@@ -8,7 +8,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { isEqual } from '@/commons/utils/isEqual'
-import { pluralizeString } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
@@ -172,9 +172,10 @@ export const LinkVenuesDialog = ({
                 />
                 <span className={styles['dialog-select-all-count']}>
                   {selectedVenuesIds.length}{' '}
-                  {pluralizeString(
+                  {pluralizeFr(
+                    selectedVenuesIds.length,
                     'structure sélectionnée',
-                    selectedVenuesIds.length
+                    'structures sélectionnées'
                   )}
                 </span>
               </div>

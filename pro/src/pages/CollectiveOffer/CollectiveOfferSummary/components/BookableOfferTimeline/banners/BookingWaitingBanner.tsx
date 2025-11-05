@@ -2,7 +2,7 @@ import { differenceInCalendarDays } from 'date-fns'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullMailIcon from '@/icons/full-mail.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -41,7 +41,7 @@ export const BookingWaitingBanner = ({
         isExpiringSoon
           ? `expire ${
               daysCountBeforeExpiration > 0
-                ? `dans ${pluralize(daysCountBeforeExpiration, 'jour')}`
+                ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
                 : 'aujourd’hui'
             }`
           : undefined

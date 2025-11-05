@@ -1,4 +1,4 @@
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
@@ -29,7 +29,12 @@ export const Header = ({
       <div className={styles['bookings-header']}>
         {!queryBookingId ? (
           <span className={styles['bookings-header-number']}>
-            {pluralize(bookingsRecapFilteredLength, 'réservation')}
+            {bookingsRecapFilteredLength}{' '}
+            {pluralizeFr(
+              bookingsRecapFilteredLength,
+              'réservation',
+              'réservations'
+            )}
           </span>
         ) : (
           <Button

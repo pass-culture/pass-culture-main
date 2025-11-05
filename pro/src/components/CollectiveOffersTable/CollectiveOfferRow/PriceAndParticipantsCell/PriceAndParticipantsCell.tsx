@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
 import type { CollectiveOfferResponseModel } from '@/apiClient/v1'
-import { pluralizeString } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 
 import styles from '../Cells.module.scss'
@@ -31,7 +31,7 @@ export const PriceAndParticipantsCell = ({
       {price && numberOfTickets ? (
         <div className={styles['price-and-participants-container']}>
           <span>{price}€</span>
-          <span>{`${numberOfTickets} ${pluralizeString('participant', numberOfTickets)}`}</span>
+          <span>{`${numberOfTickets} ${pluralizeFr(numberOfTickets, 'participant', 'participants')}`}</span>
         </div>
       ) : (
         '-'

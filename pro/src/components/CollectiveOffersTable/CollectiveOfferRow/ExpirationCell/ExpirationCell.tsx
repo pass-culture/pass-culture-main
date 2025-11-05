@@ -9,7 +9,7 @@ import {
   FORMAT_DD_MM_YYYY,
   toDateStrippedOfTimezone,
 } from '@/commons/utils/date'
-import { pluralize } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { getCellsDefinition } from '@/components/CollectiveOffersTable/utils/cellDefinitions'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -55,7 +55,7 @@ export function ExpirationCell({
               <div>
                 expire{' '}
                 {daysCountBeforeExpiration > 0
-                  ? `dans ${pluralize(daysCountBeforeExpiration, 'jour')}`
+                  ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
                   : 'aujourd’hui'}
               </div>
             </div>

@@ -8,7 +8,7 @@ import {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { pluralizeString } from '@/commons/utils/pluralize'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -115,9 +115,10 @@ export const ReimbursementBankAccount = ({
           data-testid="reimbursement-bank-account-linked-venues"
         >
           <div className={styles['linked-venues-section-title']}>
-            {pluralizeString(
+            {pluralizeFr(
+              bankAccount.linkedVenues.length,
               'Structure rattachée',
-              bankAccount.linkedVenues.length
+              'Structures rattachées'
             )}{' '}
             à ce compte bancaire
             {hasWarning && managedVenues.length > 0 && (
