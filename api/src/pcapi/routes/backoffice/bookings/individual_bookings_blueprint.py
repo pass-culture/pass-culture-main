@@ -7,6 +7,7 @@ from collections import defaultdict
 from io import BytesIO
 
 import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import redirect
@@ -446,7 +447,7 @@ def _batch_validate_bookings(bookings: list[bookings_models.Booking]) -> None:
             ) as exc:
                 error_dict[exc.__class__.__name__].append(token)
                 mark_transaction_as_invalid()
-            except sa.exc.InternalError as exc:
+            except sa_exc.InternalError as exc:
                 if exc.orig and "tooManyBookings" in str(exc.orig):
                     error_dict["tooManyBookings"].append(token)
                 elif exc.orig and "insufficientFunds" in str(exc.orig):

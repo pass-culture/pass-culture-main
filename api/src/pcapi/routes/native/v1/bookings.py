@@ -19,7 +19,6 @@ from pcapi.routes.native.v1.serialization.bookings import BookingDisplayStatusRe
 from pcapi.routes.native.v1.serialization.bookings import BookingReponse
 from pcapi.routes.native.v1.serialization.bookings import BookingsResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import repository
 
 from .. import blueprint
 
@@ -153,4 +152,5 @@ def cancel_booking(user: User, booking_id: int) -> None:
 def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
     booking = first_or_404(db.session.query(Booking).filter(Booking.userId == user.id, Booking.id == booking_id))
     booking.displayAsEnded = body.ended
-    repository.save(booking)
+    db.session.add(booking)
+    db.session.commit()
