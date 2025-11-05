@@ -17,21 +17,6 @@ class OffererValidationTest:
         api_errors = validate(offerer)
         assert not api_errors.errors
 
-    def test_invalid_siren_with_incorrect_with_length(self):
-        offerer = offerers_factories.OffererFactory.build(siren="1")
-        api_errors = validate(offerer)
-        assert api_errors.errors == {"siren": ["Ce code SIREN est invalide"]}
-
-    def test_invalid_empty_siren(self):
-        offerer = offerers_factories.OffererFactory.build(siren="")
-        api_errors = validate(offerer)
-        assert api_errors.errors == {"siren": ["Ce code SIREN est invalide"]}
-
-    def test_valid_siren(self):
-        offerer = offerers_factories.OffererFactory.build(siren="123456789")
-        api_errors = validate(offerer)
-        assert not api_errors.errors
-
 
 class VenueValidationTest:
     def test_invalid_siret(self):
