@@ -636,7 +636,7 @@ describe('CollectiveActionsCells', () => {
   it('should not render share link drawer when offer is bookable', async () => {
     renderCollectiveActionsCell(
       {
-        offer: collectiveOfferBookableFactory(),
+        offer: collectiveOfferFactory(),
       },
       ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
     )
