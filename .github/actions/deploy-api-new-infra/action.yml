@@ -32,12 +32,10 @@ inputs:
     default: "3.6.5"
   cluster_scope:
     description: "Cluster scope"
-    required: false
-    default: "gke-backend-tst-eu9"
+    required: true
   cluster_project_id:
     description: "Cluster project_id"
-    required: false
-    default: "pc-backend-tst"
+    required: true
 
 runs:
   using: composite
@@ -70,7 +68,7 @@ runs:
         use_dns_based_endpoint: true
 
     - name: "Play pre-migrations"
-      uses: pass-culture/common-workflows/actions/pcapi-migration@IC-405-Allow-different-artifact-registry
+      uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.3.0
       with:
         environment: "pcapi-${{ inputs.environment }}"
         app_version: ${{ inputs.app_version }}
@@ -107,7 +105,7 @@ runs:
         use_dns_based_endpoint: true
 
     - name: "Play post-migrations"
-      uses: pass-culture/common-workflows/actions/pcapi-migration@IC-405-Allow-different-artifact-registry
+      uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.3.0
       with:
         environment: "pcapi-${{ inputs.environment }}"
         app_version: ${{ inputs.app_version }}
