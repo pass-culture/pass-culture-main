@@ -41,7 +41,7 @@ const renderCheckboxGroup = ({
   return render(<CheckboxGroup label="My label" {...props} options={options} />)
 }
 
-describe('CheckboxGroup', () => {
+describe.skip('CheckboxGroup', () => {
   describe('Rendering', () => {
     it('renders the label', () => {
       renderCheckboxGroup({

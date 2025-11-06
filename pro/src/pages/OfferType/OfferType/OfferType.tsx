@@ -14,7 +14,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
+import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
