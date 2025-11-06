@@ -31,6 +31,7 @@ from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 
@@ -167,15 +168,13 @@ def is_v2_identification(identification_id: str | None) -> bool:
 def start_ubble_workflow(
     user: users_models.User, first_name: str, last_name: str, redirect_url: str, webhook_url: str | None = None
 ) -> HttpUrl | None:
+    from pcapi.core.subscription.ubble import tasks as ubble_tasks
+
     if webhook_url is None:
         webhook_url = flask.url_for("Public API.ubble_v2_webhook_update_application_status", _external=True)
 
     ubble_fraud_check = _get_last_ubble_fraud_check(user)
-    if ubble_fraud_check is not None and _should_reattempt_identity_verification(ubble_fraud_check):
-        content = _reattempt_identity_verification(ubble_fraud_check, first_name, last_name, redirect_url, webhook_url)
-        _update_identity_fraud_check(ubble_fraud_check, content)
-        batch_notification.track_identity_check_started_event(ubble_fraud_check.user.id, ubble_fraud_check.type)
-    else:
+    if ubble_fraud_check is None or not _should_reattempt_identity_verification(ubble_fraud_check):
         content = ubble.create_and_start_identity_verification(first_name, last_name, redirect_url, webhook_url)
         subscription_api.initialize_identity_fraud_check(
             eligibility_type=user.eligibility,
@@ -184,6 +183,20 @@ def start_ubble_workflow(
             third_party_id=str(content.identification_id),
             user=user,
         )
+        return content.identification_url
+
+    try:
+        content = _reattempt_identity_verification(ubble_fraud_check, first_name, last_name, redirect_url, webhook_url)
+    except ubble.UbbleConflictError:
+        # resync the identity verification
+        ubble_tasks.update_ubble_workflow_task(
+            ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_ids=[ubble_fraud_check.id])
+        )
+
+        raise
+
+    _update_identity_fraud_check(ubble_fraud_check, content)
+    batch_notification.track_identity_check_started_event(ubble_fraud_check.user.id, ubble_fraud_check.type)
 
     return content.identification_url
 
@@ -228,14 +241,7 @@ def _reattempt_identity_verification(
         )
         identification_id = ubble_content.identification_id
 
-    try:
-        identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
-    except ubble.UbbleConflictError:
-        # resync the identity verification
-        update_ubble_workflow(ubble_fraud_check)
-
-        raise
-
+    identification_url = ubble.create_identity_verification_attempt(identification_id, redirect_url)
     ubble_content.identification_url = identification_url
 
     return ubble_content
@@ -440,24 +446,35 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
     Sometimes the ubble webhook does not reach our API. This is a problem because the application is still pending.
     We want to be able to retrieve the processed applications and update the status of the application anyway.
     """
+    from pcapi.core.subscription.ubble import tasks as ubble_tasks
+
     pending_ubble_application_counter = 0
     for pending_ubble_application_fraud_checks in _get_pending_fraud_checks_pages():
         pending_ubble_application_counter += len(pending_ubble_application_fraud_checks)
-        for fraud_check in pending_ubble_application_fraud_checks:
-            try:
-                update_ubble_workflow(fraud_check)
-            except Exception:
-                logger.error(
-                    "Error while updating pending ubble application",
-                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
+            ubble_tasks.update_ubble_workflow_task(
+                ubble_schemas.UpdateWorkflowPayload(
+                    beneficiary_fraud_check_ids=[
+                        fraud_check.id for fraud_check in pending_ubble_application_fraud_checks
+                    ]
                 )
-                continue
-            db.session.refresh(fraud_check)
-            if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
-                logger.error(
-                    "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
-                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
-                )
+            )
+        else:
+            for fraud_check in pending_ubble_application_fraud_checks:
+                try:
+                    update_ubble_workflow(fraud_check)
+                except Exception:
+                    logger.error(
+                        "Error while updating pending ubble application",
+                        extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+                    )
+                    continue
+                db.session.refresh(fraud_check)
+                if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
+                    logger.error(
+                        "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
+                        extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+                    )
 
     if pending_ubble_application_counter > 0:
         logger.warning(

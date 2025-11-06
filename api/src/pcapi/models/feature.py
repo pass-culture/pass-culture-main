@@ -127,6 +127,7 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
+    WIP_ASYNCHRONOUS_CELERY_UBBLE = "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
     )
@@ -230,9 +231,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
 )
 
 if settings.IS_PROD:
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_FREE_ELIGIBILITY,)
-if settings.IS_STAGING:
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_FREE_ELIGIBILITY,)
+    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE,)
 
 
 def add_feature_to_database(feature: Feature) -> None:
