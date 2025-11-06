@@ -153,10 +153,8 @@ class CulturalPartner:
     active: int | None
 
 
-def synchronize_adage_ids_on_venues(debug: bool = False, since_date: datetime | None = None) -> None:
+def synchronize_adage_ids_on_venues(adage_cultural_partners: AdageCulturalPartners, debug: bool = False) -> None:
     from pcapi.core.external.attributes.api import update_external_pro
-
-    adage_cultural_partners = get_cultural_partners(force_update=True, since_date=since_date)
 
     adage_cps = []
     venue_to_adage_id = {}
