@@ -400,6 +400,13 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
             raise ValueError(f"La longitude doit être comprise entre -{MAX_LONGITUDE} et +{MAX_LONGITUDE}")
         return longitude
 
+    @validator("bookingEmail", always=True)
+    @classmethod
+    def validate_booking_email(cls, booking_email: str | None) -> str | None:
+        if booking_email == "":
+            return None
+        return booking_email
+
 
 class EditVenueCollectiveDataBodyModel(BaseModel):
     collectiveDescription: str | None

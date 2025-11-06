@@ -1037,6 +1037,18 @@ class Returns200Test:
         db.session.refresh(venue)
         assert venue.publicName == venue.name  # empty publicname default to name
 
+    def test_update_venue_empty_booking_email(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        data = {
+            "bookingEmail": "",
+        }
+        http_client = client.with_session_auth(email=user_offerer.user.email)
+        response = http_client.patch(f"/venues/{venue.id}", json=data)
+        assert response.status_code == 200
+        db.session.refresh(venue)
+        assert venue.bookingEmail is None
+
 
 class Returns400Test:
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)
@@ -1166,6 +1178,18 @@ class Returns400Test:
         assert response.status_code == 400
         assert "La latitude doit être comprise entre -90 et +90" in response.json["latitude"]
         assert "La longitude doit être comprise entre -180 et +180" in response.json["longitude"]
+
+    def test_raise_if_invalid_booking_email(self, client) -> None:
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory()
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+
+        venue_data = populate_missing_data_from_venue({"bookingEmail": "invalid-email-format"}, venue)
+
+        response = client.with_session_auth(email=user.email).patch(f"/venues/{venue.id}", json=venue_data)
+
+        assert response.status_code == 400
+        assert "Le format d'email est incorrect." in response.json["bookingEmail"]
 
 
 @pytest.mark.parametrize(
