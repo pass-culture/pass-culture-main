@@ -75,10 +75,16 @@ class VenueDescription(pydantic_v1.ConstrainedStr):
     max_length = 1000
 
 
-class VenueBookingEmail(pydantic_v1.ConstrainedStr):
+class VenueBookingEmail(pydantic_v1.EmailStr):
     strip_whitespace = True
     # optional, hence no `min_length`
     max_length = 120
+
+    @classmethod
+    def validate(cls, value: str) -> str:
+        if value == "":
+            return value
+        return super().validate(value)
 
 
 class VenueAddress(RequiredStrippedString):
