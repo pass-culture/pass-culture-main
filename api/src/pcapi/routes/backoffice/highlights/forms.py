@@ -63,7 +63,7 @@ class CreateHighlightForm(FlaskForm):
         drops="up",
     )
     image = fields.PCImageField(
-        "Image de la valorisation thématique (max. 1 Mo)",
+        "Image de la valorisation thématique (max. 3 Mo)",
         validators=(wtforms.validators.InputRequired("L'image de la valorisation thématique est obligatoire"),),
     )
 
@@ -109,5 +109,5 @@ class CreateHighlightForm(FlaskForm):
 
 class UpdateHighlightForm(CreateHighlightForm):
     image = fields.PCImageField(
-        "Ajouter une image seulement pour modifier la précédente. Image de la valorisation thématique (max. 1 Mo)",
+        "Ajouter une image seulement pour modifier la précédente. Image de la valorisation thématique (max. 3 Mo)",
     )
