@@ -14,10 +14,10 @@ inputs:
     default: europe-west9
   cluster_name: # Argo WF cluster
     type: string
-    required: false
+    required: true
   gcp_project_id: # Argo WF project
     type: string
-    required: false
+    required: true
   GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
     required: true
   GCP_EHP_SERVICE_ACCOUNT:
@@ -36,7 +36,9 @@ inputs:
   cluster_project_id:
     description: "Cluster project_id"
     required: true
-
+  argo_namespace:
+    required: true
+    default: infra-cd-prd
 runs:
   using: composite
   steps:
@@ -84,7 +86,7 @@ runs:
         cluster_name: ${{ inputs.cluster_name }}
         project_id: ${{ inputs.gcp_project_id }}
         location: ${{ inputs.location }}
-        namespace: "infra-cd-prd"
+        namespace: ${{ inputs.argo_namespace }}
         use_dns_based_endpoint: true
 
     - name: "🔀 Switch to ArgoCD namespace and Run Workflow 🚀"
@@ -92,8 +94,9 @@ runs:
       run: |
         argo submit --from wftmpl/${{ inputs.argo_template }} \
           --log --wait \
-          -p environment=${{ inputs.environment }}
-          -p version=${{ inputs.app_version }}
+          -p environment=${{ inputs.environment }} \
+          -p pcapi_version=${{ inputs.app_version }}
+
     # End Trigger WF #
     # Trigger post-migrations #
     - name: Authenticate to GKE cluster

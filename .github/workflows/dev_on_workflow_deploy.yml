@@ -50,6 +50,9 @@ on:
       gcp_project_id:
         type: string
         required: true
+      cluster_project_id:
+        type: string
+        required: false
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -100,7 +103,9 @@ jobs:
           GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
           cluster_name: ${{ inputs.cluster_name }}
+          cluster_scope: ${{ inputs.cluster_scope }}
           gcp_project_id: ${{ inputs.gcp_project_id }}
+          cluster_project_id: ${{ inputs.cluster_project_id}}
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
