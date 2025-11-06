@@ -5,35 +5,23 @@ from hashlib import sha256
 from typing import Any
 from typing import Callable
 from typing import Iterable
+from typing import Union
 from typing import cast
 
 import pydantic.v1 as pydantic_v1
 from flask import current_app
+from pydantic.v1 import parse_obj_as
 
 
-class _CacheProxy:
-    def __init__(self, data: str):
-        self._json = data
-        self._data = None
-
-    def __getattr__(self, name: str) -> Any:
-        if self._data is None:
-            self._data = json.loads(self._json)
-        return self._data.get(name)  # type: ignore[attr-defined]
-
-    def json(self, *args: Iterable[Any], **kwargs: dict[str, Any]) -> str:
-        return self._json
-
-
-def get_from_cache(
+def get_from_cache[T: Union[str, pydantic_v1.BaseModel]](
     *,
-    retriever: Callable[..., pydantic_v1.BaseModel | str],
+    retriever: Callable[..., T],
     key_template: str,
     key_args: tuple[str, ...] | dict[str, Any] | None = None,
     expire: int | None = 60 * 60 * 24,  # 24h
-    return_type: type = str,
+    return_type: type[pydantic_v1.BaseModel] | None = None,
     force_update: bool = False,
-) -> pydantic_v1.BaseModel | str:
+) -> T:
     """
     Retrieve data from cache if available else use the retriever callable to retrieve data and store it in cache.
 
@@ -44,8 +32,8 @@ def get_from_cache(
         can use functools.partial to prefill its arguments. It must return a pydantic_v1.BaseModel child or str.
     :param expire: The number of seconds before the cache expires. If None it will be set to never expire.
         It's default value is 86400 (24h).
-    :param return_type: Type awaited for return value. This is meant to fool mypy and spectree_serialize and keep
-        compatibility. It can be either `BaseModel` or `str`.
+    :param return_type: if left to None, the function will return a string. Otherwise it will parse the cached data
+        to the given pydantic_v1.BaseModel child type.
     :param force_update: If True force the update of the field cache.
     """
     redis_client = current_app.redis_client
@@ -54,21 +42,20 @@ def get_from_cache(
     else:
         key = key_template
 
-    data = redis_client.get(key)
-    miss = data is None
+    cached_data: str | None = redis_client.get(key)
 
-    if miss or force_update:
+    if force_update or cached_data is None:
         data = retriever()
         if isinstance(data, pydantic_v1.BaseModel):
-            data = data.json(exclude_none=False, by_alias=True)
-        redis_client.set(key, data.encode("utf-8"), ex=expire)
+            cached_data = data.json(exclude_none=False, by_alias=True)
+        else:
+            cached_data = data
+        redis_client.set(key, cached_data.encode("utf-8"), ex=expire)
 
-    assert isinstance(data, str)  # help mypy
+    if not return_type:
+        return cast(T, cached_data)
 
-    if return_type is str:
-        return data
-
-    return cast(pydantic_v1.BaseModel, _CacheProxy(data=data))
+    return cast(T, parse_obj_as(return_type, json.loads(cached_data)))
 
 
 def cached_view(
@@ -104,26 +91,18 @@ def cached_view(
             else:
                 args_hash = _compute_arguments_hash(args, kwargs)
 
-            result = get_from_cache(
+            return get_from_cache(
                 key_template=template,
                 key_args={"func_name": function.__name__, "args_hash": args_hash},
-                retriever=partial(_view_retriever, view=function, args=args, kwargs=kwargs),
+                retriever=partial(function, *args, **kwargs),
                 expire=expire,
                 return_type=pydantic_v1.BaseModel,
                 force_update=False,
             )
-            return cast(pydantic_v1.BaseModel, result)
 
         return wrapper
 
     return decorator
-
-
-def _view_retriever(view: Callable[[Any], pydantic_v1.BaseModel], args: Iterable[Any], kwargs: dict[str, Any]) -> str:
-    result = view(*args, **kwargs)
-    if isinstance(result, pydantic_v1.BaseModel):
-        return result.json(exclude_none=False, by_alias=True)
-    return result
 
 
 def _compute_arguments_hash(args: Iterable[Any], kwargs: dict[str, Any]) -> str:
