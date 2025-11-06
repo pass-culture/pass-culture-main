@@ -23,6 +23,7 @@ export const serializeApiCollectiveFilters = (
   ] satisfies (keyof CollectiveSearchFiltersParams)[]
 
   const body: ListCollectiveOffersQueryModel = {}
+  const locationType = searchFilters.locationType
 
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]
@@ -56,7 +57,16 @@ export const serializeApiCollectiveFilters = (
 
     if (filterValue && !isEqual(filterValue, defaultFilters[field])) {
       if (field === 'offererAddressId') {
-        accumulator.offererAddressId = filterValue ? Number(filterValue) : null
+        // FIX: Avoid overriding the above switch logic (non-ADDRESS location types can't have an `offererAddressId`)
+        if (
+          locationType === CollectiveLocationType.SCHOOL ||
+          locationType === CollectiveLocationType.TO_BE_DEFINED
+        ) {
+          return accumulator
+        }
+
+        // FIX: `filterValue` can't be null or undefined here (l. 58)
+        accumulator.offererAddressId = Number(filterValue)
       } else {
         ;(accumulator as any)[field] = filterValue
       }
