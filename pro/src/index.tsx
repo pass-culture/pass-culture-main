@@ -41,6 +41,19 @@ if (!isAdageIframe) {
     tmpl.content.appendChild(r)
     a.appendChild(tmpl)
   })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
+
+  // We do the same thing for orejime scripts
+  ;((d, v, prefix) => {
+    const head = d.getElementsByTagName('head')[0]
+    const script = d.createElement('script')
+    script.src = `${prefix}${v}/dist/orejime-standard-fr.js`
+    head.appendChild(script)
+    const link = d.createElement('link')
+    link.rel = 'stylesheet'
+    link.href = `${prefix}${v}/dist/orejime-standard.css`
+    link.crossOrigin = 'anonymous'
+    head.appendChild(link)
+  })(document, '3.0.2', 'https://cdn.jsdelivr.net/npm/orejime@')
 }
 
 // Start app
