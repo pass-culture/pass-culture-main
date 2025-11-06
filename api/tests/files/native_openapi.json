@@ -690,10 +690,6 @@
                         "title": "Id",
                         "type": "integer"
                     },
-                    "label": {
-                        "title": "Label",
-                        "type": "string"
-                    },
                     "name": {
                         "title": "Name",
                         "type": "string"
@@ -705,7 +701,6 @@
                 },
                 "required": [
                     "id",
-                    "label",
                     "name",
                     "timezone"
                 ],

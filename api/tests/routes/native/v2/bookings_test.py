@@ -413,14 +413,12 @@ class GetBookingsListTest:
         venue1 = offerers_factories.VenueFactory(
             city="Paris",
             name="fnac",
-            venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
             timezone="Europe/Paris",
         )
 
         venue2 = offerers_factories.VenueFactory(
             city="Marseille",
             name="fnac",
-            venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
             timezone="Europe/Paris",
         )
 
@@ -498,7 +496,6 @@ class GetBookingsListTest:
                     "venue": {
                         "city": ongoing_booking.stock.offer.venue.city,
                         "id": ongoing_booking.stock.offer.venue.id,
-                        "label": ongoing_booking.stock.offer.venue.venueLabel.label,
                         "name": ongoing_booking.stock.offer.venue.name,
                         "timezone": ongoing_booking.stock.offer.venue.timezone,
                     },
@@ -517,7 +514,6 @@ class GetBookingsListTest:
         offer = offers_factories.OfferFactory(
             venue=offerers_factories.VenueFactory(
                 name="fnac",
-                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
                 timezone=paris_timezone,
             ),
             offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
@@ -537,7 +533,6 @@ class GetBookingsListTest:
             user=user,
             stock__offer__venue=offerers_factories.VenueFactory(
                 name="fnac",
-                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
                 timezone=paris_timezone,
             ),
             stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
@@ -592,7 +587,6 @@ class GetBookingsListTest:
                     "venue": {
                         "city": ended_booking.stock.offer.venue.city,
                         "id": ended_booking.stock.offer.venue.id,
-                        "label": ended_booking.stock.offer.venue.venueLabel.label,
                         "name": ended_booking.stock.offer.venue.name,
                         "timezone": ended_booking.stock.offer.venue.timezone,
                     },
@@ -636,7 +630,6 @@ class GetBookingsListTest:
         offer = offers_factories.OfferFactory(
             venue=offerers_factories.VenueFactory(
                 name="fnac",
-                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Paris"),
                 timezone=paris_timezone,
             ),
             offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
@@ -657,7 +650,6 @@ class GetBookingsListTest:
             status=status,
             stock__offer__venue=offerers_factories.VenueFactory(
                 name="fnac",
-                venueLabel=offerers_factories.VenueLabelFactory(label="Fnac Marseille"),
                 timezone=paris_timezone,
             ),
             stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
@@ -706,7 +698,6 @@ class GetBookingsListTest:
                     "venue": {
                         "city": ended_booking.stock.offer.venue.city,
                         "id": ended_booking.stock.offer.venue.id,
-                        "label": ended_booking.stock.offer.venue.venueLabel.label,
                         "name": ended_booking.stock.offer.venue.name,
                         "timezone": ended_booking.stock.offer.venue.timezone,
                     },
