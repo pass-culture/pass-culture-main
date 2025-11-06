@@ -103,16 +103,17 @@ describe('VenueSettingsValidationSchema', () => {
       ],
     },
     {
-      description: 'invalid - bookingEmail required',
+      description: 'invalid - bookingEmail format invalid',
       formValues: {
         ...baseFormValues,
-        bookingEmail: '',
+        bookingEmail: 'email1@example.com email2@example.com',
       },
       context: {
         ...baseContext,
-        isVenueVirtual: true,
       },
-      expectedErrors: ['Veuillez renseigner une adresse email'],
+      expectedErrors: [
+        'Veuillez renseigner un email valide, exemple : mail@exemple.com',
+      ],
     },
   ]
 
