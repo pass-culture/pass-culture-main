@@ -3,6 +3,7 @@ import typing
 
 from pydantic.v1 import ValidationError
 
+from pcapi.connectors.beneficiaries import ubble as ubble_connector
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import exceptions
@@ -17,7 +18,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import requests as requests_utils
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -168,8 +168,8 @@ def start_identification_session(
         )
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)  # type: ignore[arg-type]
 
-    except requests_utils.ExternalAPIException as exception:
-        if exception.is_retryable:
+    except ubble_connector.UbbleHttpError as exception:
+        if isinstance(exception, ubble_connector.UbbleServerError):
             code = "IDCHECK_SERVICE_UNAVAILABLE"
             message = "Le service d'identification n'est pas joignable"
             return_status = 503
