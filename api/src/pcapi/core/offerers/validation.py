@@ -59,6 +59,14 @@ def check_venue_edition(modifications: dict[str, typing.Any], venue: models.Venu
         venue_with_same_siret = db.session.query(models.Venue).filter_by(siret=siret).one_or_none()
         if venue_with_same_siret:
             raise ApiErrors(errors={"siret": ["Un lieu avec le même siret existe déjà"]})
+        if not siret.startswith(venue.managingOfferer.siren):
+            raise ApiErrors(
+                errors={
+                    "siret": [
+                        f"Le code {venue.identifier_name} doit correspondre à un établissement de votre structure"
+                    ]
+                }
+            )
     if "name" in modifications and modifications["name"] != venue.name and (siret is None or venue.siret == siret):
         raise ApiErrors(errors={"name": ["Vous ne pouvez pas modifier la raison sociale d'un lieu"]})
     if (

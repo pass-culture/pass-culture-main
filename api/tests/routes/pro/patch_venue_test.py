@@ -1135,6 +1135,20 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json["siret"] == ["Vous ne pouvez pas supprimer le siret d'un lieu"]
 
+    def test_edit_with_siret_not_tied_to_siren(self, app, client) -> None:
+        user = users_factories.UserFactory()
+        venue = offerers_factories.VenueFactory(
+            siret="12345678900001",
+            managingOfferer__siren="123456789",
+        )
+        offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
+        http_client = client.with_session_auth(email=user.email)
+
+        response = http_client.patch(f"/venues/{venue.id}", json={"siret": "22345678900001"})
+
+        assert response.status_code == 400
+        assert response.json["siret"] == ["Le code SIRET doit correspondre à un établissement de votre structure"]
+
     def test_raises_if_coordinates_are_not_numbers(self, client) -> None:
         user = users_factories.UserFactory()
         venue = offerers_factories.VenueFactory()

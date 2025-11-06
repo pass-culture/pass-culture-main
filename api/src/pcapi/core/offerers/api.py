@@ -232,8 +232,11 @@ def update_venue(
 
     venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
 
-    # keep commit with repository.save() as long as venue is validated in pcapi.validation.models.venue
-    repository.save(venue)
+    db.session.add(venue)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     if modifications:
         on_commit(
@@ -399,7 +402,8 @@ def update_venue_collective_data(
     for key, value in modifications.items():
         setattr(venue, key, value)
 
-    repository.save(venue)
+    db.session.add(venue)
+    db.session.commit()
 
     zendesk_sell.update_venue(venue)
 
@@ -1702,7 +1706,8 @@ def save_venue_banner(
         "updated_at": updated_at,
     }
 
-    repository.save(venue)
+    db.session.add(venue)
+    db.session.commit()
 
     search.async_index_venue_ids(
         [venue.id],
@@ -1712,7 +1717,8 @@ def save_venue_banner(
 
 def delete_venue_banner(venue: models.Venue) -> None:
     rm_previous_venue_thumbs(venue)
-    repository.save(venue)
+    db.session.add(venue)
+    db.session.commit()
     search.async_index_venue_ids(
         [venue.id],
         reason=IndexationReason.VENUE_BANNER_DELETION,
