@@ -12,7 +12,7 @@ import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/use
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
-import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
+import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 

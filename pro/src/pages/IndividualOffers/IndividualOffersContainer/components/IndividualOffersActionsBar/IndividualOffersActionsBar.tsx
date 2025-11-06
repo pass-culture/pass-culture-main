@@ -10,7 +10,7 @@ import {
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { SearchFiltersParams } from '@/commons/core/Offers/types'
-import { serializeApiFilters } from '@/commons/core/Offers/utils/serializer'
+import { serializeApiFilters } from '@/commons/core/Offers/utils/serializeApiFilters'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'

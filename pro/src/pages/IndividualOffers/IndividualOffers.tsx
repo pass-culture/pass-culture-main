@@ -20,7 +20,7 @@ import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearc
 import type { SearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { serializeApiFilters } from '@/commons/core/Offers/utils/serializer'
+import { serializeApiFilters } from '@/commons/core/Offers/utils/serializeApiFilters'
 import type { Audience } from '@/commons/core/shared/types'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'

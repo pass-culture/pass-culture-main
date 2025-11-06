@@ -2,7 +2,7 @@ import { format } from 'date-fns'
 
 import { api } from '@/apiClient/api'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
-import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializer'
+import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { downloadFile } from '@/commons/utils/downloadFile'
 
 const BOOKABLE_OFFERS_FILENAME = 'offres-reservables'
