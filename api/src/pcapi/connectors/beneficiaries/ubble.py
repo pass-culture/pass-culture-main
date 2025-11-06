@@ -13,10 +13,27 @@ from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import requests
+from pcapi.utils.rate_limit import RateLimitedError as RedisRateLimitedError
 from pcapi.utils.rate_limit import rate_limit
 
 
 logger = logging.getLogger(__name__)
+
+
+class UbbleHttpError(Exception):
+    pass
+
+
+class UbbleConflictError(UbbleHttpError):
+    pass
+
+
+class UbbleRateLimitedError(UbbleHttpError):
+    pass
+
+
+class UbbleServerError(UbbleHttpError):
+    pass
 
 
 def log_and_handle_ubble_response(
@@ -26,26 +43,12 @@ def log_and_handle_ubble_response(
         @functools.wraps(ubble_function)
         def wrapper(*args: typing.Any, **kwargs: typing.Any) -> ubble_schemas.UbbleContent:
             try:
-                ubble_content = ubble_function(*args, **kwargs)
-
-                identification_id = getattr(ubble_content, "identification_id", None)
-                logger.info(
-                    "Valid response from Ubble",
-                    extra={"identification_id": str(identification_id), "request_type": request_type},
-                )
-
-                return ubble_content
+                return ubble_function(*args, **kwargs)
             except requests.exceptions.HTTPError as e:
                 response = e.response
-                if response.status_code >= 500:
-                    error_message = f"Ubble {request_type}: External error: %s"
-                    can_retry = True
-                else:
-                    error_message = f"Ubble {request_type}: Unexpected error: %s"
-                    can_retry = False
                 logger.error(
-                    error_message,
-                    response.status_code,
+                    f"Ubble %s error: {response.status_code}",
+                    request_type,
                     extra={
                         "alert": "Ubble error",
                         "error_type": "http",
@@ -55,8 +58,18 @@ def log_and_handle_ubble_response(
                         "url": response.url,
                     },
                 )
-                raise requests.ExternalAPIException(can_retry, {"status_code": response.status_code}) from e
-            except (urllib3_exceptions.HTTPError, requests.exceptions.RequestException) as e:
+                if response.status_code == 409:
+                    raise UbbleConflictError("Conflicting request was sent") from e
+
+                if response.status_code == 429:
+                    raise UbbleRateLimitedError("Ubble rate limit was reached") from e
+
+                if response.status_code >= 500:
+                    raise UbbleServerError("Ubble has server issues") from e
+
+                raise UbbleHttpError(f"Unexpected Ubble error code {response.status_code}") from e
+
+            except requests.exceptions.RequestException as e:
                 logger.error(
                     "Ubble %s: Network error",
                     request_type,
@@ -67,7 +80,7 @@ def log_and_handle_ubble_response(
                         "request_type": request_type,
                     },
                 )
-                raise requests.ExternalAPIException(is_retryable=True) from e
+                raise UbbleServerError("Could not reach Ubble server") from e
 
         return wrapper
 
@@ -76,8 +89,11 @@ def log_and_handle_ubble_response(
 
 def ubble_rate_limit[**P, T](func: typing.Callable[P, T]) -> typing.Callable[P, T]:
     def wrapper(*args: P.args, **kwds: P.kwargs) -> T:
-        with rate_limit("connectors:ubble", settings.UBBLE_RATE_LIMIT, settings.UBBLE_TIME_WINDOW_SIZE):
-            return func(*args, **kwds)
+        try:
+            with rate_limit("connectors:ubble", settings.UBBLE_RATE_LIMIT, settings.UBBLE_TIME_WINDOW_SIZE):
+                return func(*args, **kwds)
+        except RedisRateLimitedError as e:
+            raise UbbleRateLimitedError("Ubble rate limit was reached") from e
 
     return wrapper
 

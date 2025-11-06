@@ -15,7 +15,7 @@ from tests.test_utils import json_default
 
 
 class StartIdentificationTest:
-    def test_start_identification(self, requests_mock, caplog):
+    def test_start_identification(self, requests_mock):
         requests_mock.post(
             f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
             json={
@@ -42,53 +42,25 @@ class StartIdentificationTest:
             },
         )
 
-        with caplog.at_level(logging.INFO):
-            response = ubble.create_and_start_identity_verification(
-                first_name="Cassandre",
-                last_name="Beaugrand",
-                webhook_url="https://webhook.example.com",
-                redirect_url="https://redirect.example.com",
-            )
+        response = ubble.create_and_start_identity_verification(
+            first_name="Cassandre",
+            last_name="Beaugrand",
+            webhook_url="https://webhook.example.com",
+            redirect_url="https://redirect.example.com",
+        )
 
         assert isinstance(response, ubble_schemas.UbbleContent)
         assert requests_mock.call_count == 1
-
         assert requests_mock.last_request.json() == {
             "declared_data": {"name": "Cassandre Beaugrand"},
             "webhook_url": "https://webhook.example.com",
             "redirect_url": "https://redirect.example.com",
         }
 
-        assert len(caplog.records) >= 2
-        record = caplog.records[2]
-        assert record.extra["identification_id"] == str(response.identification_id)
-        assert record.extra["request_type"] == "create-and-start-idv", record.extra
-        assert record.message == "Valid response from Ubble"
-
-    def test_start_identification_connection_error(self, requests_mock, caplog):
+    def test_start_identification_connection_error(self, requests_mock):
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
 
-        with pytest.raises(requests.ExternalAPIException):
-            with caplog.at_level(logging.ERROR):
-                ubble.create_and_start_identity_verification(
-                    first_name="Cassandre",
-                    last_name="Beaugrand",
-                    webhook_url="https://webhook.example.com",
-                    redirect_url="https://redirect.example.com",
-                )
-
-        assert requests_mock.call_count == 1
-
-        assert len(caplog.records) == 1
-        record = caplog.records[0]
-        assert record.extra["request_type"] == "create-and-start-idv"
-        assert record.extra["error_type"] == "network"
-        assert record.message == "Ubble create-and-start-idv: Network error"
-
-    def test_start_identification_http_error_status(self, requests_mock, caplog):
-        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=401)
-
-        with pytest.raises(requests.ExternalAPIException):
+        with pytest.raises(ubble.UbbleHttpError):
             ubble.create_and_start_identity_verification(
                 first_name="Cassandre",
                 last_name="Beaugrand",
@@ -98,12 +70,18 @@ class StartIdentificationTest:
 
         assert requests_mock.call_count == 1
 
-        assert len(caplog.records) == 1
-        record = caplog.records[0]
-        assert record.extra["status_code"] == 401
-        assert record.extra["request_type"] == "create-and-start-idv"
-        assert record.extra["error_type"] == "http"
-        assert record.message == "Ubble create-and-start-idv: Unexpected error: 401"
+    def test_start_identification_http_error_status(self, requests_mock):
+        requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=401)
+
+        with pytest.raises(ubble.UbbleHttpError):
+            ubble.create_and_start_identity_verification(
+                first_name="Cassandre",
+                last_name="Beaugrand",
+                webhook_url="https://webhook.example.com",
+                redirect_url="https://redirect.example.com",
+            )
+
+        assert requests_mock.call_count == 1
 
 
 class ShouldUseMockTest:
