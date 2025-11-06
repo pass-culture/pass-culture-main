@@ -1,4 +1,4 @@
-name: "[on_dispatch] Deploy OPS"
+name: "[DEVOPS][TEST][on_dispatch] Deploy OPS"
 
 on:
   workflow_dispatch:
@@ -9,8 +9,7 @@ on:
       deploy_new_infra:
         description: Deploy ops to new infra
         type: boolean
-        required: true
-        default: false
+        default: true
 
 permissions: write-all
 
