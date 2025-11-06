@@ -3,6 +3,7 @@ import enum
 
 import pydantic.v1 as pydantic_v1
 import pytz
+from pydantic import BaseModel as BaseModelV2
 
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
@@ -125,3 +126,7 @@ class UbbleContent(subscription_schemas.IdentityCheckContent):
 
     def get_id_piece_number(self) -> str | None:
         return self.id_document_number
+
+
+class UpdateWorkflowPayload(BaseModelV2):
+    beneficiary_fraud_check_ids: list[int]

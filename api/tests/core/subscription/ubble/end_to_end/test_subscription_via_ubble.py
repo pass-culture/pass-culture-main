@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import pytest
 import requests_mock
+import sqlalchemy as sa
 import time_machine
 from dateutil.relativedelta import relativedelta
 
@@ -71,6 +72,7 @@ class UbbleV2EndToEndTest:
                 user, client, ubble_client, requests_mocker
             )
 
+            user = _refresh_user(user)
             assert user.eligibility == users_models.EligibilityType.AGE17_18
             assert user.age < 18
 
@@ -83,6 +85,7 @@ class UbbleV2EndToEndTest:
                 user, client, ubble_client, requests_mocker
             )
 
+            user = _refresh_user(user)
             assert user.eligibility == users_models.EligibilityType.AGE17_18
             assert user.age >= 18
 
@@ -141,6 +144,7 @@ class UbbleV2EndToEndTest:
         )
         assert response.status_code == 200, response.json
 
+        user = _refresh_user(user)
         (ubble_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
@@ -173,6 +177,7 @@ class UbbleV2EndToEndTest:
         )
         assert response.status_code == 200, response.json
 
+        user = _refresh_user(user)
         (ubble_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
@@ -193,6 +198,7 @@ class UbbleV2EndToEndTest:
         )
         assert response.status_code == 200, response.json
 
+        user = _refresh_user(user)
         ubble_fraud_checks = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
@@ -208,6 +214,13 @@ class UbbleV2EndToEndTest:
         response = client.with_token(user.email).post("/native/v1/subscription/honor_statement")
 
         assert response.status_code == 204, response.json
+
+
+def _refresh_user(user: users_models.User) -> users_models.User:
+    """
+    Celery task transactions expunge the current user, so we must refetch them after each task
+    """
+    return db.session.scalar(sa.select(users_models.User).where(users_models.User.id == user.id))
 
 
 class UbbleDummyWebhookTest:

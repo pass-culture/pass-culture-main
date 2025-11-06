@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 import requests_mock
+import sqlalchemy as sa
 import time_machine
 from dateutil.relativedelta import relativedelta
 
@@ -718,7 +719,11 @@ class IdentificationSessionTest:
         assert response.status_code == 500, response.json
         assert response.json["code"] == "IDCHECK_SERVICE_ERROR", response.json
 
-        db.session.refresh(fraud_check)
+        fraud_check = db.session.scalar(
+            sa.select(subscription_models.BeneficiaryFraudCheck).where(
+                subscription_models.BeneficiaryFraudCheck.id == fraud_check.id
+            )
+        )
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK, fraud_check.reasonCodes
 
 

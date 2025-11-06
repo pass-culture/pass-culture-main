@@ -27,7 +27,7 @@ def celery_async_task(
     name: str,
     # (tcoudray-pass, 10/11/25) TODO: Remove `type[pydantic_v1.BaseModel]` when all models are using pydantic V2
     model: type[pydantic_v1.BaseModel | BaseModelV2] | None = None,
-    autoretry_for: typing.Tuple[Exception, ...] = tuple(),
+    autoretry_for: tuple[type[Exception], ...] = tuple(),
     retry_backoff: bool = True,
     time_window_size: int = 60,
     max_per_time_window: int | None = None,
