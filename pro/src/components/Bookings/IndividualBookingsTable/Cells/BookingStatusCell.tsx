@@ -26,7 +26,7 @@ export const BookingStatusCell = ({
     <div className={cn(className)}>
       <div className={styles['booking-status-label']}>
         <Tag
-          label={bookingDisplayInfo.status.toLowerCase()}
+          label={bookingDisplayInfo.title.toLowerCase()}
           variant={bookingDisplayInfo.variant}
         />
       </div>

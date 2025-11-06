@@ -5,7 +5,6 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -18,7 +17,6 @@ import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
 import { FilterByEventDate } from './FilterByEventDate'
-import { FilterByVenue } from './FilterByVenue'
 import styles from './PreFilters.module.scss'
 import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBookingsCSVFile'
 import { downloadIndividualBookingsXLSFile } from './utils/downloadIndividualBookingsXLSFile'
@@ -30,7 +28,6 @@ export interface PreFiltersProps {
   isRefreshRequired: boolean
   applyNow: () => void
 
-  audience: Audience
   hasResult: boolean
   isFiltersDisabled: boolean
   isTableLoading: boolean
@@ -39,7 +36,6 @@ export interface PreFiltersProps {
   resetPreFilters: () => void
   urlParams?: PreFiltersParams
   updateUrl: (selectedPreFilters: PreFiltersParams) => void
-  venues: { value: string; label: string }[]
   offererAddresses: SelectOption[]
 }
 
@@ -49,13 +45,11 @@ export const PreFilters = ({
   hasPreFilters,
   isRefreshRequired,
   applyNow,
-  audience,
   hasResult,
   isFiltersDisabled,
   isTableLoading,
   isLocalLoading,
   resetPreFilters,
-  venues,
   offererAddresses,
 }: PreFiltersProps): JSX.Element => {
   const notify = useNotification()
@@ -69,23 +63,16 @@ export const PreFilters = ({
 
   const downloadBookingsFilters = { ...selectedPreFilters, page: 1 }
 
-  type DownloadParams = {
-    audience: Audience.INDIVIDUAL
-    filters: PreFiltersParams
-  }
-
   const downloadBookingsCSV = useCallback(
-    async ({ audience, filters }: DownloadParams, type: 'CSV' | 'XLS') => {
+    async (filters: PreFiltersParams, type: 'CSV' | 'XLS') => {
       setIsDownloadingCSV(true)
 
       try {
-        if (audience === Audience.INDIVIDUAL) {
-          /* istanbul ignore next: DEBT to fix */
-          if (type === 'CSV') {
-            await downloadIndividualBookingsCSVFile(filters)
-          } else {
-            await downloadIndividualBookingsXLSFile(filters)
-          }
+        /* istanbul ignore next: DEBT to fix */
+        if (type === 'CSV') {
+          await downloadIndividualBookingsCSVFile(filters)
+        } else {
+          await downloadIndividualBookingsXLSFile(filters)
         }
       } catch {
         notify.error(GET_DATA_ERROR_MESSAGE)
@@ -107,32 +94,23 @@ export const PreFilters = ({
       >
         <div className={styles['pre-filters-form-filters']}>
           <FormLayout.Row inline>
-            {audience === Audience.INDIVIDUAL ? (
-              <FieldLayout
-                label="Localisation"
+            <FieldLayout
+              label="Localisation"
+              name="address"
+              className={styles['venue-filter']}
+              required={false}
+            >
+              <SelectInput
+                defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+                onChange={(e) =>
+                  updateSelectedFilters({ offererAddressId: e.target.value })
+                }
+                disabled={isFiltersDisabled}
                 name="address"
-                className={styles['venue-filter']}
-                required={false}
-              >
-                <SelectInput
-                  defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-                  onChange={(e) =>
-                    updateSelectedFilters({ offererAddressId: e.target.value })
-                  }
-                  disabled={isFiltersDisabled}
-                  name="address"
-                  options={offererAddresses}
-                  value={selectedPreFilters.offererAddressId}
-                />
-              </FieldLayout>
-            ) : (
-              <FilterByVenue
-                isDisabled={isFiltersDisabled}
-                selectedVenueId={selectedPreFilters.offerVenueId}
-                updateFilters={updateSelectedFilters}
-                venuesFormattedAndOrdered={venues}
+                options={offererAddresses}
+                value={selectedPreFilters.offererAddressId}
               />
-            )}
+            </FieldLayout>
 
             <FilterByEventDate
               isDisabled={isFiltersDisabled}
@@ -172,10 +150,7 @@ export const PreFilters = ({
 
             <MultiDownloadButtonsModal
               downloadFunction={(filters, type) =>
-                downloadBookingsCSV(
-                  { audience, filters } as DownloadParams,
-                  type
-                )
+                downloadBookingsCSV(filters, type)
               }
               filters={downloadBookingsFilters}
               isDownloading={isDownloadingCSV}

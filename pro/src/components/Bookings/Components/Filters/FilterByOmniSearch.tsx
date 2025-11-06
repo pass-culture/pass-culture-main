@@ -3,17 +3,11 @@ import { type ChangeEvent, useId } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { Audience } from '@/commons/core/shared/types'
-import type { SelectOption } from '@/commons/custom_types/form'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 
 import type { BookingsFilters } from '../types'
-import {
-  COLLECTIVE_OMNISEARCH_FILTERS,
-  EMPTY_FILTER_VALUE,
-  INDIVIDUAL_OMNISEARCH_FILTERS,
-} from './constants'
+import { EMPTY_FILTER_VALUE, INDIVIDUAL_OMNISEARCH_FILTERS } from './constants'
 import styles from './FilterByOmniSearch.module.scss'
 import type { BookingOmniSearchFilters } from './types'
 
@@ -25,7 +19,6 @@ export interface FilterByOmniSearchProps {
     filters: Partial<BookingsFilters>,
     updatedContent: { keywords: string; selectedOmniSearchCriteria: string }
   ) => void
-  audience: Audience
 }
 
 export const FilterByOmniSearch = ({
@@ -33,23 +26,12 @@ export const FilterByOmniSearch = ({
   keywords,
   selectedOmniSearchCriteria,
   updateFilters,
-  audience,
 }: FilterByOmniSearchProps) => {
   const { logEvent } = useAnalytics()
 
   const criteriaSelectId = useId()
 
-  const omnisearchFilters =
-    audience === Audience.INDIVIDUAL
-      ? INDIVIDUAL_OMNISEARCH_FILTERS
-      : COLLECTIVE_OMNISEARCH_FILTERS
-
-  const omnisearchFiltersOptions: SelectOption[] = omnisearchFilters.map(
-    (omnisearchFilter) => ({
-      value: omnisearchFilter.id,
-      label: omnisearchFilter.selectOptionText,
-    })
-  )
+  const omnisearchFiltersOptions = INDIVIDUAL_OMNISEARCH_FILTERS
 
   const updateOmniSearchKeywords = (
     omniSearchCriteria: string,
@@ -64,8 +46,8 @@ export const FilterByOmniSearch = ({
       bookingId: EMPTY_FILTER_VALUE,
     }
 
-    const omniSearchStateKey = omnisearchFilters.find(
-      (criteria) => criteria.id === omniSearchCriteria
+    const omniSearchStateKey = omnisearchFiltersOptions.find(
+      (criteria) => criteria.value === omniSearchCriteria
     )?.stateKey
     if (omniSearchStateKey) {
       cleanedOmnisearchFilters[omniSearchStateKey] = keywords

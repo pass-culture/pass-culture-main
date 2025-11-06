@@ -5,52 +5,45 @@ export const DEFAULT_OMNISEARCH_CRITERIA = 'offre'
 export const EMPTY_FILTER_VALUE = ''
 
 type OmnisearchFilter = {
-  id: string
+  value: string
   placeholderText: string
   stateKey: keyof BookingOmniSearchFilters
-  selectOptionText: string
+  label: string
 }
 
 const offerOmnisearchFilter: OmnisearchFilter = {
-  id: 'offre',
+  value: 'offre',
   placeholderText: 'Rechercher par nom d’offre',
   stateKey: 'offerName',
-  selectOptionText: 'Offre',
+  label: 'Offre',
 }
 
 const beneficiaryOmnisearchFilter: OmnisearchFilter = {
-  id: 'bénéficiaire',
+  value: 'bénéficiaire',
   placeholderText: 'Rechercher par nom ou email',
   stateKey: 'bookingBeneficiary',
-  selectOptionText: 'Bénéficiaire',
-}
-
-const institutionOmnisearchFilter: OmnisearchFilter = {
-  id: 'établissement',
-  placeholderText: 'Rechercher par nom d’établissement',
-  stateKey: 'bookingInstitution',
-  selectOptionText: 'Établissement',
+  label: 'Bénéficiaire',
 }
 
 const eanOmnisearchFilter: OmnisearchFilter = {
-  id: 'ean',
+  value: 'ean',
   placeholderText: 'Rechercher par EAN-13',
   stateKey: 'offerISBN',
-  selectOptionText: 'EAN-13',
+  label: 'EAN-13',
 }
 
 const tokenOmnisearchFilter: OmnisearchFilter = {
-  id: 'contremarque',
+  value: 'contremarque',
   placeholderText: 'Rechercher par contremarque',
   stateKey: 'bookingToken',
-  selectOptionText: 'Contremarque',
+  label: 'Contremarque',
 }
 
 export const bookingIdOmnisearchFilter: OmnisearchFilter = {
-  id: 'booking_id',
+  value: 'booking_id',
   placeholderText: 'Rechercher par numéro de réservation',
   stateKey: 'bookingId',
-  selectOptionText: 'Numéro de réservation',
+  label: 'Numéro de réservation',
 }
 
 export const INDIVIDUAL_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
@@ -58,9 +51,4 @@ export const INDIVIDUAL_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
   beneficiaryOmnisearchFilter,
   eanOmnisearchFilter,
   tokenOmnisearchFilter,
-]
-export const COLLECTIVE_OMNISEARCH_FILTERS: OmnisearchFilter[] = [
-  offerOmnisearchFilter,
-  institutionOmnisearchFilter,
-  bookingIdOmnisearchFilter,
 ]

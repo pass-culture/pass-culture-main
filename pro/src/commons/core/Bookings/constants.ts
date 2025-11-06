@@ -18,7 +18,6 @@ export const BOOKING_STATUS = {
 }
 
 const ALL_VENUES = 'all'
-const ALL_STRUCTURES = 'all'
 
 const ALL_DATES = 'all'
 
@@ -38,11 +37,6 @@ export const DEFAULT_PRE_FILTERS = {
   offererAddressId: ALL_OFFERER_ADDRESSES,
   offererId: ALL_OFFERERS,
   offerId: undefined,
-}
-
-export const ALL_STRUCTURES_OPTION: SelectOption = {
-  label: 'Toutes les structures',
-  value: ALL_STRUCTURES,
 }
 
 export const BOOKING_STATUS_FILTER_OPTIONS: SelectOption[] = [

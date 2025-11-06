@@ -31,7 +31,7 @@ export const BookingStatusCellHistory = ({
 
     return (
       <li
-        key={displayInfoFromStatus.status}
+        key={displayInfoFromStatus.title}
         className={styles['booking-status-history-list-element']}
       >
         {`${displayInfoFromStatus.label} : ${computeDateForStatus(

@@ -3,7 +3,6 @@ import { userEvent } from '@testing-library/user-event'
 import { useState } from 'react'
 
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
-import { Audience } from '@/commons/core/shared/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { PreFilters, type PreFiltersProps } from '../PreFilters'
@@ -64,13 +63,6 @@ describe('filter bookings by bookings period', () => {
     mockApplyNow.mockReset()
 
     props = {
-      audience: Audience.INDIVIDUAL,
-      venues: [
-        {
-          value: '12',
-          label: 'Mon nom de lieu',
-        },
-      ],
       offererAddresses: [{ value: '21', label: 'label - street city cp' }],
       hasResult: true,
       resetPreFilters: vi.fn(),
@@ -168,10 +160,5 @@ describe('filter bookings by bookings period', () => {
       offererAddressId: '21',
       offererId: DEFAULT_PRE_FILTERS.offererId,
     })
-  })
-
-  it('should not display offererAddress for collective audiance', () => {
-    renderPreFilters({ ...props, audience: Audience.COLLECTIVE })
-    expect(screen.queryByLabelText('Localisation')).not.toBeInTheDocument()
   })
 })

@@ -7,76 +7,43 @@ import { TagVariant } from '@/design-system/Tag/Tag'
 
 export const INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
   {
-    id: BOOKING_STATUS.VALIDATED,
-    status: 'Validée',
-    label: 'Réservation validée',
-    dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    variant: TagVariant.SUCCESS,
-  },
-  {
-    id: BOOKING_STATUS.CANCELLED,
-    status: 'Annulée',
+    value: BOOKING_STATUS.CANCELLED,
+    title: 'Annulée',
     label: 'Réservation annulée',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
     variant: TagVariant.ERROR,
   },
   {
-    id: BOOKING_STATUS.BOOKED,
-    status: 'Réservée',
-    label: 'Réservée',
+    value: BOOKING_STATUS.CONFIRMED,
+    title: 'Confirmée',
+    label: 'Réservation confirmée',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    variant: TagVariant.WARNING,
+    variant: TagVariant.SUCCESS,
   },
   {
-    id: BOOKING_STATUS.REIMBURSED,
-    status: 'Remboursée',
+    value: BOOKING_STATUS.REIMBURSED,
+    title: 'Remboursée',
     label: 'Remboursée',
     dateFormat: FORMAT_DD_MM_YYYY,
     variant: TagVariant.SUCCESS,
   },
   {
-    id: BOOKING_STATUS.CONFIRMED,
-    status: 'Confirmée',
-    label: 'Réservation confirmée',
+    value: BOOKING_STATUS.BOOKED,
+    title: 'Réservée',
+    label: 'Réservée',
     dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
-    variant: TagVariant.SUCCESS,
-  },
-]
-
-export const COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS = [
-  {
-    id: BOOKING_STATUS.VALIDATED,
-    status: 'Terminée',
-    variant: TagVariant.SUCCESS,
-  },
-  {
-    id: BOOKING_STATUS.CANCELLED,
-    status: 'Annulée',
-    variant: TagVariant.ERROR,
-  },
-  {
-    id: BOOKING_STATUS.BOOKED,
-    status: 'Réservée',
-    variant: TagVariant.SUCCESS,
-  },
-  {
-    id: BOOKING_STATUS.PENDING,
-    status: 'Préréservée',
     variant: TagVariant.WARNING,
   },
   {
-    id: BOOKING_STATUS.REIMBURSED,
-    status: 'Remboursée',
-    variant: TagVariant.SUCCESS,
-  },
-  {
-    id: BOOKING_STATUS.CONFIRMED,
-    status: 'Confirmée',
+    value: BOOKING_STATUS.VALIDATED,
+    title: 'Validée',
+    label: 'Réservation validée',
+    dateFormat: FORMAT_DD_MM_YYYY_HH_mm,
     variant: TagVariant.SUCCESS,
   },
 ]
 
 export const getBookingStatusDisplayInformations = (bookingStatus: string) =>
   INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS.find(
-    ({ id }) => bookingStatus.toLowerCase() === id
+    ({ value }) => bookingStatus.toLowerCase() === value
   )
