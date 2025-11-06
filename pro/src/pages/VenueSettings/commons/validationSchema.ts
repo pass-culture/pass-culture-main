@@ -46,15 +46,7 @@ export const VenueSettingsValidationSchema = yup
         }
         return schema
       }),
-    bookingEmail: yup.string().when(['$isVenueVirtual'], (vals, schema) => {
-      const [isVenueVirtual] = vals as [boolean]
-      if (isVenueVirtual) {
-        return schema
-          .test(emailSchema)
-          .required('Veuillez renseigner une adresse email')
-      }
-      return schema
-    }),
+    bookingEmail: yup.string().test(emailSchema),
     name: yup
       .string()
       .required(`Veuillez renseigner la raison sociale de votre lieu`),
