@@ -292,23 +292,11 @@ class BookingsResponseV2(ConfiguredBaseModel):
     has_bookings_after_18: bool
 
 
-class BookingListItemVenueResponseGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "label" and (venue_label := self._obj.venueLabel):
-            return venue_label.label
-
-        return super().get(key, default)
-
-
 class BookingListItemVenueResponse(ConfiguredBaseModel):
     id: int
     city: str | None
-    label: str
     name: str
     timezone: str
-
-    class Config:
-        getter_dict = BookingListItemVenueResponseGetterDict
 
 
 class BookingListItemOfferResponseTimezone(ConfiguredBaseModel):
