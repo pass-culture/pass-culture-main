@@ -177,11 +177,15 @@ def synchronize_adage_ids_on_venues(adage_cultural_partners: AdageCulturalPartne
     deactivated_adage_ids = {row.adage_id for row in deactivated}
     deactivated_venue_ids = {row.venue_id for row in deactivated if row.venue_id}
 
-    deactivated_venues: sa_orm.Query[offerers_models.Venue] = db.session.query(offerers_models.Venue).filter(
-        sa.or_(
-            offerers_models.Venue.adageId.in_(deactivated_adage_ids),
-            offerers_models.Venue.id.in_(deactivated_venue_ids),
+    deactivated_venues = (
+        db.session.query(offerers_models.Venue)
+        .filter(
+            sa.or_(
+                offerers_models.Venue.adageId.in_(deactivated_adage_ids),
+                offerers_models.Venue.id.in_(deactivated_venue_ids),
+            )
         )
+        .all()
     )
 
     deactivated_venue_ids = {venue.id for venue in deactivated_venues}
@@ -231,7 +235,6 @@ def synchronize_adage_ids_on_venues(adage_cultural_partners: AdageCulturalPartne
                     update_external_pro(email)
                 if venue.managingOfferer.isValidated:
                     send_eac_offerer_activation_email(venue, list(emails))
-                venue.adageInscriptionDate = date_utils.get_naive_utc_now()
 
             new_adage_id = venue_to_adage_id.get(venue.id)
             if new_adage_id:
@@ -246,6 +249,7 @@ def synchronize_adage_ids_on_venues(adage_cultural_partners: AdageCulturalPartne
                         modified_info={"adageId": {"old_info": venue.adageId, "new_info": str(new_adage_id)}},
                     )
                 venue.adageId = str(new_adage_id)
+                venue.adageInscriptionDate = date_utils.get_naive_utc_now()
                 db.session.add(venue)
             else:
                 logger.warning(

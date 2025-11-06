@@ -2,6 +2,8 @@ import logging
 
 from sqlalchemy.orm import exc as orm_exc
 
+from pcapi.core.educational import schemas as educational_schemas
+from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import venue as educational_api_venue
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models.api_errors import ApiErrors
@@ -118,3 +120,28 @@ def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesRes
     return venue_serialization.GetVenuesResponseModel(
         venues=[venue_serialization.VenueModel.from_orm(venue) for venue in venues]
     )
+
+
+@blueprint.adage_v1.route("/cultural-partners", methods=["POST"])
+@atomic()
+@spectree_serialize(
+    api=blueprint.api,
+    response_model=None,
+    on_success_status=204,
+    on_error_statuses=[400, 401, 403, 404],
+)
+@adage_api_key_required
+def post_educational_partners(body: venue_serialization.PostAdageCulturalPartnerModel) -> None:
+    partners = educational_schemas.AdageCulturalPartners(partners=[body])
+    educational_api_adage.synchronize_adage_ids_on_venues(partners, debug=True)
+    # now deal with allowedOnAdage. The synchronize_adage_ids_on_offerers sync does not work with
+    # a single venue so we have to process it here. Also only deal with the obvious addition and
+    # leave more complex cases, the daily sync will deal with them.
+    if not body.venueId:
+        return
+    venue = offerers_repository.find_venue_by_id(body.venueId)
+    if not venue or venue.managingOfferer.allowedOnAdage:
+        return
+    if body.id and body.actif == 1 and body.synchroPass == 1:
+        venue.managingOfferer.allowedOnAdage = True
+        logger.info("Set allowedOnAdage=True for SIREN %s", venue.managingOfferer.siren)

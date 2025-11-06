@@ -3,6 +3,7 @@ import typing
 
 from pydantic.v1 import PositiveInt
 
+from pcapi.core.educational import schemas
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offerers.models import VenueLabel
 from pcapi.routes.serialization import BaseModel
@@ -140,3 +141,7 @@ class GetVenuesResponseModel(BaseModel):
 class GetAllVenuesQueryModel(BaseModel):
     page: PositiveInt | None
     per_page: PositiveInt | None
+
+
+class PostAdageCulturalPartnerModel(schemas.AdageCulturalPartner):
+    pass
