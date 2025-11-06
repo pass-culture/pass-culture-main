@@ -219,7 +219,7 @@ class CreateHighlightTest(PostEndpointHelper):
             == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : Le nom est obligatoire ; "
             "Description : La description est obligatoire ; Dates de diffusion sur l'espace partenaire : "
             "Les dates de diffusion sur l'espace partenaire sont obligatoires ; Dates de l'évènement : "
-            "Les dates de l'évènement sont obligatoires ; Image de la valorisation thématique (max. 1 Mo) : "
+            "Les dates de l'évènement sont obligatoires ; Image de la valorisation thématique (max. 3 Mo) : "
             "L'image de la valorisation thématique est obligatoire ;"
         )
 
