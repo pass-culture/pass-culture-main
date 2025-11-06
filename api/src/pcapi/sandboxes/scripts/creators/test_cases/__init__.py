@@ -307,7 +307,9 @@ def create_artists() -> None:
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
         )
-    artist_factories.ArtistAliasFactory.create(artist_id=artist_1.id, artist_alias_name="Virginie Despente")
+    artist_factories.ArtistAliasFactory.create(
+        artist_id=artist_1.id, artist_alias_name="Virginie Despentes", artist_wiki_data_id="Q295015"
+    )
 
     # Artist 2 : singer
     artist_2 = artist_factories.ArtistFactory.create(
@@ -325,7 +327,7 @@ def create_artists() -> None:
         )
     for alias_index in range(20):
         artist_factories.ArtistAliasFactory.create(
-            artist_id=artist_2.id, artist_alias_name=f"Alias Lavigne {alias_index + 1}"
+            artist_id=artist_2.id, artist_alias_name=f"Alias Lavigne {alias_index + 1}", artist_wiki_data_id="Q30449"
         )
 
     # Artist 3 : other
@@ -342,7 +344,9 @@ def create_artists() -> None:
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_3.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
-    artist_factories.ArtistAliasFactory.create(artist_id=artist_3.id, artist_alias_name="Rollman Marina")
+    artist_factories.ArtistAliasFactory.create(
+        artist_id=artist_3.id, artist_alias_name="Rollman Marina", artist_wiki_data_id="Q47393836"
+    )
 
     _create_library_with_writers()
 
