@@ -27,6 +27,7 @@ jobs:
       workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider # to delete after migration
       deploy_api: true
       cluster_scope: gke-backend-tst-eu9
+      cluster_project_id: pc-backend-tst
 
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.deploy_new_infra && secrets.V2_GCP_WORKLOAD_IDENTITY_PROVIDER || secrets.GCP_WORKLOAD_IDENTITY_PROVIDER}} # To rename after migration for consistency
