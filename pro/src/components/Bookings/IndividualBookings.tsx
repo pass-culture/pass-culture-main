@@ -1,10 +1,6 @@
 import { useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
-import {
-  formatAndOrderAddresses,
-  formatAndOrderVenues,
-} from 'repository/venuesService'
+import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -16,14 +12,11 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
   GET_BOOKINGS_QUERY_KEY,
   GET_HAS_BOOKINGS_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import type { Audience } from '@/commons/core/shared/types'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -44,7 +37,6 @@ import { IndividualBookingsTable } from './IndividualBookingsTable/IndividualBoo
 
 type BookingsProps<T> = {
   locationState?: { statuses: string[] }
-  audience: Audience
   getFilteredBookingsAdapter: (
     params: PreFiltersParams & { page?: number }
   ) => Promise<{ bookings: T[]; pages: number; currentPage: number }>
@@ -56,14 +48,11 @@ export const IndividualBookingsComponent = <
   T extends BookingRecapResponseModel,
 >({
   locationState,
-  audience,
   getFilteredBookingsAdapter,
 }: BookingsProps<T>): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const location = useLocation()
-
-  const selectedOffererId = useSelector(selectCurrentOffererId)
 
   const {
     initialAppliedFilters,
@@ -79,14 +68,7 @@ export const IndividualBookingsComponent = <
     resetPreFilters,
     resetAndApplyPreFilters,
     updateUrl,
-  } = useBookingsFilters({ audience })
-
-  const venuesQuery = useSWR(
-    [GET_VENUES_QUERY_KEY, selectedOffererId],
-    ([, maybeOffererId]) => api.getVenues(undefined, false, maybeOffererId)
-  )
-
-  const venues = formatAndOrderVenues(venuesQuery.data?.venues ?? [])
+  } = useBookingsFilters()
 
   const offererAddressQuery = useOffererAddresses(
     GetOffererAddressesWithOffersOption.INDIVIDUAL_OFFERS_ONLY
@@ -138,7 +120,7 @@ export const IndividualBookingsComponent = <
     ...baseOmniFilters,
     // initialize from query if present
     selectedOmniSearchCriteria: defaultBookingId
-      ? bookingIdOmnisearchFilter.id
+      ? bookingIdOmnisearchFilter.value
       : DEFAULT_OMNISEARCH_CRITERIA,
     keywords: defaultBookingId,
     bookingId: defaultBookingId,
@@ -162,7 +144,7 @@ export const IndividualBookingsComponent = <
     }
   ) => {
     const { keywords, selectedOmniSearchCriteria } = updatedSelectedContent
-    if (selectedOmniSearchCriteria === bookingIdOmnisearchFilter.id) {
+    if (selectedOmniSearchCriteria === bookingIdOmnisearchFilter.value) {
       setDefaultBookingId('')
     }
     setFilters((prev) => ({
@@ -197,12 +179,10 @@ export const IndividualBookingsComponent = <
         applyNow={applyNow}
         resetPreFilters={resetPreFiltersWithLog}
         wereBookingsRequested={wereBookingsRequested}
-        audience={audience}
         hasResult={(bookingsQuery ?? []).length > 0}
         isFiltersDisabled={!hasBookingsQuery.hasBookings}
-        isLocalLoading={venuesQuery.isLoading}
+        isLocalLoading={offererAddressQuery.isLoading}
         isTableLoading={isLoading}
-        venues={venues}
         offererAddresses={offererAddresses}
         urlParams={urlParams}
         updateUrl={updateUrl}
@@ -213,7 +193,6 @@ export const IndividualBookingsComponent = <
         keywords={filters.keywords}
         selectedOmniSearchCriteria={filters.selectedOmniSearchCriteria}
         updateFilters={updateFilters}
-        audience={audience}
       />
       {filteredBookings.length !== 0 && (
         <Header

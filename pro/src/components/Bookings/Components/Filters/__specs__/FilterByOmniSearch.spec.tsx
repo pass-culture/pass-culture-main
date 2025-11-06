@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
-import { Audience } from '@/commons/core/shared/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -13,7 +12,6 @@ describe('components | FilterByOmniSearch', () => {
   let props: FilterByOmniSearchProps
   beforeEach(() => {
     props = {
-      audience: Audience.INDIVIDUAL,
       keywords: '',
       selectedOmniSearchCriteria: 'offre',
       updateFilters: vi.fn(),
@@ -36,23 +34,6 @@ describe('components | FilterByOmniSearch', () => {
     expect(options[2]).toHaveValue('ean')
     expect(options[3]).toHaveTextContent('Contremarque')
     expect(options[3]).toHaveValue('contremarque')
-  })
-
-  it('should display a select input with the collective options', () => {
-    renderWithProviders(
-      <FilterByOmniSearch {...props} audience={Audience.COLLECTIVE} />
-    )
-
-    const options = screen.getAllByRole('option')
-
-    expect(screen.getByRole('combobox')).toBeInTheDocument()
-    expect(options).toHaveLength(3)
-    expect(options[0]).toHaveTextContent('Offre')
-    expect(options[0]).toHaveValue('offre')
-    expect(options[1]).toHaveTextContent('Établissement')
-    expect(options[1]).toHaveValue('établissement')
-    expect(options[2]).toHaveTextContent('Numéro de réservation')
-    expect(options[2]).toHaveValue('booking_id')
   })
 
   it('should display the correct placeholder for current option selected', () => {
@@ -80,54 +61,6 @@ describe('components | FilterByOmniSearch', () => {
         bookingId: '',
       },
       { keywords: 'Mon nom d’offre', selectedOmniSearchCriteria: 'offre' }
-    )
-  })
-
-  it('should apply bookingInstitution filter when typing keywords for institution name', async () => {
-    props.audience = Audience.COLLECTIVE
-    props.selectedOmniSearchCriteria = 'établissement'
-    renderWithProviders(<FilterByOmniSearch {...props} />)
-    screen.getByRole('searchbox', { name: 'Recherche' }).focus()
-
-    await userEvent.paste('Mon nom d’établissement')
-
-    expect(props.updateFilters).toHaveBeenCalledWith(
-      {
-        bookingBeneficiary: '',
-        bookingToken: '',
-        offerISBN: '',
-        offerName: '',
-        bookingInstitution: 'Mon nom d’établissement',
-        bookingId: '',
-      },
-      {
-        keywords: 'Mon nom d’établissement',
-        selectedOmniSearchCriteria: 'établissement',
-      }
-    )
-  })
-
-  it('should apply bookingId filter when typing keywords for booking id', async () => {
-    props.audience = Audience.COLLECTIVE
-    props.selectedOmniSearchCriteria = 'booking_id'
-    renderWithProviders(<FilterByOmniSearch {...props} />)
-    screen.getByRole('searchbox', { name: 'Recherche' }).focus()
-
-    await userEvent.paste('123456789')
-
-    expect(props.updateFilters).toHaveBeenCalledWith(
-      {
-        bookingBeneficiary: '',
-        bookingToken: '',
-        offerISBN: '',
-        offerName: '',
-        bookingInstitution: '',
-        bookingId: '123456789',
-      },
-      {
-        keywords: '123456789',
-        selectedOmniSearchCriteria: 'booking_id',
-      }
     )
   })
 

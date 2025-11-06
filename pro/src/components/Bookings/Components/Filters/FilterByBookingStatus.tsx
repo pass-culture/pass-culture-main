@@ -5,41 +5,14 @@ import { type ChangeEvent, useId, useRef, useState } from 'react'
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { Audience } from '@/commons/core/shared/types'
 import { useOnClickOrFocusOutside } from '@/commons/hooks/useOnClickOrFocusOutside'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullSortIcon from '@/icons/full-sort.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import type { BookingsFilters } from '../types'
-import {
-  COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS,
-  INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS,
-} from '../utils/bookingStatusConverter'
+import { INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS } from '../utils/bookingStatusConverter'
 import styles from './Filters.module.scss'
-
-const getAvailableBookingStatuses = (audience: Audience) => {
-  const statuses =
-    audience === Audience.INDIVIDUAL
-      ? INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS
-      : COLLECTIVE_BOOKING_STATUS_DISPLAY_INFORMATIONS
-
-  const statusOptions = statuses.map((bookingStatus) => ({
-    title: bookingStatus.status,
-    value: bookingStatus.id,
-  }))
-
-  const byStatusTitle = (
-    bookingStatusA: { title: string; value: string },
-    bookingStatusB: { title: string; value: string }
-  ) => {
-    const titleA = bookingStatusA.title
-    const titleB = bookingStatusB.title
-    return titleA < titleB ? -1 : titleA > titleB ? 1 : 0
-  }
-
-  return statusOptions.sort(byStatusTitle)
-}
 
 export interface FilterByBookingStatusProps<
   T extends BookingRecapResponseModel,
@@ -47,13 +20,11 @@ export interface FilterByBookingStatusProps<
   bookingStatuses: string[]
   bookingsRecap: T[]
   updateGlobalFilters: (filters: Partial<BookingsFilters>) => void
-  audience: Audience
 }
 
 export const FilterByBookingStatus = <T extends BookingRecapResponseModel>({
   bookingStatuses,
   updateGlobalFilters,
-  audience,
 }: FilterByBookingStatusProps<T>) => {
   const [isToolTipVisible, setIsToolTipVisible] = useState(false)
   const containerRef = useRef<HTMLDivElement | null>(null)
@@ -108,7 +79,7 @@ export const FilterByBookingStatus = <T extends BookingRecapResponseModel>({
     }
   }
 
-  const bookingStatusOptions = getAvailableBookingStatuses(audience)
+  const bookingStatusOptions = INDIVIDUAL_BOOKING_STATUS_DISPLAY_INFORMATIONS
 
   const tooltipId = useId()
 

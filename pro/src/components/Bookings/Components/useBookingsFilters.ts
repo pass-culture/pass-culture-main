@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from 'react-router'
 import { BookingStatusFilter } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
-import { Audience } from '@/commons/core/shared/types'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -20,11 +19,7 @@ function isBookingStatusFilter(
   )
 }
 
-type Args = {
-  audience: Audience
-}
-
-export function useBookingsFilters({ audience }: Args) {
+export function useBookingsFilters() {
   const navigate = useNavigate()
   const location = useLocation()
   const selectedOffererId = useSelector(selectCurrentOffererId)
@@ -165,11 +160,7 @@ export function useBookingsFilters({ audience }: Args) {
 
     setUrlParams((prev) => ({ ...prev, ...partialUrlInfo }) as PreFiltersParams)
 
-    navigate(
-      `/reservations${
-        audience === Audience.COLLECTIVE ? '/collectives' : ''
-      }?page=1&${stringify(partialUrlInfo)}`
-    )
+    navigate(`/reservations?page=1&${stringify(partialUrlInfo)}`)
   }
 
   const applyNow = () => {

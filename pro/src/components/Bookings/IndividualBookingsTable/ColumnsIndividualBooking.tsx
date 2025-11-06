@@ -1,5 +1,4 @@
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
-import { Audience } from '@/commons/core/shared/types'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   convertEuroToPacificFranc,
@@ -93,7 +92,6 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
           bookingStatuses={bookingStatuses}
           bookingsRecap={bookings}
           updateGlobalFilters={updateGlobalFilters}
-          audience={Audience.INDIVIDUAL}
         />
       ) : undefined,
       render: (row) => (

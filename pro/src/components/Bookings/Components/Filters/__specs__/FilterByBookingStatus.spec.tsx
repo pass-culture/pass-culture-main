@@ -5,7 +5,6 @@ import {
   type BookingRecapResponseModel,
   BookingRecapStatus,
 } from '@/apiClient/v1'
-import { Audience } from '@/commons/core/shared/types'
 import {
   bookingRecapFactory,
   bookingRecapStockFactory,
@@ -67,7 +66,6 @@ describe('components | FilterByBookingStatus', () => {
           ],
         }),
       ],
-      audience: Audience.INDIVIDUAL,
       bookingStatuses: [],
       updateGlobalFilters: vi.fn(),
     }
