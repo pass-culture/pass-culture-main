@@ -11,8 +11,8 @@ from pcapi.core.fraud.factories import ProductWhitelistFactory
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants as providers_constants
+from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.repository import get_provider_by_name
 from pcapi.core.providers.titelive_bq_book_search import BigQueryProductSync
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -42,11 +42,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     def test_synchronize_products_success_logs_events(self, mock_gcp_data, mock_gcp_backend, db_session):
-        provider = (
-            db.session.query(providers_models.Provider)
-            .filter_by(name=providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-            .one()
-        )
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         sync_manager = BigQueryProductSync()
 
         with patch.object(sync_manager, "run_synchronization") as mock_run:
@@ -65,11 +61,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     def test_synchronize_products_failure_logs_error_event(self, mock_gcp_data, mock_gcp_backend, db_session):
-        provider = (
-            db_session.query(providers_models.Provider)
-            .filter_by(name=providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
-            .one()
-        )
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         sync_manager = BigQueryProductSync()
 
         with patch.object(sync_manager, "run_synchronization") as mock_run:
@@ -92,6 +84,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_create_1_product(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -117,6 +110,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_handle_bad_product_by_truncating_it(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         long_title = "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la description"
         fixture = build_titelive_one_book_response(title=long_title, ean=self.EAN_TEST)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
@@ -134,6 +128,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_create_1_thing_when_gtl_not_has_lpad_zero(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         unpadded_gtl = "3020300"
         expected_padded_gtl = "03020300"
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, no_gtl=True)
@@ -163,6 +158,7 @@ class BigQueryProductSyncTest:
     def test_handles_all_authors_formats(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings, auteurs_multi_from_bq, expected_author_string
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, auteurs_multi=auteurs_multi_from_bq)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -179,6 +175,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_gtl_school_book(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -195,6 +192,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_vat_20(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings, taux_tva
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, taux_tva=taux_tva)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -210,6 +208,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_extracurricular(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, gtl_id=self.EXTRACURRICULAR_GTL_ID, gtl_level=2)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -235,6 +234,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_non_eligible_support_code(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings, support_code
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, support_code=support_code)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -250,6 +250,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_lectorat_eighteen(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(
             ean=self.EAN_TEST, id_lectorat=providers_constants.LECTORAT_EIGHTEEN_ID
         )
@@ -274,6 +275,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_small_young(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings, level_02_code_gtl
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         young_gtl_id = providers_constants.GTL_LEVEL_01_YOUNG + level_02_code_gtl + "0000"
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, gtl_id=young_gtl_id, gtl_level=2)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
@@ -291,6 +293,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_toeic_or_toefl(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings, title
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, title=title)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
@@ -306,6 +309,7 @@ class BigQueryProductSyncTest:
     def test_does_not_create_product_when_product_is_paper_press(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(
             ean=self.EAN_TEST, support_code=providers_constants.PAPER_PRESS_SUPPORT_CODE, taux_tva="2.10"
         )
@@ -323,6 +327,7 @@ class BigQueryProductSyncTest:
     def test_creates_product_when_ineligible_but_in_whitelist(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         ProductWhitelistFactory.create(ean=self.EAN_TEST)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
@@ -339,7 +344,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_update_offers_extra_data_from_thing(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         initial_extra_data = {
             "date_parution": "2000-01-01",
             "prix_livre": "99.99",
@@ -370,7 +375,7 @@ class BigQueryProductSyncTest:
     def test_update_should_not_override_fraud_incompatibility(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         offers_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             name="Ancien Titre",
@@ -394,7 +399,7 @@ class BigQueryProductSyncTest:
     def test_should_reject_product_when_it_becomes_ineligible(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory.create(ean=self.EAN_TEST, lastProviderId=provider.id)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST, gtl_id=self.SCHOLAR_BOOK_GTL_ID, gtl_level=3)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
@@ -409,7 +414,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_should_reject_product_and_cancel_bookings(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory.create(ean=self.EAN_TEST, lastProviderId=provider.id)
         offer = offers_factories.OfferFactory.create(product=product)
         stock = offers_factories.StockFactory.create(offer=offer)
@@ -431,7 +436,7 @@ class BigQueryProductSyncTest:
     def test_should_approve_product_when_it_becomes_eligible(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             lastProviderId=provider.id,
@@ -450,7 +455,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_should_approve_product_and_offers(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             lastProviderId=provider.id,
@@ -477,7 +482,7 @@ class BigQueryProductSyncTest:
     def test_approval_should_not_override_fraud_incompatibility(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory.create(
             ean=self.EAN_TEST,
             lastProviderId=provider.id,
@@ -500,6 +505,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_creates_images_for_new_product(self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend):
         mock_copy_image.side_effect = lambda uuid: uuid
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         recto_uuid = str(uuid.uuid4())
         verso_uuid = str(uuid.uuid4())
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
@@ -529,7 +535,7 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
     def test_replaces_all_images_on_full_update(self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend):
         mock_copy_image.side_effect = lambda uuid: uuid
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
         offers_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
@@ -567,7 +573,7 @@ class BigQueryProductSyncTest:
         self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend
     ):
         mock_copy_image.side_effect = lambda uuid: uuid
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
         offers_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
@@ -604,7 +610,7 @@ class BigQueryProductSyncTest:
         self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend
     ):
         mock_copy_image.side_effect = lambda uuid: uuid
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
         offers_factories.ProductMediationFactory(
             product=product, imageType=offers_models.ImageType.RECTO, uuid="old-recto-uuid"
@@ -641,6 +647,7 @@ class BigQueryProductSyncTest:
         mock_gcp_data_instance.object_exists.return_value = True
         mock_gcp_data_instance.copy_object_to.side_effect = Exception("Simulated GCP BUCKET FAILURE")
 
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         recto_uuid = str(uuid.uuid4())
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
@@ -665,7 +672,7 @@ class BigQueryProductSyncTest:
     ):
         mock_gcp_data_instance = mock_gcp_data_class.return_value
         mock_gcp_backend_instance = mock_gcp_backend_class.return_value
-        provider = get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         old_recto_uuid = "old-recto-uuid-12345"
         product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id, name="Old Name")
         offers_factories.ProductMediationFactory(
@@ -693,10 +700,10 @@ class BigQueryProductSyncTest:
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
     @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
-    @patch("pcapi.models.db.session.commit")
     def test_batch_transaction_failure_triggers_individual_retry_success(
-        self, mock_commit, mock_execute, mock_gcp_data, mock_gcp_backend
+        self, mock_execute, mock_gcp_data, mock_gcp_backend
     ):
+        providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         EAN_1 = "9780000000001"
         EAN_2 = "9780000000002"
         fixture1 = build_titelive_one_book_response(ean=EAN_1, title="Product 1")
@@ -704,15 +711,18 @@ class BigQueryProductSyncTest:
         fixture2 = build_titelive_one_book_response(ean=EAN_2, title="Product 2")
         bq_product2 = self._prepare_bq_product_from_fixture(fixture2)
         mock_execute.return_value = iter([bq_product1, bq_product2])
-        mock_commit.side_effect = [
-            Exception("Simulated Batch Commit Failure"),  # Batch commit fail
-            None,  # individual commit for product 1
-            None,  # individual commit for product 2
-        ]
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            sync_manager = BigQueryProductSync()
-            sync_manager.run_synchronization(batch_size=self.BATCH_SIZE)
+        with patch("pcapi.models.db.session.commit") as mock_commit:
+            mock_commit.side_effect = [
+                Exception("Simulated Batch Commit Failure"),  # Batch commit fail
+                None,  # individual commit for product 1
+                None,  # individual commit for product 2
+            ]
+            with patch.object(
+                BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+            ):
+                sync_manager = BigQueryProductSync()
+                sync_manager.run_synchronization(batch_size=self.BATCH_SIZE)
 
         product1 = db.session.query(offers_models.Product).filter_by(ean=EAN_1).one_or_none()
         assert product1 is not None

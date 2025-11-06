@@ -41,7 +41,7 @@ class BigQueryProductSync:
         # individual checks instead of loading everything at once.
         self.product_whitelist_eans = {ean for (ean,) in db.session.query(fraud_models.ProductWhitelist.ean).all()}
         logger.info("Loaded EANs from the whitelist.", extra={"count": len(self.product_whitelist_eans)})
-        self.provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_EPAGINE_PROVIDER_NAME)
+        self.provider = providers_repository.get_provider_by_name(providers_constants.TITELIVE_ENRICHED_BY_DATA)
         self.gcp_data = GCPData()
         self.gcp_backend = GCPBackend()
 
