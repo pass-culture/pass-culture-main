@@ -101,7 +101,8 @@ def check_deposit_csv(path: str) -> None:
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
     # Change to use datetime arithmetic
     since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2) if with_timestamp else None
-    adage_api.synchronize_adage_ids_on_venues(debug=debug, since_date=since_date)
+    adage_cultural_partners = adage_api.get_cultural_partners(force_update=True, since_date=since_date)
+    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners, debug=debug)
     # This commit is very much needed at this time.
     # log_cron_with_transaction will only commit IF the session is dirty
     # Since synchronize_adage_ids_on_venues changes are wrapped inside an atomic
