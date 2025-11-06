@@ -101,13 +101,13 @@ class VenueCity(RequiredStrippedString):
 
 
 class VenueInseeCode(RequiredStrippedString):
-    min_length = 4
-    max_length = 6
+    min_length = 5
+    max_length = 5
 
 
 class VenuePostalCode(RequiredStrippedString):
-    min_length = 4
-    max_length = 6
+    min_length = 5
+    max_length = 5
 
 
 class VenueSiret(RequiredStrippedString):
