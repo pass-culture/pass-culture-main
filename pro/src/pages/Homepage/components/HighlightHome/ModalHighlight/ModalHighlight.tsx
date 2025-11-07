@@ -74,8 +74,8 @@ export const ModalHighlight = ({
                   description,
                   mediationUrl,
                   name,
-                  availabilityTimespan,
-                  highlightTimespan,
+                  availabilityDatespan,
+                  highlightDatespan,
                 }) => (
                   // biome-ignore lint/a11y/useSemanticElements: correct voiceover bug with list displayed with flex
                   // biome-ignore lint/a11y/noRedundantRoles: idem
@@ -83,8 +83,8 @@ export const ModalHighlight = ({
                     <HighlightCard
                       imageSrc={mediationUrl}
                       title={name}
-                      availabilityTimespan={availabilityTimespan}
-                      highlightTimespan={highlightTimespan}
+                      availabilityDatespan={availabilityDatespan}
+                      highlightDatespan={highlightDatespan}
                     >
                       {description}
                     </HighlightCard>
@@ -143,28 +143,28 @@ type HighlightCardProps = {
   imageSrc: string
   title: ReactNode
   children: ReactNode
-  availabilityTimespan: string[]
-  highlightTimespan: string[]
+  availabilityDatespan: string[]
+  highlightDatespan: string[]
 }
 
 const HighlightCard = ({
   imageSrc,
   title,
   children,
-  availabilityTimespan,
-  highlightTimespan,
+  availabilityDatespan,
+  highlightDatespan,
 }: HighlightCardProps) => {
   return (
     <div className={styles['card']}>
       <div className={styles['card-content']}>
         <img src={imageSrc} alt="" className={styles['card-image']} />
         <Tag
-          label={`Du ${formatDate(highlightTimespan[0])} au ${formatDate(highlightTimespan[1])}`}
+          label={`Du ${formatDate(highlightDatespan[0])} au ${formatDate(highlightDatespan[1])}`}
         />
         <h3 className={styles['card-title']}>{title}</h3>
         <p className={styles['card-description']}>{children}</p>
         <p className={styles['card-limit-participation-date']}>
-          Date limite de participation : {formatDate(availabilityTimespan[1])}
+          Date limite de participation : {formatDate(availabilityDatespan[1])}
         </p>
       </div>
     </div>

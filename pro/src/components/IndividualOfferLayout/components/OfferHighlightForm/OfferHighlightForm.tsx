@@ -134,8 +134,8 @@ export function OfferHighlightForm({
                   variant: 'tag',
                   tag: {
                     label: getDateTag(
-                      highlight.highlightTimespan[0],
-                      highlight.highlightTimespan[1]
+                      highlight.highlightDatespan[0],
+                      highlight.highlightDatespan[1]
                     ),
                   },
                 },

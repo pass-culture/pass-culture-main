@@ -154,7 +154,7 @@ class Returns200Test:
 
         now = datetime.datetime.now()
         unavailable_highlight = highlights_factories.HighlightFactory(
-            availability_timespan=db_utils.make_timerange(
+            availability_datespan=db_utils.make_inclusive_daterange(
                 start=now - datetime.timedelta(days=10), end=now - datetime.timedelta(days=5)
             )
         )
@@ -197,7 +197,7 @@ class Returns400Test:
 
         now = datetime.datetime.now()
         unavailable_highlight = highlights_factories.HighlightFactory(
-            availability_timespan=db_utils.make_timerange(
+            availability_datespan=db_utils.make_inclusive_daterange(
                 start=now - datetime.timedelta(days=10), end=now - datetime.timedelta(days=5)
             )
         )

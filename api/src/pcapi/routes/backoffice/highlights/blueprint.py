@@ -55,7 +55,7 @@ def list_highlights() -> utils.BackofficeResponse:
         query = query.filter(query_filter)
 
     paginated_rows = paginate(
-        query=query.order_by(highlights_models.Highlight.highlight_timespan.desc()),
+        query=query.order_by(highlights_models.Highlight.highlight_datespan.desc(), highlights_models.Highlight.name),
         page=int(form.page.data),
         per_page=int(form.limit.data),
     )
@@ -98,19 +98,23 @@ def create_highlight() -> utils.BackofficeResponse:
     if not form.validate():
         flash(utils.build_form_error_msg(form), "warning")
         return redirect(url_for(".list_highlights"), code=303)
-    assert form.availability_timespan.data[0]
-    assert form.highlight_timespan.data[0]
-    availability_timespan = db_utils.make_timerange(
-        start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
-    )
-    highlight_timespan = db_utils.make_timerange(
-        start=form.highlight_timespan.data[0], end=form.highlight_timespan.data[1]
-    )
+
+    start_availability = form.availability_datespan.data[0]
+    end_availability = form.availability_datespan.data[1]
+    start_highlight = form.highlight_datespan.data[0]
+    end_highlight = form.highlight_datespan.data[1]
+
+    assert start_availability
+    assert end_availability
+    assert start_highlight
+    assert end_highlight
+    availability_datespan = db_utils.make_inclusive_daterange(start=start_availability, end=end_availability)
+    highlight_datespan = db_utils.make_inclusive_daterange(start=start_highlight, end=end_highlight)
     highlight = highlights_api.create_highlight(
         name=form.name.data,
         description=form.description.data,
-        availability_timespan=availability_timespan,
-        highlight_timespan=highlight_timespan,
+        availability_datespan=availability_datespan,
+        highlight_datespan=highlight_datespan,
         image_as_bytes=form.get_image_as_bytes(request),
         image_mimetype=form.get_image_mimetype(request),
     )
@@ -150,14 +154,17 @@ def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
         return redirect(url_for(".list_highlights"), code=303)
 
     highlight = get_or_404(highlights_models.Highlight, highlight_id)
-    assert form.availability_timespan.data[0]
-    assert form.highlight_timespan.data[0]
-    availability_timespan = db_utils.make_timerange(
-        start=form.availability_timespan.data[0], end=form.availability_timespan.data[1]
-    )
-    highlight_timespan = db_utils.make_timerange(
-        start=form.highlight_timespan.data[0], end=form.highlight_timespan.data[1]
-    )
+    start_availability = form.availability_datespan.data[0]
+    end_availability = form.availability_datespan.data[1]
+    start_highlight = form.highlight_datespan.data[0]
+    end_highlight = form.highlight_datespan.data[1]
+
+    assert start_availability
+    assert end_availability
+    assert start_highlight
+    assert end_highlight
+    availability_datespan = db_utils.make_inclusive_daterange(start=start_availability, end=end_availability)
+    highlight_datespan = db_utils.make_inclusive_daterange(start=start_highlight, end=end_highlight)
     image_as_bytes = None
     image_mimetype = None
     if form.image.data:
@@ -167,8 +174,8 @@ def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
         highlight,
         name=form.name.data,
         description=form.description.data,
-        availability_timespan=availability_timespan,
-        highlight_timespan=highlight_timespan,
+        availability_datespan=availability_datespan,
+        highlight_datespan=highlight_datespan,
         image_as_bytes=image_as_bytes,
         image_mimetype=image_mimetype,
     )
