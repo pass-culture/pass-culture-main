@@ -13,11 +13,15 @@
 }
 
 .cards-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr;
   margin-top: var(--size-spacing-s);
   gap: var(--size-spacing-s);
   align-items: flex-start;
-  flex-wrap: wrap;
+
+  @media (min-width: size.$tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .links-container {
@@ -34,7 +38,6 @@
 }
 
 .card {
-  width: 100%;
   padding: var(--size-spacing-l);
   border-radius: var(--size-border-radius-m);
   border: 1px solid var(--color-border-subtle);
@@ -49,7 +52,6 @@
 
   @media (min-width: size.$tablet) {
     height: rem.torem(404px);
-    max-width: rem.torem(306px);
   }
 }
 
