@@ -183,7 +183,18 @@ def get_venue(venue_id: int) -> sa.engine.Row:
         has_fraudulent_booking_query = sa.null()
 
     venue_query = (
-        db.session.query(offerers_models.Venue, has_fraudulent_booking_query.label("has_fraudulent_booking"))
+        db.session.query(
+            offerers_models.Venue,
+            has_fraudulent_booking_query.label("has_fraudulent_booking"),
+        )
+        .outerjoin(
+            offerers_models.VenueBankAccountLink,
+            sa.and_(
+                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
+                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
+            ),
+        )
+        .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
         .filter(offerers_models.Venue.id == venue_id)
         .options(
             sa_orm.joinedload(offerers_models.Venue.managingOfferer)
@@ -212,6 +223,14 @@ def get_venue(venue_id: int) -> sa.engine.Row:
                 offerers_models.OffererConfidenceRule.confidenceLevel
             ),
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address),
+            sa_orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
+                offerers_models.VenuePricingPointLink.pricingPoint
+            ),
+            sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
+            .load_only(offerers_models.VenueBankAccountLink.timespan)
+            .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
+            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
+            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren),
         )
     )
 
@@ -405,31 +424,7 @@ def get_stats_data(venue_id: int) -> utils.StatsData:
 
 @venue_blueprint.route("/<int:venue_id>/stats", methods=["GET"])
 def get_stats(venue_id: int) -> utils.BackofficeResponse:
-    venue_query = (
-        db.session.query(offerers_models.Venue)
-        .filter(offerers_models.Venue.id == venue_id)
-        .options(
-            sa_orm.joinedload(offerers_models.Venue.pricing_point_links).joinedload(
-                offerers_models.VenuePricingPointLink.pricingPoint
-            )
-        )
-        .outerjoin(
-            offerers_models.VenueBankAccountLink,
-            sa.and_(
-                offerers_models.Venue.id == offerers_models.VenueBankAccountLink.venueId,
-                offerers_models.VenueBankAccountLink.timespan.contains(date_utils.get_naive_utc_now()),
-            ),
-        )
-        .outerjoin(offerers_models.VenueBankAccountLink.bankAccount)
-        .options(
-            sa_orm.contains_eager(offerers_models.Venue.bankAccountLinks)
-            .load_only(offerers_models.VenueBankAccountLink.timespan)
-            .contains_eager(offerers_models.VenueBankAccountLink.bankAccount)
-            .load_only(finance_models.BankAccount.id, finance_models.BankAccount.label),
-            sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(offerers_models.Offerer.siren),
-        )
-    )
-
+    venue_query = db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id)
     venue = venue_query.one_or_none()
     if not venue:
         raise NotFound()
@@ -440,7 +435,6 @@ def get_stats(venue_id: int) -> utils.BackofficeResponse:
         "venue/get/stats.html",
         venue=venue,
         stats=data,
-        pricing_point=venue.current_pricing_point,
     )
 
 

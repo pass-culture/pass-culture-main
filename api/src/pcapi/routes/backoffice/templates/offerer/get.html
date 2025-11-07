@@ -15,6 +15,7 @@
 {% set edit_offerer_aria_described_by_id = random_hash() %}
 {% set delete_offerer_aria_described_by_id = random_hash() %}
 {% set sync_zsell_aria_described_by_id = random_hash() %}
+{% set page_title = offerer.name %}
 {% block pro_main_content %}
   <div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
     <div class="col">
@@ -23,7 +24,7 @@
           <div class="d-flex flex-fill align-items-center">
             <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as_offerer, offerer.name, "link-primary") }}</h2>
             <span class="fs-5 ps-4">{{ build_offerer_badges(offerer, has_fraudulent_booking) }}</span>
-            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+            <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
                 {{ build_modal_form("edit-offerer", url_for("backoffice_web.offerer.update_offerer", offerer_id=offerer.id) ,
                 edit_offerer_form, "Modifier les informations", "Modifier les informations de l'entité juridique", "Enregistrer") }}
@@ -45,7 +46,7 @@
               {% endif %}
             </div>
           </div>
-          <div class="d-flex row-reverse justify-content-end flex-grow-1">
+          <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2 mt-2">
             {% if has_permission("VALIDATE_OFFERER") %}
               {% if not offerer.isValidated %}
                 <a data-bs-toggle="modal"
@@ -153,178 +154,141 @@
               {% endif %}
             </div>
             <div class="col-4">
-              {% if has_permission("CONNECT_AS_PRO") %}
-                <p class="mb-1">
-                  {{ build_connect_as_link(connect_as_offer, "Offres individuelles", class="fw-bold link-primary") }}
-                  <br />
-                  {{ build_connect_as_link(connect_as_collective_offer, "Offres collectives", class="fw-bold link-primary") }}
-                </p>
-              {% endif %}
-              {% set search_params = {
-                              "search-0-search_field": "OFFERER",
-                              "search-0-operator": "IN",
-                              "search-0-offerer": offerer.id,
-                            } %}
-              {% if has_permission("READ_OFFERS") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Offres BO :</span>
-                  <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
-                     class="link-primary">individuelles</a>
-                  {% if not offerer.is_caledonian %}
-                    | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
-    class="link-primary">collectives</a>
-                    | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', offerer=offerer.id) }}"
-    class="link-primary">vitrine</a>
-                  {% endif %}
-                </p>
-              {% endif %}
-              {% if has_permission("READ_BOOKINGS") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Réservations BO :</span>
-                  <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', offerer=offerer.id) }}"
-                     class="link-primary">individuelles</a>
-                  {% if not offerer.is_caledonian %}
-                    | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', offerer=offerer.id) }}"
-    class="link-primary">collectives</a>
-                  {% endif %}
-                </p>
-              {% endif %}
-              <div>
-                {% if zendesk_sell_synchronisation_form %}
-                  <button class="btn btn-outline-primary btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target=".pc-sync-zsell-modal"
-                          type="button">
-                    <i class="bi bi-arrow-repeat"></i>
-                    Zendesk Sell
-                  </button>
-                  <div class="modal modal-lg fade pc-sync-zsell-modal"
-                       tabindex="-1"
-                       aria-describedby="{{ sync_zsell_aria_described_by_id }}"
-                       aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <form action="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
-                              name="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
-                              method="post">
-                          {{ zendesk_sell_synchronisation_form.csrf_token }}
-                          <div class="modal-header"
-                               id="{{ sync_zsell_aria_described_by_id }}">
-                            <h5 class="modal-title">Synchroniser l'entité juridique {{ offerer.name }} sur Zendesk Sell</h5>
-                          </div>
-                          <div class="modal-body row">
-                            <div class="d-flex align-items-center">
-                              <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
-                                 style="font-size: 3.1rem"></i>
-                              <div>
-                                N'oubliez pas de vérifier que l'ID <b>{{ offerer.id }}</b> est bien renseigné dans «&thinsp;Produit Offerer ID&thinsp;» sur Zendesk Sell.
-                              </div>
+              {% if zendesk_sell_synchronisation_form %}
+                <button class="btn btn-outline-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target=".pc-sync-zsell-modal"
+                        type="button">
+                  <i class="bi bi-arrow-repeat"></i>
+                  Zendesk Sell
+                </button>
+                <div class="modal modal-lg fade pc-sync-zsell-modal"
+                     tabindex="-1"
+                     aria-describedby="{{ sync_zsell_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
+                            name="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
+                            method="post">
+                        {{ zendesk_sell_synchronisation_form.csrf_token }}
+                        <div class="modal-header"
+                             id="{{ sync_zsell_aria_described_by_id }}">
+                          <h5 class="modal-title">Synchroniser l'entité juridique {{ offerer.name }} sur Zendesk Sell</h5>
+                        </div>
+                        <div class="modal-body row">
+                          <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
+                               style="font-size: 3.1rem"></i>
+                            <div>
+                              N'oubliez pas de vérifier que l'ID <b>{{ offerer.id }}</b> est bien renseigné dans «&thinsp;Produit Offerer ID&thinsp;» sur Zendesk Sell.
                             </div>
-                            {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
                           </div>
-                          <div class="modal-footer">
-                            <button type="button"
-                                    class="btn btn-outline-primary-subtle-bg"
-                                    data-bs-dismiss="modal">Annuler</button>
-                            <button type="submit"
-                                    class="btn btn-primary">Confirmer</button>
-                          </div>
-                        </form>
-                      </div>
+                          {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary-subtle-bg"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Confirmer</button>
+                        </div>
+                      </form>
                     </div>
                   </div>
-                {% endif %}
-              </div>
+                </div>
+              {% endif %}
             </div>
           </div>
         </div>
       </div>
-      <div class="mt-4">
-        <div id="total_revenue_frame"
-             hx-trigger="load"
-             hx-get="{{ url_for('backoffice_web.offerer.get_stats', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
-      </div>
-      <div class="mt-4">
-        {% call build_details_tabs_wrapper() %}
-          {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
-          {% if show_subscription_tab %}
-            {{ build_details_tab("subscription", "Parcours auto-entrepreneur", active_tab == 'subscription') }}
-          {% endif %}
-          {% if not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
-            {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
-          {% endif %}
-          {{ build_details_tab("pro-users", "Comptes pro", active_tab == 'users') }}
-          {{ build_details_tab("managed-venues", "Partenaires culturels", active_tab == 'managed_venues') }}
-          {% if has_offerer_address %}
-            {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
-            {{ build_details_tab("addresses", "Localisations", active_tab == 'addresses') }}
-          {% endif %}
-          {% if not offerer.is_caledonian %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
-          {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
+    </div>
+    <div class="mt-4">
+      <div id="total_revenue_frame"
+           hx-trigger="load"
+           hx-get="{{ url_for('backoffice_web.offerer.get_stats', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
+    </div>
+    <div class="mt-4">
+      {% call build_details_tabs_wrapper() %}
+        {{ build_details_tab("history", "Historique du compte", active_tab == 'history') }}
+        {% if show_subscription_tab %}
+          {{ build_details_tab("subscription", "Parcours auto-entrepreneur", active_tab == 'subscription') }}
+        {% endif %}
+        {% if not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {{ build_details_tab("entreprise", "Données Entreprise", active_tab == 'entreprise') }}
+        {% endif %}
+        {{ build_details_tab("pro-users", "Comptes pro", active_tab == 'users') }}
+        {{ build_details_tab("managed-venues", "Partenaires culturels", active_tab == 'managed_venues') }}
+        {% if has_offerer_address %}
+          {# tab is hidden when there is no address in database; so it does not need a FF until migration #}
+          {{ build_details_tab("addresses", "Localisations", active_tab == 'addresses') }}
+        {% endif %}
+        {% if not offerer.is_caledonian %}{{ build_details_tab("dms-adage", "Dossiers DMS ADAGE", active_tab == 'dms_adage') }}{% endif %}
+        {{ build_details_tab("bank-accounts", "Comptes bancaires", active_tab == 'bank_accounts') }}
+      {% endcall %}
+      {% call build_details_tabs_content_wrapper() %}
+        {% call build_details_tab_content("history", active_tab == 'history') %}
+          <div id="offerer_history_frame"
+               hx-trigger="intersect once"
+               hx-get="{{ url_for('backoffice_web.offerer.get_history', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
-        {% call build_details_tabs_content_wrapper() %}
-          {% call build_details_tab_content("history", active_tab == 'history') %}
-            <div id="offerer_history_frame"
+        {% if show_subscription_tab %}
+          {% call build_details_tab_content("subscription", active_tab == 'subscription') %}
+            <div id="offerer_subscription_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_history', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
-          {% endcall %}
-          {% if show_subscription_tab %}
-            {% call build_details_tab_content("subscription", active_tab == 'subscription') %}
-              <div id="offerer_subscription_frame"
-                   hx-trigger="intersect once"
-                   hx-get="{{ url_for('backoffice_web.offerer.get_individual_subscription', offerer_id=offerer.id) }}">
-                {{ build_loading_spinner() }}
-              </div>
-            {% endcall %}
-          {% endif %}
-          {% if not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
-            {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
-              <div id="offerer_entreprise_frame"
-                   hx-trigger="intersect once"
-                   hx-get="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
-                {{ build_loading_spinner() }}
-              </div>
-            {% endcall %}
-          {% endif %}
-          {% call build_details_tab_content("pro-users", active_tab == 'users') %}
-            <div id="offerer_users_frame"
-                 hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_pro_users', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
-          {% endcall %}
-          {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
-            <div id="offerer_venues_frame"
-                 hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_managed_venues', offerer_id=offerer.id) }}">
+                 hx-get="{{ url_for('backoffice_web.offerer.get_individual_subscription', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}
-          {% if has_offerer_address %}
-            {% call build_details_tab_content("addresses", active_tab == 'addresses') %}
-              <div id="offerer_addresses_frame"
-                   hx-trigger="intersect once"
-                   hx-get="{{ url_for('backoffice_web.offerer.get_offerer_addresses', offerer_id=offerer.id) }}">
-                {{ build_loading_spinner() }}
-              </div>
-            {% endcall %}
-          {% endif %}
-          {% if not offerer.is_caledonian %}
-            {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
-              <div id="offerer_collective_dms_applications_frame"
-                   hx-trigger="intersect once"
-                   hx-get="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
-                {{ build_loading_spinner() }}
-              </div>
-            {% endcall %}
-          {% endif %}
-          {% call build_details_tab_content("bank-accounts", active_tab == 'bank_accounts') %}
-            <div id="offerer_bank_accounts_frame"
+        {% endif %}
+        {% if not offerer.rid7 and has_permission("READ_PRO_ENTREPRISE_INFO") %}
+          {% call build_details_tab_content("entreprise", active_tab == 'entreprise') %}
+            <div id="offerer_entreprise_frame"
                  hx-trigger="intersect once"
-                 hx-get="{{ url_for('backoffice_web.offerer.get_bank_accounts', offerer_id=offerer.id) }}">
+                 hx-get="{{ url_for('backoffice_web.offerer.get_entreprise_info', offerer_id=offerer.id) }}">
               {{ build_loading_spinner() }}
             </div>
           {% endcall %}
+        {% endif %}
+        {% call build_details_tab_content("pro-users", active_tab == 'users') %}
+          <div id="offerer_users_frame"
+               hx-trigger="intersect once"
+               hx-get="{{ url_for('backoffice_web.offerer.get_pro_users', offerer_id=offerer.id) }}">{{ build_loading_spinner() }}</div>
         {% endcall %}
-      </div>
+        {% call build_details_tab_content("managed-venues", active_tab == 'managed_venues') %}
+          <div id="offerer_venues_frame"
+               hx-trigger="intersect once"
+               hx-get="{{ url_for('backoffice_web.offerer.get_managed_venues', offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+          </div>
+        {% endcall %}
+        {% if has_offerer_address %}
+          {% call build_details_tab_content("addresses", active_tab == 'addresses') %}
+            <div id="offerer_addresses_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.offerer.get_offerer_addresses', offerer_id=offerer.id) }}">
+              {{ build_loading_spinner() }}
+            </div>
+          {% endcall %}
+        {% endif %}
+        {% if not offerer.is_caledonian %}
+          {% call build_details_tab_content("dms-adage", active_tab == 'dms_adage') %}
+            <div id="offerer_collective_dms_applications_frame"
+                 hx-trigger="intersect once"
+                 hx-get="{{ url_for('backoffice_web.offerer.get_collective_dms_applications', offerer_id=offerer.id) }}">
+              {{ build_loading_spinner() }}
+            </div>
+          {% endcall %}
+        {% endif %}
+        {% call build_details_tab_content("bank-accounts", active_tab == 'bank_accounts') %}
+          <div id="offerer_bank_accounts_frame"
+               hx-trigger="intersect once"
+               hx-get="{{ url_for('backoffice_web.offerer.get_bank_accounts', offerer_id=offerer.id) }}">
+            {{ build_loading_spinner() }}
+          </div>
+        {% endcall %}
+      {% endcall %}
     </div>
   </div>
+</div>
 {% endblock pro_main_content %}

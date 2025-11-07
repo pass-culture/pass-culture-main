@@ -9,9 +9,11 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/dynamic/spinner.html" import build_loading_spinner with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
+{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
-{% from "components/connect_as.html" import build_connect_as_link %}
+{% set page_title = venue.name %}
 {% set sync_zsell_aria_described_by_id = random_hash() %}
 {% block pro_main_content %}
   <div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
@@ -21,7 +23,7 @@
           <div class="d-flex flex-fill align-items-center">
             <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as, venue.name, "link-primary") }}</h2>
             <span class="fs-5 ps-4">{{ build_venue_badges(venue, has_fraudulent_booking) }}</span>
-            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+            <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
                 {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du partenaire culturel", "Enregistrer") }}
               {% endif %}
@@ -261,35 +263,44 @@
                   {{ venue_provider.lastSyncDate | format_date_time }}
                 </p>
               {% endfor %}
-              {% set search_params = {
-                              "search-0-search_field": "VENUE",
-                              "search-0-operator": "IN",
-                              "search-0-venue": venue.id,
-                            } %}
-              {% if has_permission("READ_OFFERS") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Offres BO :</span>
-                  <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
-                     class="link-primary">individuelles</a>
-                  {% if not venue.is_caledonian %}
-                    | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
-    class="link-primary">collectives</a>
-                    | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
-    class="link-primary">vitrine</a>
+              <div class="list-unstyled list-group small">
+                <div>
+                  <span class="fw-bold">Point de valorisation :</span>
+                  {% set pricing_point = venue.current_pricing_point %}
+                  {% if pricing_point %}
+                    {% if pricing_point.id != venue.id %}
+                      <a href="{{ url_for('backoffice_web.venue.get', venue_id=pricing_point.id) }}"
+                         class="link-primary">{{ pricing_point.common_name }}</a>
+                      {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+                        <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"
+                                data-bs-toggle="modal"
+                                data-bs-target="#remove-venue-pricing-point"
+                                type="button">
+                          <i class="bi bi-trash3-fill"></i>
+                        </button>
+                        {{ build_lazy_modal(url_for("backoffice_web.venue.get_remove_pricing_point_form", venue_id=venue.id) , "remove-venue-pricing-point") }}
+                      {% endif %}
+                    {% else %}
+                      {{ pricing_point.common_name | empty_string_if_null }}
+                    {% endif %}
+                  {% elif has_permission("ADVANCED_PRO_SUPPORT") %}
+                    <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"
+                            data-bs-toggle="modal"
+                            data-bs-target="#set-venue-pricing-point"
+                            type="button">
+                      <i class="bi-pencil"></i>
+                    </button>
+                    {{ build_lazy_modal(url_for("backoffice_web.venue.get_set_pricing_point_form", venue_id=venue.id) , "set-venue-pricing-point") }}
                   {% endif %}
-                </p>
-              {% endif %}
-              {% if has_permission("READ_BOOKINGS") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Réservations BO :</span>
-                  <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', venue=venue.id) }}"
-                     class="link-primary">individuelles</a>
-                  {% if not venue.is_caledonian %}
-                    | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
-    class="link-primary">collectives</a>
+                </div>
+                <div>
+                  {% set bank_account_link = venue.current_bank_account_link %}
+                  <span class="fw-bold">Compte bancaire :</span>
+                  {% if bank_account_link %}
+                    {{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }} ({{ bank_account_link.timespan.lower | format_date }})
                   {% endif %}
-                </p>
-              {% endif %}
+                </div>
+              </div>
               <p class="mb-1">
                 <a class="fw-bold link-primary"
                    href="{{ venue | webapp_venue_link }}"
