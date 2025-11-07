@@ -128,6 +128,7 @@ describe('screens:StocksThing', () => {
     })
     props = {
       offer,
+      stocks: [],
     }
     contextValue = individualOfferContextValuesFactory({
       offer,

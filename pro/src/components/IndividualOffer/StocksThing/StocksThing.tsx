@@ -1,5 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { type ChangeEvent, useEffect, useRef, useState } from 'react'
+import { type ChangeEvent, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -11,7 +11,10 @@ import {
   SubcategoryIdEnum,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFER_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import {
@@ -55,9 +58,13 @@ import { getValidationSchema } from './validationSchema'
 
 export interface StocksThingProps {
   offer: GetIndividualOfferWithAddressResponseModel
+  stocks: GetOfferStockResponseModel[]
 }
 
-export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
+export const StocksThing = ({
+  offer,
+  stocks,
+}: StocksThingProps): JSX.Element => {
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -72,7 +79,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
 
   const activationCodeButtonRef = useRef<HTMLButtonElement>(null)
 
-  const [stocks, setStocks] = useState<GetOfferStockResponseModel[]>([])
   const [isActivationCodeFormVisible, setIsActivationCodeFormVisible] =
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
@@ -80,18 +86,6 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
-
-  useEffect(() => {
-    async function loadStocks() {
-      const response = await api.getStocks(offer.id)
-      setStocks(response.stocks)
-      const newValues = buildInitialValues(offer, response.stocks, isCaledonian)
-      reset(newValues)
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    loadStocks()
-  }, [])
 
   // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
@@ -234,7 +228,7 @@ export const StocksThing = ({ offer }: StocksThingProps): JSX.Element => {
       await api.deleteStock(stockId)
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
       reset(STOCK_THING_FORM_DEFAULT_VALUES)
-      setStocks([])
+      await mutate([GET_STOCKS_QUERY_KEY, offer.id])
       notify.success('Le stock a été supprimé.')
     } catch {
       notify.error('Une erreur est survenue lors de la suppression du stock.')
