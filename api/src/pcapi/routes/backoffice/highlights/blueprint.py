@@ -115,6 +115,7 @@ def create_highlight() -> utils.BackofficeResponse:
         description=form.description.data,
         availability_datespan=availability_datespan,
         highlight_datespan=highlight_datespan,
+        communication_date=form.communication_date.data,
         image_as_bytes=form.get_image_as_bytes(request),
         image_mimetype=form.get_image_mimetype(request),
     )
@@ -176,6 +177,7 @@ def update_highlight(highlight_id: int) -> utils.BackofficeResponse:
         description=form.description.data,
         availability_datespan=availability_datespan,
         highlight_datespan=highlight_datespan,
+        communication_date=form.communication_date.data,
         image_as_bytes=image_as_bytes,
         image_mimetype=image_mimetype,
     )

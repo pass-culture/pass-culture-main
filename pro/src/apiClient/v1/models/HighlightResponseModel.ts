@@ -4,6 +4,7 @@
 /* eslint-disable */
 export type HighlightResponseModel = {
   availabilityDatespan: Array<string>;
+  communicationDate: string;
   description: string;
   highlightDatespan: Array<string>;
   id: number;

@@ -104,12 +104,14 @@ class CreateHighlightTest(PostEndpointHelper):
     expected_num_queries = 3
 
     def test_create_highlight(self, authenticated_client):
+        today = datetime.date.today()
         name = "New highlight"
         description = "Highlight description"
-        highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
-        highlight_date_to = datetime.date.today() + datetime.timedelta(days=11)
-        availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
-        availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
+        highlight_date_from = today + datetime.timedelta(days=11)
+        highlight_date_to = today + datetime.timedelta(days=11)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today + datetime.timedelta(days=10)
+        communication_date = today + datetime.timedelta(days=11)
         separator = " - "
 
         image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
@@ -121,6 +123,7 @@ class CreateHighlightTest(PostEndpointHelper):
                     "description": description,
                     "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
                     "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries,
@@ -136,14 +139,17 @@ class CreateHighlightTest(PostEndpointHelper):
         assert highlight.availability_datespan.upper == availability_date_to + datetime.timedelta(days=1)
         assert highlight.highlight_datespan.lower == highlight_date_from
         assert highlight.highlight_datespan.upper == highlight_date_to + datetime.timedelta(days=1)
+        assert highlight.communication_date == communication_date
 
-    def test_create_highlight_available_after_highlight(self, authenticated_client):
+    def test_create_highlight_available_after_highlight_should_fail(self, authenticated_client):
+        today = datetime.date.today()
         name = "New highlight"
         description = "Highlight description"
-        highlight_date_from = datetime.date.today() + datetime.timedelta(days=1)
-        highlight_date_to = datetime.date.today() + datetime.timedelta(days=2)
-        availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
-        availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
+        highlight_date_from = today + datetime.timedelta(days=1)
+        highlight_date_to = today + datetime.timedelta(days=2)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today + datetime.timedelta(days=10)
+        communication_date = today + datetime.timedelta(days=1)
         separator = " - "
 
         image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
@@ -155,6 +161,7 @@ class CreateHighlightTest(PostEndpointHelper):
                     "description": description,
                     "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
                     "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries - 1,
@@ -167,13 +174,15 @@ class CreateHighlightTest(PostEndpointHelper):
             == "La diffusion sur l'espace partenaire ne peut pas se terminer après la fin de l'évènement"
         )
 
-    def test_create_highlight_in_the_past(self, authenticated_client):
+    def test_create_highlight_in_the_past_should_fail(self, authenticated_client):
+        today = datetime.date.today()
         name = "New highlight"
         description = "Highlight description"
-        highlight_date_from = datetime.date.today() - datetime.timedelta(days=12)
-        highlight_date_to = datetime.date.today() - datetime.timedelta(days=10)
-        availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
-        availability_date_to = datetime.date.today() - datetime.timedelta(days=8)
+        highlight_date_from = today - datetime.timedelta(days=10)
+        highlight_date_to = today - datetime.timedelta(days=8)
+        availability_date_from = today - datetime.timedelta(days=12)
+        availability_date_to = today - datetime.timedelta(days=10)
+        communication_date = today - datetime.timedelta(days=10)
         separator = " - "
 
         image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
@@ -185,6 +194,7 @@ class CreateHighlightTest(PostEndpointHelper):
                     "description": description,
                     "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
                     "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries - 1,
@@ -196,7 +206,8 @@ class CreateHighlightTest(PostEndpointHelper):
             html_parser.extract_alert(response.data)
             == "Les données envoyées comportent des erreurs. Dates de diffusion sur l'espace partenaire : "
             "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé ; "
-            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ;"
+            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ; "
+            "Date de mise en avant (envoi du mail aux acteurs culturels) : La date de mise en avant ne peut pas être dans le passé ;"
         )
 
     def test_create_highlight_missing_field_should_fail(self, authenticated_client):
@@ -211,18 +222,20 @@ class CreateHighlightTest(PostEndpointHelper):
             == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : Le nom est obligatoire ; "
             "Description : La description est obligatoire ; Dates de diffusion sur l'espace partenaire : "
             "Les dates de diffusion sur l'espace partenaire sont obligatoires ; Dates de l'évènement : "
-            "Les dates de l'évènement sont obligatoires ; Image de la valorisation thématique (max. 3 Mo) : "
-            "L'image de la valorisation thématique est obligatoire ;"
+            "Les dates de l'évènement sont obligatoires ; Date de mise en avant (envoi du mail aux acteurs culturels) : La date de mise en avant est obligatoire ; "
+            "Image de la valorisation thématique (max. 3 Mo) : L'image de la valorisation thématique est obligatoire ;"
         )
 
-    def test_create_highlight_name_too_long(self, authenticated_client):
+    def test_create_highlight_name_too_long_should_fail(self, authenticated_client):
+        today = datetime.date.today()
         name = "a" * 61
         description = "Highlight description"
-        highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
-        highlight_date_to = datetime.date.today() + datetime.timedelta(days=12)
-        availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
-        availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
+        highlight_date_from = today + datetime.timedelta(days=11)
+        highlight_date_to = today + datetime.timedelta(days=12)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today + datetime.timedelta(days=10)
         separator = " - "
+        communication_date = today + datetime.timedelta(days=10)
 
         image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
         with open(image_path, "rb") as image_file:
@@ -233,6 +246,7 @@ class CreateHighlightTest(PostEndpointHelper):
                     "description": description,
                     "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
                     "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries - 1,
@@ -243,6 +257,39 @@ class CreateHighlightTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(response.data)
             == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : doit contenir moins de 60 caractères ;"
+        )
+
+    def test_create_highlight_communication_date_after_highlight_should_fail(self, authenticated_client):
+        today = datetime.date.today()
+        name = "Name"
+        description = "Highlight description"
+        highlight_date_from = today + datetime.timedelta(days=11)
+        highlight_date_to = today + datetime.timedelta(days=12)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today + datetime.timedelta(days=10)
+        separator = " - "
+        communication_date = today + datetime.timedelta(days=13)
+
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(image_path, "rb") as image_file:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={
+                    "name": name,
+                    "description": description,
+                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
+                    "image": image_file,
+                },
+                expected_num_queries=self.expected_num_queries - 1,
+            )
+            assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "La date de mise en avant ne peut pas être après la fin de l'évènement"
         )
 
 
@@ -275,16 +322,18 @@ class UpdateHighlightTest(PostEndpointHelper):
     expected_num_queries = 4
 
     def test_update_highlight(self, authenticated_client):
+        today = datetime.date.today()
         highlight = highlights_factories.HighlightFactory.create()
         highlight_id = highlight.id
 
         new_name = "New name"
         new_description = "New description"
         new_image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
-        new_highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
-        new_highlight_date_to = datetime.date.today() + datetime.timedelta(days=12)
-        new_availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
-        new_availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
+        new_highlight_date_from = today + datetime.timedelta(days=11)
+        new_highlight_date_to = today + datetime.timedelta(days=12)
+        new_availability_date_from = today - datetime.timedelta(days=10)
+        new_availability_date_to = today + datetime.timedelta(days=10)
+        new_communication_date = today + datetime.timedelta(days=11)
         separator = " - "
         with open(new_image_path, "rb") as image_file:
             response = self.post_to_endpoint(
@@ -295,6 +344,7 @@ class UpdateHighlightTest(PostEndpointHelper):
                     "description": new_description,
                     "availability_datespan": f"{new_availability_date_from.strftime('%d/%m/%Y')}{separator}{new_availability_date_to.strftime('%d/%m/%Y')}",
                     "highlight_datespan": f"{new_highlight_date_from.strftime('%d/%m/%Y')}{separator}{new_highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": new_communication_date,
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries,
@@ -311,7 +361,7 @@ class UpdateHighlightTest(PostEndpointHelper):
         assert highlight.highlight_datespan.lower == new_highlight_date_from
         assert highlight.highlight_datespan.upper == new_highlight_date_to + datetime.timedelta(days=1)
 
-    def test_update_highlight_available_after_highlight(self, authenticated_client):
+    def test_update_highlight_available_after_highlight_should_fail(self, authenticated_client):
         highlight = highlights_factories.HighlightFactory.create()
         highlight_id = highlight.id
 
@@ -326,6 +376,7 @@ class UpdateHighlightTest(PostEndpointHelper):
                 "description": highlight.description,
                 "availability_datespan": f"{highlight.availability_datespan.lower.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
                 "highlight_datespan": f"{highlight.highlight_datespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.highlight_datespan.upper.strftime('%d/%m/%Y')}",
+                "communication_date": highlight.communication_date,
             },
             expected_num_queries=self.expected_num_queries - 1,
         )
@@ -337,14 +388,16 @@ class UpdateHighlightTest(PostEndpointHelper):
             == "La diffusion sur l'espace partenaire ne peut pas se terminer après la fin de l'évènement"
         )
 
-    def test_update_highlight_in_the_past(self, authenticated_client):
+    def test_update_highlight_in_the_past_should_fail(self, authenticated_client):
+        today = datetime.date.today()
         highlight = highlights_factories.HighlightFactory.create()
         highlight_id = highlight.id
-        highlight_date_from = datetime.date.today() - datetime.timedelta(days=12)
-        highlight_date_to = datetime.date.today() - datetime.timedelta(days=10)
-        availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
-        availability_date_to = datetime.date.today() - datetime.timedelta(days=8)
+        highlight_date_from = today - datetime.timedelta(days=12)
+        highlight_date_to = today - datetime.timedelta(days=10)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today - datetime.timedelta(days=8)
         separator = " - "
+        new_communication_date = today - datetime.timedelta(days=12)
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -354,6 +407,7 @@ class UpdateHighlightTest(PostEndpointHelper):
                 "description": highlight.description,
                 "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
                 "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                "communication_date": new_communication_date,
             },
             expected_num_queries=self.expected_num_queries - 1,
         )
@@ -364,7 +418,8 @@ class UpdateHighlightTest(PostEndpointHelper):
             html_parser.extract_alert(response.data)
             == "Les données envoyées comportent des erreurs. Dates de diffusion sur l'espace partenaire : "
             "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé ; "
-            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ;"
+            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ; "
+            "Date de mise en avant (envoi du mail aux acteurs culturels) : La date de mise en avant ne peut pas être dans le passé ;"
         )
 
     def test_update_highlight_missing_field_should_fail(self, authenticated_client):
@@ -381,5 +436,60 @@ class UpdateHighlightTest(PostEndpointHelper):
             == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : Le nom est obligatoire ; "
             "Description : La description est obligatoire ; Dates de diffusion sur l'espace partenaire : "
             "Les dates de diffusion sur l'espace partenaire sont obligatoires ; "
-            "Dates de l'évènement : Les dates de l'évènement sont obligatoires ;"
+            "Dates de l'évènement : Les dates de l'évènement sont obligatoires ; "
+            "Date de mise en avant (envoi du mail aux acteurs culturels) : La date de mise en avant est obligatoire ;"
+        )
+
+    def test_update_highlight_name_too_long_should_fail(self, authenticated_client):
+        highlight = highlights_factories.HighlightFactory.create()
+        highlight_id = highlight.id
+        new_name = "a" * 61
+
+        separator = " - "
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            highlight_id=highlight_id,
+            form={
+                "name": new_name,
+                "description": highlight.description,
+                "availability_datespan": f"{highlight.availability_datespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.availability_datespan.upper.strftime('%d/%m/%Y')}",
+                "highlight_datespan": f"{highlight.highlight_datespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.highlight_datespan.upper.strftime('%d/%m/%Y')}",
+                "communication_date": highlight.communication_date,
+            },
+            expected_num_queries=self.expected_num_queries - 1,
+        )
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Nom de la valorisation thématique : doit contenir moins de 60 caractères ;"
+        )
+
+    def test_create_highlight_communication_date_after_highlight_should_fail(self, authenticated_client):
+        highlight = highlights_factories.HighlightFactory.create()
+        highlight_id = highlight.id
+        new_communication_date = highlight.highlight_datespan.upper + datetime.timedelta(days=1)
+
+        separator = " - "
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            highlight_id=highlight_id,
+            form={
+                "name": highlight.name,
+                "description": highlight.description,
+                "availability_datespan": f"{highlight.availability_datespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.availability_datespan.upper.strftime('%d/%m/%Y')}",
+                "highlight_datespan": f"{highlight.highlight_datespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.highlight_datespan.upper.strftime('%d/%m/%Y')}",
+                "communication_date": new_communication_date,
+            },
+            expected_num_queries=self.expected_num_queries - 1,
+        )
+        assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "La date de mise en avant ne peut pas être après la fin de l'évènement"
         )

@@ -50,6 +50,7 @@ def test_get_highlights_list(client):
                 (available_highlights[0].highlight_datespan.lower).isoformat(),
                 (available_highlights[0].highlight_datespan.upper - timedelta(days=1)).isoformat(),
             ],
+            "communicationDate": available_highlights[0].communication_date.isoformat(),
             "mediationUrl": available_highlights[0].mediation_url,
         },
         {
@@ -64,6 +65,7 @@ def test_get_highlights_list(client):
                 (available_highlights[1].highlight_datespan.lower).isoformat(),
                 (available_highlights[1].highlight_datespan.upper - timedelta(days=1)).isoformat(),
             ],
+            "communicationDate": available_highlights[1].communication_date.isoformat(),
             "mediationUrl": available_highlights[1].mediation_url,
         },
     ]

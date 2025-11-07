@@ -25,6 +25,7 @@ class HighlightFactory(BaseFactory):
             end=datetime.date.today() + datetime.timedelta(days=10),
         )
     )
+    communication_date = datetime.date.today() + datetime.timedelta(days=11)
     mediation_uuid = factory.LazyFunction(lambda: str(uuid.uuid4()))
 
     class Meta:
