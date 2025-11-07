@@ -12,6 +12,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
+import { getHighlightDatespanTag } from '@/commons/utils/getHighlightDatespanTag'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -22,7 +23,6 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './OfferHighlightForm.module.scss'
 import type { OfferHighlightFormValues } from './types'
-import { getDateTag } from './utils'
 
 interface OfferHighlightFormProps {
   offerId: number
@@ -133,10 +133,7 @@ export function OfferHighlightForm({
                 asset: {
                   variant: 'tag',
                   tag: {
-                    label: getDateTag(
-                      highlight.highlightDatespan[0],
-                      highlight.highlightDatespan[1]
-                    ),
+                    label: getHighlightDatespanTag(highlight.highlightDatespan),
                   },
                 },
                 onChange: (e) => {
