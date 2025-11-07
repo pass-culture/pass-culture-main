@@ -21,6 +21,7 @@ describe('ModalHighlight', () => {
         id: 1,
         mediationUrl: 'url.example',
         highlightDatespan: ['2025-01-01', '2025-01-15'],
+        communicationDate: '2025-01-01',
       },
     ])
 
@@ -58,6 +59,7 @@ describe('ModalHighlight', () => {
         id: 1,
         mediationUrl: 'url.example',
         highlightDatespan: ['2025-01-01', '2025-01-15'],
+        communicationDate: '2025-01-01',
       },
     ])
 

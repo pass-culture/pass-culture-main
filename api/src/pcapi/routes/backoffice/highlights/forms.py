@@ -64,6 +64,10 @@ class CreateHighlightForm(FlaskForm):
         drops="up",
         upper_inc=True,
     )
+    communication_date = fields.PCDateField(
+        "Date de mise en avant (envoi du mail aux acteurs culturels)",
+        validators=(wtforms.validators.InputRequired("La date de mise en avant est obligatoire"),),
+    )
     image = fields.PCImageField(
         "Image de la valorisation thématique (max. 3 Mo)",
         validators=(wtforms.validators.InputRequired("L'image de la valorisation thématique est obligatoire"),),
@@ -85,6 +89,14 @@ class CreateHighlightForm(FlaskForm):
 
         availability_datespan = self._fields["availability_datespan"].data
         highlight_datespan = self._fields["highlight_datespan"].data
+        communication_date = self._fields["communication_date"].data
+
+        if communication_date > highlight_datespan[1].date():
+            flash(
+                "La date de mise en avant ne peut pas être après la fin de l'évènement",
+                "warning",
+            )
+            return False
 
         if availability_datespan[1] > highlight_datespan[1]:
             flash(
@@ -93,6 +105,11 @@ class CreateHighlightForm(FlaskForm):
             )
             return False
         return True
+
+    def validate_communication_date(self, communication_date: fields.PCDateField) -> fields.PCDateField:
+        if communication_date.data < datetime.date.today():
+            raise wtforms.validators.ValidationError("La date de mise en avant ne peut pas être dans le passé")
+        return communication_date
 
     def validate_availability_datespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
         if dates.data[1] and dates.data[1].date() < datetime.date.today():

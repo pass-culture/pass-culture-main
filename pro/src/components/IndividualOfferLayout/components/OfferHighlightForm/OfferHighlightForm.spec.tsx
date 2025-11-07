@@ -46,6 +46,7 @@ const mockedHighlights: HighlightResponseModel[] = [
     description: 'Description 1',
     availabilityDatespan: ['2025-01-01', '2025-01-15'],
     highlightDatespan: ['2025-01-10', '2025-01-31'],
+    communicationDate: '2025-01-10',
     mediationUrl: '',
   },
   {
@@ -54,6 +55,7 @@ const mockedHighlights: HighlightResponseModel[] = [
     description: 'Description 2',
     availabilityDatespan: ['2025-02-01', '2025-02-15'],
     highlightDatespan: ['2025-02-10', '2025-02-28'],
+    communicationDate: '2025-02-10',
     mediationUrl: '',
   },
 ]
