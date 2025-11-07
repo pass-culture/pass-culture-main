@@ -1462,6 +1462,10 @@ class EducationalDeposit(PcObject, models.Model):
     # if the confirmation date is not in the same educational year as the event, the period must contain the start of the event educational year
     period: sa_orm.Mapped[DateTimeRange | None] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=True)
 
+    collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
+        "CollectiveBooking", back_populates="educationalDeposit"
+    )
+
     def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
         """Check that the total amount of bookings won't exceed the
         deposit's amount.
@@ -1605,6 +1609,13 @@ class CollectiveBooking(PcObject, models.Model):
         EducationalRedactor,
         back_populates="collectiveBookings",
         uselist=False,
+    )
+
+    educationalDepositId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("educational_deposit.id"), nullable=True, index=False
+    )
+    educationalDeposit: sa_orm.Mapped[EducationalDeposit | None] = sa_orm.relationship(
+        EducationalDeposit, back_populates="collectiveBookings", uselist=False
     )
 
     finance_events: sa_orm.Mapped[list["finance_models.FinanceEvent"]] = sa_orm.relationship(
