@@ -20,7 +20,6 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { StocksThing } from '@/components/IndividualOffer/StocksThing/StocksThing'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
 import { cleanOpeningHours } from '@/pages/VenueEdition/serializers'
@@ -78,10 +77,6 @@ export function IndividualOfferTimetableScreen({
     resolver: yupResolver(validationSchema),
     mode: 'onBlur',
   })
-
-  if (!offer.isEvent) {
-    return <StocksThing offer={offer} />
-  }
 
   const isOfferTimetableTypeEditable =
     isNewOfferCreationFlowFFEnabled &&
