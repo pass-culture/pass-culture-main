@@ -1612,7 +1612,7 @@ class CollectiveBooking(PcObject, models.Model):
     )
 
     educationalDepositId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("educational_deposit.id"), nullable=True, index=False
+        sa.BigInteger, sa.ForeignKey("educational_deposit.id"), nullable=True, index=True
     )
     educationalDeposit: sa_orm.Mapped[EducationalDeposit | None] = sa_orm.relationship(
         EducationalDeposit, back_populates="collectiveBookings", uselist=False
