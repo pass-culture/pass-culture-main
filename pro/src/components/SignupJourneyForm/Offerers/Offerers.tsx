@@ -53,9 +53,6 @@ export const Offerers = (): JSX.Element => {
   const restrictVenueCreationToCollectivity = useActiveFeature(
     'WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY'
   )
-  const restrictVenueAttachmentToCollectivity = useActiveFeature(
-    'WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY'
-  )
 
   // TODO: this is causing a rerender of the component and a double call to `getVenuesOfOffererFromSiret`
   const joinSpaceButtonRef = useRef<HTMLButtonElement>(null)
@@ -197,15 +194,13 @@ export const Offerers = (): JSX.Element => {
             </Button>
           )}
         </div>
-        {(!restrictVenueAttachmentToCollectivity || isLocalAuthority) && (
-          <Button
-            variant={ButtonVariant.SECONDARY}
-            onClick={doLinkUserToOfferer}
-            ref={joinSpaceButtonRef}
-          >
-            Rejoindre cet espace
-          </Button>
-        )}
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          onClick={doLinkUserToOfferer}
+          ref={joinSpaceButtonRef}
+        >
+          Rejoindre cet espace
+        </Button>
       </div>
 
       {(!restrictVenueCreationToCollectivity || isLocalAuthority) && (

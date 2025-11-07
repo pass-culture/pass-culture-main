@@ -149,7 +149,6 @@ class FeatureToggle(enum.Enum):
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
     )
     WIP_HIGHLIGHT = "Activer la fonctionnalité Valorisations thématiques"
-    WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY = "Autoriser le rattachement seulement pour les collectivités"
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
@@ -226,7 +225,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_HIGHLIGHT,
-    FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
     # Please keep alphabetic order
