@@ -1436,6 +1436,12 @@ class UpdateFinanceEventPricingDateTest:
             date_utils.get_naive_utc_now(),
             status=models.FinanceEventStatus.NOT_TO_BE_PRICED,
         )
+        cancelled_event = _generate_finance_event_context(
+            pricing_point,
+            date_utils.get_naive_utc_now() + datetime.timedelta(days=12),
+            date_utils.get_naive_utc_now(),
+            status=models.FinanceEventStatus.CANCELLED,
+        )
 
         unrelated_event = _generate_finance_event_context(
             offerers_factories.VenueFactory(),
@@ -1472,6 +1478,10 @@ class UpdateFinanceEventPricingDateTest:
         assert ignored_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=12)
         assert ignored_event.status == models.FinanceEventStatus.NOT_TO_BE_PRICED
         assert len(ignored_event.pricings) == 0
+
+        assert cancelled_event.pricingOrderingDate == date_utils.get_naive_utc_now() + datetime.timedelta(days=12)
+        assert cancelled_event.status == models.FinanceEventStatus.CANCELLED
+        assert len(cancelled_event.pricings) == 0
 
 
 def _generate_finance_event_context(
