@@ -16,13 +16,11 @@ import styles from './CollectiveOffersDownloadDrawer.module.scss'
 type CollectiveOffersDownloadDrawerProps = {
   isDisabled: boolean
   filters: CollectiveSearchFiltersParams
-  defaultFilters: CollectiveSearchFiltersParams
 }
 
 export const CollectiveOffersDownloadDrawer = ({
   isDisabled,
   filters,
-  defaultFilters,
 }: CollectiveOffersDownloadDrawerProps) => {
   const notify = useNotification()
   const [isOpenDialog, setIsOpenDialog] = useState(false)
@@ -32,7 +30,7 @@ export const CollectiveOffersDownloadDrawer = ({
     setIsDownloading(true)
 
     try {
-      await downloadBookableOffersFile(filters, defaultFilters, type)
+      await downloadBookableOffersFile(filters, type)
     } catch {
       notify.error(GET_DATA_ERROR_MESSAGE)
     }

@@ -123,10 +123,7 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
         format,
         locationType,
         offererAddressId,
-      } = serializeApiCollectiveFilters(
-        apiFilters,
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-      )
+      } = serializeApiCollectiveFilters(apiFilters)
 
       const templateOffersOnSelectedVenue =
         await api.getCollectiveOfferTemplates(

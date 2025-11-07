@@ -5,7 +5,6 @@ import { EacFormat } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
-import { ALL_FORMATS } from '@/commons/core/Offers/constants'
 import {
   CollectiveOfferTypeEnum,
   type CollectiveSearchFiltersParams,
@@ -26,17 +25,6 @@ vi.mock('@/commons/hooks/useNotification', () => ({
   }),
 }))
 
-const defaultFilters: CollectiveSearchFiltersParams = {
-  nameOrIsbn: '',
-  offererId: '',
-  venueId: '',
-  status: [],
-  periodBeginningDate: '',
-  periodEndingDate: '',
-  collectiveOfferType: CollectiveOfferTypeEnum.ALL,
-  format: ALL_FORMATS,
-}
-
 const filters: CollectiveSearchFiltersParams = {
   nameOrIsbn: 'test offer',
   offererId: '1',
@@ -51,13 +39,11 @@ const filters: CollectiveSearchFiltersParams = {
 const renderCollectiveOffersDownloadDrawer = ({
   isDisabled = false,
   filtersProp = filters,
-  defaultFiltersProp = defaultFilters,
 } = {}) => {
   return renderWithProviders(
     <CollectiveOffersDownloadDrawer
       isDisabled={isDisabled}
       filters={filtersProp}
-      defaultFilters={defaultFiltersProp}
     />
   )
 }
@@ -85,7 +71,6 @@ describe('CollectiveOffersDownloadDrawer', () => {
     renderCollectiveOffersDownloadDrawer({
       isDisabled: true,
       filtersProp: filters,
-      defaultFiltersProp: defaultFilters,
     })
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
@@ -109,14 +94,14 @@ describe('CollectiveOffersDownloadDrawer', () => {
 
     expect(mockGetCollectiveOffersCsv).toHaveBeenCalledWith(
       'test offer',
-      '1',
+      1,
       ['PUBLISHED'],
-      undefined,
+      2,
       '2023-01-01',
       '2023-12-31',
       'Concert',
-      undefined,
-      undefined
+      null,
+      null
     )
   })
 
@@ -137,14 +122,14 @@ describe('CollectiveOffersDownloadDrawer', () => {
 
     expect(mockGetCollectiveOffersExcel).toHaveBeenCalledWith(
       'test offer',
-      '1',
+      1,
       ['PUBLISHED'],
-      undefined,
+      2,
       '2023-01-01',
       '2023-12-31',
       'Concert',
-      undefined,
-      undefined
+      null,
+      null
     )
   })
 
@@ -219,7 +204,6 @@ describe('CollectiveOffersDownloadDrawer', () => {
     renderCollectiveOffersDownloadDrawer({
       isDisabled: false,
       filtersProp: filtersWithLocation,
-      defaultFiltersProp: defaultFilters,
     })
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
@@ -232,9 +216,9 @@ describe('CollectiveOffersDownloadDrawer', () => {
 
     expect(mockGetCollectiveOffersCsv).toHaveBeenCalledWith(
       'test offer',
-      '1',
+      1,
       ['PUBLISHED'],
-      undefined,
+      2,
       '2023-01-01',
       '2023-12-31',
       'Concert',
@@ -256,7 +240,6 @@ describe('CollectiveOffersDownloadDrawer', () => {
     renderCollectiveOffersDownloadDrawer({
       isDisabled: false,
       filtersProp: filtersWithLocation,
-      defaultFiltersProp: defaultFilters,
     })
 
     const downloadButton = screen.getByRole('button', { name: 'Télécharger' })
@@ -269,9 +252,9 @@ describe('CollectiveOffersDownloadDrawer', () => {
 
     expect(mockGetCollectiveOffersExcel).toHaveBeenCalledWith(
       'test offer',
-      '1',
+      1,
       ['PUBLISHED'],
-      undefined,
+      2,
       '2023-01-01',
       '2023-12-31',
       'Concert',

@@ -84,18 +84,18 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
       'Le nom de l’offre 3',
-      undefined,
+      null,
       [
         CollectiveOfferDisplayedStatus.PUBLISHED,
         CollectiveOfferDisplayedStatus.HIDDEN,
         CollectiveOfferDisplayedStatus.ENDED,
       ],
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
     )
   })
 

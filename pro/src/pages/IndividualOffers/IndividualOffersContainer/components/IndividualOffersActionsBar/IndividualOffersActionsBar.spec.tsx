@@ -389,7 +389,7 @@ describe('ActionsBar', () => {
         creationMode: null,
         isActive: true,
         nameOrIsbn: null,
-        offererAddressId: '814',
+        offererAddressId: 814,
         offererId: null,
         periodBeginningDate: null,
         periodEndingDate: null,
@@ -424,7 +424,7 @@ describe('ActionsBar', () => {
         periodBeginningDate: null,
         periodEndingDate: null,
         status: null,
-        venueId: '123',
+        venueId: 123,
       }
 
       const activateButton = screen.getByText('Publier')

@@ -62,20 +62,17 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     format,
     locationType,
     offererAddressId,
-  } = serializeApiCollectiveFilters(
-    {
-      ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-      nameOrIsbn: searchedOfferName,
-      offererId: currentOffererId ? currentOffererId.toString() : 'all',
-      venueId: queryVenueId ? queryVenueId : 'all',
-      status: [
-        CollectiveOfferDisplayedStatus.PUBLISHED,
-        CollectiveOfferDisplayedStatus.HIDDEN,
-        CollectiveOfferDisplayedStatus.ENDED,
-      ],
-    },
-    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-  )
+  } = serializeApiCollectiveFilters({
+    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    nameOrIsbn: searchedOfferName,
+    offererId: currentOffererId ? currentOffererId.toString() : 'all',
+    venueId: queryVenueId ? queryVenueId : 'all',
+    status: [
+      CollectiveOfferDisplayedStatus.PUBLISHED,
+      CollectiveOfferDisplayedStatus.HIDDEN,
+      CollectiveOfferDisplayedStatus.ENDED,
+    ],
+  })
 
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_QUERY_KEY, nameOrIsbn],

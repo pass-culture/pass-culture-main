@@ -59,10 +59,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   const offersQuery = useSWR<CollectiveOfferTemplateResponseModel[]>(
     [GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY, apiFilters],
     () => {
-      const params = serializeApiCollectiveFilters(
-        apiFilters,
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-      )
+      const params = serializeApiCollectiveFilters(apiFilters)
       return api.getCollectiveOfferTemplates(
         params.nameOrIsbn,
         params.offererId,

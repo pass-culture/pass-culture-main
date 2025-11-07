@@ -9,7 +9,6 @@ const BOOKABLE_OFFERS_FILENAME = 'offres-reservables'
 
 export const downloadBookableOffersFile = async (
   filters: CollectiveSearchFiltersParams,
-  defaultFilters: CollectiveSearchFiltersParams,
   type: 'CSV' | 'XLS'
 ): Promise<void> => {
   const {
@@ -22,7 +21,7 @@ export const downloadBookableOffersFile = async (
     format: offerFormat,
     locationType,
     offererAddressId,
-  } = serializeApiCollectiveFilters(filters, defaultFilters)
+  } = serializeApiCollectiveFilters(filters)
 
   const apiParams = [
     nameOrIsbn,

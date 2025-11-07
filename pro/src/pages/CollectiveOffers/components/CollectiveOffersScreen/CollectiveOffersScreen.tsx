@@ -182,7 +182,6 @@ export const CollectiveOffersScreen = ({
               <CollectiveOffersDownloadDrawer
                 isDisabled={userHasNoOffers}
                 filters={selectedFilters}
-                defaultFilters={DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS}
               />
             }
           />

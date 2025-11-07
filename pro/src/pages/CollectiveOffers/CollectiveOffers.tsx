@@ -66,10 +66,7 @@ export const CollectiveOffers = (): JSX.Element => {
   const offersQuery = useSWR(
     collectiveOffersQueryKeys,
     () => {
-      const params = serializeApiCollectiveFilters(
-        apiFilters,
-        DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
-      )
+      const params = serializeApiCollectiveFilters(apiFilters)
 
       return api.getCollectiveOffers(
         params.nameOrIsbn,

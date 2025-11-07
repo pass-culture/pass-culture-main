@@ -259,15 +259,15 @@ describe('OfferType', () => {
 
     await waitFor(() => {
       expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
-        undefined,
-        '1',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
       )
     })
 

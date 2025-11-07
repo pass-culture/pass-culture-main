@@ -92,7 +92,7 @@ describe('TemplateCollectiveOffers', () => {
     ).toBeInTheDocument()
   })
 
-  const offererId = '1'
+  const offererId = 1
 
   describe('filters', () => {
     describe('status filters', () => {
@@ -117,15 +117,15 @@ describe('TemplateCollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenNthCalledWith(
             2,
-            undefined,
+            null,
             offererId,
             [CollectiveOfferDisplayedStatus.REJECTED],
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -155,13 +155,13 @@ describe('TemplateCollectiveOffers', () => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenCalledWith(
             'Any word',
             offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -177,15 +177,15 @@ describe('TemplateCollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
+            null,
+            null,
             '2020-12-25',
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -200,15 +200,15 @@ describe('TemplateCollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
-            undefined,
+            null,
+            null,
+            null,
             '2020-12-27',
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null
           )
         })
       })
