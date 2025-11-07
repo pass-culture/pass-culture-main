@@ -1,14 +1,14 @@
 import { act, renderHook } from '@testing-library/react'
 import { Provider } from 'react-redux'
 
+import type {
+  CollectiveSearchFiltersParams,
+  IndividualSearchFiltersParams,
+} from '@/commons/core/Offers/types'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { isEqual } from '@/commons/utils/isEqual'
 
-import {
-  getStoredFilterConfig,
-  type SelectedFilters,
-  useStoredFilterConfig,
-} from './utils'
+import { getStoredFilterConfig, useStoredFilterConfig } from './utils'
 
 const renderStoredFilterConfigHook = () => {
   const store = configureTestStore({})
@@ -21,7 +21,9 @@ const renderStoredFilterConfigHook = () => {
   return result
 }
 
-const MOCKED_FILTERS: SelectedFilters = {
+const MOCKED_FILTERS:
+  | IndividualSearchFiltersParams
+  | CollectiveSearchFiltersParams = {
   nameOrIsbn: 'nameOrIsbn',
   offererId: 'offererId',
   venueId: 'venueId',

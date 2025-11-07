@@ -7,7 +7,7 @@ import type { ListOffersOfferResponseModel } from '@/apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -43,7 +43,7 @@ export const HeadlineOfferImageDialogs = ({
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<SearchFiltersParams>),
+    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
   }
 
   const apiFilters = computeIndividualApiFilters(

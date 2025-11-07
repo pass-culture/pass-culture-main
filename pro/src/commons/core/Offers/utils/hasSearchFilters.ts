@@ -1,17 +1,19 @@
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import type {
   CollectiveSearchFiltersParams,
-  SearchFiltersParams,
+  IndividualSearchFiltersParams,
 } from '../types'
 
 type HasSearchFiltersParams = {
-  searchFilters: Partial<SearchFiltersParams>
-  lookup?: (keyof SearchFiltersParams)[]
-  ignore?: (keyof SearchFiltersParams)[]
+  searchFilters: Partial<IndividualSearchFiltersParams>
+  lookup?: (keyof IndividualSearchFiltersParams)[]
+  ignore?: (keyof IndividualSearchFiltersParams)[]
 }
 export const hasSearchFilters = ({
   searchFilters,
-  lookup = Object.keys(searchFilters) as (keyof SearchFiltersParams)[],
+  lookup = Object.keys(
+    searchFilters
+  ) as (keyof IndividualSearchFiltersParams)[],
   ignore = [],
 }: HasSearchFiltersParams): boolean => {
   // Those "filters" are ignored because none are to be interpreted

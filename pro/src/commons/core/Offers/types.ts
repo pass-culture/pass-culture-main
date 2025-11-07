@@ -1,39 +1,43 @@
+import type { EacFormat } from '@/apiClient/adage'
 import type {
   CollectiveOfferDisplayedStatus,
-  EacFormat,
   OfferStatus,
 } from '@/apiClient/v1'
 import type { CropParams } from '@/commons/utils/imageUploadTypes'
 
 import type { ALL_FORMATS, ALL_STATUS } from './constants'
 
-export type SearchFiltersParams = {
-  nameOrIsbn: string
-  offererId: string
-  venueId: string
-  categoryId: string
+type SearchListParams = {
   format: EacFormat | typeof ALL_FORMATS
-  status: OfferStatus | CollectiveOfferDisplayedStatus[] | typeof ALL_STATUS
-  creationMode: string
-  collectiveOfferType: string
-  periodBeginningDate: string
-  periodEndingDate: string
-  offererAddressId: string
   page?: number
 }
 
-export type CollectiveSearchFiltersParams = {
+export type IndividualSearchFiltersParams = SearchListParams & {
   nameOrIsbn: string
+  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that never happens since there is always a `currentOfferer` in the store.
   offererId: string
+  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that will disappear once `WIP_SWITCH_VENUE` is enabled in production.
   venueId: string
-  format: EacFormat | typeof ALL_FORMATS
+  categoryId: string
+  status: OfferStatus | typeof ALL_STATUS
+  creationMode: string
+  periodBeginningDate: string
+  periodEndingDate: string
+  offererAddressId: string
+}
+
+export type CollectiveSearchFiltersParams = SearchListParams & {
+  nameOrIsbn: string
+  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that never happens since there is always a `currentOfferer` in the store.
+  offererId: string | 'all'
+  // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that will disappear once `WIP_SWITCH_VENUE` is enabled in production.
+  venueId: string | 'all'
   status: CollectiveOfferDisplayedStatus[]
   collectiveOfferType: CollectiveOfferTypeEnum
   periodBeginningDate: string
   periodEndingDate: string
   locationType?: string
   offererAddressId?: string
-  page?: number
 }
 
 export enum CollectiveOfferTypeEnum {

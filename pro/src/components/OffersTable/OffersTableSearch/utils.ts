@@ -1,15 +1,14 @@
 import type {
   CollectiveSearchFiltersParams,
-  SearchFiltersParams,
+  IndividualSearchFiltersParams,
 } from '@/commons/core/Offers/types'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 
-export type SelectedFilters =
-  | Partial<SearchFiltersParams>
-  | Partial<CollectiveSearchFiltersParams>
 type StoredFilterConfig = {
   filtersVisibility: boolean
-  storedFilters: SelectedFilters
+  storedFilters: Partial<
+    IndividualSearchFiltersParams | CollectiveSearchFiltersParams
+  >
 }
 
 export type FilterConfigType = 'individual' | 'collective' | 'template'
@@ -57,7 +56,11 @@ export function useStoredFilterConfig<
     }
   }
 
-  const onApplyFilters = (selectedFilters: SelectedFilters) => {
+  const onApplyFilters = (
+    selectedFilters: Partial<
+      IndividualSearchFiltersParams | CollectiveSearchFiltersParams
+    >
+  ) => {
     const filterConfig = getStoredFilterConfig(type)
     const newFilterConfig: StoredFilterConfig = {
       ...filterConfig,

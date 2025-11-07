@@ -1,12 +1,16 @@
 import type { ListOffersQueryModel } from '@/apiClient/v1'
 
 import { DEFAULT_SEARCH_FILTERS } from '../constants'
-import type { SearchFiltersParams } from '../types'
+import type { IndividualSearchFiltersParams } from '../types'
 
-export const serializeApiFilters = (
-  searchFilters: Partial<SearchFiltersParams>
-): ListOffersQueryModel => {
-  const listOffersQueryKeys: (keyof ListOffersQueryModel)[] = [
+// TODO (igabriele, 2025-11-07): This function is overly complicated for what it does and its typing is unreliable.
+export const serializeApiIndividualFilters = (
+  searchFilters: Partial<IndividualSearchFiltersParams>
+): Omit<ListOffersQueryModel, 'collectiveOfferType'> => {
+  const listOffersQueryKeys: (keyof Omit<
+    ListOffersQueryModel,
+    'collectiveOfferType'
+  >)[] = [
     'nameOrIsbn',
     'offererId',
     'status',
@@ -16,10 +20,9 @@ export const serializeApiFilters = (
     'creationMode',
     'periodBeginningDate',
     'periodEndingDate',
-    'collectiveOfferType',
   ]
 
-  const body: ListOffersQueryModel = {}
+  const body: Omit<ListOffersQueryModel, 'collectiveOfferType'> = {}
   const defaultFilters = DEFAULT_SEARCH_FILTERS
   return listOffersQueryKeys.reduce((accumulator, field) => {
     const filterValue = searchFilters[field]

@@ -4,7 +4,7 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import {
   CollectiveOfferTypeEnum,
   type CollectiveSearchFiltersParams,
-  type SearchFiltersParams,
+  type IndividualSearchFiltersParams,
 } from './types'
 
 export enum OFFER_TYPES {
@@ -83,13 +83,12 @@ const ALL_CATEGORIES = 'all'
 export const ALL_FORMATS = 'all'
 export const ALL_STATUS = 'all'
 export const ALL_CREATION_MODES = 'all'
-const ALL_COLLECTIVE_OFFER_TYPE = 'all'
 const ALL_EVENT_PERIODS = ''
 export const DEFAULT_PAGE = 1
 export const NUMBER_OF_OFFERS_PER_PAGE = 10
 export const MAX_TOTAL_PAGES = 10
 export const MAX_OFFERS_TO_DISPLAY = MAX_TOTAL_PAGES * NUMBER_OF_OFFERS_PER_PAGE
-export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
+export const DEFAULT_SEARCH_FILTERS: IndividualSearchFiltersParams = {
   nameOrIsbn: ALL_OFFERS,
   offererId: 'all',
   venueId: ALL_VENUES,
@@ -97,7 +96,6 @@ export const DEFAULT_SEARCH_FILTERS: SearchFiltersParams = {
   format: ALL_FORMATS,
   status: ALL_STATUS,
   creationMode: ALL_CREATION_MODES,
-  collectiveOfferType: ALL_COLLECTIVE_OFFER_TYPE,
   periodBeginningDate: ALL_EVENT_PERIODS,
   periodEndingDate: ALL_EVENT_PERIODS,
   page: DEFAULT_PAGE,

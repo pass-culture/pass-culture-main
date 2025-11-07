@@ -14,7 +14,7 @@ import {
   ALL_OFFERER_ADDRESS_OPTION,
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   listOffersOfferFactory,
@@ -224,7 +224,9 @@ describe('IndividualOffersScreen', () => {
 
     renderOffers(props)
 
-    const searchAndChecked = async (params: Partial<SearchFiltersParams>) => {
+    const searchAndChecked = async (
+      params: Partial<IndividualSearchFiltersParams>
+    ) => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       expect(redirectWithSelectedFiltersSpy).toHaveBeenCalled()
       expect(redirectWithSelectedFiltersSpy).toHaveBeenCalledWith(
