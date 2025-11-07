@@ -1366,6 +1366,12 @@ class EducationalInstitution(PcObject, models.Model):
         "CollectivePlaylist", back_populates="institution"
     )
 
+    deposits: sa_orm.Mapped[list["EducationalDeposit"]] = sa_orm.relationship(
+        "EducationalDeposit",
+        back_populates="educationalInstitution",
+        foreign_keys="EducationalDeposit.educationalInstitutionId",
+    )
+
     latitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=True)
 
     longitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=True)
@@ -1402,6 +1408,10 @@ class EducationalYear(PcObject, models.Model):
 
     expirationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
 
+    deposits: sa_orm.Mapped[list["EducationalDeposit"]] = sa_orm.relationship(
+        "EducationalDeposit", back_populates="educationalYear", foreign_keys="EducationalDeposit.educationalYearId"
+    )
+
     @hybrid_property
     def displayed_year(self) -> str:
         return f"{self.beginningDate.year}-{self.expirationDate.year}"
@@ -1426,7 +1436,7 @@ class EducationalDeposit(PcObject, models.Model):
     )
 
     educationalInstitution: sa_orm.Mapped[EducationalInstitution] = sa_orm.relationship(
-        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="deposits"
+        EducationalInstitution, foreign_keys=[educationalInstitutionId], back_populates="deposits"
     )
 
     educationalYearId: sa_orm.Mapped[str] = sa_orm.mapped_column(
@@ -1434,7 +1444,7 @@ class EducationalDeposit(PcObject, models.Model):
     )
 
     educationalYear: sa_orm.Mapped["EducationalYear"] = sa_orm.relationship(
-        EducationalYear, foreign_keys=[educationalYearId], backref="deposits"
+        EducationalYear, foreign_keys=[educationalYearId], back_populates="deposits"
     )
 
     amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
