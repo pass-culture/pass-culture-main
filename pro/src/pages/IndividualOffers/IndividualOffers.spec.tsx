@@ -20,6 +20,7 @@ import type { Audience } from '@/commons/core/shared/types'
 import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
+  makeVenueListItem,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
@@ -94,6 +95,7 @@ const renderIndividualOffers = async (
       storeOverrides: {
         user: {
           currentUser: user,
+          selectedVenue: makeVenueListItem({ id: 2 }),
         },
         offerer: currentOffererFactory(),
       },

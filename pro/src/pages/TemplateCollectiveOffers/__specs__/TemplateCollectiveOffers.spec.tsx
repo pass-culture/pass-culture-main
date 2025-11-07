@@ -18,7 +18,10 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
   currentOffererFactory,
@@ -55,6 +58,7 @@ const renderOffers = async (
     storeOverrides: {
       user: {
         currentUser: user,
+        selectedVenue: makeVenueListItem({ id: 2 }),
       },
       offerer: currentOffererFactory(),
     },

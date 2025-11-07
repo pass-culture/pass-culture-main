@@ -7,6 +7,8 @@ import { SubcategoryIdEnum } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   categoryFactory,
+  defaultGetOffererResponseModel,
+  makeVenueListItem,
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
@@ -33,6 +35,14 @@ const renderOfferTypes = (
   renderWithProviders(<OfferTypeScreen collectiveOnly={false} />, {
     user: sharedCurrentUserFactory(),
     initialRouterEntries: [`/creation${venueId ? `?lieu=${venueId}` : ''}`],
+    storeOverrides: {
+      user: {
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+      offerer: {
+        currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+      },
+    },
     ...options,
   })
 }

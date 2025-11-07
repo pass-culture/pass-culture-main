@@ -1,6 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import { Route, Routes } from 'react-router'
 
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { OfferType } from '@/pages/OfferType/OfferType'
@@ -19,7 +20,10 @@ const renderOfferTypes = (initialRoute = '/', allowedOnAdage = false) => {
     </Routes>,
     {
       storeOverrides: {
-        user: { currentUser: sharedCurrentUserFactory() },
+        user: {
+          currentUser: sharedCurrentUserFactory(),
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
         offerer: { currentOfferer: { allowedOnAdage } },
       },
       user: sharedCurrentUserFactory(),

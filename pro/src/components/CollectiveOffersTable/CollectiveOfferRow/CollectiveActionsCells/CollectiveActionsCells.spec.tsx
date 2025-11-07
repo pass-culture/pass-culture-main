@@ -23,7 +23,10 @@ import {
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  venueListItemFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import * as storageAvailable from '@/commons/utils/storageAvailable'
 
@@ -69,7 +72,14 @@ const renderCollectiveActionsCell = (
         </tr>
       </tbody>
     </table>,
-    { features }
+    {
+      features,
+      storeOverrides: {
+        offerer: {
+          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+        },
+      },
+    }
   )
 }
 
@@ -346,6 +356,7 @@ describe('CollectiveActionsCells', () => {
           offerId: 200,
           offerStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
           offerType: 'collective',
+          offererId: '1',
         }
       )
     })

@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { formatAndOrderAddresses } from 'repository/venuesService'
 import useSWR from 'swr'
@@ -24,7 +23,9 @@ import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/seria
 import type { Audience } from '@/commons/core/shared/types'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { HighlightBanner } from '@/components/HighlightBanner/HighlightBanner'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
@@ -40,16 +41,21 @@ export const IndividualOffers = (): JSX.Element => {
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
+
   const urlSearchFilters = useQuerySearchFilters()
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
     ...(storedFilters as Partial<IndividualSearchFiltersParams>),
+    ...(withSwitchVenueFeature ? { venueId: selectedVenue.id.toString() } : {}),
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
   const navigate = useNavigate()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const categoriesQuery = useSWR(
     [GET_CATEGORIES_QUERY_KEY],
@@ -85,7 +91,7 @@ export const IndividualOffers = (): JSX.Element => {
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId?.toString()
+    selectedOffererId
   )
 
   const offersQuery = useSWR([GET_OFFERS_QUERY_KEY, apiFilters], () => {

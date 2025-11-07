@@ -15,7 +15,7 @@ import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -94,7 +94,7 @@ export function CollectiveOffersActionsBar<
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useSelector(ensureCurrentOfferer).id
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const deActivateButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -103,7 +103,7 @@ export function CollectiveOffersActionsBar<
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isInTemplateOffersPage: areTemplateOffers,
     urlSearchFilters,
-    selectedOffererId: selectedOffererId?.toString(),
+    selectedOffererId,
   })
 
   async function updateOfferStatus(

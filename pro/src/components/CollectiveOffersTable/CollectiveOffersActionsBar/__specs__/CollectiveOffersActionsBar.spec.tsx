@@ -18,6 +18,7 @@ import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
@@ -38,7 +39,11 @@ const renderActionsBar = (
       <Notification />
     </>,
     {
-      storeOverrides: {},
+      storeOverrides: {
+        offerer: {
+          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+        },
+      },
       initialRouterEntries: ['/offres/collectives'],
       features,
     }

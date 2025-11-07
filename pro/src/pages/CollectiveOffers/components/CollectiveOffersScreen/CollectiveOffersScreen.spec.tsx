@@ -210,6 +210,11 @@ describe('CollectiveOffersScreen', () => {
 
   it('should display actionsBar when at least one offer is selected', async () => {
     renderWithProviders(<CollectiveOffersScreen {...props} />, {
+      storeOverrides: {
+        offerer: {
+          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+        },
+      },
       user: currentUser,
     })
 

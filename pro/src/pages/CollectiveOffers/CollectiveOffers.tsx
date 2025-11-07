@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
@@ -13,12 +12,17 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
-import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 
 export const CollectiveOffers = (): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const urlSearchFilters = useQueryCollectiveSearchFilters()
   const { storedFilters } = getStoredFilterConfig('collective')
   const finalSearchFilters = {
@@ -27,7 +31,9 @@ export const CollectiveOffers = (): JSX.Element => {
   }
 
   const navigate = useNavigate()
-  const offerer = useSelector(selectCurrentOfferer)
+
+  const selectedOfferer = useAppSelector(ensureCurrentOfferer)
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
 
@@ -53,13 +59,15 @@ export const CollectiveOffers = (): JSX.Element => {
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isInTemplateOffersPage: false,
     urlSearchFilters: finalSearchFilters,
-    selectedOffererId: offerer?.id.toString() ?? '',
+    selectedOffererId: selectedOfferer.id,
+    ...(withSwitchVenueFeature ? { selectedVenueId: selectedVenue.id } : {}),
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
     ...finalSearchFilters,
-    ...{ offererId: offerer?.id?.toString() ?? 'all' },
+    ...{ offererId: selectedOfferer.id.toString() },
+    ...(withSwitchVenueFeature ? { venueId: selectedVenue.id.toString() } : {}),
   }
   delete apiFilters.page
 
@@ -89,7 +97,7 @@ export const CollectiveOffers = (): JSX.Element => {
         currentPageNumber={currentPageNumber}
         initialSearchFilters={apiFilters}
         isLoading={offersQuery.isLoading}
-        offerer={offerer}
+        offerer={selectedOfferer}
         offers={offersQuery.data}
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}

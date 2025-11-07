@@ -11,12 +11,25 @@ import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  defaultGetOffererResponseModel,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOfferSelectionDuplication } from './CollectiveOfferSelectionDuplication'
 
 function renderCollectiveOfferSelectionDuplication() {
-  renderWithProviders(<CollectiveOfferSelectionDuplication />)
+  renderWithProviders(<CollectiveOfferSelectionDuplication />, {
+    storeOverrides: {
+      user: {
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+      offerer: {
+        currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+      },
+    },
+  })
 }
 
 vi.mock('@/apiClient/api', () => ({
@@ -84,7 +97,7 @@ describe('CollectiveOfferConfirmation', () => {
 
     expect(api.getCollectiveOfferTemplates).toHaveBeenLastCalledWith(
       'Le nom de l’offre 3',
-      null,
+      1,
       [
         CollectiveOfferDisplayedStatus.PUBLISHED,
         CollectiveOfferDisplayedStatus.HIDDEN,

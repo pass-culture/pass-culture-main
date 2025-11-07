@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
@@ -14,8 +13,10 @@ import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeC
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
@@ -35,10 +36,11 @@ type SearchFormValues = {
 }
 
 export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
+  const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const notify = useNotification()
   const navigate = useNavigate()
-
-  const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 
   const form = useForm<SearchFormValues>({
     defaultValues: { searchQuery: '' },
@@ -49,7 +51,8 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const { handleSubmit: handleSubmitSearch } = form
 
   const queryParams = new URLSearchParams(location.search)
-  const currentOffererId = useSelector(selectCurrentOffererId)
+  const currentOffererId = useAppSelector(ensureCurrentOfferer).id
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
   const queryVenueId = queryParams.get('lieu')
 
   const {
@@ -65,8 +68,10 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   } = serializeApiCollectiveFilters({
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
     nameOrIsbn: searchedOfferName,
-    offererId: currentOffererId ? currentOffererId.toString() : 'all',
-    venueId: queryVenueId ? queryVenueId : 'all',
+    offererId: currentOffererId.toString(),
+    venueId: withSwitchVenueFeature
+      ? selectedVenue.id.toString()
+      : (queryVenueId ?? undefined),
     status: [
       CollectiveOfferDisplayedStatus.PUBLISHED,
       CollectiveOfferDisplayedStatus.HIDDEN,

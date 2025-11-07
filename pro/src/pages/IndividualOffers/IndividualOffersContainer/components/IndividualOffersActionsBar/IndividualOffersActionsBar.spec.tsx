@@ -8,6 +8,7 @@ import { OfferStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -29,7 +30,14 @@ const renderActionsBar = (
       <IndividualOffersActionsBar {...props} />
       <Notification />
     </>,
-    overrides
+    {
+      storeOverrides: {
+        offerer: {
+          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+        },
+      },
+      ...overrides,
+    }
   )
 }
 
@@ -224,7 +232,7 @@ describe('ActionsBar', () => {
       isActive: true,
       nameOrIsbn: null,
       offererAddressId: null,
-      offererId: null,
+      offererId: 1,
       periodBeginningDate: null,
       periodEndingDate: null,
       status: null,
@@ -250,7 +258,7 @@ describe('ActionsBar', () => {
       isActive: false,
       nameOrIsbn: null,
       offererAddressId: null,
-      offererId: null,
+      offererId: 1,
       periodBeginningDate: null,
       periodEndingDate: null,
       status: null,
@@ -390,7 +398,7 @@ describe('ActionsBar', () => {
         isActive: true,
         nameOrIsbn: null,
         offererAddressId: 814,
-        offererId: null,
+        offererId: 1,
         periodBeginningDate: null,
         periodEndingDate: null,
         status: null,
@@ -420,7 +428,7 @@ describe('ActionsBar', () => {
         isActive: true,
         nameOrIsbn: null,
         offererAddressId: null,
-        offererId: null,
+        offererId: 1,
         periodBeginningDate: null,
         periodEndingDate: null,
         status: null,

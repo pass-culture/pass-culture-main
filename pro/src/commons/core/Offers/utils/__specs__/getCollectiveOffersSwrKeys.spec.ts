@@ -7,7 +7,7 @@ import {
 
 const props: GetCollectiveOffersSwrKeysProps = {
   isInTemplateOffersPage: false,
-  selectedOffererId: '1',
+  selectedOffererId: 1,
   urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 }
 
@@ -36,18 +36,24 @@ describe('getCollectiveOffersSwrKeys', () => {
     ).toBeUndefined()
   })
 
-  it('should return the right offerer id', () => {
+  it('should return the right offerer and venue ids', () => {
     expect(
       getCollectiveOffersSwrKeys({
         ...props,
-        selectedOffererId: null,
-      })[1].offererId
-    ).toEqual('all')
+      })[1]
+    ).toMatchObject({
+      offererId: '1',
+      venueId: 'all',
+    })
 
     expect(
       getCollectiveOffersSwrKeys({
         ...props,
-      })[1].offererId
-    ).toEqual(props.selectedOffererId?.toString())
+        selectedVenueId: 2,
+      })[1]
+    ).toMatchObject({
+      offererId: '1',
+      venueId: '2',
+    })
   })
 })

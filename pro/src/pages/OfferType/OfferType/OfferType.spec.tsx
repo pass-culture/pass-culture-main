@@ -1,5 +1,9 @@
 import { screen } from '@testing-library/react'
 
+import {
+  defaultGetOffererResponseModel,
+  makeVenueListItem,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { OfferTypeScreen, type OfferTypeScreenProps } from './OfferType'
@@ -12,6 +16,15 @@ const renderOfferTypeScreen = (
 ) => {
   renderWithProviders(<OfferTypeScreen {...defaultProps} {...props} />, {
     features: features,
+    storeOverrides: {
+      offerer: {
+        currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+        offererNames: [],
+      },
+      user: {
+        selectedVenue: makeVenueListItem({ id: 2 }),
+      },
+    },
   })
 }
 

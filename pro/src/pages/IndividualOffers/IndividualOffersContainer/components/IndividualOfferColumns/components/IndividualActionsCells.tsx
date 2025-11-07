@@ -16,7 +16,7 @@ import { OFFER_STATUS_DRAFT } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
@@ -48,7 +48,7 @@ export const IndividualActionsCells = ({
   const { storedFilters } = getStoredFilterConfig('individual')
   const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
     useHeadlineOfferContext()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useSelector(ensureCurrentOfferer).id
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
@@ -82,7 +82,7 @@ export const IndividualActionsCells = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId?.toString()
+    selectedOffererId
   )
 
   const onConfirmDeleteDraftOffer = async () => {

@@ -12,7 +12,7 @@ import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearc
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
@@ -128,7 +128,7 @@ export const IndividualOffersActionsBar = ({
   }
 
   const { mutate } = useSWRConfig()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useSelector(ensureCurrentOfferer).id
 
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const dactivateButtonRef = useRef<HTMLButtonElement>(null)
@@ -140,7 +140,7 @@ export const IndividualOffersActionsBar = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId?.toString()
+    selectedOffererId
   )
 
   const handleClose = () => {
