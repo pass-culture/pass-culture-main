@@ -255,6 +255,11 @@ class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
     amount = 3000
     isFinal = True
     ministry = models.Ministry.EDUCATION_NATIONALE.name
+    period = factory.LazyAttribute(
+        lambda deposit: db_utils.make_timerange(
+            start=deposit.educationalYear.beginningDate, end=deposit.educationalYear.expirationDate
+        )
+    )
 
 
 class EducationalRedactorFactory(BaseFactory[models.EducationalRedactor]):
