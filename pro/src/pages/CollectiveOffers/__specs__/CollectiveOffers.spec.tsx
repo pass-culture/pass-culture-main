@@ -87,7 +87,7 @@ const renderOffers = async (
   await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
-const offererId = '1'
+const offererId = 1
 
 describe('CollectiveOffers', () => {
   beforeEach(() => {
@@ -108,15 +108,15 @@ describe('CollectiveOffers', () => {
 
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-        undefined,
+        null,
         offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
       )
     })
   })
@@ -141,15 +141,15 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
-            undefined,
+            null,
             offererId,
             [CollectiveOfferDisplayedStatus.EXPIRED],
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -174,19 +174,19 @@ describe('CollectiveOffers', () => {
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
             2,
-            undefined,
+            null,
             offererId,
             [
               CollectiveOfferDisplayedStatus.EXPIRED,
               CollectiveOfferDisplayedStatus.PREBOOKED,
               CollectiveOfferDisplayedStatus.BOOKED,
             ],
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -236,20 +236,20 @@ describe('CollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            null,
+            null,
+            null,
+            null,
+            null,
             CollectiveLocationType.ADDRESS,
             1
           )
         })
       })
 
-      it('should send locationType TO_BE_DEFINED and offererAddressId undefined when "À déterminer" is selected', async () => {
+      it('should send locationType TO_BE_DEFINED and offererAddressId null when "À déterminer" is selected', async () => {
         await renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
@@ -259,20 +259,20 @@ describe('CollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            null,
+            null,
+            null,
+            null,
+            null,
             CollectiveLocationType.TO_BE_DEFINED,
             null
           )
         })
       })
 
-      it('should send locationType SCHOOL and offererAddressId undefined when "En établissement scolaire" is selected', async () => {
+      it('should send locationType SCHOOL and offererAddressId null when "En établissement scolaire" is selected', async () => {
         await renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
@@ -282,35 +282,35 @@ describe('CollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            null,
+            null,
+            null,
+            null,
+            null,
             CollectiveLocationType.SCHOOL,
             null
           )
         })
       })
 
-      it('should send locationType and offererAddressId undefined when "all" is selected', async () => {
+      it('should send locationType and offererAddressId null when "all" is selected', async () => {
         await renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(localisationSelect, 'all')
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -331,13 +331,13 @@ describe('CollectiveOffers', () => {
           expect(api.getCollectiveOffers).toHaveBeenCalledWith(
             'Any word',
             offererId,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -353,15 +353,15 @@ describe('CollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
+            null,
+            null,
             '2020-12-25',
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null,
+            null
           )
         })
       })
@@ -376,15 +376,15 @@ describe('CollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
-            undefined,
+            null,
             offererId,
-            undefined,
-            undefined,
-            undefined,
+            null,
+            null,
+            null,
             '2020-12-27',
-            undefined,
-            undefined,
-            undefined
+            null,
+            null,
+            null
           )
         })
       })
@@ -468,15 +468,15 @@ describe('CollectiveOffers', () => {
       expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
-        undefined,
+        null,
         offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        null,
+        null,
+        null,
+        null,
         'Atelier de pratique',
-        undefined,
-        undefined
+        null,
+        null
       )
 
       await userEvent.click(screen.getByText('Rechercher'))
@@ -485,15 +485,15 @@ describe('CollectiveOffers', () => {
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
-        undefined,
+        null,
         offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        null,
+        null,
+        null,
+        null,
         'Atelier de pratique',
-        undefined,
-        undefined
+        null,
+        null
       )
 
       screen.getByText('Aucune offre trouvée pour votre recherche')
@@ -504,15 +504,15 @@ describe('CollectiveOffers', () => {
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
-        undefined,
+        null,
         offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
       )
     })
 
@@ -530,13 +530,13 @@ describe('CollectiveOffers', () => {
         1,
         nameOrIsbn,
         offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        null,
+        null,
+        null,
+        null,
         'Atelier de pratique',
-        undefined,
-        undefined
+        null,
+        null
       )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
@@ -547,13 +547,13 @@ describe('CollectiveOffers', () => {
         2,
         nameOrIsbn,
         offererId,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
       )
     })
   })

@@ -1,34 +1,24 @@
-import type { ListOffersQueryModel } from '@/apiClient/v1'
+import { type ListOffersQueryModel, OfferStatus } from '@/apiClient/v1'
+import { nullifyEmptyProps } from '@/commons/utils/nullifyEmptyProps'
+import { toEnumOrNull } from '@/commons/utils/toEnumOrNull'
+import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
 
-import { DEFAULT_SEARCH_FILTERS } from '../constants'
 import type { IndividualSearchFiltersParams } from '../types'
 
-// TODO (igabriele, 2025-11-07): This function is overly complicated for what it does and its typing is unreliable.
 export const serializeApiIndividualFilters = (
   searchFilters: Partial<IndividualSearchFiltersParams>
 ): Omit<ListOffersQueryModel, 'collectiveOfferType'> => {
-  const listOffersQueryKeys: (keyof Omit<
-    ListOffersQueryModel,
-    'collectiveOfferType'
-  >)[] = [
-    'nameOrIsbn',
-    'offererId',
-    'status',
-    'venueId',
-    'offererAddressId',
-    'categoryId',
-    'creationMode',
-    'periodBeginningDate',
-    'periodEndingDate',
-  ]
+  const { format: _format, page: _page, ...params } = searchFilters
 
-  const body: Omit<ListOffersQueryModel, 'collectiveOfferType'> = {}
-  const defaultFilters = DEFAULT_SEARCH_FILTERS
-  return listOffersQueryKeys.reduce((accumulator, field) => {
-    const filterValue = searchFilters[field]
-    if (filterValue && filterValue !== defaultFilters[field]) {
-      ;(accumulator as any)[field] = filterValue
-    }
-    return accumulator
-  }, body)
+  return nullifyEmptyProps({
+    ...params,
+    categoryId:
+      searchFilters.categoryId === 'all' ? null : searchFilters.categoryId,
+    creationMode:
+      searchFilters.creationMode === 'all' ? null : searchFilters.creationMode,
+    offererAddressId: toNumberOrNull(searchFilters.offererAddressId),
+    offererId: toNumberOrNull(searchFilters.offererId),
+    status: toEnumOrNull(searchFilters.status, OfferStatus),
+    venueId: toNumberOrNull(searchFilters.venueId),
+  })
 }

@@ -1,130 +1,104 @@
 import { describe, expect, it } from 'vitest'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
-import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import { CollectiveOfferTypeEnum } from '@/commons/core/Offers/types'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 
 describe('serializeApiCollectiveFilters', () => {
-  it('should set venueId to undefined and otherwise return empty when no filters provided', () => {
-    const result = serializeApiCollectiveFilters(
-      {},
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
-
-    expect(result).toEqual({ venueId: undefined })
-  })
-
-  it('should include non-default simple fields and omit defaults', () => {
-    const result = serializeApiCollectiveFilters(
-      {
-        nameOrIsbn: 'Projet Arts',
-        collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE, // default is ALL
-        // equal to default -> omitted
-        format: DEFAULT_COLLECTIVE_SEARCH_FILTERS.format,
-      },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
-
-    expect(result).toMatchObject({
-      nameOrIsbn: 'Projet Arts',
-      collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE,
-    })
-    expect(result.venueId).toBeUndefined()
-    expect('format' in result).toBe(false)
-  })
-
-  it('should coerce offererAddressId to number via general branch when provided without locationType', () => {
-    const result = serializeApiCollectiveFilters(
-      { offererAddressId: '123' },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
-
-    expect(result).toEqual({ offererAddressId: 123, venueId: undefined })
-  })
-
-  it('should include status array when it differs from default empty array', () => {
-    const result = serializeApiCollectiveFilters(
-      { status: [CollectiveOfferDisplayedStatus.PUBLISHED] },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
+  it('should set computed fields to null when no filters are provided', () => {
+    const result = serializeApiCollectiveFilters({})
 
     expect(result).toEqual({
-      status: [CollectiveOfferDisplayedStatus.PUBLISHED],
-      venueId: undefined,
+      format: null,
+      locationType: null,
+      offererAddressId: null,
+      offererId: null,
+      venueId: null,
     })
   })
 
-  it('should not include status when equal to default (empty array)', () => {
-    const result = serializeApiCollectiveFilters(
-      { status: [] },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
+  it('should coerce offererAddressId, offererId and venueId to numbers', () => {
+    const result = serializeApiCollectiveFilters({
+      offererAddressId: '123',
+      offererId: '456',
+      venueId: '789',
+    })
 
-    expect(result).toEqual({ venueId: undefined })
+    expect(result).toEqual({
+      format: null,
+      locationType: null,
+      offererAddressId: 123,
+      offererId: 456,
+      venueId: 789,
+    })
   })
 
   it('should handle locationType ADDRESS with and without offererAddressId', () => {
-    const withAddress = serializeApiCollectiveFilters(
-      { locationType: CollectiveLocationType.ADDRESS, offererAddressId: '42' },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
-    const withoutAddress = serializeApiCollectiveFilters(
-      { locationType: CollectiveLocationType.ADDRESS },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
+    const withAddress = serializeApiCollectiveFilters({
+      locationType: CollectiveLocationType.ADDRESS,
+      offererAddressId: '42',
+    })
+    const withoutAddress = serializeApiCollectiveFilters({
+      locationType: CollectiveLocationType.ADDRESS,
+    })
 
     expect(withAddress).toEqual({
+      format: null,
       locationType: CollectiveLocationType.ADDRESS,
       offererAddressId: 42,
-      venueId: undefined,
+      offererId: null,
+      venueId: null,
     })
     expect(withoutAddress).toEqual({
+      format: null,
       locationType: CollectiveLocationType.ADDRESS,
       offererAddressId: null,
-      venueId: undefined,
+      offererId: null,
+      venueId: null,
     })
   })
 
   it('should handle locationType SCHOOL by nulling offererAddressId', () => {
-    const result = serializeApiCollectiveFilters(
-      { locationType: CollectiveLocationType.SCHOOL, offererAddressId: '999' },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
+    const result = serializeApiCollectiveFilters({
+      locationType: CollectiveLocationType.SCHOOL,
+      offererAddressId: '999',
+    })
 
     expect(result).toEqual({
+      format: null,
       locationType: CollectiveLocationType.SCHOOL,
       offererAddressId: null,
-      venueId: undefined,
+      offererId: null,
+      venueId: null,
     })
   })
 
   it('should handle locationType TO_BE_DEFINED by nulling offererAddressId', () => {
-    const result = serializeApiCollectiveFilters(
-      {
-        locationType: CollectiveLocationType.TO_BE_DEFINED,
-        offererAddressId: '999',
-      },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
+    const result = serializeApiCollectiveFilters({
+      locationType: CollectiveLocationType.TO_BE_DEFINED,
+      offererAddressId: '999',
+    })
 
     expect(result).toEqual({
+      format: null,
       locationType: CollectiveLocationType.TO_BE_DEFINED,
       offererAddressId: null,
-      venueId: undefined,
+      offererId: null,
+      venueId: null,
     })
   })
 
   it('should ignore unknown locationType values', () => {
-    const result = serializeApiCollectiveFilters(
-      {
-        locationType:
-          'UNKNOWN' as unknown as (typeof CollectiveLocationType)[keyof typeof CollectiveLocationType],
-      },
-      DEFAULT_COLLECTIVE_SEARCH_FILTERS
-    )
+    const result = serializeApiCollectiveFilters({
+      locationType:
+        'UNKNOWN' as unknown as (typeof CollectiveLocationType)[keyof typeof CollectiveLocationType],
+    })
 
-    expect(result).toEqual({ venueId: undefined })
+    expect(result).toEqual({
+      format: null,
+      locationType: null,
+      offererAddressId: null,
+      offererId: null,
+      venueId: null,
+    })
   })
 })

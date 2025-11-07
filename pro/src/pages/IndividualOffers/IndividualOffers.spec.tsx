@@ -45,7 +45,7 @@ const proVenues = [
     id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
-    publicName: undefined,
+    publicName: null,
     isVirtual: false,
   }),
   venueListItemFactory({
@@ -170,6 +170,8 @@ describe('IndividualOffers', () => {
 
         await renderIndividualOffers()
 
+        expect(api.listOffers).toHaveBeenCalledTimes(1)
+
         const statusSelect = screen.getByRole('combobox', {
           name: 'Statut',
         })
@@ -180,17 +182,18 @@ describe('IndividualOffers', () => {
         )
 
         await waitFor(() => {
+          expect(api.listOffers).toHaveBeenCalledTimes(2)
           expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            '1',
+            null,
+            1,
             'EXPIRED',
+            null,
+            null,
+            null,
+            null,
+            null,
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null
           )
         })
       })
@@ -242,6 +245,8 @@ describe('IndividualOffers', () => {
 
         await renderIndividualOffers()
 
+        expect(api.listOffers).toHaveBeenCalledTimes(1)
+
         await userEvent.type(
           screen.getByRole('searchbox', {
             name: LABELS.nameSearchInput,
@@ -254,17 +259,18 @@ describe('IndividualOffers', () => {
         )
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledWith(
+          expect(api.listOffers).toHaveBeenCalledTimes(2)
+          expect(api.listOffers).toHaveBeenLastCalledWith(
             'Any word',
-            '1',
+            1,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null
           )
         })
       })
@@ -273,6 +279,8 @@ describe('IndividualOffers', () => {
         vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
+
+        expect(api.listOffers).toHaveBeenCalledTimes(1)
 
         const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -287,17 +295,18 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
-          expect(api.listOffers).toHaveBeenCalledWith(
+          expect(api.listOffers).toHaveBeenCalledTimes(2)
+          expect(api.listOffers).toHaveBeenLastCalledWith(
+            null,
+            1,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
             undefined,
-            '1',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            '2'
+            2
           )
         })
       })
@@ -306,6 +315,8 @@ describe('IndividualOffers', () => {
         vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
+
+        expect(api.listOffers).toHaveBeenCalledTimes(1)
 
         await waitFor(() => {
           expect(
@@ -325,16 +336,16 @@ describe('IndividualOffers', () => {
 
         await waitFor(() => {
           expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            '1',
-            undefined,
-            undefined,
+            null,
+            1,
+            null,
+            null,
             'CINEMA',
+            null,
+            null,
+            null,
             undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined
+            null
           )
         })
       })
@@ -343,6 +354,8 @@ describe('IndividualOffers', () => {
         vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
         await renderIndividualOffers()
+
+        expect(api.listOffers).toHaveBeenCalledTimes(1)
 
         const creationModeSelect = screen.getByRole('combobox', {
           name: 'Mode de création',
@@ -356,17 +369,18 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
+          expect(api.listOffers).toHaveBeenCalledTimes(2)
           expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            '1',
-            undefined,
-            undefined,
-            undefined,
+            null,
+            1,
+            null,
+            null,
+            null,
             'imported',
+            null,
+            null,
             undefined,
-            undefined,
-            undefined,
-            undefined
+            null
           )
         })
       })
@@ -376,6 +390,8 @@ describe('IndividualOffers', () => {
 
         await renderIndividualOffers()
 
+        expect(api.listOffers).toHaveBeenCalledTimes(1)
+
         await userEvent.type(
           screen.getByLabelText('Début de la période'),
           '2020-12-25'
@@ -384,17 +400,18 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
+          expect(api.listOffers).toHaveBeenCalledTimes(2)
           expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            '1',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            null,
+            1,
+            null,
+            null,
+            null,
+            null,
             '2020-12-25',
+            null,
             undefined,
-            undefined,
-            undefined
+            null
           )
         })
       })
@@ -411,17 +428,18 @@ describe('IndividualOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         await waitFor(() => {
+          expect(api.listOffers).toHaveBeenCalledTimes(2)
           expect(api.listOffers).toHaveBeenLastCalledWith(
-            undefined,
-            '1',
-            undefined,
-            undefined,
-            undefined,
-            undefined,
-            undefined,
+            null,
+            1,
+            null,
+            null,
+            null,
+            null,
+            null,
             '2020-12-27',
             undefined,
-            undefined
+            null
           )
         })
       })
@@ -448,6 +466,9 @@ describe('IndividualOffers', () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
+
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+
       const searchInput = screen.getByRole('searchbox', {
         name: LABELS.nameSearchInput,
       })
@@ -456,17 +477,18 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
           'search string',
-          '1',
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
           undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
+          null
         )
       })
     })
@@ -484,16 +506,16 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledWith(
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
           undefined,
-          '1',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
+          null
         )
       })
     })
@@ -502,6 +524,8 @@ describe('IndividualOffers', () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
+
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
 
       const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -515,17 +539,18 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
           undefined,
-          '1',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          '2'
+          2
         )
       })
     })
@@ -546,6 +571,8 @@ describe('IndividualOffers', () => {
 
       await renderIndividualOffers()
 
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+
       await waitFor(() => {
         expect(
           screen.getByRole('option', {
@@ -562,17 +589,18 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
-          undefined,
-          '1',
-          undefined,
-          undefined,
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          1,
+          null,
+          null,
           'test_id_1',
+          null,
+          null,
+          null,
           undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
+          null
         )
       })
     })
@@ -586,6 +614,9 @@ describe('IndividualOffers', () => {
       ])
 
       await renderIndividualOffers()
+
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+
       const statusSelect = screen.getByRole('combobox', {
         name: 'Statut',
       })
@@ -594,17 +625,18 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
-          undefined,
-          '1',
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          1,
           'SOLD_OUT',
+          null,
+          null,
+          null,
+          null,
+          null,
           undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
+          null
         )
       })
     })
@@ -616,7 +648,9 @@ describe('IndividualOffers', () => {
           stocks: [],
         }),
       ])
+
       await renderIndividualOffers()
+
       const statusSelect = screen.getByRole('combobox', {
         name: 'Statut',
       })
@@ -624,17 +658,17 @@ describe('IndividualOffers', () => {
 
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          1,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
           undefined,
-          '1',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined
+          null
         )
       })
     })
@@ -644,6 +678,8 @@ describe('IndividualOffers', () => {
 
       await renderIndividualOffers()
 
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+
       await userEvent.selectOptions(
         screen.getByRole('combobox', { name: 'Mode de création' }),
         'manual'
@@ -651,17 +687,18 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       await waitFor(() => {
-        expect(api.listOffers).toHaveBeenCalledWith(
-          undefined,
-          '1',
-          undefined,
-          undefined,
-          undefined,
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          1,
+          null,
+          null,
+          null,
           'manual',
+          null,
+          null,
           undefined,
-          undefined,
-          undefined,
-          undefined
+          null
         )
       })
     })
@@ -670,6 +707,8 @@ describe('IndividualOffers', () => {
       vi.spyOn(api, 'listOffers').mockResolvedValueOnce(offersRecap)
 
       await renderIndividualOffers()
+
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
 
       const searchButton = screen.getByText('Rechercher')
       await userEvent.selectOptions(
@@ -684,17 +723,18 @@ describe('IndividualOffers', () => {
       )
       await userEvent.click(searchButton)
 
-      expect(api.listOffers).toHaveBeenCalledWith(
-        undefined,
-        '1',
-        undefined,
-        undefined,
-        undefined,
+      expect(api.listOffers).toHaveBeenCalledTimes(2)
+      expect(api.listOffers).toHaveBeenLastCalledWith(
+        null,
+        1,
+        null,
+        null,
+        null,
         'manual',
+        null,
+        null,
         undefined,
-        undefined,
-        undefined,
-        undefined
+        null
       )
     })
   })
@@ -775,6 +815,8 @@ describe('IndividualOffers', () => {
 
       await renderIndividualOffers(filters)
 
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
+
       const offererAddressOption = screen.getByLabelText('Localisation')
 
       await waitFor(() => {
@@ -793,17 +835,18 @@ describe('IndividualOffers', () => {
       await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
       await waitFor(() => {
+        expect(api.listOffers).toHaveBeenCalledTimes(2)
         expect(api.listOffers).toHaveBeenLastCalledWith(
+          null,
+          1,
+          null,
+          666,
+          null,
+          null,
+          null,
+          null,
           undefined,
-          '1',
-          undefined,
-          '666',
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          '2'
+          2
         )
       })
 
@@ -816,16 +859,16 @@ describe('IndividualOffers', () => {
       })
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
+        null,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         undefined,
-        '1',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        null
       )
     })
 
@@ -841,6 +884,8 @@ describe('IndividualOffers', () => {
         nameOrIsbn,
         venueId: '666',
       })
+
+      expect(api.listOffers).toHaveBeenCalledTimes(1)
 
       const offererAddressOption = screen.getByLabelText('Localisation')
 
@@ -861,19 +906,19 @@ describe('IndividualOffers', () => {
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledTimes(2)
+        expect(api.listOffers).toHaveBeenLastCalledWith(
+          nameOrIsbn,
+          1,
+          null,
+          666,
+          null,
+          null,
+          null,
+          null,
+          undefined,
+          2
+        )
       })
-      expect(api.listOffers).toHaveBeenCalledWith(
-        nameOrIsbn,
-        '1',
-        undefined,
-        '666',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        '2'
-      )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
 
@@ -883,15 +928,15 @@ describe('IndividualOffers', () => {
       expect(api.listOffers).toHaveBeenNthCalledWith(
         3,
         nameOrIsbn,
-        '1',
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        null
       )
     })
   })
@@ -903,6 +948,9 @@ describe('IndividualOffers', () => {
       defaultGetOffererResponseModel
     )
     await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
+
+    expect(api.listOffers).toHaveBeenCalledTimes(1)
+
     const offererAddressOption = screen.getByLabelText('Localisation')
 
     await waitFor(() => {
@@ -919,17 +967,18 @@ describe('IndividualOffers', () => {
     await userEvent.click(screen.getByText('Rechercher'))
 
     await waitFor(() => {
-      expect(api.listOffers).toHaveBeenCalledWith(
+      expect(api.listOffers).toHaveBeenCalledTimes(2)
+      expect(api.listOffers).toHaveBeenLastCalledWith(
+        null,
+        defaultGetOffererResponseModel.id,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
         undefined,
-        defaultGetOffererResponseModel.id.toString(),
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        offererAddress[1].id.toString()
+        offererAddress[1].id
       )
     })
   })

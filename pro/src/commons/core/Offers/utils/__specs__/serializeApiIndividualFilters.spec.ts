@@ -1,59 +1,41 @@
 import { describe, expect, it } from 'vitest'
 
 import { OfferStatus } from '@/apiClient/v1'
-import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 
 describe('serializeApiIndividualFilters', () => {
-  it('should return an empty object when no filters are provided', () => {
+  it('should set computed fields to null when no filters are provided', () => {
     const result = serializeApiIndividualFilters({})
 
-    expect(result).toEqual({})
-  })
-
-  it('should include only whitelisted keys that differ from defaults', () => {
-    const result = serializeApiIndividualFilters({
-      // truthy and different from default (default ""), should be included
-      nameOrIsbn: 'Le Petit Prince',
-      // equal to default, should be omitted
-      offererId: DEFAULT_SEARCH_FILTERS.offererId,
+    expect(result).toEqual({
+      offererAddressId: null,
+      offererId: null,
+      status: null,
+      venueId: null,
     })
-
-    expect(result).toEqual({ nameOrIsbn: 'Le Petit Prince' })
   })
 
-  it('should omit falsy values even if different from defaults', () => {
+  it('should compute all entries as expected', () => {
     const result = serializeApiIndividualFilters({
-      // default is 'all' but provided value is '', which is falsy -> omitted
-      categoryId: '',
-      // default is '' and provided is '' (falsy) -> omitted
-      nameOrIsbn: '',
-    })
-
-    expect(result).toEqual({})
-  })
-
-  it('should include multiple non-default values unchanged', () => {
-    const result = serializeApiIndividualFilters({
-      status: OfferStatus.PENDING,
+      categoryId: 'BOOKS',
       creationMode: 'manual',
+      offererAddressId: '123',
+      offererId: '456',
       periodBeginningDate: '2025-01-01',
       periodEndingDate: '2025-12-31',
-      offererAddressId: '123',
-      categoryId: 'BOOKS',
-      offererId: 'off_42',
-      venueId: 'v_99',
+      status: OfferStatus.PENDING,
+      venueId: '789',
     })
 
     expect(result).toMatchObject({
-      status: OfferStatus.PENDING,
+      categoryId: 'BOOKS',
       creationMode: 'manual',
+      offererAddressId: 123,
+      offererId: 456,
       periodBeginningDate: '2025-01-01',
       periodEndingDate: '2025-12-31',
-      offererAddressId: '123',
-      categoryId: 'BOOKS',
-      offererId: 'off_42',
-      venueId: 'v_99',
+      status: OfferStatus.PENDING,
+      venueId: 789,
     })
 
     expect('nameOrIsbn' in result).toBe(false)
