@@ -1,5 +1,4 @@
 import re
-from datetime import datetime
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -17,6 +16,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.routes.backoffice.filters import format_datespan
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import siren as siren_utils
@@ -217,15 +217,12 @@ def prefill_highlights_choices(autocomplete_field: fields.PCTomSelectField) -> N
                 sa_orm.load_only(
                     highlights_models.Highlight.id,
                     highlights_models.Highlight.name,
-                    highlights_models.Highlight.highlight_timespan,
+                    highlights_models.Highlight.highlight_datespan,
                 )
             )
         )
         autocomplete_field.choices = [
-            (
-                highlight.id,
-                f"{highlight.name} - {datetime.strftime(highlight.highlight_timespan.lower.date(), '%d/%m/%Y')} - {datetime.strftime(highlight.highlight_timespan.upper.date(), '%d/%m/%Y')}",
-            )
+            (highlight.id, f"{highlight.name} - {format_datespan(highlight.highlight_datespan)}")
             for highlight in highlights
         ]
 
@@ -310,7 +307,7 @@ def autocomplete_highlights() -> AutocompleteResponse:
         sa_orm.load_only(
             highlights_models.Highlight.id,
             highlights_models.Highlight.name,
-            highlights_models.Highlight.highlight_timespan,
+            highlights_models.Highlight.highlight_datespan,
         )
     )
     if string_utils.is_numeric(query_string):
@@ -326,8 +323,7 @@ def autocomplete_highlights() -> AutocompleteResponse:
     return AutocompleteResponse(
         items=[
             AutocompleteItem(
-                id=highlight.id,
-                text=f"{highlight.name} - {datetime.strftime(highlight.highlight_timespan.lower.date(), '%d/%m/%Y')} - {datetime.strftime(highlight.highlight_timespan.upper.date(), '%d/%m/%Y')}",
+                id=highlight.id, text=f"{highlight.name} - {format_datespan(highlight.highlight_datespan)}"
             )
             for highlight in highlights
         ]

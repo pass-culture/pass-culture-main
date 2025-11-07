@@ -425,7 +425,7 @@ class IndividualOfferResponseGetterDict(GetterDict):
             return [
                 highlight_request.highlight
                 for highlight_request in self._obj.highlight_requests
-                if highlight_request.highlight.highlight_timespan.upper >= date_utils.get_naive_utc_now()
+                if highlight_request.highlight.highlight_datespan.upper > datetime.date.today()
             ]
         return super().get(key, default)
 

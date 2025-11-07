@@ -2813,12 +2813,12 @@ def upsert_highlight_requests(
     if any(not h.is_available for h in highlights):
         raise exceptions.UnavailableHighlightException()
 
-    now = date_utils.get_naive_utc_now()
+    today = datetime.date.today()
     current_highlight_requests = (
         db.session.query(highlights_models.HighlightRequest)
         .join(highlights_models.HighlightRequest.highlight)
         .filter(
-            highlights_models.Highlight.availability_timespan.contains(now),
+            highlights_models.Highlight.availability_datespan.contains(today),
             highlights_models.HighlightRequest.offerId == offer.id,
         )
         .options(sa_orm.joinedload(highlights_models.HighlightRequest.highlight))

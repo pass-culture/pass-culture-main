@@ -54,8 +54,8 @@
       <td>{{ highlight.id }}</td>
       <td>{{ highlight.name }}</td>
       <td>{{ highlight.description | nl2br }}</td>
-      <td>{{ highlight.availability_timespan | format_timespan }}</td>
-      <td>{{ highlight.highlight_timespan | format_timespan }}</td>
+      <td>{{ highlight.availability_datespan | format_datespan }}</td>
+      <td>{{ highlight.highlight_datespan | format_datespan }}</td>
       <td class="px-2 py-3">
         {% if highlight.mediation_url %}
           <div class="rounded pc-offer-table-image pc-offer-table-image-container"

@@ -50,17 +50,19 @@ class CreateHighlightForm(FlaskForm):
             wtforms.validators.Length(max=300, message="ne doit pas dépasser %(max)d caractères"),
         ),
     )
-    availability_timespan = fields.PCDateRangeField(
+    availability_datespan = fields.PCDateRangeField(
         "Dates de diffusion sur l'espace partenaire",
         validators=(
             wtforms.validators.InputRequired("Les dates de diffusion sur l'espace partenaire sont obligatoires"),
         ),
         drops="up",
+        upper_inc=True,
     )
-    highlight_timespan = fields.PCDateRangeField(
+    highlight_datespan = fields.PCDateRangeField(
         "Dates de l'évènement",
         validators=(wtforms.validators.InputRequired("Les dates de l'évènement sont obligatoires"),),
         drops="up",
+        upper_inc=True,
     )
     image = fields.PCImageField(
         "Image de la valorisation thématique (max. 3 Mo)",
@@ -81,10 +83,10 @@ class CreateHighlightForm(FlaskForm):
         if not super().validate(extra_validators):
             return False
 
-        availability_timespan = self._fields["availability_timespan"].data
-        highlight_timespan = self._fields["highlight_timespan"].data
+        availability_datespan = self._fields["availability_datespan"].data
+        highlight_datespan = self._fields["highlight_datespan"].data
 
-        if availability_timespan[1] > highlight_timespan[1]:
+        if availability_datespan[1] > highlight_datespan[1]:
             flash(
                 "La diffusion sur l'espace partenaire ne peut pas se terminer après la fin de l'évènement",
                 "warning",
@@ -92,14 +94,14 @@ class CreateHighlightForm(FlaskForm):
             return False
         return True
 
-    def validate_availability_timespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
+    def validate_availability_datespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
         if dates.data[1] and dates.data[1].date() < datetime.date.today():
             raise wtforms.validators.ValidationError(
                 "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé",
             )
         return dates
 
-    def validate_highlight_timespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
+    def validate_highlight_datespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
         if dates.data[1] and dates.data[1].date() < datetime.date.today():
             raise wtforms.validators.ValidationError(
                 "La date de fin de l'évènement ne peut pas être dans le passé",

@@ -1,3 +1,4 @@
+import datetime
 import typing
 
 import psycopg2.extras
@@ -8,7 +9,6 @@ from sqlalchemy.dialects import postgresql
 from pcapi import settings
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
-from pcapi.utils.date import get_naive_utc_now
 
 
 if typing.TYPE_CHECKING:
@@ -17,15 +17,25 @@ if typing.TYPE_CHECKING:
 
 
 class Highlight(PcObject, Model):
+    """
+    Model containing DateRange fields.
+
+    ⚠️ PostgreSQL stores DateRange values with an exclusive upper bound.
+    For instance, ['2025-11-01', '2025-11-02') means the range includes
+    only November 1st, not the 2nd. When displaying these values (e.g. in forms),
+    subtract one day from the upper limit to present an inclusive date range
+    that matches user expectations.
+    """
+
     __tablename__ = "highlight"
 
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
     description: sa_orm.Mapped[str] = sa_orm.mapped_column("description", sa.Text, nullable=False)
-    availability_timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(
-        postgresql.TSRANGE, nullable=False
+    availability_datespan: sa_orm.Mapped[psycopg2.extras.DateRange] = sa_orm.mapped_column(
+        postgresql.DATERANGE, nullable=False
     )
-    highlight_timespan: sa_orm.Mapped[psycopg2.extras.DateTimeRange] = sa_orm.mapped_column(
-        postgresql.TSRANGE, nullable=False
+    highlight_datespan: sa_orm.Mapped[psycopg2.extras.DateRange] = sa_orm.mapped_column(
+        postgresql.DATERANGE, nullable=False
     )
     mediation_uuid: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
     highlight_requests: sa_orm.Mapped[list["HighlightRequest"]] = sa_orm.relationship(
@@ -48,8 +58,8 @@ class Highlight(PcObject, Model):
 
     @property
     def is_available(self) -> bool:
-        now = get_naive_utc_now()
-        return self.availability_timespan.upper >= now and self.availability_timespan.lower < now
+        today = datetime.date.today()
+        return self.availability_datespan.upper > today and self.availability_datespan.lower <= today
 
     @property
     def mediation_url(self) -> str:
