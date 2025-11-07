@@ -17,10 +17,10 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { serializeApiFilters } from '@/commons/core/Offers/utils/serializeApiFilters'
+import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -44,7 +44,7 @@ export const IndividualOffers = (): JSX.Element => {
   const { storedFilters } = getStoredFilterConfig('individual')
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<SearchFiltersParams>),
+    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
   }
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
@@ -67,7 +67,7 @@ export const IndividualOffers = (): JSX.Element => {
   )
 
   const redirectWithSelectedFilters = (
-    filters: Partial<SearchFiltersParams> & { audience?: Audience }
+    filters: Partial<IndividualSearchFiltersParams> & { audience?: Audience }
   ) => {
     // We dont need to pass the offererId in the URL since
     // its already present in the redux store (useSelector(selectCurrentOfferer))
@@ -99,8 +99,7 @@ export const IndividualOffers = (): JSX.Element => {
       periodBeginningDate,
       periodEndingDate,
       offererAddressId,
-      collectiveOfferType,
-    } = serializeApiFilters(apiFilters)
+    } = serializeApiIndividualFilters(apiFilters)
 
     return api.listOffers(
       nameOrIsbn,
@@ -111,7 +110,7 @@ export const IndividualOffers = (): JSX.Element => {
       creationMode,
       periodBeginningDate,
       periodEndingDate,
-      collectiveOfferType,
+      undefined,
       offererAddressId
     )
   })

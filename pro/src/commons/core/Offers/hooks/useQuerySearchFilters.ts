@@ -7,35 +7,36 @@ import { translateQueryParamsToApiParams } from '@/commons/utils/translate'
 
 import type {
   CollectiveSearchFiltersParams,
-  SearchFiltersParams,
+  IndividualSearchFiltersParams,
 } from '../types'
 
-export const useQuerySearchFilters = (): Partial<SearchFiltersParams> => {
-  const { search } = useLocation()
+export const useQuerySearchFilters =
+  (): Partial<IndividualSearchFiltersParams> => {
+    const { search } = useLocation()
 
-  const urlSearchFilters = useMemo(() => {
-    const urlParams = new URLSearchParams(search)
-    const queryParams = parseUrlParams(urlParams)
+    const urlSearchFilters = useMemo(() => {
+      const urlParams = new URLSearchParams(search)
+      const queryParams = parseUrlParams(urlParams)
 
-    const urlFilters: Partial<SearchFiltersParams> =
-      translateQueryParamsToApiParams(
-        {
-          ...queryParams,
-        },
-        Audience.INDIVIDUAL
-      )
+      const urlFilters: Partial<IndividualSearchFiltersParams> =
+        translateQueryParamsToApiParams(
+          {
+            ...queryParams,
+          },
+          Audience.INDIVIDUAL
+        )
 
-    // Convert page type to number
-    urlFilters.page =
-      typeof urlFilters.page === 'string'
-        ? parseInt(urlFilters.page, 10)
-        : urlFilters.page
+      // Convert page type to number
+      urlFilters.page =
+        typeof urlFilters.page === 'string'
+          ? parseInt(urlFilters.page, 10)
+          : urlFilters.page
 
-    return urlFilters
-  }, [search])
+      return urlFilters
+    }, [search])
 
-  return urlSearchFilters
-}
+    return urlSearchFilters
+  }
 
 export const useQueryCollectiveSearchFilters =
   (): Partial<CollectiveSearchFiltersParams> => {

@@ -1,11 +1,12 @@
 import { DEFAULT_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 
+// TODO (igabriele, 2025-11-07): This util seems redundant with `serializeApiIndividualFilters`. Consider merging the logic.
 export function computeIndividualApiFilters(
-  finalSearchFilters: Partial<SearchFiltersParams>,
+  finalSearchFilters: Partial<IndividualSearchFiltersParams>,
   selectedOffererId?: string | null
-): SearchFiltersParams {
-  const apiFilters: SearchFiltersParams = {
+): IndividualSearchFiltersParams {
+  const apiFilters: IndividualSearchFiltersParams = {
     ...DEFAULT_SEARCH_FILTERS,
     ...finalSearchFilters,
     ...{ offererId: selectedOffererId?.toString() ?? '' },

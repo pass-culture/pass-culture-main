@@ -8,7 +8,7 @@ import {
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
@@ -19,9 +19,9 @@ import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 interface IndividualOffersSearchFiltersProps {
   hasFilters: boolean
-  applyFilters: (filters: SearchFiltersParams) => void
-  selectedFilters: SearchFiltersParams
-  setSelectedFilters: Dispatch<SetStateAction<SearchFiltersParams>>
+  applyFilters: (filters: IndividualSearchFiltersParams) => void
+  selectedFilters: IndividualSearchFiltersParams
+  setSelectedFilters: Dispatch<SetStateAction<IndividualSearchFiltersParams>>
   disableAllFilters: boolean
   resetFilters: () => void
   offererAddresses: SelectOption[]
@@ -56,7 +56,7 @@ export const IndividualOffersSearchFilters = ({
   searchButtonRef,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
   const updateSearchFilters = (
-    newSearchFilters: Partial<SearchFiltersParams>
+    newSearchFilters: Partial<IndividualSearchFiltersParams>
   ) => {
     setSelectedFilters((currentSearchFilters) => ({
       ...currentSearchFilters,

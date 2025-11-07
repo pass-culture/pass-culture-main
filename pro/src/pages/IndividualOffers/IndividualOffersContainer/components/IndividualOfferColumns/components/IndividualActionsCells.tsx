@@ -14,7 +14,7 @@ import {
 } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_STATUS_DRAFT } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
@@ -52,7 +52,7 @@ export const IndividualActionsCells = ({
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,
-    ...(storedFilters as Partial<SearchFiltersParams>),
+    ...(storedFilters as Partial<IndividualSearchFiltersParams>),
   }
 
   const dropdownTriggerRef = useRef<HTMLButtonElement>(null)

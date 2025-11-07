@@ -9,7 +9,7 @@ import {
   MAX_TOTAL_PAGES,
   NUMBER_OF_OFFERS_PER_PAGE,
 } from '@/commons/core/Offers/constants'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
@@ -32,9 +32,9 @@ import styles from './IndividualOffersContainer.module.scss'
 export type IndividualOffersContainerProps = {
   currentPageNumber: number
   isLoading: boolean
-  initialSearchFilters: SearchFiltersParams
+  initialSearchFilters: IndividualSearchFiltersParams
   redirectWithSelectedFilters: (
-    filters: Partial<SearchFiltersParams> & {
+    filters: Partial<IndividualSearchFiltersParams> & {
       page?: number
       audience?: Audience
     }
@@ -92,12 +92,12 @@ export const IndividualOffersContainer = ({
   const pageCount = Math.min(numberOfPages, MAX_TOTAL_PAGES)
 
   const applySelectedFiltersAndRedirect = (
-    filters: Partial<SearchFiltersParams> & { audience?: Audience }
+    filters: Partial<IndividualSearchFiltersParams> & { audience?: Audience }
   ) => {
     redirectWithSelectedFilters(filters)
   }
 
-  const applyFilters = (filters: SearchFiltersParams) => {
+  const applyFilters = (filters: IndividualSearchFiltersParams) => {
     onApplyFilters(filters)
     applySelectedFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
   }

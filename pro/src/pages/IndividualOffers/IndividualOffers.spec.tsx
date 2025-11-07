@@ -14,7 +14,7 @@ import {
   CREATION_MODES_OPTIONS,
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
-import type { SearchFiltersParams } from '@/commons/core/Offers/types'
+import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import type { Audience } from '@/commons/core/shared/types'
 import {
@@ -70,7 +70,7 @@ const LABELS = {
 }
 
 const renderIndividualOffers = async (
-  filters: Partial<SearchFiltersParams> & {
+  filters: Partial<IndividualSearchFiltersParams> & {
     page?: number
     audience?: Audience
   } = DEFAULT_SEARCH_FILTERS,
