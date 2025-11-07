@@ -1,7 +1,8 @@
+// TODO (igabriele, 2025-11-12): Refactor usages of this utility and remove it.
+
 /**
  * We shouldn't need such a utility since filters and forms should handle values via null instead of empty strings,
  * but until we refactor everything, this utility help us centralize the logic.
- *
  */
 export const nullifyEmptyProps = <T extends Record<string, unknown>>(
   obj: T

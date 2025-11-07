@@ -16,11 +16,13 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
+  ensureCurrentOfferer,
   selectCurrentOfferer,
-  selectCurrentOffererId,
 } from '@/commons/store/offerer/selectors'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 
@@ -49,14 +51,17 @@ function getInitialValues(collectiveOnly: boolean) {
 }
 
 export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const queryOffererId = useSelector(selectCurrentOffererId)?.toString()
-  const queryVenueId = queryParams.get('lieu')
   const isNewOfferCreationFlowFeatureActive = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
+  const navigate = useNavigate()
+  const location = useLocation()
+  const queryParams = new URLSearchParams(location.search)
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
+  const queryVenueId = queryParams.get('lieu')
 
   const notify = useNotification()
 
@@ -110,8 +115,10 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
     ) {
       const apiFilters = {
         ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-        offererId: queryOffererId ? queryOffererId : 'all',
-        venueId: queryVenueId ? queryVenueId : 'all',
+        offererId: selectedOffererId.toString(),
+        venueId: withSwitchVenueFeature
+          ? selectedVenue.id.toString()
+          : (queryVenueId ?? undefined),
       }
       const {
         nameOrIsbn,

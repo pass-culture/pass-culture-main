@@ -9,7 +9,7 @@ import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import {
@@ -31,7 +31,7 @@ export const HeadlineOfferImageDialogs = ({
   setIsFirstDialogOpen,
   offer,
 }: HeadlineOfferImageDialogsProps) => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useSelector(ensureCurrentOfferer).id
   const { mutate } = useSWRConfig()
 
   const { headlineOffer, upsertHeadlineOffer } = useHeadlineOfferContext()
@@ -48,7 +48,7 @@ export const HeadlineOfferImageDialogs = ({
 
   const apiFilters = computeIndividualApiFilters(
     finalSearchFilters,
-    selectedOffererId?.toString()
+    selectedOffererId
   )
 
   const onImageUpload = async ({

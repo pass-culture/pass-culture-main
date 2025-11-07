@@ -10,6 +10,7 @@ import {
 import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -177,6 +178,11 @@ describe('TemplateCollectiveOffersScreen', () => {
 
   it('should display actionsBar when at least one offer is selected', async () => {
     renderWithProviders(<TemplateCollectiveOffersScreen {...props} />, {
+      storeOverrides: {
+        offerer: {
+          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+        },
+      },
       user: currentUser,
     })
 

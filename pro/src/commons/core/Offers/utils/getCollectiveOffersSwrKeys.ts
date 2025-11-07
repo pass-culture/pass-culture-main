@@ -12,14 +12,16 @@ import type { CollectiveSearchFiltersParams } from '../types'
 export type GetCollectiveOffersSwrKeysProps = {
   isInTemplateOffersPage: boolean
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
-  selectedOffererId?: string | null
+  selectedOffererId: number
+  selectedVenueId?: number
 }
 
 //  Make sure that the exact same query key is used across collective offers list actions
 export function getCollectiveOffersSwrKeys({
   isInTemplateOffersPage,
   urlSearchFilters,
-  selectedOffererId = null,
+  selectedOffererId,
+  selectedVenueId,
 }: GetCollectiveOffersSwrKeysProps): [string, CollectiveSearchFiltersParams] {
   const collectiveOffersListQueryKey = isInTemplateOffersPage
     ? GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY
@@ -32,7 +34,8 @@ export function getCollectiveOffersSwrKeys({
   const apiFilters: CollectiveSearchFiltersParams = {
     ...defaultCollectiveFilters,
     ...urlSearchFilters,
-    ...{ offererId: selectedOffererId ?? 'all' },
+    ...{ offererId: selectedOffererId.toString() },
+    ...{ venueId: selectedVenueId?.toString() ?? 'all' },
     page: undefined,
   }
 

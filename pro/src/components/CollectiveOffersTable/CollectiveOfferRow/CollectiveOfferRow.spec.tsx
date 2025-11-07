@@ -17,6 +17,7 @@ import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -50,7 +51,14 @@ const renderOfferItem = (
       </table>
       <Notification />
     </>,
-    options
+    {
+      storeOverrides: {
+        offerer: {
+          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
+        },
+      },
+      ...options,
+    }
   )
 
 const offerId = 12

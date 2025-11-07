@@ -49,6 +49,9 @@ const renderOffers = async (
           currentOfferer: { id: 1, isOnboarded: true },
           offererNames: [],
         },
+        user: {
+          selectedVenue: makeVenueListItem({ id: 2 }),
+        },
       },
     }
   )
