@@ -988,13 +988,6 @@ def create_offerer(
             db.session.query(offerers_models.UserOfferer).filter_by(userId=user.id, offererId=offerer.id).one_or_none()
         )
         if not user_offerer:
-            if (
-                FeatureToggle.WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY
-                and not offerer.isRejected
-                and insee_data.ape_code
-                and not APE_TAG_MAPPING.get(insee_data.ape_code, False)
-            ):
-                raise offerers_exceptions.NotACollectivity()
             user_offerer = models.UserOfferer(offerer=offerer, user=user, validationStatus=ValidationStatus.NEW)
             db.session.add(user_offerer)
             db.session.flush()

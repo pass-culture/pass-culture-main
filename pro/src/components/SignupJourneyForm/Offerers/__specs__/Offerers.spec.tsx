@@ -213,28 +213,6 @@ describe('screens:SignupJourney::Offerers', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render component without venue attachement', async () => {
-    renderOfferersScreen(contextValue, {
-      features: ['WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY'],
-    })
-
-    expect(
-      await screen.findByRole('button', {
-        name: 'Ajouter une nouvelle structure',
-      })
-    ).toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('button', { name: 'Rejoindre cet espace' })
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByText(
-        'Vous souhaitez ajouter une nouvelle structure à cet espace ?'
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should render component without venue creation', async () => {
     renderOfferersScreen(contextValue, {
       features: ['WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY'],
@@ -264,10 +242,7 @@ describe('screens:SignupJourney::Offerers', () => {
         offerer: { ...DEFAULT_OFFERER_FORM_VALUES, apeCode: '8411Z' },
       },
       {
-        features: [
-          'WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY',
-          'WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY',
-        ],
+        features: ['WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY'],
       }
     )
 
