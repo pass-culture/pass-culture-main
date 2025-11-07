@@ -1455,10 +1455,12 @@ class EducationalDeposit(PcObject, models.Model):
 
     isFinal: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=True)
 
-    ministry = sa_orm.mapped_column(
-        sa.Enum(Ministry),
-        nullable=True,
-    )
+    ministry = sa_orm.mapped_column(sa.Enum(Ministry), nullable=True)
+
+    # when a collective booking is confirmed, we find the corresponding deposit depending on the institution, educational year and period
+    # if the confirmation date is in the same educational year as the event, the period must contain the confirmation date
+    # if the confirmation date is not in the same educational year as the event, the period must contain the start of the event educational year
+    period: sa_orm.Mapped[DateTimeRange | None] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=True)
 
     def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
         """Check that the total amount of bookings won't exceed the
