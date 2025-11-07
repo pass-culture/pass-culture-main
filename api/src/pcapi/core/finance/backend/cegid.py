@@ -205,7 +205,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
         """We only push invoices out of work hours so as not to impact Cegid perfs during its work hours usage"""
         allowed_hours = [19, 20, 21, 22, 23, 0, 1, 2, 3, 4, 5, 6, 7]  # "night" hours
         allowed_weekdays = [5, 6]  # saturday and sunday
-        now = date_utils.get_naive_utc_now()
+        now = datetime.datetime.now(finance_utils.ACCOUNTING_TIMEZONE)
         if now.weekday() in allowed_weekdays:
             return True
         elif now.hour in allowed_hours:
