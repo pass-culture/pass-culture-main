@@ -55,7 +55,7 @@ vi.mock('@/commons/utils/date', async () => {
   }
 })
 
-const renderStockThingScreen = async (
+const renderStockThingScreen = (
   stocks: GetOfferStockResponseModel[],
   props: StocksThingProps,
   contextValue: IndividualOfferContextValues,
@@ -76,7 +76,7 @@ const renderStockThingScreen = async (
           })}
           element={
             <IndividualOfferContext.Provider value={contextValue}>
-              <StocksThing {...props} />
+              <StocksThing {...props} stocks={stocks} />
               <ButtonLink to="/outside">Go outside !</ButtonLink>
             </IndividualOfferContext.Provider>
           }
@@ -106,9 +106,6 @@ const renderStockThingScreen = async (
       storeOverrides,
     }
   )
-  await waitFor(() => {
-    expect(api.getStocks).toHaveBeenCalledTimes(1)
-  })
 }
 
 describe('screens:StocksThing', () => {

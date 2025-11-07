@@ -7,6 +7,7 @@ describe('Didactic Onboarding feature', () => {
   let login: string
 
   beforeEach(() => {
+    cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/draft/*' }).as(
       'patchDraftOffer'
@@ -221,6 +222,10 @@ describe('Didactic Onboarding feature', () => {
 
         // Set price
         cy.url().should('contain', '/creation/stocks')
+        cy.wait(['@getStocks'], {
+          responseTimeout: 60 * 1000,
+        })
+
         cy.findByLabelText(/Prix/).type('42')
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
@@ -319,6 +324,9 @@ describe('Didactic Onboarding feature', () => {
 
         //  PRICE CATEGORY STEP
         cy.url().should('contain', '/creation/tarifs')
+        cy.wait(['@getStocks'], {
+          responseTimeout: 60 * 1000,
+        })
         cy.findByLabelText(/Prix/).type('42')
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
