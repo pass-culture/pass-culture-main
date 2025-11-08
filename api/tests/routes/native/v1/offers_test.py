@@ -1728,6 +1728,70 @@ class MovieCalendarTest:
         assert today_screenings[0]["distance"] < 10_000
 
 
+class VenueMovieCalendarTest:
+    def test_get_movie_shows(self, client):
+        product = offers_factories.ProductFactory(
+            extraData={"allocineId": 12345}, subcategoryId=subcategories.SEANCE_CINE.id
+        )
+        address = AddressFactory(latitude=48.85, longitude=2.35)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product,
+            offer__venue__offererAddress__address=address,
+            offer__venue__offererAddress__label="Cinéma Parisien",
+            beginningDatetime=datetime.now() + timedelta(hours=1),
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar == {
+            today.isoformat(): [
+                {
+                    "address": f"{address.street}, {address.postalCode} {address.city}",
+                    "distance": 0.0,
+                    "dayScreenings": [
+                        {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "features": [],
+                            "price": float(stock.price),
+                            "stockId": stock.id,
+                        }
+                    ],
+                    "label": stock.offer.offererAddress.label,
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "features": [],
+                        "price": float(stock.price),
+                        "stockId": stock.id,
+                    },
+                    "thumbUrl": None,
+                    "venueId": stock.offer.venue.id,
+                },
+            ],
+            tomorrow.isoformat(): [
+                {
+                    "address": f"{address.street}, {address.postalCode} {address.city}",
+                    "distance": 0.0,
+                    "dayScreenings": [],
+                    "label": stock.offer.offererAddress.label,
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "features": [],
+                        "price": 10.1,
+                        "stockId": stock.id,
+                    },
+                    "thumbUrl": None,
+                    "venueId": stock.offer.venue.id,
+                },
+            ],
+        }
+
+
 class OffersStocksV2Test:
     def test_return_empty_on_empty_request(self, client):
         # 1. select offer
