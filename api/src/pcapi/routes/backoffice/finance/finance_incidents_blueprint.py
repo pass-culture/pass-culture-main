@@ -127,11 +127,7 @@ def _get_incidents(
                 ids_query = ids_query.filter(sa.not_(finance_models.FinanceIncident.relates_to_collective_bookings))
 
     if form.status.data:
-        # When filtering on status, always exclude closed incidents
-        ids_query = ids_query.filter(
-            finance_models.FinanceIncident.status.in_(form.status.data),
-            sa.not_(finance_models.FinanceIncident.isClosed),
-        )
+        ids_query = ids_query.filter(finance_models.FinanceIncident.status.in_(form.status.data))
 
     if form.origin.data:
         ids_query = ids_query.filter(
@@ -267,10 +263,13 @@ def cancel_finance_incident(finance_incident_id: int) -> utils.BackofficeRespons
         )
     except finance_exceptions.FinanceIncidentAlreadyCancelled:
         mark_transaction_as_invalid()
-        flash("L'incident a déjà été annulé", "warning")
+        flash("Impossible d'annuler un incident déjà annulé", "warning")
     except finance_exceptions.FinanceIncidentAlreadyValidated:
         mark_transaction_as_invalid()
         flash("Impossible d'annuler un incident déjà validé", "warning")
+    except finance_exceptions.FinanceIncidentAlreadyInvoiced:
+        mark_transaction_as_invalid()
+        flash("Impossible d'annuler un incident déjà remboursé", "warning")
     else:
         flash("L'incident a été annulé", "success")
 
@@ -1331,7 +1330,7 @@ def force_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     if not finance_incident:
         raise NotFound()
 
-    if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
+    if finance_incident.status != finance_models.IncidentStatus.VALIDATED:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
         mark_transaction_as_invalid()
         return redirect(
@@ -1386,7 +1385,7 @@ def cancel_debit_note(finance_incident_id: int) -> utils.BackofficeResponse:
     if not finance_incident:
         raise NotFound()
 
-    if finance_incident.status != finance_models.IncidentStatus.VALIDATED or finance_incident.isClosed:
+    if finance_incident.status != finance_models.IncidentStatus.VALIDATED:
         flash("Cette action ne peut être effectuée que sur un incident validé non terminé.", "warning")
         return redirect(
             url_for("backoffice_web.finance_incidents.get_incident", finance_incident_id=finance_incident.id), 303

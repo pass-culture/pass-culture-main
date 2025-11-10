@@ -9,13 +9,7 @@
               <h5 class="card-title me-2">Créé le : {{ incident.details.createdAt | format_string_to_date_time }}</h5>
             {% endif %}
           </div>
-          <div class="h5 me-1 align-middle">
-            {% if incident.isClosed %}
-              {{ "Terminé" | format_badge("secondary") }}
-            {% else %}
-              {{ incident.status | format_finance_incident_status_badge }}
-            {% endif %}
-          </div>
+          <div class="h5 me-1 align-middle">{{ incident.status | format_finance_incident_status_badge }}</div>
           <div class="h5 me-1 align-middle">{{ incident.is_partial | format_finance_incident_nature_badge }}</div>
           <div class="d-flex justify-content-end flex-grow-1 gap-2">
             {% if has_permission("MANAGE_INCIDENTS") and incident.status.value == 'created' %}
@@ -27,7 +21,7 @@
                       data-bs-toggle="modal"
                       data-bs-target="#finance-incident-validation-modal-{{ incident.id }}">Valider l'incident</button>
               {{ build_lazy_modal(url_for('backoffice_web.finance_incidents.get_finance_incident_validation_form', finance_incident_id=incident.id) , "finance-incident-validation-modal-" + incident.id|string) }}
-            {% elif has_permission("MANAGE_INCIDENTS") and incident.status.value == 'validated' and not incident.isClosed %}
+            {% elif has_permission("MANAGE_INCIDENTS") and incident.status.value == 'validated' %}
               {% if incident.forceDebitNote %}
                 <button class="btn btn-outline-primary"
                         data-bs-toggle="modal"
