@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type HighlightResponseModel = {
-  availabilityDatespan: Array<string>;
+  availabilityTimespan: Array<string>;
   description: string;
-  highlightDatespan: Array<string>;
+  highlightTimespan: Array<string>;
   id: number;
   mediationUrl: string;
   name: string;

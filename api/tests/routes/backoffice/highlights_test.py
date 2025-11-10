@@ -40,28 +40,28 @@ class ListHighlightsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert rows[0]["ID"] == str(highlight_1.id)
-        assert rows[0]["Nom"] == highlight_1.name
-        assert rows[0]["Description"] == highlight_1.description
+        assert rows[0]["ID"] == str(highlight_2.id)
+        assert rows[0]["Nom"] == highlight_2.name
+        assert rows[0]["Description"] == highlight_2.description
         assert (
             rows[0]["Diffusion espace partenaire"]
-            == f"{highlight_1.availability_datespan.lower.strftime('%d/%m/%Y')} → {(highlight_1.availability_datespan.upper - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            == f"{highlight_2.availability_timespan.lower.strftime('%d/%m/%Y')} → {highlight_2.availability_timespan.upper.strftime('%d/%m/%Y')}"
         )
         assert (
             rows[0]["Date(s) d'évènement"]
-            == f"{highlight_1.highlight_datespan.lower.strftime('%d/%m/%Y')} → {(highlight_1.highlight_datespan.upper - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            == f"{highlight_2.highlight_timespan.lower.strftime('%d/%m/%Y')} → {highlight_2.highlight_timespan.upper.strftime('%d/%m/%Y')}"
         )
 
-        assert rows[1]["ID"] == str(highlight_2.id)
-        assert rows[1]["Nom"] == highlight_2.name
-        assert rows[1]["Description"] == highlight_2.description
+        assert rows[1]["ID"] == str(highlight_1.id)
+        assert rows[1]["Nom"] == highlight_1.name
+        assert rows[1]["Description"] == highlight_1.description
         assert (
             rows[1]["Diffusion espace partenaire"]
-            == f"{highlight_2.availability_datespan.lower.strftime('%d/%m/%Y')} → {(highlight_2.availability_datespan.upper - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            == f"{highlight_1.availability_timespan.lower.strftime('%d/%m/%Y')} → {highlight_1.availability_timespan.upper.strftime('%d/%m/%Y')}"
         )
         assert (
             rows[1]["Date(s) d'évènement"]
-            == f"{highlight_2.highlight_datespan.lower.strftime('%d/%m/%Y')} → {(highlight_2.highlight_datespan.upper - datetime.timedelta(days=1)).strftime('%d/%m/%Y')}"
+            == f"{highlight_1.highlight_timespan.lower.strftime('%d/%m/%Y')} → {highlight_1.highlight_timespan.upper.strftime('%d/%m/%Y')}"
         )
 
     def test_search_by_content(self, authenticated_client):
@@ -107,7 +107,7 @@ class CreateHighlightTest(PostEndpointHelper):
         name = "New highlight"
         description = "Highlight description"
         highlight_date_from = datetime.date.today() + datetime.timedelta(days=11)
-        highlight_date_to = datetime.date.today() + datetime.timedelta(days=11)
+        highlight_date_to = datetime.date.today() + datetime.timedelta(days=12)
         availability_date_from = datetime.date.today() - datetime.timedelta(days=10)
         availability_date_to = datetime.date.today() + datetime.timedelta(days=10)
         separator = " - "
@@ -119,8 +119,8 @@ class CreateHighlightTest(PostEndpointHelper):
                 form={
                     "name": name,
                     "description": description,
-                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
-                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "availability_timespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_timespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries,
@@ -132,10 +132,18 @@ class CreateHighlightTest(PostEndpointHelper):
         highlight = db.session.query(highlights_models.Highlight).one()
         assert highlight.name == name
         assert highlight.description == description
-        assert highlight.availability_datespan.lower == availability_date_from
-        assert highlight.availability_datespan.upper == availability_date_to + datetime.timedelta(days=1)
-        assert highlight.highlight_datespan.lower == highlight_date_from
-        assert highlight.highlight_datespan.upper == highlight_date_to + datetime.timedelta(days=1)
+        assert highlight.availability_timespan.lower == datetime.datetime.combine(
+            availability_date_from, datetime.time(0, 0, 0)
+        )
+        assert highlight.availability_timespan.upper == datetime.datetime.combine(
+            availability_date_to, datetime.time(0, 0, 0)
+        )
+        assert highlight.highlight_timespan.lower == datetime.datetime.combine(
+            highlight_date_from, datetime.time(0, 0, 0)
+        )
+        assert highlight.highlight_timespan.upper == datetime.datetime.combine(
+            highlight_date_to, datetime.time(0, 0, 0)
+        )
 
     def test_create_highlight_available_after_highlight(self, authenticated_client):
         name = "New highlight"
@@ -153,8 +161,8 @@ class CreateHighlightTest(PostEndpointHelper):
                 form={
                     "name": name,
                     "description": description,
-                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
-                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "availability_timespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_timespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries - 1,
@@ -183,8 +191,8 @@ class CreateHighlightTest(PostEndpointHelper):
                 form={
                     "name": name,
                     "description": description,
-                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
-                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "availability_timespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_timespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries - 1,
@@ -231,8 +239,8 @@ class CreateHighlightTest(PostEndpointHelper):
                 form={
                     "name": name,
                     "description": description,
-                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
-                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "availability_timespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_timespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries - 1,
@@ -293,8 +301,8 @@ class UpdateHighlightTest(PostEndpointHelper):
                 form={
                     "name": new_name,
                     "description": new_description,
-                    "availability_datespan": f"{new_availability_date_from.strftime('%d/%m/%Y')}{separator}{new_availability_date_to.strftime('%d/%m/%Y')}",
-                    "highlight_datespan": f"{new_highlight_date_from.strftime('%d/%m/%Y')}{separator}{new_highlight_date_to.strftime('%d/%m/%Y')}",
+                    "availability_timespan": f"{new_availability_date_from.strftime('%d/%m/%Y')}{separator}{new_availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_timespan": f"{new_highlight_date_from.strftime('%d/%m/%Y')}{separator}{new_highlight_date_to.strftime('%d/%m/%Y')}",
                     "image": image_file,
                 },
                 expected_num_queries=self.expected_num_queries,
@@ -306,16 +314,24 @@ class UpdateHighlightTest(PostEndpointHelper):
         highlight = db.session.query(highlights_models.Highlight).one()
         assert highlight.name == new_name
         assert highlight.description == new_description
-        assert highlight.availability_datespan.lower == new_availability_date_from
-        assert highlight.availability_datespan.upper == new_availability_date_to + datetime.timedelta(days=1)
-        assert highlight.highlight_datespan.lower == new_highlight_date_from
-        assert highlight.highlight_datespan.upper == new_highlight_date_to + datetime.timedelta(days=1)
+        assert highlight.availability_timespan.lower == datetime.datetime.combine(
+            new_availability_date_from, datetime.time(0, 0, 0)
+        )
+        assert highlight.availability_timespan.upper == datetime.datetime.combine(
+            new_availability_date_to, datetime.time(0, 0, 0)
+        )
+        assert highlight.highlight_timespan.lower == datetime.datetime.combine(
+            new_highlight_date_from, datetime.time(0, 0, 0)
+        )
+        assert highlight.highlight_timespan.upper == datetime.datetime.combine(
+            new_highlight_date_to, datetime.time(0, 0, 0)
+        )
 
     def test_update_highlight_available_after_highlight(self, authenticated_client):
         highlight = highlights_factories.HighlightFactory.create()
         highlight_id = highlight.id
 
-        availability_date_to = highlight.highlight_datespan.upper + datetime.timedelta(days=1)
+        availability_date_to = highlight.highlight_timespan.upper + datetime.timedelta(days=1)
         separator = " - "
 
         response = self.post_to_endpoint(
@@ -324,8 +340,8 @@ class UpdateHighlightTest(PostEndpointHelper):
             form={
                 "name": highlight.name,
                 "description": highlight.description,
-                "availability_datespan": f"{highlight.availability_datespan.lower.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
-                "highlight_datespan": f"{highlight.highlight_datespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.highlight_datespan.upper.strftime('%d/%m/%Y')}",
+                "availability_timespan": f"{highlight.availability_timespan.lower.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                "highlight_timespan": f"{highlight.highlight_timespan.lower.strftime('%d/%m/%Y')}{separator}{highlight.highlight_timespan.upper.strftime('%d/%m/%Y')}",
             },
             expected_num_queries=self.expected_num_queries - 1,
         )
@@ -352,8 +368,8 @@ class UpdateHighlightTest(PostEndpointHelper):
             form={
                 "name": highlight.name,
                 "description": highlight.description,
-                "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
-                "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                "availability_timespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                "highlight_timespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
             },
             expected_num_queries=self.expected_num_queries - 1,
         )

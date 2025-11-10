@@ -771,34 +771,34 @@ def create_offers_with_video_url() -> None:
 
 @log_func_duration
 def create_highlights() -> None:
-    today = datetime.date.today()
+    now = date_utils.get_naive_utc_now()
     highlights_factories.HighlightFactory.create(
         name="Valorisation passée",
         description="Ceci est une valorisation passée",
-        availability_datespan=db_utils.make_inclusive_daterange(
-            start=today - datetime.timedelta(days=10), end=today - datetime.timedelta(days=5)
+        availability_timespan=db_utils.make_timerange(
+            start=now - datetime.timedelta(days=10), end=now - datetime.timedelta(days=5)
         ),
-        highlight_datespan=db_utils.make_inclusive_daterange(
-            start=today - datetime.timedelta(days=3), end=today - datetime.timedelta(days=2)
+        highlight_timespan=db_utils.make_timerange(
+            start=now - datetime.timedelta(days=3), end=now - datetime.timedelta(days=2)
         ),
     )
     highlights_factories.HighlightFactory.create(
         name="Valorisation actuelle disponible",
         description="Ceci est une valorisation actuelle, à laquelle les acteurices culturelles peuvent proposer des offres",
-        availability_datespan=db_utils.make_inclusive_daterange(
-            start=today - datetime.timedelta(days=10), end=today + datetime.timedelta(days=10)
+        availability_timespan=db_utils.make_timerange(
+            start=now - datetime.timedelta(days=10), end=now + datetime.timedelta(days=10)
         ),
-        highlight_datespan=db_utils.make_inclusive_daterange(
-            start=today + datetime.timedelta(days=11), end=today + datetime.timedelta(days=12)
+        highlight_timespan=db_utils.make_timerange(
+            start=now + datetime.timedelta(days=11), end=now + datetime.timedelta(days=12)
         ),
     )
     highlights_factories.HighlightFactory.create(
         name="Valorisation actuelle non disponible",
         description="Ceci est un valorisation actuelle, à laquelle les acteurices culturelles ne peuvent plus proposer des offres",
-        availability_datespan=db_utils.make_inclusive_daterange(
-            start=today - datetime.timedelta(days=10), end=today - datetime.timedelta(days=1)
+        availability_timespan=db_utils.make_timerange(
+            start=now - datetime.timedelta(days=10), end=now - datetime.timedelta(days=1)
         ),
-        highlight_datespan=db_utils.make_inclusive_daterange(start=today, end=today + datetime.timedelta(days=8)),
+        highlight_timespan=db_utils.make_timerange(start=now, end=now + datetime.timedelta(days=8)),
     )
 
 

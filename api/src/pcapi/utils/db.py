@@ -115,23 +115,6 @@ def make_timerange(
     )
 
 
-def make_inclusive_daterange(
-    start: datetime.date,
-    end: datetime.date | None = None,
-    bounds: str = "[]",
-) -> psycopg2.extras.DateRange:
-    """
-    IMPORTANT: We force `bounds='[]'` to make the upper limit inclusive when creating the DateRange.
-    PostgreSQL stores all DateRanges with an exclusive upper bound, so a one-day input
-    (e.g. 2025-11-01 → 2025-11-01) is stored as ['2025-11-01', '2025-11-02').
-    """
-    return psycopg2.extras.DateRange(
-        lower=start.isoformat(),
-        upper=end.isoformat() if end else None,
-        bounds=bounds,
-    )
-
-
 class BadSortError(Exception):
     pass
 

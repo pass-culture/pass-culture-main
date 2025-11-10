@@ -293,7 +293,7 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
                 "co",
                 {
                     f"Temps costaud - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
-                    f" → {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
+                    f" - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
                 },
                 3,
             ),
@@ -301,7 +301,7 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
                 "fort",
                 {
                     f"Temps Fôrt - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
-                    f" → {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
+                    f" - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
                 },
                 3,
             ),
@@ -309,7 +309,7 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
                 "1",
                 {
                     f"Temps costaud - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
-                    f" → {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}"
+                    f" - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}"
                 },
                 3,
             ),

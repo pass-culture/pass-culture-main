@@ -302,17 +302,8 @@ class PCDateRangeField(wtforms.StringField):
     widget = partial(widget, template="components/forms/date_range_field.html")
 
     def process_data(self, value: Range | None) -> None:
-        """
-        IMPORTANT: If upper_inc is True, it means we want to adjust the upper bound of a PostgreSQL DateRange.
-        PostgreSQL stores date ranges with an exclusive upper limit, meaning the end date is not included.
-        For example, a range like ['2025-11-01', '2025-11-02') represents a single day — November 1st.
-        To display this correctly in a form (as users expect inclusive dates), we subtract one day from the upper bound before rendering.
-        """
         if value:
-            upper = value.upper
-            if self.upper_inc and value.upper:
-                upper = value.upper - datetime.timedelta(days=1)
-            self.data = [value.lower, upper]
+            self.data = [value.lower, value.upper]
         else:
             self.data = []
 
@@ -341,7 +332,6 @@ class PCDateRangeField(wtforms.StringField):
         reset_to_blank: bool = False,
         calendar_start_date: datetime.date | None = None,
         calendar_end_date: datetime.date | None = None,
-        upper_inc: bool = False,
         drops: str | None = None,
         **kwargs: typing.Any,
     ):
@@ -351,7 +341,6 @@ class PCDateRangeField(wtforms.StringField):
         self.calendar_start_date = calendar_start_date
         self.calendar_end_date = calendar_end_date
         self.drops = drops
-        self.upper_inc = upper_inc
 
 
 class PCSelectField(wtforms.SelectField):

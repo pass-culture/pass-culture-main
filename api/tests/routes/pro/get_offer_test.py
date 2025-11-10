@@ -1,4 +1,3 @@
-from datetime import date
 from datetime import datetime
 from datetime import timedelta
 
@@ -440,7 +439,6 @@ class Returns200Test:
         assert response.json["hasPendingBookings"] == has_pending_bookings
 
     def test_returns_highlight_requests(self, client):
-        today = date.today()
         user_offerer = offerers_factories.UserOffererFactory()
         offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
         offer_id = offer.id
@@ -456,8 +454,9 @@ class Returns200Test:
         highlight2_id = highlight2.id
 
         highlight3 = highlights_factories.HighlightFactory(
-            highlight_datespan=db_utils.make_inclusive_daterange(
-                start=today - timedelta(days=10), end=today - timedelta(days=9)
+            highlight_timespan=db_utils.make_timerange(
+                start=date_utils.get_naive_utc_now() - timedelta(days=10),
+                end=date_utils.get_naive_utc_now() - timedelta(days=9),
             )
         )
         highlights_factories.HighlightRequestFactory(offer=offer, highlight=highlight3)

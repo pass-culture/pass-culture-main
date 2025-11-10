@@ -17,10 +17,10 @@ describe('ModalHighlight', () => {
       {
         name: 'my name',
         description: 'my description',
-        availabilityDatespan: ['2025-01-01', '2025-01-15'],
+        availabilityTimespan: ['2025-01-01', '2025-01-15'],
         id: 1,
         mediationUrl: 'url.example',
-        highlightDatespan: ['2025-01-01', '2025-01-15'],
+        highlightTimespan: ['2025-01-01', '2025-01-15'],
       },
     ])
 
@@ -54,10 +54,10 @@ describe('ModalHighlight', () => {
       {
         name: 'my name',
         description: 'my description',
-        availabilityDatespan: ['2025-01-01', '2025-01-15'],
+        availabilityTimespan: ['2025-01-01', '2025-01-15'],
         id: 1,
         mediationUrl: 'url.example',
-        highlightDatespan: ['2025-01-01', '2025-01-15'],
+        highlightTimespan: ['2025-01-01', '2025-01-15'],
       },
     ])
 

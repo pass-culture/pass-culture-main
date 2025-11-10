@@ -294,18 +294,6 @@ def format_timespan(timespan: psycopg2.extras.DateTimeRange) -> str:
     return f"{start} → {end}"
 
 
-def format_datespan(datespan: psycopg2.extras.DateRange) -> str:
-    if not datespan:
-        return ""
-    start = datespan.lower.strftime("%d/%m/%Y")
-    if datespan.upper:
-        # upper bound is exclusive, and we want to show the last day included in the date range
-        end = (datespan.upper - datetime.timedelta(days=1)).strftime("%d/%m/%Y")
-    else:
-        end = "∞"
-    return f"{start} → {end}"
-
-
 def format_timezone(address: geography_models.Address) -> str:
     return address.timezone.rsplit("/", 1)[-1]
 
@@ -2013,7 +2001,6 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_string_to_date_time"] = format_string_to_date_time
     app.jinja_env.filters["format_cutoff_date"] = format_cutoff_date
     app.jinja_env.filters["format_timespan"] = format_timespan
-    app.jinja_env.filters["format_datespan"] = format_datespan
     app.jinja_env.filters["format_timezone"] = format_timezone
     app.jinja_env.filters["format_deposit_used"] = format_deposit_used
     app.jinja_env.filters["format_active_deposit"] = format_active_deposit
