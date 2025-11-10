@@ -38,7 +38,7 @@ on:
       # Variables used for the new infra
       is_new_infra:
         type: boolean
-        required: true
+        required: false
         default: false
       location:
         type: string
@@ -46,10 +46,10 @@ on:
         default: europe-west9
       cluster_name:
         type: string
-        required: true
+        required: false
       gcp_project_id:
         type: string
-        required: true
+        required: false
       cluster_project_id:
         type: string
         required: false

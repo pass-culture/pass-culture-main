@@ -102,8 +102,7 @@ runs:
       shell: bash
       run: |
         #Retrieve pcapi secrets list from source code
-        PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.getlist(" | awk -F'=' '{print $1}')
-        PCAPI_SECRETS+=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
+        PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | grep -oP '(?<=secrets_utils.get\(\").*?(?=\")')
         #Sort list
         PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
         #Transform list into helm readable parameter list (pattern: --set secrets={item1,item2,item3})
