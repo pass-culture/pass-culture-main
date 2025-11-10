@@ -11,58 +11,8 @@ import {
  *
  * @export
  * @param {Array<Array<string>>} expectedResults
- * @example
- * const expectedResults = [
-      ['Réservation', "Nom de l'offre", 'Établissement', 'Places et prix', 'Statut'],
-      ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places', 'confirmée'],
-    ]
-   expectOffersOrBookingsAreFound(expectedResults)
- */
-export function expectOffersOrBookingsAreFound(
-  expectedResults: Array<Array<string>>
-) {
-  const expectedLength = expectedResults.length - 1
-  const regexExpectedCount = new RegExp(
-    expectedLength +
-      ' ' +
-      '(offre|réservation)' +
-      (expectedLength > 1 ? 's' : ''),
-    'g'
-  )
-
-  cy.contains(regexExpectedCount)
-
-  cy.findAllByTestId('offer-item-row').should('have.length', expectedLength)
-
-  for (let rowLine = 0; rowLine < expectedLength; rowLine++) {
-    const lineArray = expectedResults[rowLine + 1]
-
-    cy.findAllByTestId('offer-item-row')
-      .eq(rowLine)
-      .within(() => {
-        cy.get('td, th[scope="row"]').then(($elt) => {
-          for (let column = 0; column < lineArray.length; column++) {
-            cy.wrap($elt)
-              .eq(column)
-              .then((cellValue) => {
-                if (lineArray[column].length) {
-                  expect(cellValue.text()).to.include(lineArray[column])
-                }
-              })
-          }
-        })
-      })
-  }
-}
-
-/**
- * This function takes a string[][] as a DataTable representing the data
- * in a Table and checks that what is displayed is what is expected.
- * Also checks that the label above is counting the right number of rows: `3 offres`.
- * First row represents the title of columns and is not checked
- *
- * @export
- * @param {Array<Array<string>>} expectedResults
+ * @param {boolean} hasTableFullRowContent optional param to indicate if the table has a full row content
+ * (for example the expiration banner in collective offers) that takes one row space
  * @example
  * TODO remove expectOffersOrBookingsAreFoundForNewTable after migrating all table
  * const expectedResults = [
@@ -72,7 +22,8 @@ export function expectOffersOrBookingsAreFound(
    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
  */
 export function expectOffersOrBookingsAreFoundForNewTable(
-  expectedResults: Array<Array<string>>
+  expectedResults: Array<Array<string>>,
+  hasTableFullRowContent: boolean = false
 ) {
   const expectedLength = expectedResults.length - 1
   const regexExpectedCount = new RegExp(
@@ -85,7 +36,9 @@ export function expectOffersOrBookingsAreFoundForNewTable(
 
   cy.contains(regexExpectedCount)
 
-  cy.get('tbody').findAllByRole('row').should('have.length', expectedLength)
+  cy.get('tbody')
+    .findAllByRole('row')
+    .should('have.length', expectedLength + (hasTableFullRowContent ? 1 : 0))
 
   for (let rowLine = 0; rowLine < expectedLength; rowLine++) {
     const lineArray = expectedResults[rowLine + 1]

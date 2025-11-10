@@ -8,8 +8,7 @@ export const DEFAULT_AXE_RULES = {
 }
 
 export const BOOKABLE_OFFERS_COLUMNS = [
-  '', // checkbox cell
-  '', // expiration cell
+  '',
   'Nom de l’offre',
   'Dates',
   'Prix et participants',
@@ -19,7 +18,6 @@ export const BOOKABLE_OFFERS_COLUMNS = [
 ]
 
 export const TEMPLATE_OFFERS_COLUMNS = [
-  '',
   '',
   'Nom de l’offre',
   'Dates',

@@ -8,7 +8,7 @@ import {
   TEMPLATE_OFFERS_COLUMNS,
 } from '../support/constants.ts'
 import {
-  expectOffersOrBookingsAreFound,
+  expectOffersOrBookingsAreFoundForNewTable,
   interceptSearch5Adresses,
   logInAndGoToPage,
 } from '../support/helpers.ts'
@@ -148,7 +148,6 @@ describe('Create collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        '',
         title,
         format(data.date, 'dd/MM/yyyy'),
         `${data.price}€${data.participants} participants`,
@@ -157,7 +156,12 @@ describe('Create collective offers', () => {
         status,
       ],
     ]
-    expectOffersOrBookingsAreFound(expectedResults)
+    const hasTableFullRowContent =
+      status === 'publiée' || status === 'préréservée'
+    expectOffersOrBookingsAreFoundForNewTable(
+      expectedResults,
+      hasTableFullRowContent
+    )
   }
 
   it('Create collective bookable offers with a precise address (the venue address, selected by default)', () => {
@@ -315,14 +319,13 @@ describe('Create collective offers', () => {
       TEMPLATE_OFFERS_COLUMNS,
       [
         '',
-        '',
         `Offre vitrine${commonOfferData.title}`,
         'Toute l’année scolaire',
         `${venueName} - 1 boulevard Poissonnière 75002 Paris`,
         'publiée',
       ],
     ]
-    expectOffersOrBookingsAreFound(templateResults)
+    expectOffersOrBookingsAreFoundForNewTable(templateResults)
 
     cy.visit('/offre/creation')
     cy.findByText('À un groupe scolaire').click()
@@ -361,15 +364,7 @@ describe('Create collective offers', () => {
       `${venueName} - 1 boulevard Poissonnière 75002 Paris`
     )
 
-    cy.findAllByTestId('offer-item-row')
-      .eq(0)
-      .within(() =>
-        cy
-          .findByRole('link', {
-            name: `N°6 ${newOfferName}`,
-          })
-          .click()
-      )
+    cy.findByRole('link', { name: `N°6 ${newOfferName}` }).click()
     cy.findAllByText('Modifier').eq(0).click()
     cy.findByLabelText('Autre adresse').click()
     // eslint-disable-next-line cypress/unsafe-to-chain-command
@@ -424,7 +419,6 @@ describe('Create collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        '',
         commonOfferData.title,
         `${format(commonOfferData.date, 'dd/MM/yyyy')}`,
         `${commonOfferData.price}€${commonOfferData.participants} participants`,
@@ -433,7 +427,6 @@ describe('Create collective offers', () => {
         'brouillon',
       ],
       [
-        '',
         '',
         offerDraft.name,
         '-',
@@ -444,14 +437,10 @@ describe('Create collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFound(draftResults)
+    expectOffersOrBookingsAreFoundForNewTable(draftResults)
 
     cy.stepLog({ message: 'I want to change my offer to published status' })
-    cy.findAllByTestId('offer-item-row')
-      .eq(0)
-      .within(() =>
-        cy.findByRole('link', { name: `N°6 ${newOfferName}` }).click()
-      )
+    cy.findByRole('link', { name: `N°6 ${newOfferName}` }).click()
 
     cy.wait('@educationalOfferers')
 
