@@ -29,7 +29,11 @@ FROM builder AS builder-proxy
 
 COPY /cacert.pem /cacert.pem
 
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem pip install poetry
+ENV REQUESTS_CA_BUNDLE=/cacert.pem 
+ENV PIP_CERT=/cacert.pem 
+ENV CURL_CA_BUNDLE=/cacert.pem 
+
+RUN pip install poetry
 
 WORKDIR /home/pcapi
 
@@ -63,7 +67,7 @@ FROM builder-${network_mode} AS builder-dev-proxy
 
 RUN poetry check --lock
 
-RUN REQUESTS_CA_BUNDLE=/cacert.pem PIP_CERT=/cacert.pem CURL_CA_BUNDLE=/cacert.pem poetry install --only dev --no-root
+RUN poetry install --only dev --no-root
 
 ########## DEV BUILDER DEFAULT ##########
 
@@ -87,7 +91,15 @@ RUN rm -rf tests/ pyproject.toml
 
 ######### LIB ##########
 
-FROM python:3.13-slim AS lib
+FROM python:3.13-slim AS lib-default
+
+FROM python:3.13-slim AS lib-proxy
+COPY /cacert.pem /cacert.pem
+ENV REQUESTS_CA_BUNDLE=/cacert.pem 
+ENV PIP_CERT=/cacert.pem 
+ENV CURL_CA_BUNDLE=/cacert.pem 
+
+FROM lib-${network_mode} AS lib
 
 RUN useradd -rm -d /home/pcapi -u 1000 pcapi
 
