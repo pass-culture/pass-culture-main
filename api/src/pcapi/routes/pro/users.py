@@ -75,6 +75,7 @@ def signup_pro(body: users_serializers.ProUserCreationBodyV2Model) -> None:
 
 
 @private_api.route("/users/validate_signup/<token>", methods=["PATCH"])
+@atomic()
 @spectree_serialize(on_success_status=204, api=blueprint.pro_private_schema)
 def validate_user(token: str) -> None:
     try:
@@ -91,6 +92,7 @@ def validate_user(token: str) -> None:
 
 
 @private_api.route("/users/tuto-seen", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
 def patch_user_tuto_seen() -> None:
@@ -99,6 +101,7 @@ def patch_user_tuto_seen() -> None:
 
 
 @private_api.route("/users/rgs-seen", methods=["PATCH"])
+@atomic()
 @login_required
 @spectree_serialize(response_model=None, on_success_status=204, api=blueprint.pro_private_schema)
 def patch_pro_user_rgs_seen() -> None:
@@ -229,6 +232,7 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
 
 
 @private_api.route("/users/signin", methods=["POST"])
+@atomic()
 @spectree_serialize(response_model=users_serializers.SharedLoginUserResponseModel, api=blueprint.pro_private_schema)
 def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.SharedLoginUserResponseModel:
     if not body.captcha_token:
@@ -267,6 +271,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 
 
 @private_api.route("/users/signout", methods=["GET"])
+@atomic()
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def signout() -> None:
@@ -285,6 +290,7 @@ def cookies_consent(body: CookieConsentRequest) -> None:
 
 
 @private_api.route("/users/connect-as/<token>", methods=["GET"])
+@atomic()
 @spectree_serialize(api=blueprint.pro_private_schema, raw_response=True, json_format=False)
 def connect_as(token: str) -> Response:
     # This route is not used by PRO but it is used by the Backoffice

@@ -77,6 +77,7 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
+@atomic()
 @jwt_required(refresh=True)
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:

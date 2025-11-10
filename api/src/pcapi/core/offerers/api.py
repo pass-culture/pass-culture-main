@@ -2640,10 +2640,7 @@ def accept_offerer_invitation_if_exists(user: users_models.User) -> None:
         )
         offerer_invitation.status = offerers_models.InvitationStatus.ACCEPTED
         db.session.add_all([user_offerer, offerer_invitation])
-        if is_managed_transaction():
-            db.session.flush()
-        else:
-            db.session.commit()
+        db.session.flush()
         external_attributes_api.update_external_pro(user.email)
         zendesk_sell.create_offerer(user_offerer.offerer)
         logger.info(

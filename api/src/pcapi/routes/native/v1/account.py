@@ -108,6 +108,7 @@ def patch_user_profile(
 
 @blueprint.native_route("/reset_recredit_amount_to_show", methods=["POST"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserProfileResponse)
+@atomic()
 @authenticated_and_active_user_required
 def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserProfileResponse:
     api.reset_recredit_amount_to_show(user)

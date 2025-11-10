@@ -856,12 +856,14 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
 
 def set_pro_tuto_as_seen(user: models.User) -> None:
     user.hasSeenProTutorials = True
-    repository.save(user)
+    db.session.add(user)
+    db.session.flush()
 
 
 def set_pro_rgs_as_seen(user: models.User) -> None:
     user.hasSeenProRgs = True
-    repository.save(user)
+    db.session.add(user)
+    db.session.flush()
 
 
 def update_last_connection_date(user: models.User) -> None:
@@ -878,7 +880,11 @@ def update_last_connection_date(user: models.User) -> None:
 
     if should_save_last_connection_date:
         user.lastConnectionDate = last_connection_date
-        repository.save(user)
+        db.session.add(user)
+        if transaction_manager.is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
     if should_update_sendinblue_last_connection_date:
         external_attributes_api.update_external_user(user, skip_batch=True)
@@ -956,7 +962,8 @@ def update_notification_subscription(
 
 def reset_recredit_amount_to_show(user: models.User) -> None:
     user.recreditAmountToShow = None
-    repository.save(user)
+    db.session.add(user)
+    db.session.flush()
 
 
 def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Query:
@@ -1140,9 +1147,10 @@ def validate_pro_user_email(user: models.User, author_user: models.User | None =
     if author_user:
         history_api.add_action(history_models.ActionType.USER_EMAIL_VALIDATED, author=author_user, user=user)
 
-    repository.save(user)
+    db.session.add(user)
+    db.session.flush()
 
-    # FIXME (prouzet-pass): accept_offerer_invitation_if_exists also add() and commit()... in a loop!
+    # FIXME (prouzet-pass): accept_offerer_invitation_if_exists also add() and flush()... in a loop!
     offerers_api.accept_offerer_invitation_if_exists(user)
 
 

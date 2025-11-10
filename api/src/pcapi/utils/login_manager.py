@@ -75,7 +75,7 @@ def stamp_session(user: users_models.User) -> None:
     flask.session["session_uuid"] = session_uuid
     flask.session["user_id"] = user.id
     db.session.add(users_models.UserSession(userId=user.id, uuid=session_uuid))
-    db.session.commit()
+    db.session.flush()
 
 
 def discard_session() -> None:
@@ -86,7 +86,7 @@ def discard_session() -> None:
         userId=user_id,
         uuid=session_uuid,
     ).delete(synchronize_session=False)
-    db.session.commit()
+    db.session.flush()
 
 
 def manage_pro_session(user: users_models.User | None) -> users_models.User | None:
