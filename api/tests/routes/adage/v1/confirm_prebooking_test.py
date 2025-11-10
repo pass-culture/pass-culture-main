@@ -14,12 +14,10 @@ from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.factories import PendingCollectiveBookingFactory
-from pcapi.core.educational.models import CollectiveBooking
 from pcapi.core.educational.models import CollectiveBookingStatus
 from pcapi.core.educational.models import CollectiveLocationType
 from pcapi.core.educational.models import Ministry
 from pcapi.core.offerers.factories import VenueFactory
-from pcapi.models import db
 from pcapi.routes.adage.v1.serialization import constants
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
@@ -40,7 +38,7 @@ class Returns200Test:
         redactor = EducationalRedactorFactory()
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
-        EducationalDepositFactory(
+        deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(1400.00),
@@ -76,10 +74,9 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == expected_serialized_prebooking(booking)
-        assert (
-            db.session.query(CollectiveBooking).filter(CollectiveBooking.id == booking.id).one().status
-            == CollectiveBookingStatus.CONFIRMED
-        )
+
+        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == deposit.id
 
     def test_confirm_collective_prebooking_with_address(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
@@ -93,7 +90,7 @@ class Returns200Test:
             collectiveStock__collectiveOffer__offererAddress=venue.offererAddress,
         )
         offer = booking.collectiveStock.collectiveOffer
-        EducationalDepositFactory(
+        deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(1400.00),
@@ -109,6 +106,9 @@ class Returns200Test:
             **expected_serialized_prebooking(booking),
             "address": offer.offererAddress.address.fullAddress,
         }
+
+        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == deposit.id
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_sufficient_ministry_fund(self, client) -> None:
@@ -129,7 +129,7 @@ class Returns200Test:
             amount=Decimal(10000.00),
             isFinal=True,
         )
-        EducationalDepositFactory(
+        deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
             amount=Decimal(10000.00),
@@ -164,7 +164,11 @@ class Returns200Test:
         booking_id = booking.id
         with testing.assert_num_queries(self.expected_num_queries):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
+
         assert response.status_code == 200
+
+        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == deposit.id
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_out_of_minitry_check_dates(self, client) -> None:
@@ -172,7 +176,7 @@ class Returns200Test:
         educational_institution2 = EducationalInstitutionFactory()
 
         educational_year = EducationalYearFactory(adageId="1")
-        EducationalDepositFactory(
+        deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(2000.00),
@@ -205,19 +209,22 @@ class Returns200Test:
         booking_id = booking.id
         with testing.assert_num_queries(self.expected_num_queries):
             response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
+
         assert response.status_code == 200
+
+        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == deposit.id
 
     @pytest.mark.settings(EAC_CHECK_INSTITUTION_FUND=False)
     def test_no_deposit_without_check(self, client):
         booking = PendingCollectiveBookingFactory()
 
-        client = client.with_eac_token()
-        response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
 
         assert response.status_code == 200
 
-        db.session.refresh(booking)
         assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId is None
 
     @pytest.mark.settings(EAC_CHECK_INSTITUTION_FUND=False)
     def test_insufficient_fund_without_check(self, client) -> None:
@@ -240,8 +247,8 @@ class Returns200Test:
 
         assert response.status_code == 200
 
-        db.session.refresh(booking)
         assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId is None
 
 
 class ReturnsErrorTest:
@@ -265,6 +272,9 @@ class ReturnsErrorTest:
 
         assert response.status_code == 404
         assert response.json == {"code": "DEPOSIT_NOT_FOUND"}
+
+        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_insufficient_fund_for_collective_bookings(self, client) -> None:
@@ -290,6 +300,9 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND"}
 
+        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
     @time_machine.travel("2021-10-15 09:00:00")
     def test_insufficient_temporary_fund_for_collective_bookings(self, client) -> None:
         educational_institution = EducationalInstitutionFactory()
@@ -314,10 +327,11 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}
 
+        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
     def test_collective_booking_is_cancelled(self, client) -> None:
-        booking = CollectiveBookingFactory(
-            status=CollectiveBookingStatus.CANCELLED,
-        )
+        booking = CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED)
 
         client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
@@ -325,11 +339,13 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}
 
+        assert booking.status == CollectiveBookingStatus.CANCELLED
+        assert booking.educationalDepositId is None
+
     @time_machine.travel("2021-08-05 15:00:00")
     def test_confirmation_limit_date_has_passed_for_collective_bookings(self, client) -> None:
         booking: Booking = CollectiveBookingFactory(
-            confirmationLimitDate=datetime(2021, 8, 5, 14),
-            status=CollectiveBookingStatus.PENDING,
+            confirmationLimitDate=datetime(2021, 8, 5, 14), status=CollectiveBookingStatus.PENDING
         )
 
         client = client.with_eac_token()
@@ -337,3 +353,6 @@ class ReturnsErrorTest:
 
         assert response.status_code == 422
         assert response.json == {"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}
+
+        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
