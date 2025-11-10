@@ -164,6 +164,7 @@ export const TemplateCollectiveOffersScreen = ({
       <Table
         columns={columns}
         data={currentPageItems}
+        allData={sortedOffers}
         isLoading={isLoading}
         selectable={true}
         selectedIds={selectedOfferIds}
