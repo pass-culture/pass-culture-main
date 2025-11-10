@@ -8,3 +8,9 @@
   width: rem.torem(150px);
   color: var(--color-text-subtle);
 }
+
+@media screen and (max-width: size.$tablet) {
+  .location-cell {
+    text-align: end;
+  }
+}

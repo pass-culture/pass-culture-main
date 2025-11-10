@@ -44,3 +44,21 @@
     }
   }
 }
+
+@media screen and (max-width: size.$tablet) {
+  .title-column {
+    &-with-thumb {
+      align-items: end;
+    }
+
+    &-name {
+      @include fonts.body-accent;
+
+      display: flex;
+      flex-direction: column;
+      overflow-wrap: anywhere;
+      text-align: right;
+      align-items: end;
+    }
+  }
+}
