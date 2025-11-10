@@ -1,6 +1,51 @@
 {
     "components": {
         "schemas": {
+            "AccessibilityData": {
+                "additionalProperties": false,
+                "properties": {
+                    "audioDisability": {
+                        "$ref": "#/components/schemas/AudioDisability"
+                    },
+                    "isAccessibleAudioDisability": {
+                        "title": "Isaccessibleaudiodisability",
+                        "type": "boolean"
+                    },
+                    "isAccessibleMentalDisability": {
+                        "title": "Isaccessiblementaldisability",
+                        "type": "boolean"
+                    },
+                    "isAccessibleMotorDisability": {
+                        "title": "Isaccessiblemotordisability",
+                        "type": "boolean"
+                    },
+                    "isAccessibleVisualDisability": {
+                        "title": "Isaccessiblevisualdisability",
+                        "type": "boolean"
+                    },
+                    "mentalDisability": {
+                        "$ref": "#/components/schemas/MentalDisability"
+                    },
+                    "motorDisability": {
+                        "$ref": "#/components/schemas/MotorDisability"
+                    },
+                    "visualDisability": {
+                        "$ref": "#/components/schemas/VisualDisability"
+                    }
+                },
+                "required": [
+                    "isAccessibleMotorDisability",
+                    "isAccessibleAudioDisability",
+                    "isAccessibleVisualDisability",
+                    "isAccessibleMentalDisability",
+                    "audioDisability",
+                    "mentalDisability",
+                    "motorDisability",
+                    "visualDisability"
+                ],
+                "title": "AccessibilityData",
+                "type": "object"
+            },
             "AccountRequest": {
                 "properties": {
                     "appsFlyerPlatform": {
@@ -145,6 +190,34 @@
                 "title": "ActivationCodeResponse",
                 "type": "object"
             },
+            "Activity": {
+                "description": "Venue's Activity is the main business activity of an ERP (open to public) structure\nFor a non-ERP structure, the business is described through the Venue's list of EducationalDomain (venue.collectiveDomains)",
+                "enum": [
+                    "ART_GALLERY",
+                    "ART_SCHOOL",
+                    "ARTS_CENTRE",
+                    "BOOKSTORE",
+                    "CINEMA",
+                    "COMMUNITY_CENTRE",
+                    "CREATIVE_ARTS_STORE",
+                    "CULTURAL_CENTRE",
+                    "DISTRIBUTION_STORE",
+                    "FESTIVAL",
+                    "GAMES_CENTRE",
+                    "HERITAGE_SITE",
+                    "LIBRARY",
+                    "MUSEUM",
+                    "MUSIC_INSTRUMENT_STORE",
+                    "NOT_ASSIGNED",
+                    "OTHER",
+                    "PERFORMANCE_HALL",
+                    "RECORD_STORE",
+                    "SCIENCE_CENTRE",
+                    "TOURIST_INFORMATION_CENTRE"
+                ],
+                "title": "Activity",
+                "type": "string"
+            },
             "ActivityIdEnum": {
                 "description": "An enumeration.",
                 "enum": [
@@ -226,12 +299,10 @@
                 "title": "ArtistResponse",
                 "type": "object"
             },
-            "AudioDisabilityModel": {
+            "AudioDisability": {
+                "additionalProperties": false,
                 "properties": {
                     "deafAndHardOfHearing": {
-                        "default": [
-                            "Non renseign\u00e9"
-                        ],
                         "items": {
                             "type": "string"
                         },
@@ -239,7 +310,10 @@
                         "type": "array"
                     }
                 },
-                "title": "AudioDisabilityModel",
+                "required": [
+                    "deafAndHardOfHearing"
+                ],
+                "title": "AudioDisability",
                 "type": "object"
             },
             "AvailableReactionBooking": {
@@ -296,29 +370,6 @@
                     "text"
                 ],
                 "title": "Banner",
-                "type": "object"
-            },
-            "BannerMetaModel": {
-                "properties": {
-                    "image_credit": {
-                        "maxLength": 255,
-                        "minLength": 1,
-                        "nullable": true,
-                        "title": "Image Credit",
-                        "type": "string"
-                    },
-                    "image_credit_url": {
-                        "nullable": true,
-                        "title": "Image Credit Url",
-                        "type": "string"
-                    },
-                    "is_from_google": {
-                        "nullable": true,
-                        "title": "Is From Google",
-                        "type": "boolean"
-                    }
-                },
-                "title": "BannerMetaModel",
                 "type": "object"
             },
             "BannerName": {
@@ -2155,84 +2206,6 @@
                 ],
                 "title": "ExpenseDomain"
             },
-            "ExternalAccessibilityDataModel": {
-                "properties": {
-                    "audioDisability": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/AudioDisabilityModel"
-                            }
-                        ],
-                        "default": {
-                            "deafAndHardOfHearing": [
-                                "Non renseign\u00e9"
-                            ]
-                        },
-                        "title": "Audiodisability"
-                    },
-                    "isAccessibleAudioDisability": {
-                        "default": false,
-                        "title": "Isaccessibleaudiodisability",
-                        "type": "boolean"
-                    },
-                    "isAccessibleMentalDisability": {
-                        "default": false,
-                        "title": "Isaccessiblementaldisability",
-                        "type": "boolean"
-                    },
-                    "isAccessibleMotorDisability": {
-                        "default": false,
-                        "title": "Isaccessiblemotordisability",
-                        "type": "boolean"
-                    },
-                    "isAccessibleVisualDisability": {
-                        "default": false,
-                        "title": "Isaccessiblevisualdisability",
-                        "type": "boolean"
-                    },
-                    "mentalDisability": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/MentalDisabilityModel"
-                            }
-                        ],
-                        "default": {
-                            "trainedPersonnel": "Non renseign\u00e9"
-                        },
-                        "title": "Mentaldisability"
-                    },
-                    "motorDisability": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/MotorDisabilityModel"
-                            }
-                        ],
-                        "default": {
-                            "entrance": "Non renseign\u00e9",
-                            "exterior": "Non renseign\u00e9",
-                            "facilities": "Non renseign\u00e9",
-                            "parking": "Non renseign\u00e9"
-                        },
-                        "title": "Motordisability"
-                    },
-                    "visualDisability": {
-                        "allOf": [
-                            {
-                                "$ref": "#/components/schemas/VisualDisabilityModel"
-                            }
-                        ],
-                        "default": {
-                            "audioDescription": [
-                                "Non renseign\u00e9"
-                            ],
-                            "soundBeacon": "Non renseign\u00e9"
-                        },
-                        "title": "Visualdisability"
-                    }
-                },
-                "title": "ExternalAccessibilityDataModel",
-                "type": "object"
-            },
             "ExternalBookingDataResponseV2": {
                 "properties": {
                     "barcode": {
@@ -2775,41 +2748,47 @@
                 "title": "MarkAchievementsAsSeenRequest",
                 "type": "object"
             },
-            "MentalDisabilityModel": {
+            "MentalDisability": {
+                "additionalProperties": false,
                 "properties": {
                     "trainedPersonnel": {
-                        "default": "Non renseign\u00e9",
                         "title": "Trainedpersonnel",
                         "type": "string"
                     }
                 },
-                "title": "MentalDisabilityModel",
+                "required": [
+                    "trainedPersonnel"
+                ],
+                "title": "MentalDisability",
                 "type": "object"
             },
-            "MotorDisabilityModel": {
+            "MotorDisability": {
+                "additionalProperties": false,
                 "properties": {
                     "entrance": {
-                        "default": "Non renseign\u00e9",
                         "title": "Entrance",
                         "type": "string"
                     },
                     "exterior": {
-                        "default": "Non renseign\u00e9",
                         "title": "Exterior",
                         "type": "string"
                     },
                     "facilities": {
-                        "default": "Non renseign\u00e9",
                         "title": "Facilities",
                         "type": "string"
                     },
                     "parking": {
-                        "default": "Non renseign\u00e9",
                         "title": "Parking",
                         "type": "string"
                     }
                 },
-                "title": "MotorDisabilityModel",
+                "required": [
+                    "facilities",
+                    "exterior",
+                    "entrance",
+                    "parking"
+                ],
+                "title": "MotorDisability",
                 "type": "object"
             },
             "MovieCalendarResponse": {
@@ -5727,127 +5706,175 @@
                 "title": "ValidationErrorElement",
                 "type": "object"
             },
-            "VenueAccessibilityModel": {
-                "properties": {
-                    "audioDisability": {
-                        "nullable": true,
-                        "title": "Audiodisability",
-                        "type": "boolean"
-                    },
-                    "mentalDisability": {
-                        "nullable": true,
-                        "title": "Mentaldisability",
-                        "type": "boolean"
-                    },
-                    "motorDisability": {
-                        "nullable": true,
-                        "title": "Motordisability",
-                        "type": "boolean"
-                    },
-                    "visualDisability": {
-                        "nullable": true,
-                        "title": "Visualdisability",
-                        "type": "boolean"
-                    }
-                },
-                "title": "VenueAccessibilityModel",
-                "type": "object"
-            },
-            "VenueContactModel": {
+            "VenueContact": {
                 "additionalProperties": false,
                 "properties": {
                     "email": {
-                        "format": "email",
-                        "nullable": true,
-                        "title": "Email",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Email"
                     },
                     "phoneNumber": {
-                        "nullable": true,
-                        "title": "Phonenumber",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Phonenumber"
                     },
                     "socialMedias": {
-                        "additionalProperties": {
-                            "format": "uri",
-                            "maxLength": 2083,
-                            "minLength": 1,
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Socialmedias",
-                        "type": "object"
+                        "anyOf": [
+                            {
+                                "additionalProperties": {
+                                    "format": "uri",
+                                    "maxLength": 2083,
+                                    "minLength": 1,
+                                    "type": "string"
+                                },
+                                "propertyNames": {
+                                    "enum": [
+                                        "facebook",
+                                        "instagram",
+                                        "snapchat",
+                                        "twitter"
+                                    ]
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Socialmedias"
                     },
                     "website": {
-                        "nullable": true,
-                        "title": "Website",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Website"
                     }
                 },
-                "title": "VenueContactModel",
+                "required": [
+                    "email",
+                    "phoneNumber",
+                    "socialMedias",
+                    "website"
+                ],
+                "title": "VenueContact",
                 "type": "object"
             },
             "VenueResponse": {
+                "additionalProperties": false,
                 "properties": {
-                    "accessibility": {
-                        "$ref": "#/components/schemas/VenueAccessibilityModel"
-                    },
-                    "address": {
-                        "nullable": true,
-                        "title": "Address",
-                        "type": "string"
-                    },
-                    "bannerMeta": {
+                    "accessibilityData": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/BannerMetaModel"
+                                "$ref": "#/components/schemas/AccessibilityData"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true
+                        "default": null
+                    },
+                    "accessibilityUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Accessibilityurl"
+                    },
+                    "activity": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Activity"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "bannerCredit": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bannercredit"
+                    },
+                    "bannerIsFromGoogle": {
+                        "default": false,
+                        "title": "Bannerisfromgoogle",
+                        "type": "boolean"
                     },
                     "bannerUrl": {
-                        "nullable": true,
-                        "title": "Bannerurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "uri",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bannerurl"
                     },
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "City"
                     },
                     "contact": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/VenueContactModel"
+                                "$ref": "#/components/schemas/VenueContact"
+                            },
+                            {
+                                "type": "null"
                             }
-                        ],
-                        "nullable": true,
-                        "title": "VenueContactModel"
+                        ]
                     },
                     "description": {
-                        "maxLength": 1000,
-                        "nullable": true,
-                        "title": "Description",
-                        "type": "string"
-                    },
-                    "externalAccessibilityData": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/ExternalAccessibilityDataModel"
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "ExternalAccessibilityDataModel"
-                    },
-                    "externalAccessibilityId": {
-                        "nullable": true,
-                        "title": "Externalaccessibilityid",
-                        "type": "string"
-                    },
-                    "externalAccessibilityUrl": {
-                        "nullable": true,
-                        "title": "Externalaccessibilityurl",
-                        "type": "string"
+                        "title": "Description"
                     },
                     "id": {
                         "title": "Id",
@@ -5858,69 +5885,78 @@
                         "type": "boolean"
                     },
                     "isPermanent": {
-                        "nullable": true,
                         "title": "Ispermanent",
                         "type": "boolean"
-                    },
-                    "isVirtual": {
-                        "title": "Isvirtual",
-                        "type": "boolean"
-                    },
-                    "latitude": {
-                        "nullable": true,
-                        "title": "Latitude",
-                        "type": "number"
-                    },
-                    "longitude": {
-                        "nullable": true,
-                        "title": "Longitude",
-                        "type": "number"
                     },
                     "name": {
                         "title": "Name",
                         "type": "string"
                     },
                     "openingHours": {
-                        "nullable": true,
-                        "title": "Openinghours",
-                        "type": "object"
+                        "anyOf": [
+                            {
+                                "additionalProperties": true,
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Openinghours"
                     },
                     "postalCode": {
-                        "nullable": true,
-                        "title": "Postalcode",
-                        "type": "string"
-                    },
-                    "publicName": {
-                        "nullable": true,
-                        "title": "Publicname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Postalcode"
                     },
                     "street": {
-                        "nullable": true,
-                        "title": "Street",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Street"
                     },
                     "timezone": {
                         "title": "Timezone",
                         "type": "string"
                     },
-                    "venueTypeCode": {
-                        "$ref": "#/components/schemas/VenueTypeCodeKey"
-                    },
                     "withdrawalDetails": {
-                        "nullable": true,
-                        "title": "Withdrawaldetails",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Withdrawaldetails"
                     }
                 },
                 "required": [
-                    "isVirtual",
-                    "name",
-                    "isOpenToPublic",
                     "id",
-                    "accessibility",
-                    "venueTypeCode",
-                    "timezone"
+                    "activity",
+                    "bannerUrl",
+                    "contact",
+                    "city",
+                    "description",
+                    "isOpenToPublic",
+                    "isPermanent",
+                    "name",
+                    "openingHours",
+                    "postalCode",
+                    "street",
+                    "timezone",
+                    "withdrawalDetails"
                 ],
                 "title": "VenueResponse",
                 "type": "object"
@@ -5985,38 +6021,10 @@
                 "title": "VenueScreenings",
                 "type": "object"
             },
-            "VenueTypeCodeKey": {
-                "description": "An enumeration.",
-                "enum": [
-                    "OTHER",
-                    "VISUAL_ARTS",
-                    "LIBRARY",
-                    "CULTURAL_CENTRE",
-                    "MOVIE",
-                    "TRAVELING_CINEMA",
-                    "ARTISTIC_COURSE",
-                    "SCIENTIFIC_CULTURE",
-                    "FESTIVAL",
-                    "GAMES",
-                    "BOOKSTORE",
-                    "CREATIVE_ARTS_STORE",
-                    "DISTRIBUTION_STORE",
-                    "RECORD_STORE",
-                    "MUSICAL_INSTRUMENT_STORE",
-                    "CONCERT_HALL",
-                    "MUSEUM",
-                    "DIGITAL",
-                    "PATRIMONY_TOURISM",
-                    "PERFORMING_ARTS"
-                ],
-                "title": "VenueTypeCodeKey"
-            },
-            "VisualDisabilityModel": {
+            "VisualDisability": {
+                "additionalProperties": false,
                 "properties": {
                     "audioDescription": {
-                        "default": [
-                            "Non renseign\u00e9"
-                        ],
                         "items": {
                             "type": "string"
                         },
@@ -6024,12 +6032,15 @@
                         "type": "array"
                     },
                     "soundBeacon": {
-                        "default": "Non renseign\u00e9",
                         "title": "Soundbeacon",
                         "type": "string"
                     }
                 },
-                "title": "VisualDisabilityModel",
+                "required": [
+                    "soundBeacon",
+                    "audioDescription"
+                ],
+                "title": "VisualDisability",
                 "type": "object"
             },
             "VoucherResponse": {
@@ -9828,6 +9839,54 @@
                     }
                 ],
                 "summary": "get_subscription_stepper <GET>",
+                "tags": []
+            }
+        },
+        "/native/v2/venue/{venue_id}": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v2_venue_{venue_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "venue_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VenueResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_venue_v2 <GET>",
                 "tags": []
             }
         }

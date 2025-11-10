@@ -193,6 +193,77 @@ def find_venue_by_id(venue_id: int) -> models.Venue | None:
     )
 
 
+def get_active_venue_page_data(venue_id: int) -> models.Venue | None:
+    return (
+        db.session.execute(
+            sa.select(models.Venue)
+            .join(models.Venue.managingOfferer)
+            .options(
+                sa_orm.load_only(
+                    models.Venue.activity,
+                    models.Venue.bannerUrl,
+                    models.Venue.description,
+                    models.Venue.isPermanent,
+                    models.Venue.isOpenToPublic,
+                    models.Venue.name,
+                    models.Venue.publicName,
+                    models.Venue.withdrawalDetails,
+                )
+            )
+            .options(
+                sa_orm.joinedload(models.Venue.accessibilityProvider).load_only(
+                    models.AccessibilityProvider.externalAccessibilityData,
+                    models.AccessibilityProvider.externalAccessibilityUrl,
+                )
+            )
+            .options(
+                sa_orm.joinedload(models.Venue.googlePlacesInfo).load_only(
+                    models.GooglePlacesInfo.bannerMeta,
+                    models.GooglePlacesInfo.bannerUrl,
+                )
+            )
+            .options(
+                sa_orm.contains_eager(models.Venue.managingOfferer).load_only(
+                    models.Offerer.isActive,
+                    models.Offerer.validationStatus,
+                )
+            )
+            .options(
+                sa_orm.selectinload(models.Venue.openingHours).load_only(
+                    models.OpeningHours.timespan, models.OpeningHours.weekday
+                )
+            )
+            .options(
+                sa_orm.joinedload(models.Venue.offererAddress)
+                .load_only()
+                .joinedload(models.OffererAddress.address)
+                .load_only(
+                    geography_models.Address.city,
+                    geography_models.Address.postalCode,
+                    geography_models.Address.street,
+                    geography_models.Address.timezone,
+                )
+            )
+            .options(
+                sa_orm.joinedload(models.Venue.contact).load_only(
+                    models.VenueContact.email,
+                    models.VenueContact.phone_number,
+                    models.VenueContact.social_medias,
+                    models.VenueContact.website,
+                )
+            )
+            .filter(
+                models.Venue.id == venue_id,
+                models.Venue.isPermanent.is_(True),
+                models.Offerer.isClosed.is_(False),
+                models.Offerer.isActive.is_(True),
+            )
+        )
+        .scalars()
+        .one_or_none()
+    )
+
+
 def find_venue_by_id_with_address(venue_id: int) -> models.Venue | None:
     return (
         db.session.query(models.Venue)

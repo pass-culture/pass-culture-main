@@ -57,6 +57,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "native.native_v1.offer_chronicles",  # → response.status_code = 404
     "native.native_v1.similar_offers",  # → response.status_code = 200
     "native.native_v2.get_offer_v2",  # → response.status_code = 404
+    "native.native_v2.get_venue_v2",  # → response.status_code = 404
     "Private API.clear_email_list",  # → response.status_code = 200
     "Private API.testing_route_with_common_errors",
     "Private API.testing_route_with_validation_errors",
