@@ -17,6 +17,7 @@ import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import api as bookings_api
+from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings.models import BookingStatus
@@ -164,6 +165,25 @@ class CancelBeneficiaryBookingsOnSuspendAccountTest:
         users_api.suspend_account(booking_event.user, reason=reason, actor=author)
 
         assert booking_event.status is BookingStatus.CONFIRMED
+
+    def test_should_not_crash_when_booking_already_canceled(self):
+        booking_thing = bookings_factories.BookingFactory(
+            stock__offer__subcategoryId=subcategories.CARTE_CINE_ILLIMITE.id,
+            status=BookingStatus.CONFIRMED,
+        )
+
+        with mock.patch("pcapi.core.bookings.validation.check_booking_can_be_cancelled") as can_cancel_booking_mock:
+            # if Ubble calls our webhook twice at the same time, a race condition can occur when
+            # both thread try to cancel the user bookings. the slower thread will raise the exception.
+            can_cancel_booking_mock.side_effect = bookings_exceptions.BookingIsAlreadyCancelled()
+            users_api.suspend_account(
+                booking_thing.user,
+                reason=users_constants.SuspensionReason.FRAUD_SUSPICION,
+                actor=None,
+            )
+
+        # assert no operation was done
+        assert booking_thing.status is BookingStatus.CONFIRMED
 
 
 @pytest.mark.usefixtures("db_session")
