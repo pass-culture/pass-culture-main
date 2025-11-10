@@ -2,7 +2,7 @@ import { addDays, format } from 'date-fns'
 
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
-  expectOffersOrBookingsAreFoundForNewTable,
+  expectOffersOrBookingsAreFound,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
@@ -64,7 +64,7 @@ describe('Search individual offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('I should be able to search with a EAN and see expected results', () => {
@@ -89,7 +89,7 @@ describe('Search individual offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('I should be able to search with "Catégorie" filter and see expected results', () => {
@@ -119,7 +119,7 @@ describe('Search individual offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('I should be able to search by offer status and see expected results', () => {
@@ -184,7 +184,7 @@ describe('Search individual offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('I should be able to search by date and see expected results', () => {
@@ -212,7 +212,7 @@ describe('Search individual offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it('I should be able to search combining several filters and see expected results', () => {
@@ -262,7 +262,7 @@ describe('Search individual offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
 
     cy.stepLog({ message: 'I reset all filters' })
     cy.findByText('Réinitialiser les filtres').click()
@@ -339,6 +339,6 @@ describe('Search individual offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults2)
+    expectOffersOrBookingsAreFound(expectedResults2)
   })
 })

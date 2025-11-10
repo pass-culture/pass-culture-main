@@ -1,6 +1,6 @@
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
-  expectOffersOrBookingsAreFoundForNewTable,
+  expectOffersOrBookingsAreFound,
   sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
@@ -363,7 +363,7 @@ describe('Create individual offers', () => {
       [],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedNewResults)
+    expectOffersOrBookingsAreFound(expectedNewResults)
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())
     })

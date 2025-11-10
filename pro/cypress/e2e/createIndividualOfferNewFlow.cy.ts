@@ -4,7 +4,7 @@ import {
   MOCKED_BACK_ADDRESS_LABEL,
 } from '../support/constants.ts'
 import {
-  expectOffersOrBookingsAreFoundForNewTable,
+  expectOffersOrBookingsAreFound,
   interceptSearch5Adresses,
   sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
@@ -354,7 +354,7 @@ describe('Create individual offers new flow', () => {
       [],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedNewResults)
+    expectOffersOrBookingsAreFound(expectedNewResults)
     cy.get('@ean').then((ean) => {
       cy.contains(ean.toString())
     })
