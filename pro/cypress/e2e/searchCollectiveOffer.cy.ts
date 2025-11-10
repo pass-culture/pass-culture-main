@@ -7,7 +7,7 @@ import {
 } from '../support/constants.ts'
 import {
   collectiveFormatEventDate,
-  expectOffersOrBookingsAreFoundForNewTable,
+  expectOffersOrBookingsAreFound,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
@@ -76,7 +76,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults, true)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it(`I should be able to search with a location and see expected results`, () => {
@@ -108,7 +108,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
   })
 
   it(`I should be able to search with a format "${formatName}" and see expected results`, () => {
@@ -138,7 +138,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults, true)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it(`I should be able to search with a Date and see expected results`, () => {
@@ -170,7 +170,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults, true)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it('I should be able to search with a status "Publiée" and see expected results', () => {
@@ -203,7 +203,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults, true)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it('I should be able to search with several filters and see expected results, then reinit filters', () => {
@@ -246,7 +246,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults)
 
     cy.stepLog({ message: 'I reset all filters' })
     cy.findByText('Réinitialiser les filtres').click()

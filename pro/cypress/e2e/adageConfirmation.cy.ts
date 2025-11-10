@@ -1,7 +1,7 @@
 import { BOOKABLE_OFFERS_COLUMNS } from '../support/constants.ts'
 import {
   collectiveFormatEventDate,
-  expectOffersOrBookingsAreFoundForNewTable,
+  expectOffersOrBookingsAreFound,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
@@ -123,7 +123,7 @@ describe('Adage confirmation', () => {
         ],
       ]
 
-      expectOffersOrBookingsAreFoundForNewTable(expectedResults, true)
+      expectOffersOrBookingsAreFound(expectedResults, true)
 
       // full row content check
       cy.findByText(
@@ -202,7 +202,7 @@ describe('Adage confirmation', () => {
         ],
       ]
 
-      expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+      expectOffersOrBookingsAreFound(expectedResults)
 
       cy.stepLog({ message: 'I reset all filters' })
       cy.findByText('Réinitialiser les filtres').click()
@@ -258,7 +258,7 @@ describe('Adage confirmation', () => {
           'annulée',
         ],
       ]
-      expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+      expectOffersOrBookingsAreFound(expectedResults)
     })
   })
 })

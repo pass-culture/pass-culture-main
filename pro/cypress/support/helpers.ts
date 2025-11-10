@@ -14,14 +14,13 @@ import {
  * @param {boolean} hasTableFullRowContent optional param to indicate if the table has a full row content
  * (for example the expiration banner in collective offers) that takes one row space
  * @example
- * TODO remove expectOffersOrBookingsAreFoundForNewTable after migrating all table
  * const expectedResults = [
       ['Réservation', "Nom de l'offre", 'Établissement', 'Places et prix', 'Statut'],
       ['1', 'Mon offre', 'COLLEGE DE LA TOUR', '25 places', 'confirmée'],
     ]
-   expectOffersOrBookingsAreFoundForNewTable(expectedResults)
+   expectOffersOrBookingsAreFound(expectedResults)
  */
-export function expectOffersOrBookingsAreFoundForNewTable(
+export function expectOffersOrBookingsAreFound(
   expectedResults: Array<Array<string>>,
   hasTableFullRowContent: boolean = false
 ) {

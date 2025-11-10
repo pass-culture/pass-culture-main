@@ -8,7 +8,7 @@ import {
   TEMPLATE_OFFERS_COLUMNS,
 } from '../support/constants.ts'
 import {
-  expectOffersOrBookingsAreFoundForNewTable,
+  expectOffersOrBookingsAreFound,
   interceptSearch5Adresses,
   logInAndGoToPage,
 } from '../support/helpers.ts'
@@ -158,10 +158,7 @@ describe('Create collective offers', () => {
     ]
     const hasTableFullRowContent =
       status === 'publiée' || status === 'préréservée'
-    expectOffersOrBookingsAreFoundForNewTable(
-      expectedResults,
-      hasTableFullRowContent
-    )
+    expectOffersOrBookingsAreFound(expectedResults, hasTableFullRowContent)
   }
 
   it('Create collective bookable offers with a precise address (the venue address, selected by default)', () => {
@@ -325,7 +322,7 @@ describe('Create collective offers', () => {
         'publiée',
       ],
     ]
-    expectOffersOrBookingsAreFoundForNewTable(templateResults)
+    expectOffersOrBookingsAreFound(templateResults)
 
     cy.visit('/offre/creation')
     cy.findByText('À un groupe scolaire').click()
@@ -437,7 +434,7 @@ describe('Create collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFoundForNewTable(draftResults)
+    expectOffersOrBookingsAreFound(draftResults)
 
     cy.stepLog({ message: 'I want to change my offer to published status' })
     cy.findByRole('link', { name: `N°6 ${newOfferName}` }).click()
