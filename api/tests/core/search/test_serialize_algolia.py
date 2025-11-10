@@ -81,6 +81,7 @@ def test_serialize_offer():
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
         venue__venueTypeCode=VenueTypeCode.LIBRARY,
+        venue__activity=offerers_models.Activity.CINEMA,
         venue__managingOfferer__name="Les Librairies Associées",
     )
     offers_factories.StockFactory(offer=offer, price=10)
@@ -122,8 +123,9 @@ def test_serialize_offer():
             "name": "Les Librairies Associées",
         },
         "venue": {
-            "banner_url": offer.venue.bannerUrl,
+            "activity": offer.venue.activity,
             "address": offer.offererAddress.address.street,
+            "banner_url": offer.venue.bannerUrl,
             "city": offer.offererAddress.address.city,
             "departmentCode": "86",
             "postalCode": offer.offererAddress.address.postalCode,
@@ -557,6 +559,7 @@ def test_serialize_venue():
     serialized = algolia.AlgoliaBackend().serialize_venue(venue)
     assert serialized == {
         "objectID": venue.id,
+        "activity": venue.activity,
         "city": venue.offererAddress.address.city,
         "name": venue.name,
         "offerer_name": venue.managingOfferer.name,

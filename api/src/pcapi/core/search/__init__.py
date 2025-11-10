@@ -542,6 +542,7 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
             sa_orm.joinedload(offers_models.Offer.venue)
             .load_only(
                 offerers_models.Venue.id,
+                offerers_models.Venue.activity,
                 offerers_models.Venue._bannerUrl,
                 offerers_models.Venue.isPermanent,
                 offerers_models.Venue.name,

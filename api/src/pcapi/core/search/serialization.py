@@ -302,6 +302,7 @@ class AlgoliaSerializationMixin:
                 "name": offerer.name,
             },
             "venue": {
+                "activity": venue.activity,
                 "address": address,
                 "banner_url": venue.bannerUrl,
                 "city": city,
@@ -357,6 +358,7 @@ class AlgoliaSerializationMixin:
 
         return {
             "_geoloc": position(venue),
+            "activity": venue.activity,
             "adress": venue.offererAddress.address.street,
             "audio_disability": venue.audioDisabilityCompliant,
             "banner_url": venue.bannerUrl,

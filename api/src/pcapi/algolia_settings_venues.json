@@ -22,6 +22,7 @@
         "venues-experimental"
     ],
     "attributesForFaceting": [
+        "filterOnly(activity)",
         "filterOnly(audio_disability)",
         "filterOnly(has_at_least_one_bookable_offer)",
         "filterOnly(mental_disability)",
