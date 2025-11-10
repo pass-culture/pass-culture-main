@@ -5,7 +5,7 @@
 export type CollectiveStockCreationBodyModel = {
   bookingLimitDatetime?: string | null;
   educationalPriceDetail?: string | null;
-  endDatetime?: string | null;
+  endDatetime: string;
   numberOfTickets: number;
   offerId: number;
   startDatetime: string;
