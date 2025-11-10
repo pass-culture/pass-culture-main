@@ -9,13 +9,7 @@
               <h5 class="card-title me-2">Créé le : {{ incident.details.createdAt | format_string_to_date_time }}</h5>
             {% endif %}
           </div>
-          <div class="h5 me-1 align-middle">
-            {% if incident.isClosed %}
-              {{ "Terminé" | format_badge("secondary") }}
-            {% else %}
-              {{ incident.status | format_finance_incident_status_badge }}
-            {% endif %}
-          </div>
+          <div class="h5 me-1 align-middle">{{ incident.status | format_finance_incident_status_badge }}</div>
           <div class="h5 me-1 align-middle">{{ incident.is_partial | format_finance_incident_nature_badge }}</div>
           <div class="d-flex justify-content-end flex-grow-1 gap-2">
             {% if has_permission("MANAGE_INCIDENTS") and incident.status.value == 'created' %}

@@ -2391,6 +2391,34 @@ def _generate_invoice_legacy(
             },
         )
 
+    # FinanceIncident.status: VALIDATED -> INVOICED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of finance incident"):
+        db.session.execute(
+            sa.text(
+                """
+            UPDATE finance_incident
+            SET
+            status =
+                CASE WHEN finance_incident.status = :cancelled
+                THEN :cancelled
+                ELSE :invoiced
+                END
+            FROM booking_finance_incident, finance_event, pricing, cashflow_pricing
+            WHERE
+                finance_incident.id = booking_finance_incident."incidentId"
+            AND booking_finance_incident.id = finance_event."bookingFinanceIncidentId"
+            AND finance_event.id = pricing."eventId"
+            AND pricing.id = cashflow_pricing."pricingId"
+            AND cashflow_pricing."cashflowId" IN :cashflow_ids
+            """
+            ),
+            {
+                "cancelled": models.IncidentStatus.CANCELLED.name,
+                "invoiced": models.IncidentStatus.INVOICED.name,
+                "cashflow_ids": tuple(cashflow_ids),
+            },
+        )
+
     db.session.commit()
     return invoice
 
@@ -2882,6 +2910,34 @@ def validate_invoice(invoice_id: int) -> None:
                 "reimbursed": bookings_models.BookingStatus.REIMBURSED.value,
                 "cashflow_id": cashflow_id,
                 "reimbursement_date": date_utils.get_naive_utc_now(),
+            },
+        )
+
+    # FinanceIncident.status: VALIDATED -> INVOICED (but keep CANCELLED as is)
+    with log_elapsed(logger, "Updating status of finance incident"):
+        db.session.execute(
+            sa.text(
+                """
+            UPDATE finance_incident
+            SET
+            status =
+                CASE WHEN finance_incident.status = :cancelled
+                THEN :cancelled
+                ELSE :invoiced
+                END
+            FROM booking_finance_incident, finance_event, pricing, cashflow_pricing
+            WHERE
+                finance_incident.id = booking_finance_incident."incidentId"
+            AND booking_finance_incident.id = finance_event."bookingFinanceIncidentId"
+            AND finance_event.id = pricing."eventId"
+            AND pricing.id = cashflow_pricing."pricingId"
+            AND cashflow_pricing."cashflowId" = :cashflow_id
+            """
+            ),
+            {
+                "cancelled": models.IncidentStatus.CANCELLED.name,
+                "invoiced": models.IncidentStatus.INVOICED.name,
+                "cashflow_id": cashflow_id,
             },
         )
 
@@ -3594,6 +3650,8 @@ def cancel_finance_incident(
         raise exceptions.FinanceIncidentAlreadyCancelled
     if incident.status == models.IncidentStatus.VALIDATED:
         raise exceptions.FinanceIncidentAlreadyValidated
+    if incident.status == models.IncidentStatus.INVOICED:
+        raise exceptions.FinanceIncidentAlreadyInvoiced
 
     incident.status = models.IncidentStatus.CANCELLED
     db.session.add(incident)

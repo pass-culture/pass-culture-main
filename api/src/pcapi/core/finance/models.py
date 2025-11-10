@@ -1104,12 +1104,10 @@ class PaymentMessage(PcObject, Model):
     )
 
 
-##
-# When an incident is `CREATED` it can be either `CANCELLED` and it's the end of this incident. Or it can be `VALIDATED`.
-##
 class IncidentStatus(enum.Enum):
     CREATED = "created"
     VALIDATED = "validated"
+    INVOICED = "invoiced"
     CANCELLED = "cancelled"
 
 
@@ -1211,34 +1209,6 @@ class FinanceIncident(PcObject, Model):
             ):
                 author_full_name = author.full_name
         return author_full_name or ""
-
-    @hybrid_property
-    def isClosed(self) -> bool:
-        # FOR REVIEW (to remove): We could have simply started from cashflow to simplify the code,
-        # but this would have caused an additional request for each call
-        return self.status == IncidentStatus.VALIDATED and all(
-            all(
-                any(
-                    pricing.cashflow and pricing.cashflow.status == CashflowStatus.ACCEPTED
-                    for pricing in event.pricings
-                )
-                for event in booking_incident.finance_events
-            )
-            for booking_incident in self.booking_finance_incidents
-        )
-
-    @isClosed.inplace.expression
-    @classmethod
-    def _isClosedExpression(cls) -> Exists:
-        return (
-            sa.exists()
-            .where(BookingFinanceIncident.incidentId == cls.id)
-            .where(FinanceEvent.bookingFinanceIncidentId == BookingFinanceIncident.id)
-            .where(Pricing.eventId == FinanceEvent.id)
-            .where(CashflowPricing.pricingId == Pricing.id)
-            .where(Cashflow.id == CashflowPricing.cashflowId)
-            .where(Cashflow.status == CashflowStatus.ACCEPTED)
-        )
 
     @property
     def cashflow_batch_label(self) -> str | None:
