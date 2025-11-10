@@ -3,6 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
 import {
+  CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
   type SharedCurrentUserResponseModel,
   UserRole,
@@ -334,5 +335,77 @@ describe('CollectiveOffersScreen', () => {
       name: 'Télécharger',
     })
     expect(downloadButton).toBeInTheDocument()
+  })
+
+  describe('ExpirationCell', () => {
+    it('should render expiration row when offer is PREBOOKED and has a booking limit', () => {
+      const offer = collectiveOfferFactory({
+        stock: {
+          bookingLimitDatetime: '2024-07-31T09:11:00Z',
+        },
+        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+      })
+
+      renderOffers({
+        ...props,
+        offers: [offer],
+      })
+
+      expect(
+        screen.getByText(
+          'En attente de réservation par le chef d’établissement'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should render expiration row when offer is PUBLISHED and has a booking limit', () => {
+      const offer = collectiveOfferFactory({
+        stock: {
+          bookingLimitDatetime: '2024-07-31T09:11:00Z',
+        },
+        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+      })
+
+      renderOffers({
+        ...props,
+        offers: [offer],
+      })
+
+      expect(
+        screen.getByText('En attente de préréservation par l’enseignant')
+      ).toBeInTheDocument()
+    })
+
+    it('should not render expiration row when offer is not PREBOOKED or PUBLISHED', () => {
+      const offer = collectiveOfferFactory({
+        stock: {
+          bookingLimitDatetime: '2024-07-31T09:11:00Z',
+        },
+        displayedStatus: CollectiveOfferDisplayedStatus.BOOKED,
+      })
+
+      renderOffers({
+        ...props,
+        offers: [offer],
+      })
+
+      expect(screen.queryByText('En attente de')).not.toBeInTheDocument()
+    })
+
+    it('should not render expiration row when offer has no booking limit', () => {
+      const offer = collectiveOfferFactory({
+        stock: {
+          bookingLimitDatetime: null,
+        },
+        displayedStatus: CollectiveOfferDisplayedStatus.PREBOOKED,
+      })
+
+      renderOffers({
+        ...props,
+        offers: [offer],
+      })
+
+      expect(screen.queryByText('En attente de')).not.toBeInTheDocument()
+    })
   })
 })

@@ -1,10 +1,14 @@
 import { useRef, useState } from 'react'
 
-import type {
-  CollectiveOfferResponseModel,
-  GetOffererResponseModel,
+import {
+  CollectiveOfferDisplayedStatus,
+  type CollectiveOfferResponseModel,
+  type GetOffererResponseModel,
 } from '@/apiClient/v1'
-import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
+import {
+  type CollectiveOffersSortingColumn,
+  isCollectiveOfferBookable,
+} from '@/commons/core/OfferEducational/types'
 import {
   DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -45,6 +49,15 @@ export type CollectiveOffersScreenProps = {
   ) => void
   urlSearchFilters: Partial<CollectiveSearchFiltersParams>
   offers: CollectiveOfferResponseModel[]
+}
+
+function isCollectiveOfferPublishedOrPreBooked(
+  offer: CollectiveOfferResponseModel
+) {
+  return (
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.PUBLISHED ||
+    offer.displayedStatus === CollectiveOfferDisplayedStatus.PREBOOKED
+  )
 }
 
 export const CollectiveOffersScreen = ({
@@ -198,9 +211,13 @@ export const CollectiveOffersScreen = ({
             subtitle: '',
           },
         }}
-        getFullRowContent={(offer: CollectiveOfferResponseModel) => (
-          <ExpirationCell offer={offer} />
-        )}
+        getFullRowContent={(offer: CollectiveOfferResponseModel) => {
+          const hasExpirationRow =
+            isCollectiveOfferBookable(offer) &&
+            isCollectiveOfferPublishedOrPreBooked(offer) &&
+            !!offer.stock?.bookingLimitDatetime
+          return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
+        }}
       />
       {hasOffers && (
         <div className={styles['offers-pagination']}>
