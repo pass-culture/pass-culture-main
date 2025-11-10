@@ -154,6 +154,8 @@ def _check_institution_fund(collective_booking: models.CollectiveBooking) -> Non
         deposit=deposit,
     )
 
+    collective_booking.educationalDeposit = deposit
+
 
 def refuse_collective_booking(educational_booking_id: int) -> models.CollectiveBooking:
     collective_booking = repository.find_collective_booking_by_id(educational_booking_id)
