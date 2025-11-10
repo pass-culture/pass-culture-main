@@ -29,10 +29,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
     number_of_tickets = stock_data.numberOfTickets
     educational_price_detail = stock_data.educationalPriceDetail
 
-    if end:
-        validation.check_start_and_end_dates_in_same_educational_year(start, end)
-    else:
-        end = start
+    validation.check_start_and_end_dates_in_same_educational_year(start, end)
 
     collective_offer = (
         db.session.query(educational_models.CollectiveOffer)

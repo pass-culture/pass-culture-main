@@ -1,5 +1,4 @@
 import decimal
-import logging
 from datetime import datetime
 from datetime import timezone
 from typing import Any
@@ -10,9 +9,6 @@ from pydantic.v1.fields import ModelField
 
 from pcapi import settings
 from pcapi.routes.serialization import ConfiguredBaseModel
-
-
-logger = logging.getLogger(__name__)
 
 
 def validate_number_of_tickets(number_of_tickets: int | None) -> int:
@@ -91,7 +87,7 @@ def price_detail_validator(field_name: str) -> classmethod:
 class CollectiveStockCreationBodyModel(ConfiguredBaseModel):
     offerId: int
     startDatetime: datetime
-    endDatetime: datetime | None
+    endDatetime: datetime
     bookingLimitDatetime: datetime | None
     totalPrice: decimal.Decimal
     numberOfTickets: int
