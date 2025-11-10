@@ -2147,6 +2147,7 @@ class GenerateInvoiceTest:
         + 1  # select Booking.id
         + 1  # update Booking.status
         + 1  # update CollectiveBooking.status
+        + 1  # update FinanceIncident.status
     )
 
     def test_one_regular_rule_one_rate(self):
@@ -2514,7 +2515,21 @@ class GenerateInvoiceTest:
         indiv_booking1 = indiv_finance_event1.booking
         indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
         indiv_booking2 = indiv_finance_event2.booking
+
         past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        # Create booking for overpayment finance incident
+        incident_booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue, dateUsed=past)
+        used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+        factories.PricingFactory(
+            booking=incident_booking, event=used_event, status=models.PricingStatus.INVOICED, valueDate=past
+        )
+
+        booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(booking=incident_booking)
+        finance_incident_events = api._create_finance_events_from_incident(
+            booking_finance_incident=booking_finance_incident,
+            incident_validation_date=date_utils.get_naive_utc_now(),
+        )
+
         collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
             collectiveBooking__collectiveStock__startDatetime=past,
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
@@ -2525,12 +2540,18 @@ class GenerateInvoiceTest:
             collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
         )
         collective_booking2 = collective_finance_event2.collectiveBooking
-        for e in (collective_finance_event1, collective_finance_event2, indiv_finance_event1, indiv_finance_event2):
+        for e in (
+            collective_finance_event1,
+            collective_finance_event2,
+            indiv_finance_event1,
+            indiv_finance_event2,
+            *finance_incident_events,
+        ):
             api.price_event(e)
         batch = api.generate_cashflows(date_utils.get_naive_utc_now())
         api.generate_payment_files(batch)  # mark cashflow as UNDER_REVIEW
         cashflow = db.session.query(models.Cashflow).one()
-        pricings = db.session.query(models.Pricing).all()
+        pricings = db.session.query(models.Pricing).filter(models.Pricing.valueDate > past).all()
         assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
         assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
         assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
@@ -2556,6 +2577,7 @@ class GenerateInvoiceTest:
         assert indiv_booking1.reimbursementDate == invoice.date  # updated
         assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
         assert indiv_booking2.reimbursementDate == invoice.date  # updated
+        assert booking_finance_incident.incident.status == models.IncidentStatus.INVOICED  # updated
         assert collective_booking1.status == educational_models.CollectiveBookingStatus.REIMBURSED  # updated
         assert collective_booking1.reimbursementDate == invoice.date  # updated
         assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated

@@ -1759,7 +1759,10 @@ class CollectiveBooking(PcObject, models.Model):
     @hybrid_property
     def validated_incident_id(self) -> int | None:
         for booking_incident in self.incidents:
-            if booking_incident.incident.status == finance_models.IncidentStatus.VALIDATED:
+            if booking_incident.incident.status in (
+                finance_models.IncidentStatus.VALIDATED,
+                finance_models.IncidentStatus.INVOICED,
+            ):
                 return booking_incident.incident.id
         return None
 
@@ -1773,7 +1776,9 @@ class CollectiveBooking(PcObject, models.Model):
             .where(
                 sa.and_(
                     finance_models.BookingFinanceIncident.collectiveBookingId == CollectiveBooking.id,
-                    finance_models.FinanceIncident.status == finance_models.IncidentStatus.VALIDATED,
+                    finance_models.FinanceIncident.status.in_(
+                        (finance_models.IncidentStatus.VALIDATED, finance_models.IncidentStatus.INVOICED)
+                    ),
                 )
             )
             .limit(1)
