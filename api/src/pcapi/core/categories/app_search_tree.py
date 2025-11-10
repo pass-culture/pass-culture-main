@@ -391,7 +391,6 @@ SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES = SearchGroup(
 SEARCH_GROUP_JEUX_JEUX_VIDEOS = SearchGroup(
     children=[
         NATIVE_CATEGORY_CONCOURS,
-        NATIVE_CATEGORY_ESCAPE_GAMES,
         NATIVE_CATEGORY_JEUX_EN_LIGNE,
         NATIVE_CATEGORY_LUDOTHEQUE,
         NATIVE_CATEGORY_RENCONTRES_EVENEMENTS,
@@ -402,7 +401,6 @@ SEARCH_GROUP_JEUX_JEUX_VIDEOS = SearchGroup(
         "ABO_JEU_VIDEO",
         "ABO_LUDOTHEQUE",
         "CONCOURS",
-        "ESCAPE_GAME",
         "EVENEMENT_JEU",
         "JEU_EN_LIGNE",
         "RENCONTRE_JEU",
@@ -482,10 +480,10 @@ SEARCH_GROUP_MUSIQUE = SearchGroup(
     ],
 )
 SEARCH_GROUP_NONE = SearchGroup(
-    children=[],
+    children=[NATIVE_CATEGORY_ESCAPE_GAMES],
     search_value="NONE",
     label="None",
-    included_subcategories=["ACTIVATION_EVENT", "ACTIVATION_THING", "JEU_SUPPORT_PHYSIQUE"],
+    included_subcategories=["ACTIVATION_EVENT", "ACTIVATION_THING", "JEU_SUPPORT_PHYSIQUE", "ESCAPE_GAME"],
 )
 SEARCH_GROUP_RENCONTRES_CONFERENCES = SearchGroup(
     children=[

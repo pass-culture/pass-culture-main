@@ -1344,7 +1344,7 @@ class SubcategoriesTest:
                 "categoryId": "JEU",
                 "nativeCategoryId": "ESCAPE_GAMES",
                 "appLabel": "Escape game",
-                "searchGroupName": "JEUX_JEUX_VIDEOS",
+                "searchGroupName": "NONE",
                 "homepageLabelName": "JEUX",
                 "isEvent": False,
                 "onlineOfflinePlatform": "OFFLINE",
