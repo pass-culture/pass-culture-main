@@ -27,7 +27,6 @@ export const useFocus = (): void => {
     }
 
     const backToNav = document.getElementById('back-to-nav-link')
-    const goToContent = document.getElementById('go-to-content')
     // Mind that those are subject to race conditions since they might be rendered after
     // the userEffect is triggered.
     // TODO (asaez-pass, 2025-09-16): a more robust way to implement this needs to be discussed.
@@ -53,11 +52,7 @@ export const useFocus = (): void => {
         }
       } else if (backToNav) {
         backToNav.focus()
-      } else if (goToContent) {
-        goToContent.focus()
       }
-    } else if (goToContent) {
-      goToContent.focus()
     }
 
     // If none of above is called, focus will be document.activeElement = body.
