@@ -14,6 +14,7 @@ from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
 
+import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
 import pcapi.core.history.api as history_api
@@ -527,10 +528,16 @@ def _cancel_bookings_of_user_on_requested_account_suspension(
     cancelled_bookings_count = 0
 
     for booking in bookings_query.all():
-        if not is_backoffice_action and reason in _USER_REQUESTED_REASONS:
-            bookings_api.cancel_booking_on_user_requested_account_suspension(booking)
-        else:
-            bookings_api.cancel_booking_for_fraud(booking, reason)
+        try:
+            if not is_backoffice_action and reason in _USER_REQUESTED_REASONS:
+                bookings_api.cancel_booking_on_user_requested_account_suspension(booking)
+            else:
+                bookings_api.cancel_booking_for_fraud(booking, reason)
+        except bookings_exceptions.BookingIsAlreadyCancelled:
+            # race conditions can occur when we receive two simultaneous calls in our exposed webhooks
+            # do nothing in such cases
+            continue
+
         cancelled_bookings_count += 1
 
     return cancelled_bookings_count
