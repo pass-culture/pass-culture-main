@@ -369,7 +369,6 @@ export function getOffererNameFactory(
 
 export const defaultGetOffererResponseModel: GetOffererResponseModel = {
   hasAvailablePricingPoints: false,
-  hasDigitalVenueAtLeastOneOffer: false,
   hasValidBankAccount: true,
   hasPendingBankAccount: false,
   hasNonFreeOffer: true,
