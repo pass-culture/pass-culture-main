@@ -13,6 +13,7 @@ import {
   getOffererNameFactory,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import { setSelectedOffererById } from '../setSelectedOffererById'
 
@@ -21,6 +22,7 @@ vi.mock('@/apiClient/api', () => ({
     getVenues: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
+    getVenue: vi.fn(),
     signout: vi.fn(),
   },
 }))
@@ -31,7 +33,7 @@ vi.mock('@/commons/errors/handleError', () => ({
 describe('setSelectedOffererById', () => {
   const currentOffererBase = { ...defaultGetOffererResponseModel, id: 100 }
   const currentOffererNameBase = getOffererNameFactory({ id: 100 })
-  const selectedVenueBase = makeVenueListItem({
+  const selectedVenueBase = makeGetVenueResponseModel({
     id: 101,
     managingOffererId: 100,
   })
@@ -53,6 +55,10 @@ describe('setSelectedOffererById', () => {
   })
 
   it('should early-return when nextCurrentOffererId equals previous currentOfferer id', async () => {
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
+    const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '100')
     localStorage.setItem(SAVED_VENUE_ID_KEY, '101')
 
@@ -76,9 +82,10 @@ describe('setSelectedOffererById', () => {
 
     expect(result).toBeNull()
 
-    expect(api.getOfferer).not.toHaveBeenCalled()
-    expect(api.getVenues).not.toHaveBeenCalled()
     expect(api.listOfferersNames).not.toHaveBeenCalled()
+    expect(apiGetVenuesSpy).not.toHaveBeenCalled()
+    expect(apiGetOffererSpy).not.toHaveBeenCalled()
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
     const state = store.getState()
     expect(state.offerer.currentOfferer?.id).toBe(100)
@@ -95,6 +102,7 @@ describe('setSelectedOffererById', () => {
       id: 100,
       isOnboarded: false,
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(selectedVenueBase)
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: venuesBase,
     })
@@ -129,6 +137,7 @@ describe('setSelectedOffererById', () => {
 
     expect(api.getVenues).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
@@ -145,12 +154,17 @@ describe('setSelectedOffererById', () => {
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBe('101')
   })
 
-  it('should use existing venues when shouldRefetch=false and set access to full', async () => {
+  it('should skip fetching offerers/venues when shouldRefetch=false and set access to full', async () => {
+    const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 200,
       isOnboarded: true,
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 201 })
+    )
 
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '100')
     localStorage.setItem(SAVED_VENUE_ID_KEY, '101')
@@ -169,18 +183,18 @@ describe('setSelectedOffererById', () => {
       },
     })
 
-    const getVenuesSpy = vi.spyOn(api, 'getVenues')
-    const listOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
-
     const result = await store
       .dispatch(setSelectedOffererById({ nextSelectedOffererId: 200 }))
       .unwrap()
 
     expect(result).toBe('full')
 
+    expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
+    expect(apiGetVenuesSpy).not.toHaveBeenCalled()
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+
     const state = store.getState()
-    expect(getVenuesSpy).not.toHaveBeenCalled()
-    expect(listOfferersNamesSpy).not.toHaveBeenCalled()
     expect(state.offerer.currentOfferer?.id).toBe(200)
     expect(state.offerer.currentOffererName?.id).toBe(200)
     expect(state.user.selectedVenue?.id).toBe(201)
@@ -191,12 +205,15 @@ describe('setSelectedOffererById', () => {
   })
 
   it('should set access to unattached on 403 ApiError and not throw', async () => {
+    const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
     vi.spyOn(api, 'getOfferer').mockRejectedValue({
       name: 'ApiError',
       message: 'Forbidden',
       status: 403,
       body: {},
     })
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '100')
     localStorage.setItem(SAVED_VENUE_ID_KEY, '101')
@@ -221,7 +238,10 @@ describe('setSelectedOffererById', () => {
 
     expect(result).toBe('unattached')
 
+    expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
+    expect(apiGetVenuesSpy).not.toHaveBeenCalled()
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
     const state = store.getState()
     expect(state.user.access).toBe('unattached')
@@ -233,14 +253,12 @@ describe('setSelectedOffererById', () => {
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
   })
 
-  it('should throw when no venue matches the offerer', async () => {
+  it('should throw when no offerer name matches the selected offerer', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: true,
-      name: 'O',
-    })
+    const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
+    const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
 
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '100')
@@ -272,6 +290,11 @@ describe('setSelectedOffererById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
 
+    expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
+    expect(apiGetVenuesSpy).not.toHaveBeenCalled()
+    expect(apiGetOffererSpy).not.toHaveBeenCalled()
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
     const state = store.getState()
     expect(state.user.access).toBeNull()
     expect(state.offerer.currentOfferer).toBeNull()
@@ -285,8 +308,11 @@ describe('setSelectedOffererById', () => {
 
   it('should handle unknown error without logging out', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+    const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
+    const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
     vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error())
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+    const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
 
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '100')
     localStorage.setItem(SAVED_VENUE_ID_KEY, '101')
@@ -315,6 +341,10 @@ describe('setSelectedOffererById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
 
+    expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
+    expect(apiGetVenuesSpy).not.toHaveBeenCalled()
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
     expect(api.signout).not.toHaveBeenCalled()
 
     const state = store.getState()

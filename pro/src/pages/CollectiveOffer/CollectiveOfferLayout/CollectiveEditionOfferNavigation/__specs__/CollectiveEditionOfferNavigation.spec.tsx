@@ -85,7 +85,7 @@ describe('CollectiveEditionOfferNavigation', () => {
     }))
 
     vi.spyOn(api, 'getVenues').mockResolvedValue({
-      venues: [makeVenueListItem({})],
+      venues: [makeVenueListItem({ id: 2 })],
     })
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(templateOffer)

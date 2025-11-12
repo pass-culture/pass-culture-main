@@ -236,6 +236,7 @@ class Returns200Test:
             "hasNonFreeOffers": True,
             "isActive": True,
             "isValidated": True,
+            "hasPartnerPage": True,
         }
         db.session.expire_all()
 
@@ -250,7 +251,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -277,7 +279,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -312,7 +315,8 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -344,7 +348,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -369,7 +374,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -397,7 +403,8 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -439,7 +446,8 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -472,7 +480,8 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -509,7 +518,8 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -538,7 +548,8 @@ class Returns200Test:
         num_queries += 1  # check user has rignts on venue
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -569,7 +580,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -596,7 +608,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -620,7 +633,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -648,7 +662,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -674,7 +689,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -729,7 +745,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
@@ -777,7 +794,8 @@ class Returns200Test:
         num_queries += 1  # select google_places_info
         num_queries += 1  # select accessibility_provider
         num_queries += 1  # select offer
-        num_queries += 1  # select stock (from hasActiveIndividualOffers)
+        num_queries += 1  # venue.hasActiveIndividualOffer
+        num_queries += 1  # venue.hasPartnerPage
         venue_id = venue.id
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)

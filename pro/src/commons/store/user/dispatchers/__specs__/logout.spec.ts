@@ -9,6 +9,7 @@ import {
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 import { logout } from '../logout'
@@ -41,7 +42,7 @@ describe('logout', () => {
       user: {
         access: 'full',
         currentUser: sharedCurrentUserFactory({ id: 3 }),
-        selectedVenue: makeVenueListItem({ id: 2 }),
+        selectedVenue: makeGetVenueResponseModel({ id: 2 }),
         venues: [makeVenueListItem({ id: 2 })],
       },
     })

@@ -16,7 +16,6 @@ import {
 } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
 import { setSelectedVenue, updateUserAccess } from '../reducer'
-import { ensureVenues } from '../selectors'
 import { logout } from './logout'
 
 export const setSelectedVenueById = createAsyncThunk<
@@ -35,18 +34,10 @@ export const setSelectedVenueById = createAsyncThunk<
       if (nextSelectedVenueId === previousSelectedVenue?.id) {
         return
       }
-      const venues = ensureVenues(state)
 
-      const nextSelectedVenue = venues.find(
-        (venue) => venue.id === nextSelectedVenueId
-      )
-      assertOrFrontendError(
-        nextSelectedVenue,
-        '`nextSelectedVenue` is undefined.'
-      )
-
+      const nextSelectedVenue = await api.getVenue(nextSelectedVenueId)
       const nextSelectedOfferer = await api.getOfferer(
-        nextSelectedVenue.managingOffererId
+        nextSelectedVenue.managingOfferer.id
       )
       const nextSelectedOffererName = offererNames.find(
         (offerer) => offerer.id === nextSelectedOfferer.id

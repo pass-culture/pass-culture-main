@@ -15,6 +15,7 @@ import {
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueManagingOffererResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -83,7 +84,11 @@ describe('<IndividualOfferDetails />', () => {
     const offer = getIndividualOfferFactory({
       venue: makeVenueListItem({
         id: 99,
-        managingOfferer: { id: 7, name: 'Struct 7', allowedOnAdage: true },
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 7,
+          allowedOnAdage: true,
+        }),
+        managingOffererId: 7,
       }),
     })
     const contextValues = { offer }
@@ -114,7 +119,11 @@ describe('<IndividualOfferDetails />', () => {
     const offer = getIndividualOfferFactory({
       venue: makeVenueListItem({
         id: 5,
-        managingOfferer: { id: 42, name: 'Struct 42', allowedOnAdage: true },
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 42,
+          allowedOnAdage: true,
+        }),
+        managingOffererId: 42,
       }),
     })
     const contextValues = { offer }
@@ -139,7 +148,7 @@ describe('<IndividualOfferDetails />', () => {
 
   it('should render IndividualOfferDetailsScreenNext when FF is active', () => {
     const venuesData = {
-      venues: [makeVenueListItem({})],
+      venues: [makeVenueListItem({ id: 2 })],
     }
     useSWRMock.mockImplementation(
       () =>

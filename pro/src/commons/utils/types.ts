@@ -7,6 +7,29 @@ export type Defined<T extends AnyObject> = {
   [K in keyof T]-?: T[K] extends undefined ? never : T[K]
 }
 
+/**
+ * Makes all properties in `T` optional, except for those in `K` which are required.
+ *
+ * @example
+ * ```ts
+ * interface Foo {
+ *   id: number
+ *   name: string
+ * }
+ *
+ * type Bar = PartialExcept<Foo, 'id'>
+ * // Equivalent to:
+ * // {
+ * //   id: number
+ * //   name?: string
+ * // }
+ * ```
+ */
+export type PartialExcept<T extends AnyObject, K extends keyof T> = Partial<
+  Omit<T, K>
+> &
+  Pick<T, K>
+
 export const hasProperty = <T extends string>(
   element: unknown,
   property: T

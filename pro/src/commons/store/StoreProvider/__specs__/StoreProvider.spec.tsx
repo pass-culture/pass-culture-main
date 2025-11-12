@@ -7,6 +7,7 @@ import {
   getOffererNameFactory,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { StoreProvider } from '../StoreProvider'
@@ -25,6 +26,7 @@ vi.mock('@/apiClient/api', () => ({
     listFeatures: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
+    getVenue: vi.fn(),
     getVenues: vi.fn(),
   },
 }))
@@ -46,6 +48,13 @@ describe('src | App', () => {
       id: 1,
       name: 'Offerer A',
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 2,
+        managingOffererId: 1,
+        name: 'Venue A1',
+      })
+    )
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [
         getOffererNameFactory({
@@ -71,10 +80,11 @@ describe('src | App', () => {
 
     await screen.findByText('Sub component')
 
-    expect(api.listFeatures).toHaveBeenCalled()
-    expect(api.getProfile).toHaveBeenCalled()
-    expect(api.listOfferersNames).toHaveBeenCalled()
-    expect(api.getVenues).toHaveBeenCalled()
-    expect(api.getOfferer).toHaveBeenCalled()
+    expect(api.listFeatures).toHaveBeenCalledTimes(1)
+    expect(api.getProfile).toHaveBeenCalledTimes(1)
+    expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
+    expect(api.getVenues).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
   })
 })

@@ -59,6 +59,8 @@ vi.mock('@/components/IndividualOfferLayout/IndividualOfferLayout', () => ({
 // We import after mock so the default export is already mocked
 import useSWR from 'swr'
 
+import { makeGetVenueManagingOffererResponseModel } from '@/commons/utils/factories/venueFactories'
+
 const mockUseSWR = useSWR as unknown as {
   mockReturnValue: (v: unknown) => void
   mockImplementation: (fn: () => unknown) => void
@@ -101,7 +103,11 @@ describe('<IndividualOfferLocation />', () => {
     const offer = getIndividualOfferFactory({
       venue: makeVenueListItem({
         id: 99,
-        managingOfferer: { id: 7, name: 'Struct 7', allowedOnAdage: true },
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 7,
+          allowedOnAdage: true,
+        }),
+        managingOffererId: 7,
       }),
     })
     mockUseSWR.mockReturnValue({ isLoading: true })
@@ -113,7 +119,11 @@ describe('<IndividualOfferLocation />', () => {
     const offer = getIndividualOfferFactory({
       venue: makeVenueListItem({
         id: 5,
-        managingOfferer: { id: 42, name: 'Struct 42', allowedOnAdage: true },
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 42,
+          allowedOnAdage: true,
+        }),
+        managingOffererId: 42,
       }),
     })
     const venuesData = {

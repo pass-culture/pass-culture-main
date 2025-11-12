@@ -15,6 +15,7 @@ import {
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueManagingOffererResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderComponentFunction,
   type RenderWithProvidersOptions,
@@ -110,7 +111,11 @@ describe('<IndividualOfferInformations />', () => {
     const offer = getIndividualOfferFactory({
       venue: makeVenueListItem({
         id: 4,
-        managingOfferer: { id: 42, name: 'Struct 42', allowedOnAdage: true },
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 42,
+          allowedOnAdage: true,
+        }),
+        managingOffererId: 42,
       }),
     })
     const contextValues = { offer }
@@ -136,7 +141,11 @@ describe('<IndividualOfferInformations />', () => {
     const offer = getIndividualOfferFactory({
       venue: makeVenueListItem({
         id: 4,
-        managingOfferer: { id: 42, name: 'Struct 42', allowedOnAdage: true },
+        managingOfferer: makeGetVenueManagingOffererResponseModel({
+          id: 42,
+          allowedOnAdage: true,
+        }),
+        managingOffererId: 42,
       }),
     })
     const contextValues = { offer }

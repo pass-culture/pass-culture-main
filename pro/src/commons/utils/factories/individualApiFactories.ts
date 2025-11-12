@@ -33,6 +33,7 @@ import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import type { StocksEvent } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/form/types'
 
+import type { PartialExcept } from '../types'
 import { listOffersVenueFactory } from './collectiveApiFactories'
 
 let offerId = 1
@@ -244,54 +245,71 @@ export const venueListItemFactory = (
   customVenueListItem: Partial<VenueListItemResponseModel> = {}
 ): VenueListItemResponseModel => {
   const id = customVenueListItem.id ?? venueId++
+  const offererId = customVenueListItem.managingOffererId ?? 1
+  const offererName =
+    customVenueListItem.offererName ?? 'la structure de Michel'
+  // Auto-generated `VenueTypeCode` enum is completely wrong:
+  // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
+  const venueTypeCode =
+    customVenueListItem.venueTypeCode ?? ('OTHER' as VenueTypeCode)
 
   return {
     id,
-    isVirtual: false,
-    name: `Le nom du lieu ${id}`,
-    publicName: undefined,
-    venueTypeCode: VenueTypeCode.AUTRE,
+    audioDisabilityCompliant: true,
+    bankAccountStatus: null,
     hasCreatedOffer: true,
-    managingOffererId: 1,
-    offererName: 'la structure de Michel',
-    visualDisabilityCompliant: true,
+    hasNonFreeOffers: true,
+    isActive: true,
+    isCaledonian: false,
+    isPermanent: true,
+    isValidated: true,
+    isVirtual: false,
+    managingOffererId: offererId,
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
-    audioDisabilityCompliant: true,
-    isPermanent: true,
-    isCaledonian: false,
-    isActive: true,
-    isValidated: true,
-    bankAccountStatus: null,
-    hasNonFreeOffers: true,
+    name: `Le nom du lieu ${id}`,
+    offererName,
+    publicName: undefined,
+    venueTypeCode,
+    visualDisabilityCompliant: true,
     ...customVenueListItem,
   }
 }
 export const makeVenueListItem = <
-  T extends Partial<VenueListItemResponseModel>,
+  T extends PartialExcept<VenueListItemResponseModel, 'id'>,
 >(
-  customVenueListItem: T
+  override: T
 ): Omit<VenueListItemResponseModel, keyof T> & T => {
-  const id = customVenueListItem.id ?? venueId++
+  const offererId = override.managingOffererId ?? 1
+  const offererName = override.offererName ?? `Entité ${offererId}`
+  // Auto-generated `VenueTypeCode` enum is completely wrong:
+  // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
+  const venueTypeCode = override.venueTypeCode ?? ('OTHER' as VenueTypeCode)
+
+  const fake: VenueListItemResponseModel = {
+    id: override.id,
+    audioDisabilityCompliant: false,
+    hasCreatedOffer: false,
+    hasNonFreeOffers: false,
+    isActive: false,
+    isCaledonian: false,
+    isPermanent: false,
+    isValidated: false,
+    isVirtual: false,
+    managingOffererId: offererId,
+    mentalDisabilityCompliant: false,
+    motorDisabilityCompliant: false,
+    name: `Structure ${override.id}`,
+    offererName,
+    publicName: undefined,
+    venueTypeCode,
+    visualDisabilityCompliant: false,
+  }
 
   return {
-    id,
-    isVirtual: false,
-    name: `Le nom du lieu ${id}`,
-    publicName: undefined,
-    venueTypeCode: VenueTypeCode.AUTRE,
-    hasCreatedOffer: true,
-    managingOffererId: 1,
-    offererName: 'la structure de Michel',
-    visualDisabilityCompliant: true,
-    mentalDisabilityCompliant: true,
-    motorDisabilityCompliant: true,
-    audioDisabilityCompliant: true,
-    isPermanent: true,
-    isCaledonian: false,
-
-    ...customVenueListItem,
-  } as Omit<VenueListItemResponseModel, keyof T> & T
+    ...fake,
+    ...override,
+  }
 }
 
 export const categoryFactory = (

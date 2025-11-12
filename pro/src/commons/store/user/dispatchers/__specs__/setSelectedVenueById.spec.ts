@@ -14,12 +14,14 @@ import {
   getOffererNameFactory,
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
 import { setSelectedVenueById } from '../setSelectedVenueById'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
     getOfferer: vi.fn(),
+    getVenue: vi.fn(),
     signout: vi.fn(),
   },
 }))
@@ -40,7 +42,7 @@ describe('setSelectedVenueById', () => {
     user: {
       access: null,
       currentUser: null,
-      selectedVenue: makeVenueListItem({
+      selectedVenue: makeGetVenueResponseModel({
         id: 201,
         managingOffererId: 200,
       }),
@@ -65,6 +67,7 @@ describe('setSelectedVenueById', () => {
     await store.dispatch(setSelectedVenueById(201)).unwrap()
 
     expect(api.getOfferer).not.toHaveBeenCalled()
+    expect(api.getVenue).not.toHaveBeenCalled()
 
     const state = store.getState()
     expect(state.offerer.currentOfferer?.id).toBe(200)
@@ -76,6 +79,9 @@ describe('setSelectedVenueById', () => {
   })
 
   it('should compute nextSelectedVenue, fetch its offerer, update user access and persist it', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
+    )
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
@@ -85,6 +91,9 @@ describe('setSelectedVenueById', () => {
     const store = configureTestStore(storeDataBase)
 
     await store.dispatch(setSelectedVenueById(101)).unwrap()
+
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.user.access).toBe('full')
@@ -97,6 +106,9 @@ describe('setSelectedVenueById', () => {
   })
 
   it('should set access to no-onboarding when offerer is not onboarded', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
+    )
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
@@ -106,6 +118,9 @@ describe('setSelectedVenueById', () => {
     const store = configureTestStore(storeDataBase)
 
     await store.dispatch(setSelectedVenueById(101)).unwrap()
+
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.user.access).toBe('no-onboarding')
@@ -119,11 +134,8 @@ describe('setSelectedVenueById', () => {
 
   it('should throw when offererNames is null', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: true,
-    })
+    const getVenueSpy = vi.spyOn(api, 'getVenue')
+    const getOffererSpy = vi.spyOn(api, 'getOfferer')
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
 
     const store = configureTestStore({
@@ -142,6 +154,9 @@ describe('setSelectedVenueById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
 
+    expect(getVenueSpy).not.toHaveBeenCalled()
+    expect(getOffererSpy).not.toHaveBeenCalled()
+
     const state = store.getState()
     expect(state.user.access).toBeNull()
     expect(state.offerer.currentOfferer).toBeNull()
@@ -155,6 +170,9 @@ describe('setSelectedVenueById', () => {
 
   it('should throw when nextSelectedOffererName is undefined', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 101, managingOffererId: 999 })
+    )
     // The selected venue belongs to offerer 999, which is not in offererNames
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
@@ -175,10 +193,13 @@ describe('setSelectedVenueById', () => {
       user: {
         access: null,
         currentUser: null,
-        selectedVenue: makeVenueListItem({ id: 201, managingOffererId: 200 }),
+        selectedVenue: makeGetVenueResponseModel({
+          id: 201,
+          managingOffererId: 200,
+        }),
         venues: [
-          makeVenueListItem({ id: 101, name: 'V1', managingOffererId: 999 }),
-          makeVenueListItem({ id: 201, name: 'V2', managingOffererId: 200 }),
+          makeVenueListItem({ id: 101, managingOffererId: 999 }),
+          makeVenueListItem({ id: 201, managingOffererId: 200 }),
         ],
       },
     })
@@ -193,35 +214,8 @@ describe('setSelectedVenueById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
 
-    const state = store.getState()
-    expect(state.user.access).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.currentOffererName).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
-
-    expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
-    expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
-  })
-
-  it('should throw when nextSelectedVenue is undefined', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
-    vi.spyOn(api, 'getOfferer').mockResolvedValue({
-      ...defaultGetOffererResponseModel,
-      id: 100,
-      isOnboarded: true,
-    })
-    const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
-
-    const store = configureTestStore(storeDataBase)
-
-    await store.dispatch(setSelectedVenueById(999)).unwrap()
-
-    expect(console.error).toHaveBeenCalledWith(expect.any(FrontendError))
-    expect(handleErrorSpy).toHaveBeenCalledExactlyOnceWith(
-      expect.any(FrontendError),
-      'Une erreur est survenue lors du changement de la structure.'
-    )
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.user.access).toBeNull()
@@ -237,7 +231,8 @@ describe('setSelectedVenueById', () => {
   it('should handle unknown error without logging out (no APIError, no FrontendError)', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
-    vi.spyOn(api, 'getOfferer').mockRejectedValue(new Error())
+    vi.spyOn(api, 'getVenue').mockRejectedValue(new Error())
+    const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
 
     const store = configureTestStore(storeDataBase)
 
@@ -248,6 +243,8 @@ describe('setSelectedVenueById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
 
+    expect(api.getVenue).toHaveBeenCalledTimes(1)
+    expect(apiGetOffererSpy).not.toHaveBeenCalled()
     expect(api.signout).not.toHaveBeenCalled()
 
     const state = store.getState()

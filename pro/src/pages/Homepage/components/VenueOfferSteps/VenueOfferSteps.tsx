@@ -1,8 +1,9 @@
 import cn from 'classnames'
 
 import type {
-  DMSApplicationForEAC,
   GetOffererResponseModel,
+  GetOffererVenueResponseModel,
+  GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import {
@@ -23,16 +24,9 @@ import {
 } from '../Offerers/components/VenueList/venueUtils'
 import styles from './VenueOfferSteps.module.scss'
 
-export type VenueThing = {
-  hasCreatedOffer: boolean
-  id: number
-  collectiveDmsApplications: Array<DMSApplicationForEAC>
-  hasAdageId: boolean
-}
-
 export interface VenueOfferStepsProps {
   offerer: GetOffererResponseModel
-  venue?: VenueThing
+  venue?: GetOffererVenueResponseModel | GetVenueResponseModel
   hasVenue: boolean
   isFirstVenue?: boolean
   isInsidePartnerBlock?: boolean
