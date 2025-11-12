@@ -15,12 +15,12 @@ class Session(BaseModelV2):
 
 class Event(BaseModelV2):
     id: str
-    allocine_id: int | None
+    allocine_id: int | None = None
     title: str
-    director: str | None
-    synopsis: str | None
-    bill_url: str | None
-    duration: int | None
+    director: str | None = None
+    synopsis: str | None = None
+    bill_url: str | None = None
+    duration: int | None = None
     sessions: list[Session]
 
     @field_validator("allocine_id", mode="before")
@@ -52,7 +52,7 @@ class Site(BaseModelV2):
     address: str
     zip_code: str
     city: str
-    siret: str | None
+    siret: str | None = None
 
 
 class SiteWithEvents(BaseModelV2):
@@ -88,7 +88,7 @@ class ReservationPassCultureRequest(BaseModelV2):
     total_price: float
     email: str
     num_pass_culture: str  # User.id
-    num_cmde: str | None
+    num_cmde: str | None = None
 
     @field_validator("num_pass_culture", mode="before")
     def convert_num_pass_culture_to_str(cls, value: str | int) -> str:
