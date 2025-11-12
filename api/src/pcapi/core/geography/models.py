@@ -81,6 +81,12 @@ class Address(PcObject, Model):
                 "description": "gin_trgm_ops",
             },
         ),
+        sa.Index(
+            "ix_address_geo_gist",
+            sa.text("(ST_MakePoint(longitude::double precision, latitude::double precision)::geography)"),
+            postgresql_using="gist",
+            unique=False,
+        ),
         sa.CheckConstraint('length("postalCode") = 5'),
         sa.CheckConstraint('length("inseeCode") = 5'),
         sa.CheckConstraint('length("city") <= 50'),

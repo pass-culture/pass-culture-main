@@ -417,6 +417,15 @@ class Stock(PcObject, Model, SoftDeletableMixin):
         # Next step : Create a unicity constraint based on this index and to drop the unicity constraint on idAtProviders
         sa.Index("unique_ix_offer_id_id_at_providers", offerId, idAtProviders, unique=True),
         sa.Index("ix_stock_idAtProviders", idAtProviders),
+        sa.Index(
+            "ix_stock_bookability",
+            "offerId",
+            "beginningDatetime",
+            "isSoftDeleted",
+            "bookingLimitDatetime",
+            "quantity",
+            "dnBookedQuantity",
+        ),
     )
 
     @property
