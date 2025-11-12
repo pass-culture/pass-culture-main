@@ -11,51 +11,9 @@ from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.users import models as users_models
 
-
-QUOTIENT_FAMILIAL_FIXTURE = {
-    "data": {
-        "allocataires": [
-            {
-                "nom_naissance": "LEFEBVRE",
-                "nom_usage": None,
-                "prenoms": "ALEXIS GÉRÔME JEAN-PHILIPPE",
-                "date_naissance": "1982-12-27",
-                "sexe": "F",
-            }
-        ],
-        "enfants": [
-            {
-                "nom_naissance": "LEFEBVRE",
-                "nom_usage": None,
-                "prenoms": "LEO",
-                "date_naissance": "1990-04-20",
-                "sexe": "M",
-            }
-        ],
-        "adresse": {
-            "destinataire": "Monsieur LEFEBVRE ALEXIS GÉRÔME JEAN-PHILIPPE",
-            "complement_information": None,
-            "complement_information_geographique": None,
-            "numero_libelle_voie": "1 RUE MONTORGUEIL",
-            "lieu_dit": None,
-            "code_postal_ville": "75002 PARIS",
-            "pays": "FRANCE",
-        },
-        "quotient_familial": {
-            "fournisseur": "CNAF",
-            "valeur": 2550,
-            "annee": 2023,
-            "mois": 6,
-            "annee_calcul": 2024,
-            "mois_calcul": 12,
-        },
-    },
-    "links": {},
-    "meta": {},
-}
+from tests.core.subscription.bonus.bonus_fixtures import QUOTIENT_FAMILIAL_FIXTURE
 
 
-@pytest.mark.usefixtures("db_session")
 def test_get_quotient_familial_for_french_household(requests_mock):
     requests_mock.get(
         api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
@@ -64,6 +22,7 @@ def test_get_quotient_familial_for_french_household(requests_mock):
 
     quotient_familial_response = api_particulier.get_quotient_familial(
         last_name="lefebvre",
+        common_name=None,
         first_names=["aleixs", "gréôme", "jean-philippe"],
         birth_date=date(1982, 12, 27),
         gender=users_models.GenderEnum.F,
@@ -126,6 +85,7 @@ def test_get_quotient_familial_for_french_born_custodian_without_city_code(reque
     with pytest.raises(ValueError) as exception:
         api_particulier.get_quotient_familial(
             last_name="lefebvre",
+            common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
             birth_date=date(1982, 12, 27),
             gender=users_models.GenderEnum.F,
@@ -145,6 +105,7 @@ def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(reque
 
     api_particulier.get_quotient_familial(
         last_name="lefebvre",
+        common_name=None,
         first_names=["aleixs", "gréôme", "jean-philippe"],
         birth_date=date(1982, 12, 27),
         gender=users_models.GenderEnum.F,
@@ -183,6 +144,7 @@ def test_quotient_familial_error(requests_mock, status_code, exception):
     with pytest.raises(exception):
         api_particulier.get_quotient_familial(
             last_name="lefebvre",
+            common_name=None,
             first_names=["aleixs", "gréôme", "jean-philippe"],
             birth_date=date(1982, 12, 27),
             gender=users_models.GenderEnum.F,
