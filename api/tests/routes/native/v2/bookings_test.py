@@ -481,12 +481,18 @@ class GetBookingsListTest:
         assert booking_response == {
             "activationCode": ongoing_booking.activationCode,
             "dateCreated": ongoing_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "canReact": ongoing_booking.can_react,
             "id": ongoing_booking.id,
             "quantity": ongoing_booking.quantity,
+            "dateUsed": ongoing_booking.dateUsed,
             "stock": {
                 "beginningDatetime": ongoing_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 "offer": {
-                    "address": {"timezone": ongoing_booking.stock.offer.offererAddress.address.timezone},
+                    "address": {
+                        "timezone": ongoing_booking.stock.offer.offererAddress.address.timezone,
+                        "city": ongoing_booking.stock.offer.offererAddress.address.city,
+                        "label": ongoing_booking.stock.offer.offererAddress.label,
+                    },
                     "id": ongoing_booking.stock.offer.id,
                     "imageUrl": ongoing_booking_mediation.thumbUrl,
                     "isDigital": ongoing_booking.stock.offer.isDigital,
@@ -494,7 +500,6 @@ class GetBookingsListTest:
                     "name": ongoing_booking.stock.offer.name,
                     "subcategoryId": ongoing_booking.stock.offer.subcategoryId,
                     "venue": {
-                        "city": ongoing_booking.stock.offer.venue.city,
                         "id": ongoing_booking.stock.offer.venue.id,
                         "name": ongoing_booking.stock.offer.venue.name,
                         "timezone": ongoing_booking.stock.offer.venue.timezone,
@@ -503,6 +508,10 @@ class GetBookingsListTest:
                     "withdrawalType": ongoing_booking.stock.offer.withdrawalType.value,
                 },
             },
+            "cancellationDate": ongoing_booking.cancellationDate,
+            "cancellationReason": ongoing_booking.cancellationReason,
+            "userReaction": ongoing_booking.userReaction,
+            "totalAmount": int(ongoing_booking.total_amount * 100),
         }
 
     def test_get_bookings_list_returns_ended_bookings(self, client):
@@ -571,13 +580,19 @@ class GetBookingsListTest:
                 "code": ended_booking.activationCode.code,
                 "expirationDate": ended_booking.activationCode.expirationDate.strftime("%Y-%m-%dT%H:%M:%SZ"),
             },
+            "canReact": ended_booking.can_react,
             "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "id": ended_booking.id,
             "quantity": ended_booking.quantity,
+            "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "offer": {
-                    "address": {"timezone": ended_booking.stock.offer.offererAddress.address.timezone},
+                    "address": {
+                        "timezone": ended_booking.stock.offer.offererAddress.address.timezone,
+                        "city": ended_booking.stock.offer.offererAddress.address.city,
+                        "label": ended_booking.stock.offer.offererAddress.label,
+                    },
                     "id": ended_booking.stock.offer.id,
                     "imageUrl": ended_booking_mediation.thumbUrl,
                     "isDigital": ended_booking.stock.offer.isDigital,
@@ -585,7 +600,6 @@ class GetBookingsListTest:
                     "name": ended_booking.stock.offer.name,
                     "subcategoryId": ended_booking.stock.offer.subcategoryId,
                     "venue": {
-                        "city": ended_booking.stock.offer.venue.city,
                         "id": ended_booking.stock.offer.venue.id,
                         "name": ended_booking.stock.offer.venue.name,
                         "timezone": ended_booking.stock.offer.venue.timezone,
@@ -594,6 +608,10 @@ class GetBookingsListTest:
                     "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
                 },
             },
+            "cancellationDate": ended_booking.cancellationDate,
+            "cancellationReason": ended_booking.cancellationReason,
+            "userReaction": ended_booking.userReaction,
+            "totalAmount": int(ended_booking.total_amount * 100),
         }
 
     booking_start_date = datetime(2023, 3, 2)
@@ -685,10 +703,18 @@ class GetBookingsListTest:
             "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "id": ended_booking.id,
             "quantity": ended_booking.quantity,
+            "canReact": ended_booking.can_react,
+            "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%SZ")
+            if ended_booking.dateUsed != None
+            else ended_booking.dateUsed,
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "offer": {
-                    "address": {"timezone": ended_booking.stock.offer.offererAddress.address.timezone},
+                    "address": {
+                        "timezone": ended_booking.stock.offer.offererAddress.address.timezone,
+                        "city": ended_booking.stock.offer.offererAddress.address.city,
+                        "label": ended_booking.stock.offer.offererAddress.label,
+                    },
                     "id": ended_booking.stock.offer.id,
                     "imageUrl": ended_booking_mediation.thumbUrl,
                     "isDigital": ended_booking.stock.offer.isDigital,
@@ -696,7 +722,6 @@ class GetBookingsListTest:
                     "name": ended_booking.stock.offer.name,
                     "subcategoryId": ended_booking.stock.offer.subcategoryId,
                     "venue": {
-                        "city": ended_booking.stock.offer.venue.city,
                         "id": ended_booking.stock.offer.venue.id,
                         "name": ended_booking.stock.offer.venue.name,
                         "timezone": ended_booking.stock.offer.venue.timezone,
@@ -705,6 +730,14 @@ class GetBookingsListTest:
                     "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
                 },
             },
+            "cancellationDate": ended_booking.cancellationDate.strftime("%Y-%m-%dT%H:%M:%SZ")
+            if ended_booking.cancellationDate != None
+            else ended_booking.cancellationDate,
+            "cancellationReason": ended_booking.cancellationReason.value
+            if ended_booking.cancellationReason
+            else ended_booking.cancellationReason,
+            "userReaction": ended_booking.userReaction,
+            "totalAmount": int(ended_booking.total_amount * 100),
         }
 
     def test_get_bookings_list_raises_error_when_status_is_unknown(self, client):
@@ -728,8 +761,8 @@ class GetBookingTest:
 
         assert response.json == {
             "canReact": False,
-            "cancellationDate": booking.cancellationDate,
-            "cancellationReason": booking.cancellationReason,
+            "cancellationDate": None,
+            "cancellationReason": None,
             "completedUrl": booking.completedUrl,
             "confirmationDate": booking.cancellationLimitDate,
             "dateCreated": booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
