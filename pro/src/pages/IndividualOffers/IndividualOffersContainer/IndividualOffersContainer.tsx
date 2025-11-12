@@ -18,9 +18,9 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { HeadlineOffer } from './components/HeadlineOffer/HeadlineOffer'
@@ -131,18 +131,6 @@ export const IndividualOffersContainer = ({
       offer.status === OfferStatus.SOLD_OUT
   )
 
-  const onPreviousPageClick = () =>
-    applySelectedFiltersAndRedirect({
-      ...selectedFilters,
-      page: currentPageNumber - 1,
-    })
-
-  const onNextPageClick = () =>
-    applySelectedFiltersAndRedirect({
-      ...selectedFilters,
-      page: currentPageNumber + 1,
-    })
-
   const { headlineOffer, isHeadlineOfferAllowedForOfferer } =
     useHeadlineOfferContext()
 
@@ -218,8 +206,9 @@ export const IndividualOffersContainer = ({
         <Pagination
           currentPage={currentPageNumber}
           pageCount={pageCount}
-          onPreviousPageClick={onPreviousPageClick}
-          onNextPageClick={onNextPageClick}
+          onPageClick={(page) => {
+            applySelectedFiltersAndRedirect({ ...selectedFilters, page })
+          }}
         />
       </div>
 

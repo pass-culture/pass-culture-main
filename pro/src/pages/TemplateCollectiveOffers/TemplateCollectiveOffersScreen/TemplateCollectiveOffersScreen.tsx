@@ -19,9 +19,9 @@ import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
@@ -196,20 +196,13 @@ export const TemplateCollectiveOffersScreen = ({
           <Pagination
             currentPage={page}
             pageCount={pageCount}
-            onPreviousPageClick={() => {
+            onPageClick={(page) =>
               applyUrlFiltersAndRedirect({
                 ...urlSearchFilters,
                 offererId: offererId?.toString() ?? '',
-                page: page - 1,
+                page,
               })
-            }}
-            onNextPageClick={() => {
-              applyUrlFiltersAndRedirect({
-                ...urlSearchFilters,
-                offererId: offererId?.toString() ?? '',
-                page: page + 1,
-              })
-            }}
+            }
           />
         </div>
       )}

@@ -4,8 +4,8 @@ import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { usePagination } from '@/commons/hooks/usePagination'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import type { BookingsFilters } from '../Components/types'
@@ -37,8 +37,10 @@ export const IndividualBookingsTable = ({
       }
   )
 
-  const { page, previousPage, nextPage, pageCount, currentPageItems } =
-    usePagination(bookingsWithIds, BOOKINGS_PER_PAGE)
+  const { page, pageCount, setPage, currentPageItems } = usePagination(
+    bookingsWithIds,
+    BOOKINGS_PER_PAGE
+  )
 
   const { logEvent } = useAnalytics()
 
@@ -90,17 +92,19 @@ export const IndividualBookingsTable = ({
         <Pagination
           currentPage={page}
           pageCount={pageCount}
-          onPreviousPageClick={() => {
-            previousPage()
-            logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
-              from: location.pathname,
-            })
-          }}
-          onNextPageClick={() => {
-            nextPage()
-            logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
-              from: location.pathname,
-            })
+          onPageClick={(newPage) => {
+            const currentPage = page
+            setPage(newPage)
+
+            if (currentPage + 1 === newPage) {
+              logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
+                from: location.pathname,
+              })
+            } else if (currentPage - 1 === newPage) {
+              logEvent(Events.CLICKED_PAGINATION_PREVIOUS_PAGE, {
+                from: location.pathname,
+              })
+            }
           }}
         />
       </div>
