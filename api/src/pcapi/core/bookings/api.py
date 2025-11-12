@@ -227,7 +227,11 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
         .outerjoin(models.Booking.activationCode)
         .options(
             sa_orm.load_only(
+                models.Booking.amount,
                 models.Booking.dateCreated,
+                models.Booking.dateUsed,
+                models.Booking.cancellationDate,
+                models.Booking.cancellationReason,
                 models.Booking.quantity,
             ),
             sa_orm.joinedload(models.Booking.activationCode).load_only(
@@ -250,14 +254,16 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
             )
             .options(
                 sa_orm.joinedload(offers_models.Offer.offererAddress)
+                .load_only(offerers_models.OffererAddress.label)
                 .joinedload(offerers_models.OffererAddress.address)
-                .load_only(geography_models.Address.timezone),
+                .load_only(geography_models.Address.timezone, geography_models.Address.city),
             ),
             sa_orm.joinedload(models.Booking.venue).load_only(
                 offerers_models.Venue.name,
                 offerers_models.Venue.city,
                 offerers_models.Venue.timezone,
             ),
+            sa_orm.joinedload(models.Booking.user).joinedload(users_models.User.reactions),
         )
     )
 

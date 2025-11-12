@@ -613,6 +613,16 @@
             },
             "BookingListItemOfferResponseTimezone": {
                 "properties": {
+                    "city": {
+                        "nullable": true,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "label": {
+                        "nullable": true,
+                        "title": "Label",
+                        "type": "string"
+                    },
                     "timezone": {
                         "title": "Timezone",
                         "type": "string"
@@ -635,9 +645,33 @@
                         "nullable": true,
                         "title": "ActivationCodeResponse"
                     },
+                    "canReact": {
+                        "title": "Canreact",
+                        "type": "boolean"
+                    },
+                    "cancellationDate": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Cancellationdate",
+                        "type": "string"
+                    },
+                    "cancellationReason": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BookingCancellationReasons"
+                            }
+                        ],
+                        "nullable": true
+                    },
                     "dateCreated": {
                         "format": "date-time",
                         "title": "Datecreated",
+                        "type": "string"
+                    },
+                    "dateUsed": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Dateused",
                         "type": "string"
                     },
                     "id": {
@@ -650,12 +684,26 @@
                     },
                     "stock": {
                         "$ref": "#/components/schemas/BookingListItemStockResponse"
+                    },
+                    "totalAmount": {
+                        "title": "Totalamount",
+                        "type": "integer"
+                    },
+                    "userReaction": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ReactionTypeEnum"
+                            }
+                        ],
+                        "nullable": true
                     }
                 },
                 "required": [
                     "id",
                     "dateCreated",
                     "quantity",
+                    "totalAmount",
+                    "canReact",
                     "stock"
                 ],
                 "title": "BookingListItemResponse",
@@ -681,11 +729,6 @@
             },
             "BookingListItemVenueResponse": {
                 "properties": {
-                    "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
-                    },
                     "id": {
                         "title": "Id",
                         "type": "integer"
