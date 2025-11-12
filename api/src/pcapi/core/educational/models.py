@@ -1046,7 +1046,6 @@ class CollectiveOfferTemplate(
     locationType: sa_orm.Mapped[CollectiveLocationType] = sa_orm.mapped_column(
         db_utils.MagicEnum(CollectiveLocationType), nullable=False
     )
-    sa.Index("ix_collective_offer_template_locationType_offererAddressId", locationType, offererAddressId)
 
     locationComment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
 
@@ -1062,6 +1061,7 @@ class CollectiveOfferTemplate(
             except (AttributeError, TypeError):
                 pass
         parent_args += [
+            sa.Index("ix_collective_offer_template_locationType_offererAddressId", "locationType", "offererAddressId"),
             sa.UniqueConstraint("dateRange", "id", name="collective_offer_template_unique_daterange"),
             sa.CheckConstraint(
                 '"dateRange" is NULL OR ('
@@ -1226,7 +1226,6 @@ class CollectiveStock(PcObject, models.Model):
 
     startDatetime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
     endDatetime: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
-    sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime)
 
     collectiveOfferId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer.id"), index=True, nullable=False, unique=True
@@ -1252,6 +1251,8 @@ class CollectiveStock(PcObject, models.Model):
     numberOfTickets: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
 
     priceDetail = sa_orm.mapped_column(sa.Text, nullable=True)
+
+    __table_args__ = (sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime),)
 
     @property
     def lastBooking(self) -> "CollectiveBooking | None":
@@ -1342,7 +1343,7 @@ class EducationalInstitution(PcObject, models.Model):
 
     postalCode: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(10), nullable=False)
 
-    email = sa_orm.mapped_column(sa.Text(), nullable=True)
+    email: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
 
     phoneNumber: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(30), nullable=False)
 
@@ -1358,7 +1359,7 @@ class EducationalInstitution(PcObject, models.Model):
         "EducationalInstitutionProgramAssociation", back_populates="institution"
     )
 
-    ruralLevel: sa_orm.Mapped[InstitutionRuralLevel] = sa_orm.mapped_column(
+    ruralLevel: sa_orm.Mapped[InstitutionRuralLevel | None] = sa_orm.mapped_column(
         db_utils.MagicEnum(InstitutionRuralLevel), nullable=True, default=None
     )
 
@@ -1455,7 +1456,8 @@ class EducationalDeposit(PcObject, models.Model):
 
     isFinal: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=True)
 
-    ministry = sa_orm.mapped_column(sa.Enum(Ministry), nullable=True)
+    # TODO: ministry should be nullable=False
+    ministry: sa_orm.Mapped[Ministry] = sa_orm.mapped_column(sa.Enum(Ministry), nullable=True)
 
     # when a collective booking is confirmed, we find the corresponding deposit depending on the institution, educational year and period
     # if the confirmation date is in the same educational year as the event, the period must contain the confirmation date
@@ -1490,11 +1492,11 @@ class EducationalRedactor(PcObject, models.Model):
 
     email: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(120), nullable=False, unique=True, index=True)
 
-    firstName = sa_orm.mapped_column(sa.String(128), nullable=True)
+    firstName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
 
-    lastName = sa_orm.mapped_column(sa.String(128), nullable=True)
+    lastName: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(128), nullable=True)
 
-    civility = sa_orm.mapped_column(sa.String(20), nullable=True)
+    civility: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(20), nullable=True)
 
     preferences: sa_orm.Mapped[dict] = sa_orm.mapped_column(
         postgresql.JSONB(), server_default="{}", default={}, nullable=False
@@ -1527,7 +1529,6 @@ class CollectiveBooking(PcObject, models.Model):
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
-    sa.Index("ix_collective_booking_date_created", dateCreated)
 
     dateUsed = sa_orm.mapped_column(sa.DateTime, nullable=True, index=True)
 
@@ -1576,8 +1577,6 @@ class CollectiveBooking(PcObject, models.Model):
         sa.Enum(CollectiveBookingStatus), nullable=False, default=CollectiveBookingStatus.CONFIRMED
     )
 
-    sa.Index("ix_collective_booking_status", status)
-
     reimbursementDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     educationalInstitutionId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -1593,8 +1592,6 @@ class CollectiveBooking(PcObject, models.Model):
     educationalYear: sa_orm.Mapped["EducationalYear"] = sa_orm.relationship(
         EducationalYear, foreign_keys=[educationalYearId]
     )
-
-    sa.Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId)
 
     confirmationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
     confirmationLimitDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
@@ -1629,6 +1626,12 @@ class CollectiveBooking(PcObject, models.Model):
     )
     payments: sa_orm.Mapped[list["finance_models.Payment"]] = sa_orm.relationship(
         "Payment", back_populates="collectiveBooking"
+    )
+
+    __table_args__ = (
+        sa.Index("ix_collective_booking_date_created", dateCreated),
+        sa.Index("ix_collective_booking_status", status),
+        sa.Index("ix_collective_booking_educationalYear_and_institution", educationalYearId, educationalInstitutionId),
     )
 
     def cancel_booking(
@@ -1830,9 +1833,9 @@ class CollectiveBooking(PcObject, models.Model):
         return self.collectiveStock.price
 
 
-class EducationalDomainVenue(models.Model):
+class EducationalDomainVenue(PcObject, models.Model):
     __tablename__ = "educational_domain_venue"
-    id: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, primary_key=True, autoincrement=True)
+
     educationalDomainId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_domain.id", ondelete="CASCADE"), index=True, nullable=False
     )
@@ -1901,18 +1904,24 @@ class CollectiveDmsApplication(PcObject, models.Model):
     application: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False, index=True)
     siret: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(14), nullable=False, index=True)
     lastChangeDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
-    depositDate = sa_orm.mapped_column(sa.DateTime, nullable=False)
-    expirationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    buildDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    instructionDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    processingDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
-    userDeletionDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    depositDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
+    expirationDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    buildDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    instructionDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    processingDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    userDeletionDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue",
         back_populates="collectiveDmsApplications",
         primaryjoin="foreign(CollectiveDmsApplication.siret) == Venue.siret",
         uselist=False,
+    )
+
+    __table_args__ = (
+        # Search application related to an offerer should use siren expression to use take benefit from the index
+        # instead of "LIKE '123456782%'" which causes a sequential scan.
+        sa.Index("ix_collective_dms_application_siren", sa.func.substr(siret, 1, SIREN_LENGTH)),
     )
 
     @hybrid_property
@@ -1923,10 +1932,6 @@ class CollectiveDmsApplication(PcObject, models.Model):
     @classmethod
     def _siren_expression(cls) -> sa.Function:
         return sa.func.substr(cls.siret, 1, SIREN_LENGTH)
-
-    # Search application related to an offerer should use siren expression to use take benefit from the index
-    # instead of "LIKE '123456782%'" which causes a sequential scan.
-    sa.Index("ix_collective_dms_application_siren", sa.func.substr(siret, 1, SIREN_LENGTH))
 
 
 CollectiveBooking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
@@ -2021,6 +2026,7 @@ class NationalProgram(PcObject, models.Model):
     """
 
     __tablename__ = "national_program"
+    # TODO: name should be nullable=False
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, unique=True, nullable=True)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
@@ -2091,28 +2097,28 @@ class EducationalInstitutionProgram(PcObject, models.Model):
 
 class CollectivePlaylist(PcObject, models.Model):
     __tablename__ = "collective_playlist"
-    type: sa_orm.Mapped[str] = sa_orm.mapped_column(db_utils.MagicEnum(PlaylistType), nullable=False)
-    distanceInKm: sa_orm.Mapped[float] = sa_orm.mapped_column(sa.Float, nullable=True)
+    type: sa_orm.Mapped[PlaylistType] = sa_orm.mapped_column(db_utils.MagicEnum(PlaylistType), nullable=False)
+    distanceInKm: sa_orm.Mapped[float | None] = sa_orm.mapped_column(sa.Float, nullable=True)
 
-    institutionId = sa_orm.mapped_column(
+    institutionId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
     institution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId], back_populates="collective_playlists"
     )
 
-    venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+    venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=True
     )
-    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
+    venue: sa_orm.Mapped["Venue | None"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collective_playlists"
     )
 
-    collectiveOfferTemplateId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+    collectiveOfferTemplateId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=True
     )
-    collective_offer_template: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
+    collective_offer_template: sa_orm.Mapped["CollectiveOfferTemplate | None"] = sa_orm.relationship(
         "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId], back_populates="collective_playlists"
     )
 
-    sa.Index("ix_collective_playlist_type_institutionId", type, institutionId)
+    __table_args__ = (sa.Index("ix_collective_playlist_type_institutionId", type, institutionId),)

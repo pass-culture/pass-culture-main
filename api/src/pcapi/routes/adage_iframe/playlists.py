@@ -30,6 +30,18 @@ def _format_distance(distance: float | None) -> Decimal | None:
     return Decimal.from_float(distance).quantize(Decimal("1.0"))
 
 
+def _serialize_playlist_item_with_offer_template(
+    playlist_item: educational_models.CollectivePlaylist, redactor: educational_models.EducationalRedactor
+) -> serializers.CollectiveOfferTemplateResponseModel:
+    # in CLASSROOM and NEW_OFFER playlists, collectiveOfferTemplateId is always set
+    assert playlist_item.collective_offer_template is not None
+
+    return serializers.CollectiveOfferTemplateResponseModel.build(
+        offer=playlist_item.collective_offer_template,
+        is_favorite=playlist_item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
+    )
+
+
 @blueprint.adage_iframe.route("/playlists/classroom", methods=["GET"])
 @atomic()
 @spectree_serialize(response_model=serializers.ListCollectiveOfferTemplateResponseModel, api=blueprint.api)
@@ -79,13 +91,7 @@ def get_classroom_playlist(
         )
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
-        collectiveOffers=[
-            serializers.CollectiveOfferTemplateResponseModel.build(
-                offer=item.collective_offer_template,
-                is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-            )
-            for item in playlist_items
-        ]
+        collectiveOffers=[_serialize_playlist_item_with_offer_template(item, redactor) for item in playlist_items]
     )
 
 
@@ -142,13 +148,23 @@ def new_template_offers_playlist(
         )
 
     return serializers.ListCollectiveOfferTemplateResponseModel(
-        collectiveOffers=[
-            serializers.CollectiveOfferTemplateResponseModel.build(
-                offer=item.collective_offer_template,
-                is_favorite=item.collective_offer_template in redactor.favoriteCollectiveOfferTemplates,
-            )
-            for item in playlist_items
-        ]
+        collectiveOffers=[_serialize_playlist_item_with_offer_template(item, redactor) for item in playlist_items]
+    )
+
+
+def _serialize_playlist_item_with_venue(
+    playlist_item: educational_models.CollectivePlaylist,
+) -> playlists_serializers.LocalOfferersPlaylistOffer:
+    # in LOCAL_OFFERER and NEW_OFFERER playlists, venueId is always set
+    assert playlist_item.venue is not None
+
+    return playlists_serializers.LocalOfferersPlaylistOffer(
+        imgUrl=playlist_item.venue.bannerUrl,
+        publicName=playlist_item.venue.publicName,
+        name=playlist_item.venue.name,
+        distance=_format_distance(playlist_item.distanceInKm),
+        city=playlist_item.venue.offererAddress.address.city,
+        id=playlist_item.venue.id,
     )
 
 
@@ -169,17 +185,7 @@ def get_local_offerers_playlist(
     playlist_items = playlists_api.get_playlist_items(institution, educational_models.PlaylistType.LOCAL_OFFERER)
 
     return playlists_serializers.LocalOfferersPlaylist(
-        venues=[
-            playlists_serializers.LocalOfferersPlaylistOffer(
-                imgUrl=item.venue.bannerUrl,
-                publicName=item.venue.publicName,
-                name=item.venue.name,
-                distance=_format_distance(item.distanceInKm),
-                city=item.venue.offererAddress.address.city,
-                id=item.venue.id,
-            )
-            for item in playlist_items
-        ]
+        venues=[_serialize_playlist_item_with_venue(item) for item in playlist_items]
     )
 
 
@@ -199,15 +205,5 @@ def get_new_offerers_playlist(
 
     playlist_items = playlists_api.get_playlist_items(institution, educational_models.PlaylistType.NEW_OFFERER)
     return playlists_serializers.LocalOfferersPlaylist(
-        venues=[
-            playlists_serializers.LocalOfferersPlaylistOffer(
-                imgUrl=item.venue.bannerUrl,
-                publicName=item.venue.publicName,
-                name=item.venue.name,
-                distance=_format_distance(item.distanceInKm),
-                city=item.venue.offererAddress.address.city,
-                id=item.venue.id,
-            )
-            for item in playlist_items
-        ]
+        venues=[_serialize_playlist_item_with_venue(item) for item in playlist_items]
     )

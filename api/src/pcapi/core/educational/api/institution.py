@@ -403,4 +403,7 @@ def get_offers_count_for_my_institution(uai: str) -> int:
 
 
 def get_playlist_max_distance(institution: models.EducationalInstitution) -> int:
+    if institution.ruralLevel is None:
+        return 60
+
     return models.PLAYLIST_RURALITY_MAX_DISTANCE_MAPPING.get(institution.ruralLevel, 60)
