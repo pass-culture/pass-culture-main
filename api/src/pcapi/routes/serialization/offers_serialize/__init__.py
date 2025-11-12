@@ -228,7 +228,7 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return [
                 highlight_request.highlight
                 for highlight_request in self._obj.highlight_requests
-                if highlight_request.highlight.highlight_timespan.upper >= date_utils.get_naive_utc_now()
+                if highlight_request.highlight.highlight_datespan.upper > date_utils.get_naive_utc_now().date()
             ]
         return super().get(key, default)
 
