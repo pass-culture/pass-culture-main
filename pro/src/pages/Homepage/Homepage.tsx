@@ -25,6 +25,8 @@ import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
 import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
@@ -59,12 +61,18 @@ export const Homepage = (): JSX.Element => {
         <Spinner />
       ) : (
         <>
-          <div className={styles['reimbursements-banners']}>
-            <AddBankAccountCallout offerer={selectedOfferer} />
-            <LinkVenueCallout offerer={selectedOfferer} />
-            <BankAccountHasPendingCorrectionCallout offerer={selectedOfferer} />
-          </div>
-          {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
+          {!withSwitchVenueFeature && (
+            <>
+              <div className={styles['reimbursements-banners']}>
+                <AddBankAccountCallout offerer={selectedOfferer} />
+                <LinkVenueCallout offerer={selectedOfferer} />
+                <BankAccountHasPendingCorrectionCallout
+                  offerer={selectedOfferer}
+                />
+              </div>
+              {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
+            </>
+          )}
 
           {selectedOfferer?.isValidated && selectedOfferer.isActive && (
             <section className={styles.section}>

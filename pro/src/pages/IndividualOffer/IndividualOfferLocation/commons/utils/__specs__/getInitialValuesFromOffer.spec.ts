@@ -14,7 +14,7 @@ describe('getInitialValuesFromOffer', () => {
   const offerBase = getIndividualOfferFactory()
 
   const paramsBase = {
-    offerVenue: makeVenueListItem({}),
+    offerVenue: makeVenueListItem({ id: 2 }),
   }
 
   describe('when offer subcategory is not digital', () => {
@@ -96,6 +96,7 @@ describe('getInitialValuesFromOffer', () => {
         const params = {
           ...paramsWithOfflineSubcategory,
           offerVenue: makeVenueListItem({
+            id: 2,
             address: getAddressResponseIsLinkedToVenueModelFactory({
               id_oa,
             }),
@@ -120,6 +121,7 @@ describe('getInitialValuesFromOffer', () => {
 
       it('should include selected venue address when available', () => {
         const offerVenue = makeVenueListItem({
+          id: 2,
           address: getAddressResponseIsLinkedToVenueModelFactory(),
         })
 
@@ -149,6 +151,7 @@ describe('getInitialValuesFromOffer', () => {
 
       it('should handle missing address props in selected venue', () => {
         const offerVenue = makeVenueListItem({
+          id: 2,
           address: getAddressResponseIsLinkedToVenueModelFactory({
             banId: undefined,
             inseeCode: undefined,
@@ -177,6 +180,7 @@ describe('getInitialValuesFromOffer', () => {
 
     it('should accept any url format when offline', () => {
       const offerVenue = makeVenueListItem({
+        id: 2,
         address: getAddressResponseIsLinkedToVenueModelFactory(),
       })
       const params = { ...paramsWithOfflineSubcategory, offerVenue }
@@ -221,7 +225,10 @@ describe('getInitialValuesFromOffer', () => {
   it('should return EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES when neither offer nor venue has address (offline)', () => {
     const offer = { ...offerBase, address: undefined }
     const params = {
-      offerVenue: makeVenueListItem({ address: undefined }),
+      offerVenue: makeVenueListItem({
+        id: 2,
+        address: undefined,
+      }),
       isDigital: false,
     }
 

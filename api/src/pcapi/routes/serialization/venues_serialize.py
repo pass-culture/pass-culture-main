@@ -269,6 +269,9 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
             # it has been fixed
             return True
 
+        if key == "hasPartnerPage":
+            return venue.has_partner_page
+
         return super().get(key, default)
 
 
@@ -307,6 +310,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     isValidated: bool
     bankAccountStatus: SimplifiedBankAccountStatus | None
     hasNonFreeOffers: bool
+    hasPartnerPage: bool
 
     class Config:
         orm_mode = True

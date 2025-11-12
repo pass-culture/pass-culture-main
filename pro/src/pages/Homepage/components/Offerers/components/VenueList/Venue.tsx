@@ -20,12 +20,12 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import styles from './Venue.module.scss'
 
 export interface VenueProps {
-  offerer?: GetOffererResponseModel | null
+  offerer: GetOffererResponseModel | null
   venue: GetOffererVenueResponseModel
-  isFirstVenue: boolean
+  isFirstVenue?: boolean
 }
 
-export const Venue = ({ offerer, venue, isFirstVenue }: VenueProps) => {
+export const Venue = ({ offerer, venue, isFirstVenue = false }: VenueProps) => {
   const shouldShowVenueOfferSteps = shouldShowVenueOfferStepsForVenue(venue)
 
   const [prevInitialOpenState, setPrevInitialOpenState] = useState(

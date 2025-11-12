@@ -68,34 +68,29 @@ export const setSelectedOffererById = createAsyncThunk<
       nextCurrentOffererName =
         offererNames.find((offerer) => offerer.id === nextSelectedOffererId) ??
         null
+      assertOrFrontendError(
+        nextCurrentOffererName,
+        '`nextCurrentOffererName` is null.'
+      )
 
       const nextCurrentOfferer = await api.getOfferer(nextSelectedOffererId)
-      assertOrFrontendError(
-        nextCurrentOfferer,
-        '`nextCurrentOfferer` is undefined.'
-      )
 
       dispatch(updateCurrentOfferer(nextCurrentOfferer))
 
-      const nextSelectedVenue = venues.find(
+      const nextSelectedVenueListItem = venues.find(
         (venue) => venue.managingOffererId === nextSelectedOffererId
       )
       assertOrFrontendError(
-        nextSelectedVenue,
-        '`nextSelectedVenue` is undefined.'
+        nextSelectedVenueListItem,
+        '`nextSelectedVenueListItem` is undefined.'
       )
+      const nextSelectedVenue = await api.getVenue(nextSelectedVenueListItem.id)
 
       const newAccess = nextCurrentOfferer.isOnboarded
         ? 'full'
         : 'no-onboarding'
       dispatch(updateUserAccess(newAccess))
-      dispatch(
-        setCurrentOffererName(
-          offererNames.find(
-            (offerer) => offerer.id === nextSelectedOffererId
-          ) ?? null
-        )
-      )
+      dispatch(setCurrentOffererName(nextCurrentOffererName))
       dispatch(setSelectedVenue(nextSelectedVenue))
 
       localStorage.setItem(SAVED_OFFERER_ID_KEY, String(nextSelectedOffererId))

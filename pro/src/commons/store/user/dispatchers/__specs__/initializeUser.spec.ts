@@ -11,6 +11,7 @@ import {
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 import { initializeUser } from '../initializeUser'
@@ -18,6 +19,7 @@ import { initializeUser } from '../initializeUser'
 vi.mock('@/apiClient/api', () => ({
   api: {
     listOfferersNames: vi.fn(),
+    getVenue: vi.fn(),
     getVenues: vi.fn(),
     getOfferer: vi.fn(),
     signout: vi.fn(),
@@ -50,6 +52,9 @@ describe('initializeUser', () => {
       id: 200,
       isOnboarded: true,
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 201, managingOffererId: 200 })
+    )
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '100')
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '101')
@@ -86,6 +91,9 @@ describe('initializeUser', () => {
         makeVenueListItem({ id: 202, managingOffererId: 200 }),
       ],
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 201, managingOffererId: 200 })
+    )
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 200,
@@ -132,6 +140,9 @@ describe('initializeUser', () => {
       id: 200,
       isOnboarded: true,
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 201, managingOffererId: 200 })
+    )
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '200')
 
@@ -166,6 +177,9 @@ describe('initializeUser', () => {
         makeVenueListItem({ id: 202, managingOffererId: 200 }),
       ],
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
+    )
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
       ...defaultGetOffererResponseModel,
       id: 100,
@@ -193,12 +207,14 @@ describe('initializeUser', () => {
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
     const store = configureTestStore()
 
     await store.dispatch(initializeUser(user)).unwrap()
 
     expect(apiGetOffererSpy).not.toHaveBeenCalled()
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
     const state = store.getState()
     expect(state.user.access).toBe('no-offerer')
@@ -215,9 +231,12 @@ describe('initializeUser', () => {
       status: 403,
       body: {},
     })
+    const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
     const store = configureTestStore()
     await store.dispatch(initializeUser(user)).unwrap()
+
+    expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
     const state = store.getState()
     expect(state.user.access).toBe('unattached')
@@ -239,6 +258,9 @@ describe('initializeUser', () => {
     vi.spyOn(api, 'getVenues').mockResolvedValue({
       venues: [makeVenueListItem({ id: 101, managingOffererId: 100 })],
     })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({ id: 101, managingOffererId: 100 })
+    )
     vi.spyOn(api, 'getOfferer').mockRejectedValue(
       new ApiError(
         { method: 'DELETE', url: '' },

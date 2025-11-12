@@ -272,6 +272,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   hasAdageId: true,
   hasOffers: true,
   hasActiveIndividualOffer: true,
+  hasPartnerPage: false,
   isOpenToPublic: true,
   isVirtual: false,
   managingOfferer: {

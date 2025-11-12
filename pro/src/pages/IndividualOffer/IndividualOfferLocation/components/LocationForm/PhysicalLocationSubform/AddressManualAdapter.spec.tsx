@@ -46,7 +46,7 @@ const renderAddressManualAdapter = ({
       isDigital: false,
     })
     const initialValues = getInitialValuesFromOffer(offer, {
-      offerVenue: makeVenueListItem({}),
+      offerVenue: makeVenueListItem({ id: 2 }),
     })
     const form = useForm({
       defaultValues: initialValues,

@@ -65,6 +65,7 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
   const venue: VenueListItemResponseModel = props?.venue
     ? (props.venue as VenueListItemResponseModel)
     : makeVenueListItem({
+        id: 2,
         address: {
           id: 1,
           id_oa: 10,
@@ -422,7 +423,10 @@ describe('<PhysicalLocationSubform />', () => {
       '@/commons/errors/handleUnexpectedError'
     )
     // Start on venue address, go to other, then back (error path when venue.address is undefined)
-    const venueWithoutAddress = makeVenueListItem({ address: undefined })
+    const venueWithoutAddress = makeVenueListItem({
+      id: 2,
+      address: undefined,
+    })
     renderPhysicalLocationSubform({
       props: {
         venue: venueWithoutAddress as unknown as VenueListItemResponseModel,

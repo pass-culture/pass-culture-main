@@ -128,10 +128,7 @@ export const PartnerPage = ({
       <VenueOfferSteps
         className={styles['venue-offer-steps']}
         offerer={offerer}
-        venue={{
-          ...venue,
-          hasCreatedOffer: venue.hasOffers,
-        }}
+        venue={venue}
         hasVenue
         isInsidePartnerBlock
       />

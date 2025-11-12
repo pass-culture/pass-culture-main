@@ -27,6 +27,7 @@ import {
   categoryFactory,
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
+  makeVenueListItem,
   subcategoryFactory,
   venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
@@ -716,7 +717,10 @@ describe('IndividualOfferDetailsScreenNext', () => {
         renderDetailsScreen({
           props: {
             venues: [
-              venueListItemFactory({
+              makeVenueListItem({
+                id: 2,
+                // Auto-generated `VenueTypeCode` enum is completely wrong:
+                // real keys are those declared in api/src/pcapi/core/offerers/schemas.py
                 venueTypeCode: 'RECORD_STORE' as VenueTypeCode,
               }),
             ],
