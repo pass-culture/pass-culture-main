@@ -4,10 +4,11 @@ import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { ShareLink } from '@/ui-kit/ShareLink/ShareLink'
 
-type ShareTemplateOfferLinkProps = {
-  offerId: string
+import styles from './ShareTemplateOfferLink.module.scss'
+
+export type ShareTemplateOfferLinkProps = {
+  offerId: number
   notifySuccessMessage?: string
-  maxLength?: number
 }
 
 const ADAGE_BASE_URL =
@@ -26,13 +27,18 @@ export const ShareTemplateOfferLink = ({
     <div>
       <ShareLink
         link={fullLink}
-        label="Lien de partage ADAGE"
+        label="Lien de l’offre"
         notifySuccessMessage={notifySuccessMessage}
       />
-      <div>
-        <Callout variant={CalloutVariant.INFO}>
-          Veillez à préciser aux enseignants de se connecter à ADAGE avant
-          d’ouvrir ce lien de partage sans quoi ils n’y auront pas accès.
+      <div className={styles['callout-container']}>
+        <Callout
+          title="Connexion à ADAGE obligatoire"
+          variant={CalloutVariant.INFO}
+        >
+          <div className={styles['callout-content']}>
+            Veillez à préciser aux enseignants de se connecter à ADAGE avant
+            d’ouvrir ce lien de partage sans quoi ils n’y auront pas accès.
+          </div>
         </Callout>
       </div>
     </div>

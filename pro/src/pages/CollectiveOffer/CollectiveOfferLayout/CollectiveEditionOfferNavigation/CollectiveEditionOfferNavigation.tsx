@@ -21,6 +21,7 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
+import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
@@ -239,7 +240,10 @@ export const CollectiveEditionOfferNavigation = ({
             Créer une offre réservable
           </Button>
         )}
-        {isCollectiveOfferTemplateShareLinkEnabled && <ShareLinkDrawer />}
+        {isCollectiveOfferTemplateShareLinkEnabled &&
+          isCollectiveOfferTemplate(offer) && (
+            <ShareLinkDrawer offerId={offer.id} />
+          )}
       </div>
       {canEditOffer && (
         <NavLinkItems
