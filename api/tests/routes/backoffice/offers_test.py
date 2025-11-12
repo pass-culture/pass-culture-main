@@ -138,8 +138,7 @@ class ListOffersTest(GetEndpointHelper):
     # - fetch session (1 query)
     # - fetch user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    # - fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-    expected_num_queries_with_no_result = 4
+    expected_num_queries_with_no_result = 3
     # - fetch venue addresses and offer addresses (2 x selectinload: 2 queries)
     expected_num_queries_with_results = expected_num_queries_with_no_result + 2
     # - fetch providers (selectinload: 1 query)
@@ -147,8 +146,7 @@ class ListOffersTest(GetEndpointHelper):
 
     def test_list_offers_without_filter(self, authenticated_client, offers):
         # no filter => no query to fetch offers
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 2):
+        with assert_num_queries(self.expected_num_queries_with_no_result - 1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -717,8 +715,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-3-operator": "GREATER_THAN_OR_EQUAL_TO",
             "search-3-price": 120000.20,
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):
+        with assert_num_queries(self.expected_num_queries_with_no_result):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -1061,8 +1058,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-2-operator": "IN",
             "search-2-validation": offers_models.OfferValidationStatus.PENDING.value,
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):
+        with assert_num_queries(self.expected_num_queries_with_no_result):
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 200
 
@@ -1208,8 +1204,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-category": pro_categories.LIVRE.id,
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):  # + rollback - fetch offers
+        with assert_num_queries(self.expected_num_queries_with_no_result):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1221,8 +1216,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-region": "Bretagne",
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):  # + rollback - fetch offers
+        with assert_num_queries(self.expected_num_queries_with_no_result):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1245,8 +1239,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):  # + rollback - fetch offers
+        with assert_num_queries(self.expected_num_queries_with_no_result):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1262,8 +1255,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):  # + rollback - fetch offers
+        with assert_num_queries(self.expected_num_queries_with_no_result):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1278,8 +1270,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "IN",
             "search-0-criteria": "A",
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):  # + rollback - fetch offers
+        with assert_num_queries(self.expected_num_queries_with_no_result):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1291,8 +1282,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "OUT",
             "search-0-category": "13",
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):  # + rollback - fetch offers
+        with assert_num_queries(self.expected_num_queries_with_no_result):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1314,8 +1304,7 @@ class ListOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": value,
         }
-        # no `build_pc_pro_offer_path` call here => no `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        with assert_num_queries(self.expected_num_queries_with_no_result - 1):  # + rollback - fetch offers
+        with assert_num_queries(self.expected_num_queries_with_no_result):  # + rollback - fetch offers
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1861,8 +1850,7 @@ class BatchEditOfferTest(PostEndpointHelper):
         # 1 x update offers (for 3 offers)
         # 1 x insert into offer_criterion (for 3 insertions)
         # 1 x re-fetch to render updated rows (3 queries)
-        # 1 x `build_pc_pro_offer_path` call with `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF check
-        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=10)
+        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=9)
         assert response.status_code == 200
         # ensure rows are rendered
         html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}")
@@ -1911,8 +1899,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", side_effect=((offer_to_display.id,),)
         ) as algolia_mock:
-            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-            with assert_num_queries(self.expected_num_queries_with_results + 1):
+            with assert_num_queries(self.expected_num_queries_with_results):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(query="display", facetFilters=[], numericFilters=[], count=101)
@@ -1939,8 +1926,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", side_effect=((offer_to_display.id,),)
         ) as algolia_mock:
-            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-            with assert_num_queries(self.expected_num_queries_with_results + 1):
+            with assert_num_queries(self.expected_num_queries_with_results):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
@@ -1984,8 +1970,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", side_effect=((offer_to_display.id,),)
         ) as algolia_mock:
-            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-            with assert_num_queries(self.expected_num_queries_with_results + 1):
+            with assert_num_queries(self.expected_num_queries_with_results):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
@@ -2137,8 +2122,7 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         with patch(
             "pcapi.routes.backoffice.offers.blueprint.search_offer_ids", return_value=(offer_to_display.id,)
         ) as algolia_mock:
-            # + fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-            with assert_num_queries(self.expected_num_queries_with_results + 1):
+            with assert_num_queries(self.expected_num_queries_with_results):
                 response = authenticated_client.get(url_for(self.endpoint, **query_args))
                 assert response.status_code == 200
             algolia_mock.assert_called_once_with(
@@ -2401,10 +2385,9 @@ class BatchOfferValidateTest(PostEndpointHelper):
         # select offer (3 in 1 query)
         # update offer (3 in 1 query)
         # fetch the venues for AO label if needed (3 in 1 query)
-        # select FFs (1 query) because of `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` in `build_pc_pro_offer_path`
         # re-fetch updated offers to render updated rows (3 queries)
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=9 + additional_query_count
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=8 + additional_query_count
         )
 
         assert response.status_code == 200
@@ -3586,7 +3569,6 @@ class ActivateOfferTest(PostEndpointHelper):
 
         expected_num_queries = self.expected_num_queries
         expected_num_queries += 3  # re-fetch to render updated offer + venue address + offer address
-        expected_num_queries += 1  # FFs check in `build_pc_pro_offer_path` (`WIP_ENABLE_NEW_OFFER_CREATION_FLOW`)
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -3682,8 +3664,6 @@ class DeactivateOfferTest(PostEndpointHelper):
         expected_num_queries = self.expected_num_queries
         # re-fetch offer to render again + venue address + offer address
         expected_num_queries += 3
-        # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-        expected_num_queries += 1
         response = self.post_to_endpoint(
             authenticated_client,
             offer_id=offer_to_deactivate.id,
@@ -3754,8 +3734,7 @@ class BatchOfferActivateTest(PostEndpointHelper):
     # get offers
     # update offers
     # re-fetch to render updated offer rows (3 queries)
-    # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-    expected_num_queries = 8
+    expected_num_queries = 7
 
     def test_batch_activate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, isActive=False)
@@ -3785,8 +3764,7 @@ class BatchOfferDeactivateTest(PostEndpointHelper):
     # get offers
     # update offers
     # re-fetch to render updated offer rows (3 queries)
-    # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-    expected_num_queries = 8
+    expected_num_queries = 7
 
     def test_batch_deactivate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3)
@@ -3815,7 +3793,6 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
     # session + user + offer with joined data
     expected_num_queries = 3
-    expected_num_queries_with_ff = 4
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(
@@ -3835,7 +3812,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             validation_status_prediction_reason="Cette offre est conforme aux règles de conformité",
         )
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3884,7 +3861,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id, _external=True)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -3901,7 +3878,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         product = offers_factories.ProductFactory(subcategoryId=subcategories.LIVRE_PAPIER.id, name="good book")
         offer = offers_factories.OfferFactory(product=product)
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4025,7 +4002,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4040,7 +4017,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4059,7 +4036,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4085,7 +4062,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
 
         authenticated_client = client.with_bo_session_auth(user)
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4103,7 +4080,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4129,7 +4106,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             price=30,
         ).id
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer (2 x count + pricing point)
 
@@ -4154,7 +4131,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             offer=offer, beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1), price=6.66
         )
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
@@ -4189,7 +4166,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             beginningDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(hours=1),
         )
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 1  # check_can_move_event_offer
 
@@ -4241,7 +4218,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.SEANCE_CINE.id, venue=venue_factory())
         stock = offers_factories.EventStockFactory(offer=offer, quantity=quantity, dnBookedQuantity=booked_quantity)
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4263,7 +4240,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
     def test_get_offer_details_with_soft_deleted_stock(self, authenticated_client):
         stock = offers_factories.EventStockFactory(quantity=0, dnBookedQuantity=0, isSoftDeleted=True)
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4322,7 +4299,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_bronze)
         offers_factories.EventStockFactory(offer=offer, priceCategory=price_free)
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4351,7 +4328,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
             offer=offer, beginningDatetime=now + datetime.timedelta(days=7), isSoftDeleted=True
         )
 
-        query_count = self.expected_num_queries_with_ff
+        query_count = self.expected_num_queries
         query_count += 1  # _get_editable_stock
         query_count += 3  # check_can_move_event_offer
 
@@ -4374,7 +4351,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         # - count stocks with beginningDatetime in the past
         # - count reimbursed bookings
         # - fetch destination venue candidates
-        with assert_num_queries(self.expected_num_queries_with_ff + 4):
+        with assert_num_queries(self.expected_num_queries + 4):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4397,7 +4374,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4409,7 +4386,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(venue__managingOfferer=rule.offerer)
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4421,7 +4398,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         offer = offers_factories.OfferFactory(venue=rule.venue)
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -4437,7 +4414,7 @@ class GetOfferDetailsTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, offer_id=offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
