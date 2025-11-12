@@ -52,3 +52,11 @@ class HttpBodyModel(pydantic_v2.BaseModel):
         allow_inf_nan=False,
         str_strip_whitespace=True,
     )
+
+
+class HttpQueryParamsModel(pydantic_v2.BaseModel):
+    model_config = pydantic_v2.ConfigDict(
+        alias_generator=serialization_utils.to_camel,
+        allow_inf_nan=False,
+        str_strip_whitespace=True,
+    )

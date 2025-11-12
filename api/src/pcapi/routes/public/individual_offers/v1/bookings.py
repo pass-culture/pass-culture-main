@@ -23,7 +23,7 @@ from pcapi.utils.transaction_manager import atomic
 from pcapi.validation.routes.users_authentifications import api_key_required
 from pcapi.validation.routes.users_authentifications import current_api_key
 
-from . import bookings_serialization as serialization
+from .serializers import bookings as serialization
 
 
 def _get_base_booking_query() -> sa_orm.Query:
@@ -141,7 +141,7 @@ def get_bookings_by_offer(
         stock_id=query.stock_id,
         status=query.status,
         beginning_datetime=query.beginning_datetime,
-        firstIndex=query.firstIndex,
+        firstIndex=query.first_index,
         limit=query.limit,
     )
 

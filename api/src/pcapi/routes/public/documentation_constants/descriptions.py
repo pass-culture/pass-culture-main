@@ -58,7 +58,7 @@ You have **three options** for the location:
 BOOKING_STATUS_DESCRIPTION = """
 Booking status explanation:
 
-* `CONFIRMED`: The beneficiary has booked an offer but he didn’t pick it up yet
+* `CONFIRMED`: The beneficiary has booked an offer but they didn’t pick it up yet
 * `USED`: The booking has been validated by the venue and will be reimbursed in the next payment
 * `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider
 * `REIMBURSED` The booking has been reimbursed by pass Culture to the venue

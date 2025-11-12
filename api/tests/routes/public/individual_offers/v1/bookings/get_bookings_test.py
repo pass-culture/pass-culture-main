@@ -37,7 +37,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key=plain_api_key, query_params={"offer_id": offer_id})
+            response = self.make_request(plain_api_key=plain_api_key, query_params={"offerId": offer_id})
             assert response.status_code == 404
 
     def test_should_raise_404_because_venue_provider_is_inactive(self):
@@ -50,7 +50,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key=plain_api_key, query_params={"offer_id": offer_id})
+            response = self.make_request(plain_api_key=plain_api_key, query_params={"offerId": offer_id})
             assert response.status_code == 404
 
     def test_should_raise_404_because_offer_not_found(self):
@@ -68,7 +68,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key=plain_api_key, query_params={"offer_id": product_offer_id + 1})
+            response = self.make_request(plain_api_key=plain_api_key, query_params={"offerId": product_offer_id + 1})
             assert response.status_code == 404
         assert response.json == {"offer": "we could not find this offer id"}
 
@@ -92,7 +92,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         booking_id = booking.id
         with testing.assert_num_queries(num_queries):
             response = self.make_request(
-                plain_api_key, query_params={"offer_id": offer_id, "firstIndex": booking_id + 1}
+                plain_api_key, query_params={"offerId": offer_id, "firstIndex": booking_id + 1}
             )
             print(response.json)
             assert response.status_code == 200
@@ -123,7 +123,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select bookings
         num_queries += 1  # select user
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key, query_params={"offer_id": product_offer_id})
+            response = self.make_request(plain_api_key, query_params={"offerId": product_offer_id})
             assert response.status_code == 200
         assert response.json == {
             "bookings": [
@@ -187,7 +187,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select price_category_label
         num_queries += 1  # select second user
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key, query_params={"offer_id": event_offer_id})
+            response = self.make_request(plain_api_key, query_params={"offerId": event_offer_id})
             assert response.status_code == 200
 
         assert response.json == {
@@ -282,7 +282,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select second user
         with testing.assert_num_queries(num_queries):
             response = self.make_request(
-                plain_api_key, query_params={"offer_id": event_offer_id, "price_category_id": price_category_id}
+                plain_api_key, query_params={"offerId": event_offer_id, "price_category_id": price_category_id}
             )
             assert response.status_code == 200
 
@@ -380,7 +380,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select price_category_label
         with testing.assert_num_queries(num_queries):
             response = self.make_request(
-                plain_api_key, query_params={"offer_id": event_offer_id, "stock_id": event_stock_id}
+                plain_api_key, query_params={"offerId": event_offer_id, "stockId": event_stock_id}
             )
             assert response.status_code == 200
 
@@ -453,7 +453,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select price_category_label
         with testing.assert_num_queries(num_queries):
             response = self.make_request(
-                plain_api_key, query_params={"offer_id": event_offer_id, "beginning_datetime": past}
+                plain_api_key, query_params={"offerId": event_offer_id, "beginningDatetime": past}
             )
             assert response.status_code == 200
 
@@ -527,7 +527,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         event_offer_id = event_offer.id
         with testing.assert_num_queries(num_queries):
             response = self.make_request(
-                plain_api_key, query_params={"offer_id": event_offer_id, "status": "REIMBURSED"}
+                plain_api_key, query_params={"offerId": event_offer_id, "status": "REIMBURSED"}
             )
             assert response.status_code == 200
 
@@ -609,9 +609,9 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(
                 plain_api_key,
                 query_params={
-                    "offer_id": event_offer_id,
+                    "offerId": event_offer_id,
                     "status": "USED",
-                    "beginning_datetime": past + datetime.timedelta(days=2),
+                    "beginningDatetime": past + datetime.timedelta(days=2),
                 },
             )
             assert response.status_code == 200
@@ -685,7 +685,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select second user
         event_offer_id = event_offer.id
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key, query_params={"offer_id": event_offer_id, "limit": 2})
+            response = self.make_request(plain_api_key, query_params={"offerId": event_offer_id, "limit": 2})
             assert response.status_code == 200
 
         assert response.json == {
@@ -783,7 +783,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         booking_2_id = booking_2.id
         with testing.assert_num_queries(num_queries):
             response = self.make_request(
-                plain_api_key, query_params={"offer_id": event_offer_id, "limit": 2, "firstIndex": booking_2_id}
+                plain_api_key, query_params={"offerId": event_offer_id, "limit": 2, "firstIndex": booking_2_id}
             )
             assert response.status_code == 200
 
@@ -854,7 +854,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select bookings
         product_offer_id = product_offer.id
         with testing.assert_num_queries(num_queries):
-            response = self.make_request(plain_api_key, query_params={"offer_id": product_offer_id})
+            response = self.make_request(plain_api_key, query_params={"offerId": product_offer_id})
 
             assert response.status_code == 200
 
@@ -872,4 +872,4 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key)
 
-        assert response.json == {"offerId": ["field required"]}
+        assert response.json == {"offerId": ["Field required"]}
