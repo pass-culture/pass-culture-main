@@ -14,7 +14,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import api as default_api
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import BaseModelV2
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 
 from .spec_tree import add_feature_flag
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def _make_json_response(
-    content: BaseModel | None,
+    content: BaseModel | HttpBodyModel | None,
     status_code: int,
     by_alias: bool,
     exclude_none: bool = False,
@@ -44,7 +44,9 @@ def _make_json_response(
     return response
 
 
-def _make_string_response(content: BaseModel | None, status_code: int, headers: dict | None = None) -> flask.Response:
+def _make_string_response(
+    content: BaseModel | HttpBodyModel | None, status_code: int, headers: dict | None = None
+) -> flask.Response:
     """serializes model, creates JSON response with given status code"""
     if status_code == 204:
         return flask.make_response("", 204)
@@ -75,7 +77,7 @@ def spectree_serialize(
     *,
     headers: type[BaseModel] | None = None,
     cookies: type[BaseModel] | None = None,
-    response_model: type[BaseModel] | type[BaseModelV2] | None = None,
+    response_model: type[BaseModel] | type[HttpBodyModel] | None = None,
     tags: typing.Sequence = (),
     before: typing.Callable | None = None,
     after: typing.Callable | None = None,

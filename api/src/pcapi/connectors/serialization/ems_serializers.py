@@ -1,9 +1,9 @@
 from decimal import Decimal
 
+from pydantic import BaseModel as BaseModelV2
 from pydantic import field_validator
 
 import pcapi.core.offers.models as offers_models
-from pcapi.routes.serialization import BaseModelV2
 
 
 class Session(BaseModelV2):
