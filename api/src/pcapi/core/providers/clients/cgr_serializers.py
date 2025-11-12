@@ -2,10 +2,10 @@ import datetime
 import logging
 from decimal import Decimal
 
+from pydantic import BaseModel as BaseModelV2
 from pydantic import field_validator
 
 from pcapi.core.offers import models as offers_models
-from pcapi.routes.serialization import BaseModelV2
 
 
 logger = logging.getLogger(__name__)

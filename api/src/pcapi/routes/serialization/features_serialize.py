@@ -1,10 +1,10 @@
 from pydantic import ConfigDict
 from pydantic import RootModel
 
-from pcapi.routes.serialization import BaseModelV2
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class FeatureResponseModel(BaseModelV2):
+class FeatureResponseModel(HttpBodyModel):
     description: str
     id: int
     isActive: bool
@@ -14,5 +14,5 @@ class FeatureResponseModel(BaseModelV2):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ListFeatureResponseModel(RootModel, BaseModelV2):
+class ListFeatureResponseModel(RootModel, HttpBodyModel):
     root: list[FeatureResponseModel]

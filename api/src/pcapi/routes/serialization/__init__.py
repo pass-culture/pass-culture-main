@@ -44,9 +44,11 @@ class ConfiguredBaseModel(BaseModel):
 
 # See here -> https://docs.pydantic.dev/latest/migration/
 # for a migration guide from v1 to v2
-class BaseModelV2(pydantic_v2.BaseModel):
+class HttpBodyModel(pydantic_v2.BaseModel):
     model_config = pydantic_v2.ConfigDict(
         alias_generator=serialization_utils.to_camel,
         validate_by_name=True,
         json_encoders={datetime.datetime: format_into_utc_date},
+        allow_inf_nan=False,
+        str_strip_whitespace=True,
     )
