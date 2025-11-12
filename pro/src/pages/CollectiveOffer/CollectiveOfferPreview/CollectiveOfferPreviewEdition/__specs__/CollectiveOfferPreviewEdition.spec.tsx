@@ -93,7 +93,7 @@ describe('CollectiveOfferPreviewCreation', () => {
     )
 
     const shareLinkButton = screen.getByRole('button', {
-      name: 'Partager l’offre',
+      name: 'Partager l’offreNouveau',
     })
 
     expect(shareLinkButton).toBeInTheDocument()

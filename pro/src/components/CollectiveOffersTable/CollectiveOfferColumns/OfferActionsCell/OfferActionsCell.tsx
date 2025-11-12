@@ -39,6 +39,7 @@ import {
 import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
+import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
@@ -70,6 +71,9 @@ export const OfferActionsCell = ({
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
+  const isCollectiveOfferTemplateShareLinkEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'
+  )
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
@@ -340,6 +344,16 @@ export const OfferActionsCell = ({
               </Button>
             </DropdownMenu.Item>
           )}
+          {!isCollectiveOfferBookable(offer) &&
+            isCollectiveOfferTemplateShareLinkEnabled && (
+              <DropdownMenu.Item
+                className={styles['menu-item']}
+                asChild
+                onSelect={(e) => e.preventDefault()}
+              >
+                <ShareLinkDrawer offerId={offer.id} />
+              </DropdownMenu.Item>
+            )}
           {canHideOffer && (
             <DropdownMenu.Item
               className={styles['menu-item']}
