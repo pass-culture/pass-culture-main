@@ -31,7 +31,6 @@ from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 from pcapi.utils.email import anonymize_email
 from pcapi.utils.email import sanitize_email
 from pcapi.utils.siren import complete_siren_or_siret
@@ -268,7 +267,8 @@ def _add_or_update_admin(update_if_exists: bool) -> None:
     admin.add_admin_role()
     admin.firstName = "Jeanne"
     admin.lastName = "Admin"
-    repository.save(admin)
+    db.session.add(admin)
+    db.session.commit()
     logger.info("Created or updated admin user=%s", admin.id)
 
 

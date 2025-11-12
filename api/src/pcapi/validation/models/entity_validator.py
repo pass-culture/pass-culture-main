@@ -1,13 +1,11 @@
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
-from pcapi.core.users.models import User
 from pcapi.models import Model
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.validation.models import has_address_mixin
 from pcapi.validation.models import offer
 from pcapi.validation.models import stock
-from pcapi.validation.models import user
 from pcapi.validation.models.generic import validate_generic
 
 
@@ -24,7 +22,5 @@ def validate(model: Model) -> ApiErrors:
         api_errors = offer.validate(model, api_errors)
     elif isinstance(model, Stock):
         api_errors = stock.validate(model, api_errors)
-    elif isinstance(model, User):
-        api_errors = user.validate(model, api_errors)
 
     return api_errors

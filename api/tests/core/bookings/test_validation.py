@@ -16,7 +16,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import DepositType
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 
 @pytest.mark.usefixtures("db_session")
@@ -260,7 +259,8 @@ class InsufficientFundsSQLCheckTest:
     def _expire_deposit(self, user):
         deposit = user.deposits[0]
         deposit.expirationDate = date_utils.get_naive_utc_now() - timedelta(days=1)
-        repository.save(deposit)
+        db.session.add(deposit)
+        db.session.commit()
 
     def test_insufficient_funds_when_user_has_expired_deposit(self):
         # The user once booked.

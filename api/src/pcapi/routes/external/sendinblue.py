@@ -18,7 +18,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
 from pcapi.routes.external.serialization import sendinblue as serializers
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import repository
 from pcapi.validation.routes.users_authentifications import brevo_webhook
 
 
@@ -45,7 +44,8 @@ def _toggle_marketing_email_subscription(subscribe: bool) -> None:
 
     user.set_marketing_email_subscription(subscribe)
 
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
 
     # Sendinblue is already up-to-date from originating automation, update marketing preference in Batch
     update_external_user(user, skip_sendinblue=True)

@@ -331,7 +331,9 @@ def request_email_update_from_admin(user: models.User, email: str) -> None:
     user.email = email
     user.isEmailValidated = False
 
-    repository.save(email_history, user)
+    db.session.add(email_history)
+    db.session.add(user)
+    db.session.flush()
 
     api.request_email_confirmation(user)
 
