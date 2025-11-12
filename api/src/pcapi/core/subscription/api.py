@@ -33,6 +33,7 @@ from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions
@@ -725,7 +726,11 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
         and (eligibility_api.is_eligible_for_next_recredit_activation_steps(user) or not user.validatedBirthDate)
     ):
         user.validatedBirthDate = birth_date
-        pcapi_repository.save(user)
+        db.session.add(user)
+        if is_managed_transaction():
+            db.session.flush()
+        else:
+            db.session.commit()
 
 
 def _get_subscription_message(

@@ -22,7 +22,6 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models import offer_mixin
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 from pcapi.utils.clean_accents import clean_accents
 
 
@@ -262,7 +261,8 @@ def find_or_create_redactor(information: schemas.RedactorInformation) -> models.
         civility=information.civility,
     )
 
-    repository.save(redactor)
+    db.session.add(redactor)
+    db.session.flush()
     return redactor
 
 

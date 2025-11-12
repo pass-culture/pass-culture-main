@@ -28,7 +28,6 @@ from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRes
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRequest
 from pcapi.routes.native.v1.serialization.authentication import ValidateEmailResponse
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import repository
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 from pcapi.workers import apps_flyer_job
@@ -143,7 +142,8 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
         raise ApiErrors({"code": "WEAK_PASSWORD", "newPassword": ["Le nouveau mot de passe est trop faible"]})
 
     user.setPassword(body.new_password)
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
 
 
 @blueprint.native_route("/validate_email", methods=["POST"])
@@ -161,7 +161,8 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     assert user  # helps mypy
 
     user.isEmailValidated = True
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
     external_attributes_api.update_external_user(user)
 
     if user.externalIds and "apps_flyer" in user.externalIds:

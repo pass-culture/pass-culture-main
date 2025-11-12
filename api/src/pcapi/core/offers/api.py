@@ -1320,7 +1320,7 @@ def create_mediation(
 
     mediation = models.Mediation(author=user, offer=offer, credit=credit)
 
-    repository.add_to_session(mediation)
+    db.session.add(mediation)
     db.session.flush()  # `create_thumb()` requires the object to have an id, so we must flush now.
 
     try:
@@ -1899,7 +1899,7 @@ def create_price_category(
     created_price_category = models.PriceCategory(
         offer=offer, price=price, priceCategoryLabel=price_category_label, idAtProvider=id_at_provider
     )
-    repository.add_to_session(created_price_category)
+    db.session.add(created_price_category)
     db.session.flush()
     return created_price_category
 
@@ -1930,7 +1930,7 @@ def edit_price_category(
             )
         price_category.idAtProvider = id_at_provider
 
-    repository.add_to_session(price_category)
+    db.session.add(price_category)
 
     stocks_to_edit = [stock for stock in offer.stocks if stock.priceCategoryId == price_category.id]
     for stock in stocks_to_edit:

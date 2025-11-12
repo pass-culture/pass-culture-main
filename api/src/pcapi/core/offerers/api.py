@@ -434,7 +434,11 @@ def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.Ven
     venue_contact.phone_number = contact_data.phone_number
     venue_contact.social_medias = contact_data.social_medias or {}
 
-    repository.save(venue_contact)
+    db.session.add(venue_contact)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
     return venue
 
 
@@ -2240,7 +2244,11 @@ def update_offerer_tag(
 
 def create_venue_registration(venue_id: int, target: offerers_models.Target, web_presence: str | None) -> None:
     venue_registration = offerers_models.VenueRegistration(venueId=venue_id, target=target, webPresence=web_presence)
-    repository.save(venue_registration)
+    db.session.add(venue_registration)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     if web_presence:
         for url in web_presence.split(", "):

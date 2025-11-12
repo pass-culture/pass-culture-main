@@ -23,14 +23,6 @@ class ApiErrors(Exception):
     def add_client_error(self, client_error: ClientError | CoreException) -> None:
         self.errors |= client_error.errors
 
-    def check_min_length(self, field: str, value: str, length: int) -> None:
-        if len(value) < length:
-            self.add_error(field, "Tu dois saisir au moins " + str(length) + " caractères.")
-
-    def check_email(self, field: str, value: str) -> None:
-        if "@" not in value:
-            self.add_error(field, "L’email doit contenir un @.")
-
     def __str__(self) -> str:
         if self.errors:
             return json.dumps(self.errors, indent=2)

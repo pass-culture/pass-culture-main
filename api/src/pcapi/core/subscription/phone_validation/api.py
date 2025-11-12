@@ -19,6 +19,7 @@ from pcapi.notifications import sms as sms_notifications
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import repository
 from pcapi.utils import requests
+from pcapi.utils.transaction_manager import is_managed_transaction
 
 from . import constants
 from . import exceptions
@@ -164,7 +165,11 @@ def send_phone_validation_code(
     _ensure_phone_number_unicity(user, phone_data.phone_number, change_owner=False)
 
     user.phoneNumber = phone_data.phone_number
-    repository.save(user)
+    db.session.add(user)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     phone_validation_token = users_api.create_phone_validation_token(
         user,
@@ -214,4 +219,5 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
         thirdPartyId=f"PC-{user.id}",
     )
 
-    repository.save(user, fraud_check)
+    db.session.add(user)
+    repository.save(fraud_check)

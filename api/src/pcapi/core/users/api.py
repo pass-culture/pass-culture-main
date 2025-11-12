@@ -46,13 +46,13 @@ from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
 from pcapi.core.users import models
+from pcapi.core.users.email.update import check_email_address_does_not_exist
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import random_password
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
-from pcapi.utils import repository
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.repository import transaction
@@ -582,17 +582,10 @@ def change_email(
 ) -> None:
     email_history = models.UserEmailHistory.build_validation(user=current_user, new_email=new_email, by_admin=False)
 
-    try:
-        current_user.email = new_email
-        repository.save(current_user, email_history)
-    except ApiErrors as error:
-        # The caller might not want to inform the end client that the
-        # email address exists. To do so, raise a specific error and
-        # let the caller handle this specific case as needed.
-        # Note: email addresses are unique (db constraint)
-        if "email" in error.errors:
-            raise exceptions.EmailExistsError() from error
-        raise
+    current_user.email = new_email
+    db.session.add(current_user)
+    db.session.add(email_history)
+    db.session.commit()
 
     db.session.query(models.UserSession).filter_by(userId=current_user.id).delete(synchronize_session=False)
     db.session.query(models.SingleSignOn).filter_by(userId=current_user.id).delete(synchronize_session=False)
@@ -609,12 +602,17 @@ def change_pro_user_email(
     current_user = users_repository.find_user_by_email(current_email)
     if not current_user or current_user.id != user_id:
         raise exceptions.UserDoesNotExist()
+    check_email_address_does_not_exist(new_email)
     change_email(current_user, new_email)
 
 
 def update_user_password(user: models.User, new_password: str) -> None:
     user.setPassword(new_password)
-    repository.save(user)
+    db.session.add(user)
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def update_password_and_external_user(user: models.User, new_password: str) -> None:
@@ -622,7 +620,8 @@ def update_password_and_external_user(user: models.User, new_password: str) -> N
     if not user.isEmailValidated:
         user.isEmailValidated = True
         external_attributes_api.update_external_user(user)
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
 
 
 def update_user_info(
@@ -711,12 +710,12 @@ def update_user_info(
             batch_extra_data["last_status_update_date"] = date_utils.get_naive_utc_now()
         user.activity = activity.value
 
-    # keep using repository as long as user is validated in pcapi.validation.models.user
     if commit:
         snapshot.add_action()
-        repository.save(user)
+        db.session.add(user)
+        db.session.commit
     else:
-        repository.add_to_session(user)
+        db.session.add(user)
 
     # TODO(prouzet) even for young users, we should probably remove contact with former email from sendinblue lists
     if old_email and user.has_pro_role:
@@ -863,12 +862,14 @@ def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) ->
 
 def set_pro_tuto_as_seen(user: models.User) -> None:
     user.hasSeenProTutorials = True
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
 
 
 def set_pro_rgs_as_seen(user: models.User) -> None:
     user.hasSeenProRgs = True
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
 
 
 def update_last_connection_date(user: models.User) -> None:
@@ -885,7 +886,8 @@ def update_last_connection_date(user: models.User) -> None:
 
     if should_save_last_connection_date:
         user.lastConnectionDate = last_connection_date
-        repository.save(user)
+        db.session.add(user)
+        db.session.commit()
 
     if should_update_sendinblue_last_connection_date:
         external_attributes_api.update_external_user(user, skip_batch=True)
@@ -963,7 +965,8 @@ def update_notification_subscription(
 
 def reset_recredit_amount_to_show(user: models.User) -> None:
     user.recreditAmountToShow = None
-    repository.save(user)
+    db.session.add(user)
+    db.session.commit()
 
 
 def _filter_user_accounts(accounts: sa_orm.Query, search_term: str) -> sa_orm.Query:
@@ -1147,7 +1150,11 @@ def validate_pro_user_email(user: models.User, author_user: models.User | None =
     if author_user:
         history_api.add_action(history_models.ActionType.USER_EMAIL_VALIDATED, author=author_user, user=user)
 
-    repository.save(user)
+    db.session.add(user)
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     # FIXME (prouzet-pass): accept_offerer_invitation_if_exists also add() and commit()... in a loop!
     offerers_api.accept_offerer_invitation_if_exists(user)
@@ -1171,7 +1178,11 @@ def save_trusted_device(device_info: "account_serialization.TrustedDevice", user
         source=device_info.source,
         user=user,
     )
-    repository.save(trusted_device)
+    db.session.add(trusted_device)
+    if transaction_manager.is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def update_login_device_history(
@@ -1197,7 +1208,8 @@ def update_login_device_history(
         user=user,
         location=location,
     )
-    repository.save(login_device)
+    db.session.add(login_device)
+    db.session.commit()
 
     return login_device
 
