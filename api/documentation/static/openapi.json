@@ -1083,14 +1083,14 @@
                 "type": "object"
             },
             "BookingStatus": {
-                "description": "An enumeration.",
                 "enum": [
                     "CONFIRMED",
                     "USED",
                     "CANCELLED",
                     "REIMBURSED"
                 ],
-                "title": "BookingStatus"
+                "title": "BookingStatus",
+                "type": "string"
             },
             "CAPTATION_MUSIQUE_read": {
                 "description": "Captation musicale",
@@ -3905,101 +3905,224 @@
             "GetBookingResponse": {
                 "properties": {
                     "confirmationDate": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "For event offers, deadline for cancellation by the beneficiary.",
-                        "nullable": true,
-                        "title": "Confirmationdate",
-                        "type": "string"
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "title": "Confirmationdate"
                     },
                     "creationDate": {
+                        "description": "Booking creation date (ie. when the beneficiary booked the offer)",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "format": "date-time",
                         "title": "Creationdate",
                         "type": "string"
                     },
                     "id": {
+                        "description": "Booking id",
+                        "example": 12346,
                         "title": "Id",
                         "type": "integer"
                     },
                     "offerAddress": {
-                        "nullable": true,
-                        "title": "Offeraddress",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Offer address",
+                        "example": "4 rue des dames",
+                        "title": "Offeraddress"
                     },
                     "offerDepartmentCode": {
-                        "nullable": true,
-                        "title": "Offerdepartmentcode",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Offer departement code",
+                        "example": "63",
+                        "title": "Offerdepartmentcode"
                     },
                     "offerEan": {
-                        "nullable": true,
-                        "title": "Offerean",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "European Article Number (EAN-13)",
+                        "example": "3700551782888",
+                        "title": "Offerean"
                     },
                     "offerId": {
+                        "description": "Offer id",
+                        "example": 12345,
                         "title": "Offerid",
                         "type": "integer"
                     },
                     "offerName": {
+                        "description": "Offer title",
+                        "example": "Le Petit Prince",
                         "title": "Offername",
                         "type": "string"
                     },
                     "price": {
+                        "description": "Offer price in euro cents",
+                        "example": 1000,
                         "title": "Price",
                         "type": "integer"
                     },
                     "priceCategoryId": {
-                        "nullable": true,
-                        "title": "Pricecategoryid",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Price category id",
+                        "example": 12,
+                        "title": "Pricecategoryid"
                     },
                     "priceCategoryLabel": {
-                        "nullable": true,
-                        "title": "Pricecategorylabel",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Price category label",
+                        "example": "Carr\u00e9 or",
+                        "title": "Pricecategorylabel"
                     },
                     "quantity": {
+                        "description": "Booking quantity (can be either 1 or 2)",
+                        "example": 1,
                         "title": "Quantity",
                         "type": "integer"
                     },
                     "status": {
-                        "$ref": "#/components/schemas/BookingStatus"
+                        "$ref": "#/components/schemas/BookingStatus",
+                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but they didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                        "example": "CONFIRMED"
                     },
                     "stockId": {
+                        "description": "Stock id",
+                        "example": 45,
                         "title": "Stockid",
                         "type": "integer"
                     },
                     "userBirthDate": {
-                        "nullable": true,
-                        "title": "Userbirthdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Beneficiary birth date",
+                        "example": "2025-07-24T14:00:00+02:00",
+                        "title": "Userbirthdate"
                     },
                     "userEmail": {
+                        "description": "Beneficiary email",
+                        "example": "michel.martin@somemail.fr",
                         "title": "Useremail",
                         "type": "string"
                     },
                     "userFirstName": {
-                        "nullable": true,
-                        "title": "Userfirstname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Beneficiary first name",
+                        "example": "Michel",
+                        "title": "Userfirstname"
                     },
                     "userLastName": {
-                        "nullable": true,
-                        "title": "Userlastname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Beneficiary last name",
+                        "example": "Martin",
+                        "title": "Userlastname"
                     },
                     "userPhoneNumber": {
-                        "nullable": true,
-                        "title": "Userphonenumber",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Beneficiary phone number",
+                        "example": "0612345678",
+                        "title": "Userphonenumber"
                     },
                     "userPostalCode": {
-                        "nullable": true,
-                        "title": "Userpostalcode",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Beneficiary postal code",
+                        "example": "75017",
+                        "title": "Userpostalcode"
                     },
                     "venueId": {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                        "example": 535,
                         "title": "Venueid",
                         "type": "integer"
                     },
                     "venueName": {
+                        "description": "Venue public name. If `null`, `legalName` is used instead.",
+                        "example": "pass Culture",
                         "title": "Venuename",
                         "type": "string"
                     }
@@ -4046,12 +4169,19 @@
             "GetFilteredBookingsRequest": {
                 "properties": {
                     "beginningDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                         "example": "2025-07-24T14:00:00+02:00",
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Beginningdatetime",
-                        "type": "string"
+                        "title": "Beginningdatetime"
                     },
                     "firstIndex": {
                         "default": 1,
@@ -4075,28 +4205,45 @@
                         "type": "integer"
                     },
                     "priceCategoryId": {
-                        "description": "Price category id",
-                        "example": 12,
-                        "nullable": true,
-                        "title": "Pricecategoryid",
-                        "type": "integer"
-                    },
-                    "status": {
-                        "allOf": [
+                        "anyOf": [
                             {
-                                "$ref": "#/components/schemas/BookingStatus"
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
-                        "example": "CONFIRMED",
-                        "nullable": true
+                        "default": null,
+                        "description": "Price category id",
+                        "example": 12,
+                        "title": "Pricecategoryid"
+                    },
+                    "status": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/BookingStatus"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but they didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                        "example": "CONFIRMED"
                     },
                     "stockId": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Stock id",
                         "example": 45,
-                        "nullable": true,
-                        "title": "Stockid",
-                        "type": "integer"
+                        "title": "Stockid"
                     }
                 },
                 "required": [
@@ -9473,11 +9620,18 @@
                         "name": "priceCategoryId",
                         "required": false,
                         "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
                             "description": "Price category id",
                             "example": 12,
-                            "nullable": true,
-                            "title": "Pricecategoryid",
-                            "type": "integer"
+                            "title": "Pricecategoryid"
                         }
                     },
                     {
@@ -9486,27 +9640,37 @@
                         "name": "stockId",
                         "required": false,
                         "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
                             "description": "Stock id",
                             "example": 45,
-                            "nullable": true,
-                            "title": "Stockid",
-                            "type": "integer"
+                            "title": "Stockid"
                         }
                     },
                     {
-                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                        "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but they didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
                         "in": "query",
                         "name": "status",
                         "required": false,
                         "schema": {
-                            "allOf": [
+                            "anyOf": [
                                 {
                                     "$ref": "#/components/schemas/BookingStatus"
+                                },
+                                {
+                                    "type": "null"
                                 }
                             ],
-                            "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but he didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
-                            "example": "CONFIRMED",
-                            "nullable": true
+                            "default": null,
+                            "description": "\nBooking status explanation:\n\n* `CONFIRMED`: The beneficiary has booked an offer but they didn\u2019t pick it up yet\n* `USED`: The booking has been validated by the venue and will be reimbursed in the next payment\n* `CANCELLED`: The booking has been cancelled by the beneficiary or by the provider\n* `REIMBURSED` The booking has been reimbursed by pass Culture to the venue\n",
+                            "example": "CONFIRMED"
                         }
                     },
                     {
@@ -9515,12 +9679,19 @@
                         "name": "beginningDatetime",
                         "required": false,
                         "schema": {
+                            "anyOf": [
+                                {
+                                    "format": "date-time",
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
                             "description": "Beginning datetime of the event. The expected format is **[ISO 8601](https://fr.wikipedia.org/wiki/ISO_8601)** (standard format for timezone aware datetime).",
                             "example": "2025-07-24T14:00:00+02:00",
-                            "format": "date-time",
-                            "nullable": true,
-                            "title": "Beginningdatetime",
-                            "type": "string"
+                            "title": "Beginningdatetime"
                         }
                     }
                 ],
