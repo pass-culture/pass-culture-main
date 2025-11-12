@@ -19,13 +19,6 @@ class QuotientFamilialCustodian(BaseModel):
     birth_country_cog_code: str
     birth_city_cog_code: str | None = None
 
-    @field_validator("gender", mode="before")
-    @classmethod
-    def parse_gender(cls, gender: str | users_models.GenderEnum) -> users_models.GenderEnum:
-        if isinstance(gender, str):
-            return users_models.GenderEnum[gender]
-        return gender
-
 
 class QuotientFamilialContent(BaseModel):
     """

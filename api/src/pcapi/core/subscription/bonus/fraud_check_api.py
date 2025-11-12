@@ -6,7 +6,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
-def create_bonus_credit_fraud_check(
+def create_started_bonus_credit_fraud_check(
     user: users_models.User,
     *,
     last_name: str,
@@ -18,15 +18,16 @@ def create_bonus_credit_fraud_check(
     birth_city_cog_code: str | None = None,
     origin: str,
 ) -> subscription_models.BeneficiaryFraudCheck:
-    custodian = bonus_schemas.QuotientFamilialCustodian(
-        last_name=last_name,
-        common_name=common_name,
-        first_names=first_names,
-        birth_date=birth_date,
-        gender=gender,
-        birth_country_cog_code=birth_country_cog_code,
-        birth_city_cog_code=birth_city_cog_code,
-    )
+    custodian_info = {
+        "last_name": last_name,
+        "common_name": common_name,
+        "first_names": first_names,
+        "birth_date": birth_date,
+        "gender": gender,
+        "birth_country_cog_code": birth_country_cog_code,
+        "birth_city_cog_code": birth_city_cog_code,
+    }
+    custodian = bonus_schemas.QuotientFamilialCustodian(**custodian_info)
     fraud_check_content = bonus_schemas.BonusCreditContent(custodian=custodian)
 
     fraud_check = subscription_models.BeneficiaryFraudCheck(
@@ -34,7 +35,7 @@ def create_bonus_credit_fraud_check(
         type=subscription_models.FraudCheckType.BONUS_CREDIT,
         status=subscription_models.FraudCheckStatus.STARTED,
         reason=origin,
-        thirdPartyId=f"bonus-credit-{user.id}",
+        thirdPartyId=f"bonus-credit-{user.id}-{hash(custodian_info)}",
         resultContent=fraud_check_content.dict(),
         eligibilityType=user.eligibility,
     )

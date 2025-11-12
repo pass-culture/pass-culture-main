@@ -200,7 +200,7 @@ def create_quotient_familial_bonus_credit_fraud_check(
             {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligigle à la bonification"},
             status_code=400,
         )
-    fraud_check = bonus_fraud_api.create_bonus_credit_fraud_check(
+    fraud_check = bonus_fraud_api.create_started_bonus_credit_fraud_check(
         user,
         last_name=body.last_name,
         common_name=body.common_name,
