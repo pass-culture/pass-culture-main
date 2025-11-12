@@ -195,9 +195,9 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
             token = token_utils.SixDigitsToken.load_and_check(code, token_utils.TokenType.PHONE_VALIDATION, user.id)
     except users_exceptions.InvalidToken:
         code_validation_attempts = sending_limit.get_code_validation_attempts(app.redis_client, user)
-        if code_validation_attempts.remaining == 0:
-            fraud_api.handle_phone_validation_attempts_limit_reached(user, code_validation_attempts.attempts)
-        raise exceptions.NotValidCode(remaining_attempts=code_validation_attempts.remaining)
+        raise exceptions.NotValidCode(
+            remaining_attempts=code_validation_attempts.remaining, attempts=code_validation_attempts.attempts
+        )
     try:
         phone_number = token.data["phone_number"]
     except KeyError:
@@ -218,6 +218,5 @@ def validate_phone_number(user: users_models.User, code: str) -> None:
         resultContent=subscription_schemas.PhoneValidationFraudData(phone_number=phone_number).dict(exclude_none=True),
         thirdPartyId=f"PC-{user.id}",
     )
-
-    db.session.add(user)
-    repository.save(fraud_check)
+    db.session.add(fraud_check)
+    db.session.flush()

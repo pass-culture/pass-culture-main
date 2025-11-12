@@ -33,6 +33,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
 from pcapi.utils.string import u_nbsp
+from pcapi.utils.transaction_manager import atomic
 
 import tests
 from tests.connectors.beneficiaries.ubble_fixtures import UBBLE_IDENTIFICATION_V2_RESPONSE
@@ -659,8 +660,10 @@ class UbbleWorkflowV1Test:
             ubble_check.thirdPartyId,
             json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
         ):
-            ubble_subscription_api.update_ubble_workflow(ubble_check)
-            ubble_subscription_api.update_ubble_workflow(ubble_check)
+            with atomic():
+                ubble_subscription_api.update_ubble_workflow(ubble_check)
+            with atomic():
+                ubble_subscription_api.update_ubble_workflow(ubble_check)
 
         assert ubble_check.status == subscription_models.FraudCheckStatus.OK
         assert user.has_beneficiary_role is True
@@ -688,9 +691,12 @@ class UbbleWorkflowV1Test:
                 ),
             ],
         )
-        with ubble_mocker(
-            ubble_identification,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        with (
+            ubble_mocker(
+                ubble_identification,
+                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            ),
+            atomic(),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
@@ -774,9 +780,12 @@ class UbbleWorkflowV1Test:
             ],
         )
 
-        with ubble_mocker(
-            fraud_check.thirdPartyId,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        with (
+            ubble_mocker(
+                fraud_check.thirdPartyId,
+                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            ),
+            atomic(),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
@@ -809,9 +818,12 @@ class UbbleWorkflowV1Test:
             ],
         )
 
-        with ubble_mocker(
-            fraud_check.thirdPartyId,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        with (
+            ubble_mocker(
+                fraud_check.thirdPartyId,
+                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            ),
+            atomic(),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
@@ -835,9 +847,12 @@ class UbbleWorkflowV1Test:
             ],
         )
 
-        with ubble_mocker(
-            fraud_check.thirdPartyId,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        with (
+            ubble_mocker(
+                fraud_check.thirdPartyId,
+                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            ),
+            atomic(),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
@@ -876,9 +891,12 @@ class UbbleWorkflowV1Test:
             ],
         )
 
-        with ubble_mocker(
-            fraud_check.thirdPartyId,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        with (
+            ubble_mocker(
+                fraud_check.thirdPartyId,
+                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            ),
+            atomic(),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 
@@ -921,9 +939,12 @@ class UbbleWorkflowV1Test:
             ],
         )
 
-        with ubble_mocker(
-            fraud_check.thirdPartyId,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+        with (
+            ubble_mocker(
+                fraud_check.thirdPartyId,
+                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
+            ),
+            atomic(),
         ):
             ubble_subscription_api.update_ubble_workflow(fraud_check)
 

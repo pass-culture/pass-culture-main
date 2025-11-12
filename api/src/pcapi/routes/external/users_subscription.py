@@ -17,6 +17,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
+from pcapi.utils.transaction_manager import atomic
 from pcapi.validation.routes import dms as dms_validation
 from pcapi.validation.routes import ubble as ubble_validation
 
@@ -50,6 +51,7 @@ def dummy_webook_ubble_v2(body: ubble_serializers.WebhookBodyV2) -> ubble_serial
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
 )
+@atomic()
 def ubble_v2_webhook_update_application_status(
     body: ubble_serializers.WebhookBodyV2,
 ) -> ubble_serializers.WebhookDummyReponse:
@@ -103,6 +105,7 @@ def ubble_v2_webhook_update_application_status(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
 )
+@atomic()
 def ubble_webhook_update_application_status(
     body: ubble_serializers.WebhookRequest,
 ) -> ubble_serializers.WebhookDummyReponse:

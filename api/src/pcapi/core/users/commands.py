@@ -22,6 +22,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.notifications import push
 from pcapi.notifications.push import transactional_notifications
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.transaction_manager import atomic
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -114,7 +115,8 @@ def pro_marketing_live_show_email_last_booking_40_days_ago() -> None:
 def delete_suspended_accounts_after_withdrawal_period() -> None:
     query = users_api.get_suspended_upon_user_request_accounts_since(settings.DELETE_SUSPENDED_ACCOUNTS_SINCE)
     for user in query:
-        users_api.suspend_account(user, reason=users_constants.SuspensionReason.DELETED, actor=None)
+        with atomic():
+            users_api.suspend_account(user, reason=users_constants.SuspensionReason.DELETED, actor=None)
 
 
 @blueprint.cli.command("anonymize_inactive_users")

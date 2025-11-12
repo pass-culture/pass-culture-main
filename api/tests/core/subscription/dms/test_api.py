@@ -30,6 +30,7 @@ from pcapi.core.users.constants import ELIGIBILITY_AGE_18
 from pcapi.core.users.constants import ELIGIBILITY_END_AGE
 from pcapi.models import db
 from pcapi.utils import date as date_utils
+from pcapi.utils.transaction_manager import atomic
 
 from tests.scripts.beneficiary import fixture
 from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
@@ -1326,7 +1327,9 @@ class RunIntegrationTest:
         details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         details.draft_date = date_utils.get_naive_utc_now().isoformat()
         get_applications_with_details.return_value = [details]
-        dms_subscription_api.import_all_updated_dms_applications(6712558)
+
+        with atomic():
+            dms_subscription_api.import_all_updated_dms_applications(6712558)
 
         assert db.session.query(users_models.User).count() == 1
         user = db.session.query(users_models.User).first()

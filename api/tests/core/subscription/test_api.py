@@ -28,6 +28,7 @@ from pcapi.core.users import young_status
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.string import u_nbsp
+from pcapi.utils.transaction_manager import atomic
 
 
 @pytest.mark.usefixtures("db_session")
@@ -881,7 +882,8 @@ class UpdateBirthDateTest:
 
         assert user.validatedBirthDate is None
 
-        subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
+        with atomic():
+            subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
 
         assert user.validatedBirthDate == new_birth_date.date()
 
@@ -892,7 +894,8 @@ class UpdateBirthDateTest:
         assert user.validatedBirthDate == user.dateOfBirth.date()
 
         new_birth_date = user.dateOfBirth - relativedelta(months=2)
-        subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
+        with atomic():
+            subscription_api.update_user_birth_date_if_not_beneficiary(user, new_birth_date)
 
         assert user.validatedBirthDate == new_birth_date.date()
 

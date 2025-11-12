@@ -70,7 +70,6 @@ def on_educonnect_result(
         user=user,
     )
     on_identity_fraud_check_result(user, fraud_check)
-    repository.save(fraud_check)
     return fraud_check
 
 
@@ -396,8 +395,9 @@ def _create_failed_phone_validation_fraud_check(
         eligibilityType=user.eligibility,
         status=subscription_models.FraudCheckStatus.KO,
     )
+    db.session.add(fraud_check)
+    db.session.flush()
 
-    repository.save(fraud_check)
     return fraud_check
 
 
@@ -527,7 +527,6 @@ def validate_frauds(
     fraud_check.status = fraud_check_status
     fraud_check.reason = reason
     fraud_check.reasonCodes = list(reason_codes)
-    repository.save(fraud_check)
 
     return fraud_items
 
@@ -593,7 +592,7 @@ def create_honor_statement_fraud_check(
         eligibilityType=eligibility_type if eligibility_type else user.eligibility,
     )
     db.session.add(fraud_check)
-    db.session.commit()
+    db.session.flush()
 
 
 def handle_ok_manual_review(
@@ -736,7 +735,8 @@ def create_profile_completion_fraud_check(
         eligibilityType=eligibility,
         reason=fraud_check_content.origin,
     )
-    repository.save(fraud_check)
+    db.session.add(fraud_check)
+    db.session.flush()
 
 
 def get_duplicate_beneficiary(fraud_check: subscription_models.BeneficiaryFraudCheck) -> users_models.User | None:
@@ -769,8 +769,6 @@ def invalidate_fraud_check_for_duplicate_user(
         fraud_check.reasonCodes = []
     fraud_check.reasonCodes.append(subscription_models.FraudReasonCode.DUPLICATE_USER)
     fraud_check.reason = f"Fraud check invalidé: duplicat de l'utilisateur {duplicate_user_id}"
-
-    repository.save(fraud_check)
 
 
 def get_duplicate_beneficiary_anonymized_email(

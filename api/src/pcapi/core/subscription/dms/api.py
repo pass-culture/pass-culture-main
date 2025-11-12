@@ -170,8 +170,6 @@ def _process_dms_application(
 
     _update_application_annotations(application_scalar_id, application_content, birth_date_error, fraud_check)
 
-    repository.save(fraud_check)
-
 
 def handle_dms_application(
     dms_application: dms_models.DmsApplicationResponse,
@@ -757,9 +755,8 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
         return
 
     latest_dms_import_record.isProcessing = True
-    repository.save(latest_dms_import_record)
-    processed_applications: list = []
 
+    processed_applications: list = []
     try:
         client = dms_connector_api.DMSGraphQLClient()
 
@@ -794,7 +791,9 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
         isProcessing=False,
         processedApplications=processed_applications,
     )
-    repository.save(latest_dms_import_record, new_import_record)
+    db.session.add(new_import_record)
+    db.session.flush()
+
     logger.info(
         "[DMS] End import of all applications from Démarches Simplifiées for procedure %s - Processed %s applications",
         procedure_number,

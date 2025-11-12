@@ -1,5 +1,6 @@
 import logging
 
+import flask
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
 from flask import current_app as app
@@ -13,6 +14,7 @@ from pcapi.core import token as token_utils
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.mails.transactional.users.pre_anonymize_beneficiary import send_beneficiary_pre_anonymization_email
 from pcapi.core.subscription import api as subscription_api
+from pcapi.core.subscription import fraud_check_api
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -32,7 +34,6 @@ from pcapi.routes.native.security import authenticated_maybe_inactive_user_requi
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import postal_code as postal_code_utils
-from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
 
 from .. import blueprint
@@ -116,10 +117,8 @@ def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserPr
 
 
 @blueprint.native_route("/profile/email_update/cancel", methods=["POST"])
-@spectree_serialize(
-    on_success_status=204,
-    api=blueprint.api,
-)
+@spectree_serialize(on_success_status=204, api=blueprint.api)
+@atomic()
 def cancel_email_update(body: serializers.ChangeBeneficiaryEmailBody) -> None:
     try:
         email_api.update.cancel_email_update_request(body.token)
@@ -361,42 +360,47 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
 
 
 @blueprint.native_route("/validate_phone_number", methods=["POST"])
-@spectree_serialize(api=blueprint.api, on_success_status=204)
+@spectree_serialize(api=blueprint.api, on_success_status=204, raw_response=True)
 @authenticated_and_active_user_required
-def validate_phone_number(user: users_models.User, body: serializers.ValidatePhoneNumberRequest) -> None:
-    with transaction():
-        try:
-            phone_validation_api.validate_phone_number(user, body.code)
-        except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
-            raise api_errors.ApiErrors(
+@atomic()
+def validate_phone_number(user: users_models.User, body: serializers.ValidatePhoneNumberRequest) -> flask.Response:
+    try:
+        phone_validation_api.validate_phone_number(user, body.code)
+    except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
+        raise api_errors.ApiErrors(
+            {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
+            status_code=400,
+        )
+    except phone_validation_exceptions.NotValidCode as error:
+        if error.remaining_attempts == 0:
+            # when failing the phone validation, we store a new fraud check that should not be rolled back by atomic
+            # to avoid rolling back, we manually return a raw 400 response instead of raising an ApiError
+            fraud_check_api.handle_phone_validation_attempts_limit_reached(user, error.attempts)
+            return flask.make_response(
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
-                status_code=400,
+                400,
             )
-        except phone_validation_exceptions.NotValidCode as error:
-            if error.remaining_attempts == 0:
-                raise api_errors.ApiErrors(
-                    {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
-                    status_code=400,
-                )
-            raise api_errors.ApiErrors(
-                {
-                    "message": f"Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste {error.remaining_attempts} tentative{'s' if error.remaining_attempts and error.remaining_attempts > 1 else ''}.",
-                    "code": "INVALID_VALIDATION_CODE",
-                },
-                status_code=400,
-            )
-        except phone_validation_exceptions.InvalidPhoneNumber:
-            raise api_errors.ApiErrors(
-                {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
-            )
-        except phone_validation_exceptions.PhoneVerificationException:
-            raise api_errors.ApiErrors(
-                {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
-            )
+        raise api_errors.ApiErrors(
+            {
+                "message": f"Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste {error.remaining_attempts} tentative{'s' if error.remaining_attempts and error.remaining_attempts > 1 else ''}.",
+                "code": "INVALID_VALIDATION_CODE",
+            },
+            status_code=400,
+        )
+    except phone_validation_exceptions.InvalidPhoneNumber:
+        raise api_errors.ApiErrors(
+            {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
+        )
+    except phone_validation_exceptions.PhoneVerificationException:
+        raise api_errors.ApiErrors(
+            {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
+        )
 
-        is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
-        if not is_activated:
-            external_attributes_api.update_external_user(user)
+    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+    if not is_activated:
+        external_attributes_api.update_external_user(user)
+
+    return flask.make_response("", 204)
 
 
 @blueprint.native_route("/phone_validation/remaining_attempts", methods=["GET"])
@@ -413,6 +417,7 @@ def phone_validation_remaining_attempts(user: users_models.User) -> serializers.
 @blueprint.native_route("/account/suspend", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
+@atomic()
 def suspend_account(user: users_models.User) -> None:
     try:
         api.suspend_account(user, reason=constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
