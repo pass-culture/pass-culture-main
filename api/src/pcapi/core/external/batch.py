@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from functools import partial
 
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.finance.models as finance_models
@@ -13,6 +14,7 @@ from pcapi.notifications.push.trigger_events import BatchEvent
 from pcapi.notifications.push.trigger_events import TrackBatchEventRequest
 from pcapi.notifications.push.trigger_events import TrackBatchEventsRequest
 from pcapi.tasks import batch_tasks
+from pcapi.utils.transaction_manager import on_commit
 
 
 logger = logging.getLogger(__name__)
@@ -35,8 +37,8 @@ def update_user_attributes(
     )
     payload = batch_tasks.UpdateBatchAttributesRequest(attributes=formatted_attributes, user_id=user_id)
 
-    batch_tasks.update_user_attributes_android_task.delay(payload)
-    batch_tasks.update_user_attributes_ios_task.delay(payload)
+    on_commit(partial(batch_tasks.update_user_attributes_android_task.delay, payload))
+    on_commit(partial(batch_tasks.update_user_attributes_ios_task.delay, payload))
 
 
 def format_user_attributes(
@@ -141,7 +143,7 @@ def track_deposit_activated_event(user_id: int, deposit: finance_models.Deposit)
     event_name = BatchEvent.USER_DEPOSIT_ACTIVATED
     event_payload = {"deposit_type": deposit.type.value, "deposit_amount": round(deposit.amount)}
     payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
-    batch_tasks.track_event_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def track_account_recredited(user_id: int, deposit: finance_models.Deposit, deposit_count: int) -> None:
@@ -155,7 +157,7 @@ def track_account_recredited(user_id: int, deposit: finance_models.Deposit, depo
         "deposit_expiration_date": _format_date(deposit.expirationDate),
     }
     payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
-    batch_tasks.track_event_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def track_identity_check_started_event(user_id: int, fraud_check_type: subscription_models.FraudCheckType) -> None:
@@ -163,7 +165,7 @@ def track_identity_check_started_event(user_id: int, fraud_check_type: subscript
     payload = TrackBatchEventRequest(
         event_name=event_name, event_payload={"type": fraud_check_type.value}, user_id=user_id
     )
-    batch_tasks.track_event_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def track_ubble_ko_event(user_id: int, reason_code: subscription_models.FraudReasonCode) -> None:
@@ -171,21 +173,21 @@ def track_ubble_ko_event(user_id: int, reason_code: subscription_models.FraudRea
     payload = TrackBatchEventRequest(
         event_name=event_name, event_payload={"error_code": reason_code.value}, user_id=user_id
     )
-    batch_tasks.track_event_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def track_offer_added_to_favorites_event(user_id: int, offer: offers_models.Offer) -> None:
     event_name = BatchEvent.HAS_ADDED_OFFER_TO_FAVORITES
     formatted_offer_attributes = _format_offer_attributes(offer)
     payload = TrackBatchEventRequest(event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id)
-    batch_tasks.track_event_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def track_offer_booked_event(user_id: int, offer: offers_models.Offer) -> None:
     event_name = BatchEvent.HAS_BOOKED_OFFER
     formatted_offer_attributes = _format_offer_attributes(offer)
     payload = TrackBatchEventRequest(event_name=event_name, event_payload=formatted_offer_attributes, user_id=user_id)
-    batch_tasks.track_event_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def track_booking_cancellation(booking: bookings_models.Booking) -> None:
@@ -205,7 +207,7 @@ def track_booking_cancellation(booking: bookings_models.Booking) -> None:
         "formatted_offer_price": format_price(booking.total_amount, user),
     }
     payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user.id)
-    batch_tasks.track_event_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
 
 
 def send_users_reminders_for_offer(user_ids: list[int], offer: offers_models.Offer) -> None:
@@ -219,4 +221,4 @@ def send_users_reminders_for_offer(user_ids: list[int], offer: offers_models.Off
         )
 
     payload = TrackBatchEventsRequest(trigger_events=trigger_events)
-    batch_tasks.track_event_bulk_task.delay(payload)
+    on_commit(partial(batch_tasks.track_event_bulk_task.delay, payload))

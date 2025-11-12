@@ -79,6 +79,7 @@ def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
 @blueprint.native_route("/subscription/profile", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def complete_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
     try:
         subscription_api.complete_profile(
@@ -120,6 +121,7 @@ def get_activity_types(user: users_models.User) -> serializers.ActivityTypesResp
 @blueprint.native_route("/subscription/honor_statement", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def create_honor_statement_fraud_check(user: users_models.User) -> None:
     fraud_api.create_honor_statement_fraud_check(user, "statement from /subscription/honor_statement endpoint")
 

@@ -10,6 +10,7 @@ from pcapi.core.subscription.ubble.api import recover_pending_ubble_applications
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
 from pcapi.utils import date as date_utils
 from pcapi.utils.blueprint import Blueprint
+from pcapi.utils.transaction_manager import atomic
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -47,7 +48,8 @@ def import_all_updated_dms_applications(since: str | None = None) -> None:
         if not procedure_id:
             logger.info("Skipping DMS %s because procedure id is empty", procedure_name)
             continue
-        dms_api.import_all_updated_dms_applications(procedure_id, forced_since=forced_since)
+        with atomic():
+            dms_api.import_all_updated_dms_applications(procedure_id, forced_since=forced_since)
 
 
 @blueprint.cli.command("handle_inactive_dms_applications_cron")

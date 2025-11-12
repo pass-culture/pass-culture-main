@@ -253,22 +253,13 @@ def _create_new_deposit_and_transfer_funds(
 
 
 def expire_current_deposit_for_user(user: users_models.User) -> None:
-    """
-    This function locks the user deposits for update.
-    Make sure this function is only called in transactions to free the lock if anything happens.
-    """
-    deposits = (
-        db.session.query(models.Deposit)
-        .filter(
-            models.Deposit.userId == user.id,
-            models.Deposit.expirationDate > date_utils.get_naive_utc_now(),
-        )
-        .with_for_update()
-        .all()
-    )
+    deposits = [
+        deposit
+        for deposit in user.deposits
+        if deposit.expirationDate is not None and deposit.expirationDate > date_utils.get_naive_utc_now()
+    ]
     for deposit in deposits:
         deposit.expirationDate = date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5)
-    db.session.flush()
 
 
 def _create_deposit(

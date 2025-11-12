@@ -64,6 +64,7 @@ class UbbleV2EndToEndTest:
             ).dict(exclude_none=True),
         )
 
+        user_id = user.id  # keep access to the id even after the user is expunged from the session
         with requests_mock.Mocker() as requests_mocker:
             self._start_ubble_workflow(user, client, requests_mocker)
             self._receive_and_ignore_verification_pending_webhook_notification(user, ubble_client)
@@ -72,7 +73,7 @@ class UbbleV2EndToEndTest:
                 user, client, ubble_client, requests_mocker
             )
 
-            user = _refresh_user(user)
+            user = _refresh_user(user_id)
             assert user.eligibility == users_models.EligibilityType.AGE17_18
             assert user.age < 18
 
@@ -85,7 +86,7 @@ class UbbleV2EndToEndTest:
                 user, client, ubble_client, requests_mocker
             )
 
-            user = _refresh_user(user)
+            user = _refresh_user(user_id)
             assert user.eligibility == users_models.EligibilityType.AGE17_18
             assert user.age >= 18
 
@@ -139,12 +140,13 @@ class UbbleV2EndToEndTest:
             json=fixtures.ID_VERIFICATION_REFUSED_RESPONSE,
         )
 
+        user_id = user.id
         response = ubble_client.post(
             "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_REFUSED_WEBHOOK_BODY
         )
         assert response.status_code == 200, response.json
 
-        user = _refresh_user(user)
+        user = _refresh_user(user_id)
         (ubble_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
@@ -172,12 +174,13 @@ class UbbleV2EndToEndTest:
             json=fixtures.ID_CHECKS_IN_PROGRESS_RESPONSE,
         )
 
+        user_id = user.id
         response = ubble_client.post(
             "/webhooks/ubble/v2/application_status", json=fixtures.ID_CHECKS_IN_PROGRESS_WEBHOOK_BODY
         )
         assert response.status_code == 200, response.json
 
-        user = _refresh_user(user)
+        user = _refresh_user(user_id)
         (ubble_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
@@ -193,12 +196,13 @@ class UbbleV2EndToEndTest:
             json=fixtures.ID_VERIFICATION_APPROVED_RESPONSE,
         )
 
+        user_id = user.id
         response = ubble_client.post(
             "/webhooks/ubble/v2/application_status", json=fixtures.ID_VERIFICATION_APPROVED_WEBHOOK_BODY
         )
         assert response.status_code == 200, response.json
 
-        user = _refresh_user(user)
+        user = _refresh_user(user_id)
         ubble_fraud_checks = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
@@ -216,11 +220,11 @@ class UbbleV2EndToEndTest:
         assert response.status_code == 204, response.json
 
 
-def _refresh_user(user: users_models.User) -> users_models.User:
+def _refresh_user(user_id: int) -> users_models.User:
     """
     Celery task transactions expunge the current user, so we must refetch them after each task
     """
-    return db.session.scalar(sa.select(users_models.User).where(users_models.User.id == user.id))
+    return db.session.scalar(sa.select(users_models.User).where(users_models.User.id == user_id))
 
 
 class UbbleDummyWebhookTest:

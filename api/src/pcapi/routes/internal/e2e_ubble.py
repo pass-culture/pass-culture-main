@@ -14,7 +14,7 @@ from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import repository
+from pcapi.utils.transaction_manager import atomic
 
 
 class UbbleError(enum.Enum):
@@ -34,6 +34,7 @@ class E2EUbbleIdCheck(BaseModel):
 @blueprint.native_route("/ubble_identification/e2e", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
+@atomic()
 def ubble_identification(user: users_models.User, body: E2EUbbleIdCheck) -> None:
     content = make_identification_response(user, body.errors)
     fraud_check = subscription_api.initialize_identity_fraud_check(
@@ -43,7 +44,6 @@ def ubble_identification(user: users_models.User, body: E2EUbbleIdCheck) -> None
         third_party_id=str(content.identification_id),
         user=user,
     )
-    repository.save(fraud_check)
     ubble_fraud_api.on_ubble_result(fraud_check)
     subscription_api.activate_beneficiary_if_no_missing_step(user=user)
 

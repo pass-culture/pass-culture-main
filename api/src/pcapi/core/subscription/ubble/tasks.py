@@ -11,6 +11,7 @@ from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,8 @@ def update_ubble_workflow_task(payload: ubble_schemas.UpdateWorkflowPayload) -> 
 
     for fraud_check in fraud_checks_to_update:
         try:
-            ubble_api.update_ubble_workflow(fraud_check)
+            with atomic():
+                ubble_api.update_ubble_workflow(fraud_check)
         except Exception as e:
             logger.error(
                 "Error while updating pending ubble application",

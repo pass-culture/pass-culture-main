@@ -55,7 +55,7 @@ from pcapi.routes.serialization import users as users_serialization
 from pcapi.utils import phone_number as phone_number_utils
 from pcapi.utils import transaction_manager
 from pcapi.utils.clean_accents import clean_accents
-from pcapi.utils.repository import transaction
+from pcapi.utils.repository import atomic
 from pcapi.utils.requests import ExternalAPIException
 
 
@@ -403,7 +403,7 @@ def suspend_account(
         the application in order to access to some restricted actions.
     """
 
-    with transaction():
+    with atomic():
         user.isActive = False
         user.remove_admin_role()
         db.session.add(user)

@@ -34,6 +34,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
+from pcapi.utils.transaction_manager import atomic
 
 from . import errors
 from . import exceptions
@@ -72,12 +73,10 @@ def update_ubble_workflow_with_status(
     """
     if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        pcapi_repository.save(fraud_check)
         return
 
     if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        pcapi_repository.save(fraud_check)
         return
 
     if status not in CONCLUSIVE_STATUSES:
@@ -96,12 +95,10 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
     status = content.status
     if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        pcapi_repository.save(fraud_check)
         return
 
     if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        pcapi_repository.save(fraud_check)
         return
 
     if status not in CONCLUSIVE_STATUSES:
@@ -462,7 +459,8 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
         else:
             for fraud_check in pending_ubble_application_fraud_checks:
                 try:
-                    update_ubble_workflow(fraud_check)
+                    with atomic():
+                        update_ubble_workflow(fraud_check)
                 except Exception:
                     logger.error(
                         "Error while updating pending ubble application",

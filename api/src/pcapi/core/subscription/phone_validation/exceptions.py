@@ -45,6 +45,7 @@ class UserAlreadyBeneficiary(PhoneVerificationException):
 
 
 class NotValidCode(PhoneVerificationException):
-    def __init__(self, remaining_attempts: int | None = None):
+    def __init__(self, remaining_attempts: int, attempts: int):
         self.remaining_attempts = remaining_attempts
+        self.attempts = attempts
         super().__init__()
