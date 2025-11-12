@@ -379,6 +379,16 @@ export const CollectiveActionsCells = ({
                 </Button>
               </DropdownMenu.Item>
             )}
+            {!isCollectiveOfferBookable(offer) &&
+              isCollectiveOfferTemplateShareLinkEnabled && (
+                <DropdownMenu.Item
+                  className={styles['menu-item']}
+                  asChild
+                  onSelect={(e) => e.preventDefault()}
+                >
+                  <ShareLinkDrawer offerId={offer.id} />
+                </DropdownMenu.Item>
+              )}
             {isBookingCancellable && (
               <>
                 <DropdownMenu.Separator
@@ -422,12 +432,6 @@ export const CollectiveActionsCells = ({
                 </DropdownMenu.Item>
               </>
             )}
-            {!isCollectiveOfferBookable(offer) &&
-              isCollectiveOfferTemplateShareLinkEnabled && (
-                <DropdownMenu.Label className={cn(styles['menu-item'])}>
-                  <ShareLinkDrawer />
-                </DropdownMenu.Label>
-              )}
           </DropdownMenuWrapper>
         )}
         <DuplicateOfferDialog

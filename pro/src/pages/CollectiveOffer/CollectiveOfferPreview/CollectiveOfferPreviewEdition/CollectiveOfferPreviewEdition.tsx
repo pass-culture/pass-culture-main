@@ -30,7 +30,7 @@ export const CollectiveOfferPreviewEdition = ({
       {isCollectiveOfferTemplate(offer) &&
         isCollectiveOfferTemplateShareLinkEnabled && (
           <div className={styles['share-link-drawer']}>
-            <ShareLinkDrawer />
+            <ShareLinkDrawer offerId={offer.id} />
           </div>
         )}
       <PreviewHeader offer={offer} />
