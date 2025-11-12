@@ -753,7 +753,7 @@ class HonorStatementTest:
 
 
 class BonusTest:
-    @patch("pcapi.celery_tasks.api_particulier.get_quotient_familial_task.delay")
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
     def test_create_bonus_fraud_check(self, mocked_task, client):
         user = users_factories.BeneficiaryFactory()
 
@@ -774,7 +774,7 @@ class BonusTest:
         (bonus_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == subscription_models.FraudCheckType.BONUS_CREDIT
+            if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
         ]
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert bonus_fraud_check.resultContent == {

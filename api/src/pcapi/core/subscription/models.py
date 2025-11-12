@@ -15,7 +15,7 @@ from pcapi.utils.db import MagicEnum
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.subscription.bonus.schemas import BonusCreditContent
+    from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
     from pcapi.core.subscription.jouve.schemas import JouveContent
@@ -27,7 +27,7 @@ if typing.TYPE_CHECKING:
 
 
 class FraudCheckType(enum.Enum):
-    BONUS_CREDIT = "bonus_credit"
+    QF_BONUS_CREDIT = "qf_bonus_credit"
     DMS = "dms"
     EDUCONNECT = "educonnect"
     HONOR_STATEMENT = "honor_statement"
@@ -93,6 +93,11 @@ class FraudReasonCode(enum.Enum):
     PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
     SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
 
+    # Specific to API Particulier
+    CUSTODIAN_NOT_FOUND = "quotient_familial_not_found"
+    NOT_IN_TAX_HOUSEHOLD = "not_in_tax_household"
+    QUOTIENT_FAMILIAL_TOO_HIGH = "quotient_familial_too_high"
+
     # Deprecated, kept for backward compatibility
     ALREADY_BENEFICIARY = "already_beneficiary"
     ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
@@ -124,7 +129,7 @@ VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
 
 
 FraudCheckContent = typing.Union[
-    "BonusCreditContent",
+    "QuotientFamilialBonusCreditContent",
     "DMSContent",
     "EduconnectContent",
     "UbbleContent",
@@ -138,7 +143,7 @@ FraudCheckContent = typing.Union[
 
 
 def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckContent]]:
-    from pcapi.core.subscription.bonus.schemas import BonusCreditContent
+    from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
     from pcapi.core.subscription.dms.schemas import DMSContent
     from pcapi.core.subscription.educonnect.schemas import EduconnectContent
     from pcapi.core.subscription.jouve.schemas import JouveContent
@@ -149,7 +154,7 @@ def get_fraud_check_content_mapping() -> dict[FraudCheckType, type[FraudCheckCon
     from pcapi.core.subscription.ubble.schemas import UbbleContent
 
     return {
-        FraudCheckType.BONUS_CREDIT: BonusCreditContent,
+        FraudCheckType.QF_BONUS_CREDIT: QuotientFamilialBonusCreditContent,
         FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContent,
         FraudCheckType.DMS: DMSContent,
         FraudCheckType.EDUCONNECT: EduconnectContent,
