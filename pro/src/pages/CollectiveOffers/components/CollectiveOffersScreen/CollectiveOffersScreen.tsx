@@ -29,9 +29,9 @@ import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOff
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import styles from './CollectiveOffersScreen.module.scss'
@@ -224,18 +224,9 @@ export const CollectiveOffersScreen = ({
           <Pagination
             currentPage={page}
             pageCount={pageCount}
-            onPreviousPageClick={() => {
-              applyUrlFiltersAndRedirect({
-                ...urlSearchFilters,
-                page: page - 1,
-              })
-            }}
-            onNextPageClick={() => {
-              applyUrlFiltersAndRedirect({
-                ...urlSearchFilters,
-                page: page + 1,
-              })
-            }}
+            onPageClick={(page) =>
+              applyUrlFiltersAndRedirect({ ...urlSearchFilters, page })
+            }
           />
         </div>
       )}
