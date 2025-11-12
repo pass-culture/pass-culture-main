@@ -23,6 +23,10 @@ type PaginationProps = {
    * Callback function triggered when a page is clicked.
    */
   onPageClick: (page: number) => void
+  /**
+   * Force the mobile view mode.
+   */
+  forceMobile?: boolean
 }
 
 export const Pagination = ({
@@ -30,8 +34,10 @@ export const Pagination = ({
   currentPage,
   pageCount,
   onPageClick,
+  forceMobile = false,
 }: PaginationProps): JSX.Element | null => {
-  const isMobile = useMediaQuery('(max-width: 38.125rem)')
+  const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
+  const isMobile = forceMobile ?? isSmallScreen
 
   // At least 2 pages are needed to display something, else we just display nothing
   if (pageCount <= 1) {
