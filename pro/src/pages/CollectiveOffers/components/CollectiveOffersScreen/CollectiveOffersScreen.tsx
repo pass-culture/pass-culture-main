@@ -22,7 +22,7 @@ import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTab
 import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from '@/components/NoData/NoData'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 
 import styles from './CollectiveOffersScreen.module.scss'
 import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/CollectiveOffersSearchFilters'
@@ -191,21 +191,13 @@ export const CollectiveOffersScreen = ({
               <Pagination
                 currentPage={page}
                 pageCount={pageCount}
-                onPreviousPageClick={() => {
-                  applyUrlFiltersAndRedirect({
-                    ...urlSearchFilters,
-                    page: page - 1,
-                  })
-                }}
-                onNextPageClick={() => {
-                  applyUrlFiltersAndRedirect({
-                    ...urlSearchFilters,
-                    page: page + 1,
-                  })
-                }}
+                onPageClick={(page) =>
+                  applyUrlFiltersAndRedirect({ ...urlSearchFilters, page })
+                }
               />
             </div>
           )}
+          {/** biome-ignore lint/a11y/useSemanticElements: We want to use a div with a role="status" to avoid alerting the user */}
           <div role="status">
             {selectedOffers.length > 0 && (
               <CollectiveOffersActionsBar

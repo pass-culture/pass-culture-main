@@ -18,7 +18,7 @@ import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/C
 import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from '@/components/NoData/NoData'
 import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
 import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters/TemplateOffersSearchFilters'
@@ -183,20 +183,13 @@ export const TemplateCollectiveOffersScreen = ({
               <Pagination
                 currentPage={page}
                 pageCount={pageCount}
-                onPreviousPageClick={() => {
+                onPageClick={(page) =>
                   applyUrlFiltersAndRedirect({
                     ...urlSearchFilters,
                     offererId: offererId?.toString() ?? '',
-                    page: page - 1,
+                    page,
                   })
-                }}
-                onNextPageClick={() => {
-                  applyUrlFiltersAndRedirect({
-                    ...urlSearchFilters,
-                    offererId: offererId?.toString() ?? '',
-                    page: page + 1,
-                  })
-                }}
+                }
               />
             </div>
           )}

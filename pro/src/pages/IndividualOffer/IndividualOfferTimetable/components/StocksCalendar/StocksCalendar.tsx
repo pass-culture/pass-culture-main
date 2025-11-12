@@ -21,11 +21,11 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -274,13 +274,12 @@ export function StocksCalendar({
             <div className={styles['pagination']}>
               <Pagination
                 currentPage={page}
-                onNextPageClick={() => setPage((p) => p + 1)}
-                onPreviousPageClick={() => setPage((p) => p - 1)}
                 pageCount={
                   data.stockCount % STOCKS_PER_PAGE === 0
                     ? data.stockCount / STOCKS_PER_PAGE
                     : Math.trunc(data.stockCount / STOCKS_PER_PAGE) + 1
                 }
+                onPageClick={setPage}
               />
             </div>
           </div>
