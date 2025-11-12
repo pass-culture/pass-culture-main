@@ -21,7 +21,7 @@ export const ShareLinkButton = forwardRef<
         {...props}
       >
         Partager l’offre
-        <Tag label="Nouveau" variant={TagVariant.NEW} />
+        <Tag label="Nouveau" variant={TagVariant.NEW} aria-hidden="true" />
       </Button>
     </div>
   )
