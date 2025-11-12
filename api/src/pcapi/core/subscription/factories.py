@@ -101,6 +101,7 @@ class UbbleContentFactory(factory.Factory):
     birth_date = (date.today() - relativedelta(years=18, months=4)).isoformat()
     first_name = factory.Faker("first_name")
     last_name = factory.Faker("last_name")
+    gender = users_models.GenderEnum.M
     document_type: str | None = None
     id_document_number: str | None = None
     score: float | None = None
@@ -153,24 +154,15 @@ class QuotientFamilialCustodianFactory(factory.Factory):
     first_names = factory.Faker("random_elements", elements=["Jérôme", "Charles", "Bernard"])
     common_name: str | None = None
     birth_date = factory.Faker("date_of_birth", minimum_age=20)
-    gender = "F"
+    gender = users_models.GenderEnum.F
     birth_country_cog_code = "91100"
     birth_city_cog_code = "08480"
     quotient_familial: None = None
 
-    @classmethod
-    def _create(
-        cls, model_class: type[bonus_schemas.QuotientFamilialCustodian], *args: typing.Any, **kwargs: typing.Any
-    ) -> bonus_schemas.QuotientFamilialCustodian:
-        obj = model_class(*args, **kwargs)
-        # Force string gender to avoid it being rendered as an Enum
-        obj.gender = random.choice([e.name for e in users_models.GenderEnum])  # type: ignore[assignment]
-        return obj
 
-
-class BonusCreditContentFactory(factory.Factory):
+class QuotientFamilialBonusCreditContentFactory(factory.Factory):
     class Meta:
-        model = bonus_schemas.BonusCreditContent
+        model = bonus_schemas.QuotientFamilialBonusCreditContent
 
     custodian = factory.SubFactory(QuotientFamilialCustodianFactory)
 
@@ -181,7 +173,7 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, typ
     subscription_models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
     subscription_models.FraudCheckType.HONOR_STATEMENT: None,
     subscription_models.FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContentFactory,
-    subscription_models.FraudCheckType.BONUS_CREDIT: BonusCreditContentFactory,
+    subscription_models.FraudCheckType.QF_BONUS_CREDIT: QuotientFamilialBonusCreditContentFactory,
 }
 
 
@@ -311,5 +303,5 @@ class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
 
 
 class BonusFraudCheckFactory(BeneficiaryFraudCheckFactory):
-    type = subscription_models.FraudCheckType.BONUS_CREDIT
+    type = subscription_models.FraudCheckType.QF_BONUS_CREDIT
     status = subscription_models.FraudCheckStatus.OK

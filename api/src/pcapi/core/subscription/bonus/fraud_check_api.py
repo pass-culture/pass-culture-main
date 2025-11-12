@@ -27,15 +27,15 @@ def create_bonus_credit_fraud_check(
         birth_country_cog_code=birth_country_cog_code,
         birth_city_cog_code=birth_city_cog_code,
     )
-    fraud_check_content = bonus_schemas.BonusCreditContent(custodian=custodian)
+    fraud_check_content = bonus_schemas.QuotientFamilialBonusCreditContent(custodian=custodian)
 
     fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
-        type=subscription_models.FraudCheckType.BONUS_CREDIT,
+        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
         status=subscription_models.FraudCheckStatus.STARTED,
         reason=origin,
-        thirdPartyId=f"bonus-credit-{user.id}",
-        resultContent=fraud_check_content.dict(),
+        thirdPartyId=f"qf-bonus-credit-{user.id}",
+        resultContent=fraud_check_content.model_dump(),
         eligibilityType=user.eligibility,
     )
     db.session.add(fraud_check)

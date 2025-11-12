@@ -565,7 +565,7 @@ class AccountTest:
     def test_get_user_profile_non_eligible_for_bonification_because_of_process_status(self, client, status):
         user = users_factories.BeneficiaryFactory(age=18)
         subscription_factories.BeneficiaryFraudCheckFactory(
-            type=subscription_models.FraudCheckType.BONUS_CREDIT,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=status,
             user=user,
         )
