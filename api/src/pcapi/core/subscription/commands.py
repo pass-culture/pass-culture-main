@@ -37,4 +37,5 @@ def activate_user(user_id: int) -> None:
     user = db.session.get(users_models.User, user_id)
     if user is None:
         raise ValueError(f"User {user_id} not found")
-    subscription_api.activate_beneficiary_if_no_missing_step(user)
+    with atomic():
+        subscription_api.activate_beneficiary_if_no_missing_step(user)

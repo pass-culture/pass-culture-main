@@ -1,8 +1,7 @@
 import datetime
 import logging
 import typing
-
-from sqlalchemy import exc as sqlalchemy_exceptions
+from functools import partial
 
 import pcapi.core.finance.conf as finance_conf
 import pcapi.core.finance.exceptions as finance_exceptions
@@ -28,11 +27,13 @@ from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import eligibility_api
 from pcapi.core.users import models as users_models
+from pcapi.core.users import repository as users_repository
 from pcapi.core.users import utils as users_utils
 from pcapi.core.users import young_status as young_status_module
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
+from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers import apps_flyer_job
 
 from . import exceptions
@@ -46,17 +47,9 @@ FREE_ELIGIBILITY_DEPOSIT_SOURCE = "complétion du profil"
 
 
 def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
-    user_id = user.id  # keep id to avoid PendingRollbackError when falling into IntegrityError
-
     # ensure the FOR UPDATE lock is freed if anything arises
-    with pcapi_repository.transaction():
-        user = (
-            db.session.query(users_models.User)
-            .filter(users_models.User.id == user_id)
-            .populate_existing()
-            .with_for_update()
-            .one()
-        )
+    with pcapi_repository.atomic():
+        user = users_repository.get_and_lock_user(user.id)
 
         subscription_state_machine = subscription_machines.create_state_machine_to_current_state(user)
         if (
@@ -81,11 +74,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
                 return False
 
             source_data = typing.cast(subscription_schemas.IdentityCheckContent, identity_fraud_check.source_data())
-            try:
-                users_api.update_user_information_from_external_source(user, source_data)
-            except sqlalchemy_exceptions.IntegrityError as e:
-                logger.warning("The user information could not be updated", extra={"exc": str(e), "user": user_id})
-                return False
+            users_api.update_user_information_from_external_source(user, source_data)
 
             deposit_source = identity_fraud_check.get_detailed_source()
         else:
@@ -95,7 +84,7 @@ def activate_beneficiary_if_no_missing_step(user: users_models.User) -> bool:
             activate_beneficiary_for_eligibility(user, deposit_source, eligibility_to_activate)
         except (finance_exceptions.DepositTypeAlreadyGrantedException, finance_exceptions.UserHasAlreadyActiveDeposit):
             # this error may happen on identity provider concurrent requests
-            logger.info("A deposit already exists for user %s", user_id)
+            logger.info("A deposit already exists for user %s", user.id)
             return False
 
         return True
@@ -108,14 +97,13 @@ def activate_beneficiary_for_eligibility(
 ) -> users_models.User:
     eligibility_api.check_eligibility_is_applicable_to_user(eligibility, user)
 
-    with pcapi_repository.transaction():
-        deposit = deposit_api.upsert_deposit(
-            user,
-            deposit_source=deposit_source,
-            eligibility=eligibility,
-        )
-        activated_eligibility = eligibility_api.get_activated_eligibility(deposit.type)
-        eligibility_api.add_eligibility_role(user, activated_eligibility)
+    deposit = deposit_api.upsert_deposit(
+        user,
+        deposit_source=deposit_source,
+        eligibility=eligibility,
+    )
+    activated_eligibility = eligibility_api.get_activated_eligibility(deposit.type)
+    eligibility_api.add_eligibility_role(user, activated_eligibility)
     logger.info("Activated beneficiary and created deposit", extra={"user": user.id, "source": deposit.source})
 
     transactional_mails.send_accepted_as_beneficiary_email(user=user)
@@ -123,7 +111,7 @@ def activate_beneficiary_for_eligibility(
     batch.track_deposit_activated_event(user.id, deposit)
 
     if user.externalIds and "apps_flyer" in user.externalIds:
-        apps_flyer_job.log_user_becomes_beneficiary_event_job.delay(user.id)
+        on_commit(partial(apps_flyer_job.log_user_becomes_beneficiary_event_job.delay, user.id))
 
     return user
 
@@ -641,6 +629,8 @@ def _update_fraud_check_eligibility_with_history(
         reasonCodes=fraud_check.reasonCodes,
         eligibilityType=eligibility,
     )
+    db.session.add(new_fraud_check)
+
     # Cancel the old fraud check
     fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
     reason_message = "Eligibility type changed by the identity provider"
@@ -653,8 +643,6 @@ def _update_fraud_check_eligibility_with_history(
         fraud_check.reasonCodes = []
     fraud_check.reasonCodes.append(subscription_models.FraudReasonCode.ELIGIBILITY_CHANGED)
     fraud_check.thirdPartyId = f"{DEPRECATED_UBBLE_PREFIX}{fraud_check.thirdPartyId}"
-
-    pcapi_repository.save(fraud_check, new_fraud_check)
 
     return new_fraud_check
 
@@ -725,7 +713,6 @@ def update_user_birth_date_if_not_beneficiary(user: users_models.User, birth_dat
         and (eligibility_api.is_eligible_for_next_recredit_activation_steps(user) or not user.validatedBirthDate)
     ):
         user.validatedBirthDate = birth_date
-        pcapi_repository.save(user)
 
 
 def _get_subscription_message(
@@ -762,7 +749,8 @@ def initialize_identity_fraud_check(
         status=subscription_models.FraudCheckStatus.STARTED,
         eligibilityType=eligibility_type,
     )
-    pcapi_repository.save(fraud_check)
+    db.session.add(fraud_check)
+    db.session.flush()
     batch.track_identity_check_started_event(user.id, fraud_check.type)
     return fraud_check
 

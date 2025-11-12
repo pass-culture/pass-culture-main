@@ -23,6 +23,7 @@ from pcapi.models.api_errors import UnauthorizedError
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
+from pcapi.utils.repository import atomic
 
 from . import blueprint
 
@@ -66,6 +67,7 @@ def login_educonnect(user: users_models.User) -> Response:
 @blueprint.saml_blueprint.route("educonnect/login/e2e", methods=["POST"])
 @spectree_serialize(json_format=False)
 @authenticated_and_active_user_required
+@atomic()
 def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.EduconnectUserE2ERequest) -> Response:
     if not settings.IS_E2E_TESTS:
         return redirect(ERROR_PAGE_URL, code=302)
@@ -89,6 +91,7 @@ def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.E
 
 
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
+@atomic()
 def on_educonnect_authentication_response() -> Response:
     saml_response = request.form.get("SAMLResponse")
     if saml_response is None:
