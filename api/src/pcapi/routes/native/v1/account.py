@@ -363,40 +363,40 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
 @blueprint.native_route("/validate_phone_number", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
+@atomic()
 def validate_phone_number(user: users_models.User, body: serializers.ValidatePhoneNumberRequest) -> None:
-    with transaction():
-        try:
-            phone_validation_api.validate_phone_number(user, body.code)
-        except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
+    try:
+        phone_validation_api.validate_phone_number(user, body.code)
+    except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
+        raise api_errors.ApiErrors(
+            {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
+            status_code=400,
+        )
+    except phone_validation_exceptions.NotValidCode as error:
+        if error.remaining_attempts == 0:
             raise api_errors.ApiErrors(
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
                 status_code=400,
             )
-        except phone_validation_exceptions.NotValidCode as error:
-            if error.remaining_attempts == 0:
-                raise api_errors.ApiErrors(
-                    {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
-                    status_code=400,
-                )
-            raise api_errors.ApiErrors(
-                {
-                    "message": f"Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste {error.remaining_attempts} tentative{'s' if error.remaining_attempts and error.remaining_attempts > 1 else ''}.",
-                    "code": "INVALID_VALIDATION_CODE",
-                },
-                status_code=400,
-            )
-        except phone_validation_exceptions.InvalidPhoneNumber:
-            raise api_errors.ApiErrors(
-                {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
-            )
-        except phone_validation_exceptions.PhoneVerificationException:
-            raise api_errors.ApiErrors(
-                {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
-            )
+        raise api_errors.ApiErrors(
+            {
+                "message": f"Le code est invalide. Saisis le dernier code reçu par SMS. Il te reste {error.remaining_attempts} tentative{'s' if error.remaining_attempts and error.remaining_attempts > 1 else ''}.",
+                "code": "INVALID_VALIDATION_CODE",
+            },
+            status_code=400,
+        )
+    except phone_validation_exceptions.InvalidPhoneNumber:
+        raise api_errors.ApiErrors(
+            {"message": "Le numéro de téléphone est invalide", "code": "INVALID_PHONE_NUMBER"}, status_code=400
+        )
+    except phone_validation_exceptions.PhoneVerificationException:
+        raise api_errors.ApiErrors(
+            {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
+        )
 
-        is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
-        if not is_activated:
-            external_attributes_api.update_external_user(user)
+    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+    if not is_activated:
+        external_attributes_api.update_external_user(user)
 
 
 @blueprint.native_route("/phone_validation/remaining_attempts", methods=["GET"])

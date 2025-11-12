@@ -7,6 +7,7 @@ import re
 import shutil
 import tempfile
 import typing
+from functools import partial
 
 import flask
 import sqlalchemy as sa
@@ -33,6 +34,8 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
+from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 from . import errors
 from . import exceptions
@@ -71,12 +74,10 @@ def update_ubble_workflow_with_status(
     """
     if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        pcapi_repository.save(fraud_check)
         return
 
     if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        pcapi_repository.save(fraud_check)
         return
 
     if status not in CONCLUSIVE_STATUSES:
@@ -95,12 +96,10 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
     status = content.status
     if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        pcapi_repository.save(fraud_check)
         return
 
     if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        pcapi_repository.save(fraud_check)
         return
 
     if status not in CONCLUSIVE_STATUSES:
@@ -234,7 +233,8 @@ def _reattempt_identity_verification(
         ubble_response_status_code = e.args[0].get("status_code") if e.args else None
         has_state_conflict = ubble_response_status_code == 409
         if has_state_conflict:
-            update_ubble_workflow(ubble_fraud_check)
+            with atomic():
+                update_ubble_workflow(ubble_fraud_check)
 
         raise
 
@@ -313,7 +313,7 @@ def _dispatch_reminder(user: users_models.User, error_code: subscription_models.
     if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_EMAIL_REMINDER:
         transactional_mails.send_subscription_document_error_email(user.email, error_code)
     if error_code in ubble_fraud_constants.REASON_CODE_REQUIRING_IMMEDIATE_NOTIFICATION_REMINDER:
-        track_ubble_ko_event(user.id, error_code)
+        on_commit(partial(track_ubble_ko_event, user.id, error_code))
 
 
 def handle_validation_errors(
@@ -447,7 +447,8 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
         pending_ubble_application_counter += len(pending_ubble_application_fraud_checks)
         for fraud_check in pending_ubble_application_fraud_checks:
             try:
-                update_ubble_workflow(fraud_check)
+                with atomic():
+                    update_ubble_workflow(fraud_check)
             except Exception:
                 logger.error(
                     "Error while updating pending ubble application",
