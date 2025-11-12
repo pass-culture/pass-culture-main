@@ -22,6 +22,7 @@ class DmsInstructorAnnotationEnum(enum.Enum):
     AH = "AH"  # Attestation d'Hébergement
     AD = "AD"  # Adresse
     DN = "DN"  # Date de naissance
+    LN = "LN"  # Lieu de naissance
     IDM = "IDM"  # ID manquante
     IDN = "IDN"  # Erreur n° ID
     IDP = "IDP"  # ID périmée
