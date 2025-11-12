@@ -207,7 +207,6 @@ class ReindexOfferIdsTest:
             app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, "")
 
         num_queries = 1  # base query for indexation
-        num_queries += 1  # FF
         num_queries += 1  # last30DaysBookings
         num_queries += 1  # venues from offers
         num_queries += 1  # artists from offers

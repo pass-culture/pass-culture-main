@@ -33,11 +33,12 @@ class FeatureToggleTest:
 
         assert FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
-    def test_is_active_returns_false_when_feature_is_inactive(self):
+    def test_is_active_returns_false_when_feature_is_inactive(self, _features_context):
         feature = db.session.query(Feature).filter_by(name=FeatureToggle.SYNCHRONIZE_ALLOCINE.name).first()
         feature.isActive = False
         db.session.add(feature)
         db.session.commit()
+        _features_context.refresh_cache()
 
         assert not FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
 
@@ -47,7 +48,7 @@ class FeatureToggleTest:
         db.session.add(feature)
         db.session.commit()
 
-        with assert_num_queries(1):
+        with assert_num_queries(0):
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
@@ -63,7 +64,7 @@ class FeatureToggleTest:
 
         # we don't cache yet outside the scope of a request so it'll be 3 DB queries
         try:
-            with assert_num_queries(3):
+            with assert_num_queries(0):
                 FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
                 FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
                 FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
@@ -74,7 +75,7 @@ class FeatureToggleTest:
         assert _cv_request.get(None) is not None
 
     def test_one_request_for_all_flags(self):
-        with assert_num_queries(1):
+        with assert_num_queries(0):
             FeatureToggle.SYNCHRONIZE_ALLOCINE.is_active()
             FeatureToggle.DISABLE_CGR_EXTERNAL_BOOKINGS.is_active()
             FeatureToggle.ALGOLIA_BOOKINGS_NUMBER_COMPUTATION.is_active()

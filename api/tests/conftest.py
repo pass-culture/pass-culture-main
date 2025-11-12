@@ -42,7 +42,7 @@ from pcapi.core.users import testing as users_testing
 from pcapi.db_utils import clean_all_database
 from pcapi.db_utils import install_database_extensions
 from pcapi.models import db
-from pcapi.models.feature import install_feature_flags
+from pcapi.models import feature
 from pcapi.notifications.internal import testing as internal_notifications_testing
 from pcapi.notifications.push import testing as push_notifications_testing
 from pcapi.notifications.sms import testing as sms_notifications_testing
@@ -115,7 +115,7 @@ def build_backoffice_app():
 
         install_database_extensions()
         run_migrations()
-        install_feature_flags()
+        feature.install_feature_flags()
 
         install_routes(app)
 
@@ -151,7 +151,7 @@ def build_main_app():
 
         install_database_extensions()
         run_migrations()
-        install_feature_flags()
+        feature.install_feature_flags()
 
         yield app
 
@@ -604,26 +604,32 @@ class UbbleTestClient(TestClient):
 
 
 @pytest.fixture
-def features(request):
+def _features_context():
     from pcapi.core.testing import FeaturesContext
+
+    return FeaturesContext()
+
+
+@pytest.fixture(name="features")
+def features_fixture(request, _features_context):
     from pcapi.models.feature import FeatureToggle
 
     marker = request.node.get_closest_marker("features")
-    _features = FeaturesContext()
+
     if marker:
         if kwargs := marker.kwargs:
             if invalid_features := {feature for feature in kwargs if feature not in FeatureToggle._member_names_}:
                 raise ValueError(f"Invalid features to override: {', '.join(invalid_features)}")
             for attr_name, value in kwargs.items():
-                setattr(_features, attr_name, value)
+                setattr(_features_context, attr_name, value)
         else:
             raise ValueError(
                 "Invalid usage of `features` marker, missing features to override.\n"
                 "Eg. @pytest.mark.features(WIP_ENABLE_NEW_FEATURE=True)"
             )
-    yield _features
+    yield _features_context
 
-    _features.reset()
+    _features_context.reset()
 
 
 @pytest.fixture(autouse=True)
@@ -765,3 +771,11 @@ def db_session(_db, mocker, request, app):
 def set_faker_locale():
     with factory.Faker.override_default_locale("fr_FR"):
         yield
+
+
+@pytest.fixture(autouse=True)
+def prefetch_feature_flags(monkeypatch, _features_context):
+    def is_active(self):
+        return getattr(_features_context, self.name)
+
+    monkeypatch.setattr(feature.FeatureToggle, "is_active", is_active)

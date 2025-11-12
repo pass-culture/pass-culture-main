@@ -1,4 +1,4 @@
-import collections.abc
+import collections
 import contextlib
 import functools
 import math
@@ -207,35 +207,46 @@ class SettingsContext:
             setattr(settings, attr_name, value)
 
 
+class FeaturesCache(collections.UserDict):
+    def refresh(self) -> None:
+        self.data = {f.name: f.isActive for f in db.session.query(Feature.name, Feature.isActive)}
+
+
 class FeaturesContext:
     def __init__(self) -> None:
+        cached_features = FeaturesCache()
+        cached_features.refresh()
         # Use `object.__setattr__` because `__setattr__` method is overriden
-        object.__setattr__(self, "_initial_features", {})
+        object.__setattr__(self, "_modified_values", {})
+        object.__setattr__(self, "_cached_features", cached_features)
 
     def __setattr__(self, attr_name: str, value: typing.Any) -> None:
-        self._initial_features[attr_name] = (
-            db.session.query(Feature).filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
-        )
+        self._modified_values[attr_name] = value
         db.session.query(Feature).filter(Feature.name == attr_name).update({"isActive": value})
         db.session.commit()
-        # Clear the feature cache on request if any
-        if flask.has_request_context():
-            if hasattr(flask.request, "_cached_features"):
-                del flask.request._cached_features
 
     def __getattr__(self, attr_name: str) -> typing.Any:
-        return (
-            db.session.query(Feature).filter(Feature.name == attr_name).with_entities(Feature.isActive).one().isActive
-        )
+        return self._modified_values.get(attr_name, self._cached_features[attr_name])
+
+    def refresh_cache(self) -> None:
+        cached_features = object.__getattribute__(self, "_cached_features")
+        cached_features.refresh()
 
     def reset(self) -> None:
-        for name, status in self._initial_features.items():
-            db.session.query(Feature).filter_by(name=name).update({"isActive": status})
+        values_to_reset = {}
+        for name, modified_value in self._modified_values.items():
+            cached_value = self._cached_features[name]
+            if cached_value != modified_value:
+                values_to_reset[name] = cached_value
+
+        features = db.session.query(Feature).filter(Feature.name.in_(list(values_to_reset))).all()
+        for feature in features:
+            feature.isActive = values_to_reset[feature.name]
+            db.session.add(feature)
+
+        if values_to_reset:
             db.session.commit()
-        # Clear the feature cache on request if any
-        if flask.has_request_context():
-            if hasattr(flask.request, "_cached_features"):
-                del flask.request._cached_features
+        object.__setattr__(self, "_modified_values", {})
 
 
 @contextlib.contextmanager

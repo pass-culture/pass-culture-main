@@ -782,7 +782,6 @@ class GetPublicAccountTest(GetEndpointHelper):
     # check if user is waiting to be anonymized
     # user tags (for tag account form display)
     expected_num_queries = 13
-    expected_num_queries_with_ff = expected_num_queries + 1
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
@@ -844,7 +843,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         user = users[index]
 
         user_id = user.id
-        expected_num_queries = self.expected_num_queries_with_ff
+        expected_num_queries = self.expected_num_queries
         if index != 3:
             # check if user should update their account
             expected_num_queries += 1
@@ -892,7 +891,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -909,7 +908,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         users_factories.NewEmailSelectionEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -924,7 +923,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         users_factories.EmailValidationEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -936,7 +935,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         users_factories.EmailAdminUpdateEntryFactory(user=user)
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1013,7 +1012,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         duplicate_user_id = duplicate_user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=duplicate_user_id))
             assert response.status_code == 200
 
@@ -1027,7 +1026,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
         user_id = user.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1065,7 +1064,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         user_id = beneficiary.id
         # check if user should update their account
-        with assert_num_queries(self.expected_num_queries_with_ff + 1):
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1090,7 +1089,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         )
 
         user_id = free_beneficiary.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
 
         assert response.status_code == 200
@@ -1100,7 +1099,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         _, _, _, _, random, _ = create_bunch_of_accounts()
         user_id = random.id
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1129,7 +1128,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         user_id = user.id
         # check if user should update their account
-        with assert_num_queries(self.expected_num_queries_with_ff + 1):
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1179,7 +1178,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         user_id = user.id
         # check if user should update their account
-        with assert_num_queries(self.expected_num_queries_with_ff + 1):
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1197,7 +1196,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         user_id = user.id
         # check if user should update their account
-        with assert_num_queries(self.expected_num_queries_with_ff + 1):
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1269,7 +1268,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         user_id = user.id
         # check if user should update their account
-        with assert_num_queries(self.expected_num_queries_with_ff + 1):
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1336,7 +1335,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         user = users_factories.UserFactory(roles=[users_models.UserRole.ANONYMIZED])
 
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1351,7 +1350,7 @@ class GetPublicAccountTest(GetEndpointHelper):
         tag2 = users_factories.UserTagFactory(label="Ambassadeur B")
         user = users_factories.UserFactory(tags=[tag1, tag2])
         user_id = user.id
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -1366,7 +1365,7 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         user_id = user.id
         # check if user should update their account
-        with assert_num_queries(self.expected_num_queries_with_ff + 1):
+        with assert_num_queries(self.expected_num_queries + 1):
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 200
 
@@ -5211,8 +5210,7 @@ class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
     # authenticated user session
     # authenticated user
     # targeted user by id
-    # feature
-    expected_queries = 4
+    expected_queries = 3
 
     def test_send_public_account_reset_password_email(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()

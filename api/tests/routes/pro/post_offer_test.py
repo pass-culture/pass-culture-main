@@ -244,7 +244,6 @@ class CreateOfferBase:
     success_num_queries += 1  # fetch venue
     success_num_queries += 1  # user offerer check
     success_num_queries += 1  # fetch product
-    success_num_queries += 1  # fetch FF
     success_num_queries += 1  # create offer
     success_num_queries += 1  # fetch mediation
     success_num_queries += 1  # fetch stocks

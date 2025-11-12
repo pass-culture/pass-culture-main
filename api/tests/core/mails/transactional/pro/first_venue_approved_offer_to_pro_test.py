@@ -72,8 +72,7 @@ class SendinblueSendFirstVenueOfferEmailTest:
 
         # offer
         # venue
-        # fetch FFs looking for `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` check in `build_pc_pro_offer_path` (1 query)
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             new_offer_validation_email = get_first_venue_approved_offer_email_data(offer)
 
         assert new_offer_validation_email.template == TransactionalEmail.FIRST_VENUE_APPROVED_OFFER_TO_PRO.value

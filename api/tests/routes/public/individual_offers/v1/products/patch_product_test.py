@@ -517,8 +517,6 @@ class PatchProductTest(PublicAPIVenueEndpointHelper):
         expected_num_queries += 1  # get mediations
         expected_num_queries += 1  # get stocks
 
-        expected_num_queries += 1  # get feature flag
-
         expected_num_queries += 1  # select oa
         expected_num_queries += 1  # update offer
 

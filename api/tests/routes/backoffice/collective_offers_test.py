@@ -1808,7 +1808,6 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     # - fetch CollectiveOffer
     # - _is_collective_offer_price_editable
     expected_num_queries = 4
-    expected_num_queries_with_ff = expected_num_queries + 1  # FF VENUE_REGULARIZATION
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
@@ -1831,7 +1830,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__provider=provider,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1889,7 +1888,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1903,7 +1902,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
 
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1917,7 +1916,10 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
         try:
-            with assert_num_queries(4):
+            # 1. UserSession
+            # 2. User
+            # 3. CollectiveOffer
+            with assert_num_queries(3):
                 response = authenticated_client.get(url)
                 assert response.status_code == 200
         finally:
@@ -1936,7 +1938,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__lastValidationAuthor=legit_user,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1955,7 +1957,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
             collectiveStock__collectiveOffer__rejectionReason=educational_models.CollectiveOfferRejectionReason.MISSING_DESCRIPTION,
         )
         url = url_for(self.endpoint, collective_offer_id=collective_booking.collectiveStock.collectiveOffer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff):
+        with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1969,7 +1971,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         collective_offer = educational_factories.CollectiveOfferFactory(venue__managingOfferer=rule.offerer)
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff - 1):  # no _is_collective_offer_price_editable
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1981,7 +1983,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         collective_offer = educational_factories.CollectiveOfferFactory(venue=rule.venue)
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff - 1):  # no _is_collective_offer_price_editable
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1998,7 +2000,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         )
 
         url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-        with assert_num_queries(self.expected_num_queries_with_ff - 1):  # no _is_collective_offer_price_editable
+        with assert_num_queries(self.expected_num_queries - 1):  # no _is_collective_offer_price_editable
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
