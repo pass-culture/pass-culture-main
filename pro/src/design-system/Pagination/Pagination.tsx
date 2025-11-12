@@ -37,7 +37,7 @@ export const Pagination = ({
   forceMobile = false,
 }: PaginationProps): JSX.Element | null => {
   const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
-  const isMobile = forceMobile ?? isSmallScreen
+  const isMobile = forceMobile || isSmallScreen
 
   // At least 2 pages are needed to display something, else we just display nothing
   if (pageCount <= 1) {
