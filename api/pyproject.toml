@@ -91,7 +91,7 @@ zeep = "4.3.2"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "^4.9.1"
+commitizen = "^4.10.0"
 debugpy = "^1.8.17"
 djlint = "1.36.4"
 jsbeautifier = "1.15.4"  # djlint requires 1.15.1 which is broken
