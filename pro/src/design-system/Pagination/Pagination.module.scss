@@ -21,6 +21,7 @@
 // <nav>
 .pagination-nav {
   display: flex;
+  justify-content: center;
   color: var(--color-text-default);
 
   @include fonts.body-accent-xs;
