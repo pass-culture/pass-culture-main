@@ -176,7 +176,7 @@ class ListIncidentsTest(GetEndpointHelper):
     def test_list_incident_by_collective_booking_id(self, authenticated_client):
         collective_booking = educational_factories.CollectiveBookingFactory()
         incident = finance_factories.CollectiveBookingFinanceIncidentFactory(
-            incident__status=finance_models.IncidentStatus.VALIDATED,
+            incident__status=finance_models.IncidentStatus.INVOICED,
             collectiveBooking=collective_booking,
         ).incident
         # Ensure that incident.id != other_booking.id or other_offer.id
@@ -265,9 +265,13 @@ class ListIncidentsTest(GetEndpointHelper):
         finance_factories.IndividualBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CANCELLED,
         )
+        finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.INVOICED,
+        )
         incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.VALIDATED,
         ).incident
+
         with testing.assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, status=[finance_models.IncidentStatus.VALIDATED.name])
@@ -275,7 +279,7 @@ class ListIncidentsTest(GetEndpointHelper):
             assert response.status_code == 200
 
         rows = html_parser.extract_table_rows(response.data)
-        assert len(rows) == 1  # closed and validated incidents are excluded
+        assert len(rows) == 1
         assert rows[0]["ID"] == str(incident.id)
 
     def test_list_incident_by_incident_kind_commercial_gesture(self, authenticated_client):
@@ -512,8 +516,16 @@ class CancelIncidentTest(PostEndpointHelper):
         assert action_history.authorUser == legit_user
         assert action_history.comment == self.form_data["comment"]
 
-    def test_cancel_already_cancelled_incident(self, authenticated_client):
-        incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.CANCELLED)
+    @pytest.mark.parametrize(
+        "status, wording",
+        [
+            (finance_models.IncidentStatus.CANCELLED, "annulé"),
+            (finance_models.IncidentStatus.VALIDATED, "validé"),
+            (finance_models.IncidentStatus.INVOICED, "remboursé"),
+        ],
+    )
+    def test_cancel_wrong_status_incident(self, authenticated_client, status, wording):
+        incident = finance_factories.FinanceIncidentFactory(status=status)
         self.form_data = {"comment": "L'incident n'est pas conforme"}
 
         response = self.post_to_endpoint(
@@ -522,20 +534,7 @@ class CancelIncidentTest(PostEndpointHelper):
 
         assert response.status_code == 200
 
-        assert "L'incident a déjà été annulé" in html_parser.extract_alert(response.data)
-        assert db.session.query(history_models.ActionHistory).count() == 0
-
-    def test_cancel_already_validated_incident(self, authenticated_client):
-        incident = finance_factories.FinanceIncidentFactory(status=finance_models.IncidentStatus.VALIDATED)
-        self.form_data = {"comment": "L'incident n'est pas conforme"}
-
-        response = self.post_to_endpoint(
-            authenticated_client, finance_incident_id=incident.id, form=self.form_data, follow_redirects=True
-        )
-
-        assert response.status_code == 200
-
-        assert "Impossible d'annuler un incident déjà validé" in html_parser.extract_alert(response.data)
+        assert f"Impossible d'annuler un incident déjà {wording}" in html_parser.extract_alert(response.data)
         assert db.session.query(history_models.ActionHistory).count() == 0
 
 
@@ -735,7 +734,12 @@ class ValidateFinanceOverpaymentIncidentTest(PostEndpointHelper):
         assert partial_incident_events[1].motive == finance_models.FinanceEventMotive.INCIDENT_NEW_PRICE
 
     @pytest.mark.parametrize(
-        "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
+        "initial_status",
+        [
+            finance_models.IncidentStatus.CANCELLED,
+            finance_models.IncidentStatus.VALIDATED,
+            finance_models.IncidentStatus.INVOICED,
+        ],
     )
     def test_not_validate_incident(self, authenticated_client, initial_status):
         finance_incident = finance_factories.FinanceIncidentFactory(status=initial_status)
@@ -835,11 +839,14 @@ class GetBatchFinanceIncidentValidationFormTest(PostEndpointHelper):
         incident3 = finance_factories.IndividualBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CANCELLED,
         ).incident
+        incident4 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.INVOICED,
+        ).incident
 
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "object_ids": f"{incident1.id},{incident2.id},{incident3.id}",
+                "object_ids": f"{incident1.id},{incident2.id},{incident3.id},{incident4.id}",
             },
             headers={"hx-request": "true"},
         )
@@ -905,7 +912,7 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
         assert f"Voulez-vous annuler les {expected_result} sélectionnés ?" in response_text
         assert "Vous allez annuler 2 incident(s). Voulez vous continuer ?" in response_text
 
-    def test_validate_finance_incidents_with_other_status_then_created(self, authenticated_client):
+    def test_cancel_finance_incidents_with_other_status_then_created(self, authenticated_client):
         incident1 = finance_factories.IndividualBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CREATED,
         ).incident
@@ -915,11 +922,14 @@ class GetBatchFinanceIncidentCancellationFormTest(PostEndpointHelper):
         incident3 = finance_factories.IndividualBookingFinanceIncidentFactory(
             incident__status=finance_models.IncidentStatus.CANCELLED,
         ).incident
+        incident4 = finance_factories.IndividualBookingFinanceIncidentFactory(
+            incident__status=finance_models.IncidentStatus.INVOICED,
+        ).incident
 
         response = self.post_to_endpoint(
             authenticated_client,
             form={
-                "object_ids": f"{incident1.id},{incident2.id},{incident3.id}",
+                "object_ids": f"{incident1.id},{incident2.id},{incident3.id},{incident4.id}",
             },
             headers={"hx-request": "true"},
         )
@@ -1201,7 +1211,12 @@ class ValidateFinanceCommercialGestureTest(PostEndpointHelper):
         assert compare_digest(params_2["TOKEN_LIST"], cancelled_booking2.token)
 
     @pytest.mark.parametrize(
-        "initial_status", [finance_models.IncidentStatus.CANCELLED, finance_models.IncidentStatus.VALIDATED]
+        "initial_status",
+        [
+            finance_models.IncidentStatus.CANCELLED,
+            finance_models.IncidentStatus.VALIDATED,
+            finance_models.IncidentStatus.INVOICED,
+        ],
     )
     def test_validate_invalid_commercial_gesture_status(self, authenticated_client, initial_status):
         finance_incident = finance_factories.FinanceCommercialGestureFactory(status=initial_status)
@@ -2483,6 +2498,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
         [
             finance_models.IncidentStatus.CANCELLED,
             finance_models.IncidentStatus.CREATED,
+            finance_models.IncidentStatus.INVOICED,
         ],
     )
     def test_not_force_debit_note(self, authenticated_client, incident_status):
@@ -2514,7 +2530,7 @@ class ForceDebitNoteTest(PostEndpointHelper):
         original_pricing.status = finance_models.PricingStatus.INVOICED
 
         original_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
-            booking=booking, incident__status=finance_models.IncidentStatus.VALIDATED, incident__venue=venue
+            booking=booking, incident__status=finance_models.IncidentStatus.INVOICED, incident__venue=venue
         ).incident
         events_to_price = []
         events_to_price.extend(
@@ -2614,6 +2630,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
         [
             finance_models.IncidentStatus.CANCELLED,
             finance_models.IncidentStatus.CREATED,
+            finance_models.IncidentStatus.INVOICED,
         ],
     )
     def test_not_cancel_debit_note(self, authenticated_client, incident_status):
@@ -2648,7 +2665,7 @@ class CancelDebitNoteTest(PostEndpointHelper):
 
         original_finance_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
             booking=booking,
-            incident__status=finance_models.IncidentStatus.VALIDATED,
+            incident__status=finance_models.IncidentStatus.INVOICED,
             incident__venue=venue,
             incident__forceDebitNote=True,
         ).incident

@@ -216,6 +216,7 @@ class ListIndividualBookingsTest(GetEndpointHelper):
             (finance_models.IncidentStatus.VALIDATED, True),
             (finance_models.IncidentStatus.CREATED, False),
             (finance_models.IncidentStatus.CANCELLED, False),
+            (finance_models.IncidentStatus.INVOICED, True),
         ],
     )
     def test_display_incident_alert(self, authenticated_client, incident_status, display_alert):
