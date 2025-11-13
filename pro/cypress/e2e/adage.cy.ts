@@ -447,8 +447,8 @@ describe('ADAGE discovery', () => {
     })
 
     cy.stepLog({ message: 'I go the the next page of searched offers' })
-    cy.findByTestId('next-page-button').click()
-    cy.findByText('Page 2/19').should('be.visible')
+    cy.findByRole('button', { name: /page suivante/ }).click()
+    cy.findByRole('button', { name: /Page 2 sur 19/ }).should('exist')
 
     cy.stepLog({ message: 'I go to "Mes Favoris" menu' })
     cy.contains('Mes Favoris').click()
@@ -457,6 +457,6 @@ describe('ADAGE discovery', () => {
     cy.contains('Rechercher').click()
 
     cy.stepLog({ message: 'page has not changed' })
-    cy.findByText('Page 2/19').should('be.visible')
+    cy.findByRole('button', { name: /Page 2 sur 19/ }).should('exist')
   })
 })
