@@ -15,8 +15,8 @@ const props = {
   title: 'Titre important très long très long très long très long très',
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   links: [
-    { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
-    { label: 'En savoir moins', href: '#', icon: fullLinkIcon },
+    { label: 'En savoir plus', href: '#', icon: fullLinkIcon, type: 'link' },
+    { label: 'En savoir moins', href: '#', icon: fullLinkIcon, type: 'link' },
   ],
   imageSrc: turtle,
   variant: BannerVariants.DEFAULT,
@@ -80,11 +80,17 @@ describe('Banner', () => {
     renderBanner({
       ...props,
       links: [
-        { label: 'Internal Link', href: '/internal', external: false },
+        {
+          label: 'Internal Link',
+          href: '/internal',
+          external: false,
+          type: 'link',
+        },
         {
           label: 'External Link',
           href: 'https://external.com',
           external: true,
+          type: 'link',
         },
       ],
     })
