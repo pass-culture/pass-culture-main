@@ -17,7 +17,7 @@ import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersTable } from '@/components/CollectiveOffersTable/CollectiveOffersTable'
 import { NoData } from '@/components/NoData/NoData'
-import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Pagination } from '@/ui-kit/Pagination/Pagination'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
