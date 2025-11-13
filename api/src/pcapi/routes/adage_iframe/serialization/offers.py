@@ -162,7 +162,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             isExpired=offer.hasBookingLimitDatetimesPassed,
             isSoldOut=offer.collectiveStock.isSoldOut,
             name=offer.name,
-            collectiveStock=offer.collectiveStock,  # type: ignore[call-arg]
+            stock=offer.collectiveStock,
             venue=offer.venue,
             students=offer.students,
             location=collective_offers_serialize.get_collective_offer_location_model(offer),
@@ -171,7 +171,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             durationMinutes=offer.durationMinutes,
             educationalPriceDetail=offer.collectiveStock.priceDetail,
             domains=offer.domains,
-            institution=offer.institution,
+            educationalInstitution=offer.institution,
             interventionArea=offer.interventionArea,
             imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,

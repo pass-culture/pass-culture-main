@@ -87,13 +87,13 @@ def _create_pro_user(row: dict) -> User:
     now = date_utils.get_naive_utc_now()
 
     user = users_api.create_pro_user(
-        ProUserCreationBodyV2Model(  # type: ignore[call-arg]
+        ProUserCreationBodyV2Model(
             email=row["Mail"],
-            firstName=row["Prénom"],
-            lastName=row["Nom"],
+            first_name=row["Prénom"],
+            last_name=row["Nom"],
             password=_get_password(row),
-            phoneNumber=row["Téléphone"],
-            contactOk=False,
+            phone_number=row["Téléphone"],
+            contact_ok=False,
             token="token",
         )
     )
