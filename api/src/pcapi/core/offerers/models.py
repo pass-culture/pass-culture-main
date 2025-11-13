@@ -221,6 +221,16 @@ class Activity(enum.Enum):
     TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
 
 
+OnboardingActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
+    "OnboardingActivity", {x.name: x.value for x in Activity if x.name not in ("NOT_ASSIGNED", "GAMES_CENTRE")}
+)
+
+
+DisplayedActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
+    "DisplayedActivity", {x.name: x.value for x in Activity if x.name != "NOT_ASSIGNED"}
+)
+
+
 class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
     __tablename__ = "venue"
     thumb_path_component = "venues"
