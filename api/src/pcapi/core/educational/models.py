@@ -1456,8 +1456,7 @@ class EducationalDeposit(PcObject, models.Model):
 
     isFinal: sa_orm.Mapped[bool] = sa_orm.mapped_column(sa.Boolean, nullable=False, default=True)
 
-    # TODO: ministry should be nullable=False
-    ministry: sa_orm.Mapped[Ministry] = sa_orm.mapped_column(sa.Enum(Ministry), nullable=True)
+    ministry: sa_orm.Mapped[Ministry] = sa_orm.mapped_column(sa.Enum(Ministry), nullable=False)
 
     # when a collective booking is confirmed, we find the corresponding deposit depending on the institution, educational year and period
     # if the confirmation date is in the same educational year as the event, the period must contain the confirmation date
