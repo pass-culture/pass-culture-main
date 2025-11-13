@@ -518,9 +518,9 @@ class BaseStockResponse(serialization.ConfiguredBaseModel):
 
     @classmethod
     def build_stock(cls, stock: offers_models.Stock) -> "BaseStockResponse":
-        return cls(  # type: ignore[call-arg]
+        return cls(
             booking_limit_datetime=stock.bookingLimitDatetime,
-            dnBookedQuantity=stock.dnBookedQuantity,
+            bookedQuantity=stock.dnBookedQuantity,
             quantity=stock.quantity if stock.quantity is not None else "unlimited",
         )
 

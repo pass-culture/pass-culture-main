@@ -33,6 +33,7 @@ class BookingRecapResponseStockModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class BookingRecapStatus(Enum):
@@ -62,6 +63,7 @@ class BookingRecapResponseModel(BaseModel):
 
     class Config:
         alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class UserHasBookingResponse(BaseModel):
@@ -127,32 +129,32 @@ def serialize_booking_status_history(
 def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
     stock_beginning_datetime = _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
     booking_date = convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)
-    serialized_booking_recap = BookingRecapResponseModel(  # type: ignore[call-arg]
-        stock={  # type: ignore[arg-type]
-            "offerName": booking.offerName,
-            "offerId": booking.offerId,
-            "eventBeginningDatetime": stock_beginning_datetime.isoformat() if stock_beginning_datetime else None,
-            "offerEan": booking.offerEan,
-            "offerIsEducational": False,
-        },
-        beneficiary={  # type: ignore[arg-type]
-            "lastname": booking.beneficiaryLastname,
-            "firstname": booking.beneficiaryFirstname,
-            "email": booking.beneficiaryEmail,
-            "phonenumber": booking.beneficiaryPhoneNumber,
-        },
-        bookingToken=get_booking_token(
+    serialized_booking_recap = BookingRecapResponseModel(
+        stock=BookingRecapResponseStockModel(
+            offer_name=booking.offerName,
+            offer_id=booking.offerId,
+            event_beginning_datetime=stock_beginning_datetime.isoformat() if stock_beginning_datetime else None,  # type: ignore[arg-type]
+            offer_ean=booking.offerEan,
+            offer_is_educational=False,
+        ),
+        beneficiary=BookingRecapResponseBeneficiaryModel(
+            lastname=booking.beneficiaryLastname,
+            firstname=booking.beneficiaryFirstname,
+            email=booking.beneficiaryEmail,
+            phonenumber=booking.beneficiaryPhoneNumber,
+        ),
+        booking_token=get_booking_token(
             booking.bookingToken,
             booking.status,
             bool(booking.isExternal),
             _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode),
         ),
-        bookingDate=booking_date.isoformat() if booking_date else None,
-        bookingStatus=build_booking_status(booking),
-        bookingIsDuo=booking.quantity == 2,
-        bookingAmount=booking.bookingAmount,
-        bookingPriceCategoryLabel=booking.priceCategoryLabel,
-        bookingStatusHistory=serialize_booking_status_history(booking),
+        booking_date=booking_date.isoformat() if booking_date else None,  # type: ignore[arg-type]
+        booking_status=build_booking_status(booking),
+        booking_is_duo=booking.quantity == 2,
+        booking_amount=booking.bookingAmount,
+        booking_price_category_label=booking.priceCategoryLabel,
+        booking_status_history=serialize_booking_status_history(booking),
     )
 
     return serialized_booking_recap

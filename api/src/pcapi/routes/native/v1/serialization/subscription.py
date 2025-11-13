@@ -97,7 +97,7 @@ class ProfileContent(BaseModel):
 
 
 class ProfileResponse(BaseModel):
-    profile: ProfileContent | None = fields.Field(None)
+    profile: ProfileContent | None = None
 
 
 class ProfileUpdateRequest(BaseModel):

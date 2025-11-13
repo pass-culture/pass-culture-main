@@ -71,7 +71,7 @@ def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
             return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data.dict()))
         except ValidationError as e:
             logger.error("Invalid profile data for user %s: %s", user.id, e)
-            return serializers.ProfileResponse()  # type: ignore[call-arg]
+            return serializers.ProfileResponse()
 
     raise api_errors.ResourceNotFoundError()
 
