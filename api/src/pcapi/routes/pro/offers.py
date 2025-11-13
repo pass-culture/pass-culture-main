@@ -19,12 +19,14 @@ from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
+from pcapi.core.offers import tasks
 from pcapi.core.offers import validation
 from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
@@ -602,7 +604,6 @@ def patch_all_offers_active_status(
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
     filters = {
         "user_id": current_user.id,
-        "is_user_admin": current_user.has_admin_role,
         "offerer_id": body.offerer_id,
         "status": body.status,
         "venue_id": body.venue_id,
@@ -613,7 +614,11 @@ def patch_all_offers_active_status(
         "period_ending_date": body.period_ending_date,
         "offerer_address_id": body.offerer_address_id,
     }
-    update_all_offers_active_status_job.delay(filters, body.is_active)
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES.is_active():
+        payload = tasks.UpdateAllOffersActiveStatusPayload(is_active=body.is_active, **filters)
+        tasks.update_all_offers_active_status_task.delay(payload.model_dump())
+    else:
+        update_all_offers_active_status_job.delay(filters, body.is_active)
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 

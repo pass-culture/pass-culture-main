@@ -113,6 +113,32 @@ class DeleteVenueProviderTest:
         assert action.extraData["provider_id"] == provider.id
         assert action.extraData["provider_name"] == provider.name
 
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES=True)
+    @mock.patch("pcapi.core.offers.tasks.update_venue_offers_active_status_task.delay")
+    def test_delete_venue_provider_with_celery(self, mocked_update_venue_offers_active_status_task):
+        user = users_factories.UserFactory()
+        venue_provider = providers_factories.VenueProviderFactory()
+        venue = venue_provider.venue
+        provider = venue_provider.provider
+
+        api.delete_venue_provider(venue_provider, author=user)
+
+        assert len(mails_testing.outbox) == 1
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DELETED.value)
+
+        assert not venue.venueProviders
+        mocked_update_venue_offers_active_status_task.assert_called_once_with(
+            {"is_active": False, "venue_id": venue.id, "provider_id": venue_provider.providerId}
+        )
+
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_DELETED
+        assert action.authorUserId == user.id
+        assert action.venueId == venue.id
+        assert action.extraData["provider_id"] == provider.id
+        assert action.extraData["provider_name"] == provider.name
+
 
 class DisableVenueProviderTest:
     @mock.patch("pcapi.core.providers.api.update_venue_synchronized_offers_active_status_job.delay")
@@ -127,6 +153,32 @@ class DisableVenueProviderTest:
         assert len(mails_testing.outbox) == 1  # test number of emails sent
         assert mails_testing.outbox[0]["To"] == venue.bookingEmail
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)
+
+        action = db.session.query(history_models.ActionHistory).one()
+        assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
+        assert action.authorUserId == user.id
+        assert action.venueId == venue.id
+        assert action.extraData["provider_id"] == venue_provider.provider.id
+        assert action.extraData["provider_name"] == venue_provider.provider.name
+        assert action.extraData["modified_info"] == {"isActive": {"old_info": True, "new_info": False}}
+
+    @pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES=True)
+    @mock.patch("pcapi.core.offers.tasks.update_venue_offers_active_status_task.delay")
+    def test_disable_venue_provider_with_celery(self, mocked_update_venue_offers_active_status_task):
+        user = users_factories.UserFactory()
+        venue_provider = providers_factories.VenueProviderFactory()
+        venue = venue_provider.venue
+
+        request = PostVenueProviderBody(venueId=venue.id, providerId=venue_provider.providerId, isActive=False)
+        api.update_venue_provider(venue_provider, request, user)
+
+        assert len(mails_testing.outbox) == 1  # test number of emails sent
+        assert mails_testing.outbox[0]["To"] == venue.bookingEmail
+        assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.VENUE_SYNC_DISABLED.value)
+
+        mocked_update_venue_offers_active_status_task.assert_called_once_with(
+            {"is_active": False, "venue_id": venue.id, "provider_id": venue_provider.providerId}
+        )
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.LINK_VENUE_PROVIDER_UPDATED
