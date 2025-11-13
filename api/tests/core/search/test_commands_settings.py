@@ -54,7 +54,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._set_settings(index_type, config_path, not_dry=False)
+            outputs = commands_settings._set_settings(index_type, config_path, apply=True)
 
         assert requests_mocker.call_count == 2
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
@@ -86,7 +86,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._set_settings(index_type, config_path, not_dry=False)
+            outputs = commands_settings._set_settings(index_type, config_path, apply=True)
 
         assert requests_mocker.call_count == 2
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
@@ -120,7 +120,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._set_settings(index_type, config_path, not_dry=False)
+            outputs = commands_settings._set_settings(index_type, config_path, apply=False)
 
         assert requests_mocker.call_count == 2
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
@@ -174,7 +174,7 @@ class AlgoliaSettingsTest:
             outputs = commands_settings._set_settings(
                 index_type,
                 config_path,
-                not_dry=False,
+                apply=False,
             )
 
         # GET was called but not PUT
