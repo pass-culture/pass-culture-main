@@ -3,10 +3,9 @@ import { differenceInCalendarDays } from 'date-fns'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullMailIcon from '@/icons/full-mail.svg'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import { formatDateTime } from '../../CollectiveOfferSummary/components/utils/formatDatetime'
 import styles from '../BookableOfferTimeline.module.scss'
@@ -35,56 +34,68 @@ export const BookingWaitingBanner = ({
 
   const isExpiringSoon = daysCountBeforeExpiration <= 7
 
+  const expiringSoon = isExpiringSoon
+    ? `Expire ${
+        daysCountBeforeExpiration > 0
+          ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
+          : 'aujourd’hui'
+      }`
+    : undefined
+
+  const description =
+    offerStatus === CollectiveOfferDisplayedStatus.PUBLISHED
+      ? `L'enseignant doit impérativement préréserver l'offre avant le ${formatDateTime(
+          bookingLimitDatetime,
+          FORMAT_DD_MM_YYYY,
+          departmentCode
+        )}. Sinon, elle sera automatiquement expirée et vous devrez renseigner une nouvelle date limite de réservation.`
+      : `Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le ${formatDateTime(
+          bookingLimitDatetime,
+          FORMAT_DD_MM_YYYY,
+          departmentCode
+        )}. Sinon, elle sera automatiquement expirée et vous devrez renseigner une nouvelle date limite de réservation.`
+
+  const actions = [
+    ...(canEditDates
+      ? [
+          {
+            label: 'Modifier la date limite de réservation',
+            icon: fullEditIcon,
+            href: `/offre/${offerId}/collectif/stocks/edition`,
+            type: 'link',
+          },
+        ]
+      : []),
+    ...(contactEmail && isExpiringSoon
+      ? [
+          {
+            label: "Contacter l'établissement",
+            icon: fullMailIcon,
+            href: `mailto:${contactEmail}`,
+            isExternal: true,
+            type: 'link',
+          },
+        ]
+      : []),
+  ]
+
   return (
-    <Callout
-      title={
-        isExpiringSoon
-          ? `expire ${
-              daysCountBeforeExpiration > 0
-                ? `dans ${daysCountBeforeExpiration} ${pluralizeFr(daysCountBeforeExpiration, 'jour', 'jours')}`
-                : 'aujourd’hui'
-            }`
-          : undefined
-      }
-      testId="callout-booking-waiting"
-      className={styles['callout']}
-      variant={isExpiringSoon ? CalloutVariant.WARNING : CalloutVariant.INFO}
-      links={[
-        ...(canEditDates
-          ? [
-              {
-                label: 'Modifier la date limite de réservation',
-                icon: { src: fullEditIcon, alt: 'Modifier' },
-                href: `/offre/${offerId}/collectif/stocks/edition`,
-              },
-            ]
-          : []),
-        ...(contactEmail && isExpiringSoon
-          ? [
-              {
-                label: "Contacter l'établissement",
-                icon: { src: fullMailIcon, alt: "Contacter l'établissement" },
-                href: `mailto:${contactEmail}`,
-                isExternal: true,
-              },
-            ]
-          : []),
-      ]}
-    >
-      <div>
-        {offerStatus === CollectiveOfferDisplayedStatus.PUBLISHED
-          ? "L'enseignant doit impérativement préréserver l'offre avant le "
-          : "Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le "}
-        <span className={styles['callout-accent']}>
-          {formatDateTime(
-            bookingLimitDatetime,
-            FORMAT_DD_MM_YYYY,
-            departmentCode
-          )}
-        </span>
-        . Sinon, elle sera automatiquement expirée et vous devrez renseigner une
-        nouvelle date limite de réservation.
-      </div>
-    </Callout>
+    <div className={styles['callout']}>
+      {isExpiringSoon ? (
+        <Banner
+          title="Informations"
+          variant={BannerVariants.WARNING}
+          description={`${expiringSoon}.\n ${description}`}
+          actions={actions}
+        />
+      ) : (
+        <Banner
+          title="Informations"
+          variant={BannerVariants.DEFAULT}
+          description={description}
+          actions={actions}
+        />
+      )}
+    </div>
   )
 }
