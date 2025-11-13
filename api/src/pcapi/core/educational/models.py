@@ -934,7 +934,7 @@ class CollectiveOfferTemplate(
         sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
     )
 
-    authorId = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
+    authorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
 
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
@@ -950,12 +950,13 @@ class CollectiveOfferTemplate(
 
     description: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, server_default="", default="")
 
-    durationMinutes = sa_orm.mapped_column(sa.Integer, nullable=True)
+    durationMinutes: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
 
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
 
+    # TODO: dateUpdated should be nullable=False
     dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now, onupdate=date_utils.get_naive_utc_now
     )
@@ -966,7 +967,7 @@ class CollectiveOfferTemplate(
         server_default="{}",
     )
 
-    priceDetail = sa_orm.mapped_column(sa.Text, nullable=True)
+    priceDetail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     bookingEmails: sa_orm.Mapped[list[str]] = sa_orm.mapped_column(
         sa_mutable.MutableList.as_mutable(postgresql.ARRAY(sa.String)),
@@ -1002,7 +1003,7 @@ class CollectiveOfferTemplate(
         index=True,
     )
 
-    nationalProgram: sa_orm.Mapped["NationalProgram"] = sa_orm.relationship(
+    nationalProgram: sa_orm.Mapped["NationalProgram | None"] = sa_orm.relationship(
         "NationalProgram", foreign_keys=nationalProgramId
     )
 
@@ -1250,7 +1251,7 @@ class CollectiveStock(PcObject, models.Model):
 
     numberOfTickets: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
 
-    priceDetail = sa_orm.mapped_column(sa.Text, nullable=True)
+    priceDetail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     __table_args__ = (sa.Index("ix_collective_stock_startDatetime_endDatetime", startDatetime, endDatetime),)
 
@@ -1349,6 +1350,10 @@ class EducationalInstitution(PcObject, models.Model):
 
     collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
         "CollectiveOffer", back_populates="institution"
+    )
+
+    collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
+        "CollectiveBooking", back_populates="educationalInstitution"
     )
 
     isActive: sa_orm.Mapped[bool] = sa_orm.mapped_column(
@@ -1530,7 +1535,7 @@ class CollectiveBooking(PcObject, models.Model):
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
 
-    dateUsed = sa_orm.mapped_column(sa.DateTime, nullable=True, index=True)
+    dateUsed: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True, index=True)
 
     collectiveStockId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False
@@ -1544,17 +1549,19 @@ class CollectiveBooking(PcObject, models.Model):
         sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False
     )
 
-    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship("Venue", foreign_keys=[venueId], backref="collectiveBookings")
+    venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
+        "Venue", foreign_keys=[venueId], back_populates="collectiveBookings"
+    )
 
     offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False
     )
 
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
-        "Offerer", foreign_keys=[offererId], backref="collectiveBookings"
+        "Offerer", foreign_keys=[offererId], back_populates="collectiveBookings"
     )
 
-    cancellationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    cancellationDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     cancellationUserId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), nullable=True
@@ -1564,7 +1571,7 @@ class CollectiveBooking(PcObject, models.Model):
 
     cancellationLimitDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
 
-    cancellationReason = sa_orm.mapped_column(
+    cancellationReason: sa_orm.Mapped[CollectiveBookingCancellationReasons | None] = sa_orm.mapped_column(
         "cancellationReason",
         sa.Enum(
             CollectiveBookingCancellationReasons,
@@ -1577,13 +1584,13 @@ class CollectiveBooking(PcObject, models.Model):
         sa.Enum(CollectiveBookingStatus), nullable=False, default=CollectiveBookingStatus.CONFIRMED
     )
 
-    reimbursementDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    reimbursementDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     educationalInstitutionId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), nullable=False
     )
     educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
-        EducationalInstitution, foreign_keys=[educationalInstitutionId], backref="collectiveBookings"
+        EducationalInstitution, foreign_keys=[educationalInstitutionId], back_populates="collectiveBookings"
     )
 
     educationalYearId: sa_orm.Mapped[str] = sa_orm.mapped_column(
@@ -1593,7 +1600,7 @@ class CollectiveBooking(PcObject, models.Model):
         EducationalYear, foreign_keys=[educationalYearId]
     )
 
-    confirmationDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    confirmationDate: sa_orm.Mapped[datetime.datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
     confirmationLimitDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
 
     educationalRedactorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
