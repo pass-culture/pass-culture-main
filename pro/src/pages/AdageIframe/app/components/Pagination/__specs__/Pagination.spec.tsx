@@ -33,7 +33,7 @@ describe('AdagePagination', () => {
   it('should go to next page', async () => {
     renderWithProviders(<CustomPagination {...defaultProps} />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    await userEvent.click(screen.getByRole('button', { name: /page suivante/ }))
 
     expect(mockRefinePagination).toHaveBeenCalledTimes(1)
   })
@@ -41,7 +41,7 @@ describe('AdagePagination', () => {
   it('should not refine on click previous page button', async () => {
     renderWithProviders(<CustomPagination {...defaultProps} />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    await userEvent.click(screen.getByRole('button', { name: /page suivante/ }))
     await userEvent.click(
       screen.getByRole('button', { name: 'Page précédente' })
     )
@@ -64,9 +64,9 @@ describe('AdagePagination', () => {
 
     renderWithProviders(<CustomPagination {...defaultProps} />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    await userEvent.click(screen.getByRole('button', { name: /page suivante/ }))
     await userEvent.click(
-      screen.getByRole('button', { name: 'Page précédente' })
+      screen.getByRole('button', { name: /page précédente/ })
     )
 
     expect(apiAdage.logSearchShowMore).toHaveBeenCalledTimes(2)
