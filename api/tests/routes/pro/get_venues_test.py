@@ -27,7 +27,6 @@ def test_response_serialization(client):
     num_queries += 1  # select venues
     num_queries += 1  # select venue_ids with validated offers
     num_queries += 1  # select venues' bank account links
-    num_queries += 1  # have venues non free offers?
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues")
         assert response.status_code == 200
@@ -160,7 +159,6 @@ def test_response_created_offer_serialization(client):
     num_queries += 1  # select venues
     num_queries += 1  # select venue_ids with validated offers
     num_queries += 1  # select venues' bank account links
-    num_queries += 1  # have venues non free offers?
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues")
         assert response.status_code == 200
@@ -185,7 +183,6 @@ def test_invalid_offerer_id(client):
     client = client.with_session_auth(pro_user.email)
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venues
-    num_queries += 1  # have venues non free offers?
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues", params)
         assert response.status_code == 200
@@ -208,7 +205,6 @@ def test_full_valid_call(client):
     client = client.with_session_auth(pro_user.email)
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venues
-    num_queries += 1  # have venues non free offers?
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues", params)
         assert response.status_code == 200
@@ -228,7 +224,6 @@ def test_full_valid_call_with_false(client):
     client = client.with_session_auth(pro_user.email)
     num_queries = testing.AUTHENTICATION_QUERIES
     num_queries += 1  # select venues
-    num_queries += 1  # have venues non free offers?
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues", params)
         assert response.status_code == 200
@@ -273,7 +268,6 @@ def test_only_return_non_softdeleted_venues(client):
     num_queries += 1  # select venues
     num_queries += 1  # select venue_ids with validated offers
     num_queries += 1  # select venues' bank account links
-    num_queries += 1  # have venues non free offers?
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues")
         assert response.status_code == 200
@@ -293,7 +287,6 @@ def test_is_caledonian(client):
     num_queries += 1  # select venues
     num_queries += 1  # select venue_ids with validated offers
     num_queries += 1  # select venues' bank account links
-    num_queries += 1  # have venues non free offers?
     with testing.assert_num_queries(num_queries):
         response = client.get("/venues")
         assert response.status_code == 200
