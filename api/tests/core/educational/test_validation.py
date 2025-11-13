@@ -6,35 +6,34 @@ import pytest
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.factories import CancelledCollectiveBookingFactory
 from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
+from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.factories import PendingCollectiveBookingFactory
 from pcapi.core.educational.factories import UsedCollectiveBookingFactory
-from pcapi.core.educational.models import EducationalDeposit
 from pcapi.core.educational.validation import check_institution_fund
-from pcapi.models import db
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-@pytest.fixture(name="base_data", scope="class")
+@pytest.fixture(name="base_data")
 def base_data_fixture():
     educational_institution = EducationalInstitutionFactory()
     educational_year = EducationalYearFactory(adageId="1")
 
     # 50 confirmed booking amount in first period
     ConfirmedCollectiveBookingFactory.create_batch(
-        5,
-        collectiveStock__price=Decimal(10),
+        2,
+        collectiveStock__price=Decimal(25),
         educationalInstitution=educational_institution,
         educationalYear=educational_year,
         collectiveStock__endDatetime=datetime.datetime(year=educational_year.beginningDate.year, month=10, day=1),
     )
     # 200 confirmed booking amount in second period
     ConfirmedCollectiveBookingFactory.create_batch(
-        20,
-        collectiveStock__price=Decimal(10),
+        2,
+        collectiveStock__price=Decimal(100),
         educationalInstitution=educational_institution,
         educationalYear=educational_year,
         collectiveStock__endDatetime=datetime.datetime(year=educational_year.beginningDate.year + 1, month=2, day=1),
@@ -47,12 +46,12 @@ class EducationalValidationTest:
     def test_institution_fund_is_ok(self):
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
-        educational_deposit = EducationalDeposit(
+        educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(1400.00),
         )
-        db.session.add(educational_deposit)
+
         PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(2000.00),
             educationalInstitution=educational_institution,
@@ -90,13 +89,13 @@ class EducationalValidationTest:
     def test_institution_fund_is_temporary_insufficient(self):
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
-        educational_deposit = EducationalDeposit(
+        educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(1400.00),
             isFinal=False,
         )
-        db.session.add(educational_deposit)
+
         ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
@@ -124,12 +123,12 @@ class EducationalValidationTest:
     def test_institution_fund_is_insufficient(self):
         educational_institution = EducationalInstitutionFactory()
         educational_year = EducationalYearFactory(adageId="1")
-        educational_deposit = EducationalDeposit(
+        educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(400.00),
         )
-        db.session.add(educational_deposit)
+
         ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
@@ -154,9 +153,9 @@ class EducationalValidationTest:
                 deposit=educational_deposit,
             )
 
-    def test_not_final(self, base_data):
+    def test_check_deposit_not_final(self, base_data):
         educational_institution, educational_year = base_data
-        educational_deposit = EducationalDeposit(
+        educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(400),
@@ -180,9 +179,9 @@ class EducationalValidationTest:
                 deposit=educational_deposit,
             )
 
-    def test_without_ratio_final(self, base_data):
+    def test_check_deposit_final(self, base_data):
         educational_institution, educational_year = base_data
-        educational_deposit = EducationalDeposit(
+        educational_deposit = EducationalDepositFactory(
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             amount=Decimal(400),
