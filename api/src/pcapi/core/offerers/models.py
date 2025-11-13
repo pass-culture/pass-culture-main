@@ -287,6 +287,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "CollectiveOffer", foreign_keys="CollectiveOffer.venueId", back_populates="venue"
     )
 
+    collectiveBookings: sa_orm.Mapped[list[educational_models.CollectiveBooking]] = sa_orm.relationship(
+        "CollectiveBooking", foreign_keys="CollectiveBooking.venueId", back_populates="venue"
+    )
+
     collectiveOfferTemplates: sa_orm.Mapped[list[educational_models.CollectiveOfferTemplate]] = sa_orm.relationship(
         "CollectiveOfferTemplate", foreign_keys="CollectiveOfferTemplate.venueId", back_populates="venue"
     )
@@ -1193,6 +1197,10 @@ class Offerer(
 
     bookings: sa_orm.Mapped[list["bookings_models.Booking"]] = sa_orm.relationship(
         "Booking", foreign_keys="Booking.offererId", back_populates="offerer"
+    )
+
+    collectiveBookings: sa_orm.Mapped[list["educational_models.CollectiveBooking"]] = sa_orm.relationship(
+        "CollectiveBooking", foreign_keys="CollectiveBooking.offererId", back_populates="offerer"
     )
 
     confidenceRule: sa_orm.Mapped["OffererConfidenceRule | None"] = sa_orm.relationship(
