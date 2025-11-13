@@ -14,6 +14,8 @@ from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 
 from pcapi import settings
+from pcapi.connectors.dms.models import GraphQLApplicationStates
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.history import models as history_models
 from pcapi.core.offerers import api as offerers_api
@@ -117,6 +119,9 @@ def list_offerers_to_validate() -> utils.BackofficeResponse:
 
 
 def _get_validation_action_information(offerer_ids: typing.Collection[int]) -> str | None:
+    information = ""
+    offerers_text = filters.pluralize(len(offerer_ids), "cette entité juridique", "ces entités juridiques")
+
     bank_accounts = (
         db.session.query(finance_models.BankAccount)
         .filter(
@@ -133,30 +138,66 @@ def _get_validation_action_information(offerer_ids: typing.Collection[int]) -> s
         .all()
     )
 
-    if not bank_accounts:
-        return None
+    if bank_accounts:
+        if len(bank_accounts) == 1:
+            information = Markup(
+                "Un dossier de <strong>coordonnées bancaires</strong> est en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "son traitement n'est pas automatique, ne l'oublions pas : <ul>"
+            ).format(offerers_text=offerers_text)
+        else:
+            information = Markup(
+                "{count} dossiers de <strong>coordonnées bancaires</strong> sont en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "leur traitement n'est pas automatique, ne les oublions pas : <ul>"
+            ).format(count=len(bank_accounts), offerers_text=offerers_text)
 
-    offerers_text = filters.pluralize(len(offerer_ids), "cette entité juridique", "ces entités juridiques")
-    if len(bank_accounts) == 1:
-        information = Markup(
-            "Un dossier de coordonnées bancaires est en cours sur Démarches-Simplifiées pour {offerers_text}, son traitement n'est pas automatique, ne l'oublions pas : <ul>"
-        ).format(offerers_text=offerers_text)
-    else:
-        information = Markup(
-            "{count} dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour {offerers_text}, leur traitement n'est pas automatique, ne les oublions pas : <ul>"
-        ).format(count=len(bank_accounts), offerers_text=offerers_text)
+        for pending_bank_account in bank_accounts:
+            information += Markup(
+                '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
+            ).format(
+                procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
+                application_number=pending_bank_account.dsApplicationId,
+                status=filters.format_dms_application_status_badge(pending_bank_account.status),
+            )
+        information += Markup("</ul>")
 
-    for pending_bank_account in bank_accounts:
-        information += Markup(
-            '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
-        ).format(
-            procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
-            application_number=pending_bank_account.dsApplicationId,
-            status=filters.format_dms_application_status_badge(pending_bank_account.status),
+    collective_applications = (
+        db.session.query(educational_models.CollectiveDmsApplication)
+        .join(
+            offerers_models.Offerer, offerers_models.Offerer.siren == educational_models.CollectiveDmsApplication.siren
         )
-    information += Markup("</ul>")
+        .filter(
+            offerers_models.Offerer.id.in_(offerer_ids),
+            educational_models.CollectiveDmsApplication.state.in_(
+                [GraphQLApplicationStates.draft.value, GraphQLApplicationStates.on_going.value]
+            ),
+        )
+        .order_by(educational_models.CollectiveDmsApplication.lastChangeDate)
+        .all()
+    )
 
-    return information
+    if collective_applications:
+        if len(collective_applications) == 1:
+            information += Markup(
+                "Un dossier <strong>ADAGE</strong> est en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "son traitement n'est pas automatique, ne l'oublions pas : <ul>"
+            ).format(offerers_text=offerers_text)
+        else:
+            information += Markup(
+                "{count} dossiers <strong>ADAGE</strong> sont en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "leur traitement n'est pas automatique, ne les oublions pas : <ul>"
+            ).format(count=len(collective_applications), offerers_text=offerers_text)
+
+        for collective_application in collective_applications:
+            information += Markup(
+                '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
+            ).format(
+                procedure_number=collective_application.procedure,
+                application_number=collective_application.application,
+                status=filters.format_dms_status(collective_application.state),
+            )
+        information += Markup("</ul>")
+
+    return information or None
 
 
 @validation_blueprint.route("/offerer/<int:offerer_id>/validate", methods=["GET"])
