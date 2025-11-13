@@ -281,8 +281,7 @@ class ImportBankAccountMixin:
                 )
                 return None
 
-        if venue.bankAccountLinks:
-            deprecated_link = venue.bankAccountLinks[0]
+        if deprecated_link := venue.current_bank_account_link:
             lower_bound = deprecated_link.timespan.lower
             upper_bound = date_utils.get_naive_utc_now()
             timespan = make_timerange(start=lower_bound, end=upper_bound)
