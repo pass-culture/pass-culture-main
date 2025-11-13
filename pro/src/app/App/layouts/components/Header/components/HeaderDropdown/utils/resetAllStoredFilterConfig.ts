@@ -1,5 +1,5 @@
 import { storageAvailable } from '@/commons/utils/storageAvailable'
-import { locallyStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { locallyStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 export function resetAllStoredFilterConfig() {
   const isSessionStorageAvailable = storageAvailable('sessionStorage')

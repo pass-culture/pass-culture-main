@@ -17,7 +17,7 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -190,7 +190,7 @@ export const IndividualOffersContainer = ({
         noResult={{
           message: 'Aucune offre trouvée pour votre recherche',
           resetMessage: 'Afficher toutes les offres',
-          onFilterReset: resetFilters,
+          onFilterReset: () => resetFilters(true),
         }}
         noData={{
           hasNoData: userHasNoOffers,

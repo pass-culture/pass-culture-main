@@ -18,7 +18,7 @@ import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCo
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
-import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
