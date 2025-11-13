@@ -1,7 +1,8 @@
 import fullEditIcon from 'icons/full-edit.svg'
 import fullNextIcon from 'icons/full-next.svg'
-import { Callout } from 'ui-kit/Callout/Callout'
-import { CalloutVariant } from 'ui-kit/Callout/types'
+
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from '../BookableOfferTimeline.module.scss'
 
@@ -13,6 +14,8 @@ const config = {
       label: 'Comment fonctionne les remboursements ?',
       href: 'https://aide.passculture.app/hc/fr/articles/4411992051601--Acteurs-Culturels-Quand-votre-prochain-remboursement-sera-t-il-effectu%C3%A9',
       isExternal: true,
+      icon: fullLinkIcon,
+      type: 'link',
     },
   },
   hasPendingBankAccount: {
@@ -21,10 +24,8 @@ const config = {
     link: {
       label: 'Suivre la validation de vos coordonnées bancaires',
       href: '/remboursements/informations-bancaires',
-      icon: {
-        src: fullNextIcon,
-        alt: 'Consulter la validation des coordonnées bancaires',
-      },
+      icon: fullNextIcon,
+      type: 'link',
     },
   },
   hasNoBankAccount: {
@@ -32,10 +33,8 @@ const config = {
     link: {
       label: 'Ajouter un compte bancaire',
       href: '/remboursements/informations-bancaires',
-      icon: {
-        src: fullEditIcon,
-        alt: 'Ajouter un compte bancaire',
-      },
+      icon: fullEditIcon,
+      type: 'link',
     },
   },
 }
@@ -66,12 +65,13 @@ export const ReimbursementWaitingBanner = ({
   )
 
   return (
-    <Callout
-      className={styles['callout']}
-      variant={CalloutVariant.INFO}
-      links={[link]}
-    >
-      {message}
-    </Callout>
+    <div className={styles['callout']}>
+      <Banner
+        title="Informations"
+        variant={BannerVariants.DEFAULT}
+        description={message}
+        actions={[link]}
+      />
+    </div>
   )
 }
