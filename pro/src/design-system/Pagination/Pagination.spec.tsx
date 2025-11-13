@@ -26,35 +26,35 @@ describe('<Pagination />', () => {
 
     // Click on page 4 button (should call onPageClick with 4)
     const page4Button = getByRole('button', {
-      name: /Aller à la page 4 sur 5/i,
+      name: /Aller à la page 4 sur 5/,
     })
     page4Button.click()
     expect(onPageClick).toHaveBeenCalledWith(4)
 
     // Click on page 1 button (first page)
     const page1Button = getByRole('button', {
-      name: /Aller à la première page/i,
+      name: /Aller à la page 1 sur 5/,
     })
     page1Button.click()
     expect(onPageClick).toHaveBeenCalledWith(1)
 
     // Click on next page
     const nextButton = getByRole('button', {
-      name: /Aller à la page suivante numéro 3/i,
+      name: /Aller à la page 3 sur 5/,
     })
     nextButton.click()
     expect(onPageClick).toHaveBeenCalledWith(3)
 
     // Click on previous page
     const prevButton = getByRole('button', {
-      name: /Aller à la page précédente numéro 1/i,
+      name: /Aller à la page précédente \(1 sur 5\)/,
     })
     prevButton.click()
     expect(onPageClick).toHaveBeenCalledWith(1)
 
     // Click on last page
     const lastPageButton = getByRole('button', {
-      name: /Aller à la dernière page/i,
+      name: /Aller à la page 5 sur 5/,
     })
     lastPageButton.click()
     expect(onPageClick).toHaveBeenCalledWith(5)
@@ -85,32 +85,26 @@ describe('<Pagination />', () => {
       (item) => item.getAttribute('aria-current') === 'page'
     )
     expect(currentPageItem).toBeDefined()
-    expect(getByLabelText(/Page actuelle : 3 sur 5/)).toBeInTheDocument()
-
-    // There should be at least one button with aria-label indicating current page
-    const currentPageButton = currentPageItem?.querySelector(
-      'button[aria-label*="Page actuelle"]'
-    )
-    expect(currentPageButton).toBeTruthy()
+    expect(getByLabelText(/Page 3 sur 5/)).toBeInTheDocument()
 
     // There should be buttons (with appropriate aria-labels) for first, last, previous, next and numbered pages
     expect(
-      getByRole('button', { name: /Aller à la page précédente numéro/i })
+      getByRole('button', { name: /Aller à la page précédente/ })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: /Aller à la page suivante numéro/i })
+      getByRole('button', { name: /Aller à la page suivante/ })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: /Aller à la première page/i })
+      getByRole('button', { name: /Aller à la page 1 sur 5/ })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: /Aller à la dernière page/i })
+      getByRole('button', { name: /Aller à la page 5 sur 5/ })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: /Aller à la page 4 sur 5/i })
+      getByRole('button', { name: /Aller à la page 4 sur 5/ })
     ).toBeInTheDocument()
     expect(
-      getByRole('button', { name: /Aller à la page 2 sur 5/i })
+      getByRole('button', { name: /Aller à la page 2 sur 5/ })
     ).toBeInTheDocument()
   })
 })

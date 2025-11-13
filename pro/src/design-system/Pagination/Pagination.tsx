@@ -61,7 +61,11 @@ export const Pagination = ({
           <button
             type="button"
             disabled={isFirstPage}
-            aria-label={`Aller à la page précédente numéro ${currentPage - 1}`}
+            aria-label={
+              !isFirstPage
+                ? `Aller à la page précédente (${currentPage - 1} sur ${pageCount})`
+                : undefined
+            }
             className={cn(
               styles['pagination-link'],
               styles['pagination-link-prev']
@@ -80,11 +84,10 @@ export const Pagination = ({
         >
           <button
             type="button"
-            disabled={isFirstPage}
             aria-label={
               isFirstPage
-                ? `Page actuelle : page 1`
-                : `Aller à la première page`
+                ? `Page 1 sur ${pageCount}`
+                : `Aller à la page 1 sur ${pageCount}`
             }
             className={cn(styles['pagination-link'], {
               [styles['pagination-link-current']]: isFirstPage,
@@ -113,7 +116,7 @@ export const Pagination = ({
               type="button"
               aria-label={
                 isCurrentPage(page)
-                  ? `Page actuelle : ${page} sur ${pageCount}`
+                  ? `Page ${page} sur ${pageCount}`
                   : `Aller à la page ${page} sur ${pageCount}`
               }
               className={cn(styles['pagination-link'], {
@@ -140,11 +143,10 @@ export const Pagination = ({
         >
           <button
             type="button"
-            disabled={isLastPage}
             aria-label={
               isLastPage
-                ? `Page actuelle : ${pageCount} (dernière page)`
-                : `Aller à la dernière page ${pageCount}`
+                ? `Page ${pageCount} sur ${pageCount}`
+                : `Aller à la page ${pageCount} sur ${pageCount}`
             }
             className={cn(styles['pagination-link'], {
               [styles['pagination-link-current']]: isLastPage,
@@ -161,7 +163,11 @@ export const Pagination = ({
           <button
             type="button"
             disabled={isLastPage}
-            aria-label={`Aller à la page suivante numéro ${currentPage + 1}`}
+            aria-label={
+              !isLastPage
+                ? `Aller à la page suivante (${currentPage + 1} sur ${pageCount})`
+                : undefined
+            }
             className={cn(
               styles['pagination-link'],
               styles['pagination-link-next']
