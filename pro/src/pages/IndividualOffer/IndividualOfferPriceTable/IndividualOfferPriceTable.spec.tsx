@@ -15,8 +15,6 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { IndividualOfferSummaryPriceTable } from './IndividualOfferSummaryPriceTable'
-
 vi.mock('@/apiClient/api', () => ({
   api: { getStocks: vi.fn() },
 }))
@@ -29,6 +27,8 @@ import {
   MOCKED_SUBCATEGORY,
 } from '@/pages/IndividualOffer/commons/__mocks__/constants'
 
+import { IndividualOfferPriceTable } from './IndividualOfferPriceTable'
+
 const LABELS = {
   headings: {
     priceTable: 'Tarifs',
@@ -38,7 +38,7 @@ const LABELS = {
   },
 }
 
-const renderIndividualOfferSummaryPriceTable: RenderComponentFunction<
+const renderIndividualOfferPriceTable: RenderComponentFunction<
   void,
   IndividualOfferContextValues,
   {
@@ -57,14 +57,13 @@ const renderIndividualOfferSummaryPriceTable: RenderComponentFunction<
     ...params.contextValues,
   }
   const options: RenderWithProvidersOptions = {
-    features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
     user: sharedCurrentUserFactory(),
     ...params.options,
   }
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
-      <IndividualOfferSummaryPriceTable />
+      <IndividualOfferPriceTable />
     </IndividualOfferContext.Provider>,
     options
   )
@@ -72,7 +71,7 @@ const renderIndividualOfferSummaryPriceTable: RenderComponentFunction<
 
 describe('<IndividualOfferSummaryPriceTable />', () => {
   it('should show spinner when offer is fetching', () => {
-    renderIndividualOfferSummaryPriceTable({
+    renderIndividualOfferPriceTable({
       offer: null,
       offerId: 1,
     })
@@ -94,7 +93,7 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
       subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
     })
 
-    renderIndividualOfferSummaryPriceTable({ offer })
+    renderIndividualOfferPriceTable({ offer })
 
     await waitFor(() =>
       expect(
@@ -104,7 +103,7 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
     expect(api.getStocks).toHaveBeenCalledWith(offer.id)
   })
 
-  it('should not call stocks for an event offer', () => {
+  it('should not call stocks for an event offer', async () => {
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
       hasStocks: true,
       stockCount: 1,
@@ -118,7 +117,13 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
       subcategoryId: MOCKED_SUBCATEGORY.EVENT_OFFLINE.id,
     })
 
-    renderIndividualOfferSummaryPriceTable({ offer })
+    renderIndividualOfferPriceTable({ offer })
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('heading', { name: LABELS.headings.priceTable })
+      ).toBeInTheDocument()
+    )
 
     expect(api.getStocks).not.toHaveBeenCalled()
   })

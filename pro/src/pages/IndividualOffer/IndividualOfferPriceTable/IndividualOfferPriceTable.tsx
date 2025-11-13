@@ -13,12 +13,15 @@ export const IndividualOfferPriceTable = () => {
   const { offer, offerId } = useIndividualOfferContext()
   assertOrFrontendError(offerId, '`offerId` is undefined.')
 
-  const getStocksQuery = useSWR([GET_STOCKS_QUERY_KEY, offerId], () =>
-    api.getStocks(offerId)
+  const shouldFetchStocks = offer && !offer.isEvent
+
+  const getStocksQuery = useSWR(
+    shouldFetchStocks ? [GET_STOCKS_QUERY_KEY, offerId] : null,
+    () => api.getStocks(offerId)
   )
 
   // TODO (igabriele, 2025-08-20): Handle API error.s
-  if (!offer || getStocksQuery.isLoading || !getStocksQuery.data) {
+  if (!offer || getStocksQuery.isLoading) {
     return <Spinner />
   }
 
@@ -26,7 +29,7 @@ export const IndividualOfferPriceTable = () => {
     <IndividualOfferLayout offer={offer}>
       <IndividualOfferPriceTableScreen
         offer={offer}
-        offerStocks={getStocksQuery.data.stocks}
+        offerStocks={getStocksQuery.data?.stocks}
       />
     </IndividualOfferLayout>
   )

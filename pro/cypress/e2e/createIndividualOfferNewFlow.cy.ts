@@ -138,9 +138,6 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate the price categories step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@patchOffer', '@getOffer', '@getStocks'], {
-      responseTimeout: 60 * 1000 * 3,
-    })
 
     //  RECURRENCE FORM DIALOG
     cy.stepLog({ message: 'I fill in the recurrence form' })

@@ -76,7 +76,6 @@ const renderPriceTableForm: RenderComponentFunction<
     mode: contextValues.mode,
     offer,
     schemaValidationContext: contextValues,
-    offerStocks: [],
     ...params.props,
   }
 
@@ -556,7 +555,6 @@ describe('PriceTableForm', () => {
               isCaledonian={false}
               mode={OFFER_WIZARD_MODE.CREATION}
               offer={offer as GetIndividualOfferWithAddressResponseModel}
-              offerStocks={[]}
               schemaValidationContext={{
                 isCaledonian: false,
                 mode: OFFER_WIZARD_MODE.CREATION,

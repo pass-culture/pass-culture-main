@@ -34,7 +34,7 @@ import { PriceTableForm } from './PriceTableForm/PriceTableForm'
 
 interface IndividualOfferPriceTableScreenProps {
   offer: GetIndividualOfferWithAddressResponseModel
-  offerStocks: GetOfferStockResponseModel[]
+  offerStocks: GetOfferStockResponseModel[] | undefined
 }
 export const IndividualOfferPriceTableScreen = ({
   offer,
@@ -75,7 +75,7 @@ export const IndividualOfferPriceTableScreen = ({
     context: schemaValidationContext,
     defaultValues: toFormValues(
       offer,
-      offer.isEvent ? (offer.priceCategories ?? []) : offerStocks,
+      offer.isEvent ? (offer.priceCategories ?? []) : (offerStocks ?? []),
       schemaValidationContext
     ),
     mode: 'onBlur',
@@ -127,7 +127,6 @@ export const IndividualOfferPriceTableScreen = ({
                 mode={mode}
                 offer={offer}
                 schemaValidationContext={schemaValidationContext}
-                offerStocks={offerStocks}
               />
             </FormLayout.Section>
           </FormLayout>
