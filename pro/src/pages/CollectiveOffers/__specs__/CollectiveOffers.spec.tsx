@@ -398,9 +398,7 @@ describe('CollectiveOffers', () => {
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       renderOffers()
-      const nextIcon = await screen.findByRole('button', {
-        name: 'Page suivante',
-      })
+      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
       await userEvent.click(nextIcon)
 
@@ -414,14 +412,14 @@ describe('CollectiveOffers', () => {
         collectiveOfferFactory({ stock })
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
+
       renderOffers()
-      const nextIcon = await screen.findByRole('button', {
-        name: 'Page suivante',
-      })
-      const previousIcon = screen.getByRole('button', {
-        name: 'Page précédente',
-      })
+      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
+
       await userEvent.click(nextIcon)
+      const previousIcon = screen.getByRole('button', {
+        name: /page précédente/,
+      })
 
       await userEvent.click(previousIcon)
 
@@ -435,20 +433,20 @@ describe('CollectiveOffers', () => {
         collectiveOfferFactory({ stock })
       )
 
-      it('should have max number page of 10', async () => {
+      it('should have max number page of 10', () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
 
         renderOffers()
 
-        expect(await screen.findByText('Page 1/10')).toBeInTheDocument()
+        expect(
+          screen.getByRole('button', { name: /Page 1 sur 10/ })
+        ).toBeInTheDocument()
       })
 
       it('should not display the 101st offer', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         renderOffers()
-        const nextIcon = await screen.findByRole('button', {
-          name: 'Page suivante',
-        })
+        const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
         for (let i = 1; i < 11; i++) {
           await userEvent.click(nextIcon)

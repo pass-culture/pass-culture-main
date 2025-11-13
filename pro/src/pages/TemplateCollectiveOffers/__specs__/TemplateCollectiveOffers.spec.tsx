@@ -226,7 +226,7 @@ describe('TemplateCollectiveOffers', () => {
       )
       vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(offers)
       await renderOffers()
-      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
       await userEvent.click(nextIcon)
 
@@ -241,7 +241,7 @@ describe('TemplateCollectiveOffers', () => {
       )
       vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValueOnce(offers)
       await renderOffers()
-      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
       const previousIcon = screen.getByRole('button', {
         name: 'Page précédente',
       })
@@ -268,12 +268,14 @@ describe('TemplateCollectiveOffers', () => {
       it('should have max number page of 10', async () => {
         await renderOffers()
 
-        expect(screen.getByText('Page 1/10')).toBeInTheDocument()
+        expect(
+          screen.getByRole('button', { name: /Page 1 sur 10/ })
+        ).toBeInTheDocument()
       })
 
       it('should not display the 101st offer', async () => {
         await renderOffers()
-        const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+        const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
         for (let i = 1; i < 11; i++) {
           await userEvent.click(nextIcon)
