@@ -23,10 +23,10 @@ describe('BookingWaitingBanner', () => {
       />
     )
 
-    expect(screen.getByText(/expire dans 3 jours/)).toBeInTheDocument()
+    expect(screen.getByText(/Expire dans 3 jours/)).toBeInTheDocument()
 
-    const callout = screen.getByTestId('callout-booking-waiting')
-    expect(callout.className).toMatch(/warning/)
+    const banner = screen.getByTestId('banner')
+    expect(banner.className).toMatch(/warning/)
   })
 
   it('should show "expire aujourd’hui" when offer expires today', () => {
@@ -41,7 +41,7 @@ describe('BookingWaitingBanner', () => {
       />
     )
 
-    expect(screen.getByText(/expire aujourd’hui/)).toBeInTheDocument()
+    expect(screen.getByText(/Expire aujourd’hui/)).toBeInTheDocument()
   })
 
   it('should not show expiration warning when offer expires in more than 7 days', () => {
@@ -57,10 +57,10 @@ describe('BookingWaitingBanner', () => {
       />
     )
 
-    expect(screen.queryByText(/expire/)).not.toBeInTheDocument()
+    expect(screen.queryByText(/Expire/)).not.toBeInTheDocument()
 
-    const callout = screen.getByTestId('callout-booking-waiting')
-    expect(callout.className).toMatch(/info/)
+    const banner = screen.getByTestId('banner')
+    expect(banner.className).toMatch(/banner default/)
   })
 
   it('should show a mailto link when contact email is provided and offer expires soon', () => {
