@@ -433,7 +433,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
         />
       )
 
-      expect(screen.getByText('expire dans 1 jour')).toBeInTheDocument()
+      expect(screen.getByText(/Expire dans 1 jour/i)).toBeInTheDocument()
       expect(
         screen.getByText(
           /Le chef d'établissement doit impérativement confirmer la préréservation de l'offre avant le/
