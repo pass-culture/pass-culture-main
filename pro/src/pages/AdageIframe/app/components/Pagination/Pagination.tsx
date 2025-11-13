@@ -7,7 +7,7 @@ import { PaginationType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { setAdagePageSaved } from '@/commons/store/adageFilter/reducer'
 import { adagePageSavedSelector } from '@/commons/store/adageFilter/selectors'
-import { Pagination } from '@/ui-kit/Pagination/Pagination'
+import { Pagination } from '@/design-system/Pagination/Pagination'
 
 interface CustomPaginationProps {
   queryId?: string
@@ -41,17 +41,21 @@ export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
   return (
     <Pagination
       currentPage={currentRefinement + 1}
-      onNextPageClick={() => {
-        dispatch(setAdagePageSaved(currentRefinement + 1))
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        logPagination(PaginationType.NEXT)
-      }}
-      onPreviousPageClick={() => {
-        dispatch(setAdagePageSaved(currentRefinement - 1))
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        logPagination(PaginationType.PREVIOUS)
-      }}
       pageCount={nbPages}
+      onPageClick={(newPage) => {
+        dispatch(setAdagePageSaved(newPage - 1))
+
+        // Clicked page is the immediate next page
+        if (newPage === currentRefinement) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          logPagination(PaginationType.PREVIOUS)
+        }
+        // Clicked page is the immediate previous page
+        else if (newPage === currentRefinement + 2) {
+          // eslint-disable-next-line @typescript-eslint/no-floating-promises
+          logPagination(PaginationType.NEXT)
+        }
+      }}
     />
   )
 }
