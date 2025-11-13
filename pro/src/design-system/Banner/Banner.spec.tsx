@@ -14,9 +14,9 @@ const renderBanner = (props: BannerProps) => {
 const props = {
   title: 'Titre important très long très long très long très long très',
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  links: [
-    { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
-    { label: 'En savoir moins', href: '#', icon: fullLinkIcon },
+  actions: [
+    { label: 'En savoir plus', href: '#', icon: fullLinkIcon, type: 'link' },
+    { label: 'En savoir moins', href: '#', icon: fullLinkIcon, type: 'link' },
   ],
   imageSrc: turtle,
   variant: BannerVariants.DEFAULT,
@@ -79,12 +79,18 @@ describe('Banner', () => {
   it('should target links correctly based on the external prop', () => {
     renderBanner({
       ...props,
-      links: [
-        { label: 'Internal Link', href: '/internal', external: false },
+      actions: [
+        {
+          label: 'Internal Link',
+          href: '/internal',
+          isExternal: false,
+          type: 'link',
+        },
         {
           label: 'External Link',
           href: 'https://external.com',
-          external: true,
+          isExternal: true,
+          type: 'link',
         },
       ],
     })

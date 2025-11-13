@@ -2,7 +2,9 @@ import cx from 'classnames'
 
 import closeIcon from '@/icons/full-close.svg'
 import infosIcon from '@/icons/full-info.svg'
+import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Banner.module.scss'
@@ -17,15 +19,18 @@ export enum BannerVariants {
 type BannerLink = {
   label: string
   href: string
-  external?: boolean
+  isExternal?: boolean
   icon?: string
   iconAlt?: string
+  /** Action type (e.g. "link", "button") */
+  type: string
+  onClick?: () => void
 }
 
 export type BannerProps = {
   title: string
-  description?: string
-  links?: BannerLink[]
+  description?: string | JSX.Element
+  actions?: BannerLink[]
   icon?: string
   imageSrc?: string
   /** Visual style (defines colors) */
@@ -40,7 +45,7 @@ export type BannerProps = {
 export const Banner = ({
   title,
   description,
-  links = [],
+  actions = [],
   icon = infosIcon,
   imageSrc,
   variant = BannerVariants.DEFAULT,
@@ -69,23 +74,37 @@ export const Banner = ({
             {description && (
               <span className={styles.description}>{description}</span>
             )}
-            {links.length > 0 && (
-              <ul className={styles['links-list']}>
-                {links.map((l) => (
-                  <li key={l.label}>
-                    <ButtonLink
-                      className={cx(styles.link, {
-                        [styles['link-large']]: size === 'large',
-                      })}
-                      href={l.href}
-                      target={l.external ? '_blank' : '_self'}
-                      rel={l.external ? 'noopener noreferrer' : undefined}
-                      to={l.href}
-                      icon={l.icon}
-                      iconAlt={l.iconAlt}
-                    >
-                      {l.label}
-                    </ButtonLink>
+            {actions.length > 0 && (
+              <ul className={styles['actions-list']}>
+                {actions.map((a) => (
+                  <li key={a.label}>
+                    {a.type === 'link' ? (
+                      <ButtonLink
+                        className={cx(styles.link, {
+                          [styles['link-large']]: size === 'large',
+                        })}
+                        href={a.href}
+                        target={a.isExternal ? '_blank' : '_self'}
+                        rel={a.isExternal ? 'noopener noreferrer' : undefined}
+                        to={a.href}
+                        icon={a.icon}
+                        iconAlt={a.iconAlt}
+                        isExternal={a.isExternal}
+                      >
+                        {a.label}
+                      </ButtonLink>
+                    ) : (
+                      <Button
+                        className={cx(styles.link, {
+                          [styles['link-large']]: size === 'large',
+                        })}
+                        variant={ButtonVariant.TERNARY}
+                        icon={a.icon}
+                        onClick={() => a.onClick?.()}
+                      >
+                        {a.label}
+                      </Button>
+                    )}
                   </li>
                 ))}
               </ul>

@@ -1,26 +1,31 @@
-import { Meta, StoryObj } from '@storybook/react'
-import { Banner, BannerProps, BannerVariants } from './Banner'
+import type { StoryObj } from '@storybook/react-vite'
+import { Banner, BannerVariants } from './Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
 import turtle from '../assets/turtle.png'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
-const meta: Meta<BannerProps> = {
+export default {
   title: '@/design-system/Banner',
   component: Banner,
-  decorators: [withRouter],
+  decorators: [
+    withRouter,
+    (Story: any) => (
+      <div style={{ width: 'fit-content' }}>
+        <Story />
+      </div>
+    ),
+  ],
 }
-export default meta
-type Story = StoryObj<typeof Banner>
 
-export const Default: Story = {
+export const Default: StoryObj<typeof Banner> = {
   args: {
     title: 'Titre important très long très long très long très long très',
     description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris mattis libero ultrices sem scelerisque gravida. Lorem ipsum dolor sit amet, consectetur adipiscing elit. ",
-    links: [
-      { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
-      { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
-      { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
-      { label: 'En savoir plus', href: '#', icon: fullLinkIcon },
+    actions: [
+      { label: 'En savoir plus', href: '#', icon: fullLinkIcon, type: 'link' },
+      { label: 'En savoir plus', href: '#', icon: fullLinkIcon, type: 'link' },
+      { label: 'En savoir plus', href: '#', icon: fullLinkIcon, type: 'link' },
+      { label: 'En savoir plus', href: '#', icon: fullLinkIcon, type: 'link' },
     ],
     imageSrc: turtle,
     variant: BannerVariants.DEFAULT,
@@ -29,63 +34,63 @@ export const Default: Story = {
   },
 }
 
-export const WithSuccessVariant: Story = {
+export const WithSuccessVariant: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     variant: BannerVariants.SUCCESS,
   },
 }
 
-export const WithWarningVariant: Story = {
+export const WithWarningVariant: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     variant: BannerVariants.WARNING,
   },
 }
 
-export const WithErrorVariant: Story = {
+export const WithErrorVariant: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     variant: BannerVariants.ERROR,
   },
 }
 
-export const WithoutDescription: Story = {
+export const WithoutDescription: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     description: undefined,
   },
 }
 
-export const WithoutLinks: Story = {
+export const WithoutActions: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
-    links: [],
+    actions: [],
   },
 }
 
-export const WithoutImage: Story = {
+export const WithoutImage: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     imageSrc: undefined,
   },
 }
 
-export const WithoutCloseButton: Story = {
+export const WithoutCloseButton: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     closable: false,
   },
 }
 
-export const LargeSize: Story = {
+export const LargeSize: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     size: 'large',
   },
 }
 
-export const CustomIcon: Story = {
+export const CustomIcon: StoryObj<typeof Banner> = {
   args: {
     ...Default.args,
     icon: fullLinkIcon,
