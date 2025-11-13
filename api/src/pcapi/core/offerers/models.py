@@ -6,6 +6,7 @@ import re
 import typing
 from datetime import date
 from datetime import datetime
+from types import new_class
 
 import psycopg2.extras
 import sqlalchemy as sa
@@ -219,6 +220,39 @@ class Activity(enum.Enum):
     RECORD_STORE = "RECORD_STORE"
     SCIENCE_CENTRE = "SCIENCE_CENTRE"
     TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
+
+
+# TODO fix mypy
+def populate_enumdict_OnboardingActivity(content: enum.EnumDict) -> enum.EnumDict:
+    """OnboardingActivity contains the activities available during venue creation or venue modification"""
+    for x in Activity:
+        if x.name != "GAMES_CENTRE" and x.name != "NOT_ASSIGNED":
+            content[x.name] = x.value
+    return content
+
+
+OnboardingActivity: enum.EnumType = new_class(
+    name="OnboardingActivity",
+    bases=(enum.Enum,),  # the inheritance of the new class
+    kwds={"metaclass": enum.EnumType},  # the metaclass used
+    exec_body=populate_enumdict_OnboardingActivity,  # a function populating the new class
+)  # This way the new enum gets the necessary metadata form enum
+
+
+def populate_enumdict_DisplayedActivity(content: enum.EnumDict) -> enum.EnumDict:
+    """DisplayedActivity contains the activities displayed on pages (send to front)"""
+    for x in Activity:
+        if x.name != "NOT_ASSIGNED":
+            content[x.name] = x.value
+    return content
+
+
+DisplayedActivity: enum.EnumType = new_class(
+    "DisplayedActivity",
+    bases=(enum.Enum,),
+    kwds={"metaclass": enum.EnumType},
+    exec_body=populate_enumdict_DisplayedActivity,
+)
 
 
 class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMixin):
