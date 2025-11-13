@@ -9,6 +9,7 @@ from flask import url_for
 
 from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
+from pcapi.connectors.dms.models import GraphQLApplicationStates
 from pcapi.connectors.entreprise.backends.testing import TestingBackend
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -2793,8 +2794,8 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    # session + current user + offerer + pending bank accounts
-    expected_num_queries = 4
+    # session + current user + offerer + pending bank accounts + pending collective applications
+    expected_num_queries = 5
 
     def test_get_form(self, legit_user, authenticated_client):
         offerer = offerers_factories.NewOffererFactory()
@@ -2849,6 +2850,48 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
         content = html_parser.content_as_text(response.data)
         assert (
             "3 dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas"
+            in content
+        )
+
+    def test_get_form_with_collective_application(self, legit_user, authenticated_client):
+        offerer = offerers_factories.NewOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        educational_factories.CollectiveDmsApplicationFactory(venue=venue, state=GraphQLApplicationStates.refused.value)
+        collective_application = educational_factories.CollectiveDmsApplicationFactory(
+            venue=venue, state=GraphQLApplicationStates.on_going.value
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert (
+            "Un dossier ADAGE est en cours sur Démarches-Simplifiées pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : "
+            f"Dossier n°{collective_application.application} : En instruction" in content
+        )
+
+    def test_get_form_with_several_collective_applications(self, legit_user, authenticated_client):
+        offerer = offerers_factories.NewOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        for state in list(GraphQLApplicationStates):
+            educational_factories.CollectiveDmsApplicationFactory(venue=venue, state=state.value)
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+
+        db.session.expire(offerer)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert (
+            "2 dossiers ADAGE sont en cours sur Démarches-Simplifiées pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas"
             in content
         )
 
@@ -4018,10 +4061,15 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
             offerer=offerers[2], status=finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
         )
 
+        collective_application = educational_factories.CollectiveDmsApplicationFactory.create(
+            venue=offerers_factories.VenueFactory(managingOfferer=offerers[1]),
+            state=GraphQLApplicationStates.draft.value,
+        )
+
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": parameter_ids},
-            expected_num_queries=3,  # session + current user + pending bank accounts
+            expected_num_queries=4,  # session + current user + pending bank accounts + pending collective applications
         )
         assert response.status_code == 200
 
@@ -4029,7 +4077,9 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
         assert (
             "2 dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour ces entités juridiques, leur traitement n'est pas automatique, ne les oublions pas : "
             f"Dossier n°{bank_account_1.dsApplicationId} : En construction"
-            f"Dossier n°{bank_account_2.dsApplicationId} : À corriger" in content
+            f"Dossier n°{bank_account_2.dsApplicationId} : À corriger"
+            "Un dossier ADAGE est en cours sur Démarches-Simplifiées pour ces entités juridiques, son traitement n'est pas automatique, ne l'oublions pas : "
+            f"Dossier n°{collective_application.application} : En construction" in content
         )
 
 
