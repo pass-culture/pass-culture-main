@@ -1,10 +1,7 @@
 import { useRef, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -47,7 +44,6 @@ export interface PriceTableFormProps {
   mode: OFFER_WIZARD_MODE
   offer: GetIndividualOfferWithAddressResponseModel
   schemaValidationContext: PriceTableFormContext
-  offerStocks: GetOfferStockResponseModel[]
 }
 export const PriceTableForm = ({
   isCaledonian,

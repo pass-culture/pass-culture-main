@@ -1,5 +1,9 @@
+import type { UseFormReturn } from 'react-hook-form'
+
+import { api } from '@/apiClient/api'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
+import type { PriceTableFormValues } from '../../schemas'
 import { saveEventOfferPriceTable } from '../saveEventOfferPriceTable'
 
 vi.mock('@/apiClient/api', () => ({
@@ -8,8 +12,6 @@ vi.mock('@/apiClient/api', () => ({
     postPriceCategories: vi.fn(),
   },
 }))
-
-import { api } from '@/apiClient/api'
 
 describe('saveEventOfferPriceTable', () => {
   const offer = getIndividualOfferFactory()
@@ -32,8 +34,20 @@ describe('saveEventOfferPriceTable', () => {
     isDuo: true,
   }
 
+  const form = {
+    formState: {
+      dirtyFields: {
+        isDuo: true,
+        entries: true,
+      },
+    },
+  }
   it('should patch offer and post price categories', async () => {
-    await saveEventOfferPriceTable(formValues, { offer })
+    await saveEventOfferPriceTable(
+      formValues,
+      form as unknown as UseFormReturn<PriceTableFormValues>,
+      { offer }
+    )
 
     expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
     expect(api.postPriceCategories).toHaveBeenCalledWith(
