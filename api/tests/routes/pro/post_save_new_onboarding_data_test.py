@@ -257,6 +257,28 @@ class Returns400Test:
         assert db.session.query(offerers_models.UserOfferer).count() == 0
         assert db.session.query(offerers_models.Venue).count() == 0
 
+    def test_no_venuetypecode_no_activity(self, client):
+        user = users_factories.UserFactory()
+
+        client = client.with_session_auth(user.email)
+        body = {**REQUEST_BODY}
+        body.pop("venueTypeCode")
+        response = client.post("/offerers/new", json=body)
+
+        assert response.status_code == 400
+        assert response.json == {"__root__": ["Either activity or venueTypeCode are required"]}
+
+    def test_venuetypecode_none_no_activity(self, client):
+        user = users_factories.UserFactory()
+
+        client = client.with_session_auth(user.email)
+        body = {**REQUEST_BODY}
+        body["venueTypeCode"] = None
+        response = client.post("/offerers/new", json=body)
+
+        assert response.status_code == 400
+        assert response.json == {"__root__": ["Either activity or venueTypeCode are required"]}
+
 
 class Returns500Test:
     @patch("pcapi.connectors.entreprise.api.get_siret_open_data", side_effect=sirene_exceptions.ApiException())

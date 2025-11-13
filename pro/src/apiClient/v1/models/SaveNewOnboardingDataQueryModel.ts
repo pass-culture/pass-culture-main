@@ -3,8 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AddressBodyModel } from './AddressBodyModel';
+import type { OnboardingActivity } from './OnboardingActivity';
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
+  activity?: OnboardingActivity | null;
   address: AddressBodyModel;
   createVenueWithoutSiret?: boolean;
   isOpenToPublic: boolean;
@@ -13,7 +15,7 @@ export type SaveNewOnboardingDataQueryModel = {
   siret: string;
   target: Target;
   token: string;
-  venueTypeCode: string;
+  venueTypeCode?: string | null;
   webPresence: string;
 };
 
