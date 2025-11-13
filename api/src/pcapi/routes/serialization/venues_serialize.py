@@ -262,9 +262,12 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "hasNonFreeOffers":
             # avoid some tricky circular import: schemas is not expected
             # to import a related repository module.
-            from pcapi.core.offerers.repository import venues_have_non_free_offers
+            # from pcapi.core.offerers.repository import venues_have_non_free_offers
 
-            return venue.id in venues_have_non_free_offers([venue.id])
+            # return venue.id in venues_have_non_free_offers([venue.id])
+            # FIXME(jbaudet 13/11/2025): use venues_have_non_free_offers once
+            # it has been fixed
+            return True
 
         return super().get(key, default)
 

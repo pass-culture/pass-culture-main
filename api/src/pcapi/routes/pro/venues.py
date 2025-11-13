@@ -91,8 +91,11 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
         else []
     )
 
-    venue_ids = [v.id for v in venue_list]
-    venue_ids_with_non_free_offers = offerers_repository.venues_have_non_free_offers(venue_ids)
+    # FIXME(jbaudet 13/11/2025): use venues_have_non_free_offers once
+    # it has been fixed
+    # venue_ids = [v.id for v in venue_list]
+    # venue_ids_with_non_free_offers = offerers_repository.venues_have_non_free_offers(venue_ids)
+    venue_ids_with_non_free_offers: set[int] = set()
     return venues_serialize.GetVenueListResponseModel(
         venues=[
             venues_serialize.VenueListItemResponseModel.build(
