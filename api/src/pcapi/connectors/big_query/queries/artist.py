@@ -13,6 +13,7 @@ class ArtistModel(pydantic_v1.BaseModel):
     image_author: str | None
     image_license: str | None
     image_license_url: str | None
+    wikidata_id: str | None
 
 
 class ArtistProductLinkModel(pydantic_v1.BaseModel):
@@ -39,7 +40,8 @@ class ArtistQuery(BaseQuery):
             wikidata_image_file_url as image,
             wikidata_image_author as author,
             wikidata_image_license as license,
-            wikidata_image_license_url as license_url
+            wikidata_image_license_url as license_url,
+            wikidata_id
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist`
     """
@@ -99,6 +101,7 @@ class ArtistDeltaQuery(BaseQuery):
             wikidata_image_author as author,
             wikidata_image_license as license,
             wikidata_image_license_url as license_url,
+            wikidata_id,
             action
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist_delta`
