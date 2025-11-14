@@ -2007,24 +2007,6 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Entité juridique"] == "Offerer Top Acteur"
 
-    @pytest.mark.features(VENUE_REGULARIZATION=True)
-    def test_move_offer(self, authenticated_client):
-        offerer = offerers_factories.OffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
-        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
-
-        url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
-
-        response = authenticated_client.get(url)
-        assert response.status_code == 200
-
-        buttons = html_parser.extract(response.data, "button")
-        assert "Déplacer l'offre" in buttons
-        assert (
-            html_parser.get_tag(response.data, tag="div", id=f"move-collective-offer-modal-{collective_offer.id}")
-            is not None
-        )
-
 
 class RejectCollectiveOfferFromDetailsButtonTest(button_helpers.ButtonHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS

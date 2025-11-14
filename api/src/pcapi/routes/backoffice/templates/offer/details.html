@@ -41,9 +41,6 @@
   {% if action.EDIT_VENUE in allowed_actions.inline_actions %}
     {{ action_bar_button("pencil-square", "Modifier le partenaire culturel", modal_id="#edit-offer-venue-modal") }}
   {% endif %}
-  {% if action.MOVE in allowed_actions.inline_actions %}
-    {{ action_bar_button("arrow-left-right", "Déplacer l'offre", modal_id="#edit-offer-venue-modal") }}
-  {% endif %}
   <!-- ADDITIONAL BUTTONS TO PUT IN DROPDOWN MENU -->
   {% if allowed_actions.additional_actions %}
     <ul class="dropdown-menu">
@@ -69,9 +66,6 @@
       {% endif %}
       {% if action.EDIT_VENUE in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("pencil-square", "Modifier le partenaire culturel", modal_id="#edit-offer-venue-modal") }}</li>
-      {% endif %}
-      {% if action.MOVE in allowed_actions.additional_actions %}
-        <li>{{ action_bar_additional_button("arrow-left-right", "Déplacer l'offre", modal_id="#move-offer-modal") }}</li>
       {% endif %}
     </ul>
     <button type="button"
@@ -483,8 +477,5 @@
   {% endif %}
   {% if action.EDIT_VENUE in allowed_actions %}
     {{ build_simple_modal_form("edit-offer-venue", url_for("backoffice_web.offer.edit_offer_venue", offer_id=offer.id) , edit_offer_venue_form, "Modifier le partenaire culturel", "Enregistrer") }}
-  {% endif %}
-  {% if action.MOVE in allowed_actions %}
-    {{ build_simple_modal_form("move-offer", url_for("backoffice_web.offer.move_offer", offer_id=offer.id) , move_offer_form, "Déplacer l'offre", "Enregistrer") }}
   {% endif %}
 {% endblock extra_main_content %}

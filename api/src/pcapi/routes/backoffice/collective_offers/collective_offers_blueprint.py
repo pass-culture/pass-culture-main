@@ -19,7 +19,6 @@ from pcapi.core.educational import exceptions as educational_exceptions
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.educational.adage_backends.serialize import serialize_collective_offer
-from pcapi.core.educational.api import offer as collective_offer_api
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
@@ -27,13 +26,11 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.offerers import constants as offerers_constants
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.collective_offers import forms
@@ -1029,73 +1026,3 @@ def get_collective_offer_price_form(collective_offer_id: int) -> utils.Backoffic
         button_text="Ajuster le prix",
         ajax_submit=False,
     )
-
-
-@blueprint.route("/<int:collective_offer_id>/move", methods=["GET"])
-@atomic()
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def get_move_collective_offer_form(collective_offer_id: int) -> utils.BackofficeResponse:
-    if not feature.FeatureToggle.VENUE_REGULARIZATION.is_active():
-        raise feature.DisabledFeatureError("VENUE_REGULARIZATION is inactive")
-
-    collective_offer = (
-        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
-    )
-    if not collective_offer:
-        raise NotFound()
-
-    venue_choices = offerers_repository.get_offerers_venues_with_pricing_point(
-        collective_offer.venue,
-        include_without_pricing_points=True,
-        only_similar_pricing_points=True,
-        filter_same_bank_account=True,
-    )
-    move_offer_form = forms.MoveCollectiveOfferForm()
-    move_offer_form.set_venue_choices(venue_choices)
-
-    return render_template(
-        "components/dynamic/modal_form.html",
-        form=move_offer_form,
-        dst=url_for("backoffice_web.collective_offer.move_collective_offer", collective_offer_id=collective_offer_id),
-        div_id=f"move-collective-offer-modal-{collective_offer.id}",
-        title=f"Changer le partenaire culturel de l'offre collective {collective_offer_id}",
-        button_text="Changer le partenaire",
-        ajax_submit=False,
-    )
-
-
-@blueprint.route("/<int:collective_offer_id>/move", methods=["POST"])
-@atomic()
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def move_collective_offer(collective_offer_id: int) -> utils.BackofficeResponse:
-    collective_offer = (
-        db.session.query(educational_models.CollectiveOffer).filter_by(id=collective_offer_id).one_or_none()
-    )
-    if not collective_offer:
-        raise NotFound()
-
-    form = forms.MoveCollectiveOfferForm()
-    if not form.validate():
-        flash(utils.build_form_error_msg(form), "warning")
-        return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)
-
-    destination_venue = (
-        db.session.query(offerers_models.Venue)
-        .filter_by(id=int(form.venue.data))
-        .outerjoin(
-            offerers_models.VenuePricingPointLink,
-            sa.and_(
-                offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
-            ),
-        )
-        .options(
-            sa_orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
-                offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
-            ),
-        )
-        .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
-    ).one()
-
-    collective_offer_api.move_collective_offer_for_regularization(collective_offer, destination_venue)
-    return redirect(request.referrer or url_for("backoffice_web.collective_offer.list_collective_offers"), 303)

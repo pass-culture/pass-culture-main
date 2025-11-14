@@ -25,9 +25,6 @@
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-collective-offer-modal-" + collective_offer.id|string) }}
     {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-collective-offer-modal-" + collective_offer.id|string) }}
-    {% if is_feature_active("VENUE_REGULARIZATION") %}
-      {{ action_bar_button("arrow-left-right", "Déplacer l'offre", modal_id="#move-collective-offer-modal-" + collective_offer.id|string) }}
-    {% endif %}
   {% endif %}
 {% endblock action_buttons %}
 {% block extra_title_bar %}
@@ -204,8 +201,5 @@
   {% if has_permission("PRO_FRAUD_ACTIONS") %}
     {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_validate_collective_offer_form', collective_offer_id=collective_offer.id) , "validate-collective-offer-modal-" + collective_offer.id|string) }}
     {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_reject_collective_offer_form', collective_offer_id=collective_offer.id) , "reject-collective-offer-modal-" + collective_offer.id|string) }}
-    {% if is_feature_active("VENUE_REGULARIZATION") %}
-      {{ build_lazy_modal(url_for('backoffice_web.collective_offer.get_move_collective_offer_form', collective_offer_id=collective_offer.id) , "move-collective-offer-modal-" + collective_offer.id|string) }}
-    {% endif %}
   {% endif %}
 {% endblock extra_main_content %}
