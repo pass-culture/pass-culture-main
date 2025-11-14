@@ -402,7 +402,7 @@ describe('CollectiveOffers', () => {
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers()
-      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
       await userEvent.click(nextIcon)
 
@@ -417,11 +417,11 @@ describe('CollectiveOffers', () => {
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       await renderOffers()
-      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
-      const previousIcon = screen.getByRole('button', {
-        name: 'Page précédente',
-      })
+      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
       await userEvent.click(nextIcon)
+      const previousIcon = screen.getByRole('button', {
+        name: /page précédente/,
+      })
 
       await userEvent.click(previousIcon)
 
@@ -440,13 +440,15 @@ describe('CollectiveOffers', () => {
 
         await renderOffers()
 
-        expect(screen.getByText('Page 1/10')).toBeInTheDocument()
+        expect(
+          screen.getByRole('button', { name: /Page 1 sur 10/ })
+        ).toBeInTheDocument()
       })
 
       it('should not display the 101st offer', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         await renderOffers()
-        const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+        const nextIcon = screen.getByRole('button', { name: /page suivante/ })
 
         for (let i = 1; i < 11; i++) {
           await userEvent.click(nextIcon)

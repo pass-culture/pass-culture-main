@@ -142,7 +142,7 @@ describe('route TemplateCollectiveOffers', () => {
         offersRecap
       )
       await renderOffers()
-      const nextPageIcon = screen.getByRole('button', { name: 'Page suivante' })
+      const nextPageIcon = screen.getByRole('button', { name: /page suivante/ })
 
       await userEvent.click(nextPageIcon)
 

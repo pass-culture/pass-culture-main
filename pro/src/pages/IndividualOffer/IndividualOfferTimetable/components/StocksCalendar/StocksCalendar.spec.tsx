@@ -215,17 +215,23 @@ describe('StocksCalendar', () => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
-    expect(screen.getByText('Page 1/3'))
+    expect(
+      screen.getByRole('button', { name: /Page 1 sur 3/ })
+    ).toBeInTheDocument()
 
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    await userEvent.click(screen.getByRole('button', { name: /page suivante/ }))
 
-    expect(screen.getByText('Page 2/3'))
+    expect(
+      screen.getByRole('button', { name: /Page 2 sur 3/ })
+    ).toBeInTheDocument()
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Page précédente' })
+      screen.getByRole('button', { name: /page précédente/ })
     )
 
-    expect(screen.getByText('Page 1/3'))
+    expect(
+      screen.getByRole('button', { name: /Page 1 sur 3/ })
+    ).toBeInTheDocument()
   })
 
   it('should show the total number of stocks', async () => {
@@ -326,9 +332,11 @@ describe('StocksCalendar', () => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
     })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Page suivante' }))
+    await userEvent.click(screen.getByRole('button', { name: /page suivante/ }))
 
-    expect(screen.getByText('Page 2/3'))
+    expect(
+      screen.getByRole('button', { name: /Page 2 sur 3/ })
+    ).toBeInTheDocument()
 
     await userEvent.type(screen.getByLabelText('Horaire'), '00:00')
 
@@ -336,7 +344,9 @@ describe('StocksCalendar', () => {
       screen.getByRole('button', { name: 'Réinitialiser les filtres' })
     )
 
-    expect(screen.getByText('Page 1/3'))
+    expect(
+      screen.getByRole('button', { name: /Page 1 sur 3/ })
+    ).toBeInTheDocument()
   })
 
   it('should show an error message when none of the stocks were updated', async () => {
