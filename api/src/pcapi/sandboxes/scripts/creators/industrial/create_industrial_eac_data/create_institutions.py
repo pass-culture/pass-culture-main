@@ -3,6 +3,7 @@ import datetime
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import utils
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
 from pcapi.utils.db import make_timerange
@@ -207,13 +208,13 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=current_year,
-                period=educational_factories.get_educational_year_first_period(current_year),
+                period=utils.get_educational_year_first_period(current_year),
                 amount=3000,
             ),
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=current_year,
-                period=educational_factories.get_educational_year_second_period(current_year),
+                period=utils.get_educational_year_second_period(current_year),
                 amount=7000,
             ),
         ]
@@ -226,7 +227,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=current_year,
-                period=educational_factories.get_educational_year_first_period(current_year),
+                period=utils.get_educational_year_first_period(current_year),
                 amount=3000,
             )
         ]
@@ -288,13 +289,13 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=next_year,
-                period=educational_factories.get_educational_year_first_period(next_year),
+                period=utils.get_educational_year_first_period(next_year),
                 amount=3000,
             ),
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=next_year,
-                period=educational_factories.get_educational_year_second_period(next_year),
+                period=utils.get_educational_year_second_period(next_year),
                 amount=7000,
             ),
         ]
@@ -307,7 +308,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=next_year,
-                period=educational_factories.get_educational_year_first_period(next_year),
+                period=utils.get_educational_year_first_period(next_year),
                 amount=3000,
             )
         ]
