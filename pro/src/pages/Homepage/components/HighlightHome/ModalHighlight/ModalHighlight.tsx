@@ -6,10 +6,10 @@ import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
-import { formatDate } from '@/commons/utils/date'
-import { getHighlightDatespanTag } from '@/commons/utils/getHighlightDatespanTag'
+import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullLinkIcon from '@/icons/full-link.svg'
+import { AccessibleDate } from '@/ui-kit/AccessibleDate/AccessibleDate'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -159,11 +159,14 @@ const HighlightCard = ({
     <div className={styles['card']}>
       <div className={styles['card-content']}>
         <img src={imageSrc} alt="" className={styles['card-image']} />
-        <Tag label={getHighlightDatespanTag(highlightDatespan)} />
+        <Tag
+          label={<HighlightDatespanTag highlightDatespan={highlightDatespan} />}
+        />
         <h3 className={styles['card-title']}>{title}</h3>
         <p className={styles['card-description']}>{children}</p>
         <p className={styles['card-limit-participation-date']}>
-          Date limite de participation : {formatDate(availabilityDatespan[1])}
+          Date limite de participation :{' '}
+          <AccessibleDate date={availabilityDatespan[1]} />
         </p>
       </div>
     </div>

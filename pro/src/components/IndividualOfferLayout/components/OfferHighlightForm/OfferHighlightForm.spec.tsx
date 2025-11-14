@@ -12,21 +12,16 @@ import type {
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
-import { getHighlightDatespanTag } from '@/commons/utils/getHighlightDatespanTag'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
-import { OfferHighlightForm } from '../OfferHighlightForm'
+import { OfferHighlightForm } from './OfferHighlightForm'
 
 const mockLogEvent = vi.fn()
 
 vi.mock('swr', async (importOriginal) => ({
   ...(await importOriginal()),
   default: vi.fn(),
-}))
-
-vi.mock('@/commons/utils/getHighlightDatespanTag', () => ({
-  getHighlightDatespanTag: vi.fn(),
 }))
 
 vi.mock('@/apiClient/api', () => ({
@@ -87,7 +82,6 @@ describe('OfferHighlightForm', () => {
   const useSWRMock = vi.mocked(useSWR)
   const getHighlightsMock = vi.mocked(api.getHighlights)
   const postHighlightRequestOfferMock = vi.mocked(api.postHighlightRequestOffer)
-  const getHighlightDatespanTagMock = vi.mocked(getHighlightDatespanTag)
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -101,8 +95,6 @@ describe('OfferHighlightForm', () => {
       data: mockedHighlights,
       isLoading: false,
     } as SWRResponse)
-
-    getHighlightDatespanTagMock.mockReturnValue('date-tag')
   })
 
   it('should display the info callout', async () => {
@@ -167,19 +159,13 @@ describe('OfferHighlightForm', () => {
     expect(checkboxes[0]).toBeChecked()
   })
 
-  it('should call getDateTag with correct parameters for each highlight', async () => {
+  it('should display the date', () => {
     renderOfferHighlightForm({ offerId: 1 })
 
-    await waitFor(() => {
-      expect(getHighlightDatespanTagMock).toHaveBeenNthCalledWith(1, [
-        '2025-01-10',
-        '2025-01-31',
-      ])
-      expect(getHighlightDatespanTagMock).toHaveBeenNthCalledWith(2, [
-        '2025-02-10',
-        '2025-02-28',
-      ])
-    })
+    expect(screen.getByText('10/01/2025')).toBeInTheDocument()
+    expect(screen.getByText('31/01/2025')).toBeInTheDocument()
+    expect(screen.getByText('10/02/2025')).toBeInTheDocument()
+    expect(screen.getByText('28/02/2025')).toBeInTheDocument()
   })
 
   it('should call api.postHighlightRequestOffer and log', async () => {
