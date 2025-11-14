@@ -46,7 +46,6 @@ from pcapi.core.search import search_offer_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_amount
@@ -428,7 +427,6 @@ class OfferDetailsActionType(enum.StrEnum):
     TAG_WEIGHT = enum.auto()
     RESYNC = enum.auto()
     EDIT_VENUE = enum.auto()
-    MOVE = enum.auto()
 
 
 @dataclasses.dataclass
@@ -1350,9 +1348,9 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> Of
     if utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
         offer_details_actions.add_action(OfferDetailsActionType.RESYNC)
 
-    ############################################################################################################
-    # Caution !!! EDIT_VENUE and MOVE actions are added in get_offer_details to avoid duplicated stock queries #
-    ############################################################################################################
+    #################################################################################################
+    # Caution !!! EDIT_VENUE action is added in get_offer_details to avoid duplicated stock queries #
+    #################################################################################################
 
     return offer_details_actions
 
@@ -1445,17 +1443,6 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         except offers_exceptions.MoveOfferBaseException:
             pass
 
-    move_offer_form = None
-    if FeatureToggle.VENUE_REGULARIZATION.is_active():
-        try:
-            venue_choices = offers_api.check_can_move_offer(offer)
-            move_offer_form = forms.EditOfferVenueForm()
-            move_offer_form.set_venue_choices(venue_choices)
-            # add the action here to avoid additional stock queries
-            allowed_actions.add_action(OfferDetailsActionType.MOVE)
-        except offers_exceptions.MoveOfferBaseException:
-            pass
-
     connect_as = get_connect_as(
         object_id=offer.id,
         object_type="offer",
@@ -1469,7 +1456,6 @@ def get_offer_details(offer_id: int) -> utils.BackofficeResponse:
         editable_stock_ids=editable_stock_ids,
         reindex_offer_form=empty_forms.EmptyForm() if is_advanced_pro_support else None,
         edit_offer_venue_form=edit_offer_venue_form,
-        move_offer_form=move_offer_form,
         connect_as=connect_as,
         allowed_actions=allowed_actions,
         action=OfferDetailsActionType,
@@ -1793,66 +1779,6 @@ def edit_offer_venue(offer_id: int) -> utils.BackofficeResponse:
             move_offer_address=form.move_offer_address.data,
             notify_beneficiary=form.notify_beneficiary.data,
         )
-
-    except offers_exceptions.MoveOfferBaseException as exc:
-        mark_transaction_as_invalid()
-        flash(
-            Markup("Le partenaire culturel de cette offre ne peut pas être modifié : {reason}").format(reason=str(exc)),
-            "warning",
-        )
-        return redirect(offer_url, 303)
-
-    flash(
-        Markup("L'offre a été déplacée vers le partenaire culturel <b>{venue_name}</b>").format(
-            venue_name=destination_venue.common_name
-        ),
-        "success",
-    )
-    return redirect(offer_url, 303)
-
-
-@list_offers_blueprint.route("/<int:offer_id>/move-offer", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
-def move_offer(offer_id: int) -> utils.BackofficeResponse:
-    if not FeatureToggle.VENUE_REGULARIZATION.is_active():
-        raise NotImplementedError("This feature is not active")
-    offer_url = url_for("backoffice_web.offer.get_offer_details", offer_id=offer_id)
-
-    offer = (
-        db.session.query(offers_models.Offer)
-        .filter_by(id=offer_id)
-        .options(sa_orm.joinedload(offers_models.Offer.venue))
-        .one_or_none()
-    )
-    if not offer:
-        raise NotFound()
-
-    try:
-        form = forms.EditOfferVenueForm()
-        if not form.validate():
-            mark_transaction_as_invalid()
-            flash(utils.build_form_error_msg(form), "warning")
-            return redirect(offer_url, 303)
-
-        destination_venue = (
-            db.session.query(offerers_models.Venue)
-            .filter_by(id=int(form.venue.data))
-            .outerjoin(
-                offerers_models.VenuePricingPointLink,
-                sa.and_(
-                    offerers_models.VenuePricingPointLink.venueId == offerers_models.Venue.id,
-                    offerers_models.VenuePricingPointLink.timespan.contains(date_utils.get_naive_utc_now()),
-                ),
-            )
-            .options(
-                sa_orm.contains_eager(offerers_models.Venue.pricing_point_links).load_only(
-                    offerers_models.VenuePricingPointLink.pricingPointId, offerers_models.VenuePricingPointLink.timespan
-                ),
-            )
-            .options(sa_orm.joinedload(offerers_models.Venue.offererAddress))
-        ).one()
-
-        offers_api.move_offer(offer, destination_venue)
 
     except offers_exceptions.MoveOfferBaseException as exc:
         mark_transaction_as_invalid()
