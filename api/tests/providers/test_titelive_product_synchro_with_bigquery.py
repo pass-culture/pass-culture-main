@@ -731,3 +731,37 @@ class BigQueryProductSyncTest:
         assert product2 is not None
         assert product2.name == "Product 2"
         assert mock_commit.call_count == 3
+
+    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    def test_sync_images_cleans_up_duplicates_when_correct_mediation_exists(
+        self, mock_execute, mock_gcp_data, mock_gcp_backend
+    ):
+        provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
+        product = offers_factories.ProductFactory(ean=self.EAN_TEST, lastProviderId=provider.id)
+        correct_recto_uuid = str(uuid.uuid4())
+        old_recto_uuid = str(uuid.uuid4())
+        untouched_verso_uuid = str(uuid.uuid4())
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.RECTO, uuid=correct_recto_uuid
+        )
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.RECTO, uuid=old_recto_uuid
+        )
+        offers_factories.ProductMediationFactory(
+            product=product, imageType=offers_models.ImageType.VERSO, uuid=untouched_verso_uuid
+        )
+        fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
+        bq_product = self._prepare_bq_product_from_fixture(fixture)
+        bq_product.recto_uuid = correct_recto_uuid
+        bq_product.verso_uuid = untouched_verso_uuid
+        bq_product.has_image = True
+        bq_product.has_verso_image = True
+        mock_execute.return_value = iter([bq_product])
+
+        BigQueryProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
+
+        assert len(product.productMediations) == 2
+        assert correct_recto_uuid in product.images[offers_models.ImageType.RECTO.value]
+        assert untouched_verso_uuid in product.images[offers_models.ImageType.VERSO.value]
