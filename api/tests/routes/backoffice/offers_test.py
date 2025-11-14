@@ -1726,9 +1726,12 @@ class EditOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_edit.subcategory.pro_label  # Sous-catégorie
         assert cells[next(i)] == ""  # Règles de conformité
         assert cells[next(i)] == ""  # Score data
-        assert cells[next(i)] == ""  # Predicition du validation_status (data)
+        assert cells[next(i)] == ""  # Prédiction du validation_status (data)
         assert cells[next(i)] == "-"  # Tarif
-        assert cells[next(i)] == f"{criteria[0].name} {criteria[1].name}"  # Tag
+        assert cells[next(i)] in {
+            f"{criteria[0].name} {criteria[1].name}",
+            f"{criteria[1].name} {criteria[0].name}",
+        }  # Tag
         assert cells[next(i)] == ""  # Date(s) de l'évènement
         assert cells[next(i)] == ""  # Date(s) limite(s) de réservation
         assert cells[next(i)] == ""  # Créateur de l'offre
