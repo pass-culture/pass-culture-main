@@ -305,9 +305,16 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     )
     offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
-        offerers_api.get_offerer_address_from_address(venue.managingOffererId, body.address)
+        offerers_api.get_offer_location_from_address(venue.managingOffererId, body.address)
         if body.address
-        else venue.offererAddress
+        # TODO (prouzet, 2025-11-14) CLEAN_OA Do no longer use venue.offererAddress after step 4.5
+        else (
+            venue.offererAddress
+            if venue.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+            else offerers_api.get_or_create_offer_location(
+                venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
+            )
+        )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
@@ -516,9 +523,16 @@ def post_offer(
     )
     offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
-        offerers_api.get_offerer_address_from_address(venue.managingOffererId, body.address)
+        offerers_api.get_offer_location_from_address(venue.managingOffererId, body.address)
         if body.address
-        else venue.offererAddress
+        # TODO (prouzet, 2025-11-14) CLEAN_OA Do no longer use venue.offererAddress after step 4.5
+        else (
+            venue.offererAddress
+            if venue.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+            else offerers_api.get_or_create_offer_location(
+                venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
+            )
+        )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
