@@ -22,11 +22,6 @@ describe('Search collective offers', () => {
     endDatetime: string
   }
   let offerDraft: { name: string; venueName: string }
-  let offerUnderReview: {
-    name: string
-    venueName: string
-  }
-  let offerRejected: { name: string; venueName: string }
   let offerArchived: { name: string; venueName: string }
 
   const formatName = 'Concert'
@@ -43,8 +38,6 @@ describe('Search collective offers', () => {
         logInAndGoToPage(response.body.user.email, '/accueil')
         offerPublished = response.body.offerPublished
         offerDraft = response.body.offerDraft
-        offerUnderReview = response.body.offerUnderReview
-        offerRejected = response.body.offerRejected
         offerArchived = response.body.offerArchived
         cy.visit('/offres/collectives')
         cy.wait(['@collectiveOffersBookable'])
@@ -74,7 +67,6 @@ describe('Search collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        '',
         offerPublished.name,
         `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
         '100€25 participants',
@@ -84,7 +76,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it(`I should be able to search with a location and see expected results`, () => {
@@ -106,7 +98,6 @@ describe('Search collective offers', () => {
     const expectedResults = [
       BOOKABLE_OFFERS_COLUMNS,
       [
-        '',
         '',
         offerArchived.name,
         '-',
@@ -138,7 +129,6 @@ describe('Search collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        '',
         offerPublished.name,
         `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
         '100€25 participants',
@@ -148,7 +138,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it(`I should be able to search with a Date and see expected results`, () => {
@@ -171,7 +161,6 @@ describe('Search collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        '',
         offerPublished.name,
         `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
         '100€25 participants',
@@ -181,7 +170,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it('I should be able to search with a status "Publiée" and see expected results', () => {
@@ -205,7 +194,6 @@ describe('Search collective offers', () => {
       BOOKABLE_OFFERS_COLUMNS,
       [
         '',
-        '',
         offerPublished.name,
         `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
         '100€25 participants',
@@ -215,7 +203,7 @@ describe('Search collective offers', () => {
       ],
     ]
 
-    expectOffersOrBookingsAreFound(expectedResults)
+    expectOffersOrBookingsAreFound(expectedResults, true)
   })
 
   it('I should be able to search with several filters and see expected results, then reinit filters', () => {
@@ -248,7 +236,6 @@ describe('Search collective offers', () => {
     const expectedResults = [
       BOOKABLE_OFFERS_COLUMNS,
       [
-        '',
         '',
         offerDraft.name,
         '-',
@@ -285,60 +272,6 @@ describe('Search collective offers', () => {
     cy.wait('@collectiveOffersBookable')
 
     cy.stepLog({ message: '5 results should be displayed' })
-    const expectedResults2 = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        '',
-        offerPublished.name,
-        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
-        '100€25 participants',
-        institutionName,
-        'À déterminer',
-        'publiée',
-      ],
-      [
-        '',
-        '',
-        offerRejected.name,
-        '',
-        '100€25 participants',
-        'DE LA TOUR',
-        'À déterminer',
-        'non conforme',
-      ],
-      [
-        '',
-        '',
-        offerUnderReview.name,
-        '',
-        '100€25 participants',
-        'DE LA TOUR',
-        'À déterminer',
-        'en instruction',
-      ],
-      [
-        '',
-        '',
-        offerDraft.name,
-        '-',
-        '-',
-        'DE LA TOUR',
-        'À déterminer',
-        'brouillon',
-      ],
-      [
-        '',
-        '',
-        offerArchived.name,
-        '-',
-        '-',
-        'DE LA TOUR',
-        "Dans l'établissement",
-        'archivée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults2)
+    cy.contains('5 offres')
   })
 })

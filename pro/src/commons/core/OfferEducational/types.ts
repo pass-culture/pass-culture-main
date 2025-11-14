@@ -15,6 +15,10 @@ import { hasProperty } from '@/commons/utils/types'
 
 export type OfferDatesType = 'permanent' | 'specific_dates'
 
+export type CollectiveOffer =
+  | CollectiveOfferTemplateResponseModel
+  | CollectiveOfferResponseModel
+
 export interface OfferEducationalFormValues extends Partial<AddressFormValues> {
   title: string
   description: string

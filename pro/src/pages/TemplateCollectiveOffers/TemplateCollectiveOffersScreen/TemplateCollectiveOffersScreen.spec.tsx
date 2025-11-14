@@ -307,7 +307,7 @@ describe('TemplateCollectiveOffersScreen', () => {
     )
   })
 
-  it('should filter new column "Dates de l’évènement"', async () => {
+  it('should filter and sort column "Dates de l’évènement"', async () => {
     renderOffers({
       ...props,
       offers: [
@@ -332,9 +332,7 @@ describe('TemplateCollectiveOffersScreen', () => {
     expect(firstOfferEventDate).toEqual('31/07/2024')
 
     await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Trier par ordre croissant',
-      })
+      screen.getByRole('img', { name: 'Trier par ordre croissant' })
     )
 
     const newFirstOfferEventDate =

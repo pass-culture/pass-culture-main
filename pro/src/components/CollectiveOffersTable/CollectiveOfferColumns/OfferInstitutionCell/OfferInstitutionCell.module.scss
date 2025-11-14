@@ -1,0 +1,16 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.institution-column {
+  @include fonts.body-accent-xs;
+
+  width: rem.torem(150px);
+}
+
+.institution-label-ellipsis {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

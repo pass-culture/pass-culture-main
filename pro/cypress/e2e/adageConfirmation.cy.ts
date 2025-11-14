@@ -57,7 +57,7 @@ describe('Adage confirmation', () => {
 
     cy.stepLog({ message: 'I click on the offer' })
 
-    cy.findAllByTestId('offer-item-row').find('a').contains(offer.name).click()
+    cy.findByRole('link', { name: `N°${offer.id} ${offer.name}` }).click()
 
     cy.wait('@collectiveOfferDetails')
     cy.stepLog({ message: 'I check that the offer is published' })
@@ -114,7 +114,6 @@ describe('Adage confirmation', () => {
         BOOKABLE_OFFERS_COLUMNS,
         [
           '',
-          '',
           `N°${offer.id}${offer.name}`,
           collectiveFormatEventDate(stock.startDatetime),
           `100€25 participants`,
@@ -124,7 +123,12 @@ describe('Adage confirmation', () => {
         ],
       ]
 
-      expectOffersOrBookingsAreFound(expectedResults)
+      expectOffersOrBookingsAreFound(expectedResults, true)
+
+      // full row content check
+      cy.findByText(
+        'En attente de réservation par le chef d’établissement'
+      ).should('be.visible')
 
       cy.sandboxCall(
         'GET',
@@ -189,7 +193,6 @@ describe('Adage confirmation', () => {
         BOOKABLE_OFFERS_COLUMNS,
         [
           '',
-          '',
           `N°${offer.id}${offer.name}`,
           collectiveFormatEventDate(stock.startDatetime),
           `100€25 participants`,
@@ -246,7 +249,6 @@ describe('Adage confirmation', () => {
       expectedResults = [
         BOOKABLE_OFFERS_COLUMNS,
         [
-          '',
           '',
           `N°${offer.id}${offer.name}`,
           collectiveFormatEventDate(stock.startDatetime),

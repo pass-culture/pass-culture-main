@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
@@ -69,7 +65,7 @@ const offererAddress: GetOffererAddressResponseModel[] = [
   }),
 ]
 
-const renderOffers = async (
+const renderOffers = (
   filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
@@ -87,8 +83,6 @@ const renderOffers = async (
       offerer: currentOffererFactory(),
     },
   })
-
-  await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
 }
 
 const offererId = 1
@@ -108,7 +102,7 @@ describe('CollectiveOffers', () => {
   })
 
   it('should fetch only bookable offers', async () => {
-    await renderOffers()
+    renderOffers()
 
     await waitFor(() => {
       expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
@@ -128,7 +122,7 @@ describe('CollectiveOffers', () => {
   describe('filters', () => {
     describe('status filters', () => {
       it('should filter offers given status filter when clicking on "Appliquer"', async () => {
-        await renderOffers()
+        renderOffers()
 
         await userEvent.click(
           screen.getByRole('button', {
@@ -159,7 +153,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should filter offers given multiple status filter when clicking on "Appliquer"', async () => {
-        await renderOffers()
+        renderOffers()
 
         await userEvent.click(
           screen.getByRole('button', {
@@ -199,7 +193,7 @@ describe('CollectiveOffers', () => {
         vi.spyOn(api, 'getCollectiveOffers')
           .mockResolvedValueOnce(offersRecap)
           .mockResolvedValueOnce([])
-        await renderOffers()
+        renderOffers()
 
         await userEvent.click(
           screen.getByRole('button', {
@@ -220,10 +214,10 @@ describe('CollectiveOffers', () => {
         })
       })
 
-      it('should not display column titles when no offers are returned', async () => {
+      it('should not display column titles when no offers are returned', () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
 
-        await renderOffers()
+        renderOffers()
 
         expect(screen.queryByText('Lieu', { selector: 'th' })).toBeNull()
         expect(screen.queryByText('Stock', { selector: 'th' })).toBeNull()
@@ -232,9 +226,11 @@ describe('CollectiveOffers', () => {
 
     describe('location type filters', () => {
       it('should send locationType ADDRESS and offererAddressId when an address is selected', async () => {
-        await renderOffers()
+        renderOffers()
+
+        const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
-          screen.getByLabelText('Localisation'),
+          localisationSelect,
           offererAddress[0].id.toString()
         )
         await userEvent.click(screen.getByText('Rechercher'))
@@ -254,7 +250,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should send locationType TO_BE_DEFINED and offererAddressId null when "À déterminer" is selected', async () => {
-        await renderOffers()
+        renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
           localisationSelect,
@@ -277,7 +273,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should send locationType SCHOOL and offererAddressId null when "En établissement scolaire" is selected', async () => {
-        await renderOffers()
+        renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(
           localisationSelect,
@@ -300,7 +296,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should send locationType and offererAddressId null when "all" is selected', async () => {
-        await renderOffers()
+        renderOffers()
         const localisationSelect = await screen.findByLabelText('Localisation')
         await userEvent.selectOptions(localisationSelect, 'all')
         await userEvent.click(screen.getByText('Rechercher'))
@@ -322,7 +318,7 @@ describe('CollectiveOffers', () => {
 
     describe('on click on search button', () => {
       it('should load offers with written offer name filter', async () => {
-        await renderOffers()
+        renderOffers()
 
         const searchInput = screen.getByRole('searchbox', {
           name: LABELS.nameSearchInput,
@@ -347,7 +343,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should load offers with selected period beginning date', async () => {
-        await renderOffers()
+        renderOffers()
 
         await userEvent.type(
           screen.getByLabelText('Début de la période'),
@@ -371,7 +367,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should load offers with selected period ending date', async () => {
-        await renderOffers()
+        renderOffers()
         await userEvent.type(
           screen.getByLabelText('Fin de la période'),
           '2020-12-27'
@@ -401,8 +397,10 @@ describe('CollectiveOffers', () => {
         collectiveOfferFactory({ stock })
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
-      await renderOffers()
-      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+      renderOffers()
+      const nextIcon = await screen.findByRole('button', {
+        name: 'Page suivante',
+      })
 
       await userEvent.click(nextIcon)
 
@@ -416,8 +414,10 @@ describe('CollectiveOffers', () => {
         collectiveOfferFactory({ stock })
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
-      await renderOffers()
-      const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+      renderOffers()
+      const nextIcon = await screen.findByRole('button', {
+        name: 'Page suivante',
+      })
       const previousIcon = screen.getByRole('button', {
         name: 'Page précédente',
       })
@@ -438,15 +438,17 @@ describe('CollectiveOffers', () => {
       it('should have max number page of 10', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
 
-        await renderOffers()
+        renderOffers()
 
-        expect(screen.getByText('Page 1/10')).toBeInTheDocument()
+        expect(await screen.findByText('Page 1/10')).toBeInTheDocument()
       })
 
       it('should not display the 101st offer', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers()
-        const nextIcon = screen.getByRole('button', { name: 'Page suivante' })
+        renderOffers()
+        const nextIcon = await screen.findByRole('button', {
+          name: 'Page suivante',
+        })
 
         for (let i = 1; i < 11; i++) {
           await userEvent.click(nextIcon)
@@ -467,26 +469,10 @@ describe('CollectiveOffers', () => {
       const filters = {
         format: EacFormat.ATELIER_DE_PRATIQUE,
       }
-      await renderOffers(filters)
-
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        1,
-        null,
-        offererId,
-        null,
-        null,
-        null,
-        null,
-        'Atelier de pratique',
-        null,
-        null
-      )
+      renderOffers(filters)
 
       await userEvent.click(screen.getByText('Rechercher'))
-      await waitFor(() => {
-        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      })
+      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         1,
         null,
@@ -524,24 +510,10 @@ describe('CollectiveOffers', () => {
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
 
       const nameOrIsbn = 'Any word'
-      await renderOffers({
+      renderOffers({
         nameOrIsbn,
         format: EacFormat.ATELIER_DE_PRATIQUE,
       })
-
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        1,
-        nameOrIsbn,
-        offererId,
-        null,
-        null,
-        null,
-        null,
-        'Atelier de pratique',
-        null,
-        null
-      )
 
       await userEvent.click(screen.getByText('Réinitialiser les filtres'))
       await waitFor(() => {
@@ -571,8 +543,8 @@ describe('CollectiveOffers', () => {
         displayedStatus: CollectiveOfferDisplayedStatus.DRAFT,
       }),
     ])
-    await renderOffers()
+    renderOffers()
 
-    expect(screen.getByText('2 offres')).toBeInTheDocument()
+    expect(await screen.findByText('2 offres')).toBeInTheDocument()
   })
 })

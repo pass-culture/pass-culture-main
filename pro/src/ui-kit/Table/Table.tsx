@@ -156,7 +156,7 @@ export function Table<
       return data
     }
 
-    return [...data].sort((a, b) => {
+    return [...fullScope].sort((a, b) => {
       const valueA = getValue(a, col.ordererField)
       const valueB = getValue(b, col.ordererField)
       if (valueA === valueB) {
@@ -170,7 +170,7 @@ export function Table<
           ? 1
           : -1
     })
-  }, [data, currentSortingColumn, currentSortingMode, columns])
+  }, [data, currentSortingColumn, currentSortingMode, columns, fullScope])
 
   // Header checkbox state based on ALL pages
   const headerChecked =
