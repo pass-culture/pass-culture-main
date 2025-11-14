@@ -62,7 +62,7 @@ class EducationalInstitutionTest:
         institution = educational_factories.EducationalInstitutionFactory(deposits=[deposit])
 
         used_booking = educational_factories.UsedCollectiveBookingFactory(
-            educationalInstitution=institution, educationalYear=year
+            educationalInstitution=institution, educationalYear=year, educationalDeposit=deposit
         )
 
         educational_redactor = educational_factories.EducationalRedactorFactory()

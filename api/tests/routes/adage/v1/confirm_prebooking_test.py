@@ -1,5 +1,8 @@
 import logging
+from dataclasses import dataclass
 from datetime import datetime
+from datetime import time
+from datetime import timedelta
 from decimal import Decimal
 
 import pytest
@@ -7,18 +10,19 @@ import time_machine
 
 from pcapi.core import testing
 from pcapi.core.bookings.models import Booking
+from pcapi.core.educational import models
 from pcapi.core.educational.factories import CollectiveBookingFactory
+from pcapi.core.educational.factories import ConfirmedCollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalCurrentYearFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
 from pcapi.core.educational.factories import PendingCollectiveBookingFactory
-from pcapi.core.educational.models import CollectiveBookingStatus
-from pcapi.core.educational.models import CollectiveLocationType
-from pcapi.core.educational.models import Ministry
+from pcapi.core.educational.factories import create_educational_year
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.routes.adage.v1.serialization import constants
+from pcapi.utils.db import make_timerange
 
 from tests.routes.adage.v1.conftest import expected_serialized_prebooking
 
@@ -44,19 +48,18 @@ class Returns200Test:
             amount=Decimal(1400.00),
             isFinal=True,
         )
-        CollectiveBookingFactory(
+        ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(20.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.CONFIRMED,
+            educationalDeposit=deposit,
         )
 
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(20.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalRedactor=redactor,
-            status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
@@ -75,7 +78,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json == expected_serialized_prebooking(booking)
 
-        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
         assert booking.educationalDepositId == deposit.id
 
     def test_confirm_collective_prebooking_with_address(self, client) -> None:
@@ -86,7 +89,7 @@ class Returns200Test:
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             collectiveStock__collectiveOffer__venue=venue,
-            collectiveStock__collectiveOffer__locationType=CollectiveLocationType.ADDRESS,
+            collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.ADDRESS,
             collectiveStock__collectiveOffer__offererAddress=venue.offererAddress,
         )
         offer = booking.collectiveStock.collectiveOffer
@@ -107,7 +110,7 @@ class Returns200Test:
             "address": offer.offererAddress.address.fullAddress,
         }
 
-        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
         assert booking.educationalDepositId == deposit.id
 
     @time_machine.travel("2021-10-15 09:00:00")
@@ -123,40 +126,39 @@ class Returns200Test:
             amount=Decimal(2000.00),
             isFinal=True,
         )
-        EducationalDepositFactory(
+        deposit_2 = EducationalDepositFactory(
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
             amount=Decimal(10000.00),
             isFinal=True,
         )
-        deposit = EducationalDepositFactory(
+        deposit_3 = EducationalDepositFactory(
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
             amount=Decimal(10000.00),
             isFinal=True,
-            ministry=Ministry.AGRICULTURE,
+            ministry=models.Ministry.AGRICULTURE,
         )
-        CollectiveBookingFactory(
+        ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(200.00),
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.CONFIRMED,
+            educationalDeposit=deposit_2,
             confirmationLimitDate=datetime(2021, 10, 21, 10),
         )
 
-        CollectiveBookingFactory(
+        ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(200.00),
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.CONFIRMED,
+            educationalDeposit=deposit_3,
             confirmationLimitDate=datetime(2021, 10, 21, 10),
         )
 
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(300.00),
             educationalInstitution=educational_institution3,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
@@ -167,8 +169,8 @@ class Returns200Test:
 
         assert response.status_code == 200
 
-        assert booking.status == CollectiveBookingStatus.CONFIRMED
-        assert booking.educationalDepositId == deposit.id
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == deposit_3.id
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_out_of_minitry_check_dates(self, client) -> None:
@@ -182,25 +184,25 @@ class Returns200Test:
             amount=Decimal(2000.00),
             isFinal=True,
         )
-        EducationalDepositFactory(
+        deposit_2 = EducationalDepositFactory(
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
             amount=Decimal(10000.00),
             isFinal=True,
         )
-        CollectiveBookingFactory(
+        ConfirmedCollectiveBookingFactory(
             collectiveStock__price=Decimal(4000.00),
             educationalInstitution=educational_institution2,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.CONFIRMED,
+            educationalDeposit=deposit_2,
             confirmationLimitDate=datetime(2021, 10, 21, 10),
         )
 
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(300.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
+            status=models.CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2022, 2, 15, 10),
             collectiveStock__startDatetime=datetime(2022, 3, 15, 10),
         )
@@ -212,7 +214,7 @@ class Returns200Test:
 
         assert response.status_code == 200
 
-        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
         assert booking.educationalDepositId == deposit.id
 
     @pytest.mark.settings(EAC_CHECK_INSTITUTION_FUND=False)
@@ -223,7 +225,7 @@ class Returns200Test:
 
         assert response.status_code == 200
 
-        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
         assert booking.educationalDepositId is None
 
     @pytest.mark.settings(EAC_CHECK_INSTITUTION_FUND=False)
@@ -247,7 +249,7 @@ class Returns200Test:
 
         assert response.status_code == 200
 
-        assert booking.status == CollectiveBookingStatus.CONFIRMED
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
         assert booking.educationalDepositId is None
 
 
@@ -263,7 +265,7 @@ class ReturnsErrorTest:
     def test_no_deposit_for_collective_bookings(self, client) -> None:
         booking = CollectiveBookingFactory(
             collectiveStock__price=Decimal(20.00),
-            status=CollectiveBookingStatus.PENDING,
+            status=models.CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
@@ -273,7 +275,7 @@ class ReturnsErrorTest:
         assert response.status_code == 404
         assert response.json == {"code": "DEPOSIT_NOT_FOUND"}
 
-        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.status == models.CollectiveBookingStatus.PENDING
         assert booking.educationalDepositId is None
 
     @time_machine.travel("2021-10-15 09:00:00")
@@ -286,11 +288,10 @@ class ReturnsErrorTest:
             amount=Decimal(100.00),
             isFinal=True,
         )
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
@@ -300,7 +301,39 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND"}
 
-        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.status == models.CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
+    @time_machine.travel("2021-10-15 09:00:00")
+    def test_insufficient_fund_with_confirmed_booking(self, client) -> None:
+        educational_institution = EducationalInstitutionFactory()
+        educational_year = EducationalYearFactory(adageId="1")
+        deposit = EducationalDepositFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            amount=Decimal(100.00),
+            isFinal=True,
+        )
+        ConfirmedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(80),
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            educationalDeposit=deposit,
+        )
+
+        booking = PendingCollectiveBookingFactory(
+            collectiveStock__price=Decimal(50),
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            confirmationLimitDate=datetime(2021, 10, 15, 10),
+        )
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "INSUFFICIENT_FUND"}
+
+        assert booking.status == models.CollectiveBookingStatus.PENDING
         assert booking.educationalDepositId is None
 
     @time_machine.travel("2021-10-15 09:00:00")
@@ -313,11 +346,10 @@ class ReturnsErrorTest:
             amount=Decimal(400.00),
             isFinal=False,
         )
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
@@ -327,11 +359,11 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "INSUFFICIENT_FUND_DEPOSIT_NOT_FINAL"}
 
-        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.status == models.CollectiveBookingStatus.PENDING
         assert booking.educationalDepositId is None
 
     def test_collective_booking_is_cancelled(self, client) -> None:
-        booking = CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED)
+        booking = CollectiveBookingFactory(status=models.CollectiveBookingStatus.CANCELLED)
 
         client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
@@ -339,13 +371,13 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "EDUCATIONAL_BOOKING_IS_CANCELLED"}
 
-        assert booking.status == CollectiveBookingStatus.CANCELLED
+        assert booking.status == models.CollectiveBookingStatus.CANCELLED
         assert booking.educationalDepositId is None
 
     @time_machine.travel("2021-08-05 15:00:00")
     def test_confirmation_limit_date_has_passed_for_collective_bookings(self, client) -> None:
         booking: Booking = CollectiveBookingFactory(
-            confirmationLimitDate=datetime(2021, 8, 5, 14), status=CollectiveBookingStatus.PENDING
+            confirmationLimitDate=datetime(2021, 8, 5, 14), status=models.CollectiveBookingStatus.PENDING
         )
 
         client = client.with_eac_token()
@@ -354,5 +386,305 @@ class ReturnsErrorTest:
         assert response.status_code == 422
         assert response.json == {"code": "CONFIRMATION_LIMIT_DATE_HAS_PASSED"}
 
-        assert booking.status == CollectiveBookingStatus.PENDING
+        assert booking.status == models.CollectiveBookingStatus.PENDING
         assert booking.educationalDepositId is None
+
+
+time_travel_str_first_period = "2025-10-01 15:00:00"
+time_travel_datetime_first_period = datetime.fromisoformat(time_travel_str_first_period)
+
+time_travel_str_second_period = "2026-03-01 15:00:00"
+time_travel_datetime_second_period = datetime.fromisoformat(time_travel_str_second_period)
+
+
+@dataclass
+class PeriodData:
+    institution: models.EducationalInstitution
+    year: models.EducationalYear
+    next_year: models.EducationalYear
+    deposit_first_period: models.EducationalDeposit
+    deposit_second_period: models.EducationalDeposit
+    deposit_first_period_next_year: models.EducationalDeposit
+    deposit_second_period_next_year: models.EducationalDeposit
+
+
+def get_period_data() -> PeriodData:
+    educational_institution = EducationalInstitutionFactory()
+
+    # current year
+    educational_year = create_educational_year(time_travel_datetime_first_period)
+    first_period_start = educational_year.beginningDate
+    first_period_end = datetime.combine(date=first_period_start.replace(month=12, day=31), time=time.max)
+    second_period_start = first_period_start.replace(year=first_period_start.year + 1, month=1, day=1)
+    second_period_end = datetime.combine(date=second_period_start.replace(month=8, day=31), time=time.max)
+
+    # next year
+    educational_year_next = create_educational_year(
+        time_travel_datetime_first_period.replace(year=time_travel_datetime_first_period.year + 1)
+    )
+    first_period_start_next = educational_year_next.beginningDate
+    first_period_end_next = datetime.combine(date=first_period_start_next.replace(month=12, day=31), time=time.max)
+    second_period_start_next = first_period_start_next.replace(year=first_period_start_next.year + 1, month=1, day=1)
+    second_period_end_next = datetime.combine(date=second_period_start_next.replace(month=8, day=31), time=time.max)
+
+    # one deposit with amount 400 for each period
+    deposit_first_period = EducationalDepositFactory(
+        educationalYear=educational_year,
+        educationalInstitution=educational_institution,
+        amount=Decimal(400),
+        period=make_timerange(first_period_start, first_period_end),
+    )
+    deposit_second_period = EducationalDepositFactory(
+        educationalYear=educational_year,
+        educationalInstitution=educational_institution,
+        amount=Decimal(400),
+        period=make_timerange(second_period_start, second_period_end),
+    )
+    deposit_first_period_next_year = EducationalDepositFactory(
+        educationalYear=educational_year_next,
+        educationalInstitution=educational_institution,
+        amount=Decimal(400),
+        period=make_timerange(first_period_start_next, first_period_end_next),
+    )
+    deposit_second_period_next_year = EducationalDepositFactory(
+        educationalYear=educational_year_next,
+        educationalInstitution=educational_institution,
+        amount=Decimal(400),
+        period=make_timerange(second_period_start_next, second_period_end_next),
+    )
+
+    return PeriodData(
+        institution=educational_institution,
+        year=educational_year,
+        next_year=educational_year_next,
+        deposit_first_period=deposit_first_period,
+        deposit_second_period=deposit_second_period,
+        deposit_first_period_next_year=deposit_first_period_next_year,
+        deposit_second_period_next_year=deposit_second_period_next_year,
+    )
+
+
+class PeriodCheckTest:
+    @time_machine.travel(time_travel_str_first_period)
+    def test_check_deposit_same_period(self, client):
+        """
+        CASE 1
+        Event takes place in first period (september-december)
+        Confirmation in first period
+        -> period of the deposit is the first period
+        """
+        period_data = get_period_data()
+        # available fund for first period is 400 - 350 = 50
+        ConfirmedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(350),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.year,
+            educationalDeposit=period_data.deposit_first_period,
+            collectiveStock__startDatetime=time_travel_datetime_first_period + timedelta(days=5),
+        )
+
+        # event takes place in first period and is confirmed now (in first period)
+        # -> the deposit is the first period one
+        booking = PendingCollectiveBookingFactory(
+            collectiveStock__price=Decimal(60),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.year,
+            collectiveStock__startDatetime=time_travel_datetime_first_period + timedelta(days=5),
+        )
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "INSUFFICIENT_FUND"}
+
+        assert booking.status == models.CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
+        booking.collectiveStock.price = Decimal(40)
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 200
+
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == period_data.deposit_first_period.id
+
+    @time_machine.travel(time_travel_str_first_period)
+    def test_check_deposit_event_in_next_period(self, client):
+        """
+        CASE 2
+        Event takes place in second period (january-august)
+        Confirmation in first period (september-december)
+        -> period of the deposit is the first period
+        """
+        period_data = get_period_data()
+        # available fund for first period is 400 - 350 = 50
+        ConfirmedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(350),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.year,
+            educationalDeposit=period_data.deposit_first_period,
+            collectiveStock__startDatetime=time_travel_datetime_first_period + timedelta(days=5),
+        )
+
+        # event takes place in second period and is confirmed now (in first period)
+        # -> the deposit is the first period one
+        booking = PendingCollectiveBookingFactory(
+            collectiveStock__price=Decimal(60),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.year,
+            collectiveStock__startDatetime=time_travel_datetime_second_period + timedelta(days=5),
+        )
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "INSUFFICIENT_FUND"}
+
+        assert booking.status == models.CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
+        booking.collectiveStock.price = Decimal(40)
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 200
+
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == period_data.deposit_first_period.id
+
+    @time_machine.travel(time_travel_str_second_period)
+    def test_check_deposit_same_period_second(self, client):
+        """
+        CASE 3
+        Event takes place in second period (january-august)
+        Confirmation in second period
+        -> period of the deposit is the second period
+        """
+        period_data = get_period_data()
+        # available fund for second period is 400 - 350 = 50
+        ConfirmedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(350),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.year,
+            educationalDeposit=period_data.deposit_second_period,
+            collectiveStock__startDatetime=time_travel_datetime_second_period + timedelta(days=5),
+        )
+
+        # event takes place in second period and is confirmed now (in second period)
+        # -> the deposit is the second period one
+        booking = PendingCollectiveBookingFactory(
+            collectiveStock__price=Decimal(60),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.year,
+            collectiveStock__startDatetime=time_travel_datetime_second_period + timedelta(days=5),
+        )
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "INSUFFICIENT_FUND"}
+
+        assert booking.status == models.CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
+        booking.collectiveStock.price = Decimal(40)
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 200
+
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == period_data.deposit_second_period.id
+
+    @time_machine.travel(time_travel_str_second_period)
+    def test_check_deposit_event_in_next_year_first_period(self, client):
+        """
+        CASE 4
+        Event takes place in next educational year, first period (september-december)
+        Confirmation in current educational year
+        -> period of the deposit is the first period of next educational year
+        """
+        period_data = get_period_data()
+        date_in_next_year_first_period = period_data.deposit_first_period_next_year.period.lower + timedelta(days=5)
+        # available fund for next year first period is 400 - 350 = 50
+        ConfirmedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(350),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.next_year,
+            educationalDeposit=period_data.deposit_first_period_next_year,
+            collectiveStock__startDatetime=date_in_next_year_first_period,
+        )
+
+        # event takes place in first period of next educational year and is confirmed now (in current educational year)
+        # -> the deposit is the first period of next educational year
+        booking = PendingCollectiveBookingFactory(
+            collectiveStock__price=Decimal(60),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.next_year,
+            collectiveStock__startDatetime=date_in_next_year_first_period,
+        )
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "INSUFFICIENT_FUND"}
+
+        assert booking.status == models.CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
+        booking.collectiveStock.price = Decimal(40)
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 200
+
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == period_data.deposit_first_period_next_year.id
+
+    @time_machine.travel(time_travel_str_second_period)
+    def test_check_deposit_event_in_next_year_second_period(self, client):
+        """
+        CASE 5
+        Event takes place in next educational year, second period (january-august)
+        Confirmation in current educational year
+        -> period of the deposit is the first period of next educational year
+        """
+        period_data = get_period_data()
+        date_in_next_year_first_period = period_data.deposit_first_period_next_year.period.lower + timedelta(days=5)
+        date_in_next_year_second_period = period_data.deposit_second_period_next_year.period.lower + timedelta(days=5)
+
+        # available fund for next year first period is 400 - 350 = 50
+        ConfirmedCollectiveBookingFactory(
+            collectiveStock__price=Decimal(350),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.next_year,
+            educationalDeposit=period_data.deposit_first_period_next_year,
+            collectiveStock__startDatetime=date_in_next_year_first_period,
+        )
+
+        # event takes place in second period of next educational year and is confirmed now (in current educational year)
+        # -> the deposit is the first period of next educational year
+        booking = PendingCollectiveBookingFactory(
+            collectiveStock__price=Decimal(60),
+            educationalInstitution=period_data.institution,
+            educationalYear=period_data.next_year,
+            collectiveStock__startDatetime=date_in_next_year_second_period + timedelta(days=5),
+        )
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 422
+        assert response.json == {"code": "INSUFFICIENT_FUND"}
+
+        assert booking.status == models.CollectiveBookingStatus.PENDING
+        assert booking.educationalDepositId is None
+
+        booking.collectiveStock.price = Decimal(40)
+
+        response = client.with_eac_token().post(f"/adage/v1/prebookings/{booking.id}/confirm")
+
+        assert response.status_code == 200
+
+        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
+        assert booking.educationalDepositId == period_data.deposit_first_period_next_year.id
