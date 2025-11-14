@@ -17,7 +17,7 @@ def create_bonus_credit_fraud_check(
     birth_country_cog_code: str,
     birth_city_cog_code: str | None = None,
     origin: str,
-) -> None:
+) -> subscription_models.BeneficiaryFraudCheck:
     custodian = bonus_schemas.QuotientFamilialCustodian(
         last_name=last_name,
         common_name=common_name,
@@ -39,3 +39,5 @@ def create_bonus_credit_fraud_check(
         eligibilityType=user.eligibility,
     )
     db.session.add(fraud_check)
+    db.session.flush()
+    return fraud_check

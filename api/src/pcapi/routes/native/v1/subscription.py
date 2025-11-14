@@ -1,8 +1,10 @@
 import logging
 import typing
+from functools import partial
 
 from pydantic.v1 import ValidationError
 
+from pcapi.celery_tasks.api_particulier import get_quotient_familial_task
 from pcapi.connectors.beneficiaries import ubble as ubble_connector
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription import api as subscription_api
@@ -14,11 +16,13 @@ from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 from .. import blueprint
 from .serialization import subscription as serializers
@@ -190,7 +194,12 @@ def start_identification_session(
 def create_quotient_familial_bonus_credit_fraud_check(
     user: users_models.User, body: serializers.BonusCreditRequest
 ) -> None:
-    bonus_fraud_api.create_bonus_credit_fraud_check(
+    if not users_api.get_user_is_eligible_for_bonification(user):
+        raise api_errors.ApiErrors(
+            {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
+            status_code=400,
+        )
+    fraud_check = bonus_fraud_api.create_bonus_credit_fraud_check(
         user,
         last_name=body.last_name,
         common_name=body.common_name,
@@ -201,3 +210,4 @@ def create_quotient_familial_bonus_credit_fraud_check(
         birth_city_cog_code=body.birth_city_cog_code,
         origin="enrolled from /subscription/bonus/quotient_familial endpoint",
     )
+    on_commit(partial(get_quotient_familial_task.delay, fraud_check.id))

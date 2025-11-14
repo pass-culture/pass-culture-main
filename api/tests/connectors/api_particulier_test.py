@@ -167,3 +167,26 @@ def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(reque
         "mois": ["6"],
     }
     assert "codeCogInseeCommuneNaissance" not in post_request.qs.keys()
+
+
+@pytest.mark.parametrize(
+    "status_code, exception",
+    [
+        (400, api_particulier.ParticulierApiQueryError),
+        (429, api_particulier.ParticulierApiRateLimitExceeded),
+        (500, api_particulier.ParticulierApiUnavailable),
+    ],
+)
+def test_quotient_familial_error(requests_mock, status_code, exception):
+    requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=status_code)
+
+    with pytest.raises(exception):
+        api_particulier.get_quotient_familial(
+            last_name="lefebvre",
+            first_names=["aleixs", "gréôme", "jean-philippe"],
+            birth_date=date(1982, 12, 27),
+            gender=users_models.GenderEnum.F,
+            country_insee_code="99100",
+            city_insee_code="08480",
+            quotient_familial_date=date(2023, 6, 1),
+        )
