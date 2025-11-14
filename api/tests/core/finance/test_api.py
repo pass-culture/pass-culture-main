@@ -2433,6 +2433,7 @@ def test_generate_payments_file(clean_temp_files):
         collectiveStock__collectiveOffer__venue=venue2,
         educationalInstitution=deposit_ma.educationalInstitution,
         educationalYear=deposit_ma.educationalYear,
+        educationalDeposit=deposit_ma,
     )
     collective_used_event = factories.UsedCollectiveBookingFinanceEventFactory(collectiveBooking=collective_booking)
 
@@ -4507,6 +4508,7 @@ class ValidateFinanceIncidentTest:
             collectiveStock__price=Decimal(500.00),
             educationalInstitution=deposit.educationalInstitution,
             educationalYearId=deposit.educationalYearId,
+            educationalDeposit=deposit,
         )
 
         collective_booking_finance_incident = factories.CollectiveBookingFinanceIncidentFactory(
@@ -4515,12 +4517,7 @@ class ValidateFinanceIncidentTest:
 
         # before recredit
         with pytest.raises(educational_exceptions.InsufficientFund):
-            check_institution_fund(
-                educational_institution_id=booking.educationalInstitution.id,
-                educational_year_id=booking.educationalYearId,
-                booking_amount=Decimal(7800.00),
-                deposit=deposit,
-            )
+            check_institution_fund(booking_amount=Decimal(7800.00), deposit=deposit)
 
         author = users_factories.UserFactory()
         api.validate_finance_overpayment_incident(
@@ -4530,12 +4527,7 @@ class ValidateFinanceIncidentTest:
         assert booking.status == educational_models.CollectiveBookingStatus.CANCELLED
 
         # after recredit, it does not raise InsufficientFund
-        check_institution_fund(
-            educational_institution_id=booking.educationalInstitution.id,
-            educational_year_id=booking.educationalYearId,
-            booking_amount=Decimal(700.00),
-            deposit=deposit,
-        )
+        check_institution_fund(booking_amount=Decimal(700.00), deposit=deposit)
 
 
 class CleanDuplicateBankAccountsTest:

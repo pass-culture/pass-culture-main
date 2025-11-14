@@ -3,7 +3,6 @@ import re
 import typing
 
 import factory
-import psycopg2.extras
 from dateutil.relativedelta import relativedelta
 
 from pcapi.core.categories.models import EacFormat
@@ -249,21 +248,6 @@ class EducationalCurrentYearFactory(EducationalYearFactory):
     adageId = factory.LazyFunction(_get_current_educational_year_adage_id)
 
 
-def get_educational_year_first_period(educational_year: models.EducationalYear) -> psycopg2.extras.DateTimeRange:
-    """Get the period 01/09 -> 31/12 of the given educational year"""
-    period_start = educational_year.beginningDate
-    # Set the time at 23:59:59 to be consistent with educational year expirationDate
-    period_end = educational_year.beginningDate.replace(month=12, day=31, hour=23, minute=59, second=59)
-    return db_utils.make_timerange(period_start, period_end)
-
-
-def get_educational_year_second_period(educational_year: models.EducationalYear) -> psycopg2.extras.DateTimeRange:
-    """Get the period 01/01 -> 31/08 of the given educational year"""
-    period_start = educational_year.beginningDate.replace(year=educational_year.beginningDate.year + 1, month=1, day=1)
-    period_end = educational_year.expirationDate
-    return db_utils.make_timerange(period_start, period_end)
-
-
 class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
     class Meta:
         model = models.EducationalDeposit
@@ -282,11 +266,11 @@ class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
 
 
 class EducationalDepositFirstPeriodFactory(EducationalDepositFactory):
-    period = factory.LazyAttribute(lambda deposit: get_educational_year_first_period(deposit.educationalYear))
+    period = factory.LazyAttribute(lambda deposit: utils.get_educational_year_first_period(deposit.educationalYear))
 
 
 class EducationalDepositSecondPeriodFactory(EducationalDepositFactory):
-    period = factory.LazyAttribute(lambda deposit: get_educational_year_second_period(deposit.educationalYear))
+    period = factory.LazyAttribute(lambda deposit: utils.get_educational_year_second_period(deposit.educationalYear))
 
 
 class EducationalRedactorFactory(BaseFactory[models.EducationalRedactor]):
