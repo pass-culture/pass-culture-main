@@ -44,6 +44,7 @@ class Highlight(PcObject, Model):
     criteria: sa_orm.Mapped[list["criteria_models.Criterion"]] = sa_orm.relationship(
         "Criterion", foreign_keys="Criterion.highlightId", back_populates="highlight"
     )
+    communication_date: sa_orm.Mapped[datetime.date] = sa_orm.mapped_column(sa.Date, nullable=False)
 
     __table_args__ = (
         sa.CheckConstraint('length("mediation_uuid") <= 100'),

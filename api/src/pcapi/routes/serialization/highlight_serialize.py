@@ -34,6 +34,7 @@ class HighlightResponseModel(ConfiguredBaseModel):
     availability_datespan: list[date]
     description: str
     highlight_datespan: list[date]
+    communication_date: date
     mediation_url: str
     name: str
 
