@@ -56,13 +56,6 @@ class BigQueryProductSync:
             type=event_type,
         )
 
-    def _remove_existing_mediations(self, product: offers_models.Product) -> None:
-        (
-            db.session.query(offers_models.ProductMediation)
-            .filter(offers_models.ProductMediation.productId == product.id)
-            .delete(synchronize_session=False)
-        )
-
     def _copy_image_from_data_bucket_to_backend_bucket(self, source_uuid: str) -> str | None:
         if not source_uuid:
             return None
@@ -109,63 +102,91 @@ class BigQueryProductSync:
             )
             return None
 
+    def _sync_image_mediations(
+        self,
+        product: offers_models.Product,
+        image_type: offers_models.ImageType,
+        target_uuid: str,
+    ) -> None:
+        mediations = [mediation for mediation in product.productMediations if mediation.imageType == image_type]
+        matching_mediation = next((mediation for mediation in mediations if mediation.uuid == target_uuid), None)
+        if matching_mediation:
+            mediations_to_delete = [mediation for mediation in mediations if mediation.uuid != target_uuid]
+            if mediations_to_delete:
+                logger.info(
+                    "Cleaning extra mediations",
+                    extra={
+                        "product_id": product.id,
+                        "image_type": image_type.name,
+                        "keep_uuid": target_uuid,
+                        "deleted_count": len(mediations_to_delete),
+                    },
+                )
+
+                for mediation in mediations_to_delete:
+                    logger.info(
+                        "Deleting mediation",
+                        extra={
+                            "product_id": product.id,
+                            "image_type": image_type.name,
+                            "deleted_uuid": mediation.uuid,
+                            "keep_uuid": target_uuid,
+                        },
+                    )
+                    db.session.delete(mediation)
+
+            return
+
+        source_uuid = self._copy_image_from_data_bucket_to_backend_bucket(target_uuid)
+        if not source_uuid:
+            logger.warning(
+                "Skipping mediation creation due to GCS copy failure",
+                extra={"ean": product.ean, "image_type": image_type.name, "uuid": target_uuid},
+            )
+            return
+
+        if mediations:
+            logger.info(
+                "Replacing existing mediations",
+                extra={"product_id": product.id, "image_type": image_type.name, "deleted_count": len(mediations)},
+            )
+            for mediation in mediations:
+                logger.info(
+                    "Deleting old mediation",
+                    extra={"product_id": product.id, "image_type": image_type.name, "deleted_uuid": mediation.uuid},
+                )
+                db.session.delete(mediation)
+
+        new_mediation = offers_models.ProductMediation(
+            productId=product.id,
+            uuid=target_uuid,
+            imageType=image_type,
+            lastProvider=self.provider,
+        )
+        db.session.add(new_mediation)
+
+        logger.info(
+            "Created new mediation",
+            extra={"product_id": product.id, "image_type": image_type.name, "uuid": target_uuid},
+        )
+
     def _update_product_images(self, product: offers_models.Product, bq_product: BigQueryProductModel) -> None:
         if not bq_product.has_image:
             return
 
         if bq_product.recto_uuid:
-            current_recto = next(
-                (m for m in product.productMediations if m.imageType == offers_models.ImageType.RECTO), None
+            self._sync_image_mediations(
+                product=product,
+                image_type=offers_models.ImageType.RECTO,
+                target_uuid=bq_product.recto_uuid,
             )
-            if not current_recto or current_recto.uuid != bq_product.recto_uuid:
-                source_uuid = self._copy_image_from_data_bucket_to_backend_bucket(bq_product.recto_uuid)
-                if not source_uuid:
-                    logger.warning(
-                        "Skipping RECTO mediation due to GCS copy failure.",
-                        extra={
-                            "ean": product.ean,
-                            "uuid": bq_product.recto_uuid,
-                        },
-                    )
-                    return
-
-                if current_recto:
-                    db.session.delete(current_recto)
-
-                recto_mediation = offers_models.ProductMediation(
-                    productId=product.id,
-                    uuid=bq_product.recto_uuid,
-                    imageType=offers_models.ImageType.RECTO,
-                    lastProvider=self.provider,
-                )
-                db.session.add(recto_mediation)
 
         if bq_product.has_verso_image and bq_product.verso_uuid:
-            current_verso = next(
-                (m for m in product.productMediations if m.imageType == offers_models.ImageType.VERSO), None
+            self._sync_image_mediations(
+                product=product,
+                image_type=offers_models.ImageType.VERSO,
+                target_uuid=bq_product.verso_uuid,
             )
-            if not current_verso or current_verso.uuid != bq_product.verso_uuid:
-                source_uuid = self._copy_image_from_data_bucket_to_backend_bucket(bq_product.verso_uuid)
-                if not source_uuid:
-                    logger.warning(
-                        "Skipping VERSO mediation due to GCS copy failure.",
-                        extra={
-                            "ean": product.ean,
-                            "uuid": bq_product.verso_uuid,
-                        },
-                    )
-                    return
-
-                if current_verso:
-                    db.session.delete(current_verso)
-
-                verso_mediation = offers_models.ProductMediation(
-                    productId=product.id,
-                    uuid=bq_product.verso_uuid,
-                    imageType=offers_models.ImageType.VERSO,
-                    lastProvider=self.provider,
-                )
-                db.session.add(verso_mediation)
 
     def run_synchronization(self, batch_size: int) -> None:
         logger.info("Starting product synchronization")
