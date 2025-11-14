@@ -19,6 +19,10 @@ class PostDraftOfferBodyModelTest:
             description="description",
             durationMinutes=12,
             extraData={"ean": "12345678910111"},
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
         )
 
 
