@@ -8,6 +8,7 @@ import {
   type PatchAllOffersActiveStatusBodyModel,
 } from '@/apiClient/v1'
 import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
@@ -15,9 +16,7 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
-import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
-import { computeActivationSuccessMessage } from '@/components/OffersTable/utils/computeActivationSuccessMessage'
-import { computeSelectedOffersLabel } from '@/components/OffersTable/utils/computeSelectedOffersLabel'
+import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
@@ -48,6 +47,14 @@ const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) =>
   `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre a bien été mise', 'offres ont bien été mises')} en pause`
+
+const computeActivationSuccessMessage = (nbSelectedOffers: number) =>
+  `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre a bien été publiée ', 'offres ont bien été publiées')}`
+
+const computeSelectedOffersLabel = (nbSelectedOffers: number) =>
+  nbSelectedOffers > MAX_OFFERS_TO_DISPLAY
+    ? `${MAX_OFFERS_TO_DISPLAY}+ offres sélectionnées`
+    : `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre sélectionnée', 'offres sélectionnées')}`
 
 const updateIndividualOffersStatus = async (
   isActive: boolean,

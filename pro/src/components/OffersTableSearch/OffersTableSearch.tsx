@@ -5,7 +5,7 @@ import {
   type FilterConfigType,
   getStoredFilterConfig,
   useStoredFilterConfig,
-} from '@/components/OffersTable/OffersTableSearch/utils'
+} from '@/components/OffersTableSearch/utils'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -61,9 +61,9 @@ export const OffersTableSearch = ({
           <SearchInput
             label={nameInputProps.label}
             disabled={nameInputProps.disabled}
-            name="offre"
             onChange={nameInputProps.onChange}
             value={nameInputProps.value}
+            name="nameOrIsbn"
           />
         </div>
         <ButtonFilter

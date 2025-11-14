@@ -16,7 +16,7 @@ import {
   ModalImageUpsertOrEdit,
   type OnImageUploadArgs,
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
-import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import strokeVisualArtIcon from '@/icons/stroke-visual-art.svg'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
 

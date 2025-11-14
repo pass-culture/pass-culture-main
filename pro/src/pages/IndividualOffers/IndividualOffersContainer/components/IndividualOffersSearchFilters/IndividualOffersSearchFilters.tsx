@@ -1,4 +1,4 @@
-import type { Dispatch, FormEvent, SetStateAction } from 'react'
+import type { ChangeEvent, Dispatch, FormEvent, SetStateAction } from 'react'
 
 import { OfferStatus } from '@/apiClient/v1'
 import {
@@ -11,8 +11,8 @@ import {
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { OffersTableSearch } from '@/components/OffersTable/OffersTableSearch/OffersTableSearch'
-import styles from '@/components/OffersTable/OffersTableSearch/OffersTableSearch.module.scss'
+import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
+import styles from '@/components/OffersTableSearch/OffersTableSearch.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
@@ -33,10 +33,7 @@ const individualFilterStatus = [
   { label: 'Tous', value: ALL_STATUS },
   { label: 'Brouillon', value: OfferStatus.DRAFT },
   { label: 'Publiée', value: OfferStatus.ACTIVE },
-  {
-    label: 'Programmée',
-    value: OfferStatus.SCHEDULED,
-  },
+  { label: 'Programmée', value: OfferStatus.SCHEDULED },
   { label: 'En pause', value: OfferStatus.INACTIVE },
   { label: 'Épuisée', value: OfferStatus.SOLD_OUT },
   { label: 'Expirée', value: OfferStatus.EXPIRED },
@@ -56,49 +53,34 @@ export const IndividualOffersSearchFilters = ({
   searchButtonRef,
 }: IndividualOffersSearchFiltersProps): JSX.Element => {
   const updateSearchFilters = (
-    newSearchFilters: Partial<IndividualSearchFiltersParams>
+    patch: Partial<IndividualSearchFiltersParams>
   ) => {
-    setSelectedFilters((currentSearchFilters) => ({
-      ...currentSearchFilters,
-      ...newSearchFilters,
+    setSelectedFilters((prev: IndividualSearchFiltersParams) => ({
+      ...prev,
+      ...patch,
     }))
   }
 
-  const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
-    updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
+  // ONE generic change handler for text/select inputs.
+  const handleChange = (
+    event: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = event.currentTarget
+    // Cast is safe because we align `name` with keys of SearchFiltersParams
+    updateSearchFilters({
+      [name]: value,
+    } as Partial<IndividualSearchFiltersParams>)
   }
 
-  const storeSelectedOfferAddress = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ offererAddressId: event.currentTarget.value })
-  }
-
-  const storeSelectedCategory = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ categoryId: event.currentTarget.value })
-  }
-
-  const storeCreationMode = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ creationMode: event.currentTarget.value })
-  }
-
-  const storeOfferStatus = (event: FormEvent<HTMLSelectElement>) => {
-    updateSearchFilters({ status: event.currentTarget.value as OfferStatus })
-  }
-
-  const onBeginningDateChange = (periodBeginningDate: string) => {
-    const dateToFilter =
-      periodBeginningDate !== ''
-        ? periodBeginningDate
-        : DEFAULT_SEARCH_FILTERS.periodBeginningDate
-    updateSearchFilters({ periodBeginningDate: dateToFilter })
-  }
-
-  const onEndingDateChange = (periodEndingDate: string) => {
-    const dateToFilter =
-      periodEndingDate !== ''
-        ? periodEndingDate
-        : DEFAULT_SEARCH_FILTERS.periodEndingDate
-    updateSearchFilters({ periodEndingDate: dateToFilter })
-  }
+  // Tiny helper for dates to keep the single point of update logic.
+  const handleDateChange =
+    (key: 'periodBeginningDate' | 'periodEndingDate') => (val: string) => {
+      const fallback =
+        key === 'periodBeginningDate'
+          ? DEFAULT_SEARCH_FILTERS.periodBeginningDate
+          : DEFAULT_SEARCH_FILTERS.periodEndingDate
+      updateSearchFilters({ [key]: val !== '' ? val : fallback })
+    }
 
   const requestFilteredOffers = (event: FormEvent) => {
     event.preventDefault()
@@ -114,7 +96,7 @@ export const IndividualOffersSearchFilters = ({
       nameInputProps={{
         label: 'Nom de l’offre ou EAN-13 (European Article Numbering)',
         disabled: disableAllFilters,
-        onChange: storeNameOrIsbnSearchValue,
+        onChange: handleChange,
         value: selectedFilters.nameOrIsbn,
       }}
       onResetFilters={resetFilters}
@@ -125,34 +107,41 @@ export const IndividualOffersSearchFilters = ({
           <SelectInput
             value={selectedFilters.status as OfferStatus}
             name="status"
-            onChange={storeOfferStatus}
+            onChange={handleChange}
             disabled={disableAllFilters}
             options={individualFilterStatus}
           />
         </FieldLayout>
-        <FieldLayout label="Localisation" name="address" required={false}>
+
+        <FieldLayout
+          label="Localisation"
+          name="offererAddressId"
+          required={false}
+        >
           <SelectInput
             defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-            onChange={storeSelectedOfferAddress}
+            onChange={handleChange}
             disabled={offererAddresses.length === 0 || disableAllFilters}
-            name="address"
+            name="offererAddressId"
             options={offererAddresses}
             data-testid="address-select"
             value={selectedFilters.offererAddressId}
           />
         </FieldLayout>
+
         {categories && (
-          <FieldLayout label="Catégorie" name="categorie" required={false}>
+          <FieldLayout label="Catégorie" name="categoryId" required={false}>
             <SelectInput
               defaultOption={ALL_CATEGORIES_OPTION}
-              onChange={storeSelectedCategory}
+              onChange={handleChange}
               disabled={disableAllFilters}
-              name="categorie"
+              name="categoryId"
               options={categories}
               value={selectedFilters.categoryId}
             />
           </FieldLayout>
         )}
+
         <FieldLayout
           label="Mode de création"
           name="creationMode"
@@ -160,13 +149,14 @@ export const IndividualOffersSearchFilters = ({
           required={false}
         >
           <SelectInput
-            onChange={storeCreationMode}
+            onChange={handleChange}
             disabled={disableAllFilters}
             name="creationMode"
             options={CREATION_MODES_OPTIONS}
             value={selectedFilters.creationMode}
           />
         </FieldLayout>
+
         <FieldLayout
           label="Période de l’évènement"
           name="period"
@@ -174,8 +164,8 @@ export const IndividualOffersSearchFilters = ({
           className={styles['offers-table-search-filter-full-width']}
         >
           <PeriodSelector
-            onBeginningDateChange={onBeginningDateChange}
-            onEndingDateChange={onEndingDateChange}
+            onBeginningDateChange={handleDateChange('periodBeginningDate')}
+            onEndingDateChange={handleDateChange('periodEndingDate')}
             isDisabled={disableAllFilters}
             periodBeginningDate={selectedFilters.periodBeginningDate}
             periodEndingDate={selectedFilters.periodEndingDate}

@@ -100,7 +100,7 @@ describe('Search individual offers', () => {
 
     cy.findByTestId('wrapper-categorie').within(() => {
       cy.findByLabelText('Catégorie').select('Instrument de musique')
-      cy.get('#categorie').should('have.value', 'INSTRUMENT')
+      cy.get('#categoryId').should('have.value', 'INSTRUMENT')
     })
 
     cy.stepLog({ message: 'I validate my filters' })
