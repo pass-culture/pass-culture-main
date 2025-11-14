@@ -335,3 +335,24 @@ class ComputeArtistsMostRelevantImageTest:
         assert artist.computed_image is None
         assert artist.image == "http://example.com"
         mock_async_index_artist.assert_not_called()
+
+
+class UpdateArtistFromDeltaTest:
+    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query):
+        artist_to_update = ArtistFactory(name="Ancien Nom", description="Description initiale")
+        mock_artist_delta_query.return_value = [
+            DeltaArtistModel(
+                id=artist_to_update.id,
+                name="Nouveau Nom",
+                description="Description mise à jour",
+                wikidata_id="Q12345",
+                action=DeltaAction.UPDATE,
+            ),
+        ]
+
+        ArtistImporter().run_delta_update()
+
+        assert artist_to_update.name == "Nouveau Nom"
+        assert artist_to_update.description == "Description mise à jour"
+        assert artist_to_update.wikidata_id == "Q12345"

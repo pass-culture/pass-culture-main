@@ -23,6 +23,7 @@ class ArtistFactory(BaseFactory[models.Artist]):
     description = factory.Faker("text")
     image_license_url = factory.Faker("url")
     image = factory.LazyAttributeSequence(lambda _, n: some_artist_images[n % len(some_artist_images)])
+    wikidata_id = factory.Sequence(lambda n: f"Q{n + 1:05d}")
 
 
 class ArtistAliasFactory(BaseFactory):

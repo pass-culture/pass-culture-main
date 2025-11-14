@@ -64,7 +64,6 @@ class AbstractImporter[BigQueryModel, BigQueryDeltaModel, SQLAlchemyModel: HasId
 
             elif delta_item.action == DeltaAction.UPDATE:
                 if sqlalchemy_obj:
-                    self.update(sqlalchemy_obj, delta_item)
                     items_to_update.append((sqlalchemy_obj.id, delta_item))
 
             elif delta_item.action == DeltaAction.REMOVE:
