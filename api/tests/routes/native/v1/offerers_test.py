@@ -13,6 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class VenuesTest:
     expected_num_queries = 5  # venue + google_places_info + venue_contact + accessibility_provider + opening_hours
+    route_version = "v1"
 
     def test_get_venue(self, client):
         venue = offerers_factories.VenueFactory(
@@ -50,7 +51,7 @@ class VenuesTest:
         venue_id = venue.id
 
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 200
 
         assert response.json == {
@@ -126,7 +127,7 @@ class VenuesTest:
 
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 200
 
         assert response.json["bannerUrl"] == venue.bannerUrl
@@ -150,7 +151,7 @@ class VenuesTest:
 
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 200
 
         assert response.json["bannerUrl"] == venue.bannerUrl
@@ -164,7 +165,7 @@ class VenuesTest:
         venue = offerers_factories.VenueFactory(isPermanent=True, _bannerMeta={"image_credit": "Henri"})
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 200
 
         assert response.json["bannerUrl"] == venue.bannerUrl
@@ -174,7 +175,7 @@ class VenuesTest:
         venue = offerers_factories.VenueFactory(isPermanent=False)
         venue_id = venue.id
         with assert_num_queries(1):  # venue
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 404
 
     def test_get_venue_closed_offerer(self, client):
@@ -183,14 +184,14 @@ class VenuesTest:
         )
         venue_id = venue.id
         with assert_num_queries(1):  # venue
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 404
 
     def test_get_venue_suspended_offerer(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=True, isOpenToPublic=True, managingOfferer__isActive=False)
         venue_id = venue.id
         with assert_num_queries(1):  # venue
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 404
 
     def test_get_non_existing_venue(self, client):
@@ -202,7 +203,7 @@ class VenuesTest:
         venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE)
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 200
 
         assert response.json["bannerUrl"] is not None
@@ -214,8 +215,115 @@ class VenuesTest:
         )
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/v1/venue/{venue_id}")
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
             assert response.status_code == 200
+
+
+class VenuesV2Test(VenuesTest):
+    route_version = "v2"
+
+    def test_get_venue(self, client):
+        venue = offerers_factories.VenueFactory(
+            isPermanent=True,
+            bannerMeta={
+                "author_id": 1,
+                "original_image_url": "https://ou.ps",
+                # only this field should be sent
+                "image_credit": "Wikimedia Commons CC By",
+            },
+            isOpenToPublic=True,
+            name="Legal name",
+            publicName="Public name",
+        )
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="ma-venue",
+            externalAccessibilityUrl="https://ra.te",
+            externalAccessibilityData={
+                "access_modality": [acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR, acceslibre_enum.ENTRANCE_ELEVATOR],
+                "audio_description": [
+                    acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE,
+                    acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL,
+                ],
+                "deaf_and_hard_of_hearing_amenities": [
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP,
+                    acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE,
+                ],
+                "facilities": [acceslibre_enum.FACILITIES_UNADAPTED],
+                "sound_beacon": [],
+                "trained_personnel": [acceslibre_enum.PERSONNEL_UNTRAINED],
+                "transport_modality": [acceslibre_enum.PARKING_NEARBY],
+            },
+        )
+        venue_id = venue.id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            assert response.status_code == 200
+
+        assert response.json == {
+            "id": venue.id,
+            "name": "Public name",
+            "latitude": float(venue.latitude),
+            "longitude": float(venue.longitude),
+            "city": venue.city,
+            "publicName": "Public name",
+            "isOpenToPublic": venue.isOpenToPublic,
+            "isPermanent": venue.isPermanent,
+            "isVirtual": False,
+            "withdrawalDetails": venue.withdrawalDetails,
+            "address": venue.street,
+            "street": venue.street,
+            "postalCode": venue.postalCode,
+            "timezone": venue.timezone,
+            "activity": venue.activity,
+            "description": venue.description,
+            "contact": {
+                "email": venue.contact.email,
+                "phoneNumber": venue.contact.phone_number,
+                "website": venue.contact.website,
+                "socialMedias": venue.contact.social_medias,
+            },
+            "externalAccessibilityData": {
+                "isAccessibleMotorDisability": True,
+                "isAccessibleAudioDisability": True,
+                "isAccessibleVisualDisability": True,
+                "isAccessibleMentalDisability": False,
+                "motorDisability": {
+                    "facilities": acceslibre_enum.FACILITIES_UNADAPTED.value,
+                    "exterior": acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR.value,
+                    "entrance": acceslibre_enum.ENTRANCE_ELEVATOR.value,
+                    "parking": acceslibre_enum.PARKING_NEARBY.value,
+                },
+                "audioDisability": {
+                    "deafAndHardOfHearing": [
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value,
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value,
+                    ]
+                },
+                "visualDisability": {
+                    "soundBeacon": acceslibre_enum.UNKNOWN.value,
+                    "audioDescription": [
+                        acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value,
+                        acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value,
+                    ],
+                },
+                "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
+            },
+            "externalAccessibilityId": venue.accessibilityProvider.externalAccessibilityId,
+            "externalAccessibilityUrl": venue.accessibilityProvider.externalAccessibilityUrl,
+            "accessibility": {
+                "audioDisability": venue.audioDisabilityCompliant,
+                "mentalDisability": venue.mentalDisabilityCompliant,
+                "motorDisability": venue.motorDisabilityCompliant,
+                "visualDisability": venue.visualDisabilityCompliant,
+            },
+            "bannerUrl": venue.bannerUrl,
+            "bannerMeta": {
+                "image_credit": venue.bannerMeta["image_credit"],
+            },
+            "openingHours": venue.opening_hours,
+        }
 
 
 class OffererHeadlineOfferTest:
