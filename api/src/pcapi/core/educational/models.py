@@ -1676,12 +1676,12 @@ class CollectiveBooking(PcObject, models.Model):
         else:
             self.status = CollectiveBookingStatus.PENDING
 
-    def mark_as_confirmed(self) -> None:
-        if self.has_confirmation_limit_date_passed():
+    def mark_as_confirmed(self, confirmation_datetime: datetime.datetime) -> None:
+        if self.confirmationLimitDate < confirmation_datetime:
             raise booking_exceptions.ConfirmationLimitDateHasPassed()
 
         self.status = CollectiveBookingStatus.CONFIRMED
-        self.confirmationDate = date_utils.get_naive_utc_now()
+        self.confirmationDate = confirmation_datetime
 
     @hybrid_property
     def isConfirmed(self) -> bool:
@@ -1726,9 +1726,6 @@ class CollectiveBooking(PcObject, models.Model):
     @property
     def userName(self) -> str | None:
         return f"{self.educationalRedactor.firstName} {self.educationalRedactor.lastName}"
-
-    def has_confirmation_limit_date_passed(self) -> bool:
-        return self.confirmationLimitDate <= date_utils.get_naive_utc_now()
 
     def mark_as_refused(self) -> None:
         if (
