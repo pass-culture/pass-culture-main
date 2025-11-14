@@ -179,44 +179,6 @@ class VenueHasActiveIndividualOffersTest:
         assert venue.hasActiveIndividualOffer == False
 
 
-class OffererDepartementCodePropertyTest:
-    def test_metropole_postal_code(self):
-        offerer = factories.OffererFactory.build(postalCode="75000")
-
-        assert offerer.departementCode == "75"
-
-    def test_drom_postal_code(self):
-        offerer = factories.OffererFactory.build(postalCode="97300")
-
-        assert offerer.departementCode == "973"
-
-    def test_guadeloupe_postal_code(self):
-        offerer = factories.OffererFactory(postalCode="97100")
-        assert offerer.departementCode == "971"
-
-    def test_saint_martin_postal_code(self):
-        offerer = factories.OffererFactory(postalCode="97150")
-        assert offerer.departementCode == "978"
-
-
-class OffererDepartementCodeSQLExpressionTest:
-    def test_metropole_postal_code(self):
-        factories.OffererFactory(postalCode="75000")
-        assert db.session.query(models.Offerer).filter_by(departementCode="75").count() == 1
-
-    def test_drom_postal_code(self):
-        factories.OffererFactory(postalCode="97300")
-        assert db.session.query(models.Offerer).filter_by(departementCode="973").count() == 1
-
-    def test_guadeloupe_postal_code(self):
-        factories.OffererFactory(postalCode="97100")
-        assert db.session.query(models.Offerer).filter_by(departementCode="971").count() == 1
-
-    def test_saint_martin_postal_code(self):
-        factories.OffererFactory(postalCode="97150")
-        assert db.session.query(models.Offerer).filter_by(departementCode="978").count() == 1
-
-
 class OffererIsTopActeurTest:
     def test_is_top_acteur(self):
         offerer = factories.OffererFactory(

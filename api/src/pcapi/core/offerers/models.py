@@ -42,7 +42,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.has_address_mixin import HasAddressMixin
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.pc_object import PcObject
 from pcapi.models.soft_deletable_mixin import SoftDeletableMixin
@@ -1092,7 +1091,6 @@ class OffererTagMapping(PcObject, Model):
 class Offerer(
     PcObject,
     Model,
-    HasAddressMixin,
     ValidationStatusMixin,
     DeactivableMixin,
 ):
@@ -1194,29 +1192,6 @@ class Offerer(
             .limit(1)
             .exists()
         )
-
-    @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.inplace.setter
-    def _street_setter(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.inplace.expression
-    @classmethod
-    def _street_expression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
-        return cls._address
-
-    @hybrid_property
-    def departementCode(self) -> str | None:
-        return postal_code_utils.PostalCode(self.postalCode).get_departement_code() if self.postalCode else None
-
-    @departementCode.inplace.expression
-    @classmethod
-    def _departementCodeExpression(cls) -> sa.Function:
-        return sa.func.postal_code_to_department_code(cls.postalCode)
 
     @hybrid_property
     def rid7(self) -> str | None:
