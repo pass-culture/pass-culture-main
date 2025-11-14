@@ -2,7 +2,6 @@ import { screen } from '@testing-library/react'
 
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -48,7 +47,7 @@ const renderCollectiveOffersSearchFilters = (
 const baseProps = {
   hasFilters: true,
   applyFilters: () => {},
-  offerer: { ...defaultGetOffererResponseModel },
+  offererId: '1',
   selectedFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   setSelectedFilters: () => {},
   disableAllFilters: false,
