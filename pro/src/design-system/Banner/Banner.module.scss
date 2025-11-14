@@ -3,11 +3,13 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .banner {
-  width: fit-content;
+  width: 100%;
+  max-width: 100%;
   padding: var(--size-spacing-l);
   border-radius: var(--size-border-radius-m);
   background: var(--color-background-info);
   color: var(--color-text-brand-primary);
+  white-space: pre-line;
 }
 
 .success {

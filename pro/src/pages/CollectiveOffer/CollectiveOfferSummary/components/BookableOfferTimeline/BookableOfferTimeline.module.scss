@@ -40,7 +40,7 @@
   margin-top: var(--size-spacing-s);
 
   &-accent {
-    @include fonts.body-accent;
+    @include fonts.body-accent-s;
   }
 
   &-margin {
