@@ -3,7 +3,6 @@ import { useRef, useState } from 'react'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
-  type GetOffererResponseModel,
 } from '@/apiClient/v1'
 import {
   type CollectiveOffersSortingColumn,
@@ -40,7 +39,7 @@ import { CollectiveOffersSearchFilters } from './CollectiveOffersSearchFilters/C
 export type CollectiveOffersScreenProps = {
   currentPageNumber: number
   isLoading: boolean
-  offerer: GetOffererResponseModel | null
+  offererId: string | undefined
   initialSearchFilters: CollectiveSearchFiltersParams
   redirectWithUrlFilters: (
     filters: Partial<CollectiveSearchFiltersParams> & {
@@ -63,7 +62,7 @@ function isCollectiveOfferPublishedOrPreBooked(
 export const CollectiveOffersScreen = ({
   currentPageNumber,
   isLoading,
-  offerer,
+  offererId,
   initialSearchFilters,
   redirectWithUrlFilters,
   urlSearchFilters,
@@ -140,8 +139,8 @@ export const CollectiveOffersScreen = ({
       ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
       ...(!resetNameOrIsbn && { nameOrIsbn: initialSearchFilters.nameOrIsbn }),
     }
-    applyUrlFiltersAndRedirect(newFilters)
     setSelectedFilters(newFilters)
+    applyUrlFiltersAndRedirect(newFilters)
   }
 
   const columns = getCollectiveOfferColumns(urlSearchFilters, true)
@@ -152,7 +151,7 @@ export const CollectiveOffersScreen = ({
         hasFilters={hasFilters}
         applyFilters={applyFilters}
         disableAllFilters={userHasNoOffers}
-        offerer={offerer}
+        offererId={offererId}
         resetFilters={() => resetFilters(false)}
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}

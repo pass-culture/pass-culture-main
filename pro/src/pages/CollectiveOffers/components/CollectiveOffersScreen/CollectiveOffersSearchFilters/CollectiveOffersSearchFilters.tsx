@@ -5,7 +5,6 @@ import {
   CollectiveOfferDisplayedStatus,
   EacFormat,
   GetOffererAddressesWithOffersOption,
-  type GetOffererResponseModel,
 } from '@/apiClient/v1'
 import {
   ALL_FORMATS_OPTION,
@@ -28,7 +27,7 @@ import styles from '../CollectiveOffersScreen.module.scss'
 export interface CollectiveOffersSearchFiltersProps {
   hasFilters: boolean
   applyFilters: (filters: CollectiveSearchFiltersParams) => void
-  offerer: GetOffererResponseModel | null
+  offererId: string | undefined
   selectedFilters: CollectiveSearchFiltersParams
   setSelectedFilters: Dispatch<SetStateAction<CollectiveSearchFiltersParams>>
   disableAllFilters: boolean
@@ -42,7 +41,7 @@ export const CollectiveOffersSearchFilters = ({
   selectedFilters,
   setSelectedFilters,
   resetFilters,
-  offerer,
+  offererId,
   disableAllFilters,
   searchButtonRef,
 }: CollectiveOffersSearchFiltersProps): JSX.Element => {
@@ -103,7 +102,7 @@ export const CollectiveOffersSearchFilters = ({
     event.preventDefault()
     const newSearchFilters = {
       ...selectedFilters,
-      offererId: offerer?.id.toString() ?? 'all',
+      offererId: offererId?.toString() ?? '',
     }
 
     applyFilters(newSearchFilters)

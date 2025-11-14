@@ -32,7 +32,7 @@ export const CollectiveOffers = (): JSX.Element => {
 
   const navigate = useNavigate()
 
-  const selectedOfferer = useAppSelector(ensureCurrentOfferer)
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const currentPageNumber = finalSearchFilters.page ?? DEFAULT_PAGE
@@ -59,14 +59,14 @@ export const CollectiveOffers = (): JSX.Element => {
   const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
     isInTemplateOffersPage: false,
     urlSearchFilters: finalSearchFilters,
-    selectedOffererId: selectedOfferer.id,
+    selectedOffererId,
     ...(withSwitchVenueFeature ? { selectedVenueId: selectedVenue.id } : {}),
   })
 
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
     ...finalSearchFilters,
-    ...{ offererId: selectedOfferer.id.toString() },
+    ...{ offererId: selectedOffererId.toString() },
     ...(withSwitchVenueFeature ? { venueId: selectedVenue.id.toString() } : {}),
   }
   delete apiFilters.page
@@ -97,7 +97,7 @@ export const CollectiveOffers = (): JSX.Element => {
         currentPageNumber={currentPageNumber}
         initialSearchFilters={apiFilters}
         isLoading={offersQuery.isLoading}
-        offerer={selectedOfferer}
+        offererId={selectedOffererId.toString()}
         offers={offersQuery.data}
         redirectWithUrlFilters={redirectWithUrlFilters}
         urlSearchFilters={urlSearchFilters}

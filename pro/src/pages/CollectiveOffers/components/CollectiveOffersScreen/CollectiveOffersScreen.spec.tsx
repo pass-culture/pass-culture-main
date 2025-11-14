@@ -5,14 +5,15 @@ import { expect } from 'vitest'
 import {
   CollectiveOfferDisplayedStatus,
   type CollectiveOfferResponseModel,
-  type SharedCurrentUserResponseModel,
   UserRole,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import {
+  currentOffererFactory,
+  sharedCurrentUserFactory,
+} from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -30,11 +31,11 @@ const renderOffers = (
   renderWithProviders(<CollectiveOffersScreen {...props} />, {
     storeOverrides: {
       user: {
-        currentUser: sharedCurrentUserFactory(),
+        currentUser: sharedCurrentUserFactory({
+          roles: [UserRole.PRO],
+        }),
       },
-      offerer: {
-        currentOfferer: props.offerer,
-      },
+      offerer: currentOffererFactory(),
     },
     ...options,
   })
@@ -59,21 +60,17 @@ vi.mock('@/apiClient/api', () => ({
 
 describe('CollectiveOffersScreen', () => {
   let props: CollectiveOffersScreenProps
-  let currentUser: SharedCurrentUserResponseModel
   let offersRecap: CollectiveOfferResponseModel[]
 
   const mockNotifyError = vi.fn()
   const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
-    currentUser = sharedCurrentUserFactory({
-      roles: [UserRole.PRO],
-    })
     offersRecap = [collectiveOfferFactory()]
 
     props = {
       currentPageNumber: 1,
       isLoading: false,
-      offerer: { ...defaultGetOffererResponseModel },
+      offererId: '1',
       offers: offersRecap,
       urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       initialSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
@@ -210,14 +207,7 @@ describe('CollectiveOffersScreen', () => {
   })
 
   it('should display actionsBar when at least one offer is selected', async () => {
-    renderWithProviders(<CollectiveOffersScreen {...props} />, {
-      storeOverrides: {
-        offerer: {
-          currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
-        },
-      },
-      user: currentUser,
-    })
+    renderOffers(props)
 
     const checkbox = screen.getByRole('checkbox', { name: offersRecap[0].name })
     await userEvent.click(checkbox)
