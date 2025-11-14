@@ -294,13 +294,14 @@ class BookingsResponseV2(ConfiguredBaseModel):
 
 class BookingListItemVenueResponse(ConfiguredBaseModel):
     id: int
-    city: str | None
     name: str
     timezone: str
 
 
 class BookingListItemOfferResponseTimezone(ConfiguredBaseModel):
     timezone: str
+    city: str | None
+    label: str | None
 
 
 class BookingListItemOfferResponseGetterDict(GetterDict):
@@ -309,6 +310,8 @@ class BookingListItemOfferResponseGetterDict(GetterDict):
             if offerer_address := self._obj.offererAddress or self._obj.venue.offererAddress:
                 return BookingListItemOfferResponseTimezone(
                     timezone=offerer_address.address.timezone,
+                    city=offerer_address.address.city,
+                    label=offerer_address.label,
                 )
             return None
 
@@ -344,7 +347,15 @@ class BookingListItemResponse(ConfiguredBaseModel):
     date_created: datetime
     activation_code: ActivationCodeResponse | None
     quantity: int
+    total_amount: int
+    can_react: bool
+    date_used: datetime | None
+    cancellation_date: datetime | None
+    cancellation_reason: bookings_models.BookingCancellationReasons | None
+    user_reaction: ReactionTypeEnum | None
     stock: BookingListItemStockResponse
+
+    _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
 
 
 class BookingsListResponseV2(ConfiguredBaseModel):
