@@ -36,6 +36,10 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
             ]
         if key == "hasPartnerPage":
             return self._obj._has_partner_page
+        if key == "activity":
+            if not self._obj.activity or self._obj.activity == offerers_models.Activity.NOT_ASSIGNED:
+                return None
+            return offerers_models.DisplayedActivity[self._obj.activity.name]
         return super().get(key, default)
 
 
@@ -48,7 +52,8 @@ class GetOffererVenueResponseModel(BaseModel):
     id: int
     publicName: str | None
     siret: str | None
-    venueTypeCode: offerers_models.VenueTypeCode
+    venueTypeCode: offerers_models.VenueTypeCode | None
+    activity: offerers_models.DisplayedActivity | None
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasPartnerPage: bool
