@@ -71,6 +71,7 @@ export type { DateRangeOnCreateModel } from './models/DateRangeOnCreateModel';
 export type { DeleteFilteredStockListBody } from './models/DeleteFilteredStockListBody';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
+export { DisplayedActivity } from './models/DisplayedActivity';
 export type { DMSApplicationForEAC } from './models/DMSApplicationForEAC';
 export { DMSApplicationstatus } from './models/DMSApplicationstatus';
 export { EacFormat } from './models/EacFormat';
