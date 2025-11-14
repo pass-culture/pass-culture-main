@@ -65,12 +65,14 @@ export const useSaveOfferPriceTable = ({
     }
 
     try {
-      if (offer.isEvent) {
-        await saveEventOfferPriceTable(formValues, { offer })
-      } else {
-        await saveNonEventOfferPriceTable(formValues, {
-          offer,
-        })
+      if (form.formState.isDirty) {
+        if (offer.isEvent) {
+          await saveEventOfferPriceTable(formValues, form, { offer })
+        } else {
+          await saveNonEventOfferPriceTable(formValues, {
+            offer,
+          })
+        }
       }
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {

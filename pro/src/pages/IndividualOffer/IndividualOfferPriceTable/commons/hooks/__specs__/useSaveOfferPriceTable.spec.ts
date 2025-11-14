@@ -136,6 +136,10 @@ describe('useSaveOfferPriceTable', () => {
 
     act(() => {
       result.current.form.setValue('entries.0.price', 15)
+      result.current.form.formState = {
+        ...result.current.form.formState,
+        isDirty: true,
+      }
     })
     await act(async () => {
       await result.current.saveAndContinue(result.current.form.getValues())
@@ -163,6 +167,10 @@ describe('useSaveOfferPriceTable', () => {
 
     act(() => {
       result.current.form.setValue('entries.0.price', 20)
+      result.current.form.formState = {
+        ...result.current.form.formState,
+        isDirty: true,
+      }
     })
     await act(async () => {
       await result.current.saveAndContinue(result.current.form.getValues())
@@ -190,6 +198,10 @@ describe('useSaveOfferPriceTable', () => {
     const { result } = renderUseSaveOfferPriceTable({ offer })
     act(() => {
       result.current.form.setValue('entries.0.price', 22)
+      result.current.form.formState = {
+        ...result.current.form.formState,
+        isDirty: true,
+      }
     })
     await act(async () => {
       await result.current.saveAndContinue(result.current.form.getValues())
@@ -227,6 +239,10 @@ describe('useSaveOfferPriceTable', () => {
     const spyFormSetError = vi.spyOn(result.current.form, 'setError')
 
     await act(async () => {
+      result.current.form.formState = {
+        ...result.current.form.formState,
+        isDirty: true,
+      }
       await result.current.saveAndContinue(result.current.form.getValues())
     })
 
