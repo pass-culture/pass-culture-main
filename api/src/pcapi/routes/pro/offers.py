@@ -11,6 +11,8 @@ import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.repository as offers_repository
 import pcapi.core.opening_hours.api as opening_hours_api
+from pcapi.celery_tasks.batch_updates_statuses_tasks import UpdateAllOffersActiveStatusPayload
+from pcapi.celery_tasks.batch_updates_statuses_tasks import update_all_offers_active_status_task
 from pcapi.core.categories import pro_categories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
@@ -25,6 +27,7 @@ from pcapi.core.videos import api as videos_api
 from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
@@ -602,7 +605,6 @@ def patch_all_offers_active_status(
 ) -> offers_serialize.PatchAllOffersActiveStatusResponseModel:
     filters = {
         "user_id": current_user.id,
-        "is_user_admin": current_user.has_admin_role,
         "offerer_id": body.offerer_id,
         "status": body.status,
         "venue_id": body.venue_id,
@@ -613,7 +615,11 @@ def patch_all_offers_active_status(
         "period_ending_date": body.period_ending_date,
         "offerer_address_id": body.offerer_address_id,
     }
-    update_all_offers_active_status_job.delay(filters, body.is_active)
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES.is_active():
+        payload = UpdateAllOffersActiveStatusPayload(is_active=body.is_active, **filters)
+        update_all_offers_active_status_task.delay(payload.model_dump())
+    else:
+        update_all_offers_active_status_job.delay(filters, body.is_active)
     return offers_serialize.PatchAllOffersActiveStatusResponseModel()
 
 
