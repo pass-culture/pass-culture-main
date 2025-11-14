@@ -3,4 +3,8 @@
 .share-link-container {
   display: flex;
   gap: rem.torem(8px);
+
+  span {
+    margin-left: rem.torem(8px);
+  }
 }
