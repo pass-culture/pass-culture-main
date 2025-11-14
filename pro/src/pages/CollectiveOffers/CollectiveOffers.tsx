@@ -3,6 +3,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
   DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
   DEFAULT_PAGE,
@@ -10,7 +11,6 @@ import {
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
-import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -56,13 +56,6 @@ export const CollectiveOffers = (): JSX.Element => {
     )
   }
 
-  const collectiveOffersQueryKeys = getCollectiveOffersSwrKeys({
-    isInTemplateOffersPage: false,
-    urlSearchFilters: finalSearchFilters,
-    selectedOffererId,
-    ...(withSwitchVenueFeature ? { selectedVenueId: selectedVenue.id } : {}),
-  })
-
   const apiFilters: CollectiveSearchFiltersParams = {
     ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
     ...finalSearchFilters,
@@ -72,7 +65,7 @@ export const CollectiveOffers = (): JSX.Element => {
   delete apiFilters.page
 
   const offersQuery = useSWR(
-    collectiveOffersQueryKeys,
+    [GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY, apiFilters],
     () => {
       const params = serializeApiCollectiveFilters(apiFilters)
 
