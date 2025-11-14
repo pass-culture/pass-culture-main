@@ -290,7 +290,7 @@ def get_current_year_remaining_credit(institution: models.EducationalInstitution
     if current_deposit is None:
         return Decimal(0)
 
-    spent_amount = repository.get_confirmed_collective_bookings_amount_for_deposit(current_deposit)
+    spent_amount = repository.get_confirmed_collective_bookings_amount(current_deposit)
 
     return current_deposit.amount - spent_amount
 

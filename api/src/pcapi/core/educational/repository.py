@@ -66,44 +66,45 @@ def find_bookings_in_interval(
 
 
 def get_and_lock_educational_deposit(
-    educational_institution_id: int, educational_year_id: str
+    educational_institution_id: int, educational_year: models.EducationalYear, confirmation_datetime: datetime
 ) -> models.EducationalDeposit:
     """Returns educational_deposit with a FOR UPDATE lock
     Raises exceptions.EducationalDepositNotFound if no stock is found.
     WARNING: MAKE SURE YOU FREE THE LOCK (with COMMIT or ROLLBACK) and don't hold it longer than
     strictly necessary.
     """
+    is_confirmed_in_same_year = (
+        educational_year.beginningDate <= confirmation_datetime <= educational_year.expirationDate
+    )
+
+    if is_confirmed_in_same_year:
+        # confirmation and event are in the same educational year
+        # -> the period must contain the confirmation date
+        date_for_period_filter = confirmation_datetime
+    else:
+        # confirmation and event are NOT in the same educational year
+        # -> the period must contain the event educational year start
+        date_for_period_filter = educational_year.beginningDate
+
     educational_deposit = (
         db.session.query(models.EducationalDeposit)
-        .filter_by(
-            educationalInstitutionId=educational_institution_id,
-            educationalYearId=educational_year_id,
+        .filter(
+            models.EducationalDeposit.educationalInstitutionId == educational_institution_id,
+            models.EducationalDeposit.educationalYearId == educational_year.adageId,
+            models.EducationalDeposit.period.op("@>")(date_for_period_filter),
         )
         .populate_existing()
         .with_for_update()
         .one_or_none()
     )
+
     if not educational_deposit:
         raise exceptions.EducationalDepositNotFound()
+
     return educational_deposit
 
 
-def get_confirmed_collective_bookings_amount(educational_institution_id: int, educational_year_id: str) -> Decimal:
-    query = db.session.query(sa.func.sum(models.CollectiveStock.price).label("amount"))
-    query = query.join(models.CollectiveBooking, models.CollectiveStock.collectiveBookings)
-    query = query.filter(
-        models.CollectiveBooking.educationalInstitutionId == educational_institution_id,
-        models.CollectiveBooking.educationalYearId == educational_year_id,
-        models.CollectiveBooking.status.not_in(
-            [models.CollectiveBookingStatus.CANCELLED, models.CollectiveBookingStatus.PENDING]
-        ),
-    )
-
-    result = query.first()
-    return result.amount if (result and result.amount) else Decimal(0)
-
-
-def get_confirmed_collective_bookings_amount_for_deposit(deposit: models.EducationalDeposit) -> Decimal:
+def get_confirmed_collective_bookings_amount(deposit: models.EducationalDeposit) -> Decimal:
     query = (
         db.session.query(sa.func.sum(models.CollectiveStock.price).label("amount"))
         .join(models.CollectiveBooking, models.CollectiveStock.collectiveBookings)
@@ -120,8 +121,11 @@ def get_confirmed_collective_bookings_amount_for_deposit(deposit: models.Educati
 
 
 def find_collective_booking_by_id(booking_id: int) -> models.CollectiveBooking | None:
-    query = _get_bookings_for_adage_base_query()
-    query = query.filter(models.CollectiveBooking.id == booking_id)
+    query = (
+        _get_bookings_for_adage_base_query()
+        .options(sa_orm.joinedload(models.CollectiveBooking.educationalYear))
+        .filter(models.CollectiveBooking.id == booking_id)
+    )
     return query.one_or_none()
 
 
