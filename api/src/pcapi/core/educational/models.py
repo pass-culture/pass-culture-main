@@ -2032,8 +2032,8 @@ class NationalProgram(PcObject, models.Model):
     """
 
     __tablename__ = "national_program"
-    # TODO: name should be nullable=False
-    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, unique=True, nullable=True)
+
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, unique=True, nullable=False)
     dateCreated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
