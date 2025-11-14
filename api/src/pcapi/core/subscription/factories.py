@@ -16,6 +16,7 @@ from pcapi import settings
 from pcapi.core import factories
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.subscription.educonnect import schemas as educonnect_schemas
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
@@ -144,12 +145,43 @@ class ProfileCompletionContentFactory(factory.Factory):
     school_type: users_models.SchoolTypeEnum | None = None
 
 
+class QuotientFamilialCustodianFactory(factory.Factory):
+    class Meta:
+        model = bonus_schemas.QuotientFamilialCustodian
+
+    last_name = factory.Faker("last_name")
+    first_names = factory.Faker("random_elements", elements=["Jérôme", "Charles", "Bernard"])
+    common_name: str | None = None
+    birth_date = factory.Faker("date_of_birth", minimum_age=20)
+    gender = "F"
+    birth_country_cog_code = "91100"
+    birth_city_cog_code = "08480"
+    quotient_familial: None = None
+
+    @classmethod
+    def _create(
+        cls, model_class: type[bonus_schemas.QuotientFamilialCustodian], *args: typing.Any, **kwargs: typing.Any
+    ) -> bonus_schemas.QuotientFamilialCustodian:
+        obj = model_class(*args, **kwargs)
+        # Force string gender to avoid it being rendered as an Enum
+        obj.gender = random.choice([e.name for e in users_models.GenderEnum])  # type: ignore[assignment]
+        return obj
+
+
+class BonusCreditContentFactory(factory.Factory):
+    class Meta:
+        model = bonus_schemas.BonusCreditContent
+
+    custodian = factory.SubFactory(QuotientFamilialCustodianFactory)
+
+
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, type[factory.Factory] | None] = {
     subscription_models.FraudCheckType.DMS: DMSContentFactory,
     subscription_models.FraudCheckType.UBBLE: UbbleContentFactory,
     subscription_models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
     subscription_models.FraudCheckType.HONOR_STATEMENT: None,
     subscription_models.FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContentFactory,
+    subscription_models.FraudCheckType.BONUS_CREDIT: BonusCreditContentFactory,
 }
 
 
@@ -276,3 +308,8 @@ class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
     resultContent = factory.SubFactory(UbbleContentFactory)
     status = subscription_models.FraudCheckStatus.KO
     reasonCodes = [subscription_models.FraudReasonCode.ID_CHECK_UNPROCESSABLE]
+
+
+class BonusFraudCheckFactory(BeneficiaryFraudCheckFactory):
+    type = subscription_models.FraudCheckType.BONUS_CREDIT
+    status = subscription_models.FraudCheckStatus.OK

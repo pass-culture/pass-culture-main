@@ -29,6 +29,7 @@ CELERY_BASE_SETTINGS: typing.Final = dict(
         "tasks.offers.priority.*": {"queue": CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME},
         "tasks.batch_updates.default.*": {"queue": CELERY_INTERNAL_CALLS_DEFAULT_QUEUE_NAME},
         "tasks.batch_updates.priority.*": {"queue": CELERY_INTERNAL_CALLS_PRIORITY_QUEUE_NAME},
+        "tasks.api_particulier.default.*": {"queue": CELERY_EXTERNAL_CALLS_DEFAULT_QUEUE_NAME},
     },
     task_ignore_result=True,
 )
