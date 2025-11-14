@@ -5,8 +5,8 @@ from typing import Iterable
 
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
-from pydantic.v1.utils import GetterDict
 from pydantic.v1 import root_validator
+from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
 
 import pcapi.core.offerers.models as offerers_models
@@ -36,6 +36,10 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
             ]
         if key == "hasPartnerPage":
             return self._obj._has_partner_page
+        if key == "activity":
+            if not self._obj.activity or self._obj.activity == offerers_models.Activity.NOT_ASSIGNED:
+                return None
+            return offerers_models.DisplayedActivity[self._obj.activity.name]
         return super().get(key, default)
 
 
@@ -48,7 +52,8 @@ class GetOffererVenueResponseModel(BaseModel):
     id: int
     publicName: str | None
     siret: str | None
-    venueTypeCode: offerers_models.VenueTypeCode
+    venueTypeCode: offerers_models.VenueTypeCode | None
+    activity: offerers_models.DisplayedActivity | None
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasPartnerPage: bool
@@ -290,7 +295,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
         anystr_strip_whitespace = True
 
     @root_validator
-    def check_activity_and_venue_type_code(cls, values):
+    def check_activity_and_venue_type_code(cls, values: dict) -> dict:
         activity = values.get("activity")
         venue_type_code = values.get("venueTypeCode")
 
