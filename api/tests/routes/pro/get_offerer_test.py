@@ -7,6 +7,7 @@ import pcapi.core.educational.factories as collective_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.providers.factories as providers_factories
 import pcapi.core.users.factories as users_factories
@@ -36,17 +37,25 @@ class GetOffererTest:
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        venue_1 = offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Venue withdrawal details")
+        venue_1 = offerers_factories.VenueFactory(
+            managingOfferer=offerer, withdrawalDetails="Venue withdrawal details", activity=None
+        )
         offers_factories.OfferFactory(venue=venue_1)
-        offerers_factories.VenueFactory(managingOfferer=offerer, withdrawalDetails="Other venue withdrawal details")
-        venue = offerers_factories.VenueFactory(
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            withdrawalDetails="Other venue withdrawal details",
+            activity=offerers_models.Activity.NOT_ASSIGNED,
+        )
+        venue_3 = offerers_factories.VenueFactory(
             managingOfferer=offerer,
             withdrawalDetails="More venue withdrawal details",
             adageId="123",
             adageInscriptionDate=date_utils.get_naive_utc_now(),
+            activity=offerers_models.Activity.FESTIVAL,
+            venueTypeCode=None,
         )
         collective_factories.CollectiveDmsApplicationFactory(
-            venue=venue,
+            venue=venue_3,
         )
 
         offerer_id = offerer.id
@@ -74,6 +83,7 @@ class GetOffererTest:
             "isValidated": offerer.isValidated,
             "managedVenues": [
                 {
+                    "activity": offerers_models.DisplayedActivity.FESTIVAL.name if venue == venue_3 else None,
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,
                     "bookingEmail": venue.bookingEmail,
@@ -105,7 +115,7 @@ class GetOffererTest:
                     "name": venue.name,
                     "publicName": venue.publicName,
                     "siret": venue.siret,
-                    "venueTypeCode": venue.venueTypeCode.name,
+                    "venueTypeCode": venue.venueTypeCode.name if venue.venueTypeCode else None,
                     "withdrawalDetails": venue.withdrawalDetails,
                 }
                 for venue in sorted(offerer.managedVenues, key=lambda v: v.publicName)
