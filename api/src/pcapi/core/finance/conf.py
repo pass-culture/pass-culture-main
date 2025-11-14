@@ -8,7 +8,7 @@ from . import models
 
 # Lock to prevent parallel push of invoices
 REDIS_PUSH_INVOICE_LOCK = "pc:finance:push_invoice_lock"
-REDIS_PUSH_INVOICE_LOCK_TIMEOUT = 86400  # 60 * 60 * 24 = 24h
+REDIS_PUSH_INVOICE_LOCK_TIMEOUT = 259200  # 60 * 60 * 24 * 3 = 72h
 
 # lock to prevent parallel push of bank accounts
 REDIS_PUSH_BANK_ACCOUNT_LOCK = "pc:finance:push_bank_account_lock"
