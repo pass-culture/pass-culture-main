@@ -740,55 +740,6 @@ class CreateOffererTest:
         assert actions_list[0].user == user
         assert actions_list[0].offerer == offerer
 
-    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
-    def test_create_new_offerer_attachment_if_already_registered_siren_is_not_a_collectivity(
-        self,
-    ):
-        user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer NOT A Collectivity",
-            siren="418166096",
-            street="123 rue de Paris",
-            postalCode="93100",
-            city="Montreuil",
-        )
-        offerers_factories.OffererFactory(siren=offerer_informations.siren)
-
-        with pytest.raises(offerers_exceptions.NotACollectivity):
-            offerers_api.create_offerer(user, offerer_informations)
-
-    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
-    def test_create_new_offerer_attachment_if_already_registered_siren_is_a_collectivity(self):
-        user = users_factories.UserFactory()
-        offerer_informations = offerers_serialize.CreateOffererQueryModel(
-            name="Test Offerer Collectivity",
-            siren="777084112",
-            street="123 rue de Paris",
-            postalCode="93100",
-            city="Montreuil",
-        )
-        offerer = offerers_factories.OffererFactory(siren=offerer_informations.siren)
-
-        created_user_offerer = offerers_api.create_offerer(user, offerer_informations)
-
-        created_offerer = created_user_offerer.offerer
-        assert created_offerer.name == offerer.name
-        assert created_offerer.isValidated
-        assert created_offerer.isActive
-
-        assert created_user_offerer.userId == user.id
-        assert created_user_offerer.validationStatus == ValidationStatus.NEW
-        assert created_user_offerer.dateCreated is not None
-
-        assert not created_user_offerer.user.has_pro_role
-
-        actions_list = db.session.query(history_models.ActionHistory).all()
-        assert len(actions_list) == 1
-        assert actions_list[0].actionType == history_models.ActionType.USER_OFFERER_NEW
-        assert actions_list[0].authorUser == user
-        assert actions_list[0].user == user
-        assert actions_list[0].offerer == offerer
-
     def test_keep_offerer_validation_token_if_siren_is_already_registered_but_not_validated(self):
         # Given
         user = users_factories.UserFactory()
@@ -858,10 +809,6 @@ class CreateOffererTest:
         assert actions_list[0].comment == "Nouvelle demande sur un SIREN précédemment rejeté"
 
         assert not offerer.managedVenues
-
-    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
-    def test_create_offerer_if_siren_was_previously_rejected_ff_on(self):
-        self.test_create_offerer_if_siren_was_previously_rejected()
 
     def test_create_offerer_if_siren_was_previously_rejected_on_user_rejected(self):
         # Given
@@ -3079,10 +3026,6 @@ class CreateFromOnboardingDataTest:
         assert actions[2].venue == venue
         assert actions[2].authorUser == user
 
-    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
-    def test_previously_rejected_siren_same_user_ff_on(self):
-        self.test_previously_rejected_siren_same_user()
-
     def test_previously_rejected_siren_other_user(self):
         offerer = offerers_factories.RejectedOffererFactory(siren="853318459")
         rejected_venue_id = offerers_factories.VenueFactory(managingOfferer=offerer, siret="85331845900031").id
@@ -3125,10 +3068,6 @@ class CreateFromOnboardingDataTest:
         assert actions[2].actionType == history_models.ActionType.VENUE_CREATED
         assert actions[2].venue == venue
         assert actions[2].authorUser == new_user
-
-    @pytest.mark.features(WIP_RESTRICT_VENUE_ATTACHMENT_TO_COLLECTIVITY=True)
-    def test_previously_rejected_siren_other_user_ff_on(self):
-        self.test_previously_rejected_siren_other_user()
 
     def test_missing_address(self):
         user = users_factories.UserFactory(email="pro@example.com")
