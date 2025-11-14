@@ -13,6 +13,22 @@ QUOTIENT_FAMILIAL_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/quotient_fa
 FRANCE_INSEE_CODE = "99100"
 
 
+class ParticulierApiException(Exception):
+    pass
+
+
+class ParticulierApiUnavailable(ParticulierApiException):
+    pass
+
+
+class ParticulierApiQueryError(ParticulierApiException):
+    pass
+
+
+class ParticulierApiRateLimitExceeded(ParticulierApiException):
+    pass
+
+
 class QuotientFamilialPerson(BaseModel):
     nom_naissance: str
     nom_usage: str | None = None
@@ -61,7 +77,6 @@ def get_quotient_familial(
 
     See https://particulier.api.gouv.fr/developpeurs/openapi#tag/Quotient-familial-CAF-and-MSA
     """
-
     if country_insee_code == FRANCE_INSEE_CODE and not city_insee_code:
         raise ValueError("City INSEE code is mandatory when the custodian is born in France")
 
@@ -86,7 +101,14 @@ def get_quotient_familial(
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
     )
-    response.raise_for_status()
+    if response.status_code == 429:
+        raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
+    if response.status_code // 100 == 4:
+        raise ParticulierApiQueryError("Invalid query for Particulier API")
+    if response.status_code // 100 == 5:
+        raise ParticulierApiUnavailable("Particulier API is not responding")
+    elif response.status_code // 100 != 2:
+        raise ParticulierApiException("Unexpected response from Particulier API")
 
     quotient_familial = QuotientFamilialResponse.model_validate(response.json())
     return quotient_familial

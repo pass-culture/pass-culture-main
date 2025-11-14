@@ -1,3 +1,4 @@
+import pcapi.celery_tasks.api_particulier  # noqa: F401
 import pcapi.celery_tasks.sendinblue  # noqa: F401
 import pcapi.core.educational.tasks  # noqa: F401
 import pcapi.core.offers.tasks  # noqa: F401
