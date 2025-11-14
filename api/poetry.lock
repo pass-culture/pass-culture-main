@@ -4050,9 +4050,6 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
-[package.dependencies]
-tzdata = {version = "*", markers = "sys_platform == \"win32\""}
-
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -5872,14 +5869,14 @@ files = [
 
 [[package]]
 name = "slack-sdk"
-version = "3.37.0"
+version = "3.38.0"
 description = "The Slack API Platform SDK for Python"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "slack_sdk-3.37.0-py2.py3-none-any.whl", hash = "sha256:e108a0836eafda74d8a95e76c12c2bcb010e645d504d8497451e4c7ebb229c87"},
-    {file = "slack_sdk-3.37.0.tar.gz", hash = "sha256:242d6cffbd9e843af807487ff04853189b812081aeaa22f90a8f159f20220ed9"},
+    {file = "slack_sdk-3.38.0-py2.py3-none-any.whl", hash = "sha256:6c5e908abd68e97373a88437ef2fa3ff7a4c356807bbc41fcd7d6cbbfa2034d6"},
+    {file = "slack_sdk-3.38.0.tar.gz", hash = "sha256:73f43ef535929c6034982434aba4d5fd04db3b40f4e0cd14c3abfd56419d181d"},
 ]
 
 [package.extras]
@@ -6546,7 +6543,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
+markers = {dev = "platform_system == \"Windows\""}
 
 [[package]]
 name = "tzlocal"
@@ -7272,4 +7269,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "e851b116afdd8e46eb5794b11cb92232078647d5026a57deac3888369606073e"
+content-hash = "aac1d2ebf93b63039748eee0ee4fd969174955bac8186935608b079f6d3d009d"
