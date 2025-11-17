@@ -184,7 +184,7 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
 
         cancellation_limit_date = datetime.datetime.strftime(
             date_utils.utc_datetime_to_department_timezone(
-                booking.cancellationLimitDate, booking.venue.departementCode
+                booking.cancellationLimitDate, booking.venue.offererAddress.address.departmentCode
             ),
             "%d/%m/%Y à %H:%M",
         )

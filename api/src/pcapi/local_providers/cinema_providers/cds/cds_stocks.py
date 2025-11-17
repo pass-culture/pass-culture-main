@@ -190,7 +190,7 @@ class CDSStocks(LocalProvider):
             )
 
         show: ShowCDS = showtime["show_information"]
-        local_tz = utils_date.get_department_timezone(self.venue.departementCode)
+        local_tz = utils_date.get_department_timezone(self.venue.offererAddress.address.departmentCode)
         datetime_in_utc = utils_date.local_datetime_to_default_timezone(show.showtime, local_tz)
 
         cds_stock.beginningDatetime = datetime_in_utc

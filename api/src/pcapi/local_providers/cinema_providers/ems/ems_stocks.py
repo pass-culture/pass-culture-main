@@ -198,7 +198,7 @@ class EMSStocks:
             reverse=True,
         )
 
-        local_tz = utils_date.get_department_timezone(self.venue.departementCode)
+        local_tz = utils_date.get_department_timezone(self.venue.offererAddress.address.departmentCode)
         beginning_datetime = datetime.datetime.strptime(session.date, "%Y%m%d%H%M")
         beginning_datetime_no_tz = utils_date.local_datetime_to_default_timezone(beginning_datetime, local_tz).replace(
             tzinfo=None
