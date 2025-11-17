@@ -322,7 +322,9 @@ class Returns200Test:
         assert response.status_code == 200
         assert len(response.json["bookingsRecap"]) == 1
         assert response.json["bookingsRecap"][0]["bookingDate"] == datetime.isoformat(
-            utc_datetime_to_department_timezone(booking.dateCreated, booking.venue.departementCode)
+            utc_datetime_to_department_timezone(
+                booking.dateCreated, booking.venue.offererAddress.address.departmentCode
+            )
         )
         assert response.json["page"] == 1
         assert response.json["pages"] == 1

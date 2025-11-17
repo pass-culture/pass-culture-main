@@ -68,7 +68,9 @@ class EMSExtractTransformLoadProcess(CinemaETLProcessTemplate[EMSScheduleConnect
 
             for session in event.sessions:
                 # datetime
-                local_tz = date_utils.get_department_timezone(self.venue_provider.venue.departementCode)
+                local_tz = date_utils.get_department_timezone(
+                    self.venue_provider.venue.offererAddress.address.departmentCode
+                )
                 beginning_datetime = datetime.datetime.strptime(session.date, "%Y%m%d%H%M")
                 beginning_datetime_no_tz = date_utils.local_datetime_to_default_timezone(
                     beginning_datetime, local_tz

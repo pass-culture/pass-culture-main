@@ -153,7 +153,7 @@ class AllocineStocks(LocalProvider):
         if showtime.diffusionVersion in ACCEPTED_FEATURES_MAPPING:
             allocine_stock.features = [ACCEPTED_FEATURES_MAPPING[showtime.diffusionVersion]]
 
-        local_tz = get_department_timezone(self.venue.departementCode)
+        local_tz = get_department_timezone(self.venue.offererAddress.address.departmentCode)
         date_in_utc = local_datetime_to_default_timezone(showtime.startsAt, local_tz)
         allocine_stock.beginningDatetime = date_in_utc
 
