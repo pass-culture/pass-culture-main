@@ -45,12 +45,12 @@ export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
       onPageClick={(newPage) => {
         dispatch(setAdagePageSaved(newPage - 1))
 
-        // Clicked page is the immediate next page
+        // Clicked page is the immediate previous page
         if (newPage === currentRefinement) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           logPagination(PaginationType.PREVIOUS)
         }
-        // Clicked page is the immediate previous page
+        // Clicked page is the immediate next page
         else if (newPage === currentRefinement + 2) {
           // eslint-disable-next-line @typescript-eslint/no-floating-promises
           logPagination(PaginationType.NEXT)

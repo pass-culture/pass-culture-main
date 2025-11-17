@@ -48,10 +48,10 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: rem.torem(8px);
+      gap: var(--size-spacing-s);
       color: inherit;
       text-decoration: none;
-      border-radius: rem.torem(12px);
+      border-radius: var(--size-border-radius-pill);
       border: none;
       background: none;
       cursor: pointer;
@@ -90,7 +90,7 @@
         @include page-focus;
       }
 
-      // (…)
+      // ellipsis marks (three dots for separation)
       &.pagination-link-ellipsis {
         background-color: transparent;
         color: var(--color-text-default);
