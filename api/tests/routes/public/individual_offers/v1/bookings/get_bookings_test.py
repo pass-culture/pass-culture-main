@@ -282,7 +282,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         num_queries += 1  # select second user
         with testing.assert_num_queries(num_queries):
             response = self.make_request(
-                plain_api_key, query_params={"offerId": event_offer_id, "price_category_id": price_category_id}
+                plain_api_key, query_params={"offerId": event_offer_id, "priceCategoryId": price_category_id}
             )
             assert response.status_code == 200
 

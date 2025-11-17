@@ -52,6 +52,7 @@ class HttpBodyModel(pydantic_v2.BaseModel):
         allow_inf_nan=False,
         str_strip_whitespace=True,
         url_preserve_empty_path=True,
+        extra="forbid",
     )
 
 
@@ -61,4 +62,5 @@ class HttpQueryParamsModel(pydantic_v2.BaseModel):
         allow_inf_nan=False,
         str_strip_whitespace=True,
         url_preserve_empty_path=True,
+        extra="forbid",
     )

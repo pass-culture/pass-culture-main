@@ -402,20 +402,25 @@ class _FIELDS_V2:
     # Provider fields
     PROVIDER_ID = Field(description="Provider id", example=123456)
     PROVIDER_NAME = Field(description="Provider name", example="Ultimate ticketing solution")
-    PROVIDER_LOGO_URL = Field(
-        description="Provider logo url", example="https://ultimate-ticketing-solution.com/logo.png"
+    PROVIDER_LOGO_URL_NOT_REQUIRED = Field(
+        description="Provider logo url",
+        example="https://ultimate-ticketing-solution.com/logo.png",
+        default=None,
     )
-    PROVIDER_NOTIFICATION_URL = Field(
+    PROVIDER_NOTIFICATION_URL_NOT_REQUIRED = Field(
         description="Url on which booking notifications on offers you created are sent",
         example="https://ultimate-ticketing-solution.com/pass-culture-endpoint",
+        default=None,
     )
-    PROVIDER_BOOKING_URL = Field(
+    PROVIDER_BOOKING_URL_NOT_REQUIRED = Field(
         description="Url on which tickets requests for events you created are sent",
         example="https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
+        default=None,
     )
-    PROVIDER_CANCEL_URL = Field(
+    PROVIDER_CANCEL_URL_NOT_REQUIRED = Field(
         description="Url on which tickets cancellation requests for events you created are sent",
         example="https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
+        default=None,
     )
 
     # User Fields
