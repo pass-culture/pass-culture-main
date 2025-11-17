@@ -5,9 +5,9 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 from pcapi.core.mails.transactional.utils import format_price
 from pcapi.core.offers.utils import offer_app_link
 from pcapi.utils import date as date_utils
+from pcapi.utils.date import default_timezone_to_local_datetime
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_time_formatted_for_email
-from pcapi.utils.date import utc_datetime_to_department_timezone
 
 
 def get_booking_cancellation_by_beneficiary_email_data(
@@ -28,8 +28,8 @@ def get_booking_cancellation_by_beneficiary_email_data(
     if offer.isEvent:
         if stock.beginningDatetime is None:
             raise ValueError("Can't convert None to local timezone")
-        beginning_date_time_in_tz = utc_datetime_to_department_timezone(
-            stock.beginningDatetime, offer.venue.departementCode
+        beginning_date_time_in_tz = default_timezone_to_local_datetime(
+            stock.beginningDatetime, offer.venue.offererAddress.address.timezone
         )
         event_date = get_date_formatted_for_email(beginning_date_time_in_tz)
         event_hour = get_time_formatted_for_email(beginning_date_time_in_tz)

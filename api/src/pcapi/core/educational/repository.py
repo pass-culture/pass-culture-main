@@ -215,8 +215,6 @@ def _get_bookings_for_adage_base_query() -> sa_orm.Query[models.CollectiveBookin
             sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(offerers_models.OffererAddress.address),
             sa_orm.joinedload(models.CollectiveOffer.venue, innerjoin=True).options(
                 sa_orm.load_only(
-                    # TODO(OA) - departementCode is still used in mails -> get_event_datetime
-                    offerers_models.Venue.departementCode,
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.name,
                     offerers_models.Venue.offererAddressId,
