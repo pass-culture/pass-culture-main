@@ -128,25 +128,24 @@ def get_capped_offers_for_filters(
             )
         )
         .options(
-            sa_orm.joinedload(models.Offer.venue)
-            .load_only(
-                offerers_models.Venue.id,
-                offerers_models.Venue.name,
-                offerers_models.Venue.publicName,
-                offerers_models.Venue.departementCode,
-                offerers_models.Venue.isVirtual,
+            sa_orm.joinedload(models.Offer.venue).options(
+                sa_orm.load_only(
+                    offerers_models.Venue.id,
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.publicName,
+                    offerers_models.Venue.isVirtual,
+                ),
+                sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
+                    offerers_models.Offerer.id, offerers_models.Offerer.name
+                ),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).options(
+                    sa_orm.joinedload(offerers_models.OffererAddress.address),
+                    sa_orm.with_expression(
+                        offerers_models.OffererAddress._isLinkedToVenue,
+                        offerers_models.OffererAddress.isLinkedToVenue.expression,
+                    ),
+                ),
             )
-            .joinedload(offerers_models.Venue.managingOfferer)
-            .load_only(offerers_models.Offerer.id, offerers_models.Offerer.name),
-            sa_orm.joinedload(models.Offer.venue)
-            .joinedload(offerers_models.Venue.offererAddress)
-            .joinedload(offerers_models.OffererAddress.address),
-            sa_orm.joinedload(models.Offer.venue)
-            .joinedload(offerers_models.Venue.offererAddress)
-            .with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue,
-                offerers_models.OffererAddress.isLinkedToVenue.expression,
-            ),
         )
         .options(
             sa_orm.joinedload(models.Offer.stocks).load_only(
