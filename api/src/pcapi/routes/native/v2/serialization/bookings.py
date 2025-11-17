@@ -38,9 +38,9 @@ class BookingVenueResponseV2GetterDict(GetterDict):
         if key == "name":
             return self._obj.common_name
         if key == "address":
-            return BookingVenueAddressResponseV2(
-                id=self._obj.offererAddress.address.id if self._obj.offererAddress else None
-            )
+            return BookingVenueAddressResponseV2(id=self._obj.offererAddress.address.id)
+        if key == "timezone":
+            return self._obj.offererAddress.address.timezone
 
         return super().get(key, default)
 
@@ -292,10 +292,21 @@ class BookingsResponseV2(ConfiguredBaseModel):
     has_bookings_after_18: bool
 
 
+class BookingListItemVenueResponseGetterDict(GetterDict):
+    def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "timezone":
+            return self._obj.offererAddress.address.timezone
+
+        return super().get(key, default)
+
+
 class BookingListItemVenueResponse(ConfiguredBaseModel):
     id: int
     name: str
     timezone: str
+
+    class Config:
+        getter_dict = BookingListItemVenueResponseGetterDict
 
 
 class BookingListItemOfferResponseTimezone(ConfiguredBaseModel):
@@ -307,13 +318,12 @@ class BookingListItemOfferResponseTimezone(ConfiguredBaseModel):
 class BookingListItemOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "address":
-            if offerer_address := self._obj.offererAddress or self._obj.venue.offererAddress:
-                return BookingListItemOfferResponseTimezone(
-                    timezone=offerer_address.address.timezone,
-                    city=offerer_address.address.city,
-                    label=offerer_address.label,
-                )
-            return None
+            offerer_address = self._obj.offererAddress or self._obj.venue.offererAddress
+            return BookingListItemOfferResponseTimezone(
+                timezone=offerer_address.address.timezone,
+                city=offerer_address.address.city,
+                label=offerer_address.label,
+            )
 
         if key == "image_url":
             return self._obj.thumbUrl

@@ -253,10 +253,12 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
             )
             .options(
                 sa_orm.joinedload(offers_models.Offer.product),
-                sa_orm.joinedload(offers_models.Offer.venue).load_only(
-                    offerers_models.Venue.name,
-                    offerers_models.Venue.timezone,
-                ),
+                sa_orm.joinedload(offers_models.Offer.venue)
+                .load_only(offerers_models.Venue.name)
+                .joinedload(offerers_models.Venue.offererAddress)
+                .load_only(offerers_models.OffererAddress.label)
+                .joinedload(offerers_models.OffererAddress.address)
+                .load_only(geography_models.Address.timezone),
                 sa_orm.joinedload(offers_models.Offer.mediations),
             )
             .options(
