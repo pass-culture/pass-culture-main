@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import * as router from 'react-router'
 
 import { api } from '@/apiClient/api'
 import {
@@ -25,7 +26,7 @@ import {
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOffers } from '../CollectiveOffers'
+import { CollectiveOffers } from './CollectiveOffers'
 
 const LABELS = {
   nameSearchInput: /Nom de l’offre/,
@@ -44,14 +45,14 @@ const offersRecap: CollectiveOfferResponseModel[] = [
 vi.mock('@/commons/hooks/useActiveFeature', () => ({
   useActiveFeature: vi.fn(),
 }))
-
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
       getCollectiveOffers: vi.fn(),
       getOfferer: vi.fn(),
-      listOfferersNames: vi.fn(),
       getOffererAddresses: vi.fn(),
+      getVenues: vi.fn(),
+      listOfferersNames: vi.fn(),
     },
   }
 })
@@ -554,5 +555,178 @@ describe('CollectiveOffers', () => {
     renderOffers()
 
     expect(await screen.findByText('2 offres')).toBeInTheDocument()
+  })
+
+  describe('Query Params', () => {
+    // We mock `useNavigate()` returned function and not `useNavigate` itself
+    const routerUseNavigateReturnMock: router.NavigateFunction = vi.fn()
+
+    const proVenues = [
+      makeVenueListItem({
+        id: 1,
+        name: 'Ma venue',
+      }),
+      makeVenueListItem({
+        id: 2,
+        name: 'Mon autre venue',
+      }),
+    ]
+
+    let offersRecap: CollectiveOfferResponseModel[]
+    const stock: CollectiveOfferStockResponseModel = {
+      bookingLimitDatetime: null,
+      numberOfTickets: 100,
+      price: 10,
+    }
+
+    beforeEach(() => {
+      offersRecap = [collectiveOfferFactory({ stock })]
+      vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
+      vi.spyOn(router, 'useNavigate').mockReturnValue(
+        routerUseNavigateReturnMock
+      )
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
+      vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+      })
+    })
+
+    afterEach(() => {
+      window.sessionStorage.clear()
+    })
+
+    describe('url query params', () => {
+      it('should have page value when page value is not first page', async () => {
+        const offersRecap = Array.from({ length: 11 }, () =>
+          collectiveOfferFactory({ stock })
+        )
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+        await renderOffers()
+        const nextPageIcon = screen.getByRole('button', {
+          name: 'Page suivante',
+        })
+
+        await userEvent.click(nextPageIcon)
+
+        expect(routerUseNavigateReturnMock).toHaveBeenCalledWith(
+          '/offres/collectives?page=2',
+          {
+            replace: true,
+          }
+        )
+      })
+
+      it('should have offer name value when name search value is not an empty string', async () => {
+        await renderOffers()
+
+        await userEvent.type(
+          screen.getByRole('searchbox', {
+            name: LABELS.nameSearchInput,
+          }),
+          'AnyWord'
+        )
+        await userEvent.click(screen.getByText('Rechercher'))
+
+        expect(routerUseNavigateReturnMock).toHaveBeenCalledWith(
+          '/offres/collectives?nom-ou-isbn=AnyWord',
+          {
+            replace: true,
+          }
+        )
+      })
+
+      it('should have offer name value be removed when name search value is an empty string', async () => {
+        await renderOffers()
+
+        await userEvent.clear(
+          screen.getByRole('searchbox', {
+            name: LABELS.nameSearchInput,
+          })
+        )
+        await userEvent.click(screen.getByText('Rechercher'))
+
+        expect(routerUseNavigateReturnMock).toHaveBeenCalledWith(
+          '/offres/collectives',
+          {
+            replace: true,
+          }
+        )
+      })
+
+      it('should have venue value be removed when user asks for all venues', async () => {
+        // Given
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+        await renderOffers()
+        const firstTypeOption = screen.getByRole('option', {
+          name: 'Concert',
+        })
+        const formatSelect = screen.getByRole('combobox', {
+          name: 'Format',
+        })
+        // When
+        await userEvent.selectOptions(formatSelect, firstTypeOption)
+        await userEvent.click(screen.getByText('Rechercher'))
+
+        expect(routerUseNavigateReturnMock).toHaveBeenCalledWith(
+          '/offres/collectives?format=Concert',
+          {
+            replace: true,
+          }
+        )
+      })
+
+      it('should have the status in the url value when user filters by status', async () => {
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+        await renderOffers()
+
+        await userEvent.click(
+          screen.getByRole('button', {
+            name: 'Statut',
+          })
+        )
+
+        await userEvent.click(screen.getByText('Réservée'))
+
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Rechercher' })
+        )
+
+        expect(routerUseNavigateReturnMock).toHaveBeenCalledWith(
+          '/offres/collectives?statut=reservee',
+          {
+            replace: true,
+          }
+        )
+      })
+
+      it('should have the status in the url value when user filters by multiple statuses', async () => {
+        vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
+        await renderOffers()
+
+        await userEvent.click(
+          screen.getByRole('button', {
+            name: 'Statut',
+          })
+        )
+
+        await userEvent.click(screen.getByText('Réservée'))
+        await userEvent.click(screen.getByText('En instruction'))
+        await userEvent.click(screen.getByText('Archivée'))
+
+        await userEvent.click(
+          screen.getByRole('button', { name: 'Rechercher' })
+        )
+
+        expect(routerUseNavigateReturnMock).toHaveBeenCalledWith(
+          '/offres/collectives?statut=reservee&statut=en-attente&statut=archivee',
+          {
+            replace: true,
+          }
+        )
+      })
+    })
   })
 })
