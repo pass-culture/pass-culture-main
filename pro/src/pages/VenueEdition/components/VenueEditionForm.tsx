@@ -22,14 +22,14 @@ import { Callout } from '@/ui-kit/Callout/Callout'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
+import { serializeEditVenueBodyModel } from '../commons/serializers'
+import { setInitialFormValues } from '../commons/setInitialFormValues'
+import type { VenueEditionFormValues } from '../commons/types'
+import { validationSchema } from '../commons/validationSchema'
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
-import { serializeEditVenueBodyModel } from './serializers'
-import { setInitialFormValues } from './setInitialFormValues'
-import type { VenueEditionFormValues } from './types'
 import styles from './VenueEditionForm.module.scss'
 import { VenueFormActionBar } from './VenueFormActionBar/VenueFormActionBar'
-import { validationSchema } from './validationSchema'
 
 interface VenueFormProps {
   venue: GetVenueResponseModel

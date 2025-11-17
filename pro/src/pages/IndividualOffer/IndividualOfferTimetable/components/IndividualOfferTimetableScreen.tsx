@@ -22,7 +22,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
-import { cleanOpeningHours } from '@/pages/VenueEdition/serializers'
+import { cleanOpeningHours } from '@/pages/VenueEdition/commons/serializers'
 
 import { areOpeningHoursEmpty } from '../commons/areOpeningHoursEmpty'
 import { getTimetableFormDefaultValues } from '../commons/getTimetableFormDefaultValues'

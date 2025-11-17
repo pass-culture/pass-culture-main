@@ -20,7 +20,7 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import * as utils from '@/commons/utils/savedPartnerPageVenueId'
 
-import { VenueEdition } from '../VenueEdition'
+import { VenueEdition } from './VenueEdition'
 
 interface VenueEditionTestProps {
   context?: 'adage' | 'partnerPage' | 'address'

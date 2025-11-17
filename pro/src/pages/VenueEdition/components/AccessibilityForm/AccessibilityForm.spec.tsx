@@ -7,9 +7,9 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
 import { Button } from '@/ui-kit/Button/Button'
 
+import type { VenueEditionFormValues } from '../../commons/types'
 import {
   AccessibilityForm,
   type AccessiblityFormProps,

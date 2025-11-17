@@ -19,7 +19,7 @@ import {
 import {
   VenueEditionHeader,
   type VenueEditionHeaderProps,
-} from '../VenueEditionHeader'
+} from './VenueEditionHeader'
 
 const mockLogEvent = vi.fn()
 

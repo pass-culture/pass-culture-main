@@ -10,9 +10,9 @@ import { ExternalAccessibility } from '@/components/ExternalAccessibility/Extern
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
-import { AccessibilityCallout } from '@/pages/VenueEdition/AccessibilityCallout/AccessibilityCallout'
-import type { VenueEditionFormValues } from '@/pages/VenueEdition/types'
 
+import type { VenueEditionFormValues } from '../../commons/types'
+import { AccessibilityCallout } from '../AccessibilityCallout/AccessibilityCallout'
 import styles from './AccessibilityForm.module.scss'
 
 export interface AccessiblityFormProps {

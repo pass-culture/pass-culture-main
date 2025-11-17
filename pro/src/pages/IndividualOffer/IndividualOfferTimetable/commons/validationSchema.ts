@@ -3,7 +3,7 @@ import * as yup from 'yup'
 
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
-import { openingHoursSchemaShape } from '@/pages/VenueEdition/validationSchema'
+import { openingHoursSchemaShape } from '@/pages/VenueEdition/commons/validationSchema'
 
 import type { QuantityPerPriceCategoryForm } from '../components/StocksCalendar/form/types'
 import { quantityPerPriceCategoriesSchema } from '../components/StocksCalendar/form/validationSchema'
