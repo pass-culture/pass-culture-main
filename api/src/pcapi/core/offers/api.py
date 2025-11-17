@@ -446,7 +446,7 @@ def get_offerer_address_from_address_body(
     if address_body.isVenueAddress:
         return venue.offererAddress
 
-    return offerers_api.get_offerer_address_from_address(venue.managingOffererId, address_body)
+    return offerers_api.get_offer_location_from_address(venue.managingOffererId, address_body)
 
 
 def update_offer(
@@ -2145,7 +2145,7 @@ def move_offer(
     with transaction():
         # Use a different OA if the offer uses the venue's OA
         if offer.offererAddress and offer.offererAddress == original_venue.offererAddress:
-            destination_oa = offerers_api.get_or_create_offerer_address(
+            destination_oa = offerers_api.get_or_create_offer_location(
                 original_venue.managingOffererId, original_venue.offererAddress.addressId, original_venue.common_name
             )
             db.session.add(destination_oa)
@@ -2234,7 +2234,7 @@ def move_event_offer(
         else:
             # Use a different OA if the offer uses the venue OA
             if offer.offererAddress and offer.offererAddress == offer.venue.offererAddress:
-                destination_oa = offerers_api.get_or_create_offerer_address(
+                destination_oa = offerers_api.get_or_create_offer_location(
                     offer.venue.managingOffererId, offer.venue.offererAddress.addressId, offer.venue.common_name
                 )
                 db.session.add(destination_oa)
