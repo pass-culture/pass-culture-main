@@ -222,9 +222,6 @@ describe('Didactic Onboarding feature', () => {
 
         // Set price
         cy.url().should('contain', '/creation/stocks')
-        cy.wait(['@getStocks'], {
-          responseTimeout: 60 * 1000,
-        })
 
         cy.findByLabelText(/Prix/).type('42')
 

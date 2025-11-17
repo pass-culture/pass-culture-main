@@ -1,8 +1,4 @@
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
-import {
-  getIndividualOfferFactory,
-  getOfferStockFactory,
-} from '@/commons/utils/factories/individualApiFactories'
 
 import { getTimetableFormDefaultValues } from '../getTimetableFormDefaultValues'
 
@@ -16,23 +12,16 @@ const defaultOpeningHours: WeekdayOpeningHoursTimespans = {
   SUNDAY: null,
 }
 
-const defualtOffer = getIndividualOfferFactory({
-  priceCategories: [{ id: 1, label: 'Tarif 1', price: 12 }],
-})
-
 describe('getTimetableFormDefaultValues', () => {
   it('should get the default values for an empty form in creation mode', () => {
     expect(
       getTimetableFormDefaultValues({
         openingHours: defaultOpeningHours,
-        stocks: [],
-        offer: defualtOffer,
         isOhoFFEnabled: true,
       })
     ).toEqual(
       expect.objectContaining({
         openingHours: defaultOpeningHours,
-        quantityPerPriceCategories: [{ priceCategory: '1' }],
         timetableType: 'calendar',
       })
     )
@@ -42,11 +31,6 @@ describe('getTimetableFormDefaultValues', () => {
     expect(
       getTimetableFormDefaultValues({
         openingHours: defaultOpeningHours,
-        stocks: [
-          getOfferStockFactory({ id: 1 }),
-          getOfferStockFactory({ id: 2 }),
-        ],
-        offer: defualtOffer,
         isOhoFFEnabled: true,
       })
     ).toEqual(
@@ -60,8 +44,6 @@ describe('getTimetableFormDefaultValues', () => {
     expect(
       getTimetableFormDefaultValues({
         openingHours: { ...defaultOpeningHours, MONDAY: [['12:12', '15:15']] },
-        stocks: [getOfferStockFactory({ id: 1 })],
-        offer: defualtOffer,
         isOhoFFEnabled: true,
       })
     ).toEqual(

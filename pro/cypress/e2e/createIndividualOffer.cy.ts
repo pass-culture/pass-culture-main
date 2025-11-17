@@ -326,9 +326,6 @@ describe('Create individual offers', () => {
 
     cy.url().should('contain', '/creation/media')
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getStocks'], {
-      responseTimeout: 60 * 1000 * 2,
-    })
 
     cy.stepLog({ message: 'I fill in stocks' })
     cy.findByLabelText(/Prix/).type('42')

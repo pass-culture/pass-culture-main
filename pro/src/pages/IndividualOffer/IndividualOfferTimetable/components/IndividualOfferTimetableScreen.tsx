@@ -6,7 +6,6 @@ import { mutate } from 'swr'
 import { api } from '@/apiClient/api'
 import {
   type GetIndividualOfferWithAddressResponseModel,
-  type GetOfferStockResponseModel,
   type GetVenueResponseModel,
   SubcategoryIdEnum,
   type WeekdayOpeningHoursTimespans,
@@ -35,7 +34,6 @@ export type IndividualOfferTimetableScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel
   mode: OFFER_WIZARD_MODE
   openingHours?: WeekdayOpeningHoursTimespans | null
-  stocks: GetOfferStockResponseModel[]
   venue?: GetVenueResponseModel
 }
 
@@ -52,7 +50,6 @@ export function IndividualOfferTimetableScreen({
   offer,
   mode,
   openingHours,
-  stocks,
   venue,
 }: IndividualOfferTimetableScreenProps) {
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
@@ -70,8 +67,6 @@ export function IndividualOfferTimetableScreen({
     defaultValues: getTimetableFormDefaultValues({
       openingHours,
       venueOpeningHours: venue?.openingHours,
-      stocks,
-      offer,
       isOhoFFEnabled,
     }),
     resolver: yupResolver(validationSchema),
@@ -90,34 +85,13 @@ export function IndividualOfferTimetableScreen({
   const timetableType = form.watch('timetableType')
 
   async function onSubmit(values: IndividualOfferTimetableFormValues) {
-    const { quantityPerPriceCategories, openingHours } = values
+    const { openingHours } = values
 
-    if (
-      !quantityPerPriceCategories ||
-      quantityPerPriceCategories.length === 0 ||
-      !openingHours ||
-      timetableType === 'calendar'
-    ) {
+    if (!openingHours || timetableType === 'calendar') {
       return
     }
 
     try {
-      //  TODO : Enable the creation of the stock when the api can create a thingStock for a "isThing" offer ie: subcategory is not event
-      /*  const { quantity, priceCategory } = quantityPerPriceCategories[0]
-
-      const price =
-        offer.priceCategories?.find(
-          (cat) => priceCategory === cat.id.toString()
-        )?.price || 0
-
-      const stockBody = { price, quantity }
-
-      if (stocks && stocks.length > 0) {
-        await api.updateThingStock(stocks[0].id, stockBody)
-      } else {
-        await api.createThingStock({ ...stockBody, offerId: offer.id })
-      } */
-
       await api.upsertOfferOpeningHours(offer.id, {
         //  TODO : update startDate and endDate here when it's available on the openingHours api
         openingHours: cleanOpeningHours(openingHours),
