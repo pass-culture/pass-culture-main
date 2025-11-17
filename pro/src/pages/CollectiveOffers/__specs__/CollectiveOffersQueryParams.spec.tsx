@@ -122,7 +122,9 @@ describe('CollectiveOffersQueryParams', () => {
 
       renderOffers()
 
-      const nextPageIcon = screen.getByRole('button', { name: /page suivante/ })
+      const nextPageIcon = await screen.findByRole('button', {
+        name: /page suivante/,
+      })
 
       await userEvent.click(nextPageIcon)
 

@@ -98,7 +98,7 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
 
-    cy.findByTestId('wrapper-categoryId').within(() => {
+    cy.findByTestId('wrapper-categorie').within(() => {
       cy.findByLabelText('Catégorie').select('Instrument de musique')
       cy.get('#categorie').should('have.value', 'INSTRUMENT')
     })
@@ -272,7 +272,7 @@ describe('Search individual offers', () => {
     cy.findByTestId('wrapper-address').within(() => {
       cy.get('select').invoke('val').should('eq', 'all')
     })
-    cy.findByTestId('wrapper-categoryId').within(() => {
+    cy.findByTestId('wrapper-categorie').within(() => {
       cy.get('select').invoke('val').should('eq', 'all')
     })
     cy.findByTestId('wrapper-creationMode').within(() => {

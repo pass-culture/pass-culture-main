@@ -398,7 +398,10 @@ describe('CollectiveOffers', () => {
       )
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
       renderOffers()
-      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
+
+      const nextIcon = await screen.findByRole('button', {
+        name: /page suivante/,
+      })
 
       await userEvent.click(nextIcon)
 
@@ -414,10 +417,12 @@ describe('CollectiveOffers', () => {
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offers)
 
       renderOffers()
-      const nextIcon = screen.getByRole('button', { name: /page suivante/ })
+      const nextIcon = await screen.findByRole('button', {
+        name: /page suivante/,
+      })
 
       await userEvent.click(nextIcon)
-      const previousIcon = screen.getByRole('button', {
+      const previousIcon = await screen.findByRole('button', {
         name: /page précédente/,
       })
 
@@ -433,20 +438,22 @@ describe('CollectiveOffers', () => {
         collectiveOfferFactory({ stock })
       )
 
-      it('should have max number page of 10', () => {
+      it('should have max number page of 10', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
 
         renderOffers()
 
         expect(
-          screen.getByRole('button', { name: /Page 1 sur 10/ })
+          await screen.findByRole('button', { name: /Page 1 sur 10/ })
         ).toBeInTheDocument()
       })
 
       it('should not display the 101st offer', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
         renderOffers()
-        const nextIcon = screen.getByRole('button', { name: /page suivante/ })
+        const nextIcon = await screen.findByRole('button', {
+          name: /page suivante/,
+        })
 
         for (let i = 1; i < 11; i++) {
           await userEvent.click(nextIcon)
@@ -470,19 +477,22 @@ describe('CollectiveOffers', () => {
       renderOffers(filters)
 
       await userEvent.click(screen.getByText('Rechercher'))
-      expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
-      expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
-        1,
-        null,
-        offererId,
-        null,
-        null,
-        null,
-        null,
-        'Atelier de pratique',
-        null,
-        null
-      )
+
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenCalledTimes(1)
+        expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
+          1,
+          null,
+          offererId,
+          null,
+          null,
+          null,
+          null,
+          'Atelier de pratique',
+          null,
+          null
+        )
+      })
 
       screen.getByText('Aucune offre trouvée pour votre recherche')
 
