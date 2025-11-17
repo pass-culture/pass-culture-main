@@ -51,6 +51,7 @@ class HttpBodyModel(pydantic_v2.BaseModel):
         json_encoders={datetime.datetime: format_into_utc_date},
         allow_inf_nan=False,
         str_strip_whitespace=True,
+        url_preserve_empty_path=True,
     )
 
 
@@ -59,4 +60,5 @@ class HttpQueryParamsModel(pydantic_v2.BaseModel):
         alias_generator=serialization_utils.to_camel,
         allow_inf_nan=False,
         str_strip_whitespace=True,
+        url_preserve_empty_path=True,
     )
