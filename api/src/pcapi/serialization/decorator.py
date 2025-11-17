@@ -6,6 +6,7 @@ from functools import wraps
 import flask
 import pydantic.v1
 import spectree
+from pydantic import RootModel
 from werkzeug.datastructures import MultiDict
 from werkzeug.exceptions import BadRequest
 from werkzeug.exceptions import UnsupportedMediaType
@@ -77,7 +78,7 @@ def spectree_serialize(
     *,
     headers: type[BaseModel] | None = None,
     cookies: type[BaseModel] | None = None,
-    response_model: type[BaseModel] | type[HttpBodyModel] | None = None,
+    response_model: type[BaseModel] | type[HttpBodyModel] | type[RootModel] | None = None,
     tags: typing.Sequence = (),
     before: typing.Callable | None = None,
     after: typing.Callable | None = None,

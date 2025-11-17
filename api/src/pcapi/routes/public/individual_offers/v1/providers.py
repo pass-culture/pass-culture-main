@@ -5,7 +5,7 @@ from pcapi.routes.public import blueprints
 from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
-from pcapi.routes.public.serialization import providers as providers_serialization
+from pcapi.routes.public.individual_offers.v1.serializers import providers as providers_serialization
 from pcapi.routes.public.serialization import venues as venues_serialization
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
@@ -61,7 +61,9 @@ def update_provider(body: providers_serialization.ProviderUpdate) -> providers_s
     Endpoint to set the urls used by our notification system to notify/request your solution.
     """
     provider = current_api_key.provider
-    update_body = body.dict(exclude_unset=True)
+    # we use `mode="json"` to have pydantic dump `str`
+    # and not `HttpUrl` object for url attributes
+    update_body = body.model_dump(exclude_unset=True, mode="json")
 
     provider = providers_api.update_provider_external_urls(
         provider,
@@ -108,7 +110,9 @@ def update_venue_external_urls(
     if not venue_provider or not venue_provider.isActive:
         raise api_errors.ResourceNotFoundError({"global": "This venue cannot be found"})
 
-    update_body = body.dict(exclude_unset=True)
+    # we use `mode="json"` to have pydantic dump `str`
+    # and not `HttpUrl` object for url attributes
+    update_body = body.model_dump(exclude_unset=True, mode="json")
 
     providers_api.update_venue_provider_external_urls(
         venue_provider,

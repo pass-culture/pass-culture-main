@@ -14,5 +14,5 @@ class FeatureResponseModel(HttpBodyModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class ListFeatureResponseModel(RootModel, HttpBodyModel):
+class ListFeatureResponseModel(RootModel):
     root: list[FeatureResponseModel]
