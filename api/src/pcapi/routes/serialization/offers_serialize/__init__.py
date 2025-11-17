@@ -296,7 +296,7 @@ def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffer
         name=venue.name,
         offererName=venue.managingOfferer.name,
         publicName=venue.publicName,
-        departementCode=venue.departementCode,
+        departementCode=venue.offererAddress.address.departmentCode,
     )
 
 
