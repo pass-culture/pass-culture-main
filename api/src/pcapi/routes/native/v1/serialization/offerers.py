@@ -30,7 +30,10 @@ class VenueResponseGetterDict(base.VenueResponseGetterDict):
             return self._obj.venueTypeCode.name
 
         if key == "address":
-            return self._obj.street
+            return self._obj.offererAddress.address.street
+
+        if key in ("street", "latitude", "longitude", "postalCode", "city", "timezone"):
+            return getattr(self._obj.offererAddress.address, key)
 
         if key == "accessibility":
             return VenueAccessibilityModel(
