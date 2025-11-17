@@ -39,28 +39,6 @@ class VenueModelConstraintsTest:
         )
 
 
-class VenueTimezonePropertyTest:
-    def test_europe_paris_is_default_timezone(self):
-        venue = factories.VenueFactory(postalCode="75000")
-
-        assert venue.timezone == "Europe/Paris"
-
-    def test_return_timezone_given_venue_departement_code(self):
-        venue = factories.VenueFactory(postalCode="97300")
-
-        assert venue.timezone == "America/Cayenne"
-
-
-class VenueTimezoneSqlQueryTest:
-    def test_europe_paris_is_default_timezone(self):
-        factories.VenueFactory(postalCode="75000")
-        assert db.session.query(models.Venue).filter_by(timezone="Europe/Paris").count() == 1
-
-    def test_return_timezone_given_venue_departement_code(self):
-        factories.VenueFactory(postalCode="97300")
-        assert db.session.query(models.Venue).filter_by(timezone="America/Cayenne").count() == 1
-
-
 class VenueBannerUrlTest:
     def test_can_set_banner_url_when_none(self, db_session):
         expected_banner_url = "http://example.com/banner_url"

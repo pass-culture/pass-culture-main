@@ -153,14 +153,12 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         if settings.ENFORCE_SIRET_CHECK or not FeatureToggle.DISABLE_SIRET_CHECK.is_active():
             raise
 
-    not_venue_fields = {
+    location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
+    not_venue_fields = location_fields | {
         "isAccessibilityAppliedOnAllOffers",
-        "isManualEdition",
         "contact",
         "openingHours",
-        "inseeCode",
     }
-    location_fields = {"street", "banId", "latitude", "longitude", "postalCode", "city", "inseeCode", "isManualEdition"}
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
 
     accessibility_fields = [
