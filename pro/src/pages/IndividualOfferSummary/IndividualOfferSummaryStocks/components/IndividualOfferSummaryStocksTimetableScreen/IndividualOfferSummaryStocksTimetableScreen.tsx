@@ -9,7 +9,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { OpeningHoursReadOnly } from '@/pages/VenueEdition/OpeningHoursAndAddressReadOnly/OpeningHoursReadOnly'
+import { OpeningHoursReadOnly } from '@/pages/VenueEdition/components/OpeningHoursAndAddressReadOnly/OpeningHoursReadOnly'
 
 type IndividualOfferSummaryStocksTimetableScreenProps = {
   offer: GetIndividualOfferWithAddressResponseModel

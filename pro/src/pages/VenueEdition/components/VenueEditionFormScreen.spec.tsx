@@ -17,7 +17,7 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 
-import { VenueEditionFormScreen } from '../VenueEditionFormScreen'
+import { VenueEditionFormScreen } from './VenueEditionFormScreen'
 
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()

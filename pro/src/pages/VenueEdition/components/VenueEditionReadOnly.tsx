@@ -3,9 +3,9 @@ import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathTo
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { OpeningHoursAndAddressReadOnly } from '@/pages/VenueEdition/OpeningHoursAndAddressReadOnly/OpeningHoursAndAddressReadOnly'
 
 import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
+import { OpeningHoursAndAddressReadOnly } from './OpeningHoursAndAddressReadOnly/OpeningHoursAndAddressReadOnly'
 
 interface VenueEditionReadOnlyProps {
   venue: GetVenueResponseModel
