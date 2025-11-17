@@ -7690,18 +7690,32 @@
             "ProviderResponse": {
                 "properties": {
                     "bookingUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which tickets requests for events you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
-                        "nullable": true,
-                        "title": "Bookingurl",
-                        "type": "string"
+                        "title": "Bookingurl"
                     },
                     "cancelUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which tickets cancellation requests for events you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
-                        "nullable": true,
-                        "title": "Cancelurl",
-                        "type": "string"
+                        "title": "Cancelurl"
                     },
                     "id": {
                         "description": "Provider id",
@@ -7710,11 +7724,18 @@
                         "type": "integer"
                     },
                     "logoUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Provider logo url",
                         "example": "https://ultimate-ticketing-solution.com/logo.png",
-                        "nullable": true,
-                        "title": "Logourl",
-                        "type": "string"
+                        "title": "Logourl"
                     },
                     "name": {
                         "description": "Provider name",
@@ -7723,11 +7744,18 @@
                         "type": "string"
                     },
                     "notificationUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which booking notifications on offers you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
-                        "nullable": true,
-                        "title": "Notificationurl",
-                        "type": "string"
+                        "title": "Notificationurl"
                     }
                 },
                 "required": [
@@ -7740,34 +7768,55 @@
             "ProviderUpdate": {
                 "properties": {
                     "bookingUrl": {
+                        "anyOf": [
+                            {
+                                "format": "uri",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which tickets requests for events you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
-                        "format": "uri",
-                        "maxLength": 2083,
-                        "minLength": 1,
-                        "nullable": true,
-                        "title": "Bookingurl",
-                        "type": "string"
+                        "title": "Bookingurl"
                     },
                     "cancelUrl": {
+                        "anyOf": [
+                            {
+                                "format": "uri",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which tickets cancellation requests for events you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
-                        "format": "uri",
-                        "maxLength": 2083,
-                        "minLength": 1,
-                        "nullable": true,
-                        "title": "Cancelurl",
-                        "type": "string"
+                        "title": "Cancelurl"
                     },
                     "notificationUrl": {
+                        "anyOf": [
+                            {
+                                "format": "uri",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which booking notifications on offers you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
-                        "format": "uri",
-                        "maxLength": 2083,
-                        "minLength": 1,
-                        "nullable": true,
-                        "title": "Notificationurl",
-                        "type": "string"
+                        "title": "Notificationurl"
                     }
                 },
                 "title": "ProviderUpdate",
@@ -9390,34 +9439,55 @@
             "VenueProviderExternalUrlsUpdate": {
                 "properties": {
                     "bookingUrl": {
+                        "anyOf": [
+                            {
+                                "format": "uri",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which tickets requests for events you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-booking-endpoint",
-                        "format": "uri",
-                        "maxLength": 2083,
-                        "minLength": 1,
-                        "nullable": true,
-                        "title": "Bookingurl",
-                        "type": "string"
+                        "title": "Bookingurl"
                     },
                     "cancelUrl": {
+                        "anyOf": [
+                            {
+                                "format": "uri",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which tickets cancellation requests for events you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-cancellation-endpoint",
-                        "format": "uri",
-                        "maxLength": 2083,
-                        "minLength": 1,
-                        "nullable": true,
-                        "title": "Cancelurl",
-                        "type": "string"
+                        "title": "Cancelurl"
                     },
                     "notificationUrl": {
+                        "anyOf": [
+                            {
+                                "format": "uri",
+                                "maxLength": 2083,
+                                "minLength": 1,
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Url on which booking notifications on offers you created are sent",
                         "example": "https://ultimate-ticketing-solution.com/pass-culture-endpoint",
-                        "format": "uri",
-                        "maxLength": 2083,
-                        "minLength": 1,
-                        "nullable": true,
-                        "title": "Notificationurl",
-                        "type": "string"
+                        "title": "Notificationurl"
                     }
                 },
                 "title": "VenueProviderExternalUrlsUpdate",

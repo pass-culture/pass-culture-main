@@ -37,12 +37,12 @@ class PatchVenueProviderExternalUrlsTest(PublicAPIVenueEndpointHelper):
         response = self.make_request(
             plain_api_key,
             {"venue_id": venue_provider.venue.id},
-            json_body={"notificationUrl": "https://notifyMoi.baby"},
+            json_body={"notificationUrl": "https://notifymoi.baby"},
         )
 
         assert response.status_code == 204
 
-        assert venue_provider_external_urls.notificationExternalUrl == "https://notifyMoi.baby"
+        assert venue_provider_external_urls.notificationExternalUrl == "https://notifymoi.baby"
         assert venue_provider_external_urls.bookingExternalUrl == previous_booking_url
         assert venue_provider_external_urls.cancelExternalUrl == previous_cancel_url
 
