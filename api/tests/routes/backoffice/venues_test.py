@@ -992,11 +992,9 @@ class UpdateVenueTest(PostEndpointHelper):
         # Check the venue update action
         update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
         update_snapshot = update_action.extraData["modified_info"]
-        assert update_snapshot["street"]["new_info"] == data["street"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["latitude"]["new_info"] == str(expected_latitude)
-        assert update_snapshot["longitude"]["new_info"] == str(expected_longitude)
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
+        assert update_snapshot["offererAddress.address.street"]["new_info"] == data["street"]
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(expected_longitude)
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.address.id
@@ -1148,19 +1146,19 @@ class UpdateVenueTest(PostEndpointHelper):
         # Patching to manually edited address
         assert actions_history[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert actions_history[0].venueId == venue_id
-        assert actions_history[0].extraData["modified_info"]["street"] == {
+        assert actions_history[0].extraData["modified_info"]["offererAddress.address.street"] == {
             "new_info": "3 Rue de Valois",
             "old_info": "2 Rue de Valois",
         }
-        assert actions_history[0].extraData["modified_info"]["latitude"] == {
+        assert actions_history[0].extraData["modified_info"]["offererAddress.address.latitude"] == {
             "new_info": "48.87171",
             "old_info": "48.87055",
         }
-        assert actions_history[0].extraData["modified_info"]["longitude"] == {
+        assert actions_history[0].extraData["modified_info"]["offererAddress.address.longitude"] == {
             "new_info": "2.30829",
             "old_info": "2.34765",
         }
-        assert actions_history[0].extraData["modified_info"]["postalCode"] == {
+        assert actions_history[0].extraData["modified_info"]["offererAddress.address.postalCode"] == {
             "new_info": "75001",
             "old_info": "75000",
         }
@@ -1227,12 +1225,10 @@ class UpdateVenueTest(PostEndpointHelper):
         update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
         update_snapshot = update_action.extraData["modified_info"]
 
+        assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
+        assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
         assert update_snapshot["offererAddress.address.street"]["new_info"] == data["street"]
-        assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["latitude"]["new_info"] == str(expected_latitude)
-        assert update_snapshot["longitude"]["new_info"] == str(expected_longitude)
-        assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(expected_longitude)
         assert "offererAddress.address.city" not in update_snapshot  # not changed
@@ -1311,7 +1307,6 @@ class UpdateVenueTest(PostEndpointHelper):
         )
         address = offerer_address.address
 
-        assert venue.timezone == "America/Guadeloupe"
         assert offerer_address.id != oa_id
         assert offerer_address.addressId == address.id
         assert address.inseeCode == expected_insee_code
@@ -2059,11 +2054,15 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
 
         assert venue.offererAddress.address.street == data["street"]
-        assert venue.banId == data["ban_id"]
-        assert venue.action_history[0].extraData == {
-            "modified_info": {
-                "banId": {"new_info": "15152_0024_00003", "old_info": "75102_7560_00001"},
-            }
+        assert venue.offererAddress.address.banId == data["ban_id"]
+        assert set(venue.action_history[0].extraData["modified_info"].keys()) == {
+            "offererAddress.address.banId",
+            "offererAddress.addressId",
+            "offererAddress.id",
+        }
+        assert venue.action_history[0].extraData["modified_info"]["offererAddress.address.banId"] == {
+            "new_info": "15152_0024_00003",
+            "old_info": "75102_7560_00001",
         }
 
     def test_update_venue_latitude_longitude_precision(self, authenticated_client):
@@ -2098,15 +2097,11 @@ class UpdateVenueTest(PostEndpointHelper):
         db.session.refresh(venue)
         assert len(venue.action_history) == 1
         update_snapshot = venue.action_history[0].extraData["modified_info"]
-        assert update_snapshot["city"]["new_info"] == "Rome"
-        assert venue.longitude == data["longitude"]
-        assert venue.latitude == data["latitude"]
+        assert update_snapshot["offererAddress.address.city"]["new_info"] == "Rome"
         assert venue.offererAddress.address.longitude == data["longitude"]
         assert venue.offererAddress.address.latitude == data["latitude"]
         assert "offererAddress.address.longitude" not in update_snapshot
         assert "offererAddress.address.latitude" not in update_snapshot
-        assert "longitude" not in update_snapshot
-        assert "latitude" not in update_snapshot
 
     def test_update_venue_accessibility_provider_with_url(self, authenticated_client):
         venue = offerers_factories.VenueFactory(venueTypeCode=offerers_models.VenueTypeCode.LIBRARY)

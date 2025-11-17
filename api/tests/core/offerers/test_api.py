@@ -112,7 +112,7 @@ class UpdateVenueTest:
             "banId": "75101_2259",
         }
 
-        offerers_api.update_venue(venue, modifications_1, modifications_1, author)
+        offerers_api.update_venue(venue, {}, modifications_1, author)
         offerer_address = venue.offererAddress
         assert offerer_address.label is None
         assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
@@ -120,7 +120,7 @@ class UpdateVenueTest:
         address_1 = offerer_address.address
         assert address_1.street == modifications_1["street"]
 
-        offerers_api.update_venue(venue, modifications_2, modifications_2, author)
+        offerers_api.update_venue(venue, {}, modifications_2, author)
         assert venue.offererAddress == offerer_address  # same object updated
         assert offerer_address.id == offerer_address.id
         assert offerer_address.label is None
@@ -130,7 +130,7 @@ class UpdateVenueTest:
         assert address_2.id != address_1.id
         assert address_2.street == modifications_2["street"]
 
-        offerers_api.update_venue(venue, modifications_1, modifications_1, author)
+        offerers_api.update_venue(venue, {}, modifications_1, author)
         assert venue.offererAddress == offerer_address  # same object updated
         assert venue.offererAddress.address == address_1
 
@@ -161,7 +161,7 @@ class UpdateVenueTest:
             "longitude": "2.302859",
             "banId": "75108_1733",
         }
-        offerers_api.update_venue(venue, modifications, {}, author)
+        offerers_api.update_venue(venue, {}, modifications, author)
 
         mock_match_acceslibre_job.assert_not_called()
 
@@ -195,12 +195,6 @@ class CreateVenueTest:
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
-        assert venue.street == "rue du test"
-        assert venue.banId == "75113_1834_00007"
-        assert venue.city == "Paris"
-        assert venue.postalCode == "75002"
-        assert venue.latitude == 1
-        assert venue.longitude == 2
         assert venue.managingOfferer == user_offerer.offerer
         assert venue.name == "La Venue"
         assert venue.publicName == "La Venue"  # empty/non public name copies name
@@ -2696,15 +2690,15 @@ class UpdateOffererTagTest:
 
 class CreateFromOnboardingDataTest:
     def assert_common_venue_attrs(self, venue: offerers_models.Venue) -> None:
-        assert venue.street == "3 RUE DE VALOIS"
-        assert venue.banId == "75101_9575_00003"
+        assert venue.offererAddress.address.street == "3 RUE DE VALOIS"
+        assert venue.offererAddress.address.banId == "75101_9575_00003"
         assert venue.bookingEmail == "pro@example.com"
-        assert venue.city == "Paris"
+        assert venue.offererAddress.address.city == "Paris"
         assert venue.dmsToken
-        assert venue.latitude == decimal.Decimal("2.30829")
-        assert venue.longitude == decimal.Decimal("48.87171")
+        assert venue.offererAddress.address.latitude == decimal.Decimal("2.30829")
+        assert venue.offererAddress.address.longitude == decimal.Decimal("48.87171")
         assert venue.name == "MINISTERE DE LA CULTURE"
-        assert venue.postalCode == "75001"
+        assert venue.offererAddress.address.postalCode == "75001"
         assert venue.publicName == "Nom public de mon lieu"
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
         assert venue.audioDisabilityCompliant is None
@@ -2822,9 +2816,9 @@ class CreateFromOnboardingDataTest:
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
-        assert created_venue.street.lower() == address.street.lower()
-        assert created_venue.city == address.city
-        assert created_venue.postalCode == address.postalCode
+        assert address.street == "3 Rue de Valois"
+        assert address.city == "Paris"
+        assert address.postalCode == "75001"
         assert address.inseeCode.startswith(address.departmentCode)
         assert address.departmentCode == "75"
         assert address.timezone == "Europe/Paris"
@@ -3164,11 +3158,12 @@ class CreateFromOnboardingDataTest:
         # 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 1
         created_venue = created_user_offerer.offerer.managedVenues[0]
-        assert created_venue.street == "n/d"
-        assert created_venue.city == "Paris"
-        assert created_venue.latitude == decimal.Decimal("2.30829")
-        assert created_venue.longitude == decimal.Decimal("48.87171")
-        assert created_venue.postalCode == "75001"
+        address = created_venue.offererAddress.address
+        assert address.street == "n/d"
+        assert address.city == "Paris"
+        assert address.latitude == decimal.Decimal("2.30829")
+        assert address.longitude == decimal.Decimal("48.87171")
+        assert address.postalCode == "75001"
 
     def test_missing_ban_id(self):
         user = users_factories.UserFactory(email="pro@example.com")
@@ -3185,12 +3180,13 @@ class CreateFromOnboardingDataTest:
         # 1 Venue with siret have been created
         assert len(created_user_offerer.offerer.managedVenues) == 1
         created_venue = created_user_offerer.offerer.managedVenues[0]
-        assert created_venue.street == "3 RUE DE VALOIS"
-        assert created_venue.banId is None
-        assert created_venue.city == "Paris"
-        assert created_venue.latitude == decimal.Decimal("2.30829")
-        assert created_venue.longitude == decimal.Decimal("48.87171")
-        assert created_venue.postalCode == "75001"
+        address = created_venue.offererAddress.address
+        assert address.street == "3 RUE DE VALOIS"
+        assert address.banId is None
+        assert address.city == "Paris"
+        assert address.latitude == decimal.Decimal("2.30829")
+        assert address.longitude == decimal.Decimal("48.87171")
+        assert address.postalCode == "75001"
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
     def test_web_presence_url_scanned(self, mock_request_url_scan):
