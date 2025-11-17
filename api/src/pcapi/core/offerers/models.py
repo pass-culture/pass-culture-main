@@ -13,8 +13,6 @@ import sqlalchemy.dialects.postgresql as sa_psql
 import sqlalchemy.orm as sa_orm
 import sqlalchemy.sql.functions as sa_func
 from sqlalchemy.dialects.postgresql.json import JSONB
-from sqlalchemy.event import listens_for
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext import mutable as sa_mutable
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.ext.mutable import MutableDict
@@ -1015,24 +1013,6 @@ class VenueContact(PcObject, Model):
         if field not in type(self).__table__.columns:
             raise ValueError(f"Unknown field {field} for model {type(self)}")
         return getattr(self, field) != value
-
-
-@listens_for(Venue, "before_insert")
-def before_insert(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
-    _fill_departement_code_and_timezone(venue)
-
-
-@listens_for(Venue, "before_update")
-def before_update(mapper: typing.Any, connect: typing.Any, venue: Venue) -> None:
-    _fill_departement_code_and_timezone(venue)
-
-
-def _fill_departement_code_and_timezone(venue: Venue) -> None:
-    if not venue.isVirtual:
-        if not venue.postalCode:
-            raise IntegrityError(None, None, Exception())
-        venue.store_departement_code()
-    venue.store_timezone()
 
 
 class VenuePricingPointLink(Model):

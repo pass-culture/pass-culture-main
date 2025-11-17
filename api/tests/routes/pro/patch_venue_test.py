@@ -31,13 +31,14 @@ venue_malformed_test_data = [
 
 
 def populate_missing_data_from_venue(venue_data: dict, venue: offerers_models.Venue) -> dict:
+    address = venue.offererAddress.address
     return {
-        "street": venue.street,
-        "banId": venue.banId,
+        "street": address.street,
+        "banId": address.banId,
         "bookingEmail": venue.bookingEmail,
-        "city": venue.city,
+        "city": address.city,
         "name": venue.name,
-        "postalCode": venue.postalCode,
+        "postalCode": address.postalCode,
         "publicName": venue.publicName,
         "siret": venue.siret,
         "venueLabelId": venue.venueLabelId,
@@ -114,12 +115,12 @@ class Returns200Test:
         assert new_location.label is None
         assert new_location.type == offerers_models.LocationType.VENUE_LOCATION
         assert new_location.venue == venue
-        assert new_address.street == venue.street == "3 Rue de Valois"
-        assert new_address.city == venue.city == "Paris"
-        assert new_address.postalCode == venue.postalCode == "75001"
-        assert new_address.longitude == venue.longitude == Decimal("2.30829")
-        assert new_address.latitude == venue.latitude == Decimal("48.87171")
-        assert new_address.banId == venue.banId == "75101_9575_00003"
+        assert new_address.street == "3 Rue de Valois"
+        assert new_address.city == "Paris"
+        assert new_address.postalCode == "75001"
+        assert new_address.longitude == Decimal("2.30829")
+        assert new_address.latitude == Decimal("48.87171")
+        assert new_address.banId == "75101_9575_00003"
         assert new_address.inseeCode == "75056"
 
         # the response should contain updated info
@@ -145,9 +146,11 @@ class Returns200Test:
         assert len(venue.action_history) == 2
 
         # one action should be added for updated venue & location info
-        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
-            0
-        ]
+        update_action = [
+            action
+            for action in venue.action_history
+            if action.extraData["modified_info"].get("offererAddress.address.street")
+        ][0]
         assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
         assert update_action.venueId == venue.id
         assert update_action.authorUser.id == user_offerer.user.id
@@ -250,16 +253,7 @@ class Returns200Test:
             inseeCode="12145",
         )
         location = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            street="11 RUE JEAN JAURÈS",
-            city="LAVELANET",
-            postalCode="09300",
-            banId=None,
-            latitude=None,
-            longitude=None,
-            offererAddress=location,
-        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=location)
 
         venue_data = populate_missing_data_from_venue(
             {
@@ -326,12 +320,12 @@ class Returns200Test:
         new_address = new_offerer_address.address
         assert len(offerer_addresses) == 2
         assert venue.offererAddressId == new_offerer_address.id
-        assert new_address.street == venue.street == "3 Rue de Valois"
-        assert new_address.city == venue.city == "Paris"
-        assert new_address.postalCode == venue.postalCode == "75001"
+        assert new_address.street == "3 Rue de Valois"
+        assert new_address.city == "Paris"
+        assert new_address.postalCode == "75001"
         assert new_address.inseeCode.startswith(new_address.departmentCode)
-        assert new_address.longitude == venue.longitude == Decimal("2.30829")
-        assert new_address.latitude == venue.latitude == Decimal("48.87171")
+        assert new_address.longitude == Decimal("2.30829")
+        assert new_address.latitude == Decimal("48.87171")
         assert new_address.isManualEdition
         assert new_offerer_address.addressId == new_address.id
         assert new_offerer_address.label is None
@@ -343,9 +337,11 @@ class Returns200Test:
         assert response.json["address"]["postalCode"] == new_address.postalCode
         assert len(venue.action_history) == 2
 
-        update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("street")][
-            0
-        ]
+        update_action = [
+            action
+            for action in venue.action_history
+            if action.extraData["modified_info"].get("offererAddress.address.street")
+        ][0]
         update_snapshot = update_action.extraData["modified_info"]
         assert update_action.actionType == history_models.ActionType.INFO_MODIFIED
         assert update_action.venueId == venue_id
@@ -378,16 +374,10 @@ class Returns200Test:
     def test_updating_venue_metadata_shouldnt_create_offerer_address_unnecessarily(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
         address = geography_factories.AddressFactory(
-            street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.87055, longitude=2.34765
+            banId=None, street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.87055, longitude=2.34765
         )
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            street=address.street,
-            postalCode=address.postalCode,
-            city=address.city,
-            offererAddress=offerer_address,
-        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=offerer_address)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
@@ -420,12 +410,12 @@ class Returns200Test:
         assert venue.offererAddressId == current_offerer_address.id
         assert venue.offererAddress.addressId == current_address.id
         assert venue.offererAddress.label is None
-        assert venue.offererAddress.address.street == venue.street == "3 Rue de Valois"
-        assert venue.offererAddress.address.city == venue.city == "Paris"
-        assert venue.offererAddress.address.postalCode == venue.postalCode == "75001"
+        assert venue.offererAddress.address.street == "3 Rue de Valois"
+        assert venue.offererAddress.address.city == "Paris"
+        assert venue.offererAddress.address.postalCode == "75001"
         assert venue.offererAddress.address.inseeCode.startswith(current_address.departmentCode)
-        assert venue.offererAddress.address.latitude == venue.latitude == Decimal("48.87171")
-        assert venue.offererAddress.address.longitude == venue.longitude == Decimal("2.30829")
+        assert venue.offererAddress.address.latitude == Decimal("48.87171")
+        assert venue.offererAddress.address.longitude == Decimal("2.30829")
         assert venue.offererAddress.address.isManualEdition
 
         assert response.json["siret"] == venue.siret
@@ -492,13 +482,7 @@ class Returns200Test:
             street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
         )
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            street=address.street,
-            postalCode=address.postalCode,
-            city=address.city,
-            offererAddress=offerer_address,
-        )
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=offerer_address)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_data = populate_missing_data_from_venue(
@@ -526,7 +510,6 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
             name="old name",
-            city="Lens",
             managingOfferer=user_offerer.offerer,
         )
         update_data = {"bookingEmail": "fakeemail@fake.com"}
@@ -735,7 +718,6 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
-            city="old City",
         )
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
@@ -758,7 +740,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
-            city="old City",
+            offererAddress__address__city="old City",
         )
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
@@ -783,7 +765,6 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
-            city="old City",
             bookingEmail="old@email.com",
         )
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
@@ -805,7 +786,7 @@ class Returns200Test:
         venue = offerers_factories.VenueFactory(
             name="old names",
             publicName="old name",
-            city="old City",
+            offererAddress__address__city="old City",
         )
         offerers_factories.UserOffererFactory(user=user, offerer=venue.managingOfferer)
 
@@ -881,8 +862,8 @@ class Returns200Test:
 
         # when
         venue_data = {
-            "departementCode": venue.departementCode,
-            "city": venue.city,
+            "departementCode": venue.offererAddress.address.departmentCode,
+            "city": venue.offererAddress.address.city,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,
             "contact": {
                 "email": venue.contact.email,
@@ -955,8 +936,8 @@ class Returns200Test:
 
         # When
         venue_data = {
-            "departmentCode": venue.departementCode,
-            "city": venue.city,
+            "departmentCode": venue.offererAddress.address.departmentCode,
+            "city": venue.offererAddress.address.city,
             "contact": {"email": None, "phone_number": None, "social_medias": None, "website": None},
         }
         http_client = client.with_session_auth(email=user.email)
@@ -976,8 +957,8 @@ class Returns200Test:
 
         # When
         venue_data = {
-            "departmentCode": venue.departementCode,
-            "city": venue.city,
+            "departmentCode": venue.offererAddress.address.departmentCode,
+            "city": venue.offererAddress.address.city,
             "contact": {
                 "email": "added@venue.com",
                 "phone_number": None,

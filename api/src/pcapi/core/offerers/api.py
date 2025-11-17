@@ -129,23 +129,16 @@ def update_venue(
         modifications["isOpenToPublic"] = False
 
     has_address_changed = (
-        modifications.get("banId", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
-        or modifications.get("postalCode", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
-        or modifications.get("street", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+        location_modifications.get("banId", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+        or location_modifications.get("postalCode", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
+        or location_modifications.get("street", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
     )
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
         assert venue.offererAddress.address is not None  # helps mypy
         is_venue_location_updated = any(
             field in location_modifications
-            for field in (
-                "street",
-                "city",
-                "inseeCode",
-                "postalCode",
-                "latitude",
-                "longitude",
-            )
+            for field in ("banId", "street", "city", "inseeCode", "postalCode", "latitude", "longitude")
         )
 
         if is_venue_location_updated:
@@ -232,17 +225,19 @@ def update_venue(
     else:
         db.session.commit()
 
-    if modifications:
+    if modifications or location_modifications:
+        modifications_keys = set(modifications.keys()) | set(location_modifications.keys())
+
         on_commit(
             functools.partial(
                 search.async_index_venue_ids,
                 [venue.id],
                 reason=IndexationReason.VENUE_UPDATE,
-                log_extra={"changes": set(modifications.keys())},
+                log_extra={"changes": modifications_keys},
             )
         )
 
-        indexing_modifications_fields = set(modifications.keys()) & set(VENUE_ALGOLIA_INDEXED_FIELDS)
+        indexing_modifications_fields = modifications_keys & set(VENUE_ALGOLIA_INDEXED_FIELDS)
         if indexing_modifications_fields:
             on_commit(
                 functools.partial(
@@ -369,19 +364,6 @@ def _update_venue_location(
     db.session.add(venue)
     db.session.flush()
 
-    if modifications.get("street"):
-        modifications["street"] = address.street
-    if modifications.get("city"):
-        modifications["city"] = address.city
-    if modifications.get("postalCode"):
-        modifications["postalCode"] = address.postalCode
-    if modifications.get("inseeCode"):
-        modifications["inseeCode"] = address.inseeCode
-    if modifications.get("latitude"):
-        modifications["latitude"] = address.latitude
-    if modifications.get("longitude"):
-        modifications["longitude"] = address.longitude
-
 
 def update_venue_collective_data(
     venue: models.Venue,
@@ -485,14 +467,6 @@ def create_venue(
         if key == "contact":
             continue
         setattr(venue, key, value)
-    # FIXME (dramelet, 05-12-2024) Until those columns are dropped
-    # we still have to maintain the historic behavior
-    venue.street = data["address"]["street"]
-    venue.city = data["address"]["city"]
-    venue.postalCode = data["address"]["postalCode"]
-    venue.latitude = data["address"]["latitude"]
-    venue.longitude = data["address"]["longitude"]
-    venue.banId = data["address"]["banId"]
 
     if venue_data.contact:
         upsert_venue_contact(venue, venue_data.contact)
