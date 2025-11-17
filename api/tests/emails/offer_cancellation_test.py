@@ -51,9 +51,9 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
         assert "le samedi 20 juillet 2019, 08h00" in html_recap
-        assert venue.street in html_recap
-        assert venue.city in html_recap
-        assert venue.postalCode in html_recap
+        assert venue.offererAddress.address.street in html_recap
+        assert venue.offererAddress.address.city in html_recap
+        assert venue.offererAddress.address.postalCode in html_recap
 
         assert (
             email.subject
@@ -88,9 +88,9 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
         assert "le samedi 20 juillet 2019, 14h00" in html_recap
-        assert venue.street in html_recap
-        assert venue.city in html_recap
-        assert venue.postalCode in html_recap
+        assert venue.offererAddress.address.street in html_recap
+        assert venue.offererAddress.address.city in html_recap
+        assert venue.offererAddress.address.postalCode in html_recap
 
         assert (
             email.subject
@@ -148,9 +148,9 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         assert booking.email in html_action
         assert f"pour {stock.offer.name}" in html_recap
         assert f"proposé par {venue.name}" in html_recap
-        assert venue.street in html_recap
-        assert venue.city in html_recap
-        assert venue.postalCode in html_recap
+        assert venue.offererAddress.address.street in html_recap
+        assert venue.offererAddress.address.city in html_recap
+        assert venue.offererAddress.address.postalCode in html_recap
         assert booking2.firstName in html_recap_table
         assert booking2.email in html_recap_table
         assert booking.token not in html_recap_table

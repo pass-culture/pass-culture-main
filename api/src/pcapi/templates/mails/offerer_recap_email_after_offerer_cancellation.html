@@ -19,7 +19,7 @@
         {% if venue.isVirtual %}
         <br /> Offre numérique proposée par {{ venue.name }}.
         {% else %}
-        <br /> proposé par {{ venue.name }} (Adresse : {{ venue.street }}, {{ venue.postalCode }} {{ venue.city }}).
+        <br /> proposé par {{ venue.name }} (Adresse : {{ venue.offererAddress.address.street }}, {{ venue.offererAddress.address.postalCode }} {{ venue.offererAddress.address.city }}).
         {% endif %}
     </p>
     {% if stock_bookings %}
