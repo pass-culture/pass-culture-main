@@ -1,16 +1,18 @@
-import { useDispatch, useSelector } from 'react-redux'
 import { generatePath, useLocation, useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
-import {
-  GET_VENUE_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setSelectedPartnerPageId } from '@/commons/store/nav/reducer'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  ensureSelectedVenue,
+  ensureVenues,
+} from '@/commons/store/user/selectors'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -24,29 +26,32 @@ import {
 } from '@/ui-kit/NavLinkItems/NavLinkItems'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
+import { VenueEditionFormScreen } from './components/VenueEditionFormScreen'
+import { VenueEditionHeader } from './components/VenueEditionHeader'
 import styles from './VenueEdition.module.scss'
-import { VenueEditionFormScreen } from './VenueEditionFormScreen'
-import { VenueEditionHeader } from './VenueEditionHeader'
 
 export const VenueEdition = (): JSX.Element | null => {
-  const { offererId, venueId } = useParams<{
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
+  const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const { venueId: selectedVenueIdFromQueryParams } = useParams<{
     offererId: string
     venueId: string
   }>()
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedVenueIdFromStore = useAppSelector(ensureSelectedVenue).id
+  const selectedVenueId = withSwitchVenueFeature
+    ? selectedVenueIdFromStore
+    : selectedVenueIdFromQueryParams
+  const venues = useAppSelector(ensureVenues)
 
   const venueQuery = useSWR(
-    [GET_VENUE_QUERY_KEY, venueId],
+    [GET_VENUE_QUERY_KEY, selectedVenueId],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
   const venue = venueQuery.data
-
-  const venuesQuery = useSWR([GET_VENUES_QUERY_KEY, offererId], () =>
-    api.getVenues(true, true, selectedOffererId)
-  )
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
@@ -55,9 +60,7 @@ export const VenueEdition = (): JSX.Element | null => {
       : 'address'
 
   const venuesOptions: SelectOption[] = formatAndOrderVenues(
-    venuesQuery?.data?.venues?.filter(
-      (venue) => venue.hasCreatedOffer && venue.isPermanent
-    ) ?? []
+    venues.filter((venue) => venue.hasCreatedOffer && venue.isPermanent) ?? []
   ).map((venue) => ({
     value: String(venue.value),
     label: venue.label,
@@ -97,48 +100,49 @@ export const VenueEdition = (): JSX.Element | null => {
         <Spinner />
       ) : (
         <div>
-          <FormLayout>
-            {context !== 'address' && venuesOptions.length > 1 && (
-              <>
-                <FormLayout.Row>
-                  <FieldLayout
-                    label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
-                    name="venues"
-                    required={false}
-                    className={styles['select-page-partenaire']}
-                  >
-                    <SelectInput
+          {!withSwitchVenueFeature && (
+            <FormLayout>
+              {context !== 'address' && venuesOptions.length > 1 && (
+                <>
+                  <FormLayout.Row>
+                    <FieldLayout
+                      label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
                       name="venues"
-                      options={venuesOptions}
-                      value={venueId ?? ''}
-                      onChange={(e) => {
-                        const venueId = e.target.value
+                      required={false}
+                      className={styles['select-page-partenaire']}
+                    >
+                      <SelectInput
+                        name="venues"
+                        options={venuesOptions}
+                        value={selectedVenueId?.toString() ?? ''}
+                        onChange={(e) => {
+                          const venueId = e.target.value
 
-                        if (context === 'partnerPage') {
-                          setSavedPartnerPageVenueId(
-                            'partnerPage',
-                            offererId,
+                          if (context === 'partnerPage') {
+                            setSavedPartnerPageVenueId(
+                              'partnerPage',
+                              venue.managingOfferer.id,
+                              venueId
+                            )
+
+                            dispatch(setSelectedPartnerPageId(venueId))
+                          }
+
+                          const path = getVenuePagePathToNavigateTo(
+                            venue.managingOfferer.id,
                             venueId
                           )
-
-                          dispatch(setSelectedPartnerPageId(venueId))
-                        }
-
-                        const path = getVenuePagePathToNavigateTo(
-                          offererId as string,
-                          venueId
-                        )
-                        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-                        navigate(path)
-                      }}
-                    />
-                  </FieldLayout>
-                </FormLayout.Row>
-                <hr className={styles['separator']} />
-              </>
-            )}
-          </FormLayout>
-          <VenueEditionHeader venue={venue} context={context} key={venueId} />
+                          navigate(path)
+                        }}
+                      />
+                    </FieldLayout>
+                  </FormLayout.Row>
+                  <hr className={styles['separator']} />
+                </>
+              )}
+            </FormLayout>
+          )}
+          <VenueEditionHeader venue={venue} context={context} key={venue.id} />
 
           {!venue.isPermanent && (
             <NavLinkItems

@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
 import classnames from 'classnames'
 import { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router'
 
 import {
@@ -10,6 +10,8 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY,
@@ -20,10 +22,6 @@ import {
   openSection,
   selectSelectedPartnerPageId,
 } from '@/commons/store/nav/selector'
-import {
-  selectCurrentOfferer,
-  selectCurrentOffererId,
-} from '@/commons/store/offerer/selectors'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
@@ -63,15 +61,19 @@ const matches = (patterns: RegExp[], path: string) =>
   patterns.some((rx) => rx.test(path))
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
-  const location = useLocation()
   const isNewOfferCreationFlowFFEnabled = useActiveFeature(
     'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
   )
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
-  const dispatch = useDispatch()
-  const navOpenSection = useSelector(openSection)
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const selectedOfferer = useSelector(selectCurrentOfferer)
+  const location = useLocation()
+
+  const dispatch = useAppDispatch()
+  const navOpenSection = useAppSelector(openSection)
+  const selectedOfferer = useAppSelector(
+    (state) => state.offerer.currentOfferer
+  )
+  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
   const sideNavCollapseSize = useMediaQuery(
     SIDE_NAV_MIN_HEIGHT_COLLAPSE_MEDIA_QUERY
   )
@@ -81,7 +83,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     selectedOfferer?.managedVenues?.filter((v) => v.isPermanent) ?? []
   const hasPartnerPageVenues =
     selectedOfferer?.managedVenues?.filter((v) => v.hasPartnerPage) ?? []
-  const venueId = permanentVenues[0]?.id
+  const venueId = withSwitchVenueFeature
+    ? selectedVenue?.id
+    : permanentVenues[0]?.id
 
   // Keep: this makes the “resize → auto-collapse to matching section” work.
   // biome-ignore lint/correctness/useExhaustiveDependencies: We do not want the changes if the state changes
@@ -117,7 +121,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const reduxStoredPartnerPageId = useSelector(selectSelectedPartnerPageId)
   const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
     'partnerPage',
-    selectedOffererId
+    selectedOfferer?.id
   )
   const stillRelevantSavedPartnerPageVenueId = hasPartnerPageVenues
     .find((v) => v.id.toString() === savedPartnerPageVenueId)
@@ -126,7 +130,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const selectedPartnerPageVenueId =
     reduxStoredPartnerPageId ||
     stillRelevantSavedPartnerPageVenueId ||
-    hasPartnerPageVenues[0]?.id
+    hasPartnerPageVenues.at(0)?.id
 
   return (
     <div
@@ -300,10 +304,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   </span>
                 </NavLink>
               </li>
-              {selectedPartnerPageVenueId && (
+              {selectedOfferer && selectedPartnerPageVenueId && (
                 <li>
                   <NavLink
-                    to={`/structures/${selectedOffererId}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
+                    to={`/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
                     end
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
@@ -395,10 +399,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 </NavLink>
               </li>
 
-              {venueId && (
+              {selectedOfferer && venueId && (
                 <li>
                   <NavLink
-                    to={`/structures/${selectedOffererId}/lieux/${venueId}/collectif`}
+                    to={`/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`}
                     end
                     className={({ isActive }) =>
                       classnames(styles['nav-links-item'], {
