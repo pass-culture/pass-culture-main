@@ -3,7 +3,6 @@ import useSWR from 'swr'
 import { api } from '@/apiClient/api'
 import {
   GET_OFFER_OPENING_HOURS_QUERY_KEY,
-  GET_STOCKS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -40,11 +39,6 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
     ([_, offerId]) => api.getOfferOpeningHours(offerId)
   )
 
-  const { isLoading: isStocksLoading, data: stocksData } = useSWR(
-    !offer?.id ? null : [GET_STOCKS_QUERY_KEY, offer.id],
-    ([, offerId]) => api.getStocks(offerId)
-  )
-
   const venueQuery = useSWR(
     offer?.venue.id && shouldFetchOpeningHoursAndVenue
       ? [GET_VENUE_QUERY_KEY, offer.venue.id]
@@ -57,8 +51,6 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
     !offer.priceCategories ||
     isOpeningHoursLoading ||
     isOpeningHoursValidating ||
-    isStocksLoading ||
-    !stocksData ||
     venueQuery.isLoading
   ) {
     return <Spinner />
@@ -71,11 +63,10 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
           offer={offer}
           mode={mode}
           openingHours={openingHoursData?.openingHours}
-          stocks={stocksData.stocks}
           venue={venueQuery.data}
         />
       ) : (
-        <StocksThing offer={offer} stocks={stocksData.stocks} />
+        <StocksThing offer={offer} stocks={[]} />
       )}
     </IndividualOfferLayout>
   )

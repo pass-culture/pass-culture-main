@@ -12,7 +12,6 @@ import {
 const defaultProps: IndividualOfferTimetableScreenProps = {
   mode: OFFER_WIZARD_MODE.CREATION,
   offer: getIndividualOfferFactory(),
-  stocks: [],
   openingHours: null,
 }
 
