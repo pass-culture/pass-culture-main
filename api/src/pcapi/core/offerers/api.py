@@ -79,7 +79,6 @@ from pcapi.utils import crypto
 from pcapi.utils import human_ids
 from pcapi.utils import image_conversion
 from pcapi.utils import regions as utils_regions
-from pcapi.utils import repository
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.repository import transaction
@@ -1062,8 +1061,11 @@ def create_offerer(
             **extra_data,
         )
 
-    # keep commit with repository.save() as long as siren is validated in pcapi.validation.models.offerer
-    repository.save(offerer)
+    db.session.add(offerer)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     if offerer_informations.phoneNumber:
         users_repository.fill_phone_number_on_all_users_offerer_without_any(
@@ -1125,8 +1127,11 @@ def update_offerer(
             history_models.ActionType.INFO_MODIFIED, author=author, offerer=offerer, modified_info=modified_info
         )
 
-    # keep commit with repository.save() as long as postal code is validated in pcapi.validation.models.offerer
-    repository.save(offerer)
+    db.session.add(offerer)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
     _update_external_offerer(offerer)
 
