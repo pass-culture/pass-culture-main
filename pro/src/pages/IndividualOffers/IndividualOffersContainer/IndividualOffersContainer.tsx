@@ -190,7 +190,7 @@ export const IndividualOffersContainer = ({
         noResult={{
           message: 'Aucune offre trouvée pour votre recherche',
           resetMessage: 'Afficher toutes les offres',
-          onFilterReset: () => resetFilters(false),
+          onFilterReset: resetFilters,
         }}
         noData={{
           hasNoData: userHasNoOffers,
