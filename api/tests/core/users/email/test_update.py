@@ -31,23 +31,6 @@ def _initialize_token(user, new_email=None, app=None):
 
 
 class RequestEmailUpdateTest:
-    def test_request_email_update_with_credentials_history(self):
-        old_email = "py@test.com"
-        password = "p@ssword"
-        user = users_factories.UserFactory(email=old_email, password=password)
-        new_email = "pypy@test.com"
-
-        email_update.request_email_update_with_credentials(user, new_email, password)
-
-        reloaded_user = db.session.get(User, user.id)
-        assert len(reloaded_user.email_history) == 1
-
-        history = reloaded_user.email_history[0]
-        assert history.oldEmail == old_email
-        assert history.newEmail == new_email
-        assert history.eventType == EmailHistoryEventTypeEnum.UPDATE_REQUEST
-        assert history.id is not None
-
     def test_request_email_update_history(self):
         user = users_factories.UserFactory()
 

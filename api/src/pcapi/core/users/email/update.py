@@ -17,7 +17,6 @@ from pcapi.core.users.email.send import send_pro_user_emails_for_email_change
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 from pcapi.utils.repository import transaction
 from pcapi.utils.urls import generate_app_link
 
@@ -77,40 +76,6 @@ def send_confirmation_email_for_email_change(user: models.User) -> None:
     )
 
 
-def generate_and_send_beneficiary_confirmation_email_for_email_change(user: models.User, new_email: str) -> None:
-    """Generate a Token
-    Generate a link with the token
-    Send an email with the link"""
-
-    expiration_date = generate_email_change_token_expiration_date()
-
-    encoded_token = token_utils.Token.create(
-        token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
-        constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
-        user.id,
-        {"new_email": new_email},
-    ).encoded_token
-    check_email_address_does_not_exist(new_email)
-
-    link_for_email_change_confirmation = _build_link_for_email_change_action(
-        EmailChangeAction.CONFIRMATION,
-        new_email,
-        expiration_date,
-        token=encoded_token,
-    )
-    link_for_email_change_cancellation = _build_link_for_email_change_action(
-        EmailChangeAction.CANCELLATION,
-        new_email,
-        expiration_date,
-        token=encoded_token,
-    )
-    transactional_mails.send_confirmation_email_change_email(
-        user,
-        link_for_email_change_confirmation,
-        link_for_email_change_cancellation,
-    )
-
-
 def generate_and_send_beneficiary_validation_email_for_email_change(user: models.User, new_email: str) -> None:
     expiration_date = generate_email_change_token_expiration_date()
     encoded_token = token_utils.Token.create(
@@ -143,17 +108,6 @@ def request_email_update(user: models.User) -> None:
 
     increment_email_update_attempts_count(user)
     send_confirmation_email_for_email_change(user)
-
-
-def request_email_update_with_credentials(user: models.User, new_email: str, password: str) -> None:
-    check_no_ongoing_email_update_request(user)
-    check_email_update_attempts_count(user)
-    check_user_password(user, password)
-
-    email_history = models.UserEmailHistory.build_update_request(user=user, new_email=new_email)
-    repository.save(email_history)
-    increment_email_update_attempts_count(user)
-    generate_and_send_beneficiary_confirmation_email_for_email_change(user, new_email)
 
 
 def confirm_email_update_request_and_send_mail(encoded_token: str) -> None:
@@ -282,7 +236,8 @@ def request_email_update_from_pro(user: models.User, email: str, password: str) 
     )
 
     email_history = models.UserEmailHistory.build_update_request(user=user, new_email=email)
-    repository.save(email_history)
+    db.session.add(email_history)
+    db.session.commit()
 
     send_pro_user_emails_for_email_change(user, email, token)
 
