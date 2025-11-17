@@ -33,7 +33,6 @@ from pcapi.models.beneficiary_import_status import ImportStatus
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions
-from pcapi.utils import repository
 
 from . import models
 
@@ -80,7 +79,8 @@ class BaseUserFactory(BaseFactory):
         instance = super()._create(model_class, *args, **kwargs)
         instance.setClearTextPassword(password)
         cls.set_custom_attributes(instance, **kwargs)
-        repository.save(instance)
+        db.session.add(instance)
+        db.session.commit()
         return instance
 
     @classmethod

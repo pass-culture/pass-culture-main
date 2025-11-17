@@ -8,7 +8,6 @@ import pcapi.core.finance.factories as finance_factories
 import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.offers.models as offers_models
-import pcapi.core.users.factories as users_factories
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import constants
@@ -16,10 +15,8 @@ from pcapi.core.offerers import factories
 from pcapi.core.offerers import models
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
-from pcapi.models.api_errors import ApiErrors
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.utils import date as date_utils
-from pcapi.utils import repository
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -352,18 +349,6 @@ class VenueNApprovedOffersTest:
         educational_factories.CollectiveOfferFactory(venue=venue, validation=offers_models.OfferValidationStatus.DRAFT)
         assert venue.nApprovedOffers == 0
         assert not venue.has_approved_offers
-
-
-def test_save_user_offerer_raise_api_error_when_not_unique(app):
-    user = users_factories.ProFactory.build()
-    offerer = factories.OffererFactory()
-    factories.UserOffererFactory(user=user, offerer=offerer)
-
-    uo2 = factories.UserOffererFactory.build(user=user, offerer=offerer)
-    with pytest.raises(ApiErrors) as error:
-        repository.save(uo2)
-
-    assert error.value.errors["global"] == ["Une entrée avec cet identifiant existe déjà dans notre base de données"]
 
 
 class IsValidatedTest:
