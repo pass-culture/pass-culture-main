@@ -565,6 +565,8 @@ class GetBookingsListTest:
             id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
         )
 
+        ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ended_booking.user, offer=ended_booking.stock.offer)
+
         with assert_num_queries(3):  # user + booking + offer
             response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
 
@@ -610,7 +612,7 @@ class GetBookingsListTest:
             },
             "cancellationDate": ended_booking.cancellationDate,
             "cancellationReason": ended_booking.cancellationReason,
-            "userReaction": ended_booking.userReaction,
+            "userReaction": ended_booking.userReaction.value,
             "totalAmount": int(ended_booking.total_amount * 100),
         }
 
