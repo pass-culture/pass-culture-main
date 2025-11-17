@@ -42,9 +42,6 @@ const offersRecap: CollectiveOfferResponseModel[] = [
   collectiveOfferFactory({ stock }),
 ]
 
-vi.mock('@/commons/hooks/useActiveFeature', () => ({
-  useActiveFeature: vi.fn(),
-}))
 vi.mock('@/apiClient/api', () => {
   return {
     api: {
@@ -604,9 +601,11 @@ describe('CollectiveOffers', () => {
           collectiveOfferFactory({ stock })
         )
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers()
-        const nextPageIcon = screen.getByRole('button', {
-          name: 'Page suivante',
+
+        renderOffers()
+
+        const nextPageIcon = await screen.findByRole('button', {
+          name: /page suivante/,
         })
 
         await userEvent.click(nextPageIcon)
@@ -620,7 +619,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should have offer name value when name search value is not an empty string', async () => {
-        await renderOffers()
+        renderOffers()
 
         await userEvent.type(
           screen.getByRole('searchbox', {
@@ -639,7 +638,7 @@ describe('CollectiveOffers', () => {
       })
 
       it('should have offer name value be removed when name search value is an empty string', async () => {
-        await renderOffers()
+        renderOffers()
 
         await userEvent.clear(
           screen.getByRole('searchbox', {
@@ -659,7 +658,7 @@ describe('CollectiveOffers', () => {
       it('should have venue value be removed when user asks for all venues', async () => {
         // Given
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers()
+        renderOffers()
         const firstTypeOption = screen.getByRole('option', {
           name: 'Concert',
         })
@@ -680,7 +679,7 @@ describe('CollectiveOffers', () => {
 
       it('should have the status in the url value when user filters by status', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers()
+        renderOffers()
 
         await userEvent.click(
           screen.getByRole('button', {
@@ -704,7 +703,7 @@ describe('CollectiveOffers', () => {
 
       it('should have the status in the url value when user filters by multiple statuses', async () => {
         vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce(offersRecap)
-        await renderOffers()
+        renderOffers()
 
         await userEvent.click(
           screen.getByRole('button', {
@@ -725,6 +724,28 @@ describe('CollectiveOffers', () => {
           {
             replace: true,
           }
+        )
+      })
+    })
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const features = ['WIP_SWITCH_VENUE']
+
+    it('should call getCollectiveOffers with the expected venueId', async () => {
+      renderOffers({}, features)
+
+      await waitFor(() => {
+        expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
+          null,
+          offererId,
+          null,
+          2,
+          null,
+          null,
+          null,
+          null,
+          null
         )
       })
     })

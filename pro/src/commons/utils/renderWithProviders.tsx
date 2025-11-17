@@ -124,5 +124,6 @@ export const renderWithProviders = (
         </Provider>
       )
     },
+    store,
   }
 }

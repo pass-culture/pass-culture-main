@@ -346,24 +346,92 @@ describe('SideNavLinks', () => {
     })
   })
 
-  it('should show a create offer dropdown button with individual and collective choices if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+  it('should show the ADAGE page link when a permanent venue exists', () => {
+    const permanentVenue = {
+      ...defaultGetOffererVenueResponseModel,
+      isPermanent: true,
+      id: 123,
+    }
+
     renderSideNavLinks({
       storeOverrides: {
         offerer: {
           currentOfferer: {
             ...defaultGetOffererResponseModel,
-            isValidated: true,
+            managedVenues: [permanentVenue],
           },
         },
       },
-      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
     })
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Créer une offre' })
-    )
+    expect(
+      screen.getByRole('link', { name: 'Page dans ADAGE' })
+    ).toBeInTheDocument()
+  })
 
-    expect(screen.getByRole('menuitem', { name: 'Pour le grand public' }))
-    expect(screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' }))
+  describe('with WIP_ENABLE_NEW_OFFER_CREATION_FLOW feature flag', () => {
+    const features = ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW']
+
+    it('should show a create offer dropdown button with individual and collective choices', async () => {
+      renderSideNavLinks({
+        storeOverrides: {
+          offerer: {
+            currentOfferer: {
+              ...defaultGetOffererResponseModel,
+              isValidated: true,
+            },
+          },
+        },
+        features,
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Créer une offre' })
+      )
+
+      expect(screen.getByRole('menuitem', { name: 'Pour le grand public' }))
+      expect(
+        screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' })
+      )
+    })
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const features = ['WIP_SWITCH_VENUE']
+
+    it('should use selected venue id for ADAGE link', () => {
+      const permanentVenue = {
+        ...defaultGetOffererVenueResponseModel,
+        isPermanent: true,
+        id: 123,
+      }
+
+      const selectedVenueId = 999
+
+      renderSideNavLinks({
+        storeOverrides: {
+          offerer: {
+            currentOfferer: {
+              ...defaultGetOffererResponseModel,
+              managedVenues: [permanentVenue],
+            },
+          },
+          user: {
+            selectedVenue: { id: selectedVenueId },
+          },
+          nav: {
+            openSection: { individual: true, collective: true },
+          },
+        },
+        features,
+      })
+
+      const offererId = defaultGetOffererResponseModel.id
+      const link = screen.getByRole('link', { name: 'Page dans ADAGE' })
+      expect(link).toHaveAttribute(
+        'href',
+        `/structures/${offererId}/lieux/${selectedVenueId}/collectif`
+      )
+    })
   })
 })

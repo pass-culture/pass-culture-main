@@ -3,10 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetVenueResponseModel,
-  VenueListItemResponseModel,
-} from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -14,11 +11,11 @@ import {
   makeVenueListItem,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import * as utils from '@/commons/utils/savedPartnerPageVenueId'
 
 import { VenueEdition } from './VenueEdition'
 
@@ -26,6 +23,9 @@ interface VenueEditionTestProps {
   context?: 'adage' | 'partnerPage' | 'address'
   options?: RenderWithProvidersOptions
 }
+
+const FIRST_VENUE = { id: 101, name: 'First Venue' }
+const SECOND_VENUE = { id: 102, name: 'Second Venue' }
 
 const renderVenueEdition = ({
   context = 'address',
@@ -51,7 +51,34 @@ const renderVenueEdition = ({
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: [initialPath],
-      ...options,
+      ...{
+        storeOverrides: {
+          offerer: {
+            currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
+          },
+          user: {
+            selectedVenue: makeGetVenueResponseModel({
+              id: FIRST_VENUE.id,
+              name: FIRST_VENUE.name,
+            }),
+            venues: [
+              makeVenueListItem({
+                id: FIRST_VENUE.id,
+                name: FIRST_VENUE.name,
+                isPermanent: true,
+                hasCreatedOffer: true,
+              }),
+              makeVenueListItem({
+                id: SECOND_VENUE.id,
+                name: SECOND_VENUE.name,
+                isPermanent: true,
+                hasCreatedOffer: true,
+              }),
+            ],
+          },
+        },
+        ...options,
+      },
     }
   )
 }
@@ -63,16 +90,6 @@ vi.mock('react-router', async () => ({
     venueId: defaultGetVenue.id,
   }),
   useNavigate: () => mockUseNavigate,
-}))
-
-const mockDispatch = vi.hoisted(() =>
-  vi.fn<typeof import('react-redux').useDispatch>()
-)
-vi.mock('react-redux', async () => ({
-  ...(await vi.importActual<typeof import('react-redux')>('react-redux')),
-  useDispatch: Object.assign(() => mockDispatch, {
-    withTypes: () => mockDispatch,
-  }),
 }))
 
 const selectCurrentOffererId = vi.hoisted(() => vi.fn())
@@ -91,25 +108,6 @@ const baseVenue: GetVenueResponseModel = {
 const notValidatedVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
   isPermanent: false,
-}
-
-const FIRST_VENUE = { id: 1, name: 'First Venue' }
-const SECOND_VENUE = { id: 2, name: 'Second Venue' }
-const mockDataVenues: { venues: VenueListItemResponseModel[] } = {
-  venues: [
-    makeVenueListItem({
-      id: FIRST_VENUE.id,
-      name: FIRST_VENUE.name,
-      isPermanent: true,
-      hasCreatedOffer: true,
-    }),
-    makeVenueListItem({
-      id: SECOND_VENUE.id,
-      name: SECOND_VENUE.name,
-      isPermanent: true,
-      hasCreatedOffer: true,
-    }),
-  ],
 }
 
 describe('VenueEdition', () => {
@@ -172,7 +170,6 @@ describe('VenueEdition', () => {
 
   describe('about venue / partner page selection', () => {
     it('should let choose an other partner page', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue(mockDataVenues)
       renderVenueEdition({ context: 'partnerPage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
@@ -191,13 +188,7 @@ describe('VenueEdition', () => {
     })
 
     it('should save the venue id in local storage on selection', async () => {
-      const setSavedPartnerPageVenueId = vi.fn()
-      vi.spyOn(utils, 'setSavedPartnerPageVenueId').mockImplementation(() => ({
-        setSavedPartnerPageVenueId,
-      }))
-      vi.spyOn(api, 'getVenues').mockResolvedValue(mockDataVenues)
-
-      renderVenueEdition({ context: 'partnerPage' })
+      const { store } = renderVenueEdition({ context: 'partnerPage' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -207,34 +198,37 @@ describe('VenueEdition', () => {
         selectedVenueId
       )
 
-      expect(utils.setSavedPartnerPageVenueId).toHaveBeenCalled()
-      vi.spyOn(utils, 'setSavedPartnerPageVenueId').mockReset()
-
-      // We also expect dispatch to be called to update
-      // side nav partner page link.
-      expect(mockDispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          payload: selectedVenueId,
-        })
-      )
+      expect(store.getState().nav.selectedPartnerPageId).toBe(selectedVenueId)
     })
 
     it('should not let choose an other partner page when there is only one partner page', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
-        venues: [
-          makeVenueListItem({
-            id: FIRST_VENUE.id,
-            publicName: FIRST_VENUE.name,
-          }),
-          makeVenueListItem({
-            id: SECOND_VENUE.id,
-            publicName: SECOND_VENUE.name,
-            isPermanent: false,
-            hasCreatedOffer: false,
-          }),
-        ],
-      })
-      renderVenueEdition({ context: 'partnerPage' })
+      const options: RenderWithProvidersOptions = {
+        storeOverrides: {
+          offerer: {
+            currentOfferer: { ...defaultGetOffererResponseModel, id: 100 },
+          },
+          user: {
+            selectedVenue: makeGetVenueResponseModel({
+              id: FIRST_VENUE.id,
+              name: FIRST_VENUE.name,
+            }),
+            venues: [
+              makeVenueListItem({
+                id: FIRST_VENUE.id,
+                publicName: FIRST_VENUE.name,
+              }),
+              makeVenueListItem({
+                id: SECOND_VENUE.id,
+                publicName: SECOND_VENUE.name,
+                isPermanent: false,
+                hasCreatedOffer: false,
+              }),
+            ],
+          },
+        },
+      }
+
+      renderVenueEdition({ context: 'partnerPage', options })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
 
@@ -244,7 +238,6 @@ describe('VenueEdition', () => {
     })
 
     it('should not let choose an other partner page when on adress page', async () => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue(mockDataVenues)
       renderVenueEdition({ context: 'address' })
 
       await waitForElementToBeRemoved(screen.getByTestId('spinner'))
