@@ -1428,13 +1428,13 @@ class GetTokenExpirationTest:
         a ms precision here.
         """
         user = users_factories.UserFactory(email=self.email)
-        expiration_date = date_utils.get_naive_utc_now() + users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME
-        token_utils.Token.create(
+        token = token_utils.Token.create(
             type_=token_utils.TokenType.EMAIL_CHANGE_CONFIRMATION,
             ttl=users_constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
             user_id=user.id,
             data={"new_email": "newemail@email.com"},
         )
+        expiration_date = token.get_expiration_date_from_token()
 
         client = client.with_token(user.email)
         expected_num_queries = 1  # user_email
