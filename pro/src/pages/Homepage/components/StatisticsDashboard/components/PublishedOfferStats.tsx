@@ -1,7 +1,7 @@
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type { GetOffererResponseModel } from '@/apiClient/v1'
+import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_V2_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -17,11 +17,6 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
 import styles from './OfferStats.module.scss'
-
-export interface PublishedOfferStatsProps {
-  offerer: GetOffererResponseModel
-  className?: string
-}
 
 interface StatBlockProps {
   icon: string
@@ -58,14 +53,18 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
   </div>
 )
 
+export interface PublishedOfferStatsProps {
+  className?: string
+  venue: GetVenueResponseModel
+}
 export const PublishedOfferStats = ({
-  offerer,
   className,
-}: PublishedOfferStatsProps) => {
+  venue,
+}: Readonly<PublishedOfferStatsProps>) => {
   const { logEvent } = useAnalytics()
 
   const { isLoading, data: stats } = useSWR(
-    offerer.id ? [GET_OFFERER_V2_STATS_QUERY_KEY, offerer.id] : null,
+    [GET_OFFERER_V2_STATS_QUERY_KEY, venue.managingOfferer.id],
     ([, offererId]) => api.getOffererV2Stats(offererId)
   )
 
@@ -87,7 +86,7 @@ export const PublishedOfferStats = ({
               icon={strokePhoneIcon}
               count={stats.publishedPublicOffers}
               label="à destination du grand public"
-              link={`/offres?structure=${offerer.id}&status=active`}
+              link={`/offres?structure=${venue.managingOfferer.id}&status=active`}
               linkLabel="Voir les offres individuelles publiées"
             />
 
@@ -95,7 +94,7 @@ export const PublishedOfferStats = ({
               icon={strokeTeacherIcon}
               count={stats.publishedEducationalOffers}
               label="à destination de groupes scolaires"
-              link={`/offres/collectives?structure=${offerer.id}&status=active`}
+              link={`/offres/collectives?structure=${venue.managingOfferer.id}&status=active`}
               linkLabel="Voir les offres collectives publiées"
             />
           </>
@@ -134,7 +133,7 @@ export const PublishedOfferStats = ({
                 icon={strokePhoneIcon}
                 count={stats.pendingPublicOffers}
                 label="à destination du grand public"
-                link={`/offres?structure=${offerer.id}&status=en-attente`}
+                link={`/offres?structure=${venue.managingOfferer.id}&status=en-attente`}
                 linkLabel={`Voir les offres individuelles ${pendingOfferWording}`}
               />
 
@@ -142,7 +141,7 @@ export const PublishedOfferStats = ({
                 icon={strokeTeacherIcon}
                 count={stats.pendingEducationalOffers}
                 label="à destination de groupes scolaires"
-                link={`/offres/collectives?structure=${offerer.id}&status=en-attente`}
+                link={`/offres/collectives?structure=${venue.managingOfferer.id}&status=en-attente`}
                 linkLabel={`Voir les offres collectives ${pendingOfferWording}`}
               />
             </div>

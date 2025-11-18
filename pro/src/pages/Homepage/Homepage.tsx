@@ -1,10 +1,9 @@
 import { useMemo, useRef } from 'react'
-import { useSelector } from 'react-redux'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
 import { AddBankAccountCallout } from '@/pages/Homepage/components/AddBankAccountCallout/AddBankAccountCallout'
@@ -41,7 +40,10 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOfferer = useSelector(selectCurrentOfferer)
+  const selectedOfferer = useAppSelector(
+    (state) => state.offerer.currentOfferer
+  )
+  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -74,7 +76,7 @@ export const Homepage = (): JSX.Element => {
             </>
           )}
 
-          {selectedOfferer?.isValidated && selectedOfferer.isActive && (
+          {selectedVenue?.isValidated && selectedVenue.isActive && (
             <section className={styles.section}>
               <div className={styles['header']}>
                 <h2 className={styles['title']}>
@@ -82,11 +84,11 @@ export const Homepage = (): JSX.Element => {
                 </h2>
               </div>
               <div className={styles['container-stats-highlight']}>
-                <StatisticsDashboard offerer={selectedOfferer} />
+                <StatisticsDashboard venue={selectedVenue} />
                 {areHighlightsEnable && <HighlightHome />}
               </div>
               <PublishedOfferStats
-                offerer={selectedOfferer}
+                venue={selectedVenue}
                 className={styles['offer-stats']}
               />
             </section>

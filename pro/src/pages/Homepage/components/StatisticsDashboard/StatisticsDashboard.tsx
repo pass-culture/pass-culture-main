@@ -3,8 +3,8 @@ import { useEffect, useState } from 'react'
 
 import { api } from '@/apiClient/api'
 import type {
-  GetOffererResponseModel,
   GetOffererStatsResponseModel,
+  GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm, formatDate } from '@/commons/utils/date'
 import { Card as HomeCard } from '@/components/Card/Card'
@@ -16,24 +16,24 @@ import { MostViewedOffers } from './components/MostViewedOffers'
 import styles from './StatisticsDashboard.module.scss'
 
 interface StatisticsDashboardProps {
-  offerer: GetOffererResponseModel
+  venue: GetVenueResponseModel
 }
 
-export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
+export const StatisticsDashboard = ({ venue }: StatisticsDashboardProps) => {
   const [stats, setStats] = useState<GetOffererStatsResponseModel | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const loadStats = async () => {
       setIsLoading(true)
-      const response = await api.getOffererStats(offerer.id)
+      const response = await api.getOffererStats(venue.managingOfferer.id)
       setStats(response)
       setIsLoading(false)
     }
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     loadStats()
-  }, [offerer.id])
+  }, [venue.managingOfferer.id])
 
   return (
     <>
@@ -70,7 +70,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
                 width="42"
               />
 
-              {offerer.hasActiveOffer
+              {venue.hasActiveOffer
                 ? 'Les statistiques de consultation de vos offres seront bientôt disponibles.'
                 : 'Créez vos premières offres grand public pour être visible par les bénéficiaires'}
             </div>
