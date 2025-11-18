@@ -43,7 +43,7 @@ def expected_serialized_prebooking(booking: models.CollectiveBooking) -> dict:
         "yearId": int(booking.educationalYearId),
         "status": booking.status.value,
         "cancellationReason": booking.cancellationReason.value if booking.cancellationReason else None,
-        "venueTimezone": venue.timezone,
+        "venueTimezone": venue.offererAddress.address.timezone,
         "totalAmount": float(stock.price),
         "url": offer_app_link(offer),
         "withdrawalDetails": None,

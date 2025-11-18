@@ -614,7 +614,6 @@ def check_booking_limit_datetime(
         else:
             offer = stock.offer
 
-        reference_tz = offer.venue.timezone
         if offer.offererAddress and not isinstance(stock, educational_models.CollectiveStock):
             reference_tz = offer.offererAddress.address.timezone
         else:
