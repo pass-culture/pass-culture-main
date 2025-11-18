@@ -170,10 +170,10 @@ class Returns200Test:
         user = users_factories.UserFactory(email="pro@example.com")
 
         client = client.with_session_auth(user.email)
-        data = {**REQUEST_BODY}
-        data["address"]["isManualEdition"] = True
-        data["address"].pop("inseeCode")
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        request_body = copy.deepcopy(REQUEST_BODY)
+        request_body["address"]["isManualEdition"] = True
+        request_body["address"].pop("inseeCode")
+        response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 201
         created_offerer = db.session.query(offerers_models.Offerer).one()
@@ -207,8 +207,8 @@ class Returns200Test:
 
         address = db.session.query(geography_models.Address).one()
         assert created_venue.offererAddress.addressId == address.id
-        assert address.street == REQUEST_BODY["address"]["street"]
-        assert address.city == REQUEST_BODY["address"]["city"]
+        assert address.street == request_body["address"]["street"]
+        assert address.city == request_body["address"]["city"]
         assert address.isManualEdition is True
         assert address.inseeCode == "75056"
         assert address.banId is None
@@ -307,7 +307,8 @@ class Returns400Test:
     @pytest.mark.settings(ENTREPRISE_BACKEND="pcapi.connectors.entreprise.backends.api_entreprise.EntrepriseBackend")
     def test_inactive_siret(self, requests_mock, client):
         siret = "77789988100026"
-        REQUEST_BODY["siret"] = siret
+        request_body = copy.deepcopy(REQUEST_BODY)
+        request_body["siret"] = siret
 
         requests_mock.get(
             f"https://entreprise.api.gouv.fr/v3/insee/sirene/etablissements/diffusibles/{siret}",
@@ -316,7 +317,7 @@ class Returns400Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        response = client.post("/offerers/new", json=REQUEST_BODY)
+        response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 400
         assert response.json == {"siret": "SIRET is no longer active"}
@@ -328,9 +329,9 @@ class Returns400Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        body = {**REQUEST_BODY}
-        body.pop("activity")
-        response = client.post("/offerers/new", json=body)
+        request_body = copy.deepcopy(REQUEST_BODY)
+        request_body.pop("activity")
+        response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 400
         assert response.json == {"__root__": ["Either activity or venueTypeCode are required"]}
@@ -339,10 +340,10 @@ class Returns400Test:
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
-        body = {**REQUEST_BODY}
-        body["venueTypeCode"] = None
-        body["activity"] = None
-        response = client.post("/offerers/new", json=body)
+        request_body = copy.deepcopy(REQUEST_BODY)
+        request_body["venueTypeCode"] = None
+        request_body["activity"] = None
+        response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 400
         assert response.json == {"__root__": ["Either activity or venueTypeCode are required"]}
