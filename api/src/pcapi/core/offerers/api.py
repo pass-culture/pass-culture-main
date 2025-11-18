@@ -2268,7 +2268,7 @@ def create_from_onboarding_data(
         if onboarding_data.publicName:
             name = onboarding_data.publicName
         else:
-            raise ValueError("missing mandatory value for public name")
+            raise exceptions.publicNameRequiredException("missing mandatory value for public name")
     else:
         name = siret_info.name
 
