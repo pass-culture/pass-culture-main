@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
 
@@ -227,6 +227,14 @@ describe('CollectiveOffers', () => {
         renderOffers()
 
         const localisationSelect = await screen.findByLabelText('Localisation')
+
+        await waitFor(() => {
+          expect(
+            within(screen.getByLabelText('Localisation')).getAllByRole('option')
+              .length
+          ).toBe(5) // all + school + to be defined + 2 addresses
+        })
+
         await userEvent.selectOptions(
           localisationSelect,
           offererAddress[0].id.toString()
@@ -242,7 +250,7 @@ describe('CollectiveOffers', () => {
             null,
             null,
             CollectiveLocationType.ADDRESS,
-            1
+            offererAddress[0].id
           )
         })
       })
