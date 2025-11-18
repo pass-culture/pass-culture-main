@@ -4050,6 +4050,9 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
+[package.dependencies]
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
+
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6438,14 +6441,14 @@ types-cffi = "*"
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.9.0.20251108"
+version = "2.9.0.20251115"
 description = "Typing stubs for python-dateutil"
 optional = false
 python-versions = ">=3.9"
 groups = ["dev"]
 files = [
-    {file = "types_python_dateutil-2.9.0.20251108-py3-none-any.whl", hash = "sha256:a4a537f0ea7126f8ccc2763eec9aa31ac8609e3c8e530eb2ddc5ee234b3cd764"},
-    {file = "types_python_dateutil-2.9.0.20251108.tar.gz", hash = "sha256:d8a6687e197f2fa71779ce36176c666841f811368710ab8d274b876424ebfcaa"},
+    {file = "types_python_dateutil-2.9.0.20251115-py3-none-any.whl", hash = "sha256:9cf9c1c582019753b8639a081deefd7e044b9fa36bd8217f565c6c4e36ee0624"},
+    {file = "types_python_dateutil-2.9.0.20251115.tar.gz", hash = "sha256:8a47f2c3920f52a994056b8786309b43143faa5a64d4cbb2722d6addabdf1a58"},
 ]
 
 [[package]]
@@ -6565,7 +6568,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\""}
+markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
 name = "tzlocal"
@@ -7291,4 +7294,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "98f33924e708572a5954b9f76d6f4847ab7dd7e65e93eef147f27443c6b989e4"
+content-hash = "86d71b4aa5ee523add0a057a7ff8e3ffa47ee4b147908212cfc186c94053ad74"
