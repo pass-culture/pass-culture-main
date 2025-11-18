@@ -70,7 +70,7 @@ runs:
         use_dns_based_endpoint: true
 
     - name: "Play pre-migrations"
-      uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.3.0
+      uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.3.1
       with:
         environment: "pcapi-${{ inputs.environment }}"
         app_version: ${{ inputs.app_version }}
@@ -108,7 +108,7 @@ runs:
         use_dns_based_endpoint: true
 
     - name: "Play post-migrations"
-      uses: pass-culture/common-workflows/actions/pcapi-migration@BSR-fix-post-migration-new-infra
+      uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.3.1
       with:
         environment: "pcapi-${{ inputs.environment }}"
         app_version: ${{ inputs.app_version }}
