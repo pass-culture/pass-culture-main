@@ -1,4 +1,5 @@
 import pcapi.celery_tasks.sendinblue  # noqa: F401
+import pcapi.core.educational.tasks  # noqa: F401
 import pcapi.core.offers.tasks  # noqa: F401
 import pcapi.core.subscription.ubble.tasks  # noqa: F401
 from pcapi import settings
