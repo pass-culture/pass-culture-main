@@ -3,6 +3,8 @@ import cn from 'classnames'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { ShareTemplateOfferLink } from '@/components/CollectiveOffer/ShareTemplateOfferLink/ShareTemplateOfferLink'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -17,18 +19,33 @@ import {
 } from '../CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import styles from './CollectiveOfferConfirmation.module.scss'
 
-const activeOffer = (institutionDisplayName?: string) => ({
+function getInstitutionDisplayName(
+  offer: MandatoryCollectiveOfferFromParamsProps['offer']
+) {
+  if (isCollectiveOfferTemplate(offer)) {
+    return ''
+  }
+
+  if (!offer.institution) {
+    return ''
+  }
+  return `${offer.institution.institutionType ?? ''} ${offer.institution.name}`.trim()
+}
+
+const activeOffer = (
+  offer: MandatoryCollectiveOfferFromParamsProps['offer']
+) => ({
   title: 'Votre offre a été publiée sur ADAGE',
   description: (
     <>
       Votre offre est désormais visible et réservable par les enseignants et
       chefs d’établissements{' '}
-      {institutionDisplayName ? (
+      {getInstitutionDisplayName(offer) ? (
         <>
           de l’établissement scolaire :
-          <br />
-          <br />
-          <b>{institutionDisplayName}</b>
+          <span className={styles['institution-name']}>
+            {getInstitutionDisplayName(offer)}
+          </span>
         </>
       ) : (
         'des établissement scolaires qui sont dans la ou les zones de mobilité sélectionnées.'
@@ -51,13 +68,16 @@ const pendingOffer = {
   title: 'Offre en cours de validation !',
   description: (
     <>
-      Nous vérifions actuellement la conformité de votre offre.
-      <br />
-      <b>Cette vérification pourra prendre jusqu’à 72h.</b>
-      <br />
-      <b>Vous ne pouvez pas effectuer de modification pour l’instant.</b>
-      <br />
-      Vous recevrez un e-mail de confirmation une fois votre offre validée.
+      <p>Nous vérifions actuellement la conformité de votre offre.</p>
+      <p className={styles['text-bold']}>
+        Cette vérification pourra prendre jusqu’à 72h.
+      </p>
+      <p className={styles['text-bold']}>
+        Vous ne pouvez pas effectuer de modification pour l’instant.
+      </p>
+      <p>
+        Vous recevrez un e-mail de confirmation une fois votre offre validée.
+      </p>
     </>
   ),
   icon: (
@@ -69,7 +89,7 @@ const pendingOffer = {
   ),
 }
 
-const showcaseOffer = {
+const showcaseOffer = () => ({
   title: 'Votre offre a été publiée sur ADAGE',
   description: (
     <>
@@ -88,60 +108,69 @@ const showcaseOffer = {
       )}
     />
   ),
-}
+})
 
-const getInstitutionDisplayName = (
+const showcaseOfferWithShareLink = (
   offer: MandatoryCollectiveOfferFromParamsProps['offer']
-) => {
-  if (isCollectiveOfferTemplate(offer)) {
-    return ''
-  }
-
-  if (!offer.institution) {
-    return ''
-  }
-
-  return `${offer.institution.institutionType ?? ''} ${
-    offer.institution.name
-  }`.trim()
-}
-
-const mapOfferStatusToData = (
-  displayedStatus?: CollectiveOfferDisplayedStatus,
-  isShowcase?: boolean,
-  institutionName?: string
-) => {
-  if (displayedStatus === CollectiveOfferDisplayedStatus.UNDER_REVIEW) {
-    return pendingOffer
-  }
-
-  if (isShowcase) {
-    return showcaseOffer
-  }
-
-  return activeOffer(institutionName)
-}
+) => ({
+  title: 'Créer une offre',
+  description: (
+    <>
+      <div className={styles['confirmation-title']}>
+        Votre offre a été publiée sur ADAGE
+      </div>
+      <div className={styles['confirmation-description']}>
+        <span className={styles['confirmation-description-instruction']}>
+          Aidez les enseignants à retrouver votre offre plus facilement sur
+          ADAGE
+        </span>
+        <ShareTemplateOfferLink offerId={offer.id} />
+      </div>
+    </>
+  ),
+  icon: (
+    <SvgIcon
+      src={fullValidateIcon}
+      alt=""
+      className={cn(
+        styles['confirmation-icon'],
+        styles['confirmation-icon-validate']
+      )}
+    />
+  ),
+})
 
 const CollectiveOfferConfirmation = ({
   offer,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
+  const isCollectiveOfferTemplateShareLinkEnabled = useActiveFeature(
+    'WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'
+  )
+
   const isShowcase = offer.isTemplate
   const offerStatus = offer.displayedStatus
   const offererId = offer.venue.managingOfferer.id
-  const institutionDisplayName = getInstitutionDisplayName(offer)
 
-  const { title, description, icon } = mapOfferStatusToData(
-    offerStatus,
-    isShowcase,
-    institutionDisplayName
-  )
+  const confirmationData =
+    offerStatus === CollectiveOfferDisplayedStatus.UNDER_REVIEW
+      ? pendingOffer
+      : isShowcase
+        ? isCollectiveOfferTemplateShareLinkEnabled
+          ? showcaseOfferWithShareLink(offer)
+          : showcaseOffer()
+        : activeOffer(offer)
 
   return (
-    <BasicLayout mainHeading={title}>
+    <BasicLayout
+      mainHeading={confirmationData.title}
+      mainSubHeading={
+        isCollectiveOfferTemplateShareLinkEnabled ? offer.name : undefined
+      }
+    >
       <div className={styles['confirmation-wrapper']}>
         <div className={styles['confirmation']}>
-          {icon}
-          <div>{description}</div>
+          {confirmationData.icon}
+          <div>{confirmationData.description}</div>
           <div className={styles['confirmation-actions']}>
             <ButtonLink
               variant={ButtonVariant.SECONDARY}
@@ -160,38 +189,50 @@ const CollectiveOfferConfirmation = ({
           </div>
         </div>
 
-        <Callout
-          className={styles['confirmation-banner']}
-          title="Quelle est la prochaine étape ?"
-          links={[
-            {
-              href: `https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-mon-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement`,
-              label:
-                'Quel est le cycle de vie d’une offre collective, de sa création à son remboursement',
-              isExternal: true,
-            },
-          ]}
-        >
-          {isShowcase ? (
-            <>
-              Les enseignants intéressés par votre offre vitrine vous
-              contacterons par mail ou téléphone. <br />
-              Après un accord mutuel, vous pourrez créer une offre réservable en
-              complétant la date, le prix et l’établissement convenus avec
-              l’enseignant. <br />
-              Cette nouvelle offre apparaitra sur ADAGE et pourra être
-              préréservée par l’enseignant.
-            </>
-          ) : (
-            <>
-              L’enseignant doit préréserver votre offre depuis son compte ADAGE.
-              <br />
-              Une fois la préréservation faite, vous verrez une réservation
-              portant le statut préréservé qui, dans un second temps, devra être
-              officiellement réservée par le chef d’établissement.
-            </>
-          )}
-        </Callout>
+        {!isCollectiveOfferTemplateShareLinkEnabled && (
+          <Callout
+            className={styles['confirmation-banner']}
+            title="Quelle est la prochaine étape ?"
+            links={[
+              {
+                href: `https://aide.passculture.app/hc/fr/articles/4416082284945--Acteurs-Culturels-Quel-est-le-cycle-de-vie-de-mon-offre-collective-de-sa-cr%C3%A9ation-%C3%A0-son-remboursement`,
+                label:
+                  'Quel est le cycle de vie d’une offre collective, de sa création à son remboursement',
+                isExternal: true,
+              },
+            ]}
+          >
+            {isShowcase ? (
+              <>
+                <p>
+                  Les enseignants intéressés par votre offre vitrine vous
+                  contacterons par mail ou téléphone.
+                </p>
+                <p>
+                  Après un accord mutuel, vous pourrez créer une offre
+                  réservable en complétant la date, le prix et l’établissement
+                  convenus avec l’enseignant.{' '}
+                </p>
+                <p>
+                  Cette nouvelle offre apparaitra sur ADAGE et pourra être
+                  préréservée par l’enseignant.
+                </p>
+              </>
+            ) : (
+              <>
+                <p>
+                  L’enseignant doit préréserver votre offre depuis son compte
+                  ADAGE.
+                </p>
+                <p>
+                  Une fois la préréservation faite, vous verrez une réservation
+                  portant le statut préréservé qui, dans un second temps, devra
+                  être officiellement réservée par le chef d’établissement.
+                </p>
+              </>
+            )}
+          </Callout>
+        )}
       </div>
       <RouteLeavingGuardCollectiveOfferCreation when={false} />
     </BasicLayout>
