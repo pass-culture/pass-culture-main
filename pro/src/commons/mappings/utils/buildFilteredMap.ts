@@ -1,31 +1,23 @@
 export function buildFilteredMap(
-  _enum: Record<string, string>,
-  _mappings: Record<string, string>
+  enumObject: Record<string, string>,
+  mappingsObject: Record<string, string>
 ) {
   // Checks if keys between backend model and frontend mappings are exactly the same (it will throw if not)
-  checkMappings(_enum, _mappings)
+  ensureMappingsMatch(enumObject, mappingsObject)
 
-  // Sort mappings by alphabetical order, except "OTHER" (if present) which should always be at the end
-  const compareFn = new Intl.Collator('fr-FR').compare
-  const sorted = Object.entries(_mappings).toSorted((a, b) =>
-    compareFn(a[1], b[1])
-  )
-
-  // Eventually move "OTHER" (if present) to the end
-  const otherIndex = sorted.findIndex(([key]) => key === 'OTHER')
-  const other = sorted[otherIndex]
-  const sortedWithOther =
-    otherIndex > -1 ? sorted.toSpliced(otherIndex, 1).concat([other]) : sorted
-
-  // Transform into select options list
-  return Object.fromEntries(sortedWithOther)
+  return Box(mappingsObject)
+    .map(Object.entries)
+    .map(sortEntriesByValue('fr-FR'))
+    .map(putKeyAtTheEnd('OTHER'))
+    .map(Object.fromEntries)
+    .identity()
 }
 
 /**
  * Internal utils functions
  */
 
-function checkMappings(
+function ensureMappingsMatch(
   backEndKeysObject: Record<string, string>,
   frontEndKeysObject: Record<string, string>
 ): void {
@@ -47,5 +39,29 @@ function checkMappings(
           ? `- Following keys are present in the mappings list, but not in the OnboardingActivity model:\n\t${Array.from(frontEndExtraKeys.keys()).join(',')}\n`
           : '')
     )
+  }
+}
+
+type Entries = [string, string][]
+
+function Box<T>(val: T) {
+  return {
+    map: <U>(fn: (val: T) => U) => Box<U>(fn(val)),
+    identity: () => val,
+  }
+}
+
+function sortEntriesByValue(locale: string): (val: Entries) => Entries {
+  const compareFn = new Intl.Collator(locale).compare
+  return (val: Entries): Entries => {
+    return val.toSorted((a, b) => compareFn(a[1], b[1]))
+  }
+}
+
+function putKeyAtTheEnd(key: string): (val: Entries) => Entries {
+  return (val: Entries): Entries => {
+    const otherIndex = val.findIndex(([k]) => k === key)
+    const other = val[otherIndex]
+    return otherIndex > -1 ? val.toSpliced(otherIndex, 1).concat([other]) : val
   }
 }

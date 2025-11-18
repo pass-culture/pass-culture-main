@@ -5,5 +5,7 @@ import { _OnboardingActivityMappings } from '@/commons/mappings/OnboardingActivi
 
 import { buildFilteredMap } from './utils/buildFilteredMap'
 
-export const OnboardingActivityMap = (() =>
-  buildFilteredMap(OnboardingActivity, _OnboardingActivityMappings))()
+export const OnboardingActivityMap = buildFilteredMap(
+  OnboardingActivity,
+  _OnboardingActivityMappings
+)
