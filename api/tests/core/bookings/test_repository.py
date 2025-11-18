@@ -1262,7 +1262,7 @@ def test_sould_return_user_offerer_timezones():
     offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Indian/Mayotte")
 
     # Venue with different timezone
-    offerers_factories.VenueFactory(managingOfferer=offerer, timezone="America/Cayenne", postalCode="97300")
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="America/Cayenne")
 
     timezones = booking_repository.get_pro_user_timezones(pro_user)
 

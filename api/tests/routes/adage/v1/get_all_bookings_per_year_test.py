@@ -21,7 +21,7 @@ def expected_serialized_booking(booking) -> dict:
         "totalAmount": booking.collectiveStock.price,
         "startDatetime": format_into_utc_date(booking.collectiveStock.startDatetime),
         "endDatetime": format_into_utc_date(booking.collectiveStock.endDatetime),
-        "venueTimezone": booking.collectiveStock.collectiveOffer.venue.timezone,
+        "venueTimezone": booking.collectiveStock.collectiveOffer.venue.offererAddress.address.timezone,
         "name": booking.collectiveStock.collectiveOffer.name,
         "redactorEmail": booking.educationalRedactor.email,
         "domainIds": [domain.id for domain in booking.collectiveStock.collectiveOffer.domains],

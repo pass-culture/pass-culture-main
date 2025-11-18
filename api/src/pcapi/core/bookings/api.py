@@ -135,8 +135,6 @@ def _get_booking_options() -> list[ExecutableOption]:
                 .load_only(
                     offerers_models.Venue.name,
                     offerers_models.Venue.publicName,
-                    # FIXME bdalbianco 28/04/2025 CLEAN_OA: check timezone relevance after regul venue
-                    offerers_models.Venue.timezone,
                     offerers_models.Venue._bannerUrl,
                     offerers_models.Venue.isOpenToPublic,
                     offerers_models.Venue.venueTypeCode,
