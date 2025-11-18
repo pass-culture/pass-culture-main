@@ -1044,6 +1044,7 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
     )
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
+        activity=attachment_venue.activity,
         address=address_body_model,
         comment=offerers_schemas.VenueComment(
             "Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel"

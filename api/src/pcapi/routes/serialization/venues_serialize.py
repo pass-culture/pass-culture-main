@@ -73,6 +73,7 @@ class DMSApplicationForEAC(BaseModel):
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
+    activity: offerers_models.Activity | None
     address: offerers_schemas.AddressBodyModel
     bookingEmail: offerers_schemas.VenueBookingEmail
     comment: offerers_schemas.VenueComment | None
@@ -82,7 +83,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     publicName: offerers_schemas.VenuePublicName | None
     siret: offerers_schemas.VenueSiret | None
     venueLabelId: int | None
-    venueTypeCode: str
+    venueTypeCode: str | None
     withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
     description: offerers_schemas.VenueDescription | None
     contact: offerers_schemas.VenueContactModel | None
