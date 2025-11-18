@@ -1,5 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
 
 .confirmation {
   text-align: center;
@@ -8,7 +9,6 @@
 
   &-icon {
     height: rem.torem(56px);
-    margin-bottom: rem.torem(19px);
 
     &-validate {
       color: var(--color-icon-success);
@@ -17,7 +17,7 @@
 
   &-actions {
     max-width: rem.torem(486px);
-    margin: var(--size-spacing-xxxl) auto 0;
+    margin: var(--size-spacing-xxxxl) auto 0;
     display: flex;
     flex-wrap: wrap;
     gap: var(--size-spacing-xl);
@@ -31,8 +31,37 @@
       margin-left: 0;
     }
   }
+
+  &-title {
+    @include fonts.title4;
+
+    margin-bottom: var(--size-spacing-xxl);
+  }
+
+  &-description {
+    display: grid;
+    gap: var(--size-spacing-m);
+    text-align: left;
+  }
+}
+
+.text-bold {
+  @include fonts.body-accent;
+}
+
+.institution-name {
+  @include fonts.body-accent;
+
+  display: grid;
+  margin-top: var(--size-spacing-xl);
 }
 
 .confirmation-wrapper .confirmation-banner {
   margin-top: rem.torem(45px);
+}
+
+@media (max-width: size.$tablet) {
+  .confirmation-title {
+    text-align: left;
+  }
 }
