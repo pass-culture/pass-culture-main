@@ -11,9 +11,6 @@ from pcapi import settings
 from pcapi.celery_tasks.sendinblue import send_transactional_email_primary_task_celery
 from pcapi.celery_tasks.sendinblue import send_transactional_email_secondary_task_celery
 from pcapi.core.users.repository import find_user_by_email
-from pcapi.models.feature import FeatureToggle
-from pcapi.tasks.sendinblue_tasks import send_transactional_email_primary_task_cloud_tasks
-from pcapi.tasks.sendinblue_tasks import send_transactional_email_secondary_task_cloud_tasks
 from pcapi.utils import email as email_utils
 from pcapi.utils.email import is_email_whitelisted
 from pcapi.utils.requests import ExternalAPIException
@@ -59,15 +56,9 @@ class SendinblueBackend(BaseBackend):
                 use_pro_subaccount=data.template.use_pro_subaccount,
             )
             if data.template.use_priority_queue:
-                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-                    send_transactional_email_primary_task_celery.delay(payload.dict())
-                else:
-                    send_transactional_email_primary_task_cloud_tasks.delay(payload)
+                send_transactional_email_primary_task_celery.delay(payload.dict())
             else:
-                if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-                    send_transactional_email_secondary_task_celery.delay(payload.dict())
-                else:
-                    send_transactional_email_secondary_task_cloud_tasks.delay(payload)
+                send_transactional_email_secondary_task_celery.delay(payload.dict())
 
         elif isinstance(data, models.TransactionalWithoutTemplateEmailData):
             payload = serializers.SendTransactionalEmailRequest(
@@ -82,10 +73,7 @@ class SendinblueBackend(BaseBackend):
                 params=None,
                 tags=None,
             )
-            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS.is_active():
-                send_transactional_email_secondary_task_celery.delay(payload.dict())
-            else:
-                send_transactional_email_secondary_task_cloud_tasks.delay(payload)
+            send_transactional_email_secondary_task_celery.delay(payload.dict())
 
         else:
             raise ValueError(f"Tried sending an email via sendinblue, but received incorrectly formatted data: {data}")
