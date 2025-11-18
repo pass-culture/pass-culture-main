@@ -198,6 +198,7 @@ export const UsefulInformationForm = ({
             label={'Informations de retrait'}
             maxLength={500}
             disabled={readOnlyFields.includes('withdrawalDetails')}
+            error={errors.withdrawalDetails?.message}
             description={
               offer.isDigital
                 ? 'Exemples : une création de compte, un code d’accès spécifique, une communication par email...'

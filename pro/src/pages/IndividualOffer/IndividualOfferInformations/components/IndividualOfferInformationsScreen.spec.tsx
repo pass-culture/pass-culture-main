@@ -1,8 +1,11 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import { SubcategoryIdEnum } from '@/apiClient/v1'
+import { ApiError, SubcategoryIdEnum } from '@/apiClient/v1'
+import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
+import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import {
   IndividualOfferContext,
   type IndividualOfferContextValues,
@@ -26,6 +29,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import { Notification } from '@/components/Notification/Notification'
 
 import {
   IndividualOfferInformationsScreen,
@@ -39,6 +43,7 @@ const renderUsefulInformationScreen = (
 ) => {
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
+      <Notification />
       <IndividualOfferInformationsScreen {...props} />
     </IndividualOfferContext.Provider>,
     {
@@ -47,6 +52,8 @@ const renderUsefulInformationScreen = (
     }
   )
 }
+
+Element.prototype.scrollIntoView = vi.fn()
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -249,6 +256,63 @@ describe('screens:IndividualOffer::UsefulInformation', () => {
       withdrawalDetails: 'My information',
       withdrawalType: undefined,
     })
+  })
+
+  it('should handle api errors', async () => {
+    vi.spyOn(api, 'patchOffer').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          body: {
+            withdrawalDetails: 'erreur retrait',
+          },
+        } as ApiResult,
+        ''
+      )
+    )
+    renderUsefulInformationScreen(offlineOfferProps, contextValue)
+
+    const withdrawalField = await screen.findByLabelText(
+      /Informations de retrait/
+    )
+
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Lieu Nom Public Pour Test – 3 Rue de Valois 75001 Paris',
+      })
+    )
+    await userEvent.type(withdrawalField, 'My information')
+    await userEvent.click(screen.getByLabelText(/Visuel/))
+    await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(api.patchOffer).toHaveBeenCalledOnce()
+    expect(screen.getByText('erreur retrait')).toBeInTheDocument()
+    expect(screen.getByText(/Merci de réessayer plus tard/)).toBeInTheDocument()
+  })
+
+  it('should handle non api errors', async () => {
+    vi.spyOn(api, 'patchOffer').mockRejectedValue(new Error('ERROR'))
+    renderUsefulInformationScreen(offlineOfferProps, contextValue)
+
+    const withdrawalField = await screen.findByLabelText(
+      /Informations de retrait/
+    )
+
+    await userEvent.click(
+      screen.getByRole('radio', {
+        name: 'Lieu Nom Public Pour Test – 3 Rue de Valois 75001 Paris',
+      })
+    )
+    await userEvent.type(withdrawalField, 'My information')
+    await userEvent.click(screen.getByLabelText(/Visuel/))
+    await userEvent.click(screen.getByLabelText(/Psychique ou cognitif/))
+    await userEvent.click(screen.getByText('Enregistrer les modifications'))
+
+    expect(api.patchOffer).toHaveBeenCalledOnce()
+    expect(
+      screen.queryByText(/Merci de réessayer plus tard/)
+    ).not.toBeInTheDocument()
   })
 
   it('should display not reimbursed banner when subcategory is not reimbursed', async () => {

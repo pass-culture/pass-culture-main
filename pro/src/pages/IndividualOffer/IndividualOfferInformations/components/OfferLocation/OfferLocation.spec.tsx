@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
+import { expect } from 'vitest'
 import { axe } from 'vitest-axe'
 
 import type { AdresseData } from '@/apiClient/adresse/types'
@@ -72,6 +73,59 @@ const MOCK: {
     },
   ],
 }
+
+const mockAPIResponse: AdresseData[] = [
+  {
+    address: "17 Rue d'Abbeville",
+    city: 'Amiens',
+    id: '80021_0050_00017',
+    latitude: 49.905915,
+    longitude: 2.270522,
+    label: "17 Rue d'Abbeville 80000 Amiens",
+    postalCode: '80000',
+    inseeCode: '80021',
+  },
+  {
+    address: "17 Rue d'Entraigues",
+    city: 'Tours',
+    id: '37261_1680_00017',
+    latitude: 47.388071,
+    longitude: 0.688431,
+    label: "17 Rue d'Entraigues 37000 Tours",
+    postalCode: '37000',
+    inseeCode: '37261',
+  },
+  {
+    address: "17 Rue d'Artois",
+    city: 'Lille',
+    id: '59350_0391_00017',
+    latitude: 50.62467,
+    longitude: 3.061394,
+    label: "17 Rue d'Artois 59000 Lille",
+    postalCode: '59000',
+    inseeCode: '59350',
+  },
+  {
+    address: "17 Rue d'Auxonne",
+    city: 'Dijon',
+    id: '21231_0610_00017',
+    latitude: 47.315591,
+    longitude: 5.045492,
+    label: "17 Rue d'Auxonne 21000 Dijon",
+    postalCode: '21000',
+    inseeCode: '21231',
+  },
+  {
+    address: "17 Rue d'Assalit",
+    city: 'Toulouse',
+    id: '31555_0580_00017',
+    latitude: 43.60356,
+    longitude: 1.469539,
+    label: "17 Rue d'Assalit 31500 Toulouse",
+    postalCode: '31500',
+    inseeCode: '31555',
+  },
+]
 
 const getDataFromAddressMock = vi.hoisted(() => vi.fn())
 vi.mock('@/apiClient/api', () => ({
@@ -211,6 +265,38 @@ describe('OfferLocation', () => {
           rules: { 'color-contrast': { enabled: false } },
         })
       ).toHaveNoViolations()
+    })
+
+    it('should set fields values on result search', async () => {
+      getDataFromAddressMock.mockResolvedValue(mockAPIResponse)
+
+      renderOfferLocation({
+        formValues: {
+          offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
+        },
+      })
+
+      const input = screen.getByRole('combobox', { name: /Adresse postale/ })
+
+      const user = userEvent.setup()
+      await user.click(input)
+      await user.type(input, "17 rue d'")
+
+      expect(await screen.findAllByRole('option')).toHaveLength(
+        mockAPIResponse.length
+      )
+
+      await user.click(
+        screen.getByText("17 Rue d'Entraigues 37000 Tours", {
+          selector: 'span',
+        })
+      )
+
+      await user.tab()
+
+      expect(screen.getByLabelText(/Adresse postale/)).toHaveValue(
+        "17 Rue d'Entraigues 37000 Tours"
+      )
     })
 
     describe('when the "manually set address" button is clicked', () => {
