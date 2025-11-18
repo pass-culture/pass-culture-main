@@ -31,7 +31,6 @@ from pcapi.models import offer_mixin
 from pcapi.utils import custom_keys
 from pcapi.utils import date as date_utils
 from pcapi.utils import string as string_utils
-from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.decorators import retry
 
 from . import exceptions
@@ -340,7 +339,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
                 offerers_models.Venue.isOpenToPublic,
                 offerers_models.Venue._bannerUrl,
                 offerers_models.Venue.venueTypeCode,
-                offerers_models.Venue.timezone,
             )
             .joinedload(offerers_models.Venue.managingOfferer)
             .load_only(
@@ -499,6 +497,8 @@ def get_offers_by_filters(
         query = _filter_by_status(query, status)
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa_orm.aliased(models.Offer)
+        venue_oa_alias = sa_orm.aliased(offerers_models.OffererAddress)
+        venue_address_alias = sa_orm.aliased(geography_models.Address)
         stock_query = (
             db.session.query(models.Stock)
             .join(offer_alias)
@@ -510,10 +510,12 @@ def get_offers_by_filters(
                 geography_models.Address,
                 offerers_models.OffererAddress.addressId == geography_models.Address.id,
             )
+            .join(venue_oa_alias, venue_oa_alias.id == offerers_models.Venue.offererAddressId)
+            .join(venue_address_alias, venue_address_alias.id == venue_oa_alias.addressId)
             .filter(models.Stock.isSoftDeleted.is_(False))
             .filter(models.Stock.offerId == models.Offer.id)
         )
-        target_timezone = sa.func.coalesce(geography_models.Address.timezone, offerers_models.Venue.timezone)
+        target_timezone = sa.func.coalesce(geography_models.Address.timezone, venue_address_alias.timezone)
         if period_beginning_date is not None:
             stock_query = stock_query.filter(
                 sa.func.timezone(
@@ -1137,6 +1139,8 @@ def get_filtered_stocks(
         db.session.query(models.Stock)
         .join(models.Offer)
         .join(offerers_models.Venue)
+        .join(offerers_models.Venue.offererAddress)
+        .join(offerers_models.OffererAddress.address)
         .filter(
             models.Stock.offerId == offer.id,
             models.Stock.isSoftDeleted == False,
@@ -1148,7 +1152,6 @@ def get_filtered_stocks(
         query = query.filter(sa.cast(models.Stock.beginningDatetime, sa.Date) == date)
     if time is not None:
         dt = datetime.datetime.combine(datetime.datetime.today(), time)
-        timezone = pytz.timezone(METROPOLE_TIMEZONE)
 
         if offer.offererAddress:
             timezone = pytz.timezone(offer.offererAddress.address.timezone)
@@ -1160,7 +1163,7 @@ def get_filtered_stocks(
         query = query.filter(
             sa.cast(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone,
+                    geography_models.Address.timezone,
                     sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 ),
                 sa.Time,
@@ -1168,7 +1171,7 @@ def get_filtered_stocks(
             >= address_time.replace(second=0),
             sa.cast(
                 sa.func.timezone(
-                    offerers_models.Venue.timezone,
+                    geography_models.Address.timezone,
                     sa.func.timezone("UTC", models.Stock.beginningDatetime),
                 ),
                 sa.Time,

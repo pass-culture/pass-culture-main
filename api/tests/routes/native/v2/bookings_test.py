@@ -411,15 +411,15 @@ class GetBookingsListTest:
 
         address_on_offer = AddressFactory()
         venue1 = offerers_factories.VenueFactory(
-            city="Paris",
+            offererAddress__address__city="Paris",
             name="fnac",
-            timezone="Europe/Paris",
+            offererAddress__address__timezone="Europe/Paris",
         )
 
         venue2 = offerers_factories.VenueFactory(
-            city="Marseille",
+            offererAddress__address__city="Marseille",
             name="fnac",
-            timezone="Europe/Paris",
+            offererAddress__address__timezone="Europe/Paris",
         )
 
         offer = offers_factories.OfferFactory(
@@ -503,7 +503,7 @@ class GetBookingsListTest:
                     "venue": {
                         "id": ongoing_booking.stock.offer.venue.id,
                         "name": ongoing_booking.stock.offer.venue.name,
-                        "timezone": ongoing_booking.stock.offer.venue.timezone,
+                        "timezone": ongoing_booking.stock.offer.venue.offererAddress.address.timezone,
                     },
                     "withdrawalDelay": ongoing_booking.stock.offer.withdrawalDelay,
                     "withdrawalType": ongoing_booking.stock.offer.withdrawalType.value,
@@ -524,7 +524,7 @@ class GetBookingsListTest:
         offer = offers_factories.OfferFactory(
             venue=offerers_factories.VenueFactory(
                 name="fnac",
-                timezone=paris_timezone,
+                offererAddress__address__timezone=paris_timezone,
             ),
             offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
@@ -543,7 +543,7 @@ class GetBookingsListTest:
             user=user,
             stock__offer__venue=offerers_factories.VenueFactory(
                 name="fnac",
-                timezone=paris_timezone,
+                offererAddress__address__timezone=paris_timezone,
             ),
             stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             displayAsEnded=True,
@@ -606,7 +606,7 @@ class GetBookingsListTest:
                     "venue": {
                         "id": ended_booking.stock.offer.venue.id,
                         "name": ended_booking.stock.offer.venue.name,
-                        "timezone": ended_booking.stock.offer.venue.timezone,
+                        "timezone": ended_booking.stock.offer.venue.offererAddress.address.timezone,
                     },
                     "withdrawalDelay": ended_booking.stock.offer.withdrawalDelay,
                     "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
@@ -652,7 +652,7 @@ class GetBookingsListTest:
         offer = offers_factories.OfferFactory(
             venue=offerers_factories.VenueFactory(
                 name="fnac",
-                timezone=paris_timezone,
+                offererAddress__address__timezone=paris_timezone,
             ),
             offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
@@ -672,7 +672,7 @@ class GetBookingsListTest:
             status=status,
             stock__offer__venue=offerers_factories.VenueFactory(
                 name="fnac",
-                timezone=paris_timezone,
+                offererAddress__address__timezone=paris_timezone,
             ),
             stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             displayAsEnded=False,
@@ -729,7 +729,7 @@ class GetBookingsListTest:
                     "venue": {
                         "id": ended_booking.stock.offer.venue.id,
                         "name": ended_booking.stock.offer.venue.name,
-                        "timezone": ended_booking.stock.offer.venue.timezone,
+                        "timezone": ended_booking.stock.offer.venue.offererAddress.address.timezone,
                     },
                     "withdrawalDelay": ended_booking.stock.offer.withdrawalDelay,
                     "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
@@ -759,7 +759,7 @@ class GetBookingsListTest:
             status=booking_models.BookingStatus.CONFIRMED,
             stock__offer__venue=offerers_factories.VenueFactory(
                 name="fnac",
-                timezone=paris_timezone,
+                offererAddress__address__timezone=paris_timezone,
             ),
             stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
             displayAsEnded=True,
@@ -809,7 +809,7 @@ class GetBookingsListTest:
                     "venue": {
                         "id": ended_booking.stock.offer.venue.id,
                         "name": ended_booking.stock.offer.venue.name,
-                        "timezone": ended_booking.stock.offer.venue.timezone,
+                        "timezone": ended_booking.stock.offer.venue.offererAddress.address.timezone,
                     },
                     "withdrawalDelay": ended_booking.stock.offer.withdrawalDelay,
                     "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
