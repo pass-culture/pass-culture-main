@@ -4344,10 +4344,10 @@ known-css-properties@^0.37.0:
   resolved "https://registry.yarnpkg.com/known-css-properties/-/known-css-properties-0.37.0.tgz#10ebe49b9dbb6638860ff8a002fb65a053f4aec5"
   integrity sha512-JCDrsP4Z1Sb9JwG0aJ8Eo2r7k4Ou5MwmThS/6lcIe1ICyb7UBJKGRIUUdqc2ASdE/42lgz6zFUnzAIhtXnBVrQ==
 
-libphonenumber-js@1.12.26:
-  version "1.12.26"
-  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.26.tgz#f8f5df8d9884a87d39f2a999e3cc8cb735df9dd3"
-  integrity sha512-MagMOuqEXB2Pa90cWE+BoCmcKJx+de5uBIicaUkQ+uiEslZ0OBMNOkSZT/36syXNHu68UeayTxPm3DYM2IHoLQ==
+libphonenumber-js@1.12.27:
+  version "1.12.27"
+  resolved "https://registry.yarnpkg.com/libphonenumber-js/-/libphonenumber-js-1.12.27.tgz#a44d2435bfb8b280253379d8bc9f303b65906549"
+  integrity sha512-8gHhHzzcnY1EF4BS5L/lrjv2VAZWd6ltU7c/sqoktRZSQvZl4g8hrgXtXHXGkSFKFYArFON12zUNJrNVqJ9u4g==
 
 lines-and-columns@^1.1.6:
   version "1.2.4"
