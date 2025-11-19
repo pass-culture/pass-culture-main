@@ -457,6 +457,7 @@ class IdentificationSessionTest:
 
         client.with_token(user.email)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
+        db.session.rollback()  # ensure the call to the route commited its transaction
 
         assert response.status_code == 200
         assert len(user.beneficiaryFraudChecks) == 3

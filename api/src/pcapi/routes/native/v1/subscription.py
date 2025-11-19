@@ -134,6 +134,7 @@ def create_honor_statement_fraud_check(user: users_models.User) -> None:
 @blueprint.native_route("/ubble_identification", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.IdentificationSessionResponse)
 @authenticated_and_active_user_required
+@atomic()
 def start_identification_session(
     user: users_models.User, body: serializers.IdentificationSessionRequest
 ) -> serializers.IdentificationSessionResponse:
