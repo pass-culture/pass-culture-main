@@ -185,6 +185,7 @@ class Returns200Test:
             isOpenToPublic=False,
             isPermanent=True,
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
+            activity=offerers_models.Activity.BOOKSTORE,
         )
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
@@ -1048,6 +1049,123 @@ class Returns200Test:
         assert response.status_code == 200
         db.session.refresh(venue)
         assert venue.bookingEmail is None
+
+    @pytest.mark.parametrize(
+        "isOpenToPublic, venueTypeCode, activity, expected_venueTypeCode, expected_activity",
+        [
+            (True, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
+            (True, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
+            (True, "BOOKSTORE", "CINEMA", offerers_models.VenueTypeCode.BOOKSTORE, offerers_models.Activity.CINEMA),
+            (False, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.NOT_ASSIGNED),
+            (
+                False,
+                "BOOKSTORE",
+                "CINEMA",
+                offerers_models.VenueTypeCode.BOOKSTORE,
+                offerers_models.Activity.NOT_ASSIGNED,
+            ),
+        ],
+    )
+    def test_update_activity_or_venue_type_code(
+        self, client, isOpenToPublic, venueTypeCode, activity, expected_venueTypeCode, expected_activity
+    ) -> None:
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=date_utils.get_naive_utc_now(),
+        )
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            venueTypeCode=offerers_models.VenueTypeCode.ARTISTIC_COURSE,
+            activity=offerers_models.Activity.ART_SCHOOL,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        # when
+        extra_data = {}
+        if venueTypeCode:
+            extra_data["venueTypeCode"] = venueTypeCode
+        if activity:
+            extra_data["activity"] = activity
+        venue_data = populate_missing_data_from_venue(
+            {
+                "publicName": "Ma librairie",
+                "withdrawalDetails": "",  # should not appear in history with None => ""
+                # Default data from api adresse TestingBackend
+                "street": "3 Rue de Valois",
+                "banId": "75101_9575_00003",
+                "city": "Paris",
+                "inseeCode": "75056",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postalCode": "75001",
+                "isOpenToPublic": isOpenToPublic,
+            }
+            | extra_data,
+            venue,
+        )
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        # then
+        assert response.status_code == 200
+
+        # the venue should be updated
+        assert venue.venueTypeCode == expected_venueTypeCode
+        assert venue.activity == expected_activity
+
+    @pytest.mark.parametrize(
+        "isOpenToPublic, venueTypeCode, activity, expected_venueTypeCode, expected_activity",
+        [
+            (True, None, None, offerers_models.VenueTypeCode.GAMES, offerers_models.Activity.GAMES_CENTRE),
+            (False, None, None, offerers_models.VenueTypeCode.GAMES, offerers_models.Activity.NOT_ASSIGNED),
+            (True, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
+            (False, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.NOT_ASSIGNED),
+        ],
+    )
+    def test_update_game_center_activity_or_venue_type_code(
+        self, client, isOpenToPublic, venueTypeCode, activity, expected_venueTypeCode, expected_activity
+    ) -> None:
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=date_utils.get_naive_utc_now(),
+        )
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            venueTypeCode=offerers_models.VenueTypeCode.GAMES,
+            activity=offerers_models.Activity.GAMES_CENTRE,
+        )
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        # when
+        extra_data = {}
+        if venueTypeCode:
+            extra_data["venueTypeCode"] = venueTypeCode
+        if activity:
+            extra_data["activity"] = activity
+        venue_data = populate_missing_data_from_venue(
+            {
+                "publicName": "Ma librairie",
+                "withdrawalDetails": "",  # should not appear in history with None => ""
+                # Default data from api adresse TestingBackend
+                "street": "3 Rue de Valois",
+                "banId": "75101_9575_00003",
+                "city": "Paris",
+                "inseeCode": "75056",
+                "latitude": 48.87171,
+                "longitude": 2.308289,
+                "postalCode": "75001",
+                "isOpenToPublic": isOpenToPublic,
+            }
+            | extra_data,
+            venue,
+        )
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+
+        # then
+        assert response.status_code == 200
+
+        # the venue should be updated
+        assert venue.venueTypeCode == expected_venueTypeCode
+        assert venue.activity == expected_activity
 
 
 class Returns400Test:

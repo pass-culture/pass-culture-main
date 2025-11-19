@@ -229,7 +229,15 @@ def update_venue(
         return venue
     venue_snapshot.add_action()
 
-    venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
+    if modifications.get("venueTypeCode", None) and not modifications.get("activity", None):
+        venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
+    if modifications.get("activity", None) and not modifications.get("venueTypeCode", None):
+        if not venue.isOpenToPublic:
+            logger.error("update_venue called with activity on a venue closed to public", extra={"venue_id": venue.id})
+        assert venue.activity  # helps mypy, activity has been modified, not null if we are here and set earlier
+        venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
+    if not venue.isOpenToPublic and venue.activity != offerers_models.Activity.NOT_ASSIGNED:
+        venue.activity = offerers_models.Activity.NOT_ASSIGNED
 
     db.session.add(venue)
     if is_managed_transaction():
@@ -494,7 +502,7 @@ def create_venue(
             data.get("isOpenToPublic"), data.get("venueTypeCode")
         )
     if not data.get("venueTypeCode"):
-        venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(data.get("activity"))
+        venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(data["activity"])
 
     db.session.add(venue)
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
