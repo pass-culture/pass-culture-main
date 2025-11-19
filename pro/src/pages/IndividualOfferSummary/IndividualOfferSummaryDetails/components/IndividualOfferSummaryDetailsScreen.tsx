@@ -5,7 +5,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
@@ -38,9 +37,6 @@ export function IndividualOfferSummaryDetailsScreen({
 }: Readonly<IndividualOfferSummaryDetailsScreenProps>) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
 
   const { musicTypes } = useMusicTypes()
   const offerData = serializeOfferSectionData(
@@ -69,14 +65,7 @@ export function IndividualOfferSummaryDetailsScreen({
         <Markdown markdownText={offerData.description} />
       ),
     },
-  ].concat(
-    !isNewOfferCreationFlowFeatureActive && offer.isDigital
-      ? {
-          title: 'URL d’accès à l’offre',
-          text: offer.url || ' - ',
-        }
-      : []
-  )
+  ]
 
   const typeDescriptions: Description[] = [
     { title: 'Catégorie', text: offerData.categoryName },
@@ -170,24 +159,16 @@ export function IndividualOfferSummaryDetailsScreen({
         )}
 
         <SummarySection
-          title={
-            isNewOfferCreationFlowFeatureActive
-              ? 'Description'
-              : 'Détails de l’offre'
-          }
+          title="Description"
           {...(cannotEditDetails
             ? {}
             : {
                 editLink: getIndividualOfferUrl({
                   offerId: offer.id,
-                  step: isNewOfferCreationFlowFeatureActive
-                    ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-                    : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
                   mode: OFFER_WIZARD_MODE.EDITION,
                 }),
-                'aria-label': isNewOfferCreationFlowFeatureActive
-                  ? 'Modifier la description de l’offre'
-                  : 'Modifier les détails de l’offre',
+                'aria-label': 'Modifier la description de l’offre',
               })}
         >
           <SummarySubSection title="A propos de votre offre">
@@ -201,13 +182,11 @@ export function IndividualOfferSummaryDetailsScreen({
               <SummaryDescriptionList descriptions={artisticInfoDescriptions} />
             </SummarySubSection>
           )}
-          {isNewOfferCreationFlowFeatureActive && (
-            <AccessibilitySummarySection
-              accessibleItem={offer}
-              accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
-              shouldShowDivider
-            />
-          )}
+          <AccessibilitySummarySection
+            accessibleItem={offer}
+            accessibleWording="Votre offre est accessible aux publics en situation de handicap :"
+            shouldShowDivider
+          />
         </SummarySection>
       </SummaryContent>
 
