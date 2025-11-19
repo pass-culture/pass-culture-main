@@ -87,8 +87,8 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
             venue = offerers_factories.VenueFactory.create(
                 managingOfferer=offerer,
                 bookingEmail=f"booking-email@offerer{offerer.id}.example.com",
-                latitude=latitude,
-                longitude=longitude,
+                offererAddress__address__latitude=latitude,
+                offererAddress__address__longitude=longitude,
                 comment=comment,
                 name=venue_name,
                 siret=siret,
@@ -115,8 +115,8 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 second_venue = offerers_factories.VenueFactory.create(
                     managingOfferer=offerer,
                     bookingEmail=f"booking-email@offerer{offerer.id}.example.com",
-                    latitude=latitude,
-                    longitude=longitude,
+                    offererAddress__address__latitude=latitude,
+                    offererAddress__address__longitude=longitude,
                     comment=None,
                     name=second_venue_name,
                     siret=f"{offerer.siren}22222",

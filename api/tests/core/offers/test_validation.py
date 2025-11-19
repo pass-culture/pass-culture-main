@@ -799,7 +799,7 @@ class CheckBookingLimitDatetimeTest:
     def test_check_booking_limit_datetime_should_raise_because_booking_limit_is_one_hour_after(
         self, stock_factory, offer_factory
     ):
-        venue = offerers_factories.VenueFactory(departementCode=71)
+        venue = offerers_factories.VenueFactory()
         offer = offer_factory(venueId=venue.id)
         if stock_factory == educational_factories.CollectiveStockFactory:
             stock = stock_factory(collectiveOfferId=offer.id)
@@ -855,7 +855,7 @@ class CheckBookingLimitDatetimeTest:
     )
     def test_check_booking_limit_datetime_should_not_raise_with_timezone(self, offer_factory):
         oa = offerers_factories.OffererAddressFactory(address__departmentCode="974")
-        offer = offer_factory(venue__timezone=71, offererAddress=oa)
+        offer = offer_factory(offererAddress=oa)
         stock = offers_factories.StockFactory(offer=offer)
 
         beginning_date = datetime.datetime(2024, 7, 19, 8, tzinfo=datetime.timezone.utc)
@@ -882,7 +882,6 @@ class CheckBookingLimitDatetimeTest:
             else None
         )
         venue = offerers_factories.VenueFactory(
-            departementCode=71,
             offererAddress__address__departmentCode="971",
             offererAddress__address__inseeCode="97103",
             offererAddress__address__timezone="America/Guadeloupe",

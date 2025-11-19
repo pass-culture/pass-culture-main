@@ -33,8 +33,8 @@ def create_accessibility_offers() -> dict:
         managingOfferer=offerer,
         name="Lieu - Audit Access42",
         venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
-        _address="21 Rue du Simplon",
-        postalCode="75018",
+        offererAddress__address__street="21 Rue du Simplon",
+        offererAddress__address__postalCode="75018",
         withdrawalDetails=(
             "Pour vous faire mieux connaître d’où vient l’erreur de ceux qui blâment la volupté, et qui louent en "
             "quelque sorte la douleur, je vais entrer dans une explication plus étendue, et vous faire voir tout ce "

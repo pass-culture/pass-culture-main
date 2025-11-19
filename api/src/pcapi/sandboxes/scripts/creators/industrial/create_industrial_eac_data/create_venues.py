@@ -7,6 +7,7 @@ from itertools import cycle
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.finance import factories as finance_factories
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
@@ -37,7 +38,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departementCode="56",
+        departmentCode="56",
         postalCode="56000",
         city="Lorient",
         street="30 boulevard Léon Blum",
@@ -55,7 +56,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         reimbursement=True,
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departementCode="91",
+        departmentCode="91",
         postalCode="91000",
         city="CORBEIL-ESSONNES",
         street="10 rue Feray",
@@ -359,7 +360,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departementCode="57",
+        departmentCode="57",
         postalCode="57000",
         city="Lorient",
         street="30 boulevard Léon Blum",
@@ -376,7 +377,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departementCode="57",
+        departmentCode="57",
         postalCode="57000",
         city="Lorient",
         street="30 boulevard Léon Blum",
@@ -395,7 +396,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departementCode="57",
+        departmentCode="57",
         postalCode="57000",
         city="Lorient",
         street="30 boulevard Léon Blum",
@@ -412,7 +413,7 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         adageInscriptionDate=date_utils.get_naive_utc_now() - timedelta(days=3),
         venueEducationalStatusId=next(educational_status_iterator),
         collectiveInterventionArea=ALL_INTERVENTION_AREA,
-        departementCode="33",
+        departmentCode="33",
         postalCode="33000",
         city="Bordeaux",
         street="10 rue Sainte-Colombe",
@@ -434,7 +435,28 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
 
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
-    venue = offerers_factories.VenueFactory.create(**kwargs, collectiveEmail="email@exemple.com", isPermanent=True)
+    location_fields = {
+        "street",
+        "banId",
+        "latitude",
+        "longitude",
+        "postalCode",
+        "city",
+        "inseeCode",
+        "departmentCode",
+        "isManualEdition",
+    }
+    location_kwargs = {k: v for k, v in kwargs.items() if k in location_fields}
+    venue_kwargs = {k: v for k, v in kwargs.items() if k not in location_fields}
+
+    venue = offerers_factories.VenueFactory.create(
+        **venue_kwargs,
+        collectiveEmail="email@exemple.com",
+        isPermanent=True,
+        offererAddress=offerers_factories.VenueLocationFactory.create(
+            address=geography_factories.AddressFactory.create(**location_kwargs)
+        ),
+    )
     if reimbursement:
         bank_account = finance_factories.BankAccountFactory.create(offerer=venue.managingOfferer)
         offerers_factories.VenueBankAccountLinkFactory.create(venue=venue, bankAccount=bank_account)

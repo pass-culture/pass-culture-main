@@ -2764,7 +2764,7 @@ class CreateFromOnboardingDataTest:
         assert created_venue.comment is None
         assert created_venue.siret == "85331845900031"
         assert created_venue.current_pricing_point_id == created_venue.id
-        assert address.street == "3 Rue de Valois"
+        assert address.street == "3 RUE DE VALOIS"
         assert address.city == "Paris"
         assert address.postalCode == "75001"
         assert address.inseeCode.startswith(address.departmentCode)
@@ -3367,28 +3367,18 @@ class DeleteExpiredOffererInvitationsTest:
 
 class AccessibilityProviderTest:
     def test_set_accessibility_provider_id(self):
-        venue = offerers_factories.VenueFactory(
-            name="Une librairie de test", postalCode="75001", city="Paris", accessibilityProvider=None
-        )
+        venue = offerers_factories.VenueFactory(name="Une librairie de test", accessibilityProvider=None)
         offerers_api.set_accessibility_provider_id(venue)
         assert venue.accessibilityProvider.externalAccessibilityId == "mon-lieu-chez-acceslibre"
 
     def test_set_accessibility_last_update_at_provider_id(self):
-        venue = offerers_factories.VenueFactory(
-            name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
-        )
+        venue = offerers_factories.VenueFactory(name="Une librairie de test")
         offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_infos_from_provider_id(venue)
         assert venue.accessibilityProvider.lastUpdateAtProvider == datetime.datetime(2024, 3, 1, 0, 0)
 
     def test_set_accessibility_infos_from_provider_id(self):
-        venue = offerers_factories.VenueFactory(
-            name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
-        )
+        venue = offerers_factories.VenueFactory(name="Une librairie de test")
         offerers_factories.AccessibilityProviderFactory(venue=venue)
         offerers_api.set_accessibility_infos_from_provider_id(venue)
         assert venue.accessibilityProvider.externalAccessibilityData["access_modality"] == [
@@ -3397,11 +3387,7 @@ class AccessibilityProviderTest:
         ]
 
     def test_synchronize_accessibility_provider_no_data(self):
-        venue = offerers_factories.VenueFactory(
-            name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
-        )
+        venue = offerers_factories.VenueFactory(name="Une librairie de test")
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, externalAccessibilityData=None
         )
@@ -3409,11 +3395,7 @@ class AccessibilityProviderTest:
         assert accessibility_provider.externalAccessibilityData is not None
 
     def test_synchronize_accessibility_provider_with_new_update(self):
-        venue = offerers_factories.VenueFactory(
-            name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
-        )
+        venue = offerers_factories.VenueFactory(name="Une librairie de test")
         accessibility_provider = offerers_factories.AccessibilityProviderFactory(
             venue=venue, lastUpdateAtProvider=datetime.datetime(2023, 2, 1)
         )
@@ -3433,11 +3415,7 @@ class AccessibilityProviderTest:
     def test_synchronize_accessibility_provider_with_new_slug(
         self, mock_get_id_at_accessibility_provider, mock_get_accessibility_infos
     ):
-        venue = offerers_factories.VenueFactory(
-            name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
-        )
+        venue = offerers_factories.VenueFactory(name="Une librairie de test")
         mock_get_id_at_accessibility_provider.side_effect = [
             acceslibre_connector.AcceslibreInfos(slug="nouveau-slug", url="https://nouvelle.adresse/nouveau-slug")
         ]

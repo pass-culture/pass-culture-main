@@ -579,7 +579,6 @@ class FindByProUserTest:
             offerer=user_offerer.offerer,
         )
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300",
             venue__managingOfferer=user_offerer.offerer,
             venue__offererAddress=offerer_address_in_cayenne,
         )
@@ -596,7 +595,6 @@ class FindByProUserTest:
             offerer=user_offerer.offerer,
         )
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600",
             venue__managingOfferer=user_offerer.offerer,
             venue__offererAddress=offerer_address_in_mayotte,
         )
@@ -652,7 +650,6 @@ class FindByProUserTest:
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300",
             venue__offererAddress__address__street="1 Rue de Rémire",
             venue__offererAddress__address__city="Cayenne",
             venue__offererAddress__address__postalCode="97300",
@@ -667,7 +664,6 @@ class FindByProUserTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600",
             venue__offererAddress__address__street="Boulevard Halidi Sélémani",
             venue__offererAddress__address__city="Mamoudzou",
             venue__offererAddress__address__postalCode="97600",
