@@ -310,6 +310,7 @@ def _get_sent_pricings_for_individual_bookings(
         offerers_models.OffererAddress.id,
         geography_models.Address.street,
         geography_models.Address.postalCode,
+        geography_models.Address.departmentCode,
         geography_models.Address.city,
     ).join_from(
         offerers_models.OffererAddress,
@@ -322,6 +323,7 @@ def _get_sent_pricings_for_individual_bookings(
         [
             sa_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
             sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+            sa_func.coalesce(sub_offer.c.departmentCode, sub_venue.c.departmentCode).label("venue_departement_code"),
             sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
         ]
     )
@@ -470,6 +472,7 @@ def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
         offerers_models.OffererAddress.id,
         geography_models.Address.street,
         geography_models.Address.postalCode,
+        geography_models.Address.departmentCode,
         geography_models.Address.city,
     ).join_from(
         offerers_models.OffererAddress,
@@ -482,6 +485,7 @@ def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
         [
             sa_func.coalesce(sub_offer.c.street, sub_venue.c.street).label("address_street"),
             sa_func.coalesce(sub_offer.c.postalCode, sub_venue.c.postalCode).label("address_postal_code"),
+            sa_func.coalesce(sub_offer.c.departmentCode, sub_venue.c.departmentCode).label("venue_departement_code"),
             sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
         ]
     )
