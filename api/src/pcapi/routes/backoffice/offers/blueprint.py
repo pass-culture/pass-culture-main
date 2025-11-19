@@ -1919,8 +1919,8 @@ def get_activate_offer_form(offer_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.offer.activate_offer", offer_id=offer.id),
         div_id=f"activate-offer-modal-{offer.id}",
-        title=f"Activation de l'offre {offer.name}",
-        button_text="Activer l'offre",
+        title=f"Publication de l'offre {offer.name}",
+        button_text="Publier l'offre",
         ajax_submit=not form.redirect.data,
     )
 
@@ -1941,8 +1941,8 @@ def get_deactivate_offer_form(offer_id: int) -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.offer.deactivate_offer", offer_id=offer.id),
         div_id=f"deactivate-offer-modal-{offer.id}",
-        title=f"Désactivation de l'offre {offer.name}",
-        button_text="Désactiver l'offre",
+        title=f"Mise en pause de l'offre {offer.name}",
+        button_text="Mettre l'offre en pause",
         ajax_submit=not form.redirect.data,
     )
 
@@ -1957,8 +1957,8 @@ def get_batch_activate_offers_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.offer.batch_activate_offers"),
         div_id="batch-activate-offer-modal",
-        title="Voulez-vous activer les offres sélectionnées ?",
-        button_text="Activer",
+        title="Voulez-vous publier les offres sélectionnées ?",
+        button_text="Publier",
     )
 
 
@@ -1972,8 +1972,8 @@ def get_batch_deactivate_offers_form() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.offer.batch_deactivate_offers"),
         div_id="batch-deactivate-offer-modal",
-        title="Voulez-vous désactiver les offres sélectionnées ?",
-        button_text="Désactiver",
+        title="Voulez-vous mettre en pause les offres sélectionnées ?",
+        button_text="Mettre en pause",
     )
 
 
@@ -1986,7 +1986,7 @@ def _batch_update_activation_offers(offer_ids: list[int], *, is_active: bool) ->
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def activate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=True)
-    flash("L'offre a été activée", "success")
+    flash("L'offre a été publiée", "success")
     if utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
@@ -2002,7 +2002,7 @@ def batch_activate_offers() -> utils.BackofficeResponse:
         return redirect(request.referrer, 400)
 
     _batch_update_activation_offers(form.object_ids_list, is_active=True)
-    flash("Les offres ont été activées", "success")
+    flash("Les offres ont été publiées", "success")
     return _render_offer_rows(form.object_ids_list)
 
 
@@ -2010,7 +2010,7 @@ def batch_activate_offers() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def deactivate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=False)
-    flash("L'offre a été désactivée", "success")
+    flash("L'offre a été mise en pause", "success")
     if utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
@@ -2026,5 +2026,5 @@ def batch_deactivate_offers() -> utils.BackofficeResponse:
         return redirect(request.referrer, 400)
 
     _batch_update_activation_offers(form.object_ids_list, is_active=False)
-    flash("Les offres ont été désactivées", "success")
+    flash("Les offres ont été mises en pause", "success")
     return _render_offer_rows(form.object_ids_list)
