@@ -3,6 +3,7 @@ from pcapi.core.finance.utils import CurrencyEnum
 
 MAX_STOCK_PRICE_IN_XPF = 23865
 MAX_STOCK_PRICE_IN_EUR = 300
+MAX_OFFER_NAME_LENGTH = 90
 
 MAX_STOCK_PRICE_BY_CURRENCY = {
     CurrencyEnum.EUR: MAX_STOCK_PRICE_IN_EUR,

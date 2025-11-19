@@ -18,6 +18,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import repository as offers_repository
+from pcapi.core.offers import validation as offers_validation
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -32,8 +33,6 @@ from pcapi.serialization.utils import to_camel
 from pcapi.serialization.utils import validate_datetime
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
-from pcapi.validation.routes.offers import check_video_url
 
 from . import deprecated  # noqa: F401
 
@@ -111,7 +110,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("name", pre=True, allow_reuse=True)
     def validate_name(cls, name: str) -> str:
         if name:
-            check_offer_name_length_is_valid(name)
+            offers_validation.check_offer_name_length_is_valid(name)
         return name
 
     @validator("video_url", pre=True)
@@ -122,7 +121,7 @@ class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
 
     @validator("video_url")
     def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
-        check_video_url(video_url)
+        offers_validation.check_video_url(video_url)
         return video_url
 
     @validator("subcategory_id", pre=True)
@@ -701,7 +700,7 @@ class PostOfferBodyModel(BaseModel):
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
+        offers_validation.check_offer_name_length_is_valid(name)
         return name
 
     @validator("withdrawal_type")

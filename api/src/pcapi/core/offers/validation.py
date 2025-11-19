@@ -22,12 +22,13 @@ from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import utils as offerers_utils
 from pcapi.core.offerers.schemas import VenueTypeCode
+from pcapi.core.offers import constants
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import repository
-from pcapi.core.offers.constants import CURRENCY_NAME_MAPPING
-from pcapi.core.offers.constants import MAX_STOCK_PRICE_BY_CURRENCY
 from pcapi.core.providers import models as providers_models
+from pcapi.core.videos import api as videos_api
+from pcapi.core.videos import exceptions as videos_exceptions
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
@@ -148,8 +149,8 @@ def check_stock_price(
 ) -> None:
     currency = offerers_utils.get_venue_currency(offer.venue)
     price_in_currency = finance_utils.euros_to_currency(price, currency)
-    max_price = MAX_STOCK_PRICE_BY_CURRENCY[currency]
-    currency_name = CURRENCY_NAME_MAPPING[currency]
+    max_price = constants.MAX_STOCK_PRICE_BY_CURRENCY[currency]
+    currency_name = constants.CURRENCY_NAME_MAPPING[currency]
     if price_in_currency < 0:
         errors = api_errors.ApiErrors()
         errors.add_error(error_key, "Le prix doit être positif")
@@ -906,11 +907,33 @@ def check_offer_is_eligible_to_be_headline(offer: models.Offer) -> None:
         raise exceptions.VirtualOfferCanNotBeHeadline()
 
 
-def _opening_hours_base_checks(offer: models.Offer) -> None:
-    if not offer.subcategory.can_have_opening_hours:
-        raise exceptions.OfferException(
-            {"offer.subcategory": [f"`{offer.subcategory.id}` subcategory does not allow opening hours"]}
+def check_offer_name_length_is_valid(offer_name: str) -> None:
+    if len(offer_name) > constants.MAX_OFFER_NAME_LENGTH:
+        api_error = api_errors.ApiErrors()
+        api_error.add_error(
+            "name", f"Le titre de l’offre doit faire au maximum {constants.MAX_OFFER_NAME_LENGTH} caractères."
+        )
+        raise api_error
+
+
+def check_video_url(video_url: HttpUrl | None) -> str | None:
+    if not video_url:
+        return None
+
+    try:
+        return videos_api.extract_video_id(video_url)
+    except videos_exceptions.InvalidVideoUrl:
+        raise api_errors.ApiErrors(
+            errors={
+                "videoUrl": [
+                    "Veuillez renseigner une URL provenant de la plateforme Youtube. Les shorts et les chaînes ne sont pas acceptées."
+                ]
+            }
         )
 
-    if repository.offer_has_timestamped_stocks(offer.id):
-        raise exceptions.OfferException({"offer": [f"Offer #{offer.id} already has timestamped stocks"]})
+
+def check_offer_can_ask_for_highlight_request(offer: models.Offer) -> None:
+    if not offer.isEvent:
+        raise api_errors.ApiErrors(
+            errors={"global": ["La sous catégorie de l'offre ne lui permet pas de participer à un temps fort"]}
+        )

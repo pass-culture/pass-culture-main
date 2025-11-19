@@ -6,9 +6,9 @@ from pydantic.v1 import validator
 
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization.utils import to_camel
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
 
 
 class PostOfferBodyModel(BaseModel):
@@ -35,7 +35,7 @@ class PostOfferBodyModel(BaseModel):
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
+        offers_validation.check_offer_name_length_is_valid(name)
         return name
 
     @validator("withdrawal_type")

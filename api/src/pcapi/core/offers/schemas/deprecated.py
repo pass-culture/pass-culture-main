@@ -4,10 +4,9 @@ from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import validator
 
+from pcapi.core.offers import validation
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
-from pcapi.validation.routes.offers import check_video_url
 
 
 OFFER_DESCRIPTION_MAX_LENGTH = 10_000
@@ -31,7 +30,7 @@ class PostDraftOfferBodyModel(BaseModel):
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
+        validation.check_offer_name_length_is_valid(name)
         return name
 
     class Config:
@@ -57,7 +56,7 @@ class PatchDraftOfferBodyModel(BaseModel):
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
-        check_offer_name_length_is_valid(name)
+        validation.check_offer_name_length_is_valid(name)
         return name
 
     @validator("video_url", pre=True)
@@ -68,7 +67,7 @@ class PatchDraftOfferBodyModel(BaseModel):
 
     @validator("video_url")
     def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
-        check_video_url(video_url)
+        validation.check_video_url(video_url)
         return video_url
 
     @validator("subcategory_id", pre=True)
