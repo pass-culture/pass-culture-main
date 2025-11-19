@@ -160,6 +160,7 @@ class CollectiveOfferTemplateAllowedAction(enum.Enum):
     CAN_CREATE_BOOKABLE_OFFER = "CAN_CREATE_BOOKABLE_OFFER"
     CAN_PUBLISH = "CAN_PUBLISH"
     CAN_HIDE = "CAN_HIDE"
+    CAN_SHARE = "CAN_SHARE"
 
 
 ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
@@ -231,6 +232,7 @@ TEMPLATE_ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
         CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,
         CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
         CollectiveOfferTemplateAllowedAction.CAN_HIDE,
+        CollectiveOfferTemplateAllowedAction.CAN_SHARE,
     ),
     CollectiveOfferDisplayedStatus.REJECTED: (CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE,),
     CollectiveOfferDisplayedStatus.ARCHIVED: (),
