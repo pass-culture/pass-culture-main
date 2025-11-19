@@ -129,8 +129,15 @@ class _FIELDS_V2:
         description="Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
         example="75101_8635_00182",  # Ban id of the French Ministry of Culture
     )
+    BAN_ID_NOT_REQUIRED = Field(
+        description="Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
+        example="75101_8635_00182",  # Ban id of the French Ministry of Culture
+        default=None,
+    )
     LATITUDE = Field(description="Latitude coordinate", example=48.86696)
+    LATITUDE_NOT_REQUIRED = Field(description="Latitude coordinate", example=48.86696, default=None)
     LONGITUDE = Field(description="Longitude coordinate", example=2.31014)
+    LONGITUDE_NOT_REQUIRED = Field(description="Longitude coordinate", example=2.31014, default=None)
     CITY = Field(description="City", example="Paris")
     POSTAL_CODE = Field(description="Postal Code", example="75001")
     STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")

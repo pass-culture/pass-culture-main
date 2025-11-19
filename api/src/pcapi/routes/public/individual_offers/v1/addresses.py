@@ -52,7 +52,7 @@ def get_address(
     if not address:
         raise api_errors.ResourceNotFoundError({"address": "We could not find any address for the given `id`"})
 
-    return AddressResponse.from_orm(address)
+    return AddressResponse.model_validate(address)
 
 
 @blueprints.public_api.route("/public/offers/v1/addresses/search", methods=["GET"])
@@ -110,7 +110,7 @@ def search_addresses(query: AddressModel) -> SearchAddressResponse:
             longitude=query.longitude,
         )
 
-    return SearchAddressResponse(addresses=[AddressResponse.from_orm(address) for address in addresses])
+    return SearchAddressResponse(addresses=[AddressResponse.model_validate(address) for address in addresses])
 
 
 @blueprints.public_api.route("/public/offers/v1/addresses", methods=["POST"])
