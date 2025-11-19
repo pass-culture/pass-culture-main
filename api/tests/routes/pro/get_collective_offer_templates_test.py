@@ -39,6 +39,7 @@ class Returns200Test:
                     "CAN_ARCHIVE",
                     "CAN_CREATE_BOOKABLE_OFFER",
                     "CAN_HIDE",
+                    "CAN_SHARE",
                 ],
                 "dates": {
                     "start": offer.start.isoformat() + "Z",

@@ -60,6 +60,7 @@ class Returns200Test:
             "CAN_ARCHIVE",
             "CAN_CREATE_BOOKABLE_OFFER",
             "CAN_HIDE",
+            "CAN_SHARE",
         ]
 
         assert response_json["location"] == {
