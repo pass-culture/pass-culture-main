@@ -10,7 +10,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import editFullIcon from '@/icons/full-edit.svg'
@@ -25,10 +24,6 @@ export const MAX_DRAFT_TO_DISPLAY = 50
 
 export const OnboardingOfferIndividual = (): JSX.Element => {
   const selectedOfferer = useSelector(selectCurrentOfferer)
-
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
 
   const offersQuery = useSWR(
     [GET_OFFERS_QUERY_KEY, { status: 'DRAFT' }],
@@ -69,15 +64,11 @@ export const OnboardingOfferIndividual = (): JSX.Element => {
         <FormLayout.Section className={styles['form-section']}>
           <div className={styles['offer-choices']}>
             <CardLink
-              to={
-                isNewOfferCreationFlowFFEnabled
-                  ? getIndividualOfferUrl({
-                      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                      mode: OFFER_WIZARD_MODE.CREATION,
-                      isOnboarding: true,
-                    })
-                  : '/onboarding/offre/creation'
-              }
+              to={getIndividualOfferUrl({
+                step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                mode: OFFER_WIZARD_MODE.CREATION,
+                isOnboarding: true,
+              })}
               icon={editFullIcon}
               label="Manuellement"
               direction="vertical"
