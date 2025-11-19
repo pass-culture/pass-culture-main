@@ -206,6 +206,13 @@ class GetOfferersNamesQueryModel(BaseModel):
         extra = "forbid"
 
 
+class GetEducationalOffererVenueResponseModelGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        if key in ("city", "postalCode", "street"):
+            return getattr(self._obj.offererAddress.address, key)
+        return super().get(key, default)
+
+
 class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     city: str | None
     id: int
@@ -220,6 +227,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
 
     class Config:
         orm_mode = True
+        getter_dict = GetEducationalOffererVenueResponseModelGetterDict
 
 
 # TODO(xordoquy): remove GetEducationalOffererResponseGetterDict once the soft delete lib is fixed
