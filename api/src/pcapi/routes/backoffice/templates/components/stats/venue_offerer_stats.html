@@ -1,0 +1,157 @@
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="card h-100 shadow">
+      <div class="card-body row p-5">
+        <div>
+          <h4>Offres</h4>
+          <div class="d-flex justify-content-between">
+            <div>
+              <h1 class="text-black">
+                {% set individual_offers = 0 %}
+                {% if stats.active_individual_offers is not none  and stats.inactive_individual_offers is not none %}
+                  {% set individual_offers = stats.active_individual_offers + stats.inactive_individual_offers %}
+                  {{ individual_offers }}
+                {% else %}
+                  N/A
+                {% endif %}
+              </h1>
+              <div>
+                {% if urls.list_offers %}
+                  <a class="link-primary"
+                     href="{{ urls.list_offers }}">individuelle{{ individual_offers|pluralize }}</a>
+                {% else %}
+                  individuelle{{ individual_offers|pluralize }}
+                {% endif %}
+              </div>
+              {% if stats.active_individual_offers is not none %}
+                {{ stats.active_individual_offers }}
+              {% else %}
+                N/A
+              {% endif %}
+              réservable{{ stats.active_individual_offers| pluralize }} |
+              {% if stats.inactive_individual_offers is not none %}
+                {{ stats.inactive_individual_offers }}
+              {% else %}
+                N/A
+              {% endif %}
+              non réservable{{ stats.inactive_individual_offers | pluralize }}
+            </div>
+            <div>
+              <h1 class="text-black">
+                {% set collective_offers = 0 %}
+                {% if stats.active_collective_offers is not none and stats.inactive_collective_offers is not none %}
+                  {% set collective_offers = stats.active_collective_offers +  stats.inactive_collective_offers %}
+                  {{ collective_offers }}
+                {% else %}
+                  N/A
+                {% endif %}
+              </h1>
+              <div>
+                {% if urls.list_collective_offers %}
+                  <a class="link-primary"
+                     href="{{ urls.list_collective_offers }}">collective{{ collective_offers | pluralize }}</a>
+                {% else %}
+                  collective{{ collective_offers | pluralize }}
+                {% endif %}
+              </div>
+              {% if stats.active_collective_offers is not none %}
+                {{ stats.active_collective_offers }}
+              {% else %}
+                N/A
+              {% endif %}
+              réservable{{ stats.active_collective_offers | pluralize }} |
+              {% if stats.inactive_collective_offers is not none %}
+                {{ stats.inactive_collective_offers }}
+              {% else %}
+                N/A
+              {% endif %}
+              non réservable{{ stats.inactive_collective_offers | pluralize }}
+            </div>
+            <div class="me-5">
+              <h1 class="text-black">
+                {% if stats.total_collective_offer_templates is not none %}
+                  {{ stats.total_collective_offer_templates }}
+                {% else %}
+                  N/A
+                {% endif %}
+              </h1>
+              <div>
+                {% if urls.list_collective_offer_templates %}
+                  <a class="link-primary"
+                     href="{{ urls.list_collective_offer_templates }}">vitrine</a>
+                {% else %}
+                  vitrine
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100 shadow">
+      <div class="card-body p-5">
+        <h4>Réservations</h4>
+        <div class="d-flex justify-content-between">
+          <div>
+            <h1 class="text-black">
+              {% if stats.individual_bookings is not none %}
+                {{ stats.individual_bookings }}
+              {% else %}
+                N/A
+              {% endif %}
+            </h1>
+            {% if urls.list_bookings %}
+              <a class="link-primary"
+                 href="{{ urls.list_bookings }}">individuelle{{ stats.individual_bookings | pluralize }}</a>
+            {% else %}
+              individuelle{{ stats.individual_bookings | pluralize }}
+            {% endif %}
+          </div>
+          <div class="me-5">
+            <h1 class="text-black">
+              {% if stats.collective_bookings is not none %}
+                {{ stats.collective_bookings }}
+              {% else %}
+                N/A
+              {% endif %}
+            </h1>
+            {% if urls.list_collective_bookins %}
+              <a class="link-primary"
+                 href="{{ urls.list_collective_bookins }}">collective{{ stats.collective_bookings | pluralize }}</a>
+            {% else %}
+              collective{{ stats.collective_bookings | pluralize }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card h-100 shadow">
+      <div class="card-body p-5">
+        <h4>Chiffre d'affaires total réalisé</h4>
+        <h1 class="text-black">
+          {% if  stats.total_revenue is not none %}
+            {{ stats.total_revenue | format_amount(target=object) }}
+          {% else %}
+            N/A
+          {% endif %}
+        </h1>
+        <div class="d-flex flex-row">
+          <div class="p-auto">
+            {% if stats.total_revenue is not none and stats.total_revenue > 0 %}
+              <a class="link-primary"
+                 data-bs-toggle="modal"
+                 data-bs-target="#display-revenue-details"
+                 role="button">Plus de détails…</a>
+              {{ build_dynamic_modal(urls.revenue_details , "display-revenue-details") }}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

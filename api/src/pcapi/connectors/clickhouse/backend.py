@@ -37,7 +37,7 @@ class BaseBackend:
                 results = connection.execute(sa.text(query), params).fetchall()
         except requests.exceptions.ConnectionError as e:
             logger.error("%s when querying Clickhouse: %s", type(e), str(e))
-            raise ApiErrors(errors={"clickhouse": "Can not connect to clickhouse server"}, status_code=422)
+            raise ApiErrors(errors={"clickhouse": "Cannot connect to clickhouse server"}, status_code=422)
         except Exception as err:
             logger.error("%s when querying Clickhouse: %s", type(err), str(err))
             raise ApiErrors(errors={"clickhouse": f"Error : {err}"}, status_code=400)

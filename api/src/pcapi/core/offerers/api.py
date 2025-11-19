@@ -7,6 +7,7 @@ import re
 import secrets
 import time
 import typing
+from collections import defaultdict
 from datetime import date
 from datetime import datetime
 from datetime import timedelta
@@ -27,7 +28,6 @@ import pcapi.core.finance.models as finance_models
 import pcapi.core.history.api as history_api
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
-import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.providers.models as providers_models
 import pcapi.core.users.models as users_models
@@ -38,6 +38,7 @@ import pcapi.utils.string as string_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
 from pcapi.connectors import virustotal
+from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.entreprise import api as api_entreprise
 from pcapi.connectors.entreprise import exceptions as entreprise_exceptions
 from pcapi.connectors.entreprise import models as sirene_models
@@ -71,6 +72,7 @@ from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import pc_object
 from pcapi.models import validation_status_mixin
+from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import offerers_serialize
@@ -2079,152 +2081,38 @@ def get_offerer_total_revenue(offerer_id: int, only_current_year: bool = False) 
     return db.session.execute(total_revenue_query).scalar() or 0.0
 
 
-def _get_is_expired_method(
-    offer_class: type[offers_api.AnyOffer],
-) -> sa.ColumnElement[bool] | sa_orm.QueryableAttribute:
-    match offer_class:
-        case offers_models.Offer:
-            return offers_models.Offer.hasBookingLimitDatetimesPassed
-        case educational_models.CollectiveOffer:
-            return educational_models.CollectiveOffer.hasStartDatetimePassed
-        case educational_models.CollectiveOfferTemplate:
-            return sa.sql.expression.false()
-        case _:
-            raise ValueError("Unexpected offer class")
+def get_venues_stats(venue_ids: typing.Iterable[int]) -> dict[str, int | decimal.Decimal | None]:
+    tuple_venue_ids = tuple(venue_ids)
+    stats: dict[str, int | decimal.Decimal | None] = defaultdict(lambda: None)
 
+    if not tuple_venue_ids:
+        return stats
 
-def get_offerer_offers_stats(offerer_id: int, max_offer_count: int = 0) -> dict:
-    def _get_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
-        is_expired_method = _get_is_expired_method(offer_class)
-
-        return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
-            sa.select(
-                sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(is_expired_method)), "active"),
-                    else_="inactive",
-                ).label("status"),
-                sa.func.count(offer_class.id).label("number"),
-            )
-            .select_from(offerers_models.Venue)
-            .outerjoin(offer_class)
-            .filter(
-                offerers_models.Venue.managingOffererId == offerer_id,
-                # TODO: remove filter on isActive when all DRAFT and PENDING collective_offers are effectively at isActive = False
-                sa.or_(
-                    sa.and_(
-                        offer_class.isActive,
-                        offer_class.validation == offer_mixin.OfferValidationStatus.APPROVED.value,
-                    ),
-                    sa.and_(
-                        sa.not_(offer_class.isActive),
-                        offer_class.validation.in_(
-                            [
-                                offer_mixin.OfferValidationStatus.APPROVED.value,
-                                offer_mixin.OfferValidationStatus.PENDING.value,
-                                offer_mixin.OfferValidationStatus.DRAFT.value,
-                            ]
-                        ),
-                    ),
-                ),
-            )
-            .group_by("status")
-            .subquery()
+    try:
+        if bookings_count := clickhouse_queries.CountBookingsQuery().execute({"venue_ids": tuple_venue_ids}):
+            stats |= bookings_count[0].dict()
+        if offers_data := clickhouse_queries.CountOffersQuery().execute({"venue_ids": tuple_venue_ids}):
+            stats |= offers_data[0].dict()
+        revenues = clickhouse_queries.AggregatedTotalRevenueQuery().execute({"venue_ids": tuple_venue_ids})
+        stats["total_revenue"] = sum([r.expected_revenue.total for r in revenues])
+    except ApiErrors as e:
+        logger.exception(
+            "An error occurred while requesting clickhouse for venues %s stats. Error %s",
+            venue_ids,
+            e.errors["clickhouse"],
         )
 
-    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
-        return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
-            sa.select(offer_class.id.label("offer_id"))
-            .join(offerers_models.Venue, offer_class.venue)
-            .filter(offerers_models.Venue.managingOffererId == offerer_id)
-            .limit(max_offer_count)
-            .subquery()
+    stats["total_collective_offer_templates"] = (
+        db.session.query(
+            sa.func.count(educational_models.CollectiveOfferTemplate.id),
         )
-
-    def _get_stats_for_offer_type(offer_class: type[offers_api.AnyOffer]) -> dict:
-        total_offer_count = db.session.execute(_max_count_query(offer_class)).scalar() or 0
-        if max_offer_count and total_offer_count >= max_offer_count:
-            return {
-                "active": -1,
-                "inactive": -1,
-            }
-        (data,) = db.session.execute(_get_query(offer_class)).one()
-        return {
-            "active": data.get("active", 0) if data else 0,
-            "inactive": data.get("inactive", 0) if data else 0,
-        }
-
-    return {
-        "offer": _get_stats_for_offer_type(offers_models.Offer),
-        "collective_offer": _get_stats_for_offer_type(educational_models.CollectiveOffer),
-        "collective_offer_template": _get_stats_for_offer_type(educational_models.CollectiveOfferTemplate),
-    }
-
-
-def get_venue_offers_stats(venue_id: int, max_offer_count: int = 0) -> dict:
-    def _get_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
-        is_expired_method = _get_is_expired_method(offer_class)
-
-        return sa.select(sa.func.jsonb_object_agg(sa.text("status"), sa.text("number"))).select_from(
-            sa.select(
-                sa.case(
-                    (sa.and_(offer_class.isActive, sa.not_(is_expired_method)), "active"),
-                    else_="inactive",
-                ).label("status"),
-                sa.func.count(offer_class.id).label("number"),
-            )
-            .select_from(offerers_models.Venue)
-            .outerjoin(offer_class)
-            .filter(
-                # TODO: remove filter on isActive when all DRAFT and PENDING collective_offers are effectively at isActive = False
-                sa.or_(
-                    sa.and_(
-                        offer_class.isActive,
-                        offer_class.venueId == venue_id,
-                        offer_class.validation == offer_mixin.OfferValidationStatus.APPROVED.value,
-                    ),
-                    sa.and_(
-                        sa.not_(offer_class.isActive),
-                        offer_class.venueId == venue_id,
-                        offer_class.validation.in_(
-                            [
-                                offer_mixin.OfferValidationStatus.APPROVED.value,
-                                offer_mixin.OfferValidationStatus.PENDING.value,
-                                offer_mixin.OfferValidationStatus.DRAFT.value,
-                            ]
-                        ),
-                    ),
-                ),
-            )
-            .group_by("status")
-            .subquery()
+        .filter(
+            educational_models.CollectiveOfferTemplate.venueId.in_(tuple_venue_ids),
         )
+        .scalar()
+    )
 
-    def _max_count_query(offer_class: type[offers_api.AnyOffer]) -> sa.sql.Select:
-        return sa.select(sa.func.count(sa.text("offer_id"))).select_from(
-            sa.select(offer_class.id.label("offer_id"))
-            .filter(offer_class.venueId == venue_id)
-            .limit(max_offer_count)
-            .subquery()
-        )
-
-    def _get_stats_for_offer_type(offer_class: type[offers_api.AnyOffer]) -> dict:
-        total_offer_count = db.session.execute(_max_count_query(offer_class)).scalar() or 0
-        if max_offer_count and total_offer_count >= max_offer_count:
-            return {
-                "active": -1,
-                "inactive": -1,
-            }
-        (data,) = db.session.execute(_get_query(offer_class)).one()
-        return {
-            "active": data.get("active", 0) if data else 0,
-            "inactive": data.get("inactive", 0) if data else 0,
-        }
-
-    return {
-        "offer": _get_stats_for_offer_type(offers_models.Offer),
-        "collective_offer": _get_stats_for_offer_type(educational_models.CollectiveOffer),
-        "collective_offer_template": _get_stats_for_offer_type(educational_models.CollectiveOfferTemplate),
-    }
+    return stats
 
 
 def count_offerers_by_validation_status() -> dict[str, int]:

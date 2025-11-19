@@ -10,7 +10,6 @@ import sqlalchemy as sa
 from flask import url_for
 
 from pcapi.connectors import api_adresse
-from pcapi.connectors.clickhouse import queries as clickhouse_queries
 from pcapi.connectors.clickhouse import query_mock as clickhouse_query_mock
 from pcapi.connectors.entreprise import models as entreprise_models
 from pcapi.core.bookings import factories as bookings_factories
@@ -36,8 +35,8 @@ from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.models import db
+from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.backoffice.pro.forms import TypeOptions
-from pcapi.routes.backoffice.venues import blueprint as venues_blueprint
 from pcapi.utils import date as date_utils
 from pcapi.utils import urls
 
@@ -391,7 +390,6 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Entité juridique : {venue.managingOfferer.name}" in response_text
         assert "Site web : https://www.example.com" in response_text
         assert "Validation des offres : Suivre les règles" in response_text
-        assert "Page partenaire" in response_text
 
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Partenaire culturel" in badges
@@ -526,33 +524,6 @@ class GetVenueTest(GetEndpointHelper):
         response_text = html_parser.content_as_text(response.data)
         assert "Partenaire culturel Fermé " in response_text
 
-    @pytest.mark.parametrize(
-        "role,has_offers_links,has_bookings_links",
-        [
-            (perm_models.Roles.SUPPORT_PRO, True, True),
-            (perm_models.Roles.PROGRAMMATION_MARKET, True, False),
-            (perm_models.Roles.CHARGE_DEVELOPPEMENT, False, False),
-        ],
-    )
-    def test_links_depending_on_permissions(
-        self, client, roles_with_permissions, role, has_offers_links, has_bookings_links
-    ):
-        bo_user = users_factories.AdminFactory(
-            backoffice_profile__roles=[r for r in roles_with_permissions if r.name == role.value]
-        )
-
-        venue = offerers_factories.VenueFactory()
-        url = url_for(self.endpoint, venue_id=venue.id)
-        client = client.with_bo_session_auth(bo_user)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = client.get(url)
-            assert response.status_code == 200
-
-        response_text = html_parser.content_as_text(response.data)
-        assert ("Offres BO" in response_text) is has_offers_links
-        assert ("Réservations BO" in response_text) is has_bookings_links
-
     def test_can_reset_venue(self, authenticated_client):
         venue = offerers_factories.VenueFactory()
         url = url_for(self.endpoint, venue_id=venue.id)
@@ -564,48 +535,6 @@ class GetVenueTest(GetEndpointHelper):
         assert ' data-has-reset="true" ' in str(response.data)
 
 
-class GetVenueStatsDataTest:
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
-    )
-    def test_get_stats_data(
-        self,
-        mock_run_query,
-        venue_with_accepted_bank_account,
-        offerer_active_individual_offers,
-        offerer_inactive_individual_offers,
-        offerer_active_collective_offers,
-        offerer_inactive_collective_offers,
-        offerer_expired_offers,
-        offerer_expired_collective_offers,
-    ):
-        venue_id = venue_with_accepted_bank_account.id
-
-        with assert_num_queries(6):
-            stats = venues_blueprint.get_stats_data(venue_id)
-
-        assert stats["active"]["individual"] == 2
-        assert stats["active"]["collective"] == 4
-        assert stats["inactive"]["individual"] == 9
-        assert stats["inactive"]["collective"] == 11
-
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
-    )
-    def test_no_offers(self, mock_run_query, venue):
-        venue_id = venue.id
-
-        with assert_num_queries(6):
-            stats = venues_blueprint.get_stats_data(venue_id)
-
-        assert stats["active"]["individual"] == 0
-        assert stats["active"]["collective"] == 0
-        assert stats["inactive"]["individual"] == 0
-        assert stats["inactive"]["collective"] == 0
-
-
 class GetVenueStatsTest(GetEndpointHelper):
     endpoint = "backoffice_web.venue.get_stats"
     endpoint_kwargs = {"venue_id": 1}
@@ -614,117 +543,46 @@ class GetVenueStatsTest(GetEndpointHelper):
     # get session (1 query)
     # get user with profile and permissions (1 query)
     # get venue with pricing point (1 query)
-    # get venue stats (6 query)
-    expected_num_queries = 9
+    # get collective offers templates count (1 query)
+    expected_num_queries = 4
 
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
-    )
-    def test_get_venue_with_no_siret(self, mock_run_query, authenticated_client, venue_with_no_siret):
-        venue_id = venue_with_no_siret.id
-        url = url_for(self.endpoint, venue_id=venue_id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-        pricing_point = venue_with_no_siret.pricing_point_links[0].pricingPoint
-        assert venue_with_no_siret.siret is None
-        assert f"Point de valorisation : {pricing_point.name}" in cards_content[2]
-
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
-    )
-    def test_get_venue_with_no_bank_account(self, mock_run_query, authenticated_client):
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-        assert cards_content[2].endswith("Compte bancaire :")
-
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
-    )
-    def test_get_venue_with_bank_account(self, mock_run_query, authenticated_client):
-        bank_account = finance_factories.BankAccountFactory()
-        venue = offerers_factories.VenueFactory(pricing_point="self")
-        offerers_factories.VenueBankAccountLinkFactory(
-            venue=venue, bankAccount=bank_account, timespan=(date_utils.get_naive_utc_now() - timedelta(days=1),)
-        )
-        url = url_for(self.endpoint, venue_id=venue.id)
-
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url)
-            assert response.status_code == 200
-
-        cards_content = html_parser.extract_cards_text(response.data)
-        assert (
-            f"Compte bancaire : {bank_account.label} ({(date_utils.get_naive_utc_now() - timedelta(days=1)).strftime('%d/%m/%Y')})"
-            in cards_content[2]
-        )
-
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
-    )
-    def test_venue_total_revenue_from_clickhouse(self, mock_run_query, authenticated_client):
+    def test_venue_total_revenue_from_clickhouse(self, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
 
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
-        mock_run_query.assert_called_once()
-        assert "70,48 € de CA" in html_parser.extract_cards_text(response.data)[0]
-
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=70.48)],
-    )
-    def test_venue_offers_stats(
-        self,
-        mock_run_query,
-        authenticated_client,
-        venue_with_accepted_bank_account,
-        offerer_active_individual_offers,
-        offerer_inactive_individual_offers,
-        offerer_active_collective_offers,
-        offerer_inactive_collective_offers,
-        offerer_active_collective_offer_templates,
-        offerer_inactive_collective_offer_templates,
-    ):
-        venue_id = venue_with_accepted_bank_account.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert "7 offres actives ( 2 IND / 5 EAC ) 16 offres inactives ( 5 IND / 11 EAC )" in cards_text
-
-    @patch(
-        "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
-        return_value=[clickhouse_queries.TotalExpectedRevenueModel(expected_revenue=0)],
-    )
-    def test_venue_offers_stats_0_if_no_offer(
-        self, mock_run_query, authenticated_client, venue_with_accepted_bank_account
-    ):
-        venue_id = venue_with_accepted_bank_account.id
-        with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
-            assert response.status_code == 200
-
-        cards_text = html_parser.extract_cards_text(response.data)
-        assert "0 offres actives ( 0 IND / 0 EAC ) 0 offres inactives ( 0 IND / 0 EAC )" in cards_text
+        response_text = html_parser.extract_cards_text(response.data)
+        assert (
+            "Offres 137 individuelles 125 réservables | 12 non réservables 56 collectives 54 réservables | 2 non réservables 0 vitrine"
+            in response_text[0]
+        )
+        assert "Réservations 876 individuelles 678 collectives" in response_text[1]
+        assert "Chiffre d'affaires total réalisé 70,48 € Plus de détails" in response_text[2]
 
     def test_get_venue_not_found(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=1))
         assert response.status_code == 404
+
+    @pytest.mark.settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.backend.ClickhouseBackend")
+    @patch(
+        "pcapi.connectors.clickhouse.backend.BaseBackend.run_query",
+        side_effect=ApiErrors(errors={"clickhouse": "Error : plouf"}, status_code=400),
+    )
+    def test_clickhouse_connector_raises_api_error(self, mock_run_query, authenticated_client):
+        venue_id = offerers_factories.VenueFactory().id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        assert (
+            "Offres N/A individuelle N/A réservable | N/A non réservable N/A collective N/A réservable | N/A non réservable 0 vitrine"
+            in html_parser.extract_cards_text(response.data)[0]
+        )
+        assert "Réservations N/A individuelle N/A collective" in html_parser.extract_cards_text(response.data)[1]
+        assert "Chiffre d'affaires total réalisé N/A" in html_parser.extract_cards_text(response.data)[2]
 
 
 class GetVenueRevenueDetailsTest(GetEndpointHelper):

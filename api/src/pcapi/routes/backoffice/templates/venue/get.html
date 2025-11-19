@@ -9,19 +9,20 @@
 {% from "components/presentation/details/tabs.html" import build_details_tabs_content_wrapper %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/dynamic/spinner.html" import build_loading_spinner with context %}
+{% from "components/connect_as.html" import build_connect_as_link %}
+{% from "components/dynamic/modal.html" import build_lazy_modal with context %}
 {% import "components/clipboard.html" as clipboard %}
 {% extends "layouts/pro.html" %}
-{% from "components/connect_as.html" import build_connect_as_link %}
+{% set page_title = venue.name %}
 {% set sync_zsell_aria_described_by_id = random_hash() %}
 {% block pro_main_content %}
   <div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
     <div class="col">
       <div class="card shadow">
-        <div class="card-body">
+        <div class="card-body p-5">
           <div class="d-flex flex-fill align-items-center">
             <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as, venue.name, "link-primary") }}</h2>
-            <span class="fs-5 ps-4">{{ build_venue_badges(venue, has_fraudulent_booking) }}</span>
-            <div class="d-flex row-reverse justify-content-end flex-grow-1">
+            <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2">
               {% if has_permission("MANAGE_PRO_ENTITY") %}
                 {{ build_modal_form("edit-venue", url_for("backoffice_web.venue.update_venue", venue_id=venue.id) , edit_venue_form, "Modifier les informations", "Modifier les informations du partenaire culturel", "Enregistrer") }}
               {% endif %}
@@ -32,6 +33,7 @@
               {% endif %}
             </div>
           </div>
+          <div class="mb-4">{{ build_venue_badges(venue, has_fraudulent_booking) }}</div>
           {% if venue.publicName and venue.publicName != venue.name %}
             <p class="card-subtitle text-muted mb-3 h5">Nom d'usage : {{ venue.publicName }}</p>
           {% endif %}
@@ -55,36 +57,82 @@
               {{ build_dynamic_modal(url_for("backoffice_web.venue.get_remove_siret_form", venue_id=venue.id) , "remove-venue-siret") }}
             {% endif %}
           </p>
+          <div>
+            {% if zendesk_sell_synchronisation_form %}
+              <button class="btn btn-outline-primary btn-sm px-4 py-3 fs-6"
+                      data-bs-toggle="modal"
+                      data-bs-target=".pc-sync-zsell-modal"
+                      type="button">
+                <i class="bi bi-arrow-repeat me-2"></i>Sync Zendesk Sell
+              </button>
+              <div class="modal modal-lg fade pc-sync-zsell-modal"
+                   tabindex="-1"
+                   aria-describedby="{{ sync_zsell_aria_described_by_id }}"
+                   aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                  <div class="modal-content">
+                    <form action="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) }}"
+                          name="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) | action_to_name }}"
+                          method="post">
+                      {{ zendesk_sell_synchronisation_form.csrf_token }}
+                      <div class="modal-header"
+                           id="{{ sync_zsell_aria_described_by_id }}">
+                        <h5 class="modal-title">Synchroniser le partenaire culturel {{ venue.common_name }} sur Zendesk Sell</h5>
+                      </div>
+                      <div class="modal-body row">
+                        <div class="d-flex align-items-center">
+                          <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
+                             style="font-size: 3.1rem"></i>
+                          <div>
+                            N'oubliez pas de vérifier que l'ID <b>{{ venue.id }}</b> est bien renseigné dans «&thinsp;Produit Venue ID&thinsp;» sur Zendesk Sell.
+                          </div>
+                        </div>
+                        {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button"
+                                class="btn btn-outline-primary-subtle-bg"
+                                data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit"
+                                class="btn btn-primary">Confirmer</button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          </div>
           <div class="row pt-3">
             <div class="col-4">
-              <div class="fs-6">
+              <h3 class="text-primary">Adresse :</h3>
+              <div class="fs-6 d-grid gap-2">
                 {% if region %}
-                  <p class="mb-1">
+                  <p class="m-0">
                     <span class="fw-bold">Région :</span>
                     {{ region }}
                   </p>
                 {% endif %}
                 {% if address %}
                   {% if address.street %}
-                    <p class="mb-1">
+                    <p class="m-0">
                       <span class="fw-bold">Adresse :</span>
                       {{ address.street }}
                     </p>
                   {% endif %}
                   {% if address.postalCode %}
-                    <p class="mb-1">
+                    <p class="m-0">
                       <span class="fw-bold">Code postal :</span>
                       {{ address.postalCode }}
                     </p>
                   {% endif %}
                   {% if address.city %}
-                    <p class="mb-1">
+                    <p class="m-0">
                       <span class="fw-bold">Ville :</span>
                       {{ address.city }}
                     </p>
                   {% endif %}
                   {% if address.latitude and address.longitude %}
-                    <p class="mb-1">
+                    <p class="m-0">
                       <span class="fw-bold">Coordonnées :</span>
                       {{ address.latitude }}, {{ address.longitude }}
                       {{ links.build_google_maps_icon(address) }}
@@ -92,7 +140,7 @@
                   {% endif %}
                 {% endif %}
                 {% if venue.bookingEmail %}
-                  <p class="mb-1">
+                  <p class="m-0">
                     <span class="fw-bold">Email :</span>
                     {{ venue.bookingEmail }}
                     <span class="ms-1">{{ clipboard.copy_to_clipboard(venue.bookingEmail, "Copier l'adresse email") }}</span>
@@ -100,7 +148,7 @@
                 {% endif %}
                 {% if venue.contact %}
                   {% if venue.contact.phone_number %}
-                    <p class="mb-1">
+                    <p class="m-0">
                       <span class="fw-bold">Numéro de téléphone :</span>
                       {{ venue.contact.phone_number }}
                     </p>
@@ -109,243 +157,199 @@
               </div>
             </div>
             <div class="col-4">
-              <p class="mb-1">
-                <span class="fw-bold">Peut créer une offre EAC : {{ venue.managingOfferer.allowedOnAdage | format_bool_badge }}</span>
-              </p>
-              {% if not venue.is_caledonian %}
-                <p class="mb-1">
-                  <span class="fw-bold">Cartographié sur ADAGE : {{ (venue.adageId is not none) | format_bool_badge }}</span>
+              <h3 class="text-primary">Informations générales :</h3>
+              <div class="fs-6 d-grid gap-2">
+                <p class="mb-0">
+                  <span class="fw-bold">Peut créer une offre EAC : {{ venue.managingOfferer.allowedOnAdage | format_bool_badge }}</span>
                 </p>
-              {% endif %}
-              {% if venue.adageId %}
-                <p class="mb-1">
-                  <span class="fw-bold">ID ADAGE :</span>
-                  {{ venue.adageId }}
+                {% if not venue.is_caledonian %}
+                  <p class="mb-0">
+                    <span class="fw-bold">Cartographié sur ADAGE : {{ (venue.adageId is not none) | format_bool_badge }}</span>
+                  </p>
+                {% endif %}
+                {% if venue.adageId %}
+                  <p class="mb-0">
+                    <span class="fw-bold">ID ADAGE :</span>
+                    {{ venue.adageId }}
+                  </p>
+                {% endif %}
+                <p class="mb-0">
+                  <span class="fw-bold">Ouvert au public :</span>
+                  {{ venue.isOpenToPublic | format_bool_badge }}
                 </p>
-              {% endif %}
-              <p class="mb-1">
-                <span class="fw-bold">Ouvert au public :</span>
-                {{ venue.isOpenToPublic | format_bool_badge }}
-              </p>
-              <p class="mb-1">
-                <span class="fw-bold">Activité principale :</span>
-                {{ venue.venueTypeCode.value }}
-              </p>
-              {% if venue.venueLabel %}
-                <p class="mb-1">
-                  <span class="fw-bold">Label :</span>
-                  {{ venue.venueLabel.label }}
+                <p class="mb-0">
+                  <span class="fw-bold">Activité principale :</span>
+                  {{ venue.venueTypeCode.value }}
                 </p>
-              {% endif %}
-              <p class="mb-1">
-                <span class="fw-bold">Entité juridique :</span>
-                {{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}
-              </p>
-              {% if venue.contact and venue.contact.website %}
-                <p class="mb-1">
-                  <span class="fw-bold">Site web :</span>
-                  {{ links.build_safe_redirect_link(venue.contact.website | format_website) }}
+                {% if venue.venueLabel %}
+                  <p class="mb-0">
+                    <span class="fw-bold">Label :</span>
+                    {{ venue.venueLabel.label }}
+                  </p>
+                {% endif %}
+                <p class="mb-0">
+                  <span class="fw-bold">Entité juridique :</span>
+                  {{ links.build_offerer_name_to_details_link(venue.managingOfferer) }}
                 </p>
-              {% endif %}
-              {% if venue.criteria %}
-                <p class="mb-1">
-                  <span class="fw-bold">Tags :</span>
-                  {{ venue.criteria | format_criteria }}
-                </p>
-              {% endif %}
-              {% if venue.accessibilityProvider %}
-                <p class="mb-1">
-                  <span class="fw-bold">Page Acceslibre :</span>
-                  {% if venue.accessibilityProvider.externalAccessibilityUrl %}
-                    {{ links.build_safe_redirect_link(venue.accessibilityProvider.externalAccessibilityUrl | format_website) }}
-                  {% elif venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
-                    Attention, l'URL pour l'identifiant Acceslibre <i>{{ venue.accessibilityProvider.externalAccessibilityId }}</i> n'est pas renseignée
-                  {% elif not venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
-                    Attention, l'URL et l'identifiant Acceslibre ne sont pas renseignés alors que le partenaire culturel est synchronisé
-                  {% endif %}
-                </p>
-              {% endif %}
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Validation des offres :</span>
-                  {{ venue | format_confidence_level_badge_for_venue }}
-                  {{ build_modal_form("edit-fraud", url_for("backoffice_web.venue.update_for_fraud", venue_id=venue.id) , fraud_form, "", "Fraude et Conformité", "Enregistrer", none, "bi-pencil") }}
-                </p>
-              {% endif %}
-            </div>
-            <div class="col-4">
-              {% for venue_provider in venue.venueProviders %}
-                <div class="mb-1 d-flex flex-row">
-                  <div>
-                    <span class="fw-bold">Provider :</span>
-                    {{ links.build_provider_name_to_details_link(venue_provider.provider) }}
-                    {% if venue_provider.isActive %}
-                      (actif)
-                    {% else %}
-                      (inactif)
+                {% if venue.contact and venue.contact.website %}
+                  <p class="mb-0">
+                    <span class="fw-bold">Site web :</span>
+                    {{ links.build_safe_redirect_link(venue.contact.website | format_website) }}
+                  </p>
+                {% endif %}
+                {% if venue.criteria %}
+                  <p class="mb-0">
+                    <span class="fw-bold">Tags :</span>
+                    {{ venue.criteria | format_criteria }}
+                  </p>
+                {% endif %}
+                {% if venue.accessibilityProvider %}
+                  <p class="mb-0">
+                    <span class="fw-bold">Page Acceslibre :</span>
+                    {% if venue.accessibilityProvider.externalAccessibilityUrl %}
+                      {{ links.build_safe_redirect_link(venue.accessibilityProvider.externalAccessibilityUrl | format_website) }}
+                    {% elif venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
+                      Attention, l'URL pour l'identifiant Acceslibre <i>{{ venue.accessibilityProvider.externalAccessibilityId }}</i> n'est pas renseignée
+                    {% elif not venue.accessibilityProvider.externalAccessibilityId and not venue.accessibilityProvider.externalAccessibilityUrl %}
+                      Attention, l'URL et l'identifiant Acceslibre ne sont pas renseignés alors que le partenaire culturel est synchronisé
                     {% endif %}
-                  </div>
-                  {% if has_permission("ADVANCED_PRO_SUPPORT") %}
-                    <div class="dropdown ms-2">
-                      <button type="button"
-                              data-bs-toggle="dropdown"
-                              aria-expanded="false"
-                              class="btn p-0">
-                        <i class="bi bi-three-dots-vertical"></i>
-                      </button>
-                      <ul class="dropdown-menu">
-                        <li class="dropdown-item p-0">
-                          <form action="{{ url_for('backoffice_web.venue.toggle_venue_provider_is_active', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
-                                name="{{ url_for('backoffice_web.venue.toggle_venue_provider_is_active', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
-                                method="post">
-                            {{ csrf_token }}
-                            <button type="submit"
-                                    class="btn btn-sm d-block w-100 text-start px-3">
-                              {% if venue_provider.isActive %}
-                                Mettre en pause
-                              {% else %}
-                                Réactiver
-                              {% endif %}
-                            </button>
-                          </form>
-                        </li>
-                        {% set has_delete_option = (venue_provider.provider.localClass != 'AllocineStocks') %}
-                        {% if has_delete_option %}
-                          <li class="dropdown-item p-0">
-                            <a class="btn btn-sm d-block w-100 text-start px-3"
-                               data-bs-toggle="modal"
-                               data-bs-target=".pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}">Supprimer le lien</a>
-                          </li>
-                        {% endif %}
-                      </ul>
-                    </div>
-                    {% if has_delete_option %}
-                      <div class="modal modal-lg fade pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
-                           tabindex="-1"
-                           aria-describedby="{{ delete_venue_modal_label_id }}"
-                           aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                          <div class="modal-content">
-                            <form action="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
-                                  name="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
-                                  method="POST">
-                              <div class="modal-header"
-                                   id="delete-venue-provider-modal-label">
-                                <h5 class="modal-title">
-                                  Supprimer le lien entre le partenaire culturel {{ venue.common_name }} et le provider {{ venue_provider.provider.name }}
-                                </h5>
-                              </div>
-                              <div class="modal-body row">
-                                <p>
-                                  Le lien entre <strong>{{ venue.common_name }}</strong> et <strong>{{ venue_provider.provider.name }}</strong> sera définitivement supprimé
-                                  de la base de données. Veuillez confirmer ce choix.
-                                </p>
-                                {{ build_form_fields_group(delete_form) }}
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button"
-                                        class="btn btn-outline-primary-subtle-bg"
-                                        data-bs-dismiss="modal">Annuler</button>
-                                <button type="submit"
-                                        class="btn btn-primary">Confirmer</button>
-                              </div>
-                            </form>
-                          </div>
-                        </div>
-                      </div>
-                    {% endif %}
-                  {% endif %}
-                </div>
-                <p class="mb-1">
-                  <span class="fw-bold">Dernière synchronisation :</span>
-                  {{ venue_provider.lastSyncDate | format_date_time }}
-                </p>
-              {% endfor %}
-              {% set search_params = {
-                              "search-0-search_field": "VENUE",
-                              "search-0-operator": "IN",
-                              "search-0-venue": venue.id,
-                            } %}
-              {% if has_permission("READ_OFFERS") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Offres BO :</span>
-                  <a href="{{ url_for('backoffice_web.offer.list_offers', **search_params) }}"
-                     class="link-primary">individuelles</a>
-                  {% if not venue.is_caledonian %}
-                    | <a href="{{ url_for('backoffice_web.collective_offer.list_collective_offers', **search_params) }}"
-    class="link-primary">collectives</a>
-                    | <a href="{{ url_for('backoffice_web.collective_offer_template.list_collective_offer_templates', venue=venue.id) }}"
-    class="link-primary">vitrine</a>
-                  {% endif %}
-                </p>
-              {% endif %}
-              {% if has_permission("READ_BOOKINGS") %}
-                <p class="mb-1">
-                  <span class="fw-bold">Réservations BO :</span>
-                  <a href="{{ url_for('backoffice_web.individual_bookings.list_individual_bookings', venue=venue.id) }}"
-                     class="link-primary">individuelles</a>
-                  {% if not venue.is_caledonian %}
-                    | <a href="{{ url_for('backoffice_web.collective_bookings.list_collective_bookings', venue=venue.id) }}"
-    class="link-primary">collectives</a>
-                  {% endif %}
-                </p>
-              {% endif %}
-              <p class="mb-1">
-                <a class="fw-bold link-primary"
-                   href="{{ venue | webapp_venue_link }}"
-                   data-bs-toggle="tooltip"
-                   data-bs-placement="top"
-                   data-bs-title="Visualiser le partenaire culturel sur l’app jeune"
-                   target="_blank">
-                  Page partenaire
-                  <i class="bi bi-phone"></i>
-                </a>
-              </p>
-              <div>
-                {% if zendesk_sell_synchronisation_form %}
-                  <button class="btn btn-outline-primary btn-sm"
-                          data-bs-toggle="modal"
-                          data-bs-target=".pc-sync-zsell-modal"
-                          type="button">
-                    <i class="bi bi-arrow-repeat"></i>
-                    Zendesk Sell
-                  </button>
-                  <div class="modal modal-lg fade pc-sync-zsell-modal"
-                       tabindex="-1"
-                       aria-describedby="{{ sync_zsell_aria_described_by_id }}"
-                       aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <form action="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) }}"
-                              name="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) | action_to_name }}"
-                              method="post">
-                          {{ zendesk_sell_synchronisation_form.csrf_token }}
-                          <div class="modal-header"
-                               id="{{ sync_zsell_aria_described_by_id }}">
-                            <h5 class="modal-title">Synchroniser le partenaire culturel {{ venue.common_name }} sur Zendesk Sell</h5>
-                          </div>
-                          <div class="modal-body row">
-                            <div class="d-flex align-items-center">
-                              <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
-                                 style="font-size: 3.1rem"></i>
-                              <div>
-                                N'oubliez pas de vérifier que l'ID <b>{{ venue.id }}</b> est bien renseigné dans «&thinsp;Produit Venue ID&thinsp;» sur Zendesk Sell.
-                              </div>
-                            </div>
-                            {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
-                          </div>
-                          <div class="modal-footer">
-                            <button type="button"
-                                    class="btn btn-outline-primary-subtle-bg"
-                                    data-bs-dismiss="modal">Annuler</button>
-                            <button type="submit"
-                                    class="btn btn-primary">Confirmer</button>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
+                  </p>
+                {% endif %}
+                {% if has_permission("PRO_FRAUD_ACTIONS") %}
+                  <div class="mb-0">
+                    <span class="fw-bold">Validation des offres :</span>
+                    {{ venue | format_confidence_level_badge_for_venue }}
+                    {{ build_modal_form("edit-fraud", url_for("backoffice_web.venue.update_for_fraud", venue_id=venue.id) , fraud_form, "", "Fraude et Conformité", "Enregistrer", none, "bi-pencil") }}
                   </div>
                 {% endif %}
+                {% for venue_provider in venue.venueProviders %}
+                  <div class="m-0 d-flex flex-row">
+                    <div>
+                      <span class="fw-bold">Provider :</span>
+                      {{ links.build_provider_name_to_details_link(venue_provider.provider) }}
+                      {% if venue_provider.isActive %}
+                        (actif)
+                      {% else %}
+                        (inactif)
+                      {% endif %}
+                    </div>
+                    {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+                      <div class="dropdown ms-2">
+                        <button type="button"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                class="btn p-0">
+                          <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li class="dropdown-item p-0">
+                            <form action="{{ url_for('backoffice_web.venue.toggle_venue_provider_is_active', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                                  name="{{ url_for('backoffice_web.venue.toggle_venue_provider_is_active', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                                  method="post">
+                              {{ csrf_token }}
+                              <button type="submit"
+                                      class="btn btn-sm d-block w-100 text-start px-3">
+                                {% if venue_provider.isActive %}
+                                  Mettre en pause
+                                {% else %}
+                                  Réactiver
+                                {% endif %}
+                              </button>
+                            </form>
+                          </li>
+                          {% set has_delete_option = (venue_provider.provider.localClass != 'AllocineStocks') %}
+                          {% if has_delete_option %}
+                            <li class="dropdown-item p-0">
+                              <a class="btn btn-sm d-block w-100 text-start px-3"
+                                 data-bs-toggle="modal"
+                                 data-bs-target=".pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}">Supprimer le lien</a>
+                            </li>
+                          {% endif %}
+                        </ul>
+                      </div>
+                      {% if has_delete_option %}
+                        <div class="modal modal-lg fade pc-delete-venue-provider-modal-{{ venue_provider.provider.id }}"
+                             tabindex="-1"
+                             aria-describedby="{{ delete_venue_modal_label_id }}"
+                             aria-hidden="true">
+                          <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                              <form action="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                                    name="{{ url_for('backoffice_web.venue.delete_venue_provider', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                                    method="POST">
+                                <div class="modal-header"
+                                     id="delete-venue-provider-modal-label">
+                                  <h5 class="modal-title">
+                                    Supprimer le lien entre le partenaire culturel {{ venue.common_name }} et le provider {{ venue_provider.provider.name }}
+                                  </h5>
+                                </div>
+                                <div class="modal-body row">
+                                  <p>
+                                    Le lien entre <strong>{{ venue.common_name }}</strong> et <strong>{{ venue_provider.provider.name }}</strong> sera définitivement supprimé
+                                    de la base de données. Veuillez confirmer ce choix.
+                                  </p>
+                                  {{ build_form_fields_group(delete_form) }}
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button"
+                                          class="btn btn-outline-primary-subtle-bg"
+                                          data-bs-dismiss="modal">Annuler</button>
+                                  <button type="submit"
+                                          class="btn btn-primary">Confirmer</button>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </div>
+                      {% endif %}
+                    {% endif %}
+                  </div>
+                  <p class="mb-0">
+                    <span class="fw-bold">Dernière synchronisation :</span>
+                    {{ venue_provider.lastSyncDate | format_date_time }}
+                  </p>
+                {% endfor %}
+              </div>
+            </div>
+            <div class="col-4">
+              <h3 class="text-primary">Informations bancaires :</h3>
+              <div class="fs-6 d-grid gap-2">
+                <div class="mb-0">
+                  <span class="fw-bold">Point de valorisation :</span>
+                  {% set pricing_point = venue.current_pricing_point %}
+                  {% if pricing_point %}
+                    {% if pricing_point.id != venue.id %}
+                      <a href="{{ url_for('backoffice_web.venue.get', venue_id=pricing_point.id) }}"
+                         class="link-primary">{{ pricing_point.common_name }}</a>
+                      {% if has_permission("ADVANCED_PRO_SUPPORT") %}
+                        <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"
+                                data-bs-toggle="modal"
+                                data-bs-target="#remove-venue-pricing-point"
+                                type="button">
+                          <i class="bi bi-trash3-fill"></i>
+                        </button>
+                        {{ build_lazy_modal(url_for("backoffice_web.venue.get_remove_pricing_point_form", venue_id=venue.id) , "remove-venue-pricing-point") }}
+                      {% endif %}
+                    {% else %}
+                      {{ pricing_point.common_name | empty_string_if_null }}
+                    {% endif %}
+                  {% elif has_permission("ADVANCED_PRO_SUPPORT") %}
+                    <button class="btn btn-link lead fw-bold mx-0 my-0 py-0"
+                            data-bs-toggle="modal"
+                            data-bs-target="#set-venue-pricing-point"
+                            type="button">
+                      <i class="bi-pencil"></i>
+                    </button>
+                    {{ build_lazy_modal(url_for("backoffice_web.venue.get_set_pricing_point_form", venue_id=venue.id) , "set-venue-pricing-point") }}
+                  {% endif %}
+                </div>
+                <div class="mb-0">
+                  {% set bank_account_link = venue.current_bank_account_link %}
+                  <span class="fw-bold">Compte bancaire :</span>
+                  {% if bank_account_link %}
+                    {{ links.build_bank_account_name_to_details_link(bank_account_link.bankAccount) }} ({{ bank_account_link.timespan.lower | format_date }})
+                  {% endif %}
+                </div>
               </div>
             </div>
           </div>
