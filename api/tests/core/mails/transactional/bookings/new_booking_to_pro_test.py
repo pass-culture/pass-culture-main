@@ -28,12 +28,12 @@ def make_booking(**kwargs):
         stock__price=10,
         stock__offer__name="Super évènement",
         stock__offer__subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
-        stock__offer__venue__name="Lieu de l'offreur",
-        stock__offer__venue__street="25 avenue du lieu",
-        stock__offer__venue__postalCode="75010",
-        stock__offer__venue__city="Paris",
         stock__offer__venue__managingOfferer__name="Théâtre du coin",
-        stock__offer__venue__departementCode="75",
+        stock__offer__venue__name="Lieu de l'offreur",
+        stock__offer__venue__offererAddress__address__street="25 avenue du lieu",
+        stock__offer__venue__offererAddress__address__postalCode="75010",
+        stock__offer__venue__offererAddress__address__city="Paris",
+        stock__offer__venue__offererAddress__address__departmentCode="75",
     )
     attributes.update(kwargs)
     return bookings_factories.BookingFactory(**attributes)

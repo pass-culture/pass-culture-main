@@ -229,13 +229,9 @@ def test_index_collective_offers_templates():
         address__postalCode="20113",
     )
     collective_offer_template_north_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode="2B",
-        venue__postalCode="20213",
         venue__offererAddress=offerer_address_north_corsica,
     )
     collective_offer_template_south_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__departementCode="2A",
-        venue__postalCode="20113",
         venue__offererAddress=offerer_address_south_corsica,
     )
 
