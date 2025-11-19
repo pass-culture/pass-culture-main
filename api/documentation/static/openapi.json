@@ -906,6 +906,7 @@
                 "type": "object"
             },
             "AddressModel": {
+                "additionalProperties": false,
                 "properties": {
                     "city": {
                         "description": "City",
@@ -916,22 +917,36 @@
                         "type": "string"
                     },
                     "latitude": {
+                        "anyOf": [
+                            {
+                                "maximum": 90,
+                                "minimum": -90,
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Latitude coordinate",
                         "example": 48.86696,
-                        "maximum": 90,
-                        "minimum": -90,
-                        "nullable": true,
-                        "title": "Latitude",
-                        "type": "number"
+                        "title": "Latitude"
                     },
                     "longitude": {
+                        "anyOf": [
+                            {
+                                "maximum": 180,
+                                "minimum": -180,
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Longitude coordinate",
                         "example": 2.31014,
-                        "maximum": 180,
-                        "minimum": -180,
-                        "nullable": true,
-                        "title": "Longitude",
-                        "type": "number"
+                        "title": "Longitude"
                     },
                     "postalCode": {
                         "description": "Postal Code",
@@ -958,18 +973,25 @@
                 "type": "object"
             },
             "AddressResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "banId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Id from the French **[Base nationale d'adresses](https://adresse.data.gouv.fr/)**",
                         "example": "75101_8635_00182",
-                        "nullable": true,
-                        "title": "Banid",
-                        "type": "string"
+                        "title": "Banid"
                     },
                     "city": {
                         "description": "City",
                         "example": "Paris",
-                        "nullable": true,
                         "title": "City",
                         "type": "string"
                     },
@@ -992,14 +1014,12 @@
                     "postalCode": {
                         "description": "Postal Code",
                         "example": "75001",
-                        "nullable": true,
                         "title": "Postalcode",
                         "type": "string"
                     },
                     "street": {
                         "description": "Street name and number",
                         "example": "182 Rue Saint-Honor\u00e9",
-                        "nullable": true,
                         "title": "Street",
                         "type": "string"
                     }
@@ -1007,7 +1027,10 @@
                 "required": [
                     "id",
                     "latitude",
-                    "longitude"
+                    "longitude",
+                    "city",
+                    "postalCode",
+                    "street"
                 ],
                 "title": "AddressResponse",
                 "type": "object"
@@ -8635,6 +8658,7 @@
                 "type": "object"
             },
             "SearchAddressResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "addresses": {
                         "items": {
@@ -10156,13 +10180,20 @@
                         "name": "latitude",
                         "required": false,
                         "schema": {
+                            "anyOf": [
+                                {
+                                    "maximum": 90,
+                                    "minimum": -90,
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
                             "description": "Latitude coordinate",
                             "example": 48.86696,
-                            "maximum": 90,
-                            "minimum": -90,
-                            "nullable": true,
-                            "title": "Latitude",
-                            "type": "number"
+                            "title": "Latitude"
                         }
                     },
                     {
@@ -10171,13 +10202,20 @@
                         "name": "longitude",
                         "required": false,
                         "schema": {
+                            "anyOf": [
+                                {
+                                    "maximum": 180,
+                                    "minimum": -180,
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
                             "description": "Longitude coordinate",
                             "example": 2.31014,
-                            "maximum": 180,
-                            "minimum": -180,
-                            "nullable": true,
-                            "title": "Longitude",
-                            "type": "number"
+                            "title": "Longitude"
                         }
                     }
                 ],

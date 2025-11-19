@@ -52,18 +52,24 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
         [
             (
                 {"postalCode": "7500"},
-                {"postalCode": ['string does not match regex "^(?:0[1-9]|[1-8]\\d|9[0-8])\\d{3}$"']},
+                {"postalCode": ["String should match pattern '^(?:0[1-9]|[1-8]\\d|9[0-8])\\d{3}$'"]},
             ),
-            ({"city": "a" * 201}, {"city": ["ensure this value has at most 200 characters"]}),
-            ({"street": "a" * 201}, {"street": ["ensure this value has at most 200 characters"]}),
-            ({"city": ""}, {"city": ["ensure this value has at least 1 characters"]}),
-            ({"street": ""}, {"street": ["ensure this value has at least 1 characters"]}),
-            ({"latitude": 91}, {"latitude": ["ensure this value is less than or equal to 90"]}),
-            ({"longitude": -183}, {"longitude": ["ensure this value is greater than or equal to -180"]}),
-            ({"latitude": -92}, {"latitude": ["ensure this value is greater than or equal to -90"]}),
-            ({"longitude": 190}, {"longitude": ["ensure this value is less than or equal to 180"]}),
-            ({"latitude": "coucou"}, {"latitude": ["value is not a valid float"]}),
-            ({"longitude": "hey"}, {"longitude": ["value is not a valid float"]}),
+            ({"city": "a" * 201}, {"city": ["String should have at most 200 characters"]}),
+            ({"street": "a" * 201}, {"street": ["String should have at most 200 characters"]}),
+            ({"city": ""}, {"city": ["String should have at least 1 character"]}),
+            ({"street": ""}, {"street": ["String should have at least 1 character"]}),
+            ({"latitude": 91}, {"latitude": ["Input should be less than or equal to 90"]}),
+            ({"longitude": -183}, {"longitude": ["Input should be greater than or equal to -180"]}),
+            ({"latitude": -92}, {"latitude": ["Input should be greater than or equal to -90"]}),
+            ({"longitude": 190}, {"longitude": ["Input should be less than or equal to 180"]}),
+            (
+                {"latitude": "coucou"},
+                {"latitude": ["Input should be a valid number, unable to parse string as a number"]},
+            ),
+            (
+                {"longitude": "hey"},
+                {"longitude": ["Input should be a valid number, unable to parse string as a number"]},
+            ),
         ],
     )
     def test_should_raise_400_because_of_bad_params(self, partial_query, expected_json):
@@ -77,11 +83,11 @@ class SearchAddressesTest(PublicAPIEndpointBaseHelper):
     @pytest.mark.parametrize(
         "missing_param,expected_json",
         [
-            ("postalCode", {"postalCode": ["field required"]}),
-            ("city", {"city": ["field required"]}),
-            ("street", {"street": ["field required"]}),
-            ("latitude", {"__root__": ["`latitude` must be set if `longitude` is provided"]}),
-            ("longitude", {"__root__": ["`longitude` must be set if `latitude` is provided"]}),
+            ("postalCode", {"postalCode": ["Field required"]}),
+            ("city", {"city": ["Field required"]}),
+            ("street", {"street": ["Field required"]}),
+            ("latitude", {"latitude": ["Value error, `latitude` must be set if `longitude` is provided"]}),
+            ("longitude", {"longitude": ["Value error, `longitude` must be set if `latitude` is provided"]}),
         ],
     )
     def test_should_raise_400_because_of_missing_params(self, missing_param, expected_json):
