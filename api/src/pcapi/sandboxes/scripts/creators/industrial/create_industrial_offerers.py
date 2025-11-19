@@ -87,14 +87,14 @@ def create_industrial_offerers() -> dict[str, Offerer]:
             offerer.siren = str(MOCK_ADAGE_ELIGIBLE_SIREN)
             offerers_factories.VenueFactory.create(
                 managingOfferer=offerer,
-                street=location.address.upper(),
                 bookingEmail="fake@email.com",
-                city=location.city,
                 comment="Salle de cinéma",
                 name=offerer.name + " - Salle 1",
-                postalCode=location.postalCode,
                 siret="88145723811111",
                 venueTypeCode=VenueTypeCode.MOVIE,
+                offererAddress__address__street=location.address.upper(),
+                offererAddress__address__city=location.city,
+                offererAddress__address__postalCode=location.postalCode,
             )
 
         offerers_by_name[offerer_name] = offerer

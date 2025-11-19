@@ -51,8 +51,6 @@ class Returns200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__latitude=None,
-            venue__longitude=None,
             venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
             ean="0123456789123",
@@ -84,8 +82,6 @@ class Returns404Test:
         user_offerer = offerers_factories.UserOffererFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__latitude=None,
-            venue__longitude=None,
             venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
             ean="0123456789123",
@@ -104,8 +100,6 @@ class Returns404Test:
         user_offerer = offerers_factories.UserOffererFactory()
         offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__latitude=None,
-            venue__longitude=None,
             venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
             ean="0123456789123",

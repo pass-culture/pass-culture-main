@@ -104,33 +104,6 @@ class VenueFactory(BaseFactory):
         offerer=factory.SelfAttribute("..managingOfferer"),
     )
 
-    # TODO: CLEAN_OA - section to be deleted - once these attributes are removed from Venue model, we can add abstraction to allow VenueFactory.create(address=...) or VenueFactory.create(street=...)
-    latitude: float | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.latitude if o.offererAddress and not o.isVirtual else None
-    )
-    longitude: float | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.longitude if o.offererAddress and not o.isVirtual else None
-    )
-    street: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.street if o.offererAddress and not o.isVirtual else None
-    )
-    banId: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.banId if o.offererAddress and not o.isVirtual else None
-    )
-    postalCode: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.postalCode if o.offererAddress and not o.isVirtual else "01000"
-    )
-    departementCode: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.departmentCode if o.offererAddress and not o.isVirtual else None
-    )
-    city: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.city if o.offererAddress and not o.isVirtual else None
-    )
-    timezone: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.timezone if o.offererAddress and not o.isVirtual else None
-    )
-    # TODO: CLEAN_OA - end of section to be deleted
-
     @factory.post_generation
     def pricing_point(
         self,

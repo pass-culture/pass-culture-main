@@ -2,7 +2,6 @@ import datetime
 import itertools
 import pathlib
 import random
-import typing
 
 from dateutil.relativedelta import relativedelta
 from factory.faker import faker
@@ -19,7 +18,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.criteria import constants
 from pcapi.core.criteria import factories as criteria_factories
-from pcapi.core.criteria import models as criteria_models
 from pcapi.core.finance.factories import RecreditFactory
 from pcapi.core.finance.models import DepositType
 from pcapi.core.finance.models import RecreditType
@@ -413,13 +411,15 @@ def create_offers_with_gtls() -> None:
     librairie_gtl = offerers_factories.VenueFactory.create(
         name="Librairie des GTls",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        latitude=45.91967,
-        longitude=3.06504,
-        street="13 AVENUE BARADUC",
-        postalCode="63140",
-        city="CHATEL-GUYON",
-        departementCode="63",
-        banId="63103_0040_00013",
+        offererAddress=offerers_factories.VenueLocationFactory.create(
+            address__latitude=45.91967,
+            address__longitude=3.06504,
+            address__street="13 AVENUE BARADUC",
+            address__postalCode="63140",
+            address__city="CHATEL-GUYON",
+            address__departmentCode="63",
+            address__banId="63103_0040_00013",
+        ),
     )
     _create_offers_for_each_gtl_level_1(10, librairie_gtl)
     _create_offers_with_gtl_id("01030000", 10, librairie_gtl)  # littérature, Œuvres classiques
@@ -433,13 +433,15 @@ def create_offers_with_gtls() -> None:
     librairie_manga = offerers_factories.VenueFactory.create(
         name="Librairie des mangas",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        latitude=46.66979,
-        longitude=-1.42979,
-        street="11 RUE GEORGES CLEMENCEAU",
-        postalCode="85000",
-        city="LA ROCHE-SUR-YON",
-        departementCode="85",
-        banId="85191_0940_00011",
+        offererAddress=offerers_factories.VenueLocationFactory.create(
+            address__latitude=46.66979,
+            address__longitude=-1.42979,
+            address__street="11 RUE GEORGES CLEMENCEAU",
+            address__postalCode="85000",
+            address__city="LA ROCHE-SUR-YON",
+            address__departmentCode="85",
+            address__banId="85191_0940_00011",
+        ),
     )
     _create_offers_with_gtl_id("03050300", 10, librairie_manga)  # 10 mangas
 
@@ -487,13 +489,13 @@ def create_offers_with_same_ean() -> None:
                 venue=offerers_factories.VenueFactory.create(
                     name=venue_data["name"],
                     venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-                    latitude=venue_data["latitude"],
-                    longitude=venue_data["longitude"],
-                    street=venue_data["address"],
-                    postalCode=venue_data["postalCode"],
-                    city=venue_data["city"],
-                    departementCode=venue_data["departementCode"],
-                    banId=venue_data["banId"],
+                    offererAddress__address__latitude=venue_data["latitude"],
+                    offererAddress__address__longitude=venue_data["longitude"],
+                    offererAddress__address__street=venue_data["address"],
+                    offererAddress__address__postalCode=venue_data["postalCode"],
+                    offererAddress__address__city=venue_data["city"],
+                    offererAddress__address__departmentCode=venue_data["departementCode"],
+                    offererAddress__address__banId=venue_data["banId"],
                 ),
             )
         )
@@ -590,13 +592,13 @@ def _create_allocine_venues() -> list[offerers_models.Venue]:
         allocine_synchonized_venue = offerers_factories.VenueFactory.create(
             name=venue_data["name"],
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
-            latitude=venue_data["latitude"],
-            longitude=venue_data["longitude"],
-            street=venue_data["address"],
-            postalCode=venue_data["postalCode"],
-            city=venue_data["city"],
-            departementCode=venue_data["departementCode"],
-            banId=venue_data["banId"],
+            offererAddress__address__latitude=venue_data["latitude"],
+            offererAddress__address__longitude=venue_data["longitude"],
+            offererAddress__address__street=venue_data["address"],
+            offererAddress__address__postalCode=venue_data["postalCode"],
+            offererAddress__address__city=venue_data["city"],
+            offererAddress__address__departmentCode=venue_data["departementCode"],
+            offererAddress__address__banId=venue_data["banId"],
             managingOfferer=allocine_offerer,
         )
         allocine_provider = providers_factories.AllocineProviderFactory.create(isActive=True)
@@ -818,13 +820,13 @@ def create_venues_across_cities() -> None:
             venue = offerers_factories.VenueFactory.create(
                 name=venue["city"] + "-" + venue["name"],
                 venueTypeCode=venue_type_code,
-                latitude=venue["latitude"],
-                longitude=venue["longitude"],
-                street=venue["address"],
-                postalCode=venue["postalCode"],
-                city=venue["city"],
-                departementCode=venue["departementCode"],
-                banId=venue["banId"],
+                offererAddress__address__latitude=venue["latitude"],
+                offererAddress__address__longitude=venue["longitude"],
+                offererAddress__address__street=venue["address"],
+                offererAddress__address__postalCode=venue["postalCode"],
+                offererAddress__address__city=venue["city"],
+                offererAddress__address__departmentCode=venue["departementCode"],
+                offererAddress__address__banId=venue["banId"],
             )
             for _ in range(7):
                 offer = offers_factories.OfferFactory.create(
@@ -891,8 +893,8 @@ def create_offers_for_each_subcategory() -> None:
                 stock = offers_factories.EventStockFactory.create(
                     offer__product=None,
                     offer__subcategoryId=subcategory.id,
-                    offer__venue__latitude=48.87004 if is_in_Paris else 43.29542,
-                    offer__venue__longitude=2.37850 if is_in_Paris else 5.37421,
+                    offer__venue__offererAddress__address__latitude=48.87004 if is_in_Paris else 43.29542,
+                    offer__venue__offererAddress__address__longitude=2.37850 if is_in_Paris else 5.37421,
                     price=0 if is_free else i * 2,
                     quantity=i * 10,
                     beginningDatetime=date_utils.get_naive_utc_now()
@@ -919,12 +921,12 @@ def create_offers_with_same_author() -> None:
         offerers_factories.VenueFactory.create(
             name="same author " + str(venue["name"]),
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-            latitude=venue["latitude"],
-            longitude=venue["longitude"],
-            street=venue["address"],
-            postalCode=venue["postalCode"],
-            city=venue["city"],
-            departementCode=venue["departementCode"],
+            offererAddress__address__latitude=venue["latitude"],
+            offererAddress__address__longitude=venue["longitude"],
+            offererAddress__address__street=venue["address"],
+            offererAddress__address__postalCode=venue["postalCode"],
+            offererAddress__address__city=venue["city"],
+            offererAddress__address__departmentCode=venue["departementCode"],
         )
         for venue in random.choices(venues_mock.venues, k=4)
     ]
@@ -1122,7 +1124,7 @@ def create_venues_with_practical_info_graphical_edge_cases() -> None:
     )
     offerers_factories.VenueFactory.create(
         name="Lieu avec une adresse trop longue",
-        street=(
+        offererAddress__address__street=(
             "50 rue de l'adresse la plus longue qui a presque atteint la limite de caractères en base de données, "
             "une adresse vraiment très longue qui prend toute la place sur l'écran, bâtiment B, étage 3, salle 4"
         ),

@@ -17,27 +17,27 @@ def create_industrial_venues_with_timezone() -> None:
     offerers_factories.VenueFactory.create(
         publicName="America/Cayenne",
         managingOfferer=offerer,
-        timezone="America/Cayenne",
-        departementCode="973",
-        postalCode="97300",
+        offererAddress__address__timezone="America/Cayenne",
+        offererAddress__address__departmentCode="973",
+        offererAddress__address__postalCode="97300",
     )
 
     # Indian/Reunion
     offerers_factories.VenueFactory.create(
         publicName="Indian/Reunion",
         managingOfferer=offerer,
-        timezone="Indian/Reunion",
-        departementCode="974",
-        postalCode="97415",
+        offererAddress__address__timezone="Indian/Reunion",
+        offererAddress__address__departmentCode="974",
+        offererAddress__address__postalCode="97415",
     )
 
     # Pacific/Noumea
     offerers_factories.VenueFactory.create(
         publicName="Pacific/Noumea",
         managingOfferer=offerer,
-        timezone="Pacific/Noumea",
-        departementCode="988",
-        postalCode="98800",
+        offererAddress__address__timezone="Pacific/Noumea",
+        offererAddress__address__departmentCode="988",
+        offererAddress__address__postalCode="98800",
     )
 
     # Timezone with winter & summer time
@@ -45,18 +45,18 @@ def create_industrial_venues_with_timezone() -> None:
     offerers_factories.VenueFactory.create(
         publicName="Europe/Paris",
         managingOfferer=offerer,
-        timezone="Europe/Paris",
-        departementCode="78",
-        postalCode="78220",
+        offererAddress__address__timezone="Europe/Paris",
+        offererAddress__address__departmentCode="78",
+        offererAddress__address__postalCode="78220",
     )
 
     # America/Miquelon
     offerers_factories.VenueFactory.create(
         publicName="America/Miquelon",
         managingOfferer=offerer,
-        timezone="America/Miquelon",
-        departementCode="975",
-        postalCode="97500",
+        offererAddress__address__timezone="America/Miquelon",
+        offererAddress__address__departmentCode="975",
+        offererAddress__address__postalCode="97500",
     )
 
     # Pacific/Pitcairn (Clipperton) has no inhabitants, so I don't create venue for it
