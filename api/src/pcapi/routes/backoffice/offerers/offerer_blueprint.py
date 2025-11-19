@@ -281,55 +281,32 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
     return _render_offerer_details(offerer_id)
 
 
-def get_stats_data(offerer: offerers_models.Offerer) -> utils.StatsData:
-    PLACEHOLDER = decimal.Decimal(-1)
-    offers_stats = offerers_api.get_offerer_offers_stats(offerer.id, max_offer_count=1000)
-    is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
-    is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
-    is_individual_too_big = offers_stats["offer"]["active"] == -1
-
-    stats: utils.StatsData = {
-        "active": {
-            "collective": PLACEHOLDER,
-            "individual": PLACEHOLDER,
-            "total": PLACEHOLDER,
-        },
-        "inactive": {
-            "collective": PLACEHOLDER,
-            "individual": PLACEHOLDER,
-            "total": PLACEHOLDER,
-        },
-        "total_revenue": PLACEHOLDER,
-        "placeholder": PLACEHOLDER,
+def _get_stat_urls(offerer: offerers_models.Offerer) -> dict[str, str]:
+    urls = {}
+    search_params = {
+        "search-0-search_field": "OFFERER",
+        "search-0-operator": "IN",
+        "search-0-offerer": offerer.id,
     }
-
-    if not is_collective_too_big:
-        stats["active"]["collective"] = (
-            offers_stats["collective_offer"]["active"] + offers_stats["collective_offer_template"]["active"]
+    if utils.has_current_user_permission(perm_models.Permissions.READ_OFFERS):
+        urls["list_offers"] = url_for("backoffice_web.offer.list_offers", **search_params)  # type: ignore [arg-type]
+        urls["list_collective_offers"] = url_for(
+            "backoffice_web.collective_offer.list_collective_offers",
+            **search_params,  # type: ignore [arg-type]
         )
-        stats["inactive"]["collective"] = (
-            offers_stats["collective_offer"]["inactive"] + offers_stats["collective_offer_template"]["inactive"]
+        urls["list_collective_offer_templates"] = url_for(
+            "backoffice_web.collective_offer_template.list_collective_offer_templates", offerer=offerer.id
         )
-    if not is_individual_too_big:
-        stats["active"]["individual"] = offers_stats["offer"]["active"]
-        stats["inactive"]["individual"] = offers_stats["offer"]["inactive"]
+    if utils.has_current_user_permission(perm_models.Permissions.READ_BOOKINGS):
+        urls["list_bookings"] = url_for(
+            "backoffice_web.individual_bookings.list_individual_bookings", offerer=offerer.id
+        )
+        urls["list_collective_bookins"] = url_for(
+            "backoffice_web.collective_bookings.list_collective_bookings", offerer=offerer.id
+        )
 
-    if not (is_collective_too_big or is_individual_too_big):
-        stats["active"]["total"] = stats["active"]["collective"] + stats["active"]["individual"]
-        stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
-
-    if not offerer.managedVenues:
-        stats["total_revenue"] = decimal.Decimal(0)
-    else:
-        try:
-            clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute(
-                {"venue_ids": tuple(venue.id for venue in offerer.managedVenues)}
-            )
-            stats["total_revenue"] = clickhouse_results[0].expected_revenue
-        except ApiErrors:
-            stats["total_revenue"] = PLACEHOLDER
-
-    return stats
+    urls["revenue_details"] = url_for("backoffice_web.offerer.get_revenue_details", offerer_id=offerer.id)
+    return urls
 
 
 @offerer_blueprint.route("/stats", methods=["GET"])
@@ -342,11 +319,13 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     )
     if not offerer:
         raise NotFound()
-    data = get_stats_data(offerer)
+
+    stats = offerers_api.get_venues_stats(venue_ids=(venue.id for venue in offerer.managedVenues))
     return render_template(
-        "offerer/get/stats.html",
-        stats=data,
-        offerer=offerer,
+        "components/stats/venue_offerer_stats.html",
+        urls=_get_stat_urls(offerer),
+        stats=stats,
+        object=offerer,
     )
 
 

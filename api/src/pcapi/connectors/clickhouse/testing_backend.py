@@ -1,14 +1,8 @@
 from sqlalchemy import engine
 
+from . import queries
+from . import query_mock
 from .backend import BaseBackend
-from .queries import AggregatedCollectiveRevenueQuery
-from .queries import AggregatedIndividualRevenueQuery
-from .queries import AggregatedTotalRevenueQuery
-from .queries import TotalExpectedRevenueQuery
-from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE
-from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE
-from .query_mock import MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE
-from .query_mock import TOTAL_EXPECTED_REVENUE
 
 
 class TestingBackend(BaseBackend):
@@ -16,12 +10,16 @@ class TestingBackend(BaseBackend):
         raise NotImplementedError
 
     def run_query(self, query: str, params: dict) -> list:
-        if query == TotalExpectedRevenueQuery().raw_query:
-            return TOTAL_EXPECTED_REVENUE
-        if query == AggregatedCollectiveRevenueQuery().raw_query:
-            return MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE
-        if query == AggregatedIndividualRevenueQuery().raw_query:
-            return MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE
-        if query == AggregatedTotalRevenueQuery().raw_query:
-            return MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE
+        if query == queries.TotalExpectedRevenueQuery().raw_query:
+            return query_mock.TOTAL_EXPECTED_REVENUE
+        if query == queries.AggregatedCollectiveRevenueQuery().raw_query:
+            return query_mock.MULTIPLE_YEARS_AGGREGATED_VENUE_COLLECTIVE_REVENUE
+        if query == queries.AggregatedIndividualRevenueQuery().raw_query:
+            return query_mock.MULTIPLE_YEARS_AGGREGATED_VENUE_INDIVIDUAL_REVENUE
+        if query == queries.AggregatedTotalRevenueQuery().raw_query:
+            return query_mock.MULTIPLE_YEARS_AGGREGATED_VENUE_TOTAL_REVENUE
+        if query == queries.CountBookingsQuery().raw_query:
+            return query_mock.COUNT_BOOKINGS
+        if query == queries.CountOffersQuery().raw_query:
+            return query_mock.COUNT_OFFERS
         return []
