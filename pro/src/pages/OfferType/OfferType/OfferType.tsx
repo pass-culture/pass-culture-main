@@ -28,7 +28,6 @@ import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGr
 
 import { ActionsBar } from './ActionsBar/ActionsBar'
 import { CollectiveOfferType } from './CollectiveOfferType/CollectiveOfferType'
-import { IndividualOfferType } from './IndividualOfferType/IndividualOfferType'
 import styles from './OfferType.module.scss'
 import type { OfferTypeFormValues } from './types'
 
@@ -51,9 +50,6 @@ function getInitialValues(collectiveOnly: boolean) {
 }
 
 export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const navigate = useNavigate()
@@ -86,15 +82,10 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
   const onSubmit = async ({ offer }: OfferTypeFormValues) => {
     if (offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO) {
       const params = new URLSearchParams(location.search)
-      if (!isNewOfferCreationFlowFeatureActive) {
-        params.append('offer-type', offer.individualOfferSubtype)
-      }
 
       return navigate({
         pathname: getIndividualOfferUrl({
-          step: isNewOfferCreationFlowFeatureActive
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         }),
@@ -199,9 +190,6 @@ export const OfferTypeScreen = ({ collectiveOnly }: OfferTypeScreenProps) => {
                 sizing="hug"
               />
             )}
-
-            {offer.offerType === OFFER_TYPES.INDIVIDUAL_OR_DUO &&
-              !isNewOfferCreationFlowFeatureActive && <IndividualOfferType />}
 
             {offer.offerType === OFFER_TYPES.EDUCATIONAL && (
               <CollectiveOfferType offerer={offerer} />
