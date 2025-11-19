@@ -2,6 +2,7 @@ import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
+import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
@@ -88,7 +89,13 @@ describe('CollectiveOfferPreviewCreation', () => {
   it('should render share link drawer when the FF WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled and offer is template', async () => {
     renderCollectiveOfferPreviewCreation(
       '/offre/T-A1/collectif/apercu',
-      defaultProps,
+      {
+        ...defaultProps,
+        offer: {
+          ...defaultProps.offer,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
+        },
+      },
       ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
     )
 

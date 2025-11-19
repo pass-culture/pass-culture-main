@@ -254,6 +254,11 @@ export const OfferActionsCell = ({
     CollectiveOfferTemplateAllowedAction.CAN_HIDE
   )
 
+  const canShareOffer = isActionAllowedOnCollectiveOffer(
+    offer,
+    CollectiveOfferTemplateAllowedAction.CAN_SHARE
+  )
+
   const noActionsAllowed = offer.allowedActions.length === 0
 
   const canEditOffer = isCollectiveOfferEditable(offer)
@@ -345,7 +350,8 @@ export const OfferActionsCell = ({
             </DropdownMenu.Item>
           )}
           {!isCollectiveOfferBookable(offer) &&
-            isCollectiveOfferTemplateShareLinkEnabled && (
+            isCollectiveOfferTemplateShareLinkEnabled &&
+            canShareOffer && (
               <DropdownMenu.Item
                 className={styles['menu-item']}
                 asChild

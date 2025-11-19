@@ -419,7 +419,10 @@ describe('CollectiveEditionOfferNavigation', () => {
       {
         ...props,
         isTemplate: true,
-        offer: getCollectiveOfferTemplateFactory({ isTemplate: true }),
+        offer: getCollectiveOfferTemplateFactory({
+          isTemplate: true,
+          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
+        }),
       },
       ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
     )

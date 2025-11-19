@@ -12,4 +12,5 @@ export enum CollectiveOfferTemplateAllowedAction {
   CAN_CREATE_BOOKABLE_OFFER = 'CAN_CREATE_BOOKABLE_OFFER',
   CAN_PUBLISH = 'CAN_PUBLISH',
   CAN_HIDE = 'CAN_HIDE',
+  CAN_SHARE = 'CAN_SHARE',
 }
