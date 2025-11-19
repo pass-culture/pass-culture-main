@@ -3,12 +3,16 @@ import { addDays, format } from 'date-fns'
 import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
-  logInAndGoToPage,
+  sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
 describe('Search individual offers', () => {
+  let login: string
+  let venueName0: string
   let venueName: string
+  let venueFullAddress0: string
   let venueFullAddress: string
+  let offerName0: string
   let offerName1: string
   let offerName2: string
   let offerName3: string
@@ -17,15 +21,18 @@ describe('Search individual offers', () => {
   let offerName6: string
   let offerName7: string
 
-  beforeEach(() => {
+  before(() => {
     cy.visit('/connexion')
     cy.sandboxCall(
       'GET',
       'http://localhost:5001/sandboxes/pro/create_pro_user_with_individual_offers',
       (response) => {
-        logInAndGoToPage(response.body.user.email, '/offres')
+        login = response.body.user.email
+        venueName0 = response.body.venue0.name
         venueName = response.body.venue.name
+        venueFullAddress0 = response.body.venue0.fullAddress
         venueFullAddress = response.body.venue.fullAddress
+        offerName0 = response.body.offer0.name
         offerName1 = response.body.offer1.name
         offerName2 = response.body.offer2.name
         offerName3 = response.body.offer3.name
@@ -35,6 +42,10 @@ describe('Search individual offers', () => {
         offerName7 = response.body.offer7.name
       }
     )
+  })
+
+  beforeEach(() => {
+    sessionLogInAndGoToPage('Session search individual', login, '/offres')
     cy.intercept({
       method: 'GET',
       url: '/offers?**',
@@ -215,6 +226,67 @@ describe('Search individual offers', () => {
     expectOffersOrBookingsAreFound(expectedResults)
   })
 
+  it('I should be able to search by venue and see expected results', () => {
+    cy.stepLog({ message: 'I search with the text "Livre"' })
+    cy.stepLog({ message: 'I open the filters' })
+    cy.findByText('Filtrer').click()
+    cy.findByTestId('wrapper-address').within(() => {
+      cy.get('select').select(1)
+    })
+    cy.findByText('Rechercher').click()
+    cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
+
+    cy.stepLog({ message: 'These 7 results should be displayed' })
+    const expectedResults2 = [
+      ['', 'Titre', 'Localisation', 'Stocks', 'Status'],
+      ['', offerName7, `${venueName} - ${venueFullAddress}`, '0', 'épuisée'],
+      [
+        '',
+        offerName6,
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
+      ],
+      [
+        '',
+        offerName5,
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
+      ],
+      [
+        '',
+        offerName4,
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
+      ],
+      [
+        '',
+        offerName3,
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
+      ],
+      [
+        '',
+        offerName2,
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
+      ],
+      [
+        '',
+        offerName1,
+        `${venueName} - ${venueFullAddress}`,
+        '1 000',
+        'publiée',
+      ],
+    ]
+
+    expectOffersOrBookingsAreFound(expectedResults2)
+  })
+
   it('I should be able to search combining several filters and see expected results', () => {
     cy.stepLog({ message: 'I search with the text "Livre"' })
     cy.findByRole('searchbox', { name: /Nom de l’offre/ }).type('incroyable')
@@ -337,6 +409,7 @@ describe('Search individual offers', () => {
         '1 000',
         'publiée',
       ],
+      ['', offerName0, `${venueName0} - ${venueFullAddress0}`, '0', 'épuisée'],
     ]
 
     expectOffersOrBookingsAreFound(expectedResults2)

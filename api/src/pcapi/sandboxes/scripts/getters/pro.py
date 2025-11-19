@@ -214,7 +214,9 @@ def create_pro_user_with_individual_offers() -> dict:
     pro_user = users_factories.ProFactory.create()
     offerer = offerers_factories.OffererFactory.create()
     offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
+    venue0 = offerers_factories.VenueFactory.create(name="Mon Lieu 2", managingOfferer=offerer, isPermanent=True)
     venue = offerers_factories.VenueFactory.create(name="Mon Lieu", managingOfferer=offerer, isPermanent=True)
+    offer0 = offers_factories.ThingOfferFactory.create(venue=venue0, name="Offre pour ma venue 2")
     offer1 = offers_factories.ThingOfferFactory.create(venue=venue, name="Une super offre")
     offers_factories.StockFactory.create(offer=offer1)
     offer2 = offers_factories.ThingOfferFactory.create(
@@ -258,7 +260,9 @@ def create_pro_user_with_individual_offers() -> dict:
     )
     return {
         "user": get_pro_user_helper(pro_user),
+        "venue0": {"name": venue0.name, "fullAddress": venue0.offererAddress.address.fullAddress},
         "venue": {"name": venue.name, "fullAddress": venue.offererAddress.address.fullAddress},
+        "offer0": {"name": offer0.name},
         "offer1": {"name": offer1.name},
         "offer2": {"name": offer2.name},
         "offer3": {"name": offer3.name},

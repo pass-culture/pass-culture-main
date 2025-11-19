@@ -18,6 +18,7 @@ describe('Create collective offers', () => {
   let offerDraft: { id: number; name: string; venueName: string }
 
   const newOfferName = 'Ma nouvelle offre collective créée'
+  const otherVenueName = 'Mon Lieu 2'
   const venueName = 'Mon Lieu 1'
   const venueFullAddress = '1 boulevard Poissonnière, 75002, Paris'
   const defaultDate = addDays(new Date(), 2)
@@ -75,6 +76,10 @@ describe('Create collective offers', () => {
   const fillBasicOfferForm = () => {
     cy.findByText('Étape suivante').click()
     cy.wait('@getDomains')
+    cy.findByLabelText(/Structure/).select(venueName)
+    cy.findByText('Mon Lieu 1 - 1 boulevard Poissonnière 75002 Paris')
+    cy.findByLabelText(/Structure/).select(otherVenueName)
+    cy.findByText('Mon Lieu 2 - 1 boulevard Poissonnière 75002 Paris')
     cy.findByLabelText(/Structure/).select(venueName)
     cy.findByLabelText('Domaines artistiques').click()
     cy.findByLabelText('Architecture').click()

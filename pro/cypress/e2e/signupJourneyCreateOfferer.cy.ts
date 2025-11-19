@@ -88,10 +88,61 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.stepLog({ message: 'the next step is displayed' })
     cy.url().should('contain', '/inscription/structure/confirmation')
 
+    cy.findByText('5 Rue Curial, 75019 Paris')
+
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
     cy.stepLog({ message: 'I validate the registration' })
+
+    cy.findByText('Valider et créer ma structure').click()
+    cy.wait('@createOfferer')
+
+    cy.stepLog({ message: 'the offerer is created' })
+
+    cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
+
+    cy.contains('Où souhaitez-vous diffuser votre première offre ?').should(
+      'be.visible'
+    )
+  })
+
+  it('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET) and a custom address', () => {
+    interceptSearch5Adresses()
+
+    goToOffererCreation(login)
+
+    cy.findByLabelText(/Numéro de SIRET à 14 chiffres/).type(mySiret)
+    cy.findByText('Continuer').click()
+    cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
+
+    cy.findByLabelText('Nom public').type(newVenueName)
+    cy.findByText('Oui').click()
+
+    cy.findByText('Vous ne trouvez pas votre adresse ?').click()
+    cy.findAllByLabelText(/Adresse postale/)
+      .last()
+      .type('10 Rue du test')
+    cy.findAllByLabelText(/Code postal/).type('75002')
+    cy.findAllByLabelText(/Ville/).type('Paris')
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
+    cy.findAllByLabelText(/Coordonnées GPS/)
+      .type('48.853320, 2.348979')
+      .blur()
+    cy.findByText('Vérifiez la localisation en cliquant ici').should(
+      'be.visible'
+    )
+
+    cy.findByText('Étape suivante').click()
+
+    cy.url().should('contain', '/inscription/structure/activite')
+    cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
+    cy.findByLabelText('Numéro de téléphone').type('612345678')
+    cy.findByText('Au grand public').click()
+    cy.findByText('Étape suivante').click()
+    cy.url().should('contain', '/inscription/structure/confirmation')
+
+    cy.findByText('10 Rue du test, 75002 Paris')
 
     cy.findByText('Valider et créer ma structure').click()
     cy.wait('@createOfferer')
