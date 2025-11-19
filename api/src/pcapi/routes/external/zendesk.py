@@ -1,10 +1,10 @@
 import logging
 
+from pcapi.connectors.serialization import zendesk_serializers
 from pcapi.routes.apis import public_api
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.tasks.zendesk_tasks import UpdateZendeskAttributesRequest
 from pcapi.tasks.zendesk_tasks import update_zendesk_attributes_task
-from pcapi.validation.routes import zendesk as zendesk_validation
 
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 @public_api.route("/webhooks/zendesk/ticket_notification", methods=["POST"])
 @spectree_serialize(on_success_status=204, on_error_statuses=[400, 403])
-def zendesk_webhook_ticket_notification(body: zendesk_validation.WebhookRequest) -> None:
+def zendesk_webhook_ticket_notification(body: zendesk_serializers.WebhookRequest) -> None:
     anonymized_body = {
         "is_new_ticket": body.is_new_ticket,
         "requester_id": body.requester_id,
