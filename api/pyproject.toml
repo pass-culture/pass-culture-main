@@ -77,7 +77,7 @@ slack-sdk = "3.38.0"
 spectree = "1.5.7"
 sqlalchemy = { version = "2.0.44", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
-time-machine = "2.19.0"
+time-machine = "3.0.0"
 transitions = "^0.9.3"
 weasyprint = "66.0"
 werkzeug = "3.1.3"
