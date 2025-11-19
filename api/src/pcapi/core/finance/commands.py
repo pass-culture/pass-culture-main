@@ -1,9 +1,14 @@
 import datetime
 import decimal
 import logging
+import signal
+import sys
+import time
+import typing
 
 import click
 import sqlalchemy.orm as sa_orm
+from flask import current_app as app
 
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.exceptions as finance_exceptions
@@ -14,6 +19,7 @@ import pcapi.utils.cron as cron_decorators
 import pcapi.utils.date as date_utils
 from pcapi import settings
 from pcapi.connectors.dms.utils import import_ds_applications
+from pcapi.core.finance import conf
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import ds
 from pcapi.core.finance import external as finance_external
@@ -266,8 +272,14 @@ def push_bank_accounts(count: int) -> None:
     type=int,
     default=100,
 )
+@click.option(
+    "--override-work-hours-check",
+    help="Run push_invoices even during work hours",
+    required=False,
+    is_flag=True,
+)
 @cron_decorators.log_cron_with_transaction
-def push_invoices(count: int) -> None:
+def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
     if not FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW or not FeatureToggle.ENABLE_INVOICE_SYNC:
         logger.info(
             "Sync invoice cronjob with not run. "
@@ -275,4 +287,14 @@ def push_invoices(count: int) -> None:
         )
         return
 
-    finance_external.push_invoices(count)
+    # in case of a pod fail unrelated to the script, we delete the lock so the restart works
+    def handler(signal_number: int, stack_frame: typing.Any) -> None:
+        logger.error("Rollback and delete redis lock before restarting push_invoices")
+        db.session.rollback()
+        time.sleep(5)
+        app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
+        sys.exit(1)
+
+    signal.signal(signal.SIGTERM, handler)
+
+    finance_external.push_invoices(count, override_work_hours_check)
