@@ -273,10 +273,16 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "hasPartnerPage":
             return venue.has_partner_page
 
+        if key == "activity":
+            if not venue.activity or venue.activity == offerers_models.Activity.NOT_ASSIGNED:
+                return None
+            return offerers_models.DisplayedActivity[venue.activity.name]
+
         return super().get(key, default)
 
 
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
+    activity: offerers_models.DisplayedActivity | None
     dateCreated: datetime
     id: int
     bannerMeta: BannerMetaModel | None

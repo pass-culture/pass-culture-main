@@ -97,6 +97,7 @@ class Returns200Test:
         )
         offers_factories.EventStockFactory(offer__venue=venue)
         expected_serialized_venue = {
+            "activity": None,
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bookingEmail": venue.bookingEmail,
             "contact": {
