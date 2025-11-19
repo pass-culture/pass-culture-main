@@ -13,6 +13,23 @@ from pcapi.utils import date as date_utils
 from pcapi.utils.date import timespan_str_to_numrange
 
 
+OFFER_DESCRIPTION = (
+    "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum "
+    "sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies "
+    "nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, "
+    "aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo. Nullam dictum "
+    "felis eu pede mollis pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper nisi. Aenean vulputate "
+    "eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus "
+    "in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean "
+    "imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. "
+    "Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet adipiscing sem neque sed "
+    "ipsum. Nam quam nunc, blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante tincidunt "
+    "tempus. Donec vitae sapien ut libero venenatis faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus "
+    "tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales sagittis magna. Sed consequat, leo eget "
+    "bibendum sodales, augue velit cursus nunc."
+)
+
+
 def create_offerer() -> offerers_models.Offerer:
     max_siren = db.session.execute(
         sa.select(sa.func.max(sa.cast(offerers_models.Offerer.siren, sa.Integer))).filter(
@@ -100,6 +117,7 @@ def create_accessibility_offers() -> dict:
 
     offer1 = offers_factories.OfferFactory.build(
         name="Offre cinéma - Audit Access42",
+        description=OFFER_DESCRIPTION,
         venue=venue,
         subcategoryId=subcategories.SEANCE_CINE.id,
         publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
@@ -121,6 +139,7 @@ def create_accessibility_offers() -> dict:
 
     offer2 = offers_factories.OfferFactory.build(
         venue=venue,
+        description=OFFER_DESCRIPTION,
         name="Offre livre - Audit Access42",
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
@@ -133,6 +152,7 @@ def create_accessibility_offers() -> dict:
     offer3 = offers_factories.OfferFactory.build(
         venue=venue,
         name="Ne pas auditer - Offre livre - Audit Access42",
+        description=OFFER_DESCRIPTION,
         subcategoryId=subcategories.CARTE_JEUNES.id,
         publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
@@ -144,6 +164,7 @@ def create_accessibility_offers() -> dict:
     offer4 = offers_factories.OfferFactory.build(
         venue=venue,
         name="Ne pas auditer - Offre numérique - Audit Access42",
+        description=OFFER_DESCRIPTION,
         subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
         publicationDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=1),
     )
