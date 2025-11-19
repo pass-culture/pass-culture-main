@@ -33,7 +33,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
       import(
         '@/pages/IndividualOfferSummary/IndividualOfferSummaryDetails/IndividualOfferSummaryDetails'
       ),
-    path: '/offre/individuelle/:offerId/recapitulatif/details',
+    path: '/offre/individuelle/:offerId/recapitulatif/description',
     title: 'Détails de l’offre - Consulter une offre individuelle',
   },
   //  Description

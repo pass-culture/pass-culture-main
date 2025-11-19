@@ -3,14 +3,11 @@ import { computeAddressDisplayName } from 'repository/venuesService'
 import {
   type GetIndividualOfferResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
+  OfferStatus,
   type SubcategoryResponseModel,
   type VenueListItemResponseModel,
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
-import {
-  OFFER_STATUS_PENDING,
-  OFFER_STATUS_REJECTED,
-} from '@/commons/core/Offers/constants'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import {
   FORM_DEFAULT_VALUES,
@@ -105,7 +102,7 @@ export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel
 ): string[] {
   const readOnlyField: string[] = []
-  if ([OFFER_STATUS_REJECTED, OFFER_STATUS_PENDING].includes(offer.status)) {
+  if ([OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)) {
     return Object.keys(DEFAULT_USEFUL_INFORMATION_INITIAL_VALUES)
   }
 
@@ -118,46 +115,4 @@ export function getFormReadOnlyFields(
   }
 
   return readOnlyField
-}
-
-// Temporary clone of `src/pages/IndividualOffer/commons/getOfferConditionalFields.ts`
-// that will disappear with this entire page once `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF is enabled in production.
-/** @deprecated */
-/* istanbul ignore next: see above comment */
-export const getOfferConditionalFields = ({
-  offerSubCategory = null,
-  receiveNotificationEmails = null,
-}: {
-  offerSubCategory?: SubcategoryResponseModel | null
-  receiveNotificationEmails?: boolean | null
-}): string[] => {
-  const offerConditionalFields = []
-
-  if (offerSubCategory?.isEvent) {
-    offerConditionalFields.push('durationMinutes')
-  }
-
-  if (offerSubCategory?.canBeDuo) {
-    offerConditionalFields.push('isDuo')
-  }
-
-  if (offerSubCategory?.conditionalFields.includes('musicType')) {
-    offerConditionalFields.push('musicSubType')
-  }
-
-  if (offerSubCategory?.conditionalFields.includes('showType')) {
-    offerConditionalFields.push('showSubType')
-  }
-
-  if (receiveNotificationEmails) {
-    offerConditionalFields.push('bookingEmail')
-  }
-
-  if (offerSubCategory?.canBeWithdrawable) {
-    offerConditionalFields.push('withdrawalType')
-    offerConditionalFields.push('withdrawalDelay')
-    offerConditionalFields.push('bookingContact')
-  }
-
-  return offerConditionalFields
 }

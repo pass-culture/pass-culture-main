@@ -8,7 +8,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
@@ -30,26 +29,18 @@ export const useSaveOfferPriceTable = ({
   const { pathname } = useLocation()
   const notify = useNotification()
 
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
-
   const isOnboarding = pathname.indexOf('onboarding') !== -1
 
   const saveAndContinue = async (
     formValues: PriceTableFormValues
   ): Promise<void> => {
-    const creationNextStepId = isNewOfferCreationFlowFFEnabled
-      ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-      : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
-
     const nextStepUrl = getIndividualOfferUrl({
       offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
           : offer.isEvent
-            ? creationNextStepId
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
             : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,

@@ -141,8 +141,8 @@ describe('IndividualOfferConfirmation', () => {
     )
   })
 
-  it('should redirect to offer creation first step if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', () => {
-    renderOffer(contextOverride, ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'])
+  it('should redirect to offer creation first step', () => {
+    renderOffer(contextOverride)
 
     expect(
       screen.getByRole('link', { name: 'Créer une nouvelle offre' })

@@ -29,7 +29,7 @@ describe('IndividualOfferTimetableScreen', () => {
   it('should render the timetable type choice', async () => {
     renderIndividualOfferTimetableScreen(
       { offer: getIndividualOfferFactory({ isEvent: true, hasStocks: false }) },
-      ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW', 'WIP_ENABLE_OHO']
+      ['WIP_ENABLE_OHO']
     )
 
     await waitFor(() => {
@@ -42,25 +42,9 @@ describe('IndividualOfferTimetableScreen', () => {
   })
 
   it('should not render the timetable type choice if the WIP_ENABLE_OHO FF is disabled', async () => {
-    renderIndividualOfferTimetableScreen(
-      { offer: getIndividualOfferFactory({ isEvent: true, hasStocks: false }) },
-      ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW']
-    )
-
-    await waitFor(() => {
-      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    renderIndividualOfferTimetableScreen({
+      offer: getIndividualOfferFactory({ isEvent: true, hasStocks: false }),
     })
-
-    expect(
-      screen.queryByRole('group', { name: /Quand profiter de l’offre/ })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not render the timetable type choice if the WIP_ENABLE_NEW_OFFER_CREATION_FLOW FF is disabled', async () => {
-    renderIndividualOfferTimetableScreen(
-      { offer: getIndividualOfferFactory({ isEvent: true, hasStocks: false }) },
-      ['WIP_ENABLE_OHO']
-    )
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()

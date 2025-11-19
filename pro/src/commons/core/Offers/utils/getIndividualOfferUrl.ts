@@ -16,7 +16,7 @@ const routes = {
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/details`,
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/details`,
-    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/recapitulatif/details`,
+    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/recapitulatif/description`,
   },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/description`,

@@ -119,11 +119,8 @@ describe('<IndividualOfferInformations />', () => {
       }),
     })
     const contextValues = { offer }
-    const options = {
-      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
-    }
 
-    renderIndividualOfferInformations({ contextValues, options })
+    renderIndividualOfferInformations({ contextValues })
 
     expect(screen.getByTestId('location-page')).toBeInTheDocument()
   })

@@ -7,7 +7,6 @@ import type {
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
@@ -34,8 +33,6 @@ type DetailsFormProps = {
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
   readOnlyFields: string[]
-  // TODO (igabriele, 2025-07-24): Remove this prop once the FF is enabled in production.
-  withUrlInput?: boolean
 }
 
 export const DetailsForm = ({
@@ -46,7 +43,6 @@ export const DetailsForm = ({
   filteredCategories,
   filteredSubcategories,
   readOnlyFields,
-  withUrlInput = false,
 }: DetailsFormProps): JSX.Element => {
   const {
     formState: { errors },
@@ -59,9 +55,6 @@ export const DetailsForm = ({
   const subcategoryId = watch('subcategoryId')
   const accessibility = watch('accessibility')
 
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
   const isSubCategorySelected =
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
   const showAddVenueBanner = venuesOptions.length === 0
@@ -70,18 +63,10 @@ export const DetailsForm = ({
 
   // TODO (igabriele, 2025-07-16): Use a `watch` flow once the FF is enabled in production.
   const updateVenue = (event: ChangeEvent<HTMLSelectElement>) => {
-    if (!isNewOfferCreationFlowFeatureActive && hasSelectedProduct) {
-      return
-    }
-
     const venueId = event.target.value
     setValue('venueId', venueId, {
       shouldValidate: true,
     })
-
-    if (!isNewOfferCreationFlowFeatureActive) {
-      return
-    }
 
     const venue = venues.find((venue) => venue.id === Number(venueId))
     if (!venue) {
@@ -163,19 +148,6 @@ export const DetailsForm = ({
                 error={errors.description?.message}
               />
             </FormLayout.Row>
-            {!isNewOfferCreationFlowFeatureActive && withUrlInput && (
-              <FormLayout.Row className={styles.row}>
-                <TextInput
-                  label="URL d’accès à l’offre"
-                  description="Format : https://exemple.com"
-                  disabled={readOnlyFields.includes('url')}
-                  {...register('url')}
-                  error={errors.url?.message}
-                  required
-                  type="url"
-                />
-              </FormLayout.Row>
-            )}
           </>
         )}
       </FormLayout.Section>
@@ -194,7 +166,7 @@ export const DetailsForm = ({
           readOnlyFields={readOnlyFields}
         />
       )}
-      {isNewOfferCreationFlowFeatureActive && accessibilityOptions && (
+      {accessibilityOptions && (
         <FormLayout.Section title="Modalités d’accessibilité">
           <FormLayout.Row>
             <CheckboxGroup

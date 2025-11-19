@@ -33,7 +33,6 @@ import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -61,9 +60,6 @@ const matches = (patterns: RegExp[], path: string) =>
   patterns.some((rx) => rx.test(path))
 
 export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const location = useLocation()
@@ -142,50 +138,40 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       {selectedOfferer && (
         <div className={styles['nav-links-group']}>
           <div className={styles['nav-links-create-offer-wrapper']}>
-            {isNewOfferCreationFlowFFEnabled ? (
-              <DropdownButton
-                name="Créer une offre"
-                triggerProps={{
-                  className: styles['nav-links-create-offer-wrapper-trigger'],
-                }}
-                options={[
-                  {
-                    element: (
-                      <ButtonLink
-                        to={getIndividualOfferUrl({
-                          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                          mode: OFFER_WIZARD_MODE.CREATION,
-                          isOnboarding: false,
-                        })}
-                        icon={strokePhoneIcon}
-                      >
-                        Pour le grand public
-                      </ButtonLink>
-                    ),
-                    id: 'individual',
-                  },
-                  {
-                    element: (
-                      <ButtonLink
-                        to="/offre/creation?type=collective"
-                        icon={strokeBagIcon}
-                      >
-                        Pour les groupes scolaires
-                      </ButtonLink>
-                    ),
-                    id: 'collective',
-                  },
-                ]}
-              />
-            ) : (
-              <ButtonLink
-                variant={ButtonVariant.PRIMARY}
-                to="/offre/creation"
-                className={styles['nav-links-create-offer-wrapper-trigger']}
-              >
-                Créer une offre
-              </ButtonLink>
-            )}
+            <DropdownButton
+              name="Créer une offre"
+              triggerProps={{
+                className: styles['nav-links-create-offer-wrapper-trigger'],
+              }}
+              options={[
+                {
+                  element: (
+                    <ButtonLink
+                      to={getIndividualOfferUrl({
+                        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                        mode: OFFER_WIZARD_MODE.CREATION,
+                        isOnboarding: false,
+                      })}
+                      icon={strokePhoneIcon}
+                    >
+                      Pour le grand public
+                    </ButtonLink>
+                  ),
+                  id: 'individual',
+                },
+                {
+                  element: (
+                    <ButtonLink
+                      to="/offre/creation?type=collective"
+                      icon={strokeBagIcon}
+                    >
+                      Pour les groupes scolaires
+                    </ButtonLink>
+                  ),
+                  id: 'collective',
+                },
+              ]}
+            />
           </div>
         </div>
       )}

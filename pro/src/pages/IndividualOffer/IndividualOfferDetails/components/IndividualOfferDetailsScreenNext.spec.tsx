@@ -169,7 +169,6 @@ const renderDetailsScreen = ({
     ...props,
   }
   const controlledOptions = {
-    features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
     initialRouterEntries: [path],
     storeOverrides: {
       user: { currentUser: sharedCurrentUserFactory() },
@@ -1136,9 +1135,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
         subCategories: MOCK_DATA.subCategories,
       })
       const mode = OFFER_WIZARD_MODE.EDITION
-      const options = {
-        features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
-      }
+
       const props = {
         venues: [venueListItemFactory()],
       }
@@ -1146,7 +1143,6 @@ describe('IndividualOfferDetailsScreenNext', () => {
       renderDetailsScreen({
         contextValue,
         mode,
-        options,
         props,
       })
 

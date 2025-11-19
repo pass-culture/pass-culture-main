@@ -134,9 +134,7 @@ describe('IndividualOfferPracticalInfosScreen', () => {
   })
 
   it('should navigate to the stocks page whern clicking previous while on creation mode', async () => {
-    renderIndividualOfferPracticalInfosScreen({}, [
-      'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
-    ])
+    renderIndividualOfferPracticalInfosScreen({})
 
     await waitFor(() => {
       screen.getByRole('heading', { name: LABELS.heading })
@@ -154,9 +152,7 @@ describe('IndividualOfferPracticalInfosScreen', () => {
       () => OFFER_WIZARD_MODE.EDITION
     )
 
-    renderIndividualOfferPracticalInfosScreen({}, [
-      'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
-    ])
+    renderIndividualOfferPracticalInfosScreen({})
 
     await waitFor(() => {
       screen.getByRole('heading', { name: LABELS.heading })
