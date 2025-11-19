@@ -44,6 +44,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import api_errors
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -3750,3 +3751,88 @@ class CleanUnusedOffererAddressTest:
         assert remaining_ids == [oa.id]
 
         assert caplog.records[0].message == "0 unused rows to delete in offerer_address"
+
+
+class GetStatsByVenueTest:
+    def test_get_offers_stats_by_venue(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+
+        # 1 bookable public offers
+        offer = offers_factories.OfferFactory(venue=venue, validation=OfferValidationStatus.APPROVED)
+        offers_factories.StockFactory.create_batch(3, offer=offer)
+
+        # 1 published collective offers + 1 published collective offer template = 2 published collective offers
+        educational_factories.create_collective_offer_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.PUBLISHED, venue=venue
+        )
+        educational_factories.create_collective_offer_template_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.PUBLISHED, venue=venue
+        )
+
+        # 1 pending public offers
+        offers_factories.OfferFactory.create_batch(3, venue=venue, validation=OfferValidationStatus.PENDING)
+
+        # 2 pending collective offers + 2 pending collective offer template = 4 pending collective offers
+        # 1 of each rejected to ensure they are not counted
+        educational_factories.create_collective_offer_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW, venue=venue
+        )
+        educational_factories.create_collective_offer_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW, venue=venue
+        )
+        educational_factories.create_collective_offer_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.REJECTED, venue=venue
+        )
+        educational_factories.create_collective_offer_template_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW, venue=venue
+        )
+        educational_factories.create_collective_offer_template_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.UNDER_REVIEW, venue=venue
+        )
+        educational_factories.create_collective_offer_template_by_status(
+            educational_models.CollectiveOfferDisplayedStatus.REJECTED, venue=venue
+        )
+
+        stats = offerers_api.get_offers_stats_by_venue(venue.id)
+
+        assert stats.pending_educational_offers == 4
+        assert stats.published_educational_offers == 2
+        assert stats.pending_public_offers == 3
+        assert stats.published_public_offers == 1
+
+    def test_get_offers_stats_by_venue_no_offers(self):
+        venue = offerers_factories.VenueFactory()
+
+        stats = offerers_api.get_offers_stats_by_venue(venue.id)
+
+        assert stats.pending_educational_offers == 0
+        assert stats.published_educational_offers == 0
+        assert stats.pending_public_offers == 0
+        assert stats.published_public_offers == 0
+
+    def test_get_offers_stats_with_no_public_offers(self):
+        venue = offerers_factories.VenueFactory()
+        educational_factories.PublishedCollectiveOfferFactory.create_batch(2, venue=venue)
+        educational_factories.UnderReviewCollectiveOfferFactory.create_batch(2, venue=venue)
+
+        stats = offerers_api.get_offers_stats_by_venue(venue.id)
+
+        assert stats.pending_educational_offers == 2
+        assert stats.published_educational_offers == 2
+        assert stats.pending_public_offers == 0
+        assert stats.published_public_offers == 0
+
+    def test_get_offers_stats_with_no_collective_offers(self):
+        venue = offerers_factories.VenueFactory()
+        offers_factories.StockFactory.create_batch(
+            2, offer__venue=venue, offer__validation=OfferValidationStatus.APPROVED
+        )
+        offers_factories.OfferFactory.create_batch(3, venue=venue, validation=OfferValidationStatus.PENDING)
+
+        stats = offerers_api.get_offers_stats_by_venue(venue.id)
+
+        assert stats.pending_educational_offers == 0
+        assert stats.published_educational_offers == 0
+        assert stats.pending_public_offers == 3
+        assert stats.published_public_offers == 2

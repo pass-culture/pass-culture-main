@@ -2752,6 +2752,27 @@ def get_offerer_v2_stats(offerer_id: int) -> OffererV2Stats:
     )
 
 
+@dataclasses.dataclass
+class OffersStatsByVenue:
+    published_public_offers: int
+    published_educational_offers: int
+    pending_educational_offers: int
+    pending_public_offers: int
+
+
+def get_offers_stats_by_venue(venue_id: int) -> OffersStatsByVenue:
+    return OffersStatsByVenue(
+        published_public_offers=offerers_repository.get_number_of_bookable_offers_for_venue(venue_id=venue_id),
+        published_educational_offers=offerers_repository.get_number_of_bookable_collective_offers_for_venue(
+            venue_id=venue_id
+        ),
+        pending_public_offers=offerers_repository.get_number_of_pending_offers_for_venue(venue_id=venue_id),
+        pending_educational_offers=offerers_repository.get_number_of_pending_collective_offers_for_venue(
+            venue_id=venue_id
+        ),
+    )
+
+
 def delete_venue_accessibility_provider(venue: models.Venue) -> None:
     db.session.query(models.AccessibilityProvider).filter_by(venueId=venue.id).delete(synchronize_session=False)
     if is_managed_transaction():

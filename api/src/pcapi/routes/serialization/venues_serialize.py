@@ -25,6 +25,7 @@ from pcapi.core.opening_hours import api as opening_hours_api
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base
 from pcapi.routes.serialization.finance_serialize import BankAccountResponseModel
@@ -715,3 +716,10 @@ class GetVenuesOfOffererFromSiretResponseModel(BaseModel):
     offererName: str | None
     offererSiren: str | None
     venues: list[VenueOfOffererFromSiretResponseModel]
+
+
+class GetOffersStatsResponseModel(HttpBodyModel):
+    published_public_offers: int
+    published_educational_offers: int
+    pending_public_offers: int
+    pending_educational_offers: int

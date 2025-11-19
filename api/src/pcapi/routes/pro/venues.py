@@ -28,6 +28,7 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils.rest import check_user_has_access_to_offerer
+from pcapi.utils.rest import check_user_has_access_to_venues
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers.update_all_venue_offers_accessibility_job import update_all_venue_offers_accessibility_job
@@ -286,4 +287,21 @@ def get_venues_of_offerer_from_siret(siret: str) -> venues_serialize.GetVenuesOf
         offererSiren=offerer.siren if offerer else None,
         offererName=offerer.name if offerer else None,
         venues=[venues_serialize.VenueOfOffererFromSiretResponseModel.from_orm(venue) for venue in db_venues],
+    )
+
+
+@private_api.route("/venue/<int:venue_id>/offers-statistics", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(response_model=venues_serialize.GetOffersStatsResponseModel, api=blueprint.pro_private_schema)
+def get_offers_statistics(venue_id: int) -> venues_serialize.GetOffersStatsResponseModel:
+    venue = get_or_404(models.Venue, venue_id)
+    check_user_has_access_to_venues(current_user, [venue_id])
+
+    stats = offerers_api.get_offers_stats_by_venue(venue.id)
+    return venues_serialize.GetOffersStatsResponseModel(
+        published_public_offers=stats.published_public_offers,
+        published_educational_offers=stats.published_educational_offers,
+        pending_public_offers=stats.pending_public_offers,
+        pending_educational_offers=stats.pending_educational_offers,
     )
