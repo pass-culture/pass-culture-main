@@ -38,7 +38,6 @@ from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils import rest
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes import offers as offers_validation
 from pcapi.workers.update_all_offers_active_status_job import update_all_offers_active_status_job
 
 from . import blueprint
@@ -1030,7 +1029,7 @@ def post_highlight_request_offer(
             status_code=404,
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    offers_validation.check_offer_can_ask_for_highlight_request(offer)
+    validation.check_offer_can_ask_for_highlight_request(offer)
 
     try:
         offers_api.upsert_highlight_requests(body.highlight_ids, offer)

@@ -3,7 +3,6 @@ import decimal
 import typing
 
 from pydantic.v1 import EmailStr
-from pydantic.v1 import Field
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import StrictInt
 from pydantic.v1 import root_validator
@@ -12,12 +11,11 @@ from pydantic.v1 import validator
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
+from pcapi.core.offers import validation as offers_validation
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
-from pcapi.validation.routes.offers import check_offer_name_length_is_valid
-from pcapi.validation.routes.offers import check_video_url
 
 from . import deprecated  # noqa: F401
 
@@ -126,7 +124,7 @@ class UpdateOffer(BaseModel):
 
     @validator("video_url")
     def validate_video_url(cls, video_url: HttpUrl, values: dict) -> str:
-        check_video_url(video_url)
+        offers_validation.check_video_url(video_url)
         return video_url
 
     class Config:

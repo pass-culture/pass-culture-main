@@ -1324,18 +1324,6 @@ def get_offer_existing_stocks_count(offer_id: int) -> int:
     )
 
 
-def offer_has_timestamped_stocks(offer_id: int) -> bool:
-    return db.session.query(
-        db.session.query(models.Stock)
-        .filter(
-            models.Stock.isSoftDeleted == False,
-            models.Stock.offerId == offer_id,
-            models.Stock.beginningDatetime != None,
-        )
-        .exists()
-    ).scalar()
-
-
 def get_unbookable_unbooked_old_offer_ids(
     min_id: int, max_id: int, batch_size: int = 5_000
 ) -> typing.Generator[int, None, None]:
