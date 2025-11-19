@@ -6,14 +6,9 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { type Step, Stepper } from '@/components/Stepper/Stepper'
-import {
-  getOfferSubtypeFromParam,
-  isOfferSubtypeEvent,
-} from '@/pages/IndividualOffer/commons/filterCategories'
 import { NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
 
 import styles from './IndividualOfferNavigation.module.scss'
@@ -27,23 +22,11 @@ export const IndividualOfferNavigation = () => {
   const activeStep = useActiveStep(
     Object.values(INDIVIDUAL_OFFER_WIZARD_STEP_IDS)
   )
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
-  const mode = useOfferWizardMode()
-  const { search } = useLocation()
-  const queryParams = new URLSearchParams(search)
-  const queryOfferType = queryParams.get('offer-type')
 
-  const offerSubtype = getOfferSubtypeFromParam(queryOfferType)
-  // TODO (igabriele, 2025-08-04): Confusing and error-prone. We should have a single source of truth for `isEvent`.
-  const isSurelyAnEvent = isNewOfferCreationFlowFeatureActive
-    ? isEvent
-    : isEvent || offer?.isEvent || isOfferSubtypeEvent(offerSubtype)
+  const mode = useOfferWizardMode()
 
   const steps = getSteps({
-    isNewOfferCreationFlowFeatureActive,
-    isEvent: isSurelyAnEvent,
+    isEvent,
     mode,
     bookingsCount: offer?.bookingsCount,
   })

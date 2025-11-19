@@ -19,33 +19,23 @@ export interface StepPattern {
 import { LabelBooking } from '../LabelBooking/LabelBooking'
 
 export const getSteps = ({
-  isNewOfferCreationFlowFeatureActive,
   isEvent,
   mode,
   bookingsCount,
 }: {
-  isNewOfferCreationFlowFeatureActive: boolean
   isEvent: boolean | null
   mode: OFFER_WIZARD_MODE
   bookingsCount?: number | null
 }): StepPattern[] => {
   const steps: StepPattern[] = [
     {
-      id: isNewOfferCreationFlowFeatureActive
-        ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-        : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
-      label: isNewOfferCreationFlowFeatureActive
-        ? 'Description'
-        : 'Détails de l’offre',
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+      label: 'Description',
       canGoBeyondStep: (offer) => Boolean(offer.name),
     },
     {
-      id: isNewOfferCreationFlowFeatureActive
-        ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION
-        : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
-      label: isNewOfferCreationFlowFeatureActive
-        ? 'Localisation'
-        : 'Informations pratiques',
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
+      label: 'Localisation',
       canGoBeyondStep: (offer) => {
         return Boolean(offer.address ?? offer.url)
       },
@@ -58,56 +48,32 @@ export const getSteps = ({
 
   // We also show all possible steps when we don't know yet
   // (meaning `isEvent` is null or undefined).
-  if (isNewOfferCreationFlowFeatureActive) {
-    if (isEvent === null || isEvent) {
-      steps.push(
-        {
-          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-          label: 'Tarifs',
-          canGoBeyondStep: (offer) => Boolean(offer?.priceCategories?.length),
-        },
-        {
-          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
-          label: 'Horaires',
-          canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
-        }
-      )
-    } else {
-      steps.push({
+  if (isEvent === null || isEvent) {
+    steps.push(
+      {
         id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
         label: 'Tarifs',
+        canGoBeyondStep: (offer) => Boolean(offer?.priceCategories?.length),
+      },
+      {
+        id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
+        label: 'Horaires',
         canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
-      })
-    }
-    steps.push({
-      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
-      label: 'Informations pratiques',
-      canGoBeyondStep: (offer, subCategory) =>
-        subCategory?.canBeWithdrawable ? Boolean(offer.bookingContact) : true,
-    })
+      }
+    )
   } else {
-    // This part will disappear once the FF is enabled in production.
-    if (isEvent) {
-      steps.push(
-        {
-          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
-          label: 'Tarifs',
-          canGoBeyondStep: (offer) => Boolean(offer?.priceCategories?.length),
-        },
-        {
-          id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-          label: 'Dates & Capacités',
-          canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
-        }
-      )
-    } else {
-      steps.push({
-        id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-        label: 'Stock & Prix',
-        canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
-      })
-    }
+    steps.push({
+      id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
+      label: 'Tarifs',
+      canGoBeyondStep: (offer) => Boolean(offer?.hasStocks),
+    })
   }
+  steps.push({
+    id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
+    label: 'Informations pratiques',
+    canGoBeyondStep: (offer, subCategory) =>
+      subCategory?.canBeWithdrawable ? Boolean(offer.bookingContact) : true,
+  })
 
   if (mode === OFFER_WIZARD_MODE.CREATION) {
     steps.push({
