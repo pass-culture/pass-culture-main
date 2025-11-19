@@ -38,9 +38,6 @@ import { IndividualOffersContainer } from './IndividualOffersContainer/Individua
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
 export const IndividualOffers = (): JSX.Element => {
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const selectedVenue = useAppSelector(ensureSelectedVenue)
@@ -140,13 +137,11 @@ export const IndividualOffers = (): JSX.Element => {
               className={styles['banner-cta']}
               icon={fullNextIcon}
               to={
-                isNewOfferCreationFlowFFEnabled
-                  ? getIndividualOfferUrl({
-                      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                      mode: OFFER_WIZARD_MODE.CREATION,
-                      isOnboarding: false,
-                    }) + bannerVideoQueryParam
-                  : `/offre/creation${bannerVideoQueryParam}`
+                getIndividualOfferUrl({
+                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                  mode: OFFER_WIZARD_MODE.CREATION,
+                  isOnboarding: false,
+                }) + bannerVideoQueryParam
               }
             >
               Créer une offre

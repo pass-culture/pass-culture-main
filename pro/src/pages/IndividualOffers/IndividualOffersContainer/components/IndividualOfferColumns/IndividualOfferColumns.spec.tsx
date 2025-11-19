@@ -63,16 +63,14 @@ describe('getIndividualOfferColumns', () => {
 
   const renderTableWithOffer = (
     offer = baseOffer,
-    options: RenderOptions = {},
-    isNewOfferCreationFlowFFEnabled: boolean = false
+    options: RenderOptions = {}
   ) => {
     const { headlineOffer = null, isHeadlineOfferAllowedForOfferer = false } =
       options
 
     const columns = getIndividualOfferColumns(
       headlineOffer,
-      isHeadlineOfferAllowedForOfferer,
-      isNewOfferCreationFlowFFEnabled
+      isHeadlineOfferAllowedForOfferer
     )
 
     return renderWithProviders(
@@ -106,14 +104,6 @@ describe('getIndividualOfferColumns', () => {
       }
     )
   }
-
-  it('renders offer name with link', () => {
-    renderTableWithOffer()
-    expect(screen.getByRole('link', { name: /My Offer/i })).toHaveAttribute(
-      'href',
-      '/offre/individuelle/123/recapitulatif/details'
-    )
-  })
 
   it('renders location based on address', () => {
     renderTableWithOffer()
@@ -167,12 +157,12 @@ describe('getIndividualOfferColumns', () => {
     expect(screen.getByText(/Réservations/)).toBeInTheDocument()
   })
 
-  it('should redirect to stocks edition page when the offer is not isEvent, and the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+  it('should redirect to stocks edition page when the offer is not isEvent', async () => {
     vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
       venues: [],
     })
 
-    renderTableWithOffer({ ...baseOffer, isEvent: false }, {}, true)
+    renderTableWithOffer({ ...baseOffer, isEvent: false }, {})
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Voir les actions' })
@@ -184,7 +174,7 @@ describe('getIndividualOfferColumns', () => {
     )
   })
 
-  it('should redirect to timetable edition page when the offer is isEvent, and the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
+  it('should redirect to timetable edition page when the offer is isEvent', async () => {
     vi.spyOn(api, 'getVenues').mockResolvedValueOnce({
       venues: [],
     })
@@ -194,8 +184,7 @@ describe('getIndividualOfferColumns', () => {
         ...baseOffer,
         isEvent: true,
       },
-      {},
-      true
+      {}
     )
 
     await userEvent.click(

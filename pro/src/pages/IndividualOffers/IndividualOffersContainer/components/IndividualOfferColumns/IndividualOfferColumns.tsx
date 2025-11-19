@@ -1,12 +1,12 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import type {
-  HeadLineOfferResponseModel,
-  ListOffersOfferResponseModel,
+import {
+  type HeadLineOfferResponseModel,
+  type ListOffersOfferResponseModel,
+  OfferStatus,
 } from '@/apiClient/v1'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_STATUS_DRAFT,
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
@@ -19,8 +19,7 @@ import { OfferStatusCell } from './components/OfferStatusCell/OfferStatusCell'
 
 export function getIndividualOfferColumns(
   headlineOffer: HeadLineOfferResponseModel | null,
-  isHeadlineOfferAllowedForOfferer: boolean,
-  isNewOfferCreationFlowFFEnabled: boolean
+  isHeadlineOfferAllowedForOfferer: boolean
 ): Column<ListOffersOfferResponseModel>[] {
   const columns: Column<ListOffersOfferResponseModel>[] = [
     {
@@ -30,12 +29,10 @@ export function getIndividualOfferColumns(
         const offerLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode:
-            offer.status === OFFER_STATUS_DRAFT
+            offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
               : OFFER_WIZARD_MODE.READ_ONLY,
-          step: isNewOfferCreationFlowFFEnabled
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
         })
 
         return <OfferNameCell offer={offer} offerLink={offerLink} />
@@ -86,22 +83,18 @@ export function getIndividualOfferColumns(
         const offerLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode:
-            offer.status === OFFER_STATUS_DRAFT
+            offer.status === OfferStatus.DRAFT
               ? OFFER_WIZARD_MODE.CREATION
               : OFFER_WIZARD_MODE.READ_ONLY,
-          step: isNewOfferCreationFlowFFEnabled
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
         })
 
         const editionStockLink = getIndividualOfferUrl({
           offerId: offer.id,
           mode: OFFER_WIZARD_MODE.EDITION,
-          step: isNewOfferCreationFlowFFEnabled
-            ? offer.isEvent
-              ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-              : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: offer.isEvent
+            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
         })
 
         return (

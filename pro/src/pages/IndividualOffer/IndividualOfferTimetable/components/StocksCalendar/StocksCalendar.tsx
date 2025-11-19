@@ -16,7 +16,6 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -63,10 +62,6 @@ export function StocksCalendar({
   })
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -169,19 +164,15 @@ export function StocksCalendar({
 
   const stocks = data?.stocks || []
 
-  const title = isNewOfferCreationFlowFFEnabled
-    ? 'Horaires'
-    : 'Dates et capacités'
-
   return (
     <>
       {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
         //  When the mode is read only, the title is already inside the SummarySection layout
         <div className={styles['header']}>
           {timetableTypeRadioGroupShown ? (
-            <h3 className={styles['subtitle']}>{title}</h3>
+            <h3 className={styles['subtitle']}>{'Horaires'}</h3>
           ) : (
-            <h2 className={styles['title']}>{title}</h2>
+            <h2 className={styles['title']}>{'Horaires'}</h2>
           )}
           {offer.hasStocks && !isOfferSynchronized(offer) && (
             <DialogBuilderButton

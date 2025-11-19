@@ -7,7 +7,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -40,19 +39,13 @@ export function StocksCalendarActionsBar({
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
 
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
-
   function handlePreviousStep() {
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate(
         getIndividualOfferUrl({
           offerId: offerId,
-          step: isNewOfferCreationFlowFeatureActive
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })
@@ -82,9 +75,7 @@ export function StocksCalendarActionsBar({
     navigate(
       getIndividualOfferUrl({
         offerId: offerId,
-        step: isNewOfferCreationFlowFeatureActive
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
         mode,
         isOnboarding,
       })
