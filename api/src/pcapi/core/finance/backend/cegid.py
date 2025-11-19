@@ -249,7 +249,6 @@ class CegidFinanceBackend(BaseFinanceBackend):
             "Description": {"value": invoice_description},  # VIRXXX - <01/12-15/12>
             "Details": lines,
             "Hold": {"value": False},
-            "LocationID": {"value": "PRINCIPAL"},
             "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             # "ReferenceNbr": {"value": invoice.reference},  # This has no effect because XRP generates an incremental ID that cannot be overriden
             "RefNbr": {"value": invoice.reference},

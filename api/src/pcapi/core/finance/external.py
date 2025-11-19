@@ -70,8 +70,12 @@ def push_bank_accounts(count: int) -> None:
         app.redis_client.delete(conf.REDIS_PUSH_BANK_ACCOUNT_LOCK)
 
 
-def push_invoices(count: int) -> None:
+def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
     if bool(app.redis_client.exists(conf.REDIS_PUSH_INVOICE_LOCK)):
+        logger.info(
+            "push_invoices ended because of lock",
+            extra={"redis_lock_value": app.redis_client.get(conf.REDIS_PUSH_INVOICE_LOCK)},
+        )
         return
 
     invoices_query = (
@@ -87,6 +91,7 @@ def push_invoices(count: int) -> None:
     invoices = invoices_query.all()
 
     if not invoices:
+        logger.info("No pending invoices found")
         return
 
     app.redis_client.set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
@@ -100,7 +105,7 @@ def push_invoices(count: int) -> None:
             try:
                 backend_name = finance_backend.get_backend_name()
                 logger.info("Push invoice", extra={"invoice_id": invoice_id, "backend": backend_name})
-                if not finance_backend.check_can_push_invoice():
+                if not override_work_hours_check and not finance_backend.check_can_push_invoice():
                     logger.info(
                         "Didn't push invoice due to work hours beginning soon",
                         extra={"invoice_id": invoice_id},

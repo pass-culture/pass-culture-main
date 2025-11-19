@@ -829,7 +829,6 @@ class CegidFinanceBackendTest:
             "Hold": {"value": False},
             "IsTaxValid": {},
             "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
-            "LocationID": {"value": "PRINCIPAL"},
             "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             "ReferenceNbr": {"value": "000014"},
             "Status": {"value": "Balanced"},
@@ -911,7 +910,6 @@ class CegidFinanceBackendTest:
         assert details3["UOM"] == {"value": "UNITE"}
 
         assert request_json["Hold"] == {"value": False}
-        assert request_json["LocationID"] == {"value": "PRINCIPAL"}
         assert request_json["PostPeriod"] == {"value": f"{invoice.date:%m%Y}"}
         assert request_json["Status"] == {"value": "Open"}
         assert request_json["TaxTotal"] == {"value": "0"}
@@ -1063,7 +1061,6 @@ class CegidFinanceBackendTest:
             "Hold": {"value": False},
             "IsTaxValid": {},
             "LastModifiedDateTime": {"value": "2024-12-18T17:07:45.433+00:00"},
-            "LocationID": {"value": "PRINCIPAL"},
             "PostPeriod": {"value": f"{invoice.date:%m%Y}"},
             "ReferenceNbr": {"value": "000014"},
             "Status": {"value": "Balanced"},
@@ -1125,7 +1122,6 @@ class CegidFinanceBackendTest:
         assert details_line["Description"] == {"value": "Réservations"}
 
         assert request_json["Hold"] == {"value": False}
-        assert request_json["LocationID"] == {"value": "PRINCIPAL"}
         assert request_json["PostPeriod"] == {"value": f"{invoice.date:%m%Y}"}
         assert request_json["Status"] == {"value": "Open"}
         assert request_json["TaxTotal"] == {"value": "0"}
@@ -1230,7 +1226,6 @@ class CegidFinanceBackendTest:
         vendor_uuid = str(faker.uuid4())
         main_contact_uuid = str(faker.uuid4())
         iban_uuid = str(faker.uuid4())
-        bic_uuid = str(faker.uuid4())
 
         iso_now = f"{date_utils.get_naive_utc_now().isoformat()}+00"
 
@@ -1273,17 +1268,6 @@ class CegidFinanceBackendTest:
                     "id": iban_uuid,
                     "note": None,
                     "rowNumber": 1,
-                },
-                {
-                    "Description": {"value": "BIC"},
-                    "LocationID": {"value": 81724},
-                    "PaymentInstructionsID": {"value": "BIC"},
-                    "PaymentMethod": {"value": "VSEPA"},
-                    "Value": {},
-                    "custom": {},
-                    "id": bic_uuid,
-                    "note": None,
-                    "rowNumber": 2,
                 },
             ],
             "PaymentLeadTimedays": {"value": 0},
@@ -1371,7 +1355,6 @@ class CegidFinanceBackendTest:
         main_contact_uuid = str(faker.uuid4())
         vendor_uuid = str(faker.uuid4())
         iban_uuid = str(faker.uuid4())
-        bic_uuid = str(faker.uuid4())
         iso_now = f"{date_utils.get_naive_utc_now().isoformat()}+00"
 
         response_vendor_data = {
@@ -1414,17 +1397,6 @@ class CegidFinanceBackendTest:
                     "id": iban_uuid,
                     "note": None,
                     "rowNumber": 1,
-                },
-                {
-                    "Description": {"value": "BIC"},
-                    "LocationID": {"value": 81724},
-                    "PaymentInstructionsID": {"value": "BIC"},
-                    "PaymentMethod": {"value": "VSEPA"},
-                    "Value": {},
-                    "custom": {},
-                    "id": bic_uuid,
-                    "note": None,
-                    "rowNumber": 2,
                 },
             ],
             "PaymentLeadTimedays": {"value": 0},
