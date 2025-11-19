@@ -1,3 +1,6 @@
+from .count_bookings import CountCollectiveBookingQuery
+from .count_bookings import CountIndividualBookingQuery
+from .count_offers import CountOffersQuery
 from .total_revenue import TotalExpectedRevenueModel
 from .total_revenue import TotalExpectedRevenueQuery
 from .yearly_revenue import AggregatedCollectiveRevenueModel
