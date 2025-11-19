@@ -1,17 +1,9 @@
-from decimal import Decimal
-
 import flask
 import semver
 import sentry_sdk
 
 from pcapi import settings
 from pcapi.models.api_errors import ForbiddenError
-
-
-def convert_to_cent(amount: Decimal | None) -> int | None:
-    if amount is None:
-        return None
-    return int(amount * 100)
 
 
 def check_client_version() -> None:
