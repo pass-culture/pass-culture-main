@@ -21,10 +21,10 @@
 {% endblock %}
 {% block action_buttons %}
   {% if action.DEACTIVATE in allowed_actions.inline_actions %}
-    {{ action_bar_button("x-circle", "Désactiver", modal_id="#deactivate-offer-modal-" + offer.id|string) }}
+    {{ action_bar_button("x-circle", "Mettre en pause", modal_id="#deactivate-offer-modal-" + offer.id|string) }}
   {% endif %}
   {% if action.ACTIVATE in allowed_actions.inline_actions %}
-    {{ action_bar_button("check-circle", "Activer", modal_id="#activate-offer-modal-" + offer.id|string) }}
+    {{ action_bar_button("check-circle", "Publier", modal_id="#activate-offer-modal-" + offer.id|string) }}
   {% endif %}
   {% if action.VALIDATE in allowed_actions.inline_actions %}
     {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-offer-modal-" + offer.id|string) }}
@@ -45,10 +45,10 @@
   {% if allowed_actions.additional_actions %}
     <ul class="dropdown-menu">
       {% if action.DEACTIVATE in allowed_actions.additional_actions %}
-        <li>{{ action_bar_additional_button("x-circle", "Désactiver", modal_id="#deactivate-offer-modal-" + offer.id|string) }}</li>
+        <li>{{ action_bar_additional_button("x-circle", "Mettre en pause", modal_id="#deactivate-offer-modal-" + offer.id|string) }}</li>
       {% endif %}
       {% if action.ACTIVATE in allowed_actions.additional_actions %}
-        <li>{{ action_bar_additional_button("check-circle", "Activer", modal_id="#activate-offer-modal-" + offer.id|string) }}</li>
+        <li>{{ action_bar_additional_button("check-circle", "Publier", modal_id="#activate-offer-modal-" + offer.id|string) }}</li>
       {% endif %}
       {% if action.VALIDATE in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("hand-thumbs-up", "Valider", modal_id="#validate-offer-modal-" + offer.id|string) }}</li>

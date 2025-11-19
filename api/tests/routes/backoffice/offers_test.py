@@ -1716,7 +1716,7 @@ class EditOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Mettre l'offre en pause Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_edit.id)  # ID
@@ -2184,7 +2184,7 @@ class ValidateOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Mettre l'offre en pause Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_validate.id)  # ID
@@ -2300,7 +2300,7 @@ class RejectOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Publier l'offre Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_reject.id)  # ID
@@ -3586,7 +3586,7 @@ class ActivateOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Désactiver l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Mettre l'offre en pause Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_activate.id)  # ID
@@ -3680,7 +3680,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
-            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Activer l'offre Taguer / Pondérer"
+            "Voir le détail de l’offre Valider l'offre Rejeter l'offre Publier l'offre Taguer / Pondérer"
         )
         assert cells[next(i)] == ""  # Image
         assert cells[next(i)] == str(offer_to_deactivate.id)  # ID
