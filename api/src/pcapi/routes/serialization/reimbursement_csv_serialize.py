@@ -154,7 +154,9 @@ class ReimbursementDetails:
         # Offer, redactor and booking info
         self.offer_name = payment_info.offer_name
         self.booking_token = getattr(payment_info, "booking_token", None)
-        self.booking_used_date = payment_info.booking_used_date
+        self.booking_used_date = utc_datetime_to_department_timezone(
+            payment_info.booking_used_date, payment_info.venue_departement_code
+        )
         self.booking_price_category_label = getattr(payment_info, "booking_price_category_label", None)
         self.booking_total_amount = format_number_as_french(
             payment_info.booking_amount * getattr(payment_info, "booking_quantity", 1)
@@ -168,7 +170,7 @@ class ReimbursementDetails:
         venue_departement_code = getattr(payment_info, "venue_departement_code", None)
         if self.event_date and venue_departement_code:
             timezoned_event_date = utc_datetime_to_department_timezone(self.event_date, venue_departement_code)
-            self.event_date = timezoned_event_date.strftime("%d/%m/%Y %H:%M")
+            self.event_date = timezoned_event_date.strftime("%d/%m/%Y %H:%M%:z")
 
         # Reimbursement rate and amount
         if using_legacy_models:

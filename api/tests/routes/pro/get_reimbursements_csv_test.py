@@ -137,7 +137,9 @@ def test_with_venue_filter_with_pricings(client, cutoff, fortnight):
     assert row["Nom de l'établissement (offre collective)"] == ""
     assert row["Date de l'évènement (offre collective)"] == ""
     assert row["Contremarque"] == booking.token
-    assert row["Date de validation de la réservation"] == booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
+    assert row["Date de validation de la réservation"] == utc_datetime_to_department_timezone(
+        booking.dateUsed, booking.venue.offererAddress.address.departmentCode
+    ).strftime("%Y-%m-%d %H:%M:%S%:z")
     assert row["Intitulé du tarif"] == ""
     assert row["Montant de la réservation"] == str(booking.amount).replace(".", ",")
     assert row["Barème"].replace("\xa0", " ") == "100 %"
@@ -257,7 +259,10 @@ def test_with_reimbursement_period_filter_with_pricings_using_oa(client, cutoff,
         assert row["Nom de l'établissement (offre collective)"] == ""
         assert row["Date de l'évènement (offre collective)"] == ""
         assert row["Contremarque"] == booking.token
-        assert row["Date de validation de la réservation"] == booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
+        assert row["Date de validation de la réservation"] == utc_datetime_to_department_timezone(
+            booking.dateUsed, booking.venue.offererAddress.address.departmentCode
+        ).strftime("%Y-%m-%d %H:%M:%S%:z")
+
         assert row["Intitulé du tarif"] == ""
         assert row["Montant de la réservation"] == str(booking.amount).replace(".", ",")
         assert row["Barème"].replace("\xa0", " ") == "100 %"
@@ -267,7 +272,10 @@ def test_with_reimbursement_period_filter_with_pricings_using_oa(client, cutoff,
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.parametrize(
     "cutoff,fortnight",
-    [(datetime.date(year=2023, month=1, day=16), "1ère"), (datetime.date(year=2023, month=1, day=1), "2nde")],
+    [
+        pytest.param(datetime.date(year=2023, month=1, day=16), "1ère", id="16/01/2025-1ere"),
+        pytest.param(datetime.date(year=2023, month=1, day=1), "2nde", id="01/01/2023-2nde"),
+    ],
 )
 def test_with_bank_account_filter_with_pricings_collective_use_case(client, cutoff, fortnight):
     beginning_date_iso_format = (cutoff - datetime.timedelta(days=2)).isoformat()
@@ -358,9 +366,11 @@ def test_with_bank_account_filter_with_pricings_collective_use_case(client, cuto
     assert row["Nom de l'établissement (offre collective)"] == institution.name
     assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
         collective_booking.collectiveStock.startDatetime, venue1.offererAddress.address.departmentCode
-    ).strftime("%d/%m/%Y %H:%M")
+    ).strftime("%d/%m/%Y %H:%M%:z")
     assert row["Contremarque"] == ""
-    assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
+    assert row["Date de validation de la réservation"] == utc_datetime_to_department_timezone(
+        collective_booking.dateUsed, venue1.offererAddress.address.departmentCode
+    ).strftime("%Y-%m-%d %H:%M:%S%:z")
     assert row["Intitulé du tarif"] == ""
     assert row["Montant de la réservation"] == str(collective_booking.collectiveStock.price).replace(".", ",")
     assert row["Barème"].replace("\xa0", " ") == "100 %"
@@ -614,9 +624,11 @@ def test_with_reimbursement_period_filter_with_pricings_collective_use_case(clie
         assert row["Nom de l'établissement (offre collective)"] == institution.name
         assert row["Date de l'évènement (offre collective)"] == utc_datetime_to_department_timezone(
             collective_booking.collectiveStock.startDatetime, venue.offererAddress.address.departmentCode
-        ).strftime("%d/%m/%Y %H:%M")
+        ).strftime("%d/%m/%Y %H:%M%:z")
         assert row["Contremarque"] == ""
-        assert row["Date de validation de la réservation"] == collective_booking.dateUsed.strftime("%Y-%m-%d %H:%M:%S")
+        assert row["Date de validation de la réservation"] == utc_datetime_to_department_timezone(
+            collective_booking.dateUsed, venue.offererAddress.address.departmentCode
+        ).strftime("%Y-%m-%d %H:%M:%S%:z")
         assert row["Intitulé du tarif"] == ""
         assert row["Montant de la réservation"] == str(collective_booking.collectiveStock.price).replace(".", ",")
         assert row["Barème"].replace("\xa0", " ") == "100 %"
