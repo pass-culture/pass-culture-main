@@ -2,10 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { OnboardingActivity } from './OnboardingActivity';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type EditVenueBodyModel = {
+  activity?: OnboardingActivity | null;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
   bookingEmail?: string | null;
