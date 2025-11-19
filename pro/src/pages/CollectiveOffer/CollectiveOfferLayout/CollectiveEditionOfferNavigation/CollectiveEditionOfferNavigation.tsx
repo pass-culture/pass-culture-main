@@ -152,6 +152,13 @@ export const CollectiveEditionOfferNavigation = ({
       CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER
     )
 
+  const canShareOffer =
+    offer &&
+    isActionAllowedOnCollectiveOffer(
+      offer,
+      CollectiveOfferTemplateAllowedAction.CAN_SHARE
+    )
+
   const tabs: NavLinkItem[] = [
     {
       key: CollectiveOfferStep.DETAILS,
@@ -241,9 +248,8 @@ export const CollectiveEditionOfferNavigation = ({
           </Button>
         )}
         {isCollectiveOfferTemplateShareLinkEnabled &&
-          isCollectiveOfferTemplate(offer) && (
-            <ShareLinkDrawer offerId={offer.id} />
-          )}
+          isCollectiveOfferTemplate(offer) &&
+          canShareOffer && <ShareLinkDrawer offerId={offer.id} />}
       </div>
       {canEditOffer && (
         <NavLinkItems
