@@ -25,7 +25,7 @@ const renderShareTemplateOfferLink = ({
 describe('ShareTemplateOfferLink', () => {
   const offerId = 1234
   const notifySuccessMessage = 'Le lien ADAGE a bien été copié'
-  const fullLink = `https://bv.ac-versailles.fr/adage/passculture/offres/offerid/${offerId}?source=shareLink`
+  const fullLink = `https://bv.ac-versailles.fr/adage/passculture/offres/offerid/${offerId}/source/shareLink`
 
   it('should render the ShareLink input with the correct value', () => {
     renderShareTemplateOfferLink({ offerId, notifySuccessMessage })
