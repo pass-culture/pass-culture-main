@@ -33,8 +33,8 @@ from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.core.users.api import get_domains_credit
 from pcapi.models import db
+from pcapi.routes.external.authentication import compute_signature
 from pcapi.utils import date as date_utils
-from pcapi.validation.routes import ubble as ubble_routes
 
 from tests.core.subscription import test_factories
 from tests.scripts.beneficiary.fixture import make_single_application
@@ -1068,7 +1068,7 @@ class UbbleWebhookTest:
 
     def _get_signature(self, payload):
         timestamp = str(int(time.time()))
-        token = ubble_routes.compute_signature(timestamp.encode("utf-8"), payload.encode("utf-8"))
+        token = compute_signature(timestamp.encode("utf-8"), payload.encode("utf-8"))
         return f"ts={timestamp},v1={token}"
 
     def _init_test(self, current_identification_state, notified_identification_state):

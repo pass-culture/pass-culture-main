@@ -20,9 +20,9 @@ from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.routes.external.authentication import compute_signature
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import DATE_ISO_FORMAT
-from pcapi.validation.routes import ubble as ubble_routes
 
 import tests
 from tests.conftest import TestClient
@@ -237,7 +237,7 @@ class UbbleDummyWebhookTest:
 class UbbleEndToEndTest:
     def _get_ubble_webhook_signature(self, payload):
         timestamp = str(int(time.time()))
-        token = ubble_routes.compute_signature(timestamp.encode("utf-8"), payload.encode("utf-8"))
+        token = compute_signature(timestamp.encode("utf-8"), payload.encode("utf-8"))
         return f"ts={timestamp},v1={token}"
 
     @time_machine.travel("2018-01-01")

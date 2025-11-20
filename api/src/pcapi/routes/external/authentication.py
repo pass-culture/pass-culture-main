@@ -14,6 +14,23 @@ from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.api_errors import UnauthorizedError
 
 
+def require_dms_token(route_function: Callable[..., Any]) -> Callable:
+    @functools.wraps(route_function)
+    def validate_dms_token(*args: Any, **kwargs: Any) -> flask.Response:
+        token = flask.request.args.get("token")
+        if not token:
+            raise UnauthorizedError()
+
+        if token != settings.DMS_WEBHOOK_TOKEN:
+            errors = ForbiddenError()
+            errors.add_error("token", "Invalid token")
+            raise errors
+
+        return route_function(*args, **kwargs)
+
+    return validate_dms_token
+
+
 def require_ubble_v2_signature(route_function: Callable[..., Any]) -> Callable:
     @functools.wraps(route_function)
     def validate_ubble_signature(*args: Any, **kwargs: Any) -> flask.Response:
