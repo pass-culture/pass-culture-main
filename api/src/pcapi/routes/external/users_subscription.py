@@ -2,6 +2,7 @@ import logging
 
 from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import utils as dms_utils
+from pcapi.connectors.serialization import dms_serializers
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription.dms import api as dms_subscription_api
@@ -15,20 +16,19 @@ from pcapi.core.subscription.ubble import tasks as ubble_tasks
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import public_api
+from pcapi.routes.external import authentication
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes import dms as dms_validation
-from pcapi.validation.routes import ubble as ubble_validation
 
 
 logger = logging.getLogger(__name__)
 
 
 @public_api.route("/webhooks/dms/application_status", methods=["POST"])
-@dms_validation.require_dms_token
+@authentication.require_dms_token
 @spectree_serialize(on_success_status=204, json_format=False)
-def dms_webhook_update_application_status(form: dms_validation.DMSWebhookRequest) -> None:
+def dms_webhook_update_application_status(form: dms_serializers.DMSWebhookRequest) -> None:
     # Ensure that the same application is not handled twice at the same time.
     # Webhook may be called twice in the same second when instructor makes two changes quickly.
     with dms_utils.lock_ds_application(form.dossier_id):
@@ -46,7 +46,7 @@ def dummy_webook_ubble_v2(body: ubble_serializers.WebhookBodyV2) -> ubble_serial
 
 
 @public_api.route("/webhooks/ubble/v2/application_status", methods=["POST"])
-@ubble_validation.require_ubble_v2_signature
+@authentication.require_ubble_v2_signature
 @spectree_serialize(
     on_success_status=200,
     response_model=ubble_serializers.WebhookDummyReponse,
@@ -99,7 +99,7 @@ def ubble_v2_webhook_update_application_status(
 
 
 @public_api.route("/webhooks/ubble/application_status", methods=["POST"])
-@ubble_validation.require_ubble_signature
+@authentication.require_ubble_signature
 @spectree_serialize(
     headers=ubble_serializers.WebhookRequestHeaders,  # type: ignore[arg-type]
     on_success_status=200,
