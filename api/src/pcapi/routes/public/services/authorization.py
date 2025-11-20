@@ -3,7 +3,7 @@ import logging
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
 from pcapi.models import api_errors
-from pcapi.validation.routes.users_authentifications import current_api_key
+from pcapi.routes.public.services.authentication import current_api_key
 
 
 logger = logging.getLogger(__name__)

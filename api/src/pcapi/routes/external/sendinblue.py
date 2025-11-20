@@ -8,6 +8,7 @@ from sqlalchemy.orm import joinedload
 import pcapi.connectors.recommendation as recommendation_api
 import pcapi.core.geography.repository as geography_repository
 from pcapi import settings
+from pcapi.connectors.serialization.brevo_serializers import brevo_webhook
 from pcapi.core.external.attributes.api import update_external_user
 from pcapi.core.history import api as history_api
 from pcapi.core.offers import models as offers_models
@@ -18,7 +19,6 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import public_api
 from pcapi.routes.external.serialization import sendinblue as serializers
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.validation.routes.users_authentifications import brevo_webhook
 
 
 logger = logging.getLogger(__name__)

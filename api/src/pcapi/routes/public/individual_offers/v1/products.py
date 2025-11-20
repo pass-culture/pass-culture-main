@@ -28,14 +28,14 @@ from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
 from pcapi.routes.public.services import authorization
+from pcapi.routes.public.services.authentication import api_key_required
+from pcapi.routes.public.services.authentication import current_api_key
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import chunks as chunks_utils
 from pcapi.utils import image_conversion
 from pcapi.utils.custom_keys import get_field
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes.users_authentifications import api_key_required
-from pcapi.validation.routes.users_authentifications import current_api_key
 
 from . import constants
 from . import serialization

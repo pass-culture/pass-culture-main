@@ -14,13 +14,13 @@ from pcapi.routes.public import utils
 from pcapi.routes.public.collective.serialization import offers as offers_serialization
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.services.authentication import api_key_required
+from pcapi.routes.public.services.authentication import current_api_key
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import date as date_utils
 from pcapi.utils.image_conversion import DO_NOT_CROP
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes.users_authentifications import api_key_required
-from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 PATCH_NON_NULLABLE_FIELDS = (

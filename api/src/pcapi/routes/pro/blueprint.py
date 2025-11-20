@@ -5,7 +5,6 @@ from spectree import SecurityScheme
 from pcapi import settings
 from pcapi.serialization.spec_tree import ExtendedSpecTree
 from pcapi.serialization.utils import before_handler
-from pcapi.validation.routes import users_authentifications
 
 
 PRO_PRIVATE_API_BLUEPRINT_NAME = "pro_private_api"
@@ -18,10 +17,11 @@ CORS(
     supports_credentials=True,
 )
 
+COOKIE_AUTH_NAME = "SessionAuth"
 
 SECURITY_SCHEMES = [
     SecurityScheme(
-        name=users_authentifications.COOKIE_AUTH_NAME,
+        name=COOKIE_AUTH_NAME,
         data={"type": "apiKey", "in": "cookie", "name": "session"},  # type: ignore[arg-type]
     ),
 ]
