@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import { batch } from 'react-redux'
 
 import { api } from '@/apiClient/api'
 import { handleError } from '@/commons/errors/handleError'
@@ -32,6 +33,12 @@ export const logout = createAsyncThunk<void, void, AppThunkApiConfig>(
     localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
     localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
 
+    console.log('logout')
+
+    // TODO: we should investigate problem of state concurrency
+    // causing problem during logout
+    // batch(
+    // ;(() => {
     dispatch(updateOffererNames(null))
     dispatch(updateCurrentOfferer(null))
     dispatch(setCurrentOffererName(null))
@@ -39,5 +46,6 @@ export const logout = createAsyncThunk<void, void, AppThunkApiConfig>(
     dispatch(setSelectedVenue(null))
     dispatch(updateUser(null))
     dispatch(updateUserAccess(null))
+    // })()
   }
 )
