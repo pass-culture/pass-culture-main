@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 
+import { ADAGE_URL } from '@/commons/utils/config'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { ShareLink } from '@/ui-kit/ShareLink/ShareLink'
@@ -11,15 +12,12 @@ export type ShareTemplateOfferLinkProps = {
   notifySuccessMessage?: string
 }
 
-const ADAGE_BASE_URL =
-  'https://bv.ac-versailles.fr/adage/passculture/offres/offerid/'
-
 export const ShareTemplateOfferLink = ({
   offerId,
   notifySuccessMessage = 'Le lien ADAGE a bien été copié',
 }: ShareTemplateOfferLinkProps) => {
   const fullLink = useMemo(
-    () => `${ADAGE_BASE_URL}${offerId}?source=shareLink`,
+    () => `${ADAGE_URL}/offerid/${offerId}/source/shareLink`,
     [offerId]
   )
 

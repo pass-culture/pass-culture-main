@@ -11,6 +11,9 @@ if (typeof window !== 'undefined') {
     : import.meta.env.VITE_API_URL_NEW
 }
 export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
+export const ADAGE_URL =
+  import.meta.env.VITE_ADAGE_URL ||
+  'https://bv.ac-versailles.fr/adage/passculture/offres'
 
 export const ENVIRONMENT_NAME = import.meta.env.MODE
 export const SENTRY_SAMPLE_RATE = import.meta.env.VITE_SENTRY_SAMPLE_RATE ?? '0'
