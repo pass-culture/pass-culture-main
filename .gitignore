@@ -48,3 +48,6 @@ docs-build/
 # Allure Report
 allure-results/
 allure-report/
+
+# Ignore accidental root yarn lockfile
+/yarn.lock
