@@ -1,11 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import {
-  type SetAccessibilityFieldValue,
-  useAccessibilityOptions,
-} from '@/commons/hooks/useAccessibilityOptions'
 import { isEqual } from '@/commons/utils/isEqual'
+import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { ExternalAccessibility } from '@/components/ExternalAccessibility/ExternalAccessibility'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
@@ -28,20 +25,12 @@ export const AccessibilityForm = ({
   externalAccessibilityData,
   isSubSubSection,
 }: AccessiblityFormProps) => {
-  const { watch, setValue, formState, trigger } =
+  const { watch, setValue, formState } =
     useFormContext<VenueEditionFormValues>()
 
   const values = watch()
 
-  const setAccessibilityValue: SetAccessibilityFieldValue = (name, value) => {
-    setValue(name, value)
-    trigger('accessibility')
-  }
-
-  const checkboxGroup = useAccessibilityOptions(
-    setAccessibilityValue,
-    values.accessibility
-  )
+  const checkboxGroup = updateAccessibilityField(setValue, values.accessibility)
 
   const hasChangedSinceLastSubmit = !isEqual(
     values.accessibility,
