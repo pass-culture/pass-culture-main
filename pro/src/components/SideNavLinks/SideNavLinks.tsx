@@ -161,10 +161,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 },
                 {
                   element: (
-                    <ButtonLink
-                      to="/offre/creation?type=collective"
-                      icon={strokeBagIcon}
-                    >
+                    <ButtonLink to="/offre/creation" icon={strokeBagIcon}>
                       Pour les groupes scolaires
                     </ButtonLink>
                   ),

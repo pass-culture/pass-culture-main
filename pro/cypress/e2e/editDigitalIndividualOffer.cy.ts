@@ -13,28 +13,26 @@ describe('Edit digital individual offers', () => {
         'http://localhost:5001/sandboxes/pro/create_regular_pro_user_with_virtual_offer',
         (response) => {
           login1 = response.body.user.email
-
-          cy.setFeatureFlags([
-            { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: false },
-          ])
         }
       )
     })
 
     it('An edited offer is displayed with 5 links', () => {
-      logInAndGoToPage(login1, '/offre/individuelle/1/recapitulatif/details')
+      logInAndGoToPage(
+        login1,
+        '/offre/individuelle/1/recapitulatif/description'
+      )
 
       cy.contains('Récapitulatif')
       cy.injectAxe(DEFAULT_AXE_CONFIG)
       cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
-      cy.stepLog({ message: 'I check that the 5 links are displayed' })
-      cy.findByRole('link', { name: 'Lien actif Détails de l’offre' }).should(
-        'exist'
-      )
+      cy.stepLog({ message: 'I check that the 6 links are displayed' })
+      cy.findByRole('link', { name: 'Description' }).should('exist')
       cy.findByRole('link', { name: 'Informations pratiques' }).should('exist')
       cy.findByRole('link', { name: 'Image et vidéo' }).should('exist')
-      cy.findByRole('link', { name: 'Stock & Prix' }).should('exist')
+      cy.findByRole('link', { name: 'Tarifs' }).should('exist')
+      cy.findByRole('link', { name: 'Horaires' }).should('exist')
       cy.findAllByRole('link', { name: 'Réservations' }).eq(1).should('exist')
     })
 

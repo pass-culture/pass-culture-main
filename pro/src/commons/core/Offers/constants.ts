@@ -132,3 +132,18 @@ export const CREATION_MODES_OPTIONS: SelectOption[] = [
   { label: 'Manuel', value: 'manual' },
   { label: 'Synchronisé', value: 'imported' },
 ]
+
+export enum COLLECTIVE_OFFER_SUBTYPE {
+  COLLECTIVE = 'COLLECTIVE',
+  TEMPLATE = 'TEMPLATE',
+}
+
+export enum COLLECTIVE_OFFER_SUBTYPE_DUPLICATE {
+  NEW_OFFER = 'NEW_OFFER',
+  DUPLICATE = 'DUPLICATE',
+}
+
+export enum OFFER_TYPES {
+  INDIVIDUAL_OR_DUO = 'INDIVIDUAL_OR_DUO',
+  EDUCATIONAL = 'EDUCATIONAL',
+}

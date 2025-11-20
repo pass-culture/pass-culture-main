@@ -105,10 +105,6 @@ describe('Edit digital individual offers', () => {
         'GET',
         'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings',
         (response) => {
-          cy.setFeatureFlags([
-            { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: true },
-          ])
-
           login2 = response.body.user.email
         }
       )
