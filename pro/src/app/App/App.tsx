@@ -44,7 +44,8 @@ export const App = (): JSX.Element | null => {
       <SWRConfig
         value={{
           onError: (error) => {
-            if (error instanceof ApiError && error.status === 401) {
+            console.log({ error })
+            if (isErrorAPIError(error) && error.status === 401) {
               // A call to users/current is made on all routes
               // including public routes
               // when user is not connected we always recieve a 401 error

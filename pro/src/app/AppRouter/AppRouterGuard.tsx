@@ -17,8 +17,11 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
   const currentRoute = findCurrentRoute(location)
   const userAccess: UserAccess = useSelector((store: any) => store.user.access)
 
+  console.log('AppRouterGuard render', { userAccess })
+
   if (currentRoute) {
     if (!userAccess && !currentRoute?.meta?.public) {
+      console.log('AppRouterGuard: redirect to login')
       if (location.pathname === `/adage-iframe`) {
         return <Navigate to="/adage-iframe/erreur" replace />
       }

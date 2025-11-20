@@ -23,11 +23,8 @@ export const StoreProvider = ({
 
   useEffect(() => {
     const getUser = async () => {
-      try {
-        return await api.getProfile()
-      } catch {
-        return null
-      }
+      return await api.getProfile()
+      console.log('error')
     }
 
     const getFeatures = async () => {
@@ -43,7 +40,9 @@ export const StoreProvider = ({
       dispatch(updateFeatures(features))
 
       if (!isAdageIframe) {
+        console.log('??')
         const user = await getUser()
+        console.log({ user })
         dispatch(updateUser(user))
         if (user) {
           await dispatch(initializeUser(user)).unwrap()
