@@ -230,7 +230,7 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: 'I search with the text "Livre"' })
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
-    cy.findByTestId('wrapper-address').within(() => {
+    cy.findByTestId('wrapper-offererAddressId').within(() => {
       cy.get('select').select(1)
     })
     cy.findByText('Rechercher').click()
