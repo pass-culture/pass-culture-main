@@ -425,7 +425,9 @@ describe('IndividualOfferLayout', () => {
 
     describe("when it's an onboarding path", () => {
       const options = {
-        initialRouterEntries: ['/onboarding/offre/creation'],
+        initialRouterEntries: [
+          '/onboarding/offre/individuelle/creation/description',
+        ],
       }
 
       it('Should display the page if the user can access onboarding and is on onboarding url', async () => {

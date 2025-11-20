@@ -69,7 +69,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
     path: '/offre/individuelle/:offerId/recapitulatif/description',
     title: 'Description - Consulter une offre individuelle',
   },
-  // Information pages
+  //  Informations pratiques
   {
     lazy: () =>
       import(
@@ -315,6 +315,17 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/description',
     title: 'Description - Créer une offre individuelle - Onboarding',
+    meta: {
+      onboardingOnly: true,
+    },
+  },
+  {
+    lazy: () =>
+      import(
+        '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
+      ),
+    path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
+    title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
     meta: {
       onboardingOnly: true,
     },

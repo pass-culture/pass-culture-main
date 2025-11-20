@@ -168,7 +168,6 @@ describe('Create collective offers', () => {
 
   it('Create collective bookable offers with a precise address (the venue address, selected by default)', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
@@ -205,7 +204,6 @@ describe('Create collective offers', () => {
 
   it('Create collective bookable offers with a precise address (another address)', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('Autre adresse').click()
     cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
@@ -221,7 +219,6 @@ describe('Create collective offers', () => {
 
   it('Create collective bookable offers with a precise address (another address - manual entry)', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('Autre adresse').click()
     cy.findByLabelText('Intitulé de la localisation').type(
@@ -251,7 +248,6 @@ describe('Create collective offers', () => {
 
   it('Create collective bookable offers with school location', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('En établissement scolaire').click()
     fillOfferDetails()
@@ -266,7 +262,6 @@ describe('Create collective offers', () => {
 
   it('Create collective bookable offers with to be defined location', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('À déterminer avec l’enseignant').click()
     cy.findByLabelText('Commentaire').type('Test commentaire')
@@ -282,7 +277,6 @@ describe('Create collective offers', () => {
 
   it('Create collective offer template and use it in duplication page', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     cy.findByText('Une offre vitrine').click()
     cy.findByText('Étape suivante').click()
     fillBasicOfferForm()
@@ -330,7 +324,6 @@ describe('Create collective offers', () => {
     expectOffersOrBookingsAreFound(templateResults)
 
     cy.visit('/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     cy.findByText('Dupliquer les informations d’une offre vitrine').click()
     cy.findByText('Étape suivante').click()
     cy.wait('@collectiveOffersTemplate')
@@ -354,7 +347,6 @@ describe('Create collective offers', () => {
 
   it('Create collective bookable offers with a precise address (the venue address, selected by default) and update location', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     fillOfferDetails()
     fillDatesAndPrice()
@@ -383,7 +375,6 @@ describe('Create collective offers', () => {
 
   it('Create an offer with draft status and publish it', () => {
     logInAndGoToPage(login, '/offre/creation')
-    cy.findByText('À un groupe scolaire').click()
     fillBasicOfferForm()
     cy.findByLabelText('Autre adresse').click()
     cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
