@@ -154,19 +154,6 @@ export const routes: CustomRouteObject[] = [
     },
   },
   {
-    lazy: () => import('@/pages/OfferType/OfferType'),
-    path: '/offre/creation',
-    title: 'Choix de la nature de l’offre - Créer une offre',
-  },
-  {
-    lazy: () => import('@/pages/OfferType/OfferType'),
-    path: '/onboarding/offre/creation',
-    title: 'Choix de la nature de l’offre - Créer une offre - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
-  },
-  {
     lazy: () => import('@/pages/IndividualOffers/IndividualOffers'),
     path: '/offres',
     title: 'Offres individuelles',

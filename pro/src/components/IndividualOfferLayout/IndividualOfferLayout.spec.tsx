@@ -97,8 +97,8 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ props })
 
       expect(screen.getByText('Template child')).toBeInTheDocument()
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Description')).toBeInTheDocument()
+      expect(screen.getByText('Tarifs')).toBeInTheDocument()
     })
 
     it('should render when offer is given', () => {
@@ -112,8 +112,9 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ props })
 
       expect(screen.getByText('Template child')).toBeInTheDocument()
-      expect(screen.getByText('Détails de l’offre')).toBeInTheDocument()
-      expect(screen.getByText('Stock & Prix')).toBeInTheDocument()
+      expect(screen.getByText('Description')).toBeInTheDocument()
+      expect(screen.getByText('Tarifs')).toBeInTheDocument()
+      expect(screen.getByText('Horaires')).toBeInTheDocument()
 
       expect(screen.getByText(/offer name/)).toBeInTheDocument()
     })

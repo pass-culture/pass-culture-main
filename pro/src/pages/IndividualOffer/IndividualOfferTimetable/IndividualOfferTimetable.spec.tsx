@@ -69,13 +69,11 @@ describe('IndividualOfferTimetable', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not get the venue and openingHours if the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled but the FF WIP_ENABLE_OHO is disabled', async () => {
+  it('should not get the venue and openingHours if the FF WIP_ENABLE_OHO is disabled', async () => {
     const venuesSpy = vi.spyOn(api, 'getVenues')
     const oHsSpy = vi.spyOn(api, 'getOfferOpeningHours')
 
-    renderIndividualOfferTimetable(contextOverride, [
-      'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
-    ])
+    renderIndividualOfferTimetable(contextOverride)
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()

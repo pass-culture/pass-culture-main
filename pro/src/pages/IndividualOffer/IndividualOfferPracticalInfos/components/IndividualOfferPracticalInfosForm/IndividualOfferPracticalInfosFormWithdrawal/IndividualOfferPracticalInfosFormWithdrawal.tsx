@@ -8,7 +8,7 @@ import { Select } from '@/ui-kit/form/Select/Select'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../../commons/types'
 
-export const ticketSentDateOptions = [
+const ticketSentDateOptions = [
   {
     label: '24 heures',
     value: (60 * 60 * 24).toString(),
@@ -39,7 +39,7 @@ export const ticketSentDateOptions = [
   },
 ]
 
-export const ticketWithdrawalHourOptions = [
+const ticketWithdrawalHourOptions = [
   {
     label: 'À tout moment',
     value: (0).toString(),
@@ -74,7 +74,7 @@ export const ticketWithdrawalHourOptions = [
   },
 ]
 
-export function getFirstWithdrawalTypeEnumValue(value: string) {
+function getFirstWithdrawalTypeEnumValue(value: string) {
   switch (value) {
     case WithdrawalTypeEnum.BY_EMAIL:
       return ticketSentDateOptions[0].value
