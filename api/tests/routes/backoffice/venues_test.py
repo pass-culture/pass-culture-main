@@ -909,6 +909,7 @@ class UpdateVenueTest(PostEndpointHelper):
             score=1,
             city="Paris",
             street="23 Boulevard de la Madeleine",
+            type="housenumber",
         ),
     )
     def test_update_venue(self, mock_get_address, authenticated_client, siren, old_siret, new_siret):
@@ -977,6 +978,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert address.inseeCode == "75101"
         assert address.isManualEdition is False
         assert venue.offererAddressId == offerer_address.id
+        assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
+        assert offerer_address.venue == venue
         assert old_oa.label == "Venue Name"
 
         # should not have been updated or erased
@@ -996,7 +999,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(expected_longitude)
-        assert update_snapshot["old_oa_label"]["new_info"] == "Venue Name"
+        assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.address.id
 
         # Check the acces libre update action
         # The folloing assert is a reminder that acceslibre_url must be None to get the updated acceslibre_url
@@ -1250,6 +1253,7 @@ class UpdateVenueTest(PostEndpointHelper):
                         score=1,
                         city="unused",
                         street="unused",
+                        type="housenumber",
                     )
                 },
                 "97129",
@@ -1393,6 +1397,7 @@ class UpdateVenueTest(PostEndpointHelper):
             score=1,
             city="Saint-Denis",
             street="unused",
+            type="housenumber",
         ),
     )
     def test_update_venue_with_address_manual_edition_clear_field_ban_id(
@@ -1454,6 +1459,7 @@ class UpdateVenueTest(PostEndpointHelper):
             score=1,
             city="Saint-Denis",
             street="unused",
+            type="housenumber",
         ),
     )
     def test_update_venue_with_address_manual_edition_clear_field_street(
@@ -1497,6 +1503,7 @@ class UpdateVenueTest(PostEndpointHelper):
             score=1,
             city="Saint-Denis",
             street="unused",
+            type="housenumber",
         ),
     )
     def test_update_venue_manual_address_reuses_existing_manual_edited_address_even_with_sending_old_ban_id(
@@ -1556,6 +1563,7 @@ class UpdateVenueTest(PostEndpointHelper):
             score=1,
             city="Saint-Denis",
             street="unused",
+            type="housenumber",
         ),
     )
     def test_update_venue_manual_address_reuses_existing_manual_edited_address_without_ban_id_case(
@@ -1614,6 +1622,7 @@ class UpdateVenueTest(PostEndpointHelper):
             score=1,
             city="Saint-Denis",
             street="unused",
+            type="housenumber",
         ),
     )
     def test_update_venue_manual_address_with_gps_difference(

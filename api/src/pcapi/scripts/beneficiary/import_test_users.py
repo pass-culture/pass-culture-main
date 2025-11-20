@@ -204,7 +204,7 @@ def _create_pro_user(row: dict) -> User:
         ),
         is_manual_edition=False,
     )
-    offerers_api.get_or_create_offerer_address(offerer.id, address.id, label="Palais des Festivals")
+    offerers_api.get_or_create_offer_location(offerer.id, address.id, label="Palais des Festivals")
 
     if row["Type"] in ("externe:bug-bounty", "interne:test"):
         _create_provider(venue, row)

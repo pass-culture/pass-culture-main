@@ -242,6 +242,16 @@ class GetOffererAddressesTest:
         result = query.one()
         assert result.id == oa.id
 
+    def test_get_offerer_addresses_do_not_return_venue_locations(self):
+        offerer = offerers_factories.OffererFactory()
+        oa = offerers_factories.OffererAddressFactory(offerer=offerer)
+        offer_oa = offerers_factories.OfferLocationFactory(offerer=offerer)
+        offerers_factories.VenueLocationFactory(offerer=offerer)
+
+        query = repository.get_offerer_addresses(offerer_id=offerer.id, with_offers_option=None)
+        results = query.all()
+        assert {item.id for item in results} == {oa.id, offer_oa.id}
+
 
 class GetOffererHeadlineOfferTest:
     def test_return_headline_offer(self):
