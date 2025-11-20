@@ -26,12 +26,12 @@ def main() -> None:
 
 @atomic()
 def attach_products(identifier_type: Any, identifier: str) -> None:
-    products = get_products(
-        product_identifier_type=identifier_type,
-        product_identifier=identifier,
+    products = list(
+        get_products(
+            product_identifier_type=identifier_type,
+            product_identifier=identifier,
+        )
     )
-    if not products:
-        return
 
     chronicles = (
         db.session.query(Chronicle)
@@ -42,16 +42,12 @@ def attach_products(identifier_type: Any, identifier: str) -> None:
         .options(sa_orm.joinedload(Chronicle.products))
     )
 
-    updated_product = 0
+    db.session.query(ProductChronicle).filter(ProductChronicle.chronicleId.in_([c.id for c in chronicles])).delete()
+
     for chronicle in chronicles:
         for product in products:
-            if product not in chronicle.products:
-                updated_product += 1
-                chronicle.products.append(product)
+            chronicle.products.append(product)
         db.session.flush()
-
-    if updated_product:
-        print(updated_product, " updated products")
 
 
 def get_products(product_identifier_type: Any, product_identifier: str) -> list[Product]:
