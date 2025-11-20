@@ -12,7 +12,6 @@ from datetime import datetime
 from datetime import timedelta
 from functools import partial
 from math import ceil
-from typing import Optional
 
 import pytz
 import schwifty
@@ -136,7 +135,6 @@ def update_venue(
     )
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
-        assert venue.offererAddress is not None  # helps mypy
         assert venue.offererAddress.address is not None  # helps mypy
         is_venue_location_updated = any(
             field in location_modifications
@@ -149,29 +147,15 @@ def update_venue(
                 "longitude",
             )
         )
-        is_manual_edition_updated = is_venue_location_updated and (
-            is_manual_edition != venue.offererAddress.address.isManualEdition
-        )
 
-        old_oa = venue.offererAddress
         if is_venue_location_updated:
-            update_venue_location(
+            _update_venue_location(
                 venue,
                 modifications,
                 location_modifications,
                 venue_snapshot=venue_snapshot,
                 is_manual_edition=is_manual_edition,
             )
-        elif is_manual_edition_updated:
-            # PC-35419 TODO refacto cette logique bdalbianco 30/04/2025
-            duplicate_oa(
-                venue=venue,
-                old_oa=old_oa,
-                is_manual_edition=is_manual_edition,
-                venue_snapshot=venue_snapshot,
-            )
-        if is_manual_edition_updated or is_venue_location_updated:
-            switch_old_oa_label(old_oa=old_oa, label=venue.common_name, venue_snapshot=venue_snapshot)
 
     if contact_data:
         # target must not be None, otherwise contact_data fields will be compared to fields in Venue, which do not exist
@@ -293,7 +277,7 @@ def update_venue(
     return venue
 
 
-def update_venue_location(
+def _update_venue_location(
     venue: models.Venue,
     modifications: dict,
     location_modifications: dict,
@@ -353,23 +337,35 @@ def update_venue_location(
     if not is_manual_edition:
         snapshot_location_data["banId"] = address.banId
 
-    new_oa = get_offerer_address(venue.managingOffererId, address.id, label=venue.common_name)
-    if new_oa:
-        new_oa.label = None
+    venue_snapshot.trace_update(snapshot_location_data, venue.offererAddress.address, "offererAddress.address.{}")
+
+    if venue.offererAddress.type == offerers_models.LocationType.VENUE_LOCATION:
+        venue_snapshot.trace_update({"addressId": address.id}, venue.offererAddress, "offererAddress.{}")
+        venue.offererAddress.address = address
     else:
-        new_oa = models.OffererAddress(offerer=venue.managingOfferer)
-        new_oa.address = address
-    db.session.add(new_oa)
-    db.session.flush()  # flush to get the new_oa.id
-    target = venue.offererAddress.address
-    old_oa = venue.offererAddress
-    venue_snapshot.trace_update(snapshot_location_data, target=target, field_name_template="offererAddress.address.{}")
-    venue_snapshot.trace_update(
-        {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
-        old_oa,
-        "offererAddress.{}",
-    )
-    venue.offererAddress = new_oa
+        # Switching from shared OffererAddress to venue location
+        # TODO (prouzet, 2025-11-14) CLEAN_OA This block can be removed after step 4.5 when all venues have VENUE_LOCATION
+        new_oa = offerers_models.OffererAddress(
+            offererId=venue.managingOffererId,
+            addressId=address.id,
+            type=offerers_models.LocationType.VENUE_LOCATION,
+            venueId=venue.id,
+        )
+        db.session.add(new_oa)
+        db.session.flush()  # flush to get the new_oa.id
+
+        venue_snapshot.trace_update(
+            {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
+            venue.offererAddress,
+            "offererAddress.{}",
+        )
+
+        old_oa = venue.offererAddress
+        venue.offererAddress = new_oa
+
+        old_oa.label = venue.common_name
+        db.session.add(old_oa)
+
     db.session.add(venue)
     db.session.flush()
 
@@ -455,18 +451,32 @@ def upsert_venue_contact(venue: models.Venue, contact_data: offerers_schemas.Ven
 def create_venue(
     venue_data: venues_serialize.PostVenueBodyModel,
     author: users_models.User,
-    offerer_address: Optional[models.OffererAddress] = None,
+    address: geography_models.Address | None = None,
 ) -> models.Venue:
-    venue = models.Venue()
-    address = venue_data.address
+    # Call generate_dms_token() before objects creation to avoid autoflush which would trigger
+    # _fill_departement_code_and_timezone and check constraints.
+    dms_token = generate_dms_token()
 
-    if not offerer_address:
-        offerer_address = get_offerer_address_from_address(venue_data.managingOffererId, address)
+    venue = models.Venue()
+    venue_address = venue_data.address
+
+    if not address:
+        address = create_offerer_address_from_address_api(venue_address)
+
+    offerer_address = offerers_models.OffererAddress(
+        offererId=venue_data.managingOffererId,
+        addressId=address.id,
+        type=offerers_models.LocationType.VENUE_LOCATION,
+        label=venue_address.label or None,
+    )
+    db.session.add(offerer_address)
+    db.session.flush()
 
     venue.offererAddressId = offerer_address.id
+    offerer_address.venue = venue
 
     data = venue_data.dict(by_alias=True)
-    data["dmsToken"] = generate_dms_token()
+    data["dmsToken"] = dms_token
     if not data["publicName"]:
         data["publicName"] = data["name"]
     if venue.is_soft_deleted():
@@ -3132,21 +3142,28 @@ def get_or_create_address(location_data: LocationData, is_manual_edition: bool =
     return address
 
 
-def get_or_create_offerer_address(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
-    offerer_address: models.OffererAddress | None  # helps mypy
-    with transaction():
-        try:
-            offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
-            db.session.add(offerer_address)
-            db.session.flush()
-        except sa.exc.IntegrityError:
-            if is_managed_transaction():
-                mark_transaction_as_invalid()
-            else:
-                db.session.rollback()
+def get_or_create_offer_location(offerer_id: int, address_id: int, label: str | None = None) -> models.OffererAddress:
+    offerer_address: models.OffererAddress | None = (
+        db.session.query(models.OffererAddress)
+        .filter(
+            models.OffererAddress.offererId == offerer_id,
+            models.OffererAddress.label == label,
+            models.OffererAddress.addressId == address_id,
+            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION after step 4.5
+            sa.or_(
+                models.OffererAddress.type.is_(None),
+                models.OffererAddress.type == models.LocationType.OFFER_LOCATION,
+            ),
+        )
+        .options(sa_orm.joinedload(models.OffererAddress.address))
+        .order_by(models.OffererAddress.type.nulls_last())
+        .first()
+    )
 
-    offerer_address = get_offerer_address(offerer_id, address_id, label)
-    assert offerer_address is not None  # helps mypy
+    if not offerer_address:
+        offerer_address = models.OffererAddress(offererId=offerer_id, addressId=address_id, label=label)
+        db.session.add(offerer_address)
+        db.session.flush()
 
     return offerer_address
 
@@ -3176,59 +3193,6 @@ def create_offerer_address(offerer_id: int, address_id: int, label: str | None =
     return offerer_address
 
 
-def switch_old_oa_label(
-    old_oa: models.OffererAddress, label: str, venue_snapshot: history_api.ObjectUpdateSnapshot
-) -> None:
-    venue_snapshot.trace_update(
-        {"label": label},
-        target=old_oa,
-        field_name_template="old_oa_label",
-    )
-    old_oa.label = label
-    db.session.add(old_oa)
-    db.session.flush()
-
-
-def duplicate_oa(
-    venue: models.Venue,
-    old_oa: models.OffererAddress,
-    is_manual_edition: bool,
-    venue_snapshot: history_api.ObjectUpdateSnapshot,
-) -> None:
-    new_oa = models.OffererAddress(offerer=venue.managingOfferer)
-    new_oa.label = old_oa.label
-    if old_oa.address.isManualEdition != is_manual_edition:
-        new_oa.address = get_or_create_address(
-            {
-                "street": old_oa.address.street,
-                "city": old_oa.address.city,
-                "postal_code": old_oa.address.postalCode,
-                "insee_code": old_oa.address.inseeCode,
-                "latitude": typing.cast(float, old_oa.address.latitude),
-                "longitude": typing.cast(float, old_oa.address.longitude),
-                "ban_id": old_oa.address.banId,
-            },
-            is_manual_edition,
-        )
-        venue_snapshot.trace_update(
-            {"isManualEdition": is_manual_edition},
-            target=old_oa.address,
-            field_name_template="offererAddress.address.isManualEdition",
-        )
-    else:
-        new_oa.address = old_oa.address
-    venue_snapshot.trace_update(
-        {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
-        old_oa,
-        "offererAddress.{}",
-    )
-    db.session.add(new_oa)
-    db.session.flush()
-    venue.offererAddressId = new_oa.id
-    db.session.add(venue)
-    db.session.flush()
-
-
 def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:
     try:
         insee_code = (
@@ -3251,14 +3215,14 @@ def create_offerer_address_from_address_api(address: offerers_schemas.AddressBod
     return get_or_create_address(location_data, is_manual_edition=address.isManualEdition)
 
 
-def get_offerer_address_from_address(
+def get_offer_location_from_address(
     offerer_id: int, address: offerers_schemas.AddressBodyModel
 ) -> offerers_models.OffererAddress:
     assert offerer_id
     if not address.label:
         address.label = None
     address_from_api = create_offerer_address_from_address_api(address)
-    return get_or_create_offerer_address(
+    return get_or_create_offer_location(
         offerer_id,
         address_from_api.id,
         label=address.label,

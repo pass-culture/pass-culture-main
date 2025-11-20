@@ -9,6 +9,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import repository as educational_repository
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -1138,6 +1139,13 @@ def get_offerer_addresses(
             geography_models.Address.departmentCode,
         )
         .filter(models.OffererAddress.offererId == offerer_id)
+        .filter(
+            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION
+            sa.or_(
+                offerers_models.OffererAddress.type.is_(None),
+                offerers_models.OffererAddress.type == offerers_models.LocationType.OFFER_LOCATION,
+            )
+        )
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
         .outerjoin(models.Venue, models.Venue.offererAddressId == models.OffererAddress.id)
     )

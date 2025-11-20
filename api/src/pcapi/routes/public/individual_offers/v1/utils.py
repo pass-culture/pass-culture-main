@@ -248,7 +248,7 @@ def extract_venue_and_offerer_address_from_location(
 
     if location.type == "address":
         address = public_utils.get_address_or_raise_404(location.address_id)
-        offerer_address = offerers_api.get_or_create_offerer_address(
+        offerer_address = offerers_api.get_or_create_offer_location(
             offerer_id=venue.managingOffererId,
             address_id=address.id,
             label=location.address_label,

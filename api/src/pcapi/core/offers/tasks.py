@@ -329,7 +329,7 @@ def _create_or_update_ean_offers(
         offerer_address = venue.offererAddress  # default offerer_address
 
         if address_id:
-            offerer_address = offerers_api.get_or_create_offerer_address(
+            offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
                 address_id=address_id,
                 label=address_label,

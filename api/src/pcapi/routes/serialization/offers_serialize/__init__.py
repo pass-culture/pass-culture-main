@@ -196,7 +196,11 @@ def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressRespo
         # We don't want to blindly return venue.offererAddress
         return None
     offerer_address = None
-    if offer.offererAddress:
+    # TODO (prouzet, 2025-11-14) CLEAN_OA Remove second part of the condition when step 4.2 is completed
+    if offer.offererAddress and (
+        offer.offererAddress.addressId != offer.venue.offererAddress.addressId
+        or offer.offererAddress.label != offer.venue.offererAddress.label
+    ):
         offerer_address = offer.offererAddress
     else:
         offerer_address = offer.venue.offererAddress

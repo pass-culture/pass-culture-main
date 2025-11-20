@@ -170,7 +170,7 @@ def post_product_offer(body: products_serializers.ProductOfferCreation) -> seria
 
     if body.location.type == "address":
         address = public_utils.get_address_or_raise_404(body.location.address_id)
-        offerer_address = offerers_api.get_or_create_offerer_address(
+        offerer_address = offerers_api.get_or_create_offer_location(
             offerer_id=venue.managingOffererId,
             address_id=address.id,
             label=body.location.address_label,

@@ -114,22 +114,25 @@ class UpdateVenueTest:
         }
 
         offerers_api.update_venue(venue, modifications_1, modifications_1, author)
-        oa_1 = venue.offererAddress
-        assert oa_1.label is None
-        address_1 = oa_1.address
+        offerer_address = venue.offererAddress
+        assert offerer_address.label is None
+        assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
+        assert offerer_address.venue == venue
+        address_1 = offerer_address.address
         assert address_1.street == modifications_1["street"]
 
         offerers_api.update_venue(venue, modifications_2, modifications_2, author)
-        oa_2 = venue.offererAddress
-        assert oa_2.label is None
-        assert oa_1.label == venue.common_name
-        address_2 = oa_2.address
+        assert venue.offererAddress == offerer_address  # same object updated
+        assert offerer_address.id == offerer_address.id
+        assert offerer_address.label is None
+        assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
+        assert offerer_address.venue == venue
+        address_2 = offerer_address.address
+        assert address_2.id != address_1.id
         assert address_2.street == modifications_2["street"]
 
         offerers_api.update_venue(venue, modifications_1, modifications_1, author)
-        assert venue.offererAddress == oa_1
-        assert oa_1.label is None
-        assert oa_2.label == venue.common_name
+        assert venue.offererAddress == offerer_address  # same object updated
         assert venue.offererAddress.address == address_1
 
     def test_add_new_opening_hours_to_venue(self):
@@ -173,7 +176,7 @@ class CreateVenueTest:
                 "postalCode": "75002",
                 "banId": "75113_1834_00007",
                 "latitude": 1,
-                "longitude": 1,
+                "longitude": 2,
             },
             "managingOffererId": offerer.id,
             "name": "La Venue",
@@ -198,13 +201,29 @@ class CreateVenueTest:
         assert venue.city == "Paris"
         assert venue.postalCode == "75002"
         assert venue.latitude == 1
-        assert venue.longitude == 1
+        assert venue.longitude == 2
         assert venue.managingOfferer == user_offerer.offerer
         assert venue.name == "La Venue"
         assert venue.publicName == "La Venue"  # empty/non public name copies name
         assert venue.bookingEmail == "venue@example.com"
         assert venue.dmsToken
         assert venue.current_pricing_point_id == venue.id
+
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+        assert offerer_address.label is None
+        assert offerer_address.offerer == user_offerer.offerer
+        assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
+        assert offerer_address.venue == venue
+        assert offerer_address.address.banId == "75113_1834_00007"
+        assert offerer_address.address.street == "rue du test"
+        assert offerer_address.address.postalCode == "75002"
+        assert offerer_address.address.city == "Paris"
+        assert offerer_address.address.latitude == 1
+        assert offerer_address.address.longitude == 2
+        assert offerer_address.address.departmentCode == "75"
+        assert offerer_address.address.timezone == "Europe/Paris"
+        assert offerer_address.address.isManualEdition is False
+        assert venue.offererAddressId == offerer_address.id
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.VENUE_CREATED
@@ -3596,17 +3615,25 @@ class GetOffererConfidenceLevelTest:
 
 
 class OffererAddressTest:
+    # TODO (prouzet, 2025-11-13) CLEAN_OA After transition, no need for this first parametrize, use OfferLocationFactory
+    @pytest.mark.parametrize(
+        "factory", [offerers_factories.OffererAddressFactory, offerers_factories.OfferLocationFactory]
+    )
     @pytest.mark.parametrize("same_label,same_address", [[True, False], [False, True], [True, True], [False, False]])
-    def test_get_or_create_offerer_address(self, same_label, same_address):
+    def test_get_or_create_offerer_address(self, same_label, same_address, factory):
         offerer = offerers_factories.OffererFactory()
-        oa_1 = offerers_factories.OffererAddressFactory(offerer=offerer)
-        other_addresss = geography_factories.AddressFactory(
+        oa_1 = factory(offerer=offerer)
+        other_address = geography_factories.AddressFactory(
             street="1 rue de la paix",
         )
+        vl_1 = offerers_factories.VenueLocationFactory(offerer=offerer, address=oa_1.address, label=oa_1.label)
+        vl_2 = offerers_factories.VenueLocationFactory(
+            offerer=offerer, address=other_address, label="somethingdifferent"
+        )
 
-        oa_return = offerers_api.get_or_create_offerer_address(
+        oa_return = offerers_api.get_or_create_offer_location(
             offerer_id=offerer.id,
-            address_id=oa_1.address.id if same_address else other_addresss.id,
+            address_id=oa_1.address.id if same_address else other_address.id,
             label=oa_1.label if same_label else "somethingdifferent",
         )
         if same_label and same_address:
@@ -3614,6 +3641,7 @@ class OffererAddressTest:
         else:
             assert oa_return.offerer == offerer
             assert oa_return != oa_1
+        assert oa_return not in (vl_1, vl_2)
 
     @pytest.mark.parametrize("existant_address", [True, False])
     def test_get_or_create_address(self, existant_address):

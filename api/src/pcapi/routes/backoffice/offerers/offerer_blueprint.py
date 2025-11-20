@@ -1027,19 +1027,28 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         mark_transaction_as_invalid()
         return _render_get_create_venue_without_siret_form(form, offerer_id), 400
 
-    attachment_venue = offerers_api.get_venue_by_id(form.attachement_venue.data)
+    attachment_venue = (
+        db.session.query(offerers_models.Venue)
+        .filter(
+            offerers_models.Venue.id == form.attachement_venue.data,
+            offerers_models.Venue.managingOffererId == offerer_id,
+        )
+        .one_or_none()
+    )
     if not attachment_venue:
         raise NotFound()
     assert attachment_venue.offererAddress
 
+    attachment_address = attachment_venue.offererAddress.address
+
     address_body_model = offerers_schemas.AddressBodyModel(
-        street=offerers_schemas.VenueAddress(attachment_venue.offererAddress.address.street),
-        city=offerers_schemas.VenueCity(attachment_venue.offererAddress.address.city),
-        postalCode=offerers_schemas.VenuePostalCode(attachment_venue.offererAddress.address.postalCode),
-        inseeCode=offerers_schemas.VenueInseeCode(attachment_venue.offererAddress.address.inseeCode),
-        latitude=float(attachment_venue.offererAddress.address.latitude),
-        longitude=float(attachment_venue.offererAddress.address.longitude),
-        banId=attachment_venue.offererAddress.address.banId,
+        street=offerers_schemas.VenueAddress(attachment_address.street),
+        city=offerers_schemas.VenueCity(attachment_address.city),
+        postalCode=offerers_schemas.VenuePostalCode(attachment_address.postalCode),
+        inseeCode=offerers_schemas.VenueInseeCode(attachment_address.inseeCode),
+        latitude=float(attachment_address.latitude),
+        longitude=float(attachment_address.longitude),
+        banId=attachment_address.banId,
         label=None,
     )
 
@@ -1065,10 +1074,7 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         visualDisabilityCompliant=None,
         isOpenToPublic=False,
     )
-    offerer_address = offerers_api.create_offerer_address(
-        attachment_venue.managingOffererId, attachment_venue.offererAddress.address.id
-    )
-    venue = offerers_api.create_venue(venue_creation_info, current_user, offerer_address=offerer_address)
+    venue = offerers_api.create_venue(venue_creation_info, current_user, address=attachment_address)
     venue.isPermanent = True
     db.session.add(venue)
     offerers_api.link_venue_to_pricing_point(venue, attachment_venue.id)
