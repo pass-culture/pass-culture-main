@@ -268,12 +268,9 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
     )
 
     query_filter = sa.or_(
-        sa.and_(models.Booking.activationCode != None, models.Booking.displayAsEnded.is_(True)),
-        sa.and_(
-            offers_models.Offer.isPermanent.is_(False),
-            models.Booking.status.in_(
-                [models.BookingStatus.USED, models.BookingStatus.REIMBURSED, models.BookingStatus.CANCELLED]
-            ),
+        models.Booking.displayAsEnded.is_(True),
+        models.Booking.status.in_(
+            [models.BookingStatus.USED, models.BookingStatus.REIMBURSED, models.BookingStatus.CANCELLED]
         ),
     )
 

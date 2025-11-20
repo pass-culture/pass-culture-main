@@ -639,7 +639,7 @@ class GetBookingsListTest:
         ],
         ids=["used_booking", "reimbursed_booking", "cancelled_booking"],
     )
-    def test_get_bookings_list_returns_ended_bookings_when_offer_is_not_permanent(
+    def test_get_bookings_list_returns_ended_bookings_when_booking_status_is_used_reimbursed_or_cancelled(
         self, client, status, cancellationDate, cancellationReason, dateUsed, reimbursementDate
     ):
         user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
@@ -739,6 +739,83 @@ class GetBookingsListTest:
             if ended_booking.cancellationReason
             else ended_booking.cancellationReason,
             "userReaction": ended_booking.userReaction,
+            "totalAmount": int(ended_booking.total_amount * 100),
+        }
+
+    def test_get_bookings_list_returns_ended_bookings_when_booking_is_displayed_as_ended(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        address_on_offer = AddressFactory()
+
+        paris_timezone = "Europe/Paris"
+
+        booking_start_date = datetime(2023, 3, 2)
+
+        ended_booking = booking_factories.UsedBookingFactory(
+            user=user,
+            status=booking_models.BookingStatus.CONFIRMED,
+            stock__offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                timezone=paris_timezone,
+            ),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            displayAsEnded=True,
+            stock__offer__subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            stock__offer__withdrawalDelay=60 * 30,
+            stock__beginningDatetime=booking_start_date,
+            cancellation_limit_date=booking_start_date - timedelta(days=2),
+        )
+
+        ended_booking_mediation = offers_factories.MediationFactory(
+            id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
+        )
+
+        with assert_num_queries(3):  # user + booking + offer
+            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+
+        assert response.status_code == 200
+
+        bookings = response.json["bookings"]
+        assert len(bookings) == 1
+
+        booking_response = bookings[0]
+
+        assert booking_response == {
+            "activationCode": None,
+            "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "id": ended_booking.id,
+            "quantity": ended_booking.quantity,
+            "canReact": ended_booking.can_react,
+            "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            if ended_booking.dateUsed != None
+            else ended_booking.dateUsed,
+            "stock": {
+                "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "offer": {
+                    "address": {
+                        "timezone": ended_booking.stock.offer.offererAddress.address.timezone,
+                        "city": ended_booking.stock.offer.offererAddress.address.city,
+                        "label": ended_booking.stock.offer.offererAddress.label,
+                    },
+                    "id": ended_booking.stock.offer.id,
+                    "imageUrl": ended_booking_mediation.thumbUrl,
+                    "isDigital": ended_booking.stock.offer.isDigital,
+                    "isPermanent": ended_booking.stock.offer.isPermanent,
+                    "name": ended_booking.stock.offer.name,
+                    "subcategoryId": ended_booking.stock.offer.subcategoryId,
+                    "venue": {
+                        "id": ended_booking.stock.offer.venue.id,
+                        "name": ended_booking.stock.offer.venue.name,
+                        "timezone": ended_booking.stock.offer.venue.timezone,
+                    },
+                    "withdrawalDelay": ended_booking.stock.offer.withdrawalDelay,
+                    "withdrawalType": ended_booking.stock.offer.withdrawalType.value,
+                },
+            },
+            "cancellationDate": None,
+            "cancellationReason": None,
+            "userReaction": None,
             "totalAmount": int(ended_booking.total_amount * 100),
         }
 
