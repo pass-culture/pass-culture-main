@@ -124,7 +124,7 @@
             {% if has_permission("MANAGE_CHRONICLE") %}
               <div class="d-flex flex-row-reverse">
                 <div class="p-2">
-                  {{ build_modal_form("edit-content", url_for("backoffice_web.chronicles.attach_offer", chronicle_id=chronicle.id) , attach_offer_form, "", "Rattacher une offre", "Rattacher", none, "bi-plus-circle-fill h3") }}
+                  {{ build_modal_form("attach-offer", url_for("backoffice_web.chronicles.attach_offer", chronicle_id=chronicle.id) , attach_offer_form, "", "Rattacher une offre", "Rattacher", none, "bi-plus-circle-fill h3") }}
                 </div>
               </div>
             {% endif %}
@@ -177,7 +177,7 @@
             {% if has_permission("MANAGE_CHRONICLE") %}
               <div class="d-flex flex-row-reverse">
                 <div class="p-2">
-                  {{ build_modal_form("edit-content", url_for("backoffice_web.chronicles.attach_product", chronicle_id=chronicle.id) , attach_product_form, "", "Rattacher une œuvre", "Rattacher", none, "bi-plus-circle-fill h3") }}
+                  {{ build_modal_form("attach-product", url_for("backoffice_web.chronicles.attach_product", chronicle_id=chronicle.id) , attach_product_form, "", "Rattacher une œuvre", "Rattacher", none, "bi-plus-circle-fill h3") }}
                 </div>
               </div>
             {% endif %}
