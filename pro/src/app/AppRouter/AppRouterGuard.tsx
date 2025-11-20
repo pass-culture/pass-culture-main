@@ -19,6 +19,10 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
 
   if (currentRoute) {
     if (!userAccess && !currentRoute?.meta?.public) {
+      if (location.pathname === `/adage-iframe`) {
+        return <Navigate to="/adage-iframe/erreur" replace />
+      }
+
       // The user is not logged in and tries to access a private page.
       const fromUrl = encodeURIComponent(
         `${location.pathname}${location.search}`

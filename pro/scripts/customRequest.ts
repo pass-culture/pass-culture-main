@@ -324,62 +324,38 @@ export const request = <T>(
   config: OpenAPIConfig,
   options: ApiRequestOptions
 ): CancelablePromise<T> => {
-  return new CancelablePromise(async (resolve, reject, onCancel) => {
-    try {
-      const url = getUrl(config, options)
-      const formData = getFormData(options)
-      const body = getRequestBody(options)
-      const headers = await getHeaders(config, options)
+  return new CancelablePromise(async (resolve, _reject, onCancel) => {
+    const url = getUrl(config, options)
+    const formData = getFormData(options)
+    const body = getRequestBody(options)
+    const headers = await getHeaders(config, options)
 
-      if (!onCancel.isCancelled) {
-        const response = await sendRequest(
-          config,
-          options,
-          url,
-          body,
-          formData,
-          headers,
-          onCancel
-        )
-        const responseBody = await getResponseBody(response)
-        const responseHeader = getResponseHeader(
-          response,
-          options.responseHeader
-        )
+    if (!onCancel.isCancelled) {
+      const response = await sendRequest(
+        config,
+        options,
+        url,
+        body,
+        formData,
+        headers,
+        onCancel
+      )
+      const responseBody = await getResponseBody(response)
+      const responseHeader = getResponseHeader(
+        response,
+        options.responseHeader
+      )
 
-        const result: ApiResult = {
-          url,
-          ok: response.ok,
-          status: response.status,
-          statusText: response.statusText,
-          body: responseHeader ?? responseBody,
-        }
-
-        catchErrorCodes(options, result)
-        resolve(result.body)
+      const result: ApiResult = {
+        url,
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        body: responseHeader ?? responseBody,
       }
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 401) {
-        if (error.url.includes('/adage-iframe')) {
-          window.location.href = '/adage-iframe/erreur'
-          return
-        }
-        // A call to users/current is made on all routes
-        // including public routes
-        // when user is not connected we always recieve a 401 error
-        // so in that case we don't redirect to the login page (since the route is public)
-        // when navigating in private routes, others calls will throw a 401
-        // and redirect the user to the login page except if the call is made to users/signin
-        if (
-          !error.url.includes('/users/current') &&
-          !error.url.includes('/offerers/names') &&
-          !error.url.includes('/users/signin')
-        ) {
-          window.location.href = '/connexion'
-          return
-        }
-      }
-      reject(error)
+
+      catchErrorCodes(options, result)
+      resolve(result.body)
     }
   })
 }
