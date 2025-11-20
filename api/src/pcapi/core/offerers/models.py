@@ -237,11 +237,17 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     siret: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(14), nullable=True, unique=True)
 
-    departementCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(3), nullable=True, index=True)
+    _deprecated_departementCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
+        "departementCode", sa.String(3), nullable=True, index=True
+    )
 
-    latitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=True)
+    _deprecated_latitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(
+        "latitude", sa.Numeric(8, 5), nullable=True
+    )
 
-    longitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(sa.Numeric(8, 5), nullable=True)
+    _deprecated_longitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(
+        "longitude", sa.Numeric(8, 5), nullable=True
+    )
 
     venueProviders: sa_orm.Mapped[list["providers_models.VenueProvider"]] = sa_orm.relationship(
         "VenueProvider", foreign_keys="VenueProvider.venueId", back_populates="venue"
@@ -256,21 +262,21 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     bookingEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True)
 
-    _address: sa_orm.Mapped[str | None] = sa_orm.mapped_column("address", sa.String(200), nullable=True)
+    _deprecated_address: sa_orm.Mapped[str | None] = sa_orm.mapped_column("address", sa.String(200), nullable=True)
 
-    _street: sa_orm.Mapped[str | None] = sa_orm.mapped_column("street", sa.Text(), nullable=True)
+    _deprecated_street: sa_orm.Mapped[str | None] = sa_orm.mapped_column("street", sa.Text(), nullable=True)
 
-    postalCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(6), nullable=True)
+    _deprecated_postalCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column("postalCode", sa.String(6), nullable=True)
 
-    city: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(50), nullable=True)
+    _deprecated_city: sa_orm.Mapped[str | None] = sa_orm.mapped_column("city", sa.String(50), nullable=True)
 
     # banId is a unique interoperability key for French addresses registered in the
     # Base Adresse Nationale. See "cle_interop" here:
     # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
-    banId: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text(), nullable=True)
+    _deprecated_banId: sa_orm.Mapped[str | None] = sa_orm.mapped_column("banId", sa.Text(), nullable=True)
 
-    timezone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
-        sa.String(50), nullable=True, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
+    _deprecated_timezone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
+        "timezone", sa.String(50), nullable=True, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
     )
 
     publicName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(255), nullable=False)
@@ -484,25 +490,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         ),
         sa.Index("idx_venue_bookingEmail", bookingEmail),
     )
-
-    def __init__(self, street: str | None = None, **kwargs: typing.Any) -> None:
-        if street:
-            self.street = street
-        super().__init__(**kwargs)
-
-    @hybrid_property
-    def street(self) -> str | None:
-        return self._address
-
-    @street.inplace.setter
-    def _street_setter(self, value: str | None) -> None:
-        self._address = value
-        self._street = value
-
-    @street.inplace.expression
-    @classmethod
-    def _street_expression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
-        return cls._address
 
     def _get_type_banner_url(self) -> str | None:
         elligible_banners: tuple[str, ...] = VENUE_TYPE_DEFAULT_BANNERS.get(self.venueTypeCode, tuple())
