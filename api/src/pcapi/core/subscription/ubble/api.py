@@ -7,6 +7,7 @@ import re
 import shutil
 import tempfile
 import typing
+from functools import partial
 
 import flask
 import sqlalchemy as sa
@@ -35,6 +36,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 from . import errors
 from . import exceptions
@@ -120,7 +122,7 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
         return
 
     payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
-    ubble_tasks.store_id_pictures_task.delay(payload)
+    on_commit(partial(ubble_tasks.store_id_pictures_task.delay, payload))
 
     try:
         is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
