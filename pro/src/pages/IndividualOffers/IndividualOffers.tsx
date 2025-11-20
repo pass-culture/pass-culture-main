@@ -28,7 +28,7 @@ import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { HighlightBanner } from '@/components/HighlightBanner/HighlightBanner'
-import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import fullNextIcon from '@/icons/full-next.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 

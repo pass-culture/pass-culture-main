@@ -27,7 +27,7 @@ import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/Co
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/ExpirationCell/ExpirationCell'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
-import { useStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'

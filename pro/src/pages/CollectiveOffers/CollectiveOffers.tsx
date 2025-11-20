@@ -16,7 +16,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
-import { getStoredFilterConfig } from '@/components/OffersTable/OffersTableSearch/utils'
+import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 
 import { CollectiveOffersScreen } from './components/CollectiveOffersScreen/CollectiveOffersScreen'
 

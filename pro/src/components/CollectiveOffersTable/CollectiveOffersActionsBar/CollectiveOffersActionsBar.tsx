@@ -12,6 +12,7 @@ import {
 } from '@/apiClient/v1'
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
+import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -20,8 +21,6 @@ import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowe
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
-import { computeActivationSuccessMessage } from '@/components/OffersTable/utils/computeActivationSuccessMessage'
-import { computeSelectedOffersLabel } from '@/components/OffersTable/utils/computeSelectedOffersLabel'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
@@ -40,6 +39,14 @@ export type CollectiveOffersActionsBarProps<T> = {
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) =>
   `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre a bien été mise', 'offres ont bien été mises')} en pause`
+
+const computeActivationSuccessMessage = (nbSelectedOffers: number) =>
+  `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre a bien été publiée', 'offres ont bien été publiées')}`
+
+const computeSelectedOffersLabel = (nbSelectedOffers: number) =>
+  nbSelectedOffers > MAX_OFFERS_TO_DISPLAY
+    ? `${MAX_OFFERS_TO_DISPLAY}+ offres sélectionnées`
+    : `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre sélectionnée', 'offres sélectionnées')}`
 
 const toggleCollectiveOffersActiveInactiveStatus = async <
   T extends {

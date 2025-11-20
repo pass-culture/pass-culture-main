@@ -109,9 +109,9 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
 
-    cy.findByTestId('wrapper-categorie').within(() => {
+    cy.findByTestId('wrapper-categoryId').within(() => {
       cy.findByLabelText('Catégorie').select('Instrument de musique')
-      cy.get('#categorie').should('have.value', 'INSTRUMENT')
+      cy.get('#categoryId').should('have.value', 'INSTRUMENT')
     })
 
     cy.stepLog({ message: 'I validate my filters' })
@@ -341,10 +341,10 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'All filters are empty' })
     cy.findByRole('searchbox', { name: /Nom de l’offre/ }).should('be.empty')
-    cy.findByTestId('wrapper-address').within(() => {
+    cy.findByTestId('wrapper-offererAddressId').within(() => {
       cy.get('select').invoke('val').should('eq', 'all')
     })
-    cy.findByTestId('wrapper-categorie').within(() => {
+    cy.findByTestId('wrapper-categoryId').within(() => {
       cy.get('select').invoke('val').should('eq', 'all')
     })
     cy.findByTestId('wrapper-creationMode').within(() => {
