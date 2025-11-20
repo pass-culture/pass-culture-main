@@ -1,6 +1,8 @@
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
+import { OnboardingActivityMap } from '@/commons/mappings'
+import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -44,6 +46,8 @@ export const ActivityForm = ({
 
   const watchSocialUrls = watch('socialUrls')
 
+  const activities = buildSelectOptions(OnboardingActivityMap)
+
   return (
     <FormLayout.Section>
       <FormLayout.Row mdSpaceAfter>
@@ -60,6 +64,21 @@ export const ActivityForm = ({
           label="Activité principale"
           className={styles['venue-type-select']}
           required
+        />
+      </FormLayout.Row>
+
+      <FormLayout.Row mdSpaceAfter>
+        <Select
+          options={[
+            {
+              value: '',
+              label: 'Sélectionnez votre activité principale',
+            },
+            ...activities,
+          ]}
+          name="activity"
+          label="Nouvelle Liste d'activités"
+          className={styles['venue-type-select']}
         />
       </FormLayout.Row>
 
