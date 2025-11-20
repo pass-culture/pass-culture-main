@@ -17,7 +17,7 @@ describe('Edit digital individual offers', () => {
       )
     })
 
-    it('An edited offer is displayed with 6 links', () => {
+    it('An edited offer should be displayed with 5 navigation links', () => {
       logInAndGoToPage(
         login1,
         '/offre/individuelle/1/recapitulatif/description'
@@ -27,7 +27,7 @@ describe('Edit digital individual offers', () => {
       cy.injectAxe(DEFAULT_AXE_CONFIG)
       cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
-      cy.stepLog({ message: 'I check that the 6 links are displayed' })
+      cy.stepLog({ message: 'I check that the 5 links are displayed' })
       cy.findByRole('link', { name: 'Lien actif Description' }).should('exist')
       cy.findByRole('link', { name: 'Localisation' }).should('exist')
       cy.findByRole('link', { name: 'Image et vidéo' }).should('exist')
@@ -39,6 +39,7 @@ describe('Edit digital individual offers', () => {
     it('I should be able to modify the url of a digital offer', () => {
       logInAndGoToPage(login1, '/offres')
 
+      //  OFFER SUMMARY PAGE
       cy.stepLog({ message: 'I open the first offer in the list' })
       cy.get('tbody')
         .findByRole('row')
@@ -49,29 +50,32 @@ describe('Edit digital individual offers', () => {
       cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
 
-      cy.findByRole('link', { name: 'Modifier les détails de l’offre' }).click()
+      //  DESCRIPTION EDITION
+      cy.stepLog({ message: 'I edit the offer description' })
+      cy.findByRole('link', {
+        name: 'Modifier la description de l’offre',
+      }).click()
+      cy.findByText('Enregistrer les modifications').click()
 
-      cy.stepLog({ message: 'I update the url link' })
+      cy.findByRole('heading', { name: 'Description' }).should('exist')
+
+      //  LOCATION EDITION
+      cy.findByText('Localisation').click()
+      cy.url().should('contain', '/localisation')
+      cy.stepLog({ message: 'I edit the offer localisation' })
+      cy.findByRole('link', {
+        name: 'Modifier la localisation de l’offre',
+      }).click()
+      cy.url().should('contain', '/edition/localisation')
       const randomUrl = `http://myrandomurl.fr/`
       cy.findByLabelText(/URL d’accès à l’offre/).type(
         `{selectall}{del}${randomUrl}`
       )
-
-      cy.stepLog({ message: 'I display Informations pratiques tab' })
       cy.findByText('Enregistrer les modifications').click()
 
       cy.findByText('http://myrandomurl.fr/').should('exist')
 
-      cy.findByText('Informations pratiques').click()
-      cy.url().should('contain', '/pratiques')
-
-      cy.stepLog({ message: 'I edit the offer displayed' })
-      cy.findByRole('link', {
-        name: 'Modifier les informations de l’offre',
-      }).click()
-      cy.url().should('contain', '/edition/pratiques')
-
-      cy.findByText('Enregistrer les modifications').click()
+      //  OFFERS LIST
       cy.findByText('Retour à la liste des offres').click()
       cy.url().should('contain', '/offres')
       cy.findAllByTestId('spinner', { timeout: 30 * 1000 }).should('not.exist')
@@ -87,13 +91,13 @@ describe('Edit digital individual offers', () => {
       cy.findByRole('menuitem', { name: 'Voir l’offre' }).click()
       cy.url().should('contain', '/recapitulatif')
 
-      cy.stepLog({ message: 'I display Informations pratiques tab' })
+      cy.stepLog({ message: 'I display useful informations tab' })
       cy.findByText('Informations pratiques').click()
-      cy.url().should('contain', '/pratiques')
+      cy.url().should('contain', '/informations_pratiques')
     })
   })
 
-  describe('Modification of date event offer with bookings', () => {
+  describe('Modification of an offer with timestamped stocks and bookings', () => {
     let login2: string
     beforeEach(() => {
       cy.visit('/connexion')
