@@ -1,6 +1,9 @@
 import cn from 'classnames'
 
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferTemplateAllowedAction,
+} from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -42,7 +45,7 @@ const activeOffer = (
       chefs d’établissements{' '}
       {getInstitutionDisplayName(offer) ? (
         <>
-          de l’établissement scolaire :
+          de l’établissement scolaire :{' '}
           <span className={styles['institution-name']}>
             {getInstitutionDisplayName(offer)}
           </span>
@@ -151,11 +154,17 @@ const CollectiveOfferConfirmation = ({
   const offerStatus = offer.displayedStatus
   const offererId = offer.venue.managingOfferer.id
 
+  const canShareOffer =
+    isCollectiveOfferTemplate(offer) &&
+    offer.allowedActions.includes(
+      CollectiveOfferTemplateAllowedAction.CAN_SHARE
+    )
+
   const confirmationData =
     offerStatus === CollectiveOfferDisplayedStatus.UNDER_REVIEW
       ? pendingOffer
       : isShowcase
-        ? isCollectiveOfferTemplateShareLinkEnabled
+        ? isCollectiveOfferTemplateShareLinkEnabled && canShareOffer
           ? showcaseOfferWithShareLink(offer)
           : showcaseOffer()
         : activeOffer(offer)
