@@ -9,6 +9,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
@@ -251,6 +252,78 @@ class Returns200Test:
         assert offer.offererAddress.address.postalCode == "75001"
         assert offer.offererAddress.address.street == "3 Rue de Valois"
         assert offer.offererAddress.address.isManualEdition == False
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
+    # TODO (prouzet, 2025-11-20) CLEAN_OA This test will be deprecated when venues have their exclusive venue location
+    def test_location_venue_address_legacy(self, pro_client, venue, payload):
+        data = {
+            **payload,
+            "interventionArea": None,
+            "location": {
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
+                "locationComment": None,
+                "address": {
+                    "isVenueAddress": True,
+                    "isManualEdition": venue.offererAddress.address.isManualEdition,
+                    "city": venue.offererAddress.address.city,
+                    "label": "My address",
+                    "latitude": str(venue.offererAddress.address.latitude),
+                    "longitude": str(venue.offererAddress.address.longitude),
+                    "postalCode": venue.offererAddress.address.postalCode,
+                    "street": venue.offererAddress.address.street,
+                },
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = db.session.query(models.CollectiveOfferTemplate).filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddress == venue.offererAddress
+        assert offer.offererAddress.type is None
+        assert offer.offererAddress.label is None
+        assert offer.locationType == models.CollectiveLocationType.ADDRESS
+        assert offer.locationComment is None
+
+    def test_location_venue_address(self, pro_client, venue, payload):
+        # TODO (prouzet, 2025-11-20) CLEAN_OA Remove this hack when venue fixture is created with a venue location
+        venue.offererAddress.type = offerers_models.LocationType.VENUE_LOCATION
+        venue.offererAddress.venue = venue
+        db.session.add(venue.offererAddress)
+        db.session.flush()
+
+        data = {
+            **payload,
+            "interventionArea": None,
+            "location": {
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
+                "locationComment": None,
+                "address": {
+                    "isVenueAddress": True,
+                    "isManualEdition": venue.offererAddress.address.isManualEdition,
+                    "city": venue.offererAddress.address.city,
+                    "label": "My address",
+                    "latitude": str(venue.offererAddress.address.latitude),
+                    "longitude": str(venue.offererAddress.address.longitude),
+                    "postalCode": venue.offererAddress.address.postalCode,
+                    "street": venue.offererAddress.address.street,
+                },
+            },
+        }
+
+        with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
+            response = pro_client.post("/collective/offers-template", json=data)
+
+        assert response.status_code == 201
+        offer = db.session.query(models.CollectiveOfferTemplate).filter_by(id=response.json["id"]).one()
+
+        assert offer.offererAddress != venue.offererAddress
+        assert offer.offererAddress.type is None  # TODO CLEAN_OA OFFER_LOCATION
+        assert offer.offererAddress.label == venue.common_name
+        assert offer.offererAddress.address == venue.offererAddress.address
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
