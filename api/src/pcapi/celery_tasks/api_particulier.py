@@ -7,7 +7,7 @@ from pcapi import settings
 from pcapi.celery_tasks.tasks import celery_async_task
 from pcapi.connectors import api_particulier as api
 from pcapi.core.subscription import models as subscription_models
-from pcapi.core.subscription.bonus.schemas import BonusCreditContent
+from pcapi.core.subscription.bonus.schemas import QuotientFamilialBonusCreditContent
 from pcapi.models import db
 from pcapi.utils.transaction_manager import atomic
 
@@ -31,14 +31,16 @@ def get_quotient_familial_task(payload: GetQutientFamilialTaskPayload) -> None:
         db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
             subscription_models.BeneficiaryFraudCheck.id == payload.fraud_check_id,
-            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.BONUS_CREDIT,
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT,
         )
         .one()
     )
     if fraud_check.status != subscription_models.FraudCheckStatus.STARTED:
         logger.warning("Trying to handle already processed bonus fraud check #%s", payload.fraud_check_id)
         return
-    source_data: BonusCreditContent = typing.cast(BonusCreditContent, fraud_check.source_data())
+    source_data: QuotientFamilialBonusCreditContent = typing.cast(
+        QuotientFamilialBonusCreditContent, fraud_check.source_data()
+    )
     logger.info("Fetching quotient familial from fraud check #%s", payload.fraud_check_id)
 
     api.get_quotient_familial(

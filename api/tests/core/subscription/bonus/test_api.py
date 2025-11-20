@@ -21,7 +21,7 @@ class GetQuotientFamilialTest:
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
-            type=subscription_models.FraudCheckType.BONUS_CREDIT,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
             resultContent={
                 "custodian": {
@@ -46,7 +46,7 @@ class GetQuotientFamilialTest:
             (
                 fraud_check
                 for fraud_check in user.beneficiaryFraudChecks
-                if fraud_check.type == subscription_models.FraudCheckType.BONUS_CREDIT
+                if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
             ),
             key=lambda fc: fc.id,
         )

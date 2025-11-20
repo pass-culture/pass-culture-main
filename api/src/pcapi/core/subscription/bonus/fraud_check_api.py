@@ -28,11 +28,11 @@ def create_started_bonus_credit_fraud_check(
         "birth_city_cog_code": birth_city_cog_code,
     }
     custodian = bonus_schemas.QuotientFamilialCustodian(**custodian_info)
-    fraud_check_content = bonus_schemas.BonusCreditContent(custodian=custodian)
+    fraud_check_content = bonus_schemas.QuotientFamilialBonusCreditContent(custodian=custodian)
 
     fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
-        type=subscription_models.FraudCheckType.BONUS_CREDIT,
+        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
         status=subscription_models.FraudCheckStatus.STARTED,
         reason=origin,
         thirdPartyId=f"bonus-credit-{user.id}-{hash(custodian_info)}",

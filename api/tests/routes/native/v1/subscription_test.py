@@ -774,7 +774,7 @@ class BonusTest:
         (bonus_fraud_check,) = [
             fraud_check
             for fraud_check in user.beneficiaryFraudChecks
-            if fraud_check.type == subscription_models.FraudCheckType.BONUS_CREDIT
+            if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
         ]
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert bonus_fraud_check.resultContent == {

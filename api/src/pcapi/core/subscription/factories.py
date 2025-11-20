@@ -170,7 +170,7 @@ class QuotientFamilialCustodianFactory(factory.Factory):
 
 class BonusCreditContentFactory(factory.Factory):
     class Meta:
-        model = bonus_schemas.BonusCreditContent
+        model = bonus_schemas.QuotientFamilialBonusCreditContent
 
     custodian = factory.SubFactory(QuotientFamilialCustodianFactory)
 
@@ -181,7 +181,7 @@ FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, typ
     subscription_models.FraudCheckType.EDUCONNECT: EduconnectContentFactory,
     subscription_models.FraudCheckType.HONOR_STATEMENT: None,
     subscription_models.FraudCheckType.PROFILE_COMPLETION: ProfileCompletionContentFactory,
-    subscription_models.FraudCheckType.BONUS_CREDIT: BonusCreditContentFactory,
+    subscription_models.FraudCheckType.QF_BONUS_CREDIT: BonusCreditContentFactory,
 }
 
 
@@ -311,5 +311,5 @@ class UbbleRetryFraudCheckFactory(BeneficiaryFraudCheckFactory):
 
 
 class BonusFraudCheckFactory(BeneficiaryFraudCheckFactory):
-    type = subscription_models.FraudCheckType.BONUS_CREDIT
+    type = subscription_models.FraudCheckType.QF_BONUS_CREDIT
     status = subscription_models.FraudCheckStatus.OK

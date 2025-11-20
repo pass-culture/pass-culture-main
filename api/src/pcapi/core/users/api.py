@@ -1501,6 +1501,6 @@ def get_user_is_eligible_for_bonification(user: models.User) -> bool:
 
 def get_user_bonification_status(user: models.User) -> subscription_models.FraudCheckStatus | None:
     for fraud_check in user.beneficiaryFraudChecks:
-        if fraud_check.type == subscription_models.FraudCheckType.BONUS_CREDIT:
+        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT:
             return fraud_check.status
     return None

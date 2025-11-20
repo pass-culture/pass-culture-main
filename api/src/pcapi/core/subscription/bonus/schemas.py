@@ -1,7 +1,6 @@
 import datetime
 
 from pydantic import BaseModel
-from pydantic import field_validator
 
 from pcapi.core.users import models as users_models
 
@@ -34,6 +33,6 @@ class QuotientFamilialContent(BaseModel):
     computation_month: int
 
 
-class BonusCreditContent(BaseModel):
+class QuotientFamilialBonusCreditContent(BaseModel):
     custodian: QuotientFamilialCustodian
     quotient_familial: QuotientFamilialContent | None = None

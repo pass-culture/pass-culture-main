@@ -11,20 +11,20 @@ from pcapi.models import db
 
 def get_quotient_familial_bonus(previous_bonus_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     source_data = previous_bonus_fraud_check.source_data()
-    if not isinstance(source_data, bonus_schemas.BonusCreditContent):
+    if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
         raise ValueError(f"BonusCreditContent was expected while {type(source_data)} was given")
 
     user = previous_bonus_fraud_check.user
     quotient_familial_content = _get_user_quotient_familial_content(source_data.custodian, user)
     status, reason_codes = _get_credit_bonus_status(user, quotient_familial_content)
 
-    new_bonus_credit_content = bonus_schemas.BonusCreditContent(
+    new_bonus_credit_content = bonus_schemas.QuotientFamilialBonusCreditContent(
         custodian=source_data.custodian,
         quotient_familial=quotient_familial_content,
     )
     fraud_check = subscription_models.BeneficiaryFraudCheck(
         user=user,
-        type=subscription_models.FraudCheckType.BONUS_CREDIT,
+        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
         status=status,
         reasonCodes=reason_codes,
         reason="from get_quotient_familial_bonus function call",
