@@ -54,6 +54,7 @@ import type { GetOffererResponseModel } from '../models/GetOffererResponseModel'
 import type { GetOfferersNamesResponseModel } from '../models/GetOfferersNamesResponseModel';
 import type { GetOffererStatsResponseModel } from '../models/GetOffererStatsResponseModel';
 import type { GetOffererV2StatsResponseModel } from '../models/GetOffererV2StatsResponseModel';
+import type { GetOffersStatsResponseModel } from '../models/GetOffersStatsResponseModel';
 import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
@@ -1617,7 +1618,8 @@ export class DefaultService {
     });
   }
   /**
-   * get_offerer_v2_stats <GET>
+   * @deprecated
+   * Deprecated. Please use GET /venues/<venue_id>/offers-statistics instead.
    * @param offererId
    * @returns GetOffererV2StatsResponseModel OK
    * @throws ApiError
@@ -2941,6 +2943,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venue-types',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_offers_statistics <GET>
+   * @param venueId
+   * @returns GetOffersStatsResponseModel OK
+   * @throws ApiError
+   */
+  public getOffersStatistics(
+    venueId: number,
+  ): CancelablePromise<GetOffersStatsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venue/{venue_id}/offers-statistics',
+      path: {
+        'venue_id': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,
