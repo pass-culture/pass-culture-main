@@ -34,6 +34,9 @@ docs-build/
 /api/src/pcapi/static/backoffice/css/bundle.css
 /api/src/pcapi/static/backoffice/js/bundle.js
 
+# Dev scripts outputs
+/api/bin/gcp/outputs
+
 # Certificate to start the api with a proxy
 *.pem
 
