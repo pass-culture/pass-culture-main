@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from 'react-router'
+import { Outlet, useLocation, useNavigate } from 'react-router'
 import { SWRConfig } from 'swr'
 
 import { isErrorAPIError } from '@/apiClient/helpers'
@@ -21,6 +21,7 @@ window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 export const App = (): JSX.Element | null => {
   const navigate = useNavigate()
   const notify = useNotification()
+  const location = useLocation()
 
   // Main hooks
   useLoadFeatureFlags()
@@ -41,6 +42,9 @@ export const App = (): JSX.Element | null => {
         value={{
           onError: (error) => {
             if (isErrorAPIError(error) && error.status === 404) {
+              if (location.pathname.startsWith('/adage-iframe')) {
+                return
+              }
               // eslint-disable-next-line @typescript-eslint/no-floating-promises
               navigate('/404')
               return
