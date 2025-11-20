@@ -17,8 +17,8 @@ from pcapi.models import db
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.individual_offers.v1.serializers import events as events_serializers
 from pcapi.routes.public.individual_offers.v1.serializers import products as products_serializers
+from pcapi.routes.public.services.authentication import current_api_key
 from pcapi.utils import image_conversion
-from pcapi.validation.routes.users_authentifications import current_api_key
 
 from . import constants
 from . import serialization

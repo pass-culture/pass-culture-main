@@ -3,10 +3,10 @@ from spectree.models import Server
 
 from pcapi.serialization import utils as serialization_utils
 from pcapi.serialization.spec_tree import ExtendedSpecTree
-from pcapi.validation.routes import users_authentifications
 
 from .documentation_constants import descriptions
 from .documentation_constants import tags
+from .services.authentication import API_KEY_AUTH_NAME
 
 
 _INTEGRATION_SERVER = Server(
@@ -28,7 +28,7 @@ public_api_schema = ExtendedSpecTree(
     before=serialization_utils.public_api_before_handler,
     security_schemes=[
         SecurityScheme(
-            name=users_authentifications.API_KEY_AUTH_NAME,
+            name=API_KEY_AUTH_NAME,
             data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore[arg-type]
         ),
     ],
@@ -45,7 +45,7 @@ deprecated_collective_public_api_schema = ExtendedSpecTree(
     tags=tags.DEPRECATED_COLLECTIVE_TAGS,
     security_schemes=[
         SecurityScheme(
-            name=users_authentifications.API_KEY_AUTH_NAME,
+            name=API_KEY_AUTH_NAME,
             data={"type": "http", "scheme": "bearer", "description": "Api key issued by passculture"},  # type: ignore[arg-type]
         ),
     ],

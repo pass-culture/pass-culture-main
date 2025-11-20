@@ -21,13 +21,13 @@ from pcapi.routes.public import spectree_schemas
 from pcapi.routes.public.collective.endpoints.adage_mock import utils
 from pcapi.routes.public.documentation_constants import http_responses
 from pcapi.routes.public.documentation_constants import tags
+from pcapi.routes.public.services.authentication import api_key_required
+from pcapi.routes.public.services.authentication import current_api_key
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.serialization.spec_tree import ExtendResponse as SpectreeResponse
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
-from pcapi.validation.routes.users_authentifications import api_key_required
-from pcapi.validation.routes.users_authentifications import current_api_key
 
 
 logger = logging.getLogger(__name__)
