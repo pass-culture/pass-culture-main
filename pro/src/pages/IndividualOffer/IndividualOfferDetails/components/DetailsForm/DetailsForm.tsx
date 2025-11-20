@@ -6,8 +6,9 @@ import type {
   SubcategoryResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import { useAccessibilityOptions } from '@/commons/hooks/useAccessibilityOptions'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
+import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
@@ -48,7 +49,6 @@ export const DetailsForm = ({
     formState: { errors },
     register,
     setValue,
-    // trigger,
     watch,
   } = useFormContext<DetailsFormValues>()
 
@@ -59,7 +59,7 @@ export const DetailsForm = ({
     subcategoryId !== DEFAULT_DETAILS_FORM_VALUES.subcategoryId
   const showAddVenueBanner = venuesOptions.length === 0
 
-  const accessibilityOptions = useAccessibilityOptions(setValue, accessibility)
+  const accessibilityOptions = updateAccessibilityField(setValue, accessibility)
 
   // TODO (igabriele, 2025-07-16): Use a `watch` flow once the FF is enabled in production.
   const updateVenue = (event: ChangeEvent<HTMLSelectElement>) => {
@@ -69,10 +69,10 @@ export const DetailsForm = ({
     })
 
     const venue = venues.find((venue) => venue.id === Number(venueId))
-    if (!venue) {
-      // TODO (igabriele, 2025-07-16): Handle that more gracefully once we have agreed on how to handle it.
-      throw new Error(`Venue with id ${venueId} not found in venues.`)
-    }
+    assertOrFrontendError(
+      venue,
+      `Venue with id ${venueId} not found in venues.`
+    )
 
     const { accessibility } = getAccessibilityInfoFromVenue(venue)
     setValue('accessibility', accessibility)

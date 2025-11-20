@@ -1,10 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
-import {
-  type SetAccessibilityFieldValue,
-  useAccessibilityOptions,
-} from '@/commons/hooks/useAccessibilityOptions'
+import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 
 import styles from './FormAccessibility.module.scss'
@@ -16,17 +13,10 @@ interface FormAccessibilityProps {
 export const FormAccessibility = ({
   disableForm,
 }: FormAccessibilityProps): JSX.Element => {
-  const { setValue, watch, getFieldState, trigger } =
+  const { setValue, watch, getFieldState } =
     useFormContext<OfferEducationalFormValues>()
 
-  const setAccessibilityValue: SetAccessibilityFieldValue = (name, value) => {
-    setValue(name, value)
-    trigger('accessibility')
-  }
-  const options = useAccessibilityOptions(
-    setAccessibilityValue,
-    watch('accessibility')
-  )
+  const options = updateAccessibilityField(setValue, watch('accessibility'))
 
   return (
     <div className={styles['container']}>
