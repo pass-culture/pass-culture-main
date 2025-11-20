@@ -67,7 +67,7 @@ describe('StocksCalendarActionsBar', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(mockNavigate).toHaveBeenLastCalledWith(
-      '/offre/individuelle/1/creation/recapitulatif'
+      '/offre/individuelle/1/creation/informations_pratiques'
     )
   })
 
@@ -81,7 +81,7 @@ describe('StocksCalendarActionsBar', () => {
       screen.getByRole('button', { name: 'Annuler et quitter' })
     )
     expect(mockNavigate).toHaveBeenLastCalledWith(
-      '/offre/individuelle/1/stocks'
+      '/offre/individuelle/1/horaires'
     )
 
     await userEvent.click(

@@ -95,10 +95,7 @@ describe('IndividualOfferConfirmation', () => {
     ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute(
-      'href',
-      `/offre/creation?structure=${offererId}&lieu=${venueId}`
-    )
+    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
     expect(
       screen.getByText('Voir la liste des offres', { selector: 'a' })
     ).toHaveAttribute('href', `/offres`)
@@ -116,10 +113,7 @@ describe('IndividualOfferConfirmation', () => {
     ).not.toBeInTheDocument()
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute(
-      'href',
-      `/offre/creation?structure=${offererId}&lieu=${venueId}`
-    )
+    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
     expect(
       screen.getByText('Voir la liste des offres', { selector: 'a' })
     ).toHaveAttribute('href', `/offres`)
@@ -135,10 +129,7 @@ describe('IndividualOfferConfirmation', () => {
     ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
       screen.getByText('Créer une nouvelle offre', { selector: 'a' })
-    ).toHaveAttribute(
-      'href',
-      `/offre/creation?structure=${offererId}&lieu=${venueId}`
-    )
+    ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
   })
 
   it('should redirect to offer creation first step', () => {

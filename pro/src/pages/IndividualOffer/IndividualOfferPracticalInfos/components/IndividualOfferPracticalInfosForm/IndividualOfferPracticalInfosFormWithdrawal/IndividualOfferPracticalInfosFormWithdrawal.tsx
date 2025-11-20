@@ -4,14 +4,88 @@ import { WithdrawalTypeEnum } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import {
-  ticketSentDateOptions,
-  ticketWithdrawalHourOptions,
-} from '@/pages/IndividualOffer/IndividualOfferInformations/commons/constants'
-import { getFirstWithdrawalTypeEnumValue } from '@/pages/IndividualOffer/IndividualOfferInformations/components/UsefulInformationForm/UsefulInformationForm'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../../commons/types'
+
+export const ticketSentDateOptions = [
+  {
+    label: '24 heures',
+    value: (60 * 60 * 24).toString(),
+  },
+  {
+    label: '48 heures',
+    value: (60 * 60 * 24 * 2).toString(),
+  },
+  {
+    label: '3 jours',
+    value: (60 * 60 * 24 * 3).toString(),
+  },
+  {
+    label: '4 jours',
+    value: (60 * 60 * 24 * 4).toString(),
+  },
+  {
+    label: '5 jours',
+    value: (60 * 60 * 24 * 5).toString(),
+  },
+  {
+    label: '6 jours',
+    value: (60 * 60 * 24 * 6).toString(),
+  },
+  {
+    label: '1 semaine',
+    value: (60 * 60 * 24 * 7).toString(),
+  },
+]
+
+export const ticketWithdrawalHourOptions = [
+  {
+    label: 'À tout moment',
+    value: (0).toString(),
+  },
+  {
+    label: '15 minutes',
+    value: (60 * 15).toString(),
+  },
+  {
+    label: '30 minutes',
+    value: (60 * 30).toString(),
+  },
+  {
+    label: '1 heure',
+    value: (60 * 60).toString(),
+  },
+  {
+    label: '2 heures',
+    value: (60 * 60 * 2).toString(),
+  },
+  {
+    label: '4 heures',
+    value: (60 * 60 * 4).toString(),
+  },
+  {
+    label: '24 heures',
+    value: (60 * 60 * 24).toString(),
+  },
+  {
+    label: '48 heures',
+    value: (60 * 60 * 48).toString(),
+  },
+]
+
+export function getFirstWithdrawalTypeEnumValue(value: string) {
+  switch (value) {
+    case WithdrawalTypeEnum.BY_EMAIL:
+      return ticketSentDateOptions[0].value
+
+    case WithdrawalTypeEnum.ON_SITE:
+      return ticketWithdrawalHourOptions[0].value
+
+    default:
+      return null
+  }
+}
 
 export type IndividualOfferPracticalInfosFormWithdrawalProps = {
   isFormDisabled: boolean

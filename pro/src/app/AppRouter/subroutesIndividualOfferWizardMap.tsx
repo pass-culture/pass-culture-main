@@ -73,7 +73,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+        '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/creation/pratiques',
     title: 'Informations pratiques - Créer une offre individuelle',
@@ -81,7 +81,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+        '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/edition/pratiques',
     title: 'Informations pratiques - Modifier une offre individuelle',
@@ -98,7 +98,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+        '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/creation/localisation',
     title: 'Localisation - Créer une offre individuelle',
@@ -106,7 +106,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+        '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/offre/individuelle/:offerId/edition/localisation',
     title: 'Localisation - Modifier une offre individuelle',
@@ -148,7 +148,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferPriceCategories/IndividualOfferPriceCategories'
+        '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
     path: '/offre/individuelle/:offerId/creation/tarifs',
     title: 'Tarifs - Créer une offre individuelle',
@@ -156,7 +156,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferPriceCategories/IndividualOfferPriceCategories'
+        '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
     path: '/offre/individuelle/:offerId/edition/tarifs',
     title: 'Tarifs - Modifier une offre individuelle',
@@ -319,23 +319,11 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
       onboardingOnly: true,
     },
   },
-  //  Informations pratiques
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
-      ),
-    path: '/onboarding/offre/individuelle/:offerId/creation/pratiques',
-    title: 'Informations pratiques - Créer une offre individuelle - Onboarding',
-    meta: {
-      onboardingOnly: true,
-    },
-  },
   //  Localisation
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferInformations/IndividualOfferInformations'
+        '@/pages/IndividualOffer/IndividualOfferLocation/IndividualOfferLocation'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/localisation',
     title: 'Localisation - Créer une offre individuelle - Onboarding',
@@ -357,7 +345,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferPriceCategories/IndividualOfferPriceCategories'
+        '@/pages/IndividualOffer/IndividualOfferPriceTable/IndividualOfferPriceTable'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/tarifs',
     title: 'Tarifs - Créer une offre individuelle - Onboarding',
