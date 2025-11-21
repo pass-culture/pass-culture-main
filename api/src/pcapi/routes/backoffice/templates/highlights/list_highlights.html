@@ -25,6 +25,7 @@
   <th>Description</th>
   <th>Diffusion espace partenaire</th>
   <th>Date(s) d'évènement</th>
+  <th>Date de mise en avant</th>
   <th>Image</th>
 {% endblock table_header %}
 {% block table_body %}
@@ -56,6 +57,7 @@
       <td>{{ highlight.description | nl2br }}</td>
       <td>{{ highlight.availability_datespan | format_datespan }}</td>
       <td>{{ highlight.highlight_datespan | format_datespan }}</td>
+      <td>{{ highlight.communication_date | format_date }}</td>
       <td class="px-2 py-3">
         {% if highlight.mediation_url %}
           <div class="rounded pc-offer-table-image pc-offer-table-image-container"
