@@ -790,6 +790,11 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
             ),
             # additional properties not allowed
             ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
+            # category related fields
+            (
+                {"categoryRelatedFields": {"category": "CONCERT", "musicType": None}},
+                {"categoryRelatedFields": ["If musicType is set, it cannot be NULL"]},
+            ),
         ],
     )
     def test_incorrect_payload_should_return_400(self, partial_request_json, expected_response_json):
