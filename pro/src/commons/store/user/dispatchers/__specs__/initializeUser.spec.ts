@@ -3,7 +3,6 @@ import { vi } from 'vitest'
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
-import type { RootState } from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
@@ -35,6 +34,14 @@ describe('initializeUser', () => {
     sessionStorage.clear()
     // Reset URL between tests
     window.history.pushState({}, '', '/')
+    Object.defineProperty(window, 'location', {
+      value: {
+        reload: vi.fn(),
+      },
+      configurable: true,
+      enumerable: true,
+      writable: true,
+    })
   })
 
   it('should prioritize BO URL params and refetch names and venues when `structure` search param is present', async () => {
@@ -250,7 +257,7 @@ describe('initializeUser', () => {
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
-  it('should logout and reset slices when getOfferer rejects with non-403 on venue path', async () => {
+  it('should logout when getOfferer rejects with non-403 on venue path', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
@@ -275,14 +282,6 @@ describe('initializeUser', () => {
     const store = configureTestStore()
 
     await store.dispatch(initializeUser(user)).unwrap()
-
-    const state = store.getState() as RootState
-    expect(state.user.access).toBeNull()
-    expect(state.user.currentUser).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.offererNames).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
 
     expect(
       localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)

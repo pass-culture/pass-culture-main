@@ -7,6 +7,8 @@ import type { ApiResult } from './ApiResult'
 import type { OnCancel } from './CancelablePromise'
 import { CancelablePromise } from './CancelablePromise'
 import type { OpenAPIConfig } from './OpenAPI'
+import { rootStore } from '@/commons/store/store'
+import { logout } from '@/commons/store/user/dispatchers/logout'
 
 const isDefined = <T>(
   value: T | null | undefined
@@ -375,7 +377,7 @@ export const request = <T>(
           !error.url.includes('/offerers/names') &&
           !error.url.includes('/users/signin')
         ) {
-          window.location.href = '/connexion'
+          await rootStore.dispatch(logout())
           return
         }
       }
