@@ -5,7 +5,7 @@
 import type { AddressBodyModel } from './AddressBodyModel';
 import type { CollectiveLocationType } from './CollectiveLocationType';
 export type CollectiveOfferLocationModel = {
-  address?: AddressBodyModel | null;
+  location?: AddressBodyModel | null;
   locationComment?: string | null;
   locationType: CollectiveLocationType;
 };

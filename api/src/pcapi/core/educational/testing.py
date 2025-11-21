@@ -148,11 +148,9 @@ def get_serialized_address(offerer_address: "OffererAddress", label: str, is_lin
     address = offerer_address.address
 
     return {
-        "address": {
+        "location": {
             "id": address.id,
-            "id_oa": offerer_address.id,
             "inseeCode": address.inseeCode,
-            "isLinkedToVenue": is_linked_to_venue,
             "isManualEdition": False,
             "city": address.city,
             "label": label,
@@ -162,6 +160,7 @@ def get_serialized_address(offerer_address: "OffererAddress", label: str, is_lin
             "departmentCode": address.departmentCode,
             "street": address.street,
             "banId": address.banId,
+            "venueLocation": is_linked_to_venue,
         },
         "locationComment": None,
         "locationType": "ADDRESS",

@@ -120,7 +120,7 @@ class CollectiveOfferDatesModel(BaseModel):
 class GetCollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    location: address_serialize.LocationResponseModel | None
 
 
 def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
@@ -259,7 +259,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
 class CollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    address: offerers_schemas.AddressBodyModel | None
+    location: offerers_schemas.AddressBodyModel | None
 
     @validator("locationComment")
     def validate_location_comment(cls, location_comment: str | None, values: dict) -> str | None:
@@ -268,7 +268,7 @@ class CollectiveOfferLocationModel(BaseModel):
             raise ValueError("locationComment is not allowed for the provided locationType")
         return location_comment
 
-    @validator("address")
+    @validator("location")
     def validate_address(
         cls, address: offerers_schemas.AddressBodyModel | None, values: dict
     ) -> offerers_schemas.AddressBodyModel | None:
@@ -324,17 +324,23 @@ class GetCollectiveOfferBookingResponseModel(BaseModel):
 def get_collective_offer_location_model(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> GetCollectiveOfferLocationModel:
-    address = None
+    location = None
     oa = offer.offererAddress
+    venue = offer.venue
     if oa is not None:
-        address = address_serialize.AddressResponseIsLinkedToVenueModel(
+        venue_location = False
+        if venue.offererAddress.address.id == oa.address.id and (
+            venue.offererAddress.label is None or venue.offererAddress.label == oa.label
+        ):
+            venue_location = True
+        location = address_serialize.LocationResponseModel(
             **address_serialize.retrieve_address_info_from_oa(oa),
             label=offer.venue.common_name if oa._isLinkedToVenue else oa.label,
-            isLinkedToVenue=oa._isLinkedToVenue,
+            venueLocation=venue_location,
         )
 
     return GetCollectiveOfferLocationModel(
-        locationType=offer.locationType, locationComment=offer.locationComment, address=address
+        locationType=offer.locationType, locationComment=offer.locationComment, location=location
     )
 
 

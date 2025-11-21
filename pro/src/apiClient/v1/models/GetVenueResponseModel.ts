@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DisplayedActivity } from './DisplayedActivity';
@@ -12,6 +11,7 @@ import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel'
 import type { GetVenueManagingOffererResponseModel } from './GetVenueManagingOffererResponseModel';
 import type { GetVenuePricingPointResponseModel } from './GetVenuePricingPointResponseModel';
 import type { LegalStatusResponseModel } from './LegalStatusResponseModel';
+import type { LocationResponseModel } from './LocationResponseModel';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
 import type { StudentLevels } from './StudentLevels';
 import type { VenueContactModel } from './VenueContactModel';
@@ -20,7 +20,6 @@ import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespan
 export type GetVenueResponseModel = {
   activity?: DisplayedActivity | null;
   adageInscriptionDate?: string | null;
-  address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
   bankAccount?: BankAccountResponseModel | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;
@@ -58,6 +57,7 @@ export type GetVenueResponseModel = {
   isPermanent?: boolean | null;
   isValidated: boolean;
   isVirtual: boolean;
+  location?: LocationResponseModel | null;
   managingOfferer: GetVenueManagingOffererResponseModel;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;

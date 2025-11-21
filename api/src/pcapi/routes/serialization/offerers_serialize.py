@@ -437,7 +437,7 @@ class OffererAddressResponseModel(BaseModel):
     id: int
     label: str | None
     offererId: int
-    address: AddressResponseModel
+    location: AddressResponseModel
 
     class Config:
         orm_mode = True

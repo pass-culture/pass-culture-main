@@ -5,7 +5,6 @@
 import type { AddressBodyModel } from './AddressBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PatchOfferBodyModel = {
-  address?: AddressBodyModel | null;
   audioDisabilityCompliant?: boolean | null;
   bookingAllowedDatetime?: string | null;
   bookingContact?: string | null;
@@ -16,6 +15,7 @@ export type PatchOfferBodyModel = {
   extraData?: any;
   isDuo?: boolean | null;
   isNational?: boolean | null;
+  location?: AddressBodyModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;

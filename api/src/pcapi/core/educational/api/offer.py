@@ -137,7 +137,7 @@ def create_collective_offer_template(
         raise offers_exceptions.UrlandFormBothSetError()
 
     offerer_address = offers_api.get_offerer_address_from_address_body(
-        address_body=offer_data.location.address, venue=venue
+        address_body=offer_data.location.location, venue=venue
     )
 
     collective_offer_template = models.CollectiveOfferTemplate(
@@ -208,7 +208,7 @@ def create_collective_offer(
             raise
 
     offerer_address = offers_api.get_offerer_address_from_address_body(
-        address_body=offer_data.location.address, venue=venue
+        address_body=offer_data.location.location, venue=venue
     )
 
     collective_offer = models.CollectiveOffer(
@@ -1153,7 +1153,7 @@ def _update_collective_offer(
         assert location_body is not None
 
         offerer_address = offers_api.get_offerer_address_from_address_body(
-            address_body=location_body.address, venue=offer.venue
+            address_body=location_body.location, venue=offer.venue
         )
 
         new_values["offererAddress"] = offerer_address
