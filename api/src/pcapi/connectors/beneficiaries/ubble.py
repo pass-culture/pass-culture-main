@@ -12,6 +12,7 @@ from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils import requests
 from pcapi.utils.rate_limit import RateLimitedError as RedisRateLimitedError
 from pcapi.utils.rate_limit import rate_limit
@@ -89,6 +90,9 @@ def log_and_handle_ubble_response(
 
 def ubble_rate_limit[**P, T](func: typing.Callable[P, T]) -> typing.Callable[P, T]:
     def wrapper(*args: P.args, **kwds: P.kwargs) -> T:
+        if not FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
+            return func(*args, **kwds)
+
         try:
             with rate_limit("connectors:ubble", settings.UBBLE_RATE_LIMIT, settings.UBBLE_TIME_WINDOW_SIZE):
                 return func(*args, **kwds)
