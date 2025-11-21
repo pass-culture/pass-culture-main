@@ -12,7 +12,7 @@ const getSiretDataRequest = async (
   const siret = unhumanizeSiret(humanSiret || '')
   if (humanSiret === '') {
     return {
-      address: null,
+      location: null,
       apeCode: null,
       isDiffusible: false,
       name: null,

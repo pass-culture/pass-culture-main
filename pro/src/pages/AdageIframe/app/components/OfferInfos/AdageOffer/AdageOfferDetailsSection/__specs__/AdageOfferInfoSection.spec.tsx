@@ -93,9 +93,9 @@ describe('AdageOfferInfoSection', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          address: {
+          location: {
             id: 1,
-            id_oa: 1,
+            isVenueLocation: false,
             isManualEdition: false,
             latitude: 48.8566,
             longitude: 2.3522,
@@ -131,26 +131,25 @@ describe('AdageOfferInfoSection', () => {
     expect(screen.getByText('Test comment section')).toBeInTheDocument()
   })
 
-  it.each([
-    null,
-    undefined,
-    '',
-  ])('should not display comment section when location type is to be defined and comment is empty', (comment) => {
-    renderAdageOfferInfoSection({
-      offer: {
-        ...defaultCollectiveTemplateOffer,
-        location: {
-          locationType: CollectiveLocationType.TO_BE_DEFINED,
-          locationComment: comment,
+  it.each([null, undefined, ''])(
+    'should not display comment section when location type is to be defined and comment is empty',
+    (comment) => {
+      renderAdageOfferInfoSection({
+        offer: {
+          ...defaultCollectiveTemplateOffer,
+          location: {
+            locationType: CollectiveLocationType.TO_BE_DEFINED,
+            locationComment: comment,
+          },
         },
-      },
-    })
+      })
 
-    expect(
-      screen.getByText('À déterminer avec l’enseignant')
-    ).toBeInTheDocument()
-    expect(screen.queryByText('Commentaire')).toBeNull()
-  })
+      expect(
+        screen.getByText('À déterminer avec l’enseignant')
+      ).toBeInTheDocument()
+      expect(screen.queryByText('Commentaire')).toBeNull()
+    }
+  )
 
   it('should display the right wording when location type is school', () => {
     renderAdageOfferInfoSection({
@@ -175,9 +174,9 @@ describe('AdageOfferInfoSection', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          address: {
+          location: {
             id: 1,
-            id_oa: 1,
+            isVenueLocation: false,
             isManualEdition: false,
             latitude: 48.8566,
             longitude: 2.3522,

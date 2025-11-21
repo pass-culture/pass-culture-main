@@ -14,13 +14,13 @@ export type NullableIfNonBoolean<T extends AnyObject> = {
 // TODO (igabriele, 2025-08-25): We can get rid of `isManualEdition` and `offerLocation` to only use `isVenueAddress` + `banId` (Frontend + Backend).
 export interface PhysicalAddressSubformValues extends AddressFormValues {
   isManualEdition: boolean
-  isVenueAddress: boolean
+  isVenueLocation: boolean
   label: string | null
   offerLocation: string
 }
 
 // TODO (igabriele, 2025-08-25): Deduce this type from Yup schema (`yup.InferType<typeof LocationValidationSchema>`) to keep a single source of truth.
 export interface LocationFormValues {
-  address: PhysicalAddressSubformValues | null
+  location: PhysicalAddressSubformValues | null
   url: string | null
 }

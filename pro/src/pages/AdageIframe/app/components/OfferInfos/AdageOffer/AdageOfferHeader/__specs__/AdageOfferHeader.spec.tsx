@@ -185,9 +185,9 @@ describe('AdageOfferHeader', () => {
         ...defaultCollectiveTemplateOffer,
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          address: {
+          location: {
             id: 1,
-            id_oa: 1,
+            isVenueLocation: false,
             isManualEdition: false,
             latitude: 48.8566,
             longitude: 2.3522,

@@ -55,9 +55,8 @@ describe('<IndividualOfferSummaryLocationScreen />', () => {
   describe('for a physical offer', () => {
     const physicalOffer = getIndividualOfferFactory({
       isDigital: false,
-      address: {
+      location: {
         id: 1,
-        id_oa: 1,
         label: "Le lieu de l'offre",
         street: '1 rue de la paix',
         postalCode: '75001',
@@ -65,7 +64,7 @@ describe('<IndividualOfferSummaryLocationScreen />', () => {
         latitude: 48.8,
         longitude: 2.3,
         isManualEdition: false,
-        isLinkedToVenue: true,
+        isVenueLocation: true,
         banId: '75101_xxxx',
         inseeCode: '75101',
       },

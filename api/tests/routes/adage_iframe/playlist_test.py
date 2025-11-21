@@ -156,7 +156,6 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         )
 
         ban_id = venue.offererAddress.address.banId
-        offer_address_id = venue.offererAddressId
         iframe_client = _get_iframe_client(client, uai=institution.institutionId)
         db.session.expunge_all()
 
@@ -167,10 +166,9 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         response_location = result["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == offer_address_id
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == ban_id
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["banId"] == ban_id
 
 
 class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError):
@@ -257,10 +255,9 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         response_location = result["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["banId"] == venue.offererAddress.address.banId
 
     def test_no_rows(self, client):
         iframe_client = _get_iframe_client(client)

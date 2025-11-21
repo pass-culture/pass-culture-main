@@ -30,6 +30,7 @@ from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -136,9 +137,25 @@ def create_collective_offer_template(
     if offer_data.contact_url and offer_data.contact_form:
         raise offers_exceptions.UrlandFormBothSetError()
 
-    offerer_address = offers_api.get_offerer_address_from_address_body(
-        address_body=offer_data.location.address, venue=venue
-    )
+    address_body: offerers_schemas.LocationModel | None = None
+    if offer_data.location.location:
+        if offer_data.location.location.venueLocation is True:
+            address_body = offerers_schemas.LocationModel(
+                venueLocation=True,
+                isManualEdition=venue.offererAddress.address.isManualEdition,
+                banId=venue.offererAddress.address.banId,
+                city=typing.cast(offerers_schemas.VenueCity, venue.offererAddress.address.city),
+                inseeCode=typing.cast(offerers_schemas.VenueInseeCode, venue.offererAddress.address.inseeCode),
+                label=venue.publicName,
+                latitude=str(venue.offererAddress.address.latitude),
+                longitude=str(venue.offererAddress.address.longitude),
+                postalCode=typing.cast(offerers_schemas.VenuePostalCode, venue.offererAddress.address.postalCode),
+                street=typing.cast(offerers_schemas.VenueAddress, venue.offererAddress.address.street),
+            )
+        else:
+            address_body = offerers_schemas.LocationModel(**offer_data.location.location.dict())
+
+    offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
 
     collective_offer_template = models.CollectiveOfferTemplate(
         venueId=venue.id,
@@ -207,9 +224,25 @@ def create_collective_offer(
             # if we are not creating from an offer template, we do not allow an invalid program
             raise
 
-    offerer_address = offers_api.get_offerer_address_from_address_body(
-        address_body=offer_data.location.address, venue=venue
-    )
+    address_body: offerers_schemas.LocationModel | None = None
+    if offer_data.location.location:
+        if offer_data.location.location.venueLocation is True:
+            address_body = offerers_schemas.LocationModel(
+                venueLocation=True,
+                isManualEdition=venue.offererAddress.address.isManualEdition,
+                banId=venue.offererAddress.address.banId,
+                city=typing.cast(offerers_schemas.VenueCity, venue.offererAddress.address.city),
+                inseeCode=typing.cast(offerers_schemas.VenueInseeCode, venue.offererAddress.address.inseeCode),
+                label=venue.publicName,
+                latitude=str(venue.offererAddress.address.latitude),
+                longitude=str(venue.offererAddress.address.longitude),
+                postalCode=typing.cast(offerers_schemas.VenuePostalCode, venue.offererAddress.address.postalCode),
+                street=typing.cast(offerers_schemas.VenueAddress, venue.offererAddress.address.street),
+            )
+        else:
+            address_body = offerers_schemas.LocationModel(**offer_data.location.location.dict())
+
+    offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
 
     collective_offer = models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
@@ -1152,9 +1185,29 @@ def _update_collective_offer(
         # the schema checks that if location is present it cannot be null
         assert location_body is not None
 
-        offerer_address = offers_api.get_offerer_address_from_address_body(
-            address_body=location_body.address, venue=offer.venue
-        )
+        address_body: offerers_schemas.LocationModel | None = None
+        if location_body.location:
+            if location_body.location.venueLocation is True:
+                address_body = offerers_schemas.LocationModel(
+                    venueLocation=True,
+                    isManualEdition=offer.venue.offererAddress.address.isManualEdition,
+                    banId=offer.venue.offererAddress.address.banId,
+                    city=typing.cast(offerers_schemas.VenueCity, offer.venue.offererAddress.address.city),
+                    inseeCode=typing.cast(
+                        offerers_schemas.VenueInseeCode, offer.venue.offererAddress.address.inseeCode
+                    ),
+                    label=offer.venue.publicName,
+                    latitude=str(offer.venue.offererAddress.address.latitude),
+                    longitude=str(offer.venue.offererAddress.address.longitude),
+                    postalCode=typing.cast(
+                        offerers_schemas.VenuePostalCode, offer.venue.offererAddress.address.postalCode
+                    ),
+                    street=typing.cast(offerers_schemas.VenueAddress, offer.venue.offererAddress.address.street),
+                )
+            else:
+                address_body = offerers_schemas.LocationModel(**location_body.location.dict())
+
+        offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=offer.venue)
 
         new_values["offererAddress"] = offerer_address
         new_values["locationType"] = location_body.locationType

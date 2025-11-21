@@ -47,13 +47,12 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
         id: 1,
         publicName: 'Lieu Nom Public Pour Test',
       }),
-      address: {
+      location: {
         banId: '75101_9575_00003',
         city: 'Paris',
         id: 945,
-        id_oa: 1,
         inseeCode: '75056',
-        isLinkedToVenue: false,
+        isVenueLocation: false,
         isManualEdition: false,
         label: 'MINISTERE DE LA CULTURE',
         latitude: 48.87171,
@@ -171,10 +170,10 @@ describe('<IndividualOfferLocationScreen />', () => {
         expect(api.patchOffer).toHaveBeenCalledWith(
           3,
           expect.objectContaining({
-            address: expect.objectContaining({
+            location: expect.objectContaining({
               city: 'Paris',
               isManualEdition: false,
-              isVenueAddress: true,
+              isVenueLocation: true,
               label: 'MINISTERE DE LA CULTURE',
               latitude: '48.87171',
               longitude: '2.30829',
@@ -216,8 +215,7 @@ describe('<IndividualOfferLocationScreen />', () => {
       describe('should open the update warning dialog before saving when address changed and offer has pending bookings', () => {
         const offlineOfferWithPendingBookings = {
           ...offlineOffer,
-          address: {
-            id: 11,
+          location: {
             banId: '12',
             inseeCode: '13',
             postalCode: '12345',
@@ -227,8 +225,8 @@ describe('<IndividualOfferLocationScreen />', () => {
             longitude: 4.56,
             departmentCode: '12',
             label: 'Etiquette de lieu',
-            id_oa: 14,
-            isLinkedToVenue: false,
+            id: 14,
+            isVenueLocation: false,
             isManualEdition: false,
           },
           hasPendingBookings: true,

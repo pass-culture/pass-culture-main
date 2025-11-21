@@ -33,7 +33,7 @@ export const OffersSynchronization = ({
               key={venueProvider.id}
               venueProvider={venueProvider}
               venue={venue}
-              venueDepartmentCode={venue.address?.departmentCode}
+              venueDepartmentCode={venue.location?.departmentCode}
               offererId={venue.managingOfferer.id}
               selectSoftwareButtonRef={selectSoftwareButtonRef}
             />

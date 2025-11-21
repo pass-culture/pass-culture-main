@@ -5,6 +5,7 @@ import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
 import {
+  CollectiveLocationType,
   CollectiveOfferAllowedAction,
   CollectiveOfferDisplayedStatus,
   CollectiveOfferTemplateAllowedAction,
@@ -23,6 +24,7 @@ import {
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   defaultGetOffererResponseModel,
   makeVenueListItem,
@@ -320,6 +322,14 @@ describe('OfferActionsCells', () => {
         imageUrl: 'https://http.cat/201',
         imageCredit: 'chats',
         venue: getCollectiveOfferVenueFactory({ id: 4 }),
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          location: getLocationResponseModel({
+            isVenueLocation: true,
+            isManualEdition: false,
+            label: 'Structure 4',
+          }),
+        },
       })
       vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
         collectiveOfferTemplate
@@ -353,17 +363,8 @@ describe('OfferActionsCells', () => {
         nationalProgramId: 1,
         interventionArea: [],
         location: {
-          address: {
-            banId: undefined,
-            city: '',
-            coords: 'undefined, undefined',
-            isManualEdition: false,
-            isVenueAddress: true,
-            label: 'Structure 4',
-            latitude: '',
-            longitude: '',
-            postalCode: '',
-            street: '',
+          location: {
+            isVenueLocation: true,
           },
           locationType: 'ADDRESS',
         },
@@ -425,21 +426,22 @@ describe('OfferActionsCells', () => {
       actions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
       name: 'institution',
     },
-  ])('should show edition button when the $name edition action is allowed', async ({
-    actions,
-  }) => {
-    renderOfferActionsCell({
-      offer: collectiveOfferFactory({
-        allowedActions: actions,
-      }),
-    })
+  ])(
+    'should show edition button when the $name edition action is allowed',
+    async ({ actions }) => {
+      renderOfferActionsCell({
+        offer: collectiveOfferFactory({
+          allowedActions: actions,
+        }),
+      })
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Voir les actions' })
-    )
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Voir les actions' })
+      )
 
-    expect(screen.getByText('Modifier')).toBeInTheDocument()
-  })
+      expect(screen.getByText('Modifier')).toBeInTheDocument()
+    }
+  )
 
   it('should not show edition button when no edition action is allowed', async () => {
     renderOfferActionsCell({

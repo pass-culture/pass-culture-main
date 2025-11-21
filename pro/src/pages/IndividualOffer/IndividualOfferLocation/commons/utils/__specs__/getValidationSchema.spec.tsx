@@ -13,12 +13,12 @@ describe('getValidationSchema', () => {
     makeLocationFormValues({})
 
   const baseAddress = makeLocationFormValues({
-    address: { offerLocation: OFFER_LOCATION.OTHER_ADDRESS },
-  }).address
+    location: { offerLocation: OFFER_LOCATION.OTHER_ADDRESS },
+  }).location
 
   const buildWithAddress = (overrides: Record<string, unknown>) =>
     makeLocationFormValues({
-      address: { ...baseAddress, ...overrides },
+      location: { ...baseAddress, ...overrides },
     })
 
   describe('when isDigital is true', () => {
@@ -52,11 +52,11 @@ describe('getValidationSchema', () => {
   describe('when isDigital is false', () => {
     const schema = getValidationSchema({ isDigital: false })
 
-    it('should require address.offerLocation when address object present', async () => {
+    it('should require location.offerLocation when address object present', async () => {
       const values = buildWithAddress({ offerLocation: null })
 
       await expect(
-        schema.validateAt('address.offerLocation', values)
+        schema.validateAt('location.offerLocation', values)
       ).rejects.toThrow('Veuillez sélectionner un choix')
     })
 
@@ -83,26 +83,26 @@ describe('getValidationSchema', () => {
 
       it('should require city, postalCode, and street', async () => {
         await expect(
-          schema.validateAt('address.city', formValuesWithOtherAddress)
+          schema.validateAt('location.city', formValuesWithOtherAddress)
         ).rejects.toThrow('Veuillez renseigner une ville')
         await expect(
-          schema.validateAt('address.postalCode', formValuesWithOtherAddress)
+          schema.validateAt('location.postalCode', formValuesWithOtherAddress)
         ).rejects.toThrow('Veuillez renseigner un code postal')
         await expect(
-          schema.validateAt('address.street', formValuesWithOtherAddress)
+          schema.validateAt('location.street', formValuesWithOtherAddress)
         ).rejects.toThrow('Veuillez renseigner une adresse postale')
       })
 
       it('should require a 5-digit postal code', async () => {
         await expect(
           schema.validateAt(
-            'address.postalCode',
+            'location.postalCode',
             buildWithAddress({ postalCode: '1234' })
           )
         ).rejects.toThrow('Veuillez renseigner un code postal valide')
         await expect(
           schema.validateAt(
-            'address.postalCode',
+            'location.postalCode',
             buildWithAddress({ postalCode: '123456' })
           )
         ).rejects.toThrow('Veuillez renseigner un code postal valide')
@@ -112,7 +112,7 @@ describe('getValidationSchema', () => {
         it('should require addressAutocomplete', async () => {
           const values = buildWithAddress({ isManualEdition: false })
           await expect(
-            schema.validateAt('address.addressAutocomplete', values)
+            schema.validateAt('location.addressAutocomplete', values)
           ).rejects.toThrow(
             'Veuillez sélectionner une adresse parmi les suggestions'
           )
@@ -126,7 +126,7 @@ describe('getValidationSchema', () => {
 
         it('should require coords', async () => {
           await expect(
-            schema.validateAt('address.coords', formValuesWithManualAddress)
+            schema.validateAt('location.coords', formValuesWithManualAddress)
           ).rejects.toThrow('Veuillez renseigner les coordonnées GPS')
         })
 
@@ -137,7 +137,7 @@ describe('getValidationSchema', () => {
           })
 
           await expect(
-            schema.validateAt('address.coords', invalidCoordsValues)
+            schema.validateAt('location.coords', invalidCoordsValues)
           ).rejects.toThrow('Veuillez respecter le format attendu')
         })
 
@@ -148,16 +148,16 @@ describe('getValidationSchema', () => {
           })
 
           await expect(
-            schema.validateAt('address.coords', validCoordsValues)
+            schema.validateAt('location.coords', validCoordsValues)
           ).resolves.toBe(VALID_COORDS)
         })
       })
     })
 
-    it('should transform isVenueAddress to true when offerLocation is venue id', async () => {
+    it('should transform isVenueLocation to true when offerLocation is venue id', async () => {
       const values = buildWithAddress({
         offerLocation: '123',
-        isVenueAddress: false,
+        isVenueLocation: false,
         street: '1 rue test',
         city: 'Paris',
         postalCode: '75001',
@@ -167,13 +167,13 @@ describe('getValidationSchema', () => {
 
       const result = await schema.validate({ ...values })
 
-      expect(result.address?.isVenueAddress).toBe(true)
+      expect(result.location?.isVenueLocation).toBe(true)
     })
 
-    it('should transform isVenueAddress to false when offerLocation is OTHER_ADDRESS', async () => {
+    it('should transform isVenueLocation to false when offerLocation is OTHER_ADDRESS', async () => {
       const values = buildWithAddress({
         offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
-        isVenueAddress: true,
+        isVenueLocation: true,
         street: '1 rue test',
         city: 'Paris',
         postalCode: '75001',
@@ -184,7 +184,7 @@ describe('getValidationSchema', () => {
 
       const result = await schema.validate({ ...values })
 
-      expect(result.address?.isVenueAddress).toBe(false)
+      expect(result.location?.isVenueLocation).toBe(false)
     })
   })
 })

@@ -54,14 +54,14 @@ export function getOfferTags(
     )
 
   const distanceFromOffer =
-    offer.location?.address?.latitude &&
-    offer.location.address.longitude &&
+    offer.location?.location?.latitude &&
+    offer.location.location.longitude &&
     (adageUser.lat || adageUser.lat === 0) &&
     (adageUser.lon || adageUser.lon === 0) &&
     getHumanizeRelativeDistance(
       {
-        latitude: offer.location.address.latitude,
-        longitude: offer.location.address.longitude,
+        latitude: offer.location.location.latitude,
+        longitude: offer.location.location.longitude,
       },
       {
         latitude: adageUser.lat,

@@ -10,9 +10,9 @@ const offer = {
   ...getDefaultEducationalValues(),
   location: {
     locationType: CollectiveLocationType.ADDRESS,
-    address: {
-      isVenueAddress: true,
-      id_oa: '123',
+    location: {
+      isVenueLocation: true,
+      id: '123',
       isManualEdition: false,
       label: '',
     },
@@ -130,7 +130,7 @@ describe('createOfferPayload', () => {
       ...offer,
       location: {
         ...offer.location,
-        address: { ...offer.location.address, label: 'théâtre' },
+        location: { ...offer.location.location, label: 'théâtre' },
       },
     })
 
@@ -138,17 +138,8 @@ describe('createOfferPayload', () => {
       expect.objectContaining({
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          address: {
-            city: 'Paris',
-            latitude: '3',
-            longitude: '2',
-            postalCode: '75018',
-            street: 'rue de la paix',
-            isVenueAddress: true,
-            isManualEdition: false,
-            label: 'théâtre',
-            banId: '',
-            coords: '',
+          location: {
+            isVenueLocation: true,
           },
         },
       })
@@ -160,7 +151,7 @@ describe('createOfferPayload', () => {
       ...offer,
       location: {
         locationType: CollectiveLocationType.SCHOOL,
-        address: { isManualEdition: false, isVenueAddress: false, label: '' },
+        location: { isManualEdition: false, isVenueLocation: false, label: '' },
       },
     })
 
@@ -195,28 +186,27 @@ describe('createOfferPayload', () => {
     )
   })
 
-  it.each([
-    null,
-    undefined,
-    '',
-  ])('should create a template offer payload with location infos and locationType is TO_BE_DEFINED and comment is empty', (comment) => {
-    const offerPayload = createCollectiveOfferTemplatePayload({
-      ...offer,
-      location: {
-        locationType: CollectiveLocationType.TO_BE_DEFINED,
-        locationComment: comment,
-      },
-    })
-
-    expect(offerPayload).toEqual(
-      expect.objectContaining({
+  it.each([null, undefined, ''])(
+    'should create a template offer payload with location infos and locationType is TO_BE_DEFINED and comment is empty',
+    (comment) => {
+      const offerPayload = createCollectiveOfferTemplatePayload({
+        ...offer,
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
-
-          locationComment: null,
+          locationComment: comment,
         },
-        interventionArea: ['44'],
       })
-    )
-  })
+
+      expect(offerPayload).toEqual(
+        expect.objectContaining({
+          location: {
+            locationType: CollectiveLocationType.TO_BE_DEFINED,
+
+            locationComment: null,
+          },
+          interventionArea: ['44'],
+        })
+      )
+    }
+  )
 })

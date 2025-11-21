@@ -104,20 +104,19 @@ class CollectiveOfferTest:
             "location": {
                 "locationType": offer.locationType.value,
                 "locationComment": offer.locationComment,
-                "address": {
+                "location": {
                     "banId": address.banId,
                     "city": address.city,
                     "departmentCode": address.departmentCode,
                     "id": address.id,
-                    "id_oa": oa.id,
                     "inseeCode": address.inseeCode,
-                    "isLinkedToVenue": True,
                     "isManualEdition": address.isManualEdition,
                     "label": venue.common_name,
                     "latitude": float(address.latitude),
                     "longitude": float(address.longitude),
                     "postalCode": address.postalCode,
                     "street": address.street,
+                    "isVenueLocation": True,
                 },
             },
             "students": ["Lycée - Seconde"],
@@ -162,10 +161,9 @@ class CollectiveOfferTest:
         response_location = response.json["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["banId"] == venue.offererAddress.address.banId
 
     def test_should_return_404_when_no_collective_offer(self, eac_client, redactor):
         response = eac_client.get("/adage-iframe/collective/offers/0")

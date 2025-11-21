@@ -18,6 +18,7 @@ from pcapi.core.offerers.models import Target
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseModel
 from pcapi.routes.serialization.venues_serialize import BannerMetaModel
@@ -284,7 +285,7 @@ class CreateOffererQueryModel(BaseModel):
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
     activity: offerers_models.OnboardingActivity | None
-    address: offerers_schemas.AddressBodyModel
+    address: address_serialize.LocationBodyModel
     createVenueWithoutSiret: bool = False
     isOpenToPublic: bool
     publicName: str | None
@@ -445,7 +446,7 @@ class OffererAddressResponseModel(BaseModel):
     id: int
     label: str | None
     offererId: int
-    address: AddressResponseModel
+    location: AddressResponseModel
 
     class Config:
         orm_mode = True

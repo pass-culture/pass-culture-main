@@ -18,11 +18,11 @@ export function getDefaultEducationalValues(
     venueId: '',
     location: {
       locationType: CollectiveLocationType.ADDRESS,
-      address: {
+      location: {
         label: '',
-        id_oa: '',
+        id: '',
         isManualEdition: false,
-        isVenueAddress: false,
+        isVenueLocation: false,
       },
     },
     latitude: '',

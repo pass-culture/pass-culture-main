@@ -71,10 +71,10 @@ const defaultVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
   name: 'Lieu de test',
   publicName: 'Lieu Exemple Public',
-  address: {
+  location: {
     banId: '12345',
-    id: 1,
-    id_oa: 2,
+    id: 2,
+    isVenueLocation: false,
     street: '123 Rue Principale',
     city: 'Ville Exemple',
     postalCode: '75001',

@@ -16,6 +16,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import exceptions
 from pcapi.core.offers import models
 from pcapi.core.offers import schemas as offers_schemas
@@ -288,7 +289,9 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     )
     offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
-        offerers_api.get_offer_location_from_address(venue.managingOffererId, body.address)
+        offerers_api.get_offer_location_from_address(
+            venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict())
+        )
         if body.address
         # TODO (prouzet, 2025-11-14) CLEAN_OA Do no longer use venue.offererAddress after step 4.5
         else (
@@ -371,6 +374,19 @@ def update_offer(
         if "ean" in body_extra_data:
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
+    if updates.get("location", {}).get("venueLocation") is True:
+        updates["location"] = {
+            "venueLocation": True,
+            "isManualEdition": offer.venue.offererAddress.address.isManualEdition,
+            "banId": offer.venue.offererAddress.address.banId,
+            "city": offer.venue.offererAddress.address.city,
+            "inseeCode": offer.venue.offererAddress.address.inseeCode,
+            "label": offer.venue.publicName,
+            "latitude": offer.venue.offererAddress.address.latitude,
+            "longitude": offer.venue.offererAddress.address.longitude,
+            "postalCode": offer.venue.offererAddress.address.postalCode,
+            "street": offer.venue.offererAddress.address.street,
+        }
 
     offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
     db.session.flush()
@@ -506,7 +522,9 @@ def post_offer(
     )
     offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
-        offerers_api.get_offer_location_from_address(venue.managingOffererId, body.address)
+        offerers_api.get_offer_location_from_address(
+            venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict())
+        )
         if body.address
         # TODO (prouzet, 2025-11-14) CLEAN_OA Do no longer use venue.offererAddress after step 4.5
         else (
@@ -651,6 +669,19 @@ def patch_offer(
         if "ean" in body_extra_data:
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
+    if updates.get("location", {}).get("venueLocation") is True:
+        updates["location"] = {
+            "venueLocation": True,
+            "isManualEdition": offer.venue.offererAddress.address.isManualEdition,
+            "banId": offer.venue.offererAddress.address.banId,
+            "city": offer.venue.offererAddress.address.city,
+            "inseeCode": offer.venue.offererAddress.address.inseeCode,
+            "label": offer.venue.publicName,
+            "latitude": offer.venue.offererAddress.address.latitude,
+            "longitude": offer.venue.offererAddress.address.longitude,
+            "postalCode": offer.venue.offererAddress.address.postalCode,
+            "street": offer.venue.offererAddress.address.street,
+        }
 
     offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
     db.session.flush()
