@@ -463,10 +463,10 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
                 try:
                     with atomic():
                         update_ubble_workflow(fraud_check)
-                except Exception:
+                except Exception as exc:
                     logger.error(
                         "Error while updating pending ubble application",
-                        extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+                        extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId, "exc": str(exc)},
                     )
                     continue
                 db.session.refresh(fraud_check)
