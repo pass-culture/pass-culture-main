@@ -112,6 +112,7 @@ def _create_pro_user(row: dict) -> User:
         phoneNumber=None,
     )
     new_onboarding_info = offerers_api.NewOnboardingInfo(
+        activity=offerers_models.Activity.NOT_ASSIGNED,
         target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
         venueTypeCode=offerers_models.VenueTypeCode.OTHER.name,
         webPresence="https://www.example.com",
@@ -150,6 +151,7 @@ def _create_pro_user(row: dict) -> User:
     )
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
+        activity=offerers_models.Activity.NOT_ASSIGNED,
         address=address,
         bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
         comment=None,

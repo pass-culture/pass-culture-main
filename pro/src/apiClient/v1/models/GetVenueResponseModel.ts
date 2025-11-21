@@ -5,6 +5,7 @@
 import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
+import type { DisplayedActivity } from './DisplayedActivity';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
@@ -17,6 +18,7 @@ import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeResponseModel } from './VenueTypeResponseModel';
 import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type GetVenueResponseModel = {
+  activity?: DisplayedActivity | null;
   adageInscriptionDate?: string | null;
   address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;

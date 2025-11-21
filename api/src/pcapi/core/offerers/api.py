@@ -229,7 +229,12 @@ def update_venue(
         return venue
     venue_snapshot.add_action()
 
-    venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
+    if modifications.get("venueTypeCode", None) and not modifications.get("activity", None):
+        venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
+    if modifications.get("activity", None) and not modifications.get("venueTypeCode", None):
+        if not venue.isOpenToPublic:
+            logger.error("update_venue called with activity on a venue closed to public", extra={"venue_id": venue.id})
+        venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
 
     db.session.add(venue)
     if is_managed_transaction():
@@ -488,9 +493,13 @@ def create_venue(
         venue.adageId = str(int(time.time()))
         venue.adageInscriptionDate = date_utils.get_naive_utc_now()
 
-    venue.activity = offerers_utils.get_venue_activity_from_type_code(
-        data.get("isOpenToPublic"), data.get("venueTypeCode")
-    )
+    assert data.get("venueTypeCode") or data.get("activity")
+    if not data.get("activity"):
+        venue.activity = offerers_utils.get_venue_activity_from_type_code(
+            data.get("isOpenToPublic"), data.get("venueTypeCode")
+        )
+    if not data.get("venueTypeCode"):
+        venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(data.get("activity"))
 
     db.session.add(venue)
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
@@ -951,8 +960,9 @@ def auto_tag_new_offerer(
 
 @dataclasses.dataclass
 class NewOnboardingInfo:
+    activity: models.Activity | None
     target: models.Target
-    venueTypeCode: str
+    venueTypeCode: str | None
     webPresence: str | None
 
 
@@ -2263,7 +2273,7 @@ def create_from_onboarding_data(
         if onboarding_data.publicName:
             name = onboarding_data.publicName
         else:
-            raise ValueError("missing mandatory value for public name")
+            raise exceptions.publicNameRequiredException("missing mandatory value for public name")
     else:
         name = siret_info.name
 
@@ -2280,6 +2290,7 @@ def create_from_onboarding_data(
         phoneNumber=onboarding_data.phoneNumber,
     )
     new_onboarding_info = NewOnboardingInfo(
+        activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
         target=onboarding_data.target,
         venueTypeCode=onboarding_data.venueTypeCode,
         webPresence=onboarding_data.webPresence,
@@ -2301,6 +2312,7 @@ def create_from_onboarding_data(
         if not address.street:
             address = address.copy(update={"street": "n/d"})
         common_kwargs = dict(
+            activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
             address=address,
             bookingEmail=user.email,
             contact=None,

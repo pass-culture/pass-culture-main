@@ -73,6 +73,7 @@ class DMSApplicationForEAC(BaseModel):
 
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
+    activity: offerers_models.Activity | None
     address: offerers_schemas.AddressBodyModel
     bookingEmail: offerers_schemas.VenueBookingEmail
     comment: offerers_schemas.VenueComment | None
@@ -82,7 +83,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     publicName: offerers_schemas.VenuePublicName | None
     siret: offerers_schemas.VenueSiret | None
     venueLabelId: int | None
-    venueTypeCode: str
+    venueTypeCode: str | None
     withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
     description: offerers_schemas.VenueDescription | None
     contact: offerers_schemas.VenueContactModel | None
@@ -272,10 +273,16 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "hasPartnerPage":
             return venue.has_partner_page
 
+        if key == "activity":
+            if not venue.activity or venue.activity == offerers_models.Activity.NOT_ASSIGNED:
+                return None
+            return offerers_models.DisplayedActivity[venue.activity.name]
+
         return super().get(key, default)
 
 
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
+    activity: offerers_models.DisplayedActivity | None
     dateCreated: datetime
     id: int
     bannerMeta: BannerMetaModel | None
@@ -358,6 +365,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
+    activity: offerers_models.OnboardingActivity | None
     name: offerers_schemas.VenueName | None
     street: offerers_schemas.VenueAddress | None
     banId: offerers_schemas.VenueBanId | None

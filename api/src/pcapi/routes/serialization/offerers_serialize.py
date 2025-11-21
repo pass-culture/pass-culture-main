@@ -5,6 +5,7 @@ from typing import Iterable
 
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
+from pydantic.v1 import root_validator
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
 
@@ -35,6 +36,10 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
             ]
         if key == "hasPartnerPage":
             return self._obj._has_partner_page
+        if key == "activity":
+            if not self._obj.activity or self._obj.activity == offerers_models.Activity.NOT_ASSIGNED:
+                return None
+            return offerers_models.DisplayedActivity[self._obj.activity.name]
         return super().get(key, default)
 
 
@@ -47,7 +52,8 @@ class GetOffererVenueResponseModel(BaseModel):
     id: int
     publicName: str | None
     siret: str | None
-    venueTypeCode: offerers_models.VenueTypeCode
+    venueTypeCode: offerers_models.VenueTypeCode | None
+    activity: offerers_models.DisplayedActivity | None
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasPartnerPage: bool
@@ -269,6 +275,7 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
+    activity: offerers_models.OnboardingActivity | None
     address: offerers_schemas.AddressBodyModel
     createVenueWithoutSiret: bool = False
     isOpenToPublic: bool
@@ -276,7 +283,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     siret: str
     target: Target
     token: str
-    venueTypeCode: str
+    venueTypeCode: str | None
     webPresence: str
     phoneNumber: str | None
 
@@ -285,6 +292,15 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     class Config:
         extra = "forbid"
         anystr_strip_whitespace = True
+
+    @root_validator
+    def check_activity_and_venue_type_code(cls: "SaveNewOnboardingDataQueryModel", values: dict) -> dict:
+        activity = values.get("activity")
+        venue_type_code = values.get("venueTypeCode")
+
+        if not activity and not venue_type_code:
+            raise ValueError("Either activity or venueTypeCode are required")
+        return values
 
 
 class InviteMemberQueryModel(BaseModel):
