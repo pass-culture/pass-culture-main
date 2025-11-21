@@ -1,6 +1,7 @@
 import datetime
 
 from pydantic import BaseModel
+from pydantic import ConfigDict
 
 from pcapi.core.users import models as users_models
 
@@ -17,6 +18,8 @@ class QuotientFamilialCustodian(BaseModel):
     gender: users_models.GenderEnum
     birth_country_cog_code: str
     birth_city_cog_code: str | None = None
+
+    # model_config = ConfigDict(use_enum_values=True)
 
 
 class QuotientFamilialContent(BaseModel):

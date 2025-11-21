@@ -9,7 +9,7 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 
-def get_quotient_familial_bonus(previous_bonus_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+def apply_for_quotient_familial_bonus(previous_bonus_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     source_data = previous_bonus_fraud_check.source_data()
     if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
         raise ValueError(f"BonusCreditContent was expected while {type(source_data)} was given")
@@ -18,21 +18,14 @@ def get_quotient_familial_bonus(previous_bonus_fraud_check: subscription_models.
     quotient_familial_content = _get_user_quotient_familial_content(source_data.custodian, user)
     status, reason_codes = _get_credit_bonus_status(user, quotient_familial_content)
 
-    new_bonus_credit_content = bonus_schemas.QuotientFamilialBonusCreditContent(
-        custodian=source_data.custodian,
-        quotient_familial=quotient_familial_content,
-    )
-    fraud_check = subscription_models.BeneficiaryFraudCheck(
-        user=user,
-        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
-        status=status,
-        reasonCodes=reason_codes,
-        reason="from get_quotient_familial_bonus function call",
-        thirdPartyId=previous_bonus_fraud_check.thirdPartyId,
-        resultContent=new_bonus_credit_content.dict(),
-        eligibilityType=user.eligibility,
-    )
-    db.session.add(fraud_check)
+    if not previous_bonus_fraud_check.resultContent:
+        previous_bonus_fraud_check.resultContent = {}
+    if not previous_bonus_fraud_check.resultContent.get("quotient_familial"):
+        previous_bonus_fraud_check.resultContent["quotient_familial"] = {}
+
+    previous_bonus_fraud_check.status = status
+    previous_bonus_fraud_check.reasonCodes = reason_codes
+    previous_bonus_fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
 
 
 def _get_user_quotient_familial_content(
@@ -84,4 +77,4 @@ def _is_user_part_of_tax_household(
 def _get_credit_bonus_status(
     quotient_familial_content: bonus_schemas.QuotientFamilialContent, user: users_models.User
 ) -> tuple[subscription_models.FraudCheckStatus, list[subscription_models.FraudReasonCode] | None]:
-    return (subscription_models.FraudCheckStatus.OK, None)
+    return (subscription_models.FraudCheckStatus.OK, [])

@@ -93,6 +93,9 @@ class FraudReasonCode(enum.Enum):
     PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED = "phone_validation_attempts_limit_reached"
     SMS_SENDING_LIMIT_REACHED = "sms_sending_limit_reached"
 
+    # Specific to API Particulier
+    QUOTIENT_FAMILIAL_NOT_FOUND = "quotient_familial_not_found"
+
     # Deprecated, kept for backward compatibility
     ALREADY_BENEFICIARY = "already_beneficiary"
     ALREADY_HAS_ACTIVE_DEPOSIT = "already_has_active_deposit"
