@@ -25,15 +25,6 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-Object.defineProperty(window, 'location', {
-  value: {
-    reload: vi.fn(),
-  },
-  configurable: true,
-  enumerable: true,
-  writable: true,
-})
-
 const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <Routes>
@@ -48,6 +39,15 @@ const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   )
 
 describe('src | components | pages | Signup | validation', () => {
+  const windowLocationReloadSpy = vi.fn()
+
+  beforeEach(() => {
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
+  })
+
   it('should redirect to home page if the user is logged in', () => {
     const validateUser = vi.spyOn(api, 'validateUser')
 
@@ -58,21 +58,28 @@ describe('src | components | pages | Signup | validation', () => {
 
     // then the validity of his token should not be verified
     expect(validateUser).not.toHaveBeenCalled()
+    expect(windowLocationReloadSpy).not.toHaveBeenCalled()
+
     // and he should be redirected to home page
     expect(screen.getByText('Accueil')).toBeInTheDocument()
   })
 
   it('should verify validity of user token and redirect to connexion', async () => {
     const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
+
     // when the user lands on signup validation page
     renderSignupValidation()
+
     // then the validity of his token should be verified
     expect(validateUser).toHaveBeenCalledTimes(1)
     expect(validateUser).toHaveBeenNthCalledWith(1, 'AAA')
+
     // and he should be redirected to signin page
     await waitFor(() => {
       expect(screen.getByText('Accueil')).toBeInTheDocument()
     })
+
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
   })
 
   it('should verify user link is not valid and redirect to connexion', async () => {
@@ -93,6 +100,8 @@ describe('src | components | pages | Signup | validation', () => {
     await waitFor(() => {
       expect(screen.getByText('Connexion')).toBeInTheDocument()
     })
+
+    expect(windowLocationReloadSpy).not.toHaveBeenCalled()
   })
 
   it('should verify user link is not valid and redirect to connexion even if the error is not an ApiError', async () => {
@@ -103,6 +112,8 @@ describe('src | components | pages | Signup | validation', () => {
     await waitFor(() => {
       expect(screen.getByText('Connexion')).toBeInTheDocument()
     })
+
+    expect(windowLocationReloadSpy).not.toHaveBeenCalled()
   })
 
   it('should verify validity of passwordless login token and redirect to pro home page', async () => {
@@ -120,6 +131,8 @@ describe('src | components | pages | Signup | validation', () => {
 
     // The user profile is fetched …
     await waitFor(() => expect(getProfile).toHaveBeenCalledOnce())
+
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     // … and the user is initialized
     await waitFor(() =>

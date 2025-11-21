@@ -36,25 +36,22 @@ const renderSignupJourneyRoutes = () => {
 const mockLogEvent = vi.fn()
 
 describe('SignupJourneyRoutes::trackers', () => {
-  beforeEach(() => {
+  it('should track logout', async () => {
+    const windowLocationReloadSpy = vi.fn()
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    Object.defineProperty(window, 'location', {
-      value: {
-        reload: vi.fn(),
-      },
-      configurable: true,
-      enumerable: true,
-      writable: true,
-    })
-  })
 
-  it('should track logout', async () => {
     renderSignupJourneyRoutes()
 
     await userEvent.click(screen.getByTestId('offerer-select'))
     await userEvent.click(screen.getByText('Se déconnecter'))
+
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenCalledTimes(1)
     expect(mockLogEvent).toHaveBeenNthCalledWith(1, Events.CLICKED_LOGOUT, {
       from: '/inscription/structure/recherche',

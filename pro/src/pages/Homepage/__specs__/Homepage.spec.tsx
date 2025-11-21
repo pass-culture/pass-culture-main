@@ -26,16 +26,6 @@ vi.mock('@/commons/utils/windowMatchMedia', () => ({
   doesUserPreferReducedMotion: vi.fn().mockReturnValue(false),
 }))
 
-const reloadFn = vi.fn()
-global.window = Object.create(window)
-Object.defineProperty(window, 'location', {
-  value: {
-    reload: reloadFn,
-    href: '',
-  },
-  writable: true,
-})
-
 const baseOfferers: GetOffererResponseModel[] = [
   {
     ...defaultGetOffererResponseModel,
@@ -94,6 +84,8 @@ const renderHomePage = (options?: RenderWithProvidersOptions) => {
 const mockLogEvent = vi.fn()
 
 describe('Homepage', () => {
+  const reloadFn = vi.fn()
+
   const baseOfferersNames = baseOfferers.map(
     (offerer): GetOffererNameResponseModel => ({
       id: offerer.id,

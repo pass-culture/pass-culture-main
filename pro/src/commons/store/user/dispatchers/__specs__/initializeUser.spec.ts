@@ -14,6 +14,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 import { initializeUser } from '../initializeUser'
+import * as logoutModule from '../logout'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -34,14 +35,6 @@ describe('initializeUser', () => {
     sessionStorage.clear()
     // Reset URL between tests
     window.history.pushState({}, '', '/')
-    Object.defineProperty(window, 'location', {
-      value: {
-        reload: vi.fn(),
-      },
-      configurable: true,
-      enumerable: true,
-      writable: true,
-    })
   })
 
   it('should prioritize BO URL params and refetch names and venues when `structure` search param is present', async () => {
@@ -290,7 +283,13 @@ describe('initializeUser', () => {
   })
 
   it('should dispatch logout when initialization fails before selection', async () => {
+    const windowLocationReloadSpy = vi.fn()
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error())
+    const logoutSpy = vi.spyOn(logoutModule, 'logout')
     vi.spyOn(api, 'signout').mockResolvedValue()
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '12')
@@ -299,6 +298,9 @@ describe('initializeUser', () => {
     const store = configureTestStore()
 
     await store.dispatch(initializeUser(user)).unwrap()
+
+    expect(logoutSpy).toHaveBeenCalledTimes(1)
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.user.access).toBeNull()
