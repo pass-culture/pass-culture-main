@@ -57,14 +57,12 @@ def test_response_serialization(client):
             "venueTypeCode": venue.venueTypeCode.name,
             "hasCreatedOffer": False,
             "externalAccessibilityData": None,
-            "address": {
+            "location": {
                 "banId": venue.offererAddress.address.banId,
                 "city": venue.offererAddress.address.city,
                 "departmentCode": venue.offererAddress.address.departmentCode,
                 "id": venue.offererAddress.addressId,
-                "id_oa": venue.offererAddressId,
                 "inseeCode": venue.offererAddress.address.inseeCode,
-                "isLinkedToVenue": True,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
                 "label": venue.common_name,
                 "latitude": float(venue.offererAddress.address.latitude),
@@ -118,14 +116,12 @@ def test_response_serialization(client):
                 },
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
-            "address": {
+            "location": {
                 "banId": venue_with_accessibility_provider.offererAddress.address.banId,
                 "city": venue_with_accessibility_provider.offererAddress.address.city,
                 "departmentCode": venue_with_accessibility_provider.offererAddress.address.departmentCode,
                 "id": venue_with_accessibility_provider.offererAddress.addressId,
-                "id_oa": venue_with_accessibility_provider.offererAddressId,
                 "inseeCode": venue_with_accessibility_provider.offererAddress.address.inseeCode,
-                "isLinkedToVenue": True,
                 "isManualEdition": venue_with_accessibility_provider.offererAddress.address.isManualEdition,
                 "label": venue_with_accessibility_provider.common_name,
                 "latitude": float(venue_with_accessibility_provider.offererAddress.address.latitude),

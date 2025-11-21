@@ -165,7 +165,7 @@ class Returns200Test:
                 "CAN_ARCHIVE",
             ],
             "location": {
-                "address": None,
+                "location": None,
                 "locationComment": None,
                 "locationType": "TO_BE_DEFINED",
             },

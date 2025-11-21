@@ -81,7 +81,7 @@ class UpdateOffer(BaseModel):
     motor_disability_compliant: bool | None = None
     visual_disability_compliant: bool | None = None
 
-    address: offerers_schemas.AddressBodyModel | None = None
+    location: offerers_schemas.AddressBodyModel | None = None
     booking_contact: EmailStr | None = None
     booking_email: EmailStr | None = None
     description: str | None = None

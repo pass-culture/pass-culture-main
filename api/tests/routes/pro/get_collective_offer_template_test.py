@@ -63,7 +63,7 @@ class Returns200Test:
         ]
 
         assert response_json["location"] == {
-            "address": None,
+            "location": None,
             "locationComment": None,
             "locationType": "TO_BE_DEFINED",
         }
@@ -89,10 +89,10 @@ class Returns200Test:
         response_location = response_json["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["id_oa"] == venue.offererAddressId
+        assert response_location["location"]["isLinkedToVenue"] is True
+        assert response_location["location"]["banId"] == venue.offererAddress.address.banId
         assert response_json["interventionArea"] == []
 
     def test_location_school(self, client):
@@ -114,7 +114,7 @@ class Returns200Test:
         response_location = response_json["location"]
         assert response_location["locationType"] == "SCHOOL"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is None
+        assert response_location["location"] is None
         assert response_json["interventionArea"] == ["33", "75", "93"]
 
     def test_location_address(self, client):
@@ -139,10 +139,9 @@ class Returns200Test:
         response_location = response_json["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == oa.id
-        assert response_location["address"]["isLinkedToVenue"] is False
-        assert response_location["address"]["banId"] == oa.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isLinkedToVenue"] is False
+        assert response_location["location"]["banId"] == oa.address.banId
         assert response_json["interventionArea"] == []
 
     def test_location_to_be_defined(self, client):
@@ -164,7 +163,7 @@ class Returns200Test:
         response_location = response_json["location"]
         assert response_location["locationType"] == "TO_BE_DEFINED"
         assert response_location["locationComment"] == "In space"
-        assert response_location["address"] is None
+        assert response_location["location"] is None
         assert response_json["interventionArea"] == ["33", "75", "93"]
 
     def test_performance(self, client):

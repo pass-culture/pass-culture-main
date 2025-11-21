@@ -128,7 +128,7 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
 
 
 class AddressBodyModel(BaseModel):
-    isVenueAddress: bool = False
+    venueLocation: bool = False
     isManualEdition: bool = False
     banId: str | None
     city: VenueCity

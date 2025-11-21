@@ -120,7 +120,7 @@ class CollectiveOfferDatesModel(BaseModel):
 class GetCollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    location: address_serialize.LocationResponseModel | None
 
 
 def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
@@ -324,17 +324,18 @@ class GetCollectiveOfferBookingResponseModel(BaseModel):
 def get_collective_offer_location_model(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> GetCollectiveOfferLocationModel:
-    address = None
+    location = None
     oa = offer.offererAddress
     if oa is not None:
-        address = address_serialize.AddressResponseIsLinkedToVenueModel(
+        location = address_serialize.LocationResponseModel(
             **address_serialize.retrieve_address_info_from_oa(oa),
             label=offer.venue.common_name if oa._isLinkedToVenue else oa.label,
-            isLinkedToVenue=oa._isLinkedToVenue,
+            # TODO(xordoquy): compute venueLocation
+            venueLocation=False,
         )
 
     return GetCollectiveOfferLocationModel(
-        locationType=offer.locationType, locationComment=offer.locationComment, address=address
+        locationType=offer.locationType, locationComment=offer.locationComment, location=location
     )
 
 

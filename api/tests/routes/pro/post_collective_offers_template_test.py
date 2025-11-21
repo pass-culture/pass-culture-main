@@ -79,7 +79,7 @@ def payload_fixture(venue, domains, template_start, template_end):
         "location": {
             "locationType": models.CollectiveLocationType.SCHOOL.value,
             "locationComment": None,
-            "address": None,
+            "location": None,
         },
         "domains": [domain.id for domain in domains],
         "venueId": venue.id,
@@ -188,8 +188,8 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
-                    "isVenueAddress": True,
+                "location": {
+                    "venueLocation": True,
                     "isManualEdition": False,
                     "city": oa.address.city,
                     "latitude": oa.address.latitude,
@@ -216,7 +216,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -237,7 +237,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
 
@@ -263,7 +263,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
+                "location": {
                     "isVenueAddress": True,
                     "isManualEdition": venue.offererAddress.address.isManualEdition,
                     "city": venue.offererAddress.address.city,
@@ -301,7 +301,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
+                "location": {
                     "isVenueAddress": True,
                     "isManualEdition": venue.offererAddress.address.isManualEdition,
                     "city": venue.offererAddress.address.city,
@@ -333,7 +333,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
-                "address": None,
+                "location": None,
             },
         }
 
@@ -488,7 +488,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": "FORBIDDEN COMMENT",
-                "address": None,
+                "location": None,
             },
         }
 
@@ -509,7 +509,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDEN COMMENT",
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
 
@@ -531,7 +531,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -551,7 +551,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -570,7 +570,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -599,7 +599,7 @@ class Returns400Test:
             "location": {
                 "locationType": location_type,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
 
