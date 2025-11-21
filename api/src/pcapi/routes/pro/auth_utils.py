@@ -1,4 +1,4 @@
-import pcapi.core.users.repository as users_repository
+from pcapi.core.users import repository as users_repository
 from pcapi.core.users.models import User
 from pcapi.models.api_errors import ResourceNotFoundError
 
