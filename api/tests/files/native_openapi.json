@@ -674,6 +674,12 @@
                         "title": "Dateused",
                         "type": "string"
                     },
+                    "expirationDate": {
+                        "format": "date-time",
+                        "nullable": true,
+                        "title": "Expirationdate",
+                        "type": "string"
+                    },
                     "id": {
                         "title": "Id",
                         "type": "integer"
@@ -700,11 +706,11 @@
                 },
                 "required": [
                     "id",
+                    "canReact",
                     "dateCreated",
                     "quantity",
-                    "totalAmount",
-                    "canReact",
-                    "stock"
+                    "stock",
+                    "totalAmount"
                 ],
                 "title": "BookingListItemResponse",
                 "type": "object"
