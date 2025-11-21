@@ -56,6 +56,7 @@ import type { GetOffererStatsResponseModel } from '../models/GetOffererStatsResp
 import type { GetOffererV2StatsResponseModel } from '../models/GetOffererV2StatsResponseModel';
 import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
+import type { GetVenueListLiteResponseModel } from '../models/GetVenueListLiteResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
@@ -1292,6 +1293,33 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'GET',
       url: '/highlights',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_venues_lite <GET>
+   * @param validated
+   * @param activeOfferersOnly
+   * @param offererId
+   * @returns GetVenueListLiteResponseModel OK
+   * @throws ApiError
+   */
+  public getVenuesLite(
+    validated?: boolean | null,
+    activeOfferersOnly?: boolean | null,
+    offererId?: number | null,
+  ): CancelablePromise<GetVenueListLiteResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/lite/venues',
+      query: {
+        'validated': validated,
+        'activeOfferersOnly': activeOfferersOnly,
+        'offererId': offererId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,
@@ -3053,7 +3081,9 @@ export class DefaultService {
     });
   }
   /**
-   * get_venues <GET>
+   * @deprecated
+   * [deprecated] please use /lite/venues instead
+   * Why? This route load way too much data.
    * @param validated
    * @param activeOfferersOnly
    * @param offererId
