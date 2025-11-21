@@ -25,7 +25,7 @@ jobs:
     name: "Quality checks"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: |
@@ -83,7 +83,7 @@ jobs:
     name: "Ruff"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Run ruff linter"
         uses: astral-sh/ruff-action@v3
         with:
@@ -117,7 +117,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           # On a feature branch, we must fetch the whole history to
           # find the common ancestor with master (see `git merge-base`
@@ -350,7 +350,7 @@ jobs:
           POSTGRES_PASSWORD: pytest
           POSTGRES_DB: pass_culture
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Compute docker image name:tag"
         id: compute-image-name
         run: echo "image_name=${{ inputs.image }}:${{ inputs.tag }}" | tee -a ${GITHUB_OUTPUT}

@@ -41,7 +41,7 @@ jobs:
             cosign_kms_key_secret_name: pc-infra-prd/cosign_kms_key
     steps:
       - name: Checkout new tag
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Push built docker image to Artifact Registry ${{ matrix.registry }}
         uses: ./.github/actions/push-docker-image

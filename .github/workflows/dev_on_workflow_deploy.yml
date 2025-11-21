@@ -78,7 +78,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: "Deploy API"
         if: ${{ inputs.deploy_api && !inputs.is_new_infra }}
@@ -117,7 +117,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
@@ -205,7 +205,7 @@ jobs:
       contents: read
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
