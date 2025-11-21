@@ -23,7 +23,7 @@ interface CollectiveOfferTypeProps {
 
 export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
   const location = useLocation()
-  const { setValue, getValues } = useFormContext()
+  const { setValue, getValues, watch } = useFormContext()
 
   const queryParams = new URLSearchParams(location.search)
   const queryOffererId = offerer?.id
@@ -40,7 +40,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
         <div className={styles['container']}>
           <RadioButtonGroup
             variant="detailed"
-            name="collectiveOfferSubtype"
+            name={watch('offer.collectiveOfferSubtype')}
             label={
               <h2 className={styles['radio-group-title']}>
                 Quel est le type de l’offre ?
@@ -82,7 +82,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           <div className={styles['container']}>
             <RadioButtonGroup
               variant="detailed"
-              name="collectiveOfferSubtypeDuplicate"
+              name={watch('offer.collectiveOfferSubtypeDuplicate')}
               label={
                 <h2 className={styles['radio-group-title']}>
                   Créer une nouvelle offre ou dupliquer une offre ?
