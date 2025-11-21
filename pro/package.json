@@ -69,7 +69,7 @@
     "yup": "1.7.1"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.5",
+    "@biomejs/biome": "2.3.7",
     "@cypress/grep": "5.0.0",
     "@hookform/devtools": "4.4.0",
     "@storybook/addon-a11y": "9.1.16",
