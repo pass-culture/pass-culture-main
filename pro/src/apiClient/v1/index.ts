@@ -12,7 +12,6 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { AddressBodyModel } from './models/AddressBodyModel';
-export type { AddressResponseIsLinkedToVenueModel } from './models/AddressResponseIsLinkedToVenueModel';
 export type { AggregatedRevenueModel } from './models/AggregatedRevenueModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
@@ -173,6 +172,7 @@ export type { ListOffersVenueResponseModel } from './models/ListOffersVenueRespo
 export type { ListProviderResponse } from './models/ListProviderResponse';
 export type { ListVenueProviderQuery } from './models/ListVenueProviderQuery';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
+export type { LocationResponseModel } from './models/LocationResponseModel';
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenues } from './models/ManagedVenues';
 export type { MentalDisabilityModel } from './models/MentalDisabilityModel';

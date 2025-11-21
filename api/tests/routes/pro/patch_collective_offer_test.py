@@ -223,7 +223,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
+                "location": {
                     "isVenueAddress": True,
                     "isManualEdition": False,
                     "city": oa.address.city,
@@ -252,7 +252,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -273,7 +273,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -298,7 +298,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -329,7 +329,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
+                "location": {
                     "isVenueAddress": True,
                     "isManualEdition": False,
                     "city": new_address.city,
@@ -675,7 +675,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": "FORBIDDEN COMMENT",
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -695,7 +695,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDEN COMMENT",
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -714,7 +714,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -733,7 +733,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -752,7 +752,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -768,7 +768,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -787,7 +787,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -817,7 +817,7 @@ class Returns400Test:
             "location": {
                 "locationType": location_type,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             }
         }
 

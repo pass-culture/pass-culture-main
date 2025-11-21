@@ -220,14 +220,15 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                     return pricing_link.pricingPoint
             return None
 
-        if key == "address":
+        if key == "location":
             offerer_address = venue.offererAddress
             if not offerer_address:
                 return None
-            return address_serialize.AddressResponseIsLinkedToVenueModel(
+            return address_serialize.LocationResponseModel(
                 **address_serialize.retrieve_address_info_from_oa(offerer_address),
                 label=venue.common_name,
-                isLinkedToVenue=True,
+                # TODO(xordoquy): compute venueLocation
+                venueLocation=False,
             )
 
         if key == "collectiveDmsApplications":
@@ -302,7 +303,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     adageInscriptionDate: datetime | None
     bankAccount: BankAccountResponseModel | None
     hasOffers: bool
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    location: address_serialize.LocationResponseModel | None
     hasActiveIndividualOffer: bool
     isCaledonian: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
@@ -453,7 +454,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasCreatedOffer: bool
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    location: address_serialize.LocationResponseModel | None
     isPermanent: bool
     isCaledonian: bool
     isActive: bool
@@ -478,7 +479,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "offererName": venue.managingOfferer.name,
             "hasCreatedOffer": venue.id in ids_of_venues_with_offers,
             "externalAccessibilityData": cls.build_external_accessibility_data(venue),
-            "address": cls.build_address(venue),
+            "location": cls.build_location(venue),
             "isCaledonian": venue.is_caledonian,
             "isActive": venue.managingOfferer.isActive,
             "isValidated": venue.managingOfferer.isValidated,
@@ -503,9 +504,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
         )
 
     @classmethod
-    def build_address(
-        cls, venue: offerers_models.Venue
-    ) -> address_serialize.AddressResponseIsLinkedToVenueModel | None:
+    def build_location(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModel | None:
         offerer_address = venue.offererAddress
         if not offerer_address:
             return None
@@ -524,7 +523,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "isManualEdition": offerer_address.address.isManualEdition,
             "departmentCode": offerer_address.address.departmentCode,
         }
-        return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
+        return address_serialize.LocationResponseModel(**data)
 
 
 class GetVenueListResponseModel(BaseModel):
