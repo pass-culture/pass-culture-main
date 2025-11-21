@@ -112,6 +112,8 @@ class Returns200Test:
         assert venue.offererAddress.addressId == new_address.id
         assert initial_location.label == "old name"
         assert new_location.label is None
+        assert new_location.type == offerers_models.LocationType.VENUE_LOCATION
+        assert new_location.venue == venue
         assert new_address.street == venue.street == "3 Rue de Valois"
         assert new_address.city == venue.city == "Paris"
         assert new_address.postalCode == venue.postalCode == "75001"
@@ -159,7 +161,7 @@ class Returns200Test:
         assert update_snapshot["offererAddress.address.banId"]["new_info"] == new_address.banId
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(new_address.latitude)
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(new_address.longitude)
-        assert update_snapshot["old_oa_label"]["new_info"] == "old name"
+        assert update_snapshot["offererAddress.addressId"]["new_info"] == new_address.id
 
         # one action should be added for updated accessibility info
         acceslibre_action = [

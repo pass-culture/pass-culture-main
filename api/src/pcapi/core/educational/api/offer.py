@@ -338,7 +338,7 @@ def _get_location_from_public_model(
 
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressModel():
             address = public_utils.get_address_or_raise_404(location_body.addressId)
-            offerer_address = offerers_api.get_or_create_offerer_address(
+            offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
                 address_id=address.id,
                 label=location_body.addressLabel,
@@ -937,7 +937,7 @@ def create_new_location_if_offer_uses_origin_venue_location(
     # Use a different OA if the offer uses the venue's OA
     source_venue = collective_offer.venue
     if collective_offer.offererAddress and collective_offer.offererAddress == source_venue.offererAddress:
-        destination_oa = offerers_api.get_or_create_offerer_address(
+        destination_oa = offerers_api.get_or_create_offer_location(
             source_venue.managingOffererId, source_venue.offererAddress.addressId, source_venue.common_name
         )
         db.session.add(destination_oa)
