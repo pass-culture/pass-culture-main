@@ -31,6 +31,6 @@ jobs:
 
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ inputs.deploy_new_infra && secrets.V2_GCP_WORKLOAD_IDENTITY_PROVIDER || secrets.GCP_WORKLOAD_IDENTITY_PROVIDER}} # To rename after migration for consistency
-      GCP_EHP_SERVICE_ACCOUNT: ${{ inputs.deploy_new_infra && secrets.V2_GCP_SERVICE_ACCOUNT || secrets.V2_GCP_SERVICE_ACCOUNT }} # To rename after migration for consistency
+      GCP_EHP_SERVICE_ACCOUNT: ${{ inputs.deploy_new_infra && secrets.V2_GCP_SERVICE_ACCOUNT || secrets.PCAPI_CI_SERVICE_ACCOUNT_OPSV2 }} # To rename after migration for consistency
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }} # to delete after migration
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }} # to delete after migration
