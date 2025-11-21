@@ -20,9 +20,9 @@ import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import { HeadlineOffer } from './components/HeadlineOffer/HeadlineOffer'
@@ -161,10 +161,12 @@ export const IndividualOffersContainer = ({
 
       <output aria-live="polite">
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
-          <Callout className={styles['offers-table-callout']}>
-            L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
-            les filtres pour affiner votre recherche.
-          </Callout>
+          <div className={styles['offers-table-callout']}>
+            <Banner
+              description={`L’affichage est limité à ${MAX_OFFERS_TO_DISPLAY} offres. Modifiez les filtres pour affiner votre recherche.`}
+              title=""
+            />
+          </div>
         )}
         {hasOffers && (
           <div className={styles['offers-table-title']}>

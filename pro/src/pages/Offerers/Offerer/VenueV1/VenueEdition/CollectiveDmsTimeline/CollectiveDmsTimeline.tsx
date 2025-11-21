@@ -3,10 +3,10 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getDateToFrenchText } from '@/commons/utils/date'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { Timeline, TimelineStepType } from '@/ui-kit/Timeline/Timeline'
 
 import styles from './CollectiveDmsTimeline.module.scss'
@@ -239,40 +239,46 @@ export const CollectiveDmsTimeline = ({
   }
 
   const refusedByDms = (
-    <Callout
-      variant={CalloutVariant.ERROR}
+    <Banner
+      variant={BannerVariants.ERROR}
       title="Votre demande de référencement a été refusée"
-      links={[
+      actions={[
         {
           href: collectiveDmsApplicationLink,
           label: 'Consulter ma messagerie sur Démarche Numérique',
           isExternal: true,
+
+          icon: fullLinkIcon,
+          iconAlt: 'Nouvelle fenêtre',
+          type: 'link',
           onClick: () => logClickOnDmsLink(DMSApplicationstatus.REFUSE),
         },
         {
           href: collectiveDmsContactSupport,
           label: 'Contacter les membres de la commission de mon territoire',
           isExternal: true,
+
+          icon: fullLinkIcon,
+          iconAlt: 'Nouvelle fenêtre',
+          type: 'link',
         },
       ]}
-    >
-      Votre demande de référencement a été refusée le {processingDate} par la
-      commission régionale de référencement qui rassemble des représentants du
-      rectorat et de la DRAC de votre territoire. Nous vous invitons à consulter
-      votre messagerie sur Démarche Numérique afin d’en savoir plus sur les
-      raisons de ce refus.
-    </Callout>
+      description="Votre demande de référencement a été refusée le {processingDate} par la commission régionale de référencement qui rassemble des représentants du rectorat et de la DRAC de votre territoire. Nous vous invitons à consulter votre messagerie sur Démarche Numérique afin d’en savoir plus sur les raisons de ce refus."
+    />
   )
 
   const droppedByDms = (
-    <Callout
-      variant={CalloutVariant.ERROR}
+    <Banner
+      variant={BannerVariants.ERROR}
       title="Votre demande de référencement a été classée sans suite"
-      links={[
+      actions={[
         {
           href: collectiveDmsApplicationLink,
           label: 'Consulter ma messagerie sur Démarche Numérique',
           isExternal: true,
+          icon: fullLinkIcon,
+          iconAlt: 'Nouvelle fenêtre',
+          type: 'link',
           onClick: () => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE),
         },
         {
@@ -280,12 +286,13 @@ export const CollectiveDmsTimeline = ({
           label:
             'Contacter les services des Ministères de l’Education Nationale et de la Culture',
           isExternal: true,
+          icon: fullLinkIcon,
+          iconAlt: 'Nouvelle fenêtre',
+          type: 'link',
         },
       ]}
-    >
-      Nous vous invitons à consulter votre messagerie sur Démarche Numérique
-      afin d’en savoir plus.
-    </Callout>
+      description="Nous vous invitons à consulter votre messagerie sur Démarche Numérique afin d’en savoir plus."
+    />
   )
   if (
     hasAdageId &&

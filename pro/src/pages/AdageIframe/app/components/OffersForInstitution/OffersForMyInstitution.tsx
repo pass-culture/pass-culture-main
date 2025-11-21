@@ -2,10 +2,11 @@ import useSWR from 'swr'
 
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { Banner } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 import strokeMyInstitution from '@/icons/stroke-my-institution.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
@@ -35,34 +36,44 @@ export const OffersForMyInstitution = () => {
   return (
     <>
       <h1 className={styles['title']}>Pour mon établissement</h1>
-      <Callout
-        className={styles['my-institution-callout']}
-        links={[
-          {
-            href: `${document.referrer}adage/passculture/index`,
-            isExternal: true,
-            label: 'Voir la page “Suivi pass Culture”',
-          },
-        ]}
-      >
-        <p className={styles['callout-text']}>
-          Retrouvez sur cette page les offres destinées aux professeurs de votre
-          établissement et rédigées par les acteurs culturels partenaires de
-          l’établissement scolaire.
-        </p>
-        <p className={styles['callout-text']}>
-          Le contenu, la date et le montant de chaque offre ont été définis lors
-          d’échanges entre un professeur et la structure culturelle concernée.
-        </p>
-        <p>
-          Processus : vous cliquez sur “Préréserver” l’offre qui vous est
-          destinée. L’offre va disparaitre de cette page, mais vous pourrez la
-          retrouver dans la page “Suivi pass Culture”. Puis, vous associerez
-          l’offre à votre projet pédagogique dans la page “Les projets”. Enfin,
-          votre chef d’établissement confirmera la réservation de l’offre dans
-          “Suivi pass Culture”.
-        </p>
-      </Callout>
+      <div className={styles['my-institution-callout']}>
+        <Banner
+          title=""
+          actions={[
+            {
+              href: `${document.referrer}adage/passculture/index`,
+              isExternal: true,
+              label: 'Voir la page “Suivi pass Culture”',
+
+              icon: fullLinkIcon,
+              iconAlt: 'Nouvelle fenêtre',
+              type: 'link',
+            },
+          ]}
+          description={
+            <>
+              <p className={styles['callout-text']}>
+                Retrouvez sur cette page les offres destinées aux professeurs de
+                votre établissement et rédigées par les acteurs culturels
+                partenaires de l’établissement scolaire.
+              </p>
+              <p className={styles['callout-text']}>
+                Le contenu, la date et le montant de chaque offre ont été
+                définis lors d’échanges entre un professeur et la structure
+                culturelle concernée.
+              </p>
+              <p>
+                Processus : vous cliquez sur “Préréserver” l’offre qui vous est
+                destinée. L’offre va disparaitre de cette page, mais vous
+                pourrez la retrouver dans la page “Suivi pass Culture”. Puis,
+                vous associerez l’offre à votre projet pédagogique dans la page
+                “Les projets”. Enfin, votre chef d’établissement confirmera la
+                réservation de l’offre dans “Suivi pass Culture”.
+              </p>
+            </>
+          }
+        />
+      </div>
       {offers.collectiveOffers.length === 0 ? (
         <div className={styles['no-results']}>
           <SvgIcon

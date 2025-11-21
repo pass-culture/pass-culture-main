@@ -7,13 +7,14 @@ import {
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
 } from '@/commons/core/Offers/constants'
 import { getLastDmsApplicationForOfferer } from '@/commons/utils/getLastCollectiveDmsApplication'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import fullLinkIcon from '@/icons/full-link.svg'
+import fullNextIcon from '@/icons/full-next.svg'
 import strokeBookedIcon from '@/icons/stroke-booked.svg'
 import strokeDuplicateOfferIcon from '@/icons/stroke-duplicate-offer.svg'
 import strokeNewOfferIcon from '@/icons/stroke-new-offer.svg'
 import strokeTemplateOfferIcon from '@/icons/stroke-template-offer.svg'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from './CollectiveOfferType.module.scss'
 
@@ -123,48 +124,57 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
         )}
 
       {!offerer?.isValidated && (
-        <Callout className={styles['pending-offerer-callout']}>
-          Votre structure est en cours de validation par les équipes pass
-          Culture.
-        </Callout>
+        <div className={styles['pending-offerer-callout']}>
+          <Banner
+            title=""
+            description="Votre structure est en cours de validation par les équipes pass Culture."
+          />
+        </div>
       )}
 
       {!offerer?.allowedOnAdage &&
         (lastDmsApplication ? (
-          <Callout
-            className={styles['pending-offerer-callout']}
-            variant={CalloutVariant.INFO}
-            links={[
-              {
-                href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
-                label: 'Voir ma demande de référencement',
-              },
-            ]}
-          >
-            Vous avez une demande de référencement en cours de traitement
-          </Callout>
+          <div className={styles['pending-offerer-callout']}>
+            <Banner
+              title=""
+              actions={[
+                {
+                  href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
+                  label: 'Voir ma demande de référencement',
+                  type: 'link',
+                  icon: fullNextIcon,
+                },
+              ]}
+              description="Vous avez une demande de référencement en cours de traitement"
+            />
+          </div>
         ) : (
-          <Callout
-            className={styles['pending-offerer-callout']}
-            links={[
-              {
-                href: 'https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage',
-                label: 'Faire une demande de référencement',
-                isExternal: true,
-              },
-              {
-                href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
-                label:
-                  'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
-                isExternal: true,
-              },
-            ]}
-            variant={CalloutVariant.ERROR}
-          >
-            Pour proposer des offres à destination d’un groupe scolaire, vous
-            devez être référencé auprès du ministère de l’Éducation Nationale et
-            du ministère de la Culture.
-          </Callout>
+          <div className={styles['pending-offerer-callout']}>
+            <Banner
+              title=""
+              actions={[
+                {
+                  href: 'https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage',
+                  label: 'Faire une demande de référencement',
+                  isExternal: true,
+                  icon: fullLinkIcon,
+                  iconAlt: 'Nouvelle fenêtre',
+                  type: 'link',
+                },
+                {
+                  href: 'https://aide.passculture.app/hc/fr/articles/5700215550364',
+                  label:
+                    'Ma demande de référencement a été acceptée mais je ne peux toujours pas créer d’offres collectives',
+                  isExternal: true,
+                  icon: fullLinkIcon,
+                  iconAlt: 'Nouvelle fenêtre',
+                  type: 'link',
+                },
+              ]}
+              variant={BannerVariants.ERROR}
+              description="Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture."
+            />
+          </div>
         ))}
     </>
   )

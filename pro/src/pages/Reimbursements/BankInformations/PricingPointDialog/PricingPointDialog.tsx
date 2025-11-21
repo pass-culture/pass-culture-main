@@ -5,9 +5,9 @@ import { useForm } from 'react-hook-form'
 import { api } from '@/apiClient/api'
 import type { ManagedVenue } from '@/apiClient/v1'
 import { useNotification } from '@/commons/hooks/useNotification'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Select } from '@/ui-kit/form/Select/Select'
 
@@ -76,13 +76,12 @@ export const PricingPointDialog = ({
 
   return (
     <div className={styles.dialog}>
-      <Callout className={styles['callout']}>
-        Comme indiqué dans nos CGUs, le barème de remboursement se définit sur
-        la base d’un établissement et donc d’un SIRET. Afin de vous faire
-        rembourser les offres de cette structure, vous devez sélectionner le
-        SIRET à partir duquel sera calculé votre taux de remboursement.
-        Attention, vous ne pourrez plus modifier votre choix après validation.{' '}
-      </Callout>
+      <div className={styles['callout']}>
+        <Banner
+          title=""
+          description="Comme indiqué dans nos CGUs, le barème de remboursement se définit sur la base d’un établissement et donc d’un SIRET. Afin de vous faire rembourser les offres de cette structure, vous devez sélectionner le SIRET à partir duquel calculé votre taux de remboursement. Attention, vous ne pourrez plus modifier votre choix après validation."
+        />
+      </div>
       <form
         onSubmit={methods.handleSubmit(onSubmit)}
         className={styles['dialog-form']}

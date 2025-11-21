@@ -27,13 +27,13 @@ import { RedirectToBankAccountDialog } from '@/components/RedirectToBankAccountD
 import { SummaryAside } from '@/components/SummaryLayout/SummaryAside'
 import { SummaryContent } from '@/components/SummaryLayout/SummaryContent'
 import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
+import { Banner } from '@/design-system/Banner/Banner'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
 import { getOfferConditionalFields } from '@/pages/IndividualOffer/commons/getOfferConditionalFields'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 import { MediaSection } from '@/pages/IndividualOfferSummary/components/MediaSection/MediaSection'
 import { PriceCategoriesSection } from '@/pages/IndividualOfferSummary/components/PriceCategoriesSection/PriceCategoriesSection'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { EventPublicationForm } from './EventPublicationForm/EventPublicationForm'
@@ -177,11 +177,10 @@ export const IndividualOfferSummaryScreen = ({
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onPublish)}>
         <div className={styles['offer-preview-banners']}>
-          <Callout>
-            <strong>Vous y êtes presque !</strong>
-            <br />
-            Vérifiez les informations ci-dessous avant de publier votre offre.
-          </Callout>
+          <Banner
+            title="Vous y êtes presque !"
+            description="Vérifiez les informations ci-dessous avant de publier votre offre."
+          />
 
           <EventPublicationForm />
         </div>

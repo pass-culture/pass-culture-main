@@ -1,8 +1,7 @@
 import { useMemo } from 'react'
 
 import { ADAGE_URL } from '@/commons/utils/config'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { ShareLink } from '@/ui-kit/ShareLink/ShareLink'
 
 import styles from './ShareTemplateOfferLink.module.scss'
@@ -30,15 +29,12 @@ export const ShareTemplateOfferLink = ({
         offerId={offerId}
       />
       <div className={styles['callout-container']}>
-        <Callout
+        <Banner
           title="Connexion à ADAGE obligatoire"
-          variant={CalloutVariant.INFO}
-        >
-          <div className={styles['callout-content']}>
-            Veillez à préciser aux enseignants de se connecter à ADAGE avant
-            d’ouvrir ce lien de partage sans quoi ils n’y auront pas accès.
-          </div>
-        </Callout>
+          variant={BannerVariants.DEFAULT}
+          description="Veillez à préciser aux enseignants de se connecter à ADAGE avant
+            d’ouvrir ce lien de partage sans quoi ils n’y auront pas accès."
+        />
       </div>
     </div>
   )

@@ -3,7 +3,7 @@ import {
   type GetCollectiveOfferResponseModel,
   type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { Callout } from '@/ui-kit/Callout/Callout'
+import { Banner } from '@/design-system/Banner/Banner'
 
 import styles from './PreviewHeader.module.scss'
 
@@ -36,9 +36,12 @@ export const PreviewHeader = ({ offer }: PreviewHeaderProps) => {
         sur la plateforme ADAGE.
       </p>
       {shouldShowCallout && (
-        <Callout className={styles['callout']}>
-          {`Cet aperçu n'est pas visible par l'enseignant car votre offre est ${statusLabel[offer.displayedStatus]}.`}
-        </Callout>
+        <div className={styles['callout']}>
+          <Banner
+            description={`Cet aperçu n'est pas visible par l'enseignant car votre offre est ${statusLabel[offer.displayedStatus]}.`}
+            title=""
+          />
+        </div>
       )}
     </>
   )

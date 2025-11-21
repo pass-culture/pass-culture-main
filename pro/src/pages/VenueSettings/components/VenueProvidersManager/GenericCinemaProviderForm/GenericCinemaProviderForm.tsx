@@ -6,10 +6,10 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 
@@ -128,12 +128,12 @@ export const GenericCinemaProviderForm = ({
         </FormLayout.Row>
 
         {showAdvancedFields && (
-          <Callout className={styles['allocine-provider-form-banner']}>
-            Pour le moment, seules les séances "classiques" peuvent être
-            importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne
-            génèreront pas d’offres. Nous travaillons actuellement à l’ajout de
-            séances spécifiques.
-          </Callout>
+          <div className={styles['allocine-provider-form-banner']}>
+            <Banner
+              description='Pour le moment, seules les séances "classiques" peuvent être importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d’offres. Nous travaillons actuellement à l’ajout de séances spécifiques.'
+              title=""
+            />
+          </div>
         )}
       </div>
 

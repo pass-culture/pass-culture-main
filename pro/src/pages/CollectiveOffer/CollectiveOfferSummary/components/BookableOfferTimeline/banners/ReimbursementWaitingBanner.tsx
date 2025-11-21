@@ -1,7 +1,11 @@
 import fullEditIcon from 'icons/full-edit.svg'
 import fullNextIcon from 'icons/full-next.svg'
 
-import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import {
+  Banner,
+  type BannerLink,
+  BannerVariants,
+} from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from '../BookableOfferTimeline.module.scss'
@@ -70,7 +74,7 @@ export const ReimbursementWaitingBanner = ({
         title="Informations"
         variant={BannerVariants.DEFAULT}
         description={message}
-        actions={[link]}
+        actions={[link as BannerLink]}
       />
     </div>
   )

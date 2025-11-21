@@ -3,7 +3,11 @@ import { differenceInCalendarDays } from 'date-fns'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import {
+  Banner,
+  type BannerLink,
+  BannerVariants,
+} from '@/design-system/Banner/Banner'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullMailIcon from '@/icons/full-mail.svg'
 
@@ -55,29 +59,24 @@ export const BookingWaitingBanner = ({
           departmentCode
         )}. Sinon, elle sera automatiquement expirée et vous devrez renseigner une nouvelle date limite de réservation.`
 
-  const actions = [
-    ...(canEditDates
-      ? [
-          {
-            label: 'Modifier la date limite de réservation',
-            icon: fullEditIcon,
-            href: `/offre/${offerId}/collectif/stocks/edition`,
-            type: 'link',
-          },
-        ]
-      : []),
-    ...(contactEmail && isExpiringSoon
-      ? [
-          {
-            label: "Contacter l'établissement",
-            icon: fullMailIcon,
-            href: `mailto:${contactEmail}`,
-            isExternal: true,
-            type: 'link',
-          },
-        ]
-      : []),
-  ]
+  const actions: BannerLink[] = []
+  if (canEditDates) {
+    actions.push({
+      label: 'Modifier la date limite de réservation',
+      icon: fullEditIcon,
+      href: `/offre/${offerId}/collectif/stocks/edition`,
+      type: 'link',
+    })
+  }
+  if (contactEmail && isExpiringSoon) {
+    actions.push({
+      label: "Contacter l'établissement",
+      icon: fullMailIcon,
+      href: `mailto:${contactEmail}`,
+      isExternal: true,
+      type: 'link',
+    })
+  }
 
   return (
     <div className={styles['callout']}>

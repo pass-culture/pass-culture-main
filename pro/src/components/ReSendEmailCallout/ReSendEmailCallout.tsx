@@ -1,7 +1,7 @@
 import { useNotification } from '@/commons/hooks/useNotification'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 
 import styles from './ReSendEmailCallout.module.scss'
 
@@ -27,26 +27,29 @@ export const ReSendEmailCallout = ({
   }
 
   return (
-    <Callout>
-      <p className={styles['re-send-callout']}>
-        Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams
-        {hideLink ? (
-          '.'
-        ) : (
-          <>
-            {' '}
-            ou{' '}
-            <Button
-              variant={ButtonVariant.QUATERNARY}
-              className={styles['re-send-callout-button']}
-              onClick={onClick}
-            >
-              cliquez ici
-            </Button>{' '}
-            pour le recevoir à nouveau.
-          </>
-        )}
-      </p>
-    </Callout>
+    <Banner
+      title=""
+      description={
+        <p className={styles['re-send-callout']}>
+          Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams
+          {hideLink ? (
+            '.'
+          ) : (
+            <>
+              {' '}
+              ou{' '}
+              <Button
+                variant={ButtonVariant.QUATERNARY}
+                className={styles['re-send-callout-button']}
+                onClick={onClick}
+              >
+                cliquez ici
+              </Button>{' '}
+              pour le recevoir à nouveau.
+            </>
+          )}
+        </p>
+      }
+    />
   )
 }

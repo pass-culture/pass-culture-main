@@ -5,10 +5,10 @@ import type {
   GetVenueResponseModel,
 } from '@/apiClient/v1'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { Callout } from '@/ui-kit/Callout/Callout'
+import { Banner } from '@/design-system/Banner/Banner'
+import fullNextIcon from '@/icons/full-next.svg'
 
 import { PricingPoint } from '../PricingPoint/PricingPoint'
-
 export interface ReimbursementFieldsProps {
   offerer: GetOffererResponseModel
   scrollToSection?: boolean
@@ -38,17 +38,18 @@ export const ReimbursementFields = ({
     <div ref={scrollToReimbursementSection} id={reimbursementSection}>
       <FormLayout.Section title="Barème de remboursement">
         {!venue.siret && !offererHaveVenueWithSiret ? (
-          <Callout
-            links={[
+          <Banner
+            title=""
+            actions={[
               {
                 href: `/inscription/structure/recherche`,
                 label: 'Créer une structure avec SIRET',
+                icon: fullNextIcon,
+                type: 'link',
               },
             ]}
-          >
-            Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous
-            devez avoir, au minimum, une structure rattachée à un SIRET.
-          </Callout>
+            description="Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous devez avoir, au minimum, une structure rattachée à un SIRET."
+          />
         ) : (
           <PricingPoint offerer={offerer} venue={venue} />
         )}

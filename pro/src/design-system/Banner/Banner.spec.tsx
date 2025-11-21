@@ -11,7 +11,7 @@ const renderBanner = (props: BannerProps) => {
   return renderWithProviders(<Banner {...props} />)
 }
 
-const props = {
+const props: BannerProps = {
   title: 'Titre important très long très long très long très long très',
   description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   actions: [

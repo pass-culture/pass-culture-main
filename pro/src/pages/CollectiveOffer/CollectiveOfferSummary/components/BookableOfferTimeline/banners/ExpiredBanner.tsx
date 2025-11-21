@@ -1,6 +1,10 @@
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
-import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import {
+  Banner,
+  type BannerLink,
+  BannerVariants,
+} from '@/design-system/Banner/Banner'
 import fullEditIcon from '@/icons/full-edit.svg'
 
 import { formatDateTime } from '../../CollectiveOfferSummary/components/utils/formatDatetime'
@@ -47,18 +51,16 @@ export const ExpiredBanner = ({
     </>
   )
 
-  const actions = [
-    ...(canEditDates
-      ? [
-          {
-            label: 'Modifier la date limite de réservation',
-            icon: fullEditIcon,
-            href: `/offre/${offerId}/collectif/stocks/edition`,
-            type: 'link',
-          },
-        ]
-      : []),
-  ]
+  const actions: BannerLink[] = canEditDates
+    ? [
+        {
+          label: 'Modifier la date limite de réservation',
+          icon: fullEditIcon,
+          href: `/offre/${offerId}/collectif/stocks/edition`,
+          type: 'link',
+        },
+      ]
+    : []
 
   return (
     <div className={styles['callout']}>

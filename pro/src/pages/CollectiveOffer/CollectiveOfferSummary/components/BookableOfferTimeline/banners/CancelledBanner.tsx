@@ -14,7 +14,11 @@ import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/du
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
-import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import {
+  Banner,
+  type BannerLink,
+  BannerVariants,
+} from '@/design-system/Banner/Banner'
 import fullDuplicateIcon from '@/icons/full-duplicate.svg'
 
 import styles from '../BookableOfferTimeline.module.scss'
@@ -61,7 +65,7 @@ export const CancelledBanner = ({
     }
   }, [reason])
 
-  const actions = canDuplicate
+  const actions: BannerLink[] = canDuplicate
     ? [
         {
           label: "Dupliquer l'offre",

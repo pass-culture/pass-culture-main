@@ -9,8 +9,8 @@ import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './OffererAuthentication.module.scss'
@@ -75,24 +75,29 @@ export const OffererAuthentication = (): JSX.Element => {
           </h2>
           <FormLayout.MandatoryInfo />
           {!offerer?.isDiffusible && (
-            <Callout
-              className={styles['warning-callout']}
-              variant={CalloutVariant.WARNING}
-              title="Certaines informations de votre structure ne sont pas diffusibles."
-              links={[
-                {
-                  href: 'https://annuaire-entreprises.data.gouv.fr/faq/entreprise-non-diffusible',
-                  label: 'En savoir plus',
-                  isExternal: true,
-                },
-              ]}
-            >
-              <p className={styles['warning-callout-text']}>
-                Pour créer votre structure au sein du Pass Culture, vous devez
-                communiquer un nom public. Aucune information protégée ne sera
-                diffusée.
-              </p>
-            </Callout>
+            <div className={styles['warning-callout']}>
+              <Banner
+                variant={BannerVariants.WARNING}
+                title="Certaines informations de votre structure ne sont pas diffusibles."
+                description={
+                  <p className={styles['warning-callout-text']}>
+                    Pour créer votre structure au sein du Pass Culture, vous
+                    devez communiquer un nom public. Aucune information protégée
+                    ne sera diffusée.
+                  </p>
+                }
+                actions={[
+                  {
+                    href: 'https://annuaire-entreprises.data.gouv.fr/faq/entreprise-non-diffusible',
+                    label: 'En savoir plus',
+                    isExternal: true,
+                    icon: fullLinkIcon,
+                    iconAlt: 'Nouvelle fenêtre',
+                    type: 'link',
+                  },
+                ]}
+              />
+            </div>
           )}
           <OffererAuthenticationForm />
           <ActionBar

@@ -26,10 +26,11 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Banner } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -123,21 +124,23 @@ export const OfferEducationalStock = <
               </BannerPublicApi>
             )}
             <FormLayout.MandatoryInfo />
-            <Callout
-              className={styles['offer-educational-stock-banner']}
-              links={[
-                {
-                  href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
-                  label:
-                    'Consultez l’article “Comment modifier ou annuler une offre collective pré-réservée”',
-                  isExternal: true,
-                },
-              ]}
-            >
-              Vous pouvez modifier ces informations en fonction de vos échanges
-              avec l’établissement scolaire tant que le chef d’établissement n’a
-              pas validé la réservation.
-            </Callout>
+            <div className={styles['offer-educational-stock-banner']}>
+              <Banner
+                title=""
+                actions={[
+                  {
+                    href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
+                    label:
+                      'Consultez l’article “Comment modifier ou annuler une offre collective pré-réservée”',
+                    isExternal: true,
+                    type: 'link',
+                    icon: fullLinkIcon,
+                    iconAlt: 'Nouvelle fenêtre',
+                  },
+                ]}
+                description="Vous pouvez modifier ces informations en fonction de vos échanges avec l’établissement scolaire tant que le chef d’établissement n’a pas validé la réservation."
+              />
+            </div>
             <FormLayout.Section title="Indiquez le prix et la date de votre offre">
               <p className={styles['description-text']}>
                 Indiquez le prix total TTC de l’évènement et le nombre de

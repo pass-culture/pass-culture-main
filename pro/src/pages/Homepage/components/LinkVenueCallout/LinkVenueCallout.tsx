@@ -3,8 +3,7 @@ import { useLocation } from 'react-router'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
 import styles from '../../Homepage.module.scss'
 
@@ -29,11 +28,13 @@ export const LinkVenueCallout = ({
 
   return (
     <div className={styles['reimbursements-banner']}>
-      <Callout
-        links={[
+      <Banner
+        title=""
+        actions={[
           {
             href: `/remboursements/informations-bancaires?structure=${offerer.id}`,
             label: 'Gérer le rattachement de mes structures',
+            type: 'link',
             onClick: () => {
               logEvent(BankAccountEvents.CLICKED_ADD_VENUE_TO_BANK_ACCOUNT, {
                 from: location.pathname,
@@ -42,14 +43,13 @@ export const LinkVenueCallout = ({
             },
           },
         ]}
-        variant={CalloutVariant.ERROR}
-      >
-        Dernière étape pour vous faire rembourser : rattachez
-        {offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
-          ? ' vos structures '
-          : ' votre structure '}
-        à un compte bancaire
-      </Callout>
+        variant={BannerVariants.ERROR}
+        description={`Dernière étape pour vous faire rembourser : rattachez ${
+          offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
+            ? ' vos structures '
+            : ' votre structure '
+        } à un compte bancaire`}
+      ></Banner>
     </div>
   )
 }
