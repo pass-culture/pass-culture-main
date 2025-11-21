@@ -4209,14 +4209,6 @@ jake@^10.8.5:
     filelist "^1.0.4"
     minimatch "^3.1.2"
 
-jest-canvas-mock@~2.5.2:
-  version "2.5.2"
-  resolved "https://registry.yarnpkg.com/jest-canvas-mock/-/jest-canvas-mock-2.5.2.tgz#7e21ebd75e05ab41c890497f6ba8a77f915d2ad6"
-  integrity sha512-vgnpPupjOL6+L5oJXzxTxFrlGEIbHdZqFU+LFNdtLxZ3lRDCl17FlTMM7IatoRQkrcyOTMlDinjUguqmQ6bR2A==
-  dependencies:
-    cssfontparser "^1.2.1"
-    moo-color "^1.0.2"
-
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -4606,7 +4598,7 @@ mkdirp@0.3.0:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.3.0.tgz#1bbf5ab1ba827af23575143490426455f481fe1e"
   integrity sha512-OHsdUcVAQ6pOtg5JYWpCBo9W/GySVuwvP9hueRMW7UqshC0tbfzLv8wjySTPm3tfUZ/21CE9E1pJagOA91Pxew==
 
-moo-color@^1.0.2:
+moo-color@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/moo-color/-/moo-color-1.0.3.tgz#d56435f8359c8284d83ac58016df7427febece74"
   integrity sha512-i/+ZKXMDf6aqYtBhuOcej71YSlbjT3wCO/4H1j8rPvxDJEifdwgg5MaFyu6iYAT8GBZJg2z0dkgK4YMzvURALQ==
@@ -6216,12 +6208,13 @@ vitest-axe@0.1.0:
     lodash-es "^4.17.21"
     redent "^3.0.0"
 
-vitest-canvas-mock@0.3.3:
-  version "0.3.3"
-  resolved "https://registry.yarnpkg.com/vitest-canvas-mock/-/vitest-canvas-mock-0.3.3.tgz#97e3b5f53003c5cbb9540204ff3122cd25be4dcd"
-  integrity sha512-3P968tYBpqYyzzOaVtqnmYjqbe13576/fkjbDEJSfQAkHtC5/UjuRHOhFEN/ZV5HVZIkaROBUWgazDKJ+Ibw+Q==
+vitest-canvas-mock@1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/vitest-canvas-mock/-/vitest-canvas-mock-1.1.2.tgz#0951d44429dc6a08db96cc0e2963bc73b1f4d17a"
+  integrity sha512-cFPhB0CZDrpdp0ZnlvnFCuq8iKRct/RswWbhqNa2HchlKfwN6FAurLwfKWIdBrYAxIzcwIgME0Ytp/VRkV2APg==
   dependencies:
-    jest-canvas-mock "~2.5.2"
+    cssfontparser "^1.2.1"
+    moo-color "^1.0.3"
 
 vitest-fail-on-console@0.10.1:
   version "0.10.1"
