@@ -20,7 +20,7 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { OfferTypeScreen } from '../OfferType'
+import { OfferTypeScreen } from './OfferType'
 
 const mockLogEvent = vi.fn()
 
@@ -45,10 +45,7 @@ const renderOfferTypes = (
 ) => {
   renderWithProviders(
     <Routes>
-      <Route
-        path="/creation"
-        element={<OfferTypeScreen collectiveOnly={false} />}
-      />
+      <Route path="/creation" element={<OfferTypeScreen />} />
       <Route
         path="/offre/creation/collectif"
         element={<div>Création collectif</div>}
@@ -109,14 +106,22 @@ describe('OfferType', () => {
     }))
   })
 
-  it('should render the component with button', async () => {
+  it('should render the component with button', () => {
     renderOfferTypes()
 
     expect(
-      screen.getByRole('radio', { name: 'Au grand public' })
+      screen.getByRole('radio', { name: /Une offre réservable/ })
     ).toBeInTheDocument()
     expect(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
+      screen.getByRole('radio', { name: /Une offre vitrine/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', { name: /Créer une nouvelle offre/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('radio', {
+        name: /Dupliquer les informations d’une offre vitrine/,
+      })
     ).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: 'Annuler et quitter' })
@@ -124,21 +129,16 @@ describe('OfferType', () => {
     expect(
       screen.getByRole('button', { name: 'Étape suivante' })
     ).toBeInTheDocument()
-
-    // Loads individual offer buttons by default
-    expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
   })
 
   it('should select collective offer', async () => {
     renderOfferTypes()
 
     expect(
-      await screen.findByRole('heading', { name: 'Votre offre est' })
+      await screen.findByRole('heading', {
+        name: 'Quel est le type de l’offre ?',
+      })
     ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
 
     await userEvent.click(
       await screen.findByRole('radio', {
@@ -156,12 +156,10 @@ describe('OfferType', () => {
     renderOfferTypes()
 
     expect(
-      await screen.findByRole('heading', { name: 'Votre offre est' })
+      await screen.findByRole('heading', {
+        name: 'Quel est le type de l’offre ?',
+      })
     ).toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
 
     await userEvent.click(
       await screen.findByRole('radio', {
@@ -195,36 +193,11 @@ describe('OfferType', () => {
 
     renderOfferTypes('offererId', 'venueId', offerer)
 
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
-
     expect(
       await screen.findByText(
         'Vous avez une demande de référencement en cours de traitement'
       )
     ).toBeInTheDocument()
-  })
-
-  it('should display individual offer choices', async () => {
-    renderOfferTypes()
-
-    expect(await screen.findByText('Un bien physique')).toBeInTheDocument()
-    expect(screen.getByText('Un bien numérique')).toBeInTheDocument()
-    expect(screen.getByText('Un évènement physique daté')).toBeInTheDocument()
-    expect(screen.getByText('Un évènement numérique daté')).toBeInTheDocument()
-  })
-
-  it('should select and redirect fine case : %s', async () => {
-    renderOfferTypes()
-
-    await userEvent.click(await screen.findByText('Un bien physique'))
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Étape suivante' })
-    )
-
-    expect(screen.getByText('Création individuel')).toBeInTheDocument()
   })
 
   it('should select duplicate template offer', async () => {
@@ -234,10 +207,6 @@ describe('OfferType', () => {
     )
 
     renderOfferTypes()
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
 
     await userEvent.click(
       await screen.findByRole('radio', {
@@ -291,10 +260,6 @@ describe('OfferType', () => {
     renderOfferTypes()
 
     await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
-
-    await userEvent.click(
       await screen.findByRole('radio', {
         name: 'Une offre réservable Cette offre a une date et un prix. Elle doit être associée à un établissement scolaire avec lequel vous avez préalablement échangé.',
       })
@@ -337,16 +302,6 @@ describe('OfferType', () => {
     renderOfferTypes('123', 'venueId', offerer)
 
     expect(
-      screen.queryByText(
-        'Votre structure est en cours de validation par les équipes pass Culture.'
-      )
-    ).not.toBeInTheDocument()
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
-
-    expect(
       await screen.findByText(
         'Votre structure est en cours de validation par les équipes pass Culture.'
       )
@@ -360,10 +315,6 @@ describe('OfferType', () => {
     }
 
     renderOfferTypes('123', 'venueId', offerer)
-
-    await userEvent.click(
-      screen.getByRole('radio', { name: 'À un groupe scolaire' })
-    )
 
     expect(
       await screen.findByText('Faire une demande de référencement')

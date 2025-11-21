@@ -21,7 +21,6 @@ import {
   defaultGetOffererResponseModel,
   listOffersOfferFactory,
   makeVenueListItem,
-  venueListItemFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 import {
@@ -42,14 +41,14 @@ const categoriesAndSubcategories = {
 }
 
 const proVenues = [
-  venueListItemFactory({
+  makeVenueListItem({
     id: 1,
     name: 'Ma venue',
     offererName: 'Mon offerer',
     publicName: null,
     isVirtual: false,
   }),
-  venueListItemFactory({
+  makeVenueListItem({
     id: 2,
     name: 'Ma venue virtuelle',
     offererName: 'Mon offerer',
@@ -999,10 +998,8 @@ describe('IndividualOffers', () => {
     expect(bannerTitle).toBeInTheDocument()
   })
 
-  it('should have a create offer button that skips the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is enabled', async () => {
-    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS, [
-      'WIP_ENABLE_NEW_OFFER_CREATION_FLOW',
-    ])
+  it('should have a create offer button that skips the offer type selection', async () => {
+    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
 
     expect(
       screen.getByRole('link', { name: 'Créer une offre' })
@@ -1010,13 +1007,5 @@ describe('IndividualOffers', () => {
       'href',
       '/offre/individuelle/creation/description?from_banner=banner_video'
     )
-  })
-
-  it('should have a create offer button that redirects to the offer type selection when the FF WIP_ENABLE_NEW_OFFER_CREATION_FLOW is disabled', async () => {
-    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
-
-    expect(
-      screen.getAllByRole('link', { name: 'Créer une offre' })[1]
-    ).toHaveAttribute('href', '/offre/creation?from_banner=banner_video')
   })
 })

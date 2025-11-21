@@ -14,7 +14,6 @@ import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
@@ -57,10 +56,6 @@ export const IndividualOffersContainer = ({
   const [selectedOfferIds, setSelectedOfferIds] = useState<
     Set<string | number>
   >(new Set())
-
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
 
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
@@ -136,8 +131,7 @@ export const IndividualOffersContainer = ({
 
   const columns = getIndividualOfferColumns(
     headlineOffer,
-    isHeadlineOfferAllowedForOfferer,
-    isNewOfferCreationFlowFFEnabled
+    isHeadlineOfferAllowedForOfferer
   )
 
   return (

@@ -1,13 +1,16 @@
-import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
+import {
+  DEFAULT_AXE_CONFIG,
+  DEFAULT_AXE_RULES,
+  MOCKED_BACK_ADDRESS_LABEL,
+} from '../support/constants.ts'
 import {
   expectOffersOrBookingsAreFound,
+  interceptSearch5Adresses,
   sessionLogInAndGoToPage,
 } from '../support/helpers.ts'
 
-describe('Create individual offers', () => {
+describe('Create individual offers new flow', () => {
   let login: string
-  let venueName: string
-  const stock = '42'
 
   before(() => {
     cy.visit('/connexion')
@@ -16,21 +19,18 @@ describe('Create individual offers', () => {
       'http://localhost:5001/sandboxes/pro/create_regular_pro_user_already_onboarded',
       (response) => {
         login = response.body.user.email
-        venueName = response.body.venueName
-        cy.setFeatureFlags([
-          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: false },
-        ])
       }
     )
   })
-
   beforeEach(() => {
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
+    cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as(
+      'patchNonEventStocks'
+    )
     cy.intercept({ method: 'POST', url: '/stocks/bulk' }).as('postEventStocks')
-    cy.intercept({ method: 'POST', url: '/stocks' }).as('postProductStock')
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.intercept({ method: 'GET', url: '/offerers/names' }).as(
       'getOfferersNames'
@@ -41,24 +41,18 @@ describe('Create individual offers', () => {
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
+    interceptSearch5Adresses()
 
-    sessionLogInAndGoToPage('Create inididual offer', login, '/offre/creation')
+    sessionLogInAndGoToPage(
+      'create individual offer new flow',
+      login,
+      '/offre/individuelle/creation/description'
+    )
   })
 
-  it('I should be able to create an individual offer (event)', () => {
-    cy.stepLog({
-      message: 'I want to create "Un évènement physique daté" offer',
-    })
-
-    cy.findByText('Au grand public').click()
-    cy.findByText('Un évènement physique daté').click()
-
-    cy.injectAxe(DEFAULT_AXE_CONFIG)
-    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-
-    cy.findByText('Étape suivante').click()
-
-    cy.stepLog({ message: 'I fill in event details' })
+  it('I should be able to create an individual show offer', () => {
+    //  DESCRIPTION STEP
+    cy.stepLog({ message: 'I fill in the description' })
 
     cy.findByLabelText(/Titre de l’offre/).type('Le Diner de Devs')
     cy.findByLabelText('Description').type(
@@ -69,29 +63,30 @@ describe('Create individual offers', () => {
     cy.findByLabelText(/Type de spectacle/).select('Théâtre')
     cy.findByLabelText(/Sous-type/).select('Comédie')
 
+    cy.findByLabelText(/Non accessible/).check()
+
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
-    cy.stepLog({ message: 'I validate event details step' })
+    cy.stepLog({ message: 'I validate the description step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@postDraftOffer'])
 
-    cy.stepLog({ message: 'I fill in event useful informations' })
+    //  LOCATION STEP
+    cy.findByRole('heading', { name: 'Où profiter de l’offre ?' })
 
-    cy.findByText('Retrait sur place (guichet, comptoir...)').click()
-    cy.findByLabelText(/Email de contact communiqué aux bénéficiaires/).type(
-      'passculture@example.com'
+    cy.findByLabelText('À une autre adresse').click()
+    cy.findByLabelText('Intitulé de la localisation').type(
+      'Libellé de mon adresse'
     )
-
-    cy.injectAxe(DEFAULT_AXE_CONFIG)
-    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
-
-    cy.stepLog({ message: 'I validate event useful informations step' })
+    cy.findByLabelText(/Adresse postale/).type(MOCKED_BACK_ADDRESS_LABEL)
+    cy.wait('@search5Address').its('response.statusCode').should('eq', 200)
+    cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
+    cy.stepLog({ message: 'I validate the location step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'])
 
-    cy.stepLog({ message: 'I fill in media' })
-
+    //  MEDIA STEP
     cy.findByLabelText('Importez une image').selectFile(
       'cypress/data/librairie.jpeg',
       {
@@ -116,43 +111,23 @@ describe('Create individual offers', () => {
         .and('eq', 705)
     })
 
-    cy.findByText('Ajouter une URL Youtube').click()
-    cy.findByLabelText('Lien URL Youtube').type(
-      'https://www.youtube.com/watch?v=0R5PZxOgoz8'
-    )
-    cy.findByText('Ajouter').click()
-
     cy.injectAxe(DEFAULT_AXE_CONFIG)
-    cy.checkA11y(
-      undefined,
-      {
-        ...DEFAULT_AXE_RULES,
-        rules: {
-          ...DEFAULT_AXE_RULES?.rules,
-          'label-title-only': { enabled: false },
-        },
-      },
-      cy.a11yLog
-    )
-
-    cy.stepLog({ message: 'I validate media step' })
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+    cy.stepLog({ message: 'I validate the media step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait('@getOffer')
 
-    cy.stepLog({ message: 'I fill in prices' })
+    //  PRICE CATEGORIES STEP
     cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
     cy.findByText('Ajouter un tarif').click()
     cy.findByText('Ajouter un tarif').click()
 
+    cy.findAllByLabelText('Intitulé du tarif').eq(0).clear()
     cy.findAllByLabelText('Intitulé du tarif').eq(0).type('Carré Or')
-    cy.findAllByLabelText(/Prix par personne/)
-      .eq(0)
-      .type('100')
+    cy.findAllByLabelText(/Prix/).eq(0).type('100')
 
     cy.findAllByLabelText('Intitulé du tarif').eq(1).type('Fosse Debout')
-    cy.findAllByLabelText(/Prix par personne/)
-      .eq(1)
-      .type('10')
+    cy.findAllByLabelText(/Prix/).eq(1).type('10')
 
     cy.findAllByLabelText('Intitulé du tarif').eq(2).type('Fosse Sceptique')
     cy.findAllByRole('checkbox', { name: 'Gratuit' }).eq(2).click()
@@ -161,13 +136,11 @@ describe('Create individual offers', () => {
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
 
-    cy.stepLog({ message: 'I validate prices step' })
+    cy.stepLog({ message: 'I validate the price categories step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@patchOffer', '@getStocks'], {
-      responseTimeout: 60 * 1000 * 3,
-    })
 
-    cy.stepLog({ message: 'I fill in recurrence' })
+    //  RECURRENCE FORM DIALOG
+    cy.stepLog({ message: 'I fill in the recurrence form' })
     cy.findByRole('button', { name: 'Définir le calendrier' }).click()
 
     cy.findByText('Toutes les semaines').click()
@@ -183,59 +156,61 @@ describe('Create individual offers', () => {
     cy.findByText('Ajouter d’autres places et tarifs').click()
 
     cy.findByTestId('wrapper-quantityPerPriceCategories.0').within(() => {
-      // trouve la première liste déroulante avec le label:
       cy.findByLabelText(/Tarif/).select('0,00\xa0€ - Fosse Sceptique')
     })
 
     cy.findAllByLabelText('Nombre de places').eq(0).type('100')
 
     cy.findByTestId('wrapper-quantityPerPriceCategories.1').within(() => {
-      // trouve la euxième liste déroulante avec le label:
       cy.findByLabelText(/Tarif/).select('10,00\xa0€ - Fosse Debout')
     })
 
     cy.findAllByLabelText('Nombre de places').eq(1).type('20')
 
     cy.findByTestId('wrapper-quantityPerPriceCategories.2').within(() => {
-      // trouve la troisième liste déroulante avec le label:
       cy.findByLabelText(/Tarif/).select('100,00\xa0€ - Carré Or')
     })
 
-    // manque un data-testid ou un placeholder ou un label accessible
-    cy.get('[name="bookingLimitDateInterval"]').type('3')
+    cy.findByLabelText('Nombre de jours avant le début de l’évènement').type(
+      '3'
+    )
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
-    // FIX ME: day selector has no visible label
-    cy.checkA11y(
-      undefined,
-      {
-        ...DEFAULT_AXE_RULES,
-        rules: {
-          ...DEFAULT_AXE_RULES?.rules,
-          'label-title-only': { enabled: false },
-        },
-      },
-      cy.a11yLog
-    )
-    cy.stepLog({ message: 'I validate recurrence step' })
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+    cy.stepLog({ message: 'I validate the recurrence step' })
     cy.findByText('Valider').click()
     cy.wait(['@postEventStocks', '@getStocks'])
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByText('Enregistrer et continuer').click()
-    cy.contains('Accepter les réservations "Duo" : Oui')
 
+    //  USEFUL INFORMATIONS STEP
+    cy.stepLog({ message: 'I fill in the useful informations' })
+    cy.findByText('Retrait sur place (guichet, comptoir...)').click()
+    cy.findByLabelText(/Email de contact communiqué aux bénéficiaires/).type(
+      'passculture@example.com'
+    )
+
+    cy.injectAxe(DEFAULT_AXE_CONFIG)
+    cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
+    cy.stepLog({ message: 'I validate the useful information step' })
+    cy.findByText('Enregistrer et continuer').click()
+
+    //  SUMMARY STEP
     cy.stepLog({ message: 'I publish my offer' })
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByText('Publier l’offre').click()
+
+    //  CONFIRMATION STEP
     cy.findByText('Plus tard').click()
     cy.wait(['@publishOffer', '@getOffer'], {
       requestTimeout: 60000 * 2,
       responseTimeout: 60000 * 2,
     })
 
+    //  OFFERS LIST
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.wait(['@getOffer', '@getCategories'], {
@@ -246,21 +221,16 @@ describe('Create individual offers', () => {
     cy.stepLog({ message: 'my new offer should be displayed' })
     cy.url().should('contain', '/offres')
     cy.contains('Le Diner de Devs')
+    cy.contains('Libellé de mon adresse - 3 RUE DE VALOIS 75008 Paris')
     cy.contains('396 dates')
   })
 
-  it('I should be able to create an individual offer (thing)', () => {
-    cy.visit('/offre/creation')
+  it('I should be able to create a physical book individual offer', () => {
     const offerTitle = 'H2G2 Le Guide du voyageur galactique'
     const offerDesc =
       'Une quête pour obtenir la question ultime sur la vie, l’univers et tout le reste.'
 
-    cy.stepLog({ message: 'I want to create "Un bien physique" offer' })
-    cy.findByText('Au grand public').click()
-    cy.findByText('Un bien physique').click()
-    cy.findByText('Étape suivante').click()
-
-    cy.stepLog({ message: 'I fill in details for physical offer' })
+    //  DESCRIPTION STEP
     cy.findByLabelText(/Titre de l’offre/).type(offerTitle)
     cy.findByLabelText('Description').type(offerDesc)
 
@@ -271,36 +241,46 @@ describe('Create individual offers', () => {
     cy.wrap(ean).as('ean')
     cy.findByLabelText(/Catégorie/).select('Livre')
     cy.findByLabelText(/Sous-catégorie/).select('Livre papier')
+    cy.findByLabelText(/Non accessible/).check()
     cy.findByLabelText('Auteur').type('Douglas Adams')
     cy.findByLabelText('EAN-13 (European Article Numbering)').type(ean)
 
-    cy.stepLog({ message: 'the details of offer should be correct' })
     cy.findByLabelText(/Titre de l’offre/).should('have.value', offerTitle)
     cy.findByLabelText('Description').should('have.text', offerDesc)
 
-    cy.stepLog({ message: 'I validate offer details step' })
+    cy.stepLog({ message: 'I validate the description step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@postDraftOffer'])
 
-    cy.stepLog({ message: 'I fill in useful informations for physical offer' })
-    cy.findByLabelText('Informations de retrait').type(
-      'Seuls les dauphins et les souris peuvent le lire.'
+    //  LOCATION STEP
+    cy.findByRole('heading', { name: 'Où profiter de l’offre ?' }).should(
+      'exist'
     )
-    cy.findByText('Non accessible').click()
-    cy.findByText('Psychique ou cognitif').click()
-    cy.findByText('Moteur').click()
-    cy.findByText('Auditif').click()
+    cy.findByLabelText('À une autre adresse').click()
+    cy.findByText('Vous ne trouvez pas votre adresse ?').click()
+    cy.findByLabelText('Intitulé de la localisation').type(
+      'Libellé de mon adresse custom'
+    )
+    cy.findAllByLabelText(/Adresse postale/)
+      .last()
+      .type('Place de la gare')
+    cy.findAllByLabelText(/Code postal/).type('123123')
+    cy.findAllByLabelText(/Ville/).type('Y')
+    // eslint-disable-next-line cypress/unsafe-to-chain-command
+    cy.findAllByLabelText(/Coordonnées GPS/)
+      .type('48.853320, 2.348979')
+      .blur()
+    cy.findByText('Vérifiez la localisation en cliquant ici').should(
+      'be.visible'
+    )
 
-    cy.findByText('Être notifié par email des réservations').click()
-
-    cy.stepLog({ message: 'I validate offer useful informations step' })
+    cy.stepLog({ message: 'I validate offer localisation step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait(['@getOffer', '@patchOffer'], {
       responseTimeout: 60 * 1000 * 2,
     })
 
-    cy.stepLog({ message: 'I fill in media' })
-
+    //  MEDIA STEP
     cy.findByLabelText('Importez une image').selectFile(
       'cypress/data/librairie.jpeg',
       {
@@ -314,30 +294,36 @@ describe('Create individual offers', () => {
     cy.get('input[type=range]').setSliderValue(1.7)
     cy.findByText('Importer').click()
 
-    cy.findByText('Ajouter une URL Youtube').click()
-    cy.findByLabelText('Lien URL Youtube').type(
-      'https://www.youtube.com/watch?v=0R5PZxOgoz8'
-    )
-    cy.findByText('Ajouter').click()
-
     cy.stepLog({ message: 'I validate media step' })
     cy.findByText('Enregistrer et continuer').click()
     cy.wait('@getOffer')
 
     cy.url().should('contain', '/creation/media')
     cy.findByText('Enregistrer et continuer').click()
+    cy.wait(['@getStocks'], {
+      responseTimeout: 60 * 1000 * 2,
+    })
 
-    cy.stepLog({ message: 'I fill in stocks' })
+    //  STOCKS STEP
     cy.findByLabelText(/Prix/).type('42')
-    cy.get('[data-testid="bookingLimitDatetime"').type('2042-05-03')
-    cy.findByLabelText(/Quantité/).type(stock)
+    cy.findByLabelText('Date limite de réservation').type('2042-05-03')
+    cy.findByLabelText(/Stock/).type('42')
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@patchOffer', '@postProductStock', '@getOffer'], {
+    cy.wait(['@patchOffer', '@patchNonEventStocks', '@getOffer'], {
       responseTimeout: 30 * 1000,
     })
 
+    //  USEFUL INFORMATIONS STEP
+    cy.findByLabelText('Informations complémentaires').type(
+      'Seuls les dauphins et les souris peuvent le lire.'
+    )
+    cy.findByText('Être notifié par email des réservations').click()
+    cy.stepLog({ message: 'I validate useful information step' })
+    cy.findByText('Enregistrer et continuer').click()
+
+    //  SUMMARY STEP
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
 
@@ -345,6 +331,7 @@ describe('Create individual offers', () => {
       requestTimeout: 60000 * 2,
       responseTimeout: 60000 * 2,
     })
+
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.url().should('contain', '/offres')
@@ -353,10 +340,17 @@ describe('Create individual offers', () => {
       responseTimeout: 60 * 1000 * 3,
     })
 
-    cy.stepLog({ message: 'my new physical offer should be displayed' })
+    //  OFFERS LIST
+    cy.stepLog({ message: 'my new offer should be displayed' })
     const expectedNewResults = [
       ['', "Nom de l'offre", 'Lieu', 'Stocks', 'Statut', ''],
-      ['', offerTitle, venueName, stock, 'publiée'],
+      [
+        '',
+        offerTitle,
+        'Libellé de mon adresse custom - Place de la gare 12312 Y',
+        '42',
+        'publiée',
+      ],
       [],
     ]
 

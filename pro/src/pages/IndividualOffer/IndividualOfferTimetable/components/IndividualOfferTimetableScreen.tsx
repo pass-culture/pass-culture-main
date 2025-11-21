@@ -52,10 +52,6 @@ export function IndividualOfferTimetableScreen({
   openingHours,
   venue,
 }: IndividualOfferTimetableScreenProps) {
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
-
   const isOhoFFEnabled = useActiveFeature('WIP_ENABLE_OHO')
 
   const notify = useNotification()
@@ -74,7 +70,6 @@ export function IndividualOfferTimetableScreen({
   })
 
   const isOfferTimetableTypeEditable =
-    isNewOfferCreationFlowFFEnabled &&
     isOhoFFEnabled &&
     offer.isEvent &&
     !DISABLED_OPENING_HOURS_SUBCATEGORIES.includes(offer.subcategoryId) &&
@@ -110,9 +105,7 @@ export function IndividualOfferTimetableScreen({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: isNewOfferCreationFlowFFEnabled
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })

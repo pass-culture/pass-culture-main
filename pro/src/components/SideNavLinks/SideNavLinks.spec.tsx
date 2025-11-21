@@ -369,31 +369,24 @@ describe('SideNavLinks', () => {
     ).toBeInTheDocument()
   })
 
-  describe('with WIP_ENABLE_NEW_OFFER_CREATION_FLOW feature flag', () => {
-    const features = ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW']
-
-    it('should show a create offer dropdown button with individual and collective choices', async () => {
-      renderSideNavLinks({
-        storeOverrides: {
-          offerer: {
-            currentOfferer: {
-              ...defaultGetOffererResponseModel,
-              isValidated: true,
-            },
+  it('should show a create offer dropdown button with individual and collective choices', async () => {
+    renderSideNavLinks({
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+            isValidated: true,
           },
         },
-        features,
-      })
-
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Créer une offre' })
-      )
-
-      expect(screen.getByRole('menuitem', { name: 'Pour le grand public' }))
-      expect(
-        screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' })
-      )
+      },
     })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Créer une offre' })
+    )
+
+    expect(screen.getByRole('menuitem', { name: 'Pour le grand public' }))
+    expect(screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' }))
   })
 
   describe('with WIP_SWITCH_VENUE feature flag', () => {

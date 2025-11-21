@@ -20,10 +20,6 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
       'GET',
       'http://localhost:5001/sandboxes/pro/create_new_pro_user',
       (response) => {
-        cy.setFeatureFlags([
-          { name: 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', isActive: false },
-        ])
-
         login = response.body.user.email
       }
     )

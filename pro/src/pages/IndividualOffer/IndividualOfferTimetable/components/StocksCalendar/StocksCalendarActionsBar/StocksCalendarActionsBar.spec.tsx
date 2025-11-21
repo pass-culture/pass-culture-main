@@ -51,6 +51,27 @@ describe('StocksCalendarActionsBar', () => {
     ).toBeInTheDocument()
   })
 
+  it('should trigger the navigation to the form previous and next steps when editing the offer', async () => {
+    renderStocksCalendarActionsBar({
+      hasStocks: true,
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Annuler et quitter' })
+    )
+    expect(mockNavigate).toHaveBeenLastCalledWith(
+      '/offre/individuelle/1/horaires'
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+    expect(mockNavigate).toHaveBeenLastCalledWith(
+      '/offre/individuelle/1/edition/informations_pratiques'
+    )
+  })
+
   it('should trigger the navigation to the form previous and next steps when creating the offer', async () => {
     renderStocksCalendarActionsBar({
       hasStocks: true,
@@ -67,27 +88,8 @@ describe('StocksCalendarActionsBar', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
     expect(mockNavigate).toHaveBeenLastCalledWith(
-      '/offre/individuelle/1/creation/recapitulatif'
+      '/offre/individuelle/1/creation/informations_pratiques'
     )
-  })
-
-  it('should trigger the navigation to the form previous and next steps when editing the offer', async () => {
-    renderStocksCalendarActionsBar({
-      hasStocks: true,
-      mode: OFFER_WIZARD_MODE.EDITION,
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Annuler et quitter' })
-    )
-    expect(mockNavigate).toHaveBeenLastCalledWith(
-      '/offre/individuelle/1/stocks'
-    )
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Enregistrer les modifications' })
-    )
-    expect(mockNavigate).toHaveBeenLastCalledWith('')
   })
 
   it('should show an error message when going to the next step without having added any stock', async () => {

@@ -18,14 +18,9 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
 
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
-
   const isOhoFFEnabled = useActiveFeature('WIP_ENABLE_OHO')
 
-  const shouldFetchOpeningHoursAndVenue =
-    isNewOfferCreationFlowFFEnabled && isOhoFFEnabled
+  const shouldFetchOpeningHoursAndVenue = isOhoFFEnabled
 
   const {
     isLoading: isOpeningHoursLoading,

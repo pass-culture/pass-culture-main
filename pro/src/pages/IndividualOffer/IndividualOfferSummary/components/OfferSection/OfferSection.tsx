@@ -9,7 +9,6 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { getDelayToFrenchText } from '@/commons/utils/date'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
@@ -36,10 +35,6 @@ export const OfferSection = ({
   const { categories, subCategories } = useIndividualOfferContext()
 
   const { musicTypes } = useMusicTypes()
-
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
 
   const offerData = serializeOfferSectionData(
     offer,
@@ -77,6 +72,7 @@ export const OfferSection = ({
   )
 
   const artisticInfoDescriptions: Description[] = []
+
   if (conditionalFields.includes('musicType')) {
     artisticInfoDescriptions.push({
       title: 'Genre musical',
@@ -181,24 +177,14 @@ export const OfferSection = ({
   return (
     <>
       <SummarySection
-        title={
-          isNewOfferCreationFlowFeatureActive
-            ? 'Description'
-            : 'Détails de l’offre'
-        }
+        title="Description"
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
-          step: isNewOfferCreationFlowFeatureActive
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}
-        aria-label={
-          isNewOfferCreationFlowFeatureActive
-            ? 'Modifier la description de l’offre'
-            : 'Modifier les détails de l’offre'
-        }
+        aria-label="Modifier la description de l’offre"
         shouldShowDivider
       >
         <SummarySubSection
@@ -220,24 +206,14 @@ export const OfferSection = ({
         )}
       </SummarySection>
       <SummarySection
-        title={
-          isNewOfferCreationFlowFeatureActive
-            ? 'Localisation'
-            : 'Informations pratiques'
-        }
+        title="Localisation"
         editLink={getIndividualOfferUrl({
           offerId: offer.id,
-          step: isNewOfferCreationFlowFeatureActive
-            ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION
-            : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })}
-        aria-label={
-          isNewOfferCreationFlowFeatureActive
-            ? 'Modifier la localisation de l’offre'
-            : 'Modifier les informations pratiques de l’offre'
-        }
+        aria-label="Modifier la localisation de l’offre"
         shouldShowDivider
       >
         {!offer.isDigital && (

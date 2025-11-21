@@ -296,7 +296,7 @@ describe('IndividualOfferMediaScreen', () => {
         })
         await userEvent.click(previousButton)
         expect(mockNavigate).toHaveBeenCalledWith(
-          `/offre/individuelle/${knownOffer.id}/creation/pratiques`
+          `/offre/individuelle/${knownOffer.id}/creation/localisation`
         )
       })
 
@@ -345,7 +345,7 @@ describe('IndividualOfferMediaScreen', () => {
           const label = getSubmitLabel(mode)
           await userEvent.click(screen.getByRole('button', { name: label }))
           expect(mockNavigate).toHaveBeenCalledWith(
-            `/offre/individuelle/${eventOffer.id}/creation/stocks`
+            `/offre/individuelle/${eventOffer.id}/creation/tarifs`
           )
         })
       })

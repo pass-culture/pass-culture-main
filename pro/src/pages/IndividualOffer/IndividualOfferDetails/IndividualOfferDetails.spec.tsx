@@ -33,13 +33,6 @@ vi.mock('@/apiClient/api', () => ({
     getVenues: vi.fn(),
   },
 }))
-vi.mock('./components/IndividualOfferDetailsScreen', () => ({
-  IndividualOfferDetailsScreen: ({ venues }: { venues: unknown[] }) => (
-    <div data-testid="details-screen">
-      Legacy Screen – venues:{venues.length}
-    </div>
-  ),
-}))
 vi.mock('./components/IndividualOfferDetailsScreenNext', () => ({
   IndividualOfferDetailsScreenNext: ({ venues }: { venues: unknown[] }) => (
     <div data-testid="details-screen-next">
@@ -104,49 +97,7 @@ describe('<IndividualOfferDetails />', () => {
     )
   })
 
-  it('should call api.getVenues with managingOfferer id and render legacy screen with venues', async () => {
-    const venuesData = {
-      venues: [makeVenueListItem({ id: 1 }), makeVenueListItem({ id: 2 })],
-    }
-    useSWRMock.mockImplementation(
-      () =>
-        ({
-          isLoading: false,
-          data: venuesData,
-        }) as SWRResponse
-    )
-
-    const offer = getIndividualOfferFactory({
-      venue: makeVenueListItem({
-        id: 5,
-        managingOfferer: makeGetVenueManagingOffererResponseModel({
-          id: 42,
-          allowedOnAdage: true,
-        }),
-        managingOffererId: 42,
-      }),
-    })
-    const contextValues = { offer }
-
-    renderIndividualOfferDetails({ contextValues })
-
-    expect(useSWRMock).toHaveBeenCalledWith(
-      expect.any(Function),
-      expect.any(Function),
-      { fallbackData: { venues: [] } }
-    )
-
-    expect(screen.getByTestId('details-screen')).toHaveTextContent('venues:2')
-
-    // Ensure the SWR fetcher delegates to `api.getVenues `with the computed offerer id
-    const fetcher = useSWRMock.mock.calls[0][1]
-
-    await fetcher!([GET_VENUES_QUERY_KEY, offer.venue.managingOfferer.id])
-
-    expect(api.getVenues).toHaveBeenCalledWith(null, true, 42)
-  })
-
-  it('should render IndividualOfferDetailsScreenNext when FF is active', () => {
+  it('should render IndividualOfferDetailsScreenNext', () => {
     const venuesData = {
       venues: [makeVenueListItem({ id: 2 })],
     }
@@ -160,11 +111,8 @@ describe('<IndividualOfferDetails />', () => {
 
     const offer = getIndividualOfferFactory()
     const contextValues = { offer }
-    const options = {
-      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
-    }
 
-    renderIndividualOfferDetails({ contextValues, options })
+    renderIndividualOfferDetails({ contextValues })
 
     expect(screen.getByTestId('details-screen-next')).toHaveTextContent(
       'venues:1'

@@ -16,7 +16,6 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -60,9 +59,6 @@ export const IndividualOfferSummaryScreen = ({
     useIndividualOfferContext()
   const [searchParams, setSearchParams] = useSearchParams()
   const currentOfferer = useSelector(selectCurrentOfferer)
-  const isNewOfferCreationFlowFeatureActive = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
 
   const onPublish = async (values: EventPublicationFormValues) => {
     const departmentCode = getDepartmentCode(offer)
@@ -155,9 +151,7 @@ export const IndividualOfferSummaryScreen = ({
     navigate(
       getIndividualOfferUrl({
         offerId: offer.id,
-        step: isNewOfferCreationFlowFeatureActive
-          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.PRACTICAL_INFOS,
         mode: OFFER_WIZARD_MODE.CREATION,
         isOnboarding,
       })

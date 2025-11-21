@@ -4,7 +4,8 @@ import { Route, Routes } from 'react-router'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { OfferType } from '@/pages/OfferType/OfferType'
+
+import { OfferType } from './OfferType'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -43,13 +44,6 @@ describe('OfferType', () => {
     await waitFor(() => {
       expect(screen.queryByTestId('lateral-panel')).not.toBeInTheDocument()
     })
-  })
-
-  it('should show a generic title if the url does not contain the collective type', async () => {
-    renderOfferTypes('/')
-    expect(
-      await screen.findByRole('heading', { name: 'Créer une offre' })
-    ).toBeInTheDocument()
   })
 
   it('should show a collective specific title if the url contains the collective type', async () => {

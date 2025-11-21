@@ -6,26 +6,24 @@ import { OnboardingLayout } from '@/app/App/layouts/funnels/OnboardingLayout/Onb
 import { OfferTypeScreen } from './OfferType/OfferType'
 
 export const OfferType = (): JSX.Element => {
-  const location = useLocation()
-  const queryParams = new URLSearchParams(location.search)
-  const collectiveOnly = queryParams.get('type') === 'collective'
-
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
 
-  const mainHeading = `Créer une offre${collectiveOnly ? ' collective' : ''}`
-  const children = <OfferTypeScreen collectiveOnly={collectiveOnly} />
+  const children = <OfferTypeScreen />
 
   return isOnboarding ? (
     <OnboardingLayout
-      mainHeading={mainHeading}
+      mainHeading="Créer une offre collective"
       isStickyActionBarInChild
       isEntryScreen
     >
       {children}
     </OnboardingLayout>
   ) : (
-    <BasicLayout mainHeading={mainHeading} isStickyActionBarInChild>
+    <BasicLayout
+      mainHeading="Créer une offre collective"
+      isStickyActionBarInChild
+    >
       {children}
     </BasicLayout>
   )

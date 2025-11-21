@@ -72,31 +72,6 @@ describe('IndividualOfferNavigation', () => {
     priceCategories: [],
   })
 
-  it('should always display "Détails", "Informations pratiques" and "Image et vidéo" steps', () => {
-    const contextValues = individualOfferContextValuesFactory({
-      offer: offerBase,
-    })
-
-    renderIndividualOfferNavigation({ contextValues })
-
-    const steps = screen.getAllByRole('listitem')
-
-    const detailsStep = steps.find((listitem) =>
-      listitem.textContent?.match(LABELS.DETAILS)
-    )
-    expect(detailsStep).toBeDefined()
-
-    const usefulInformationsStep = steps.find((listitem) =>
-      listitem.textContent?.match(LABELS.USEFUL_INFORMATIONS)
-    )
-    expect(usefulInformationsStep).toBeDefined()
-
-    const mediaStep = steps.find((listitem) =>
-      listitem.textContent?.match(LABELS.MEDIA)
-    )
-    expect(mediaStep).toBeDefined()
-  })
-
   describe('when offer is an event', () => {
     const contextValues = individualOfferContextValuesFactory({
       isEvent: true,
@@ -107,24 +82,6 @@ describe('IndividualOfferNavigation', () => {
       },
     })
 
-    it('should display "Tarifs" and "Dates & Capacités" steps', () => {
-      renderIndividualOfferNavigation({
-        contextValues,
-      })
-
-      const steps = screen.getAllByRole('listitem')
-
-      const pricesStep = steps.find((listitem) =>
-        listitem.textContent?.match(LABELS.PRICES)
-      )
-      expect(pricesStep).toBeDefined()
-
-      const datesCapacities = steps.find((listitem) =>
-        listitem.textContent?.match(LABELS.DATES_CAPACITIES)
-      )
-      expect(datesCapacities).toBeDefined()
-    })
-
     it('should never display "Stock & Prix" step', () => {
       renderIndividualOfferNavigation({ contextValues })
 
@@ -132,25 +89,6 @@ describe('IndividualOfferNavigation', () => {
         .getAllByRole('listitem')
         .find((listitem) => listitem.textContent?.match(LABELS.STOCK_PRICES))
       expect(stockPricesStep).not.toBeDefined()
-    })
-  })
-
-  describe('when offer is not an event', () => {
-    const contextValues = individualOfferContextValuesFactory({
-      isEvent: null,
-      // TODO (igabriele, 2025-08-05): We shoudn't need to "reset" factories default values.
-      offer: offerBase,
-    })
-
-    it('should display "Stock & Prix" step', () => {
-      renderIndividualOfferNavigation({
-        contextValues,
-      })
-
-      const stockStep = screen
-        .getAllByRole('listitem')
-        .find((listitem) => listitem.textContent?.match(LABELS.STOCK_PRICES))
-      expect(stockStep).toBeDefined()
     })
   })
 
@@ -274,7 +212,7 @@ describe('IndividualOfferNavigation', () => {
     })
   })
 
-  describe('with WIP_ENABLE_NEW_OFFER_CREATION_FLOW feature flag', () => {
+  describe('offer creation stepper', () => {
     // Will be merged once the feature is enabled in production.
     const FF_LABELS = {
       links: {
@@ -284,10 +222,6 @@ describe('IndividualOfferNavigation', () => {
         TIMETABLE: /Horaires/,
         SUMMARY: /Récapitulatif/,
       },
-    }
-
-    const options: RenderWithProvidersOptions = {
-      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
     }
 
     it.each([
@@ -301,7 +235,7 @@ describe('IndividualOfferNavigation', () => {
         isEvent,
       })
 
-      renderIndividualOfferNavigation({ contextValues, options })
+      renderIndividualOfferNavigation({ contextValues })
 
       const steps = screen.getAllByRole('listitem')
       expect(
@@ -336,7 +270,7 @@ describe('IndividualOfferNavigation', () => {
         isEvent: false,
       })
 
-      renderIndividualOfferNavigation({ contextValues, options })
+      renderIndividualOfferNavigation({ contextValues })
 
       const steps = screen.getAllByRole('listitem')
       expect(
@@ -375,7 +309,7 @@ describe('IndividualOfferNavigation', () => {
         }),
       })
 
-      renderIndividualOfferNavigation({ contextValues, options })
+      renderIndividualOfferNavigation({ contextValues })
 
       const locationStep = screen.getByRole('link', { name: '7 Récapitulatif' })
 

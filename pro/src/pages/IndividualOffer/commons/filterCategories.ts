@@ -41,18 +41,6 @@ export const getCategoryStatusFromOfferSubtype = (
     : CATEGORY_STATUS.OFFLINE
 }
 
-export const isOfferSubtypeEvent = (
-  offerSubtype: INDIVIDUAL_OFFER_SUBTYPE | null
-): boolean | null => {
-  if (offerSubtype === null) {
-    return null
-  }
-  return (
-    offerSubtype === INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_EVENT ||
-    offerSubtype === INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT
-  )
-}
-
 const isSubcategoryMatchingCriteria = (
   subcategory: SubcategoryResponseModel,
   onlineOfflinePlatform: CATEGORY_STATUS,

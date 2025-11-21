@@ -5,7 +5,6 @@ import type { GetOffererResponseModel } from '@/apiClient/v1'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
-  OFFER_TYPES,
 } from '@/commons/core/Offers/constants'
 import { getLastDmsApplicationForOfferer } from '@/commons/utils/getLastCollectiveDmsApplication'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
@@ -123,13 +122,12 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
           </div>
         )}
 
-      {getValues('offer.offerType') === OFFER_TYPES.EDUCATIONAL &&
-        !offerer?.isValidated && (
-          <Callout className={styles['pending-offerer-callout']}>
-            Votre structure est en cours de validation par les équipes pass
-            Culture.
-          </Callout>
-        )}
+      {!offerer?.isValidated && (
+        <Callout className={styles['pending-offerer-callout']}>
+          Votre structure est en cours de validation par les équipes pass
+          Culture.
+        </Callout>
+      )}
 
       {!offerer?.allowedOnAdage &&
         (lastDmsApplication ? (

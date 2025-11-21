@@ -23,7 +23,6 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -83,10 +82,6 @@ export const StocksThing = ({
     useState(false)
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false)
 
-  const isNewOfferCreationFlowFFEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_OFFER_CREATION_FLOW'
-  )
-
   // validation is tested in getValidationSchema
   // and it's not possible as is to test it here
   /* istanbul ignore next: DEBT, TO FIX */
@@ -107,10 +102,6 @@ export const StocksThing = ({
     (subCategory) => subCategory.id === offer.subcategoryId
   )?.canBeDuo
 
-  const currentStepId = isNewOfferCreationFlowFFEnabled
-    ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
-    : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
-
   const onSubmit = async (values: StockThingFormValues): Promise<void> => {
     if (isCaledonian && values.price) {
       values.price = convertPacificFrancToEuro(Number(values.price))
@@ -120,7 +111,7 @@ export const StocksThing = ({
       offerId: offer.id,
       step:
         mode === OFFER_WIZARD_MODE.EDITION
-          ? currentStepId
+          ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
           : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       mode:
         mode === OFFER_WIZARD_MODE.EDITION ? OFFER_WIZARD_MODE.READ_ONLY : mode,
@@ -201,7 +192,7 @@ export const StocksThing = ({
       navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: currentStepId,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
           mode: OFFER_WIZARD_MODE.READ_ONLY,
           isOnboarding,
         })

@@ -233,9 +233,8 @@ describe('IndividualOfferSummaryScreen', () => {
   })
 
   const expectOfferFields = async () => {
-    expect(await screen.findByText('Détails de l’offre')).toBeInTheDocument()
+    expect(await screen.findByText('Description')).toBeInTheDocument()
     expect(screen.getByText('Type d’offre')).toBeInTheDocument()
-    expect(screen.getByText('Informations pratiques')).toBeInTheDocument()
     expect(screen.getByText('Modalités d’accessibilité')).toBeInTheDocument()
     expect(
       screen.getByText('Notifications des réservations')
@@ -342,7 +341,7 @@ describe('IndividualOfferSummaryScreen', () => {
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
       const pageTitle = await screen.findByRole('heading', {
-        name: /Détails de l’offre/,
+        name: /Description/,
       })
       const buttonPublish = screen.getByRole('button', {
         name: /Publier l’offre/,

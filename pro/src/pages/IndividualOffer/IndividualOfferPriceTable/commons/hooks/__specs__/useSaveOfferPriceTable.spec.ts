@@ -178,7 +178,7 @@ describe('useSaveOfferPriceTable', () => {
 
     expect(saveEventOfferPriceTable).toHaveBeenCalled()
     expect(useNavigateMock).toHaveBeenCalledWith(
-      '/offre/individuelle/5/creation/stocks'
+      '/offre/individuelle/5/creation/horaires'
     )
   })
 

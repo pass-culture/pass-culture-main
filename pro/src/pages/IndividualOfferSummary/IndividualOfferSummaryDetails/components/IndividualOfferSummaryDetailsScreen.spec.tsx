@@ -180,72 +180,36 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
     expect(screen.queryByTestId('markdown-content')).not.toBeInTheDocument()
   })
 
-  describe('without `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF', () => {
-    it('should NOT have "Modalités d’accessibilité" section', () => {
-      renderIndividualOfferSummaryDetailsScreen({ props: { offer: offerBase } })
-
-      expect(
-        screen.queryByText(LABELS.headings.accessibility)
-      ).not.toBeInTheDocument()
-    })
-
-    it('should display the offer URL when offer is digital', () => {
-      const offer = {
-        ...offerBase,
-        isDigital: true,
-        url: 'https://example.com/mon-offre',
-      }
-
-      renderIndividualOfferSummaryDetailsScreen({ props: { offer } })
-
-      expect(screen.getByText(/URL d’accès à l’offre/i)).toBeInTheDocument()
-      expect(screen.getByText(offer.url)).toBeInTheDocument()
-    })
-  })
-
-  describe('with `WIP_ENABLE_NEW_OFFER_CREATION_FLOW` FF', () => {
-    const options = {
-      features: ['WIP_ENABLE_NEW_OFFER_CREATION_FLOW'],
+  it('should have "Modalités d’accessibilité" section', () => {
+    const offer = {
+      ...offerBase,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: false,
     }
 
-    it('should have "Modalités d’accessibilité" section', () => {
-      const offer = {
-        ...offerBase,
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: false,
-      }
+    renderIndividualOfferSummaryDetailsScreen({ props: { offer } })
 
-      renderIndividualOfferSummaryDetailsScreen({ props: { offer }, options })
+    expect(screen.getByText(LABELS.headings.accessibility)).toBeInTheDocument()
+    expect(screen.getByText('Auditif')).toBeInTheDocument()
+    expect(screen.queryByText('Psychique ou cognitif')).not.toBeInTheDocument()
+    expect(screen.getByText('Moteur')).toBeInTheDocument()
+    expect(screen.queryByText('Visuel')).not.toBeInTheDocument()
+  })
 
-      expect(
-        screen.getByText(LABELS.headings.accessibility)
-      ).toBeInTheDocument()
-      expect(screen.getByText('Auditif')).toBeInTheDocument()
-      expect(
-        screen.queryByText('Psychique ou cognitif')
-      ).not.toBeInTheDocument()
-      expect(screen.getByText('Moteur')).toBeInTheDocument()
-      expect(screen.queryByText('Visuel')).not.toBeInTheDocument()
+  it('should NOT display the offer URL when offer is digital', () => {
+    const offer = {
+      ...offerBase,
+      isDigital: true,
+      url: 'https://example.com/mon-offre',
+    }
+
+    renderIndividualOfferSummaryDetailsScreen({
+      props: { offer },
     })
 
-    it('should NOT display the offer URL when offer is digital', () => {
-      const offer = {
-        ...offerBase,
-        isDigital: true,
-        url: 'https://example.com/mon-offre',
-      }
-
-      renderIndividualOfferSummaryDetailsScreen({
-        props: { offer },
-        options,
-      })
-
-      expect(
-        screen.queryByText(/URL d’accès à l’offre/i)
-      ).not.toBeInTheDocument()
-      expect(screen.queryByText(offer.url)).not.toBeInTheDocument()
-    })
+    expect(screen.queryByText(/URL d’accès à l’offre/i)).not.toBeInTheDocument()
+    expect(screen.queryByText(offer.url)).not.toBeInTheDocument()
   })
 })
