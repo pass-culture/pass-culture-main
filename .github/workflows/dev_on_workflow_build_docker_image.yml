@@ -19,7 +19,7 @@ jobs:
     name: Build Docker image
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Add version to api
         working-directory: api

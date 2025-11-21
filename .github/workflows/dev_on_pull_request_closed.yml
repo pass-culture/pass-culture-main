@@ -14,7 +14,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
