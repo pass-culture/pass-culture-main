@@ -332,10 +332,7 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
         .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
         .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    # NB: unfortunatly, we still have to use Venue.timezone for digital offers
-    # as they are still on virtual venues that don't have assocaited OA.
-    # Venue.timezone removal here requires that all venues have their OA
-    timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
+    timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone)
 
     query = (
         query.filter(
@@ -401,8 +398,8 @@ def get_export(
 
 
 def get_pro_user_timezones(user: User) -> set[str]:
-    # Timezones based on offerer addresses
-    addresses_timezones_query = (
+    # Timezones based on offerer addresses (includes venues locations)
+    query = (
         db.session.query(Address)
         .with_entities(Address.timezone)
         .join(offerers_models.OffererAddress, offerers_models.OffererAddress.addressId == Address.id)
@@ -411,17 +408,6 @@ def get_pro_user_timezones(user: User) -> set[str]:
         .filter(offerers_models.UserOfferer.userId == user.id)
         .distinct()
     )
-    # Timezones based on offerer venues
-    # For digital offers that do not have an address
-    venues_timezones_query = (
-        db.session.query(offerers_models.Venue)
-        .with_entities(offerers_models.Venue.timezone)
-        .join(offerers_models.Offerer, offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
-        .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
-        .filter(offerers_models.UserOfferer.userId == user.id)
-        .distinct()
-    )
-    query = addresses_timezones_query.union_all(venues_timezones_query)
 
     return {row[0] for row in query}
 
@@ -460,13 +446,10 @@ def _get_filtered_bookings_query(
         .join(models.Booking.venue, isouter=True)
         .outerjoin(offers_models.Offer.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
-        .outerjoin(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
-        .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
+        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
     )
-    # NB: unfortunately, we still have to use Venue.timezone for digital offers
-    # as they are still on virtual venues that don't have assocaited OA.
-    # Venue.timezone removal here requires that all venues have their OA
-    timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
+    timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone)
     for join_key, *join_conditions in extra_joins:
         if join_conditions:
             bookings_query = bookings_query.join(join_key, *join_conditions, isouter=True)
@@ -558,18 +541,12 @@ def _get_offer_timezone(offer_id: int) -> str:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     return (
         db.session.query(offers_models.Offer)
-        .with_entities(
-            # TODO: Simplify when the virtual venues are removed
-            # Unfortunately, we still have to use Venue.timezone for digital offers
-            # as they are still on virtual venues that don't have associated OA.
-            # Venue.timezone removal here requires that all venues have their OA
-            sa.func.coalesce(Address.timezone, VenueAddress.timezone, offerers_models.Venue.timezone)
-        )
+        .with_entities(sa.func.coalesce(Address.timezone, VenueAddress.timezone))
         .join(offers_models.Offer.venue)
         .outerjoin(offers_models.Offer.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
-        .outerjoin(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
-        .outerjoin(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
+        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
         .filter(offers_models.Offer.id == offer_id)
         .scalar()
     )

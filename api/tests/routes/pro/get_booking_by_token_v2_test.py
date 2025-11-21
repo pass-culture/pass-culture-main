@@ -141,7 +141,9 @@ class Returns403Test:
             assert response.status_code == 403
 
         cancellation_limit_date = datetime.strftime(
-            date.utc_datetime_to_department_timezone(booking.cancellationLimitDate, booking.venue.departementCode),
+            date.utc_datetime_to_department_timezone(
+                booking.cancellationLimitDate, booking.venue.offererAddress.address.departmentCode
+            ),
             "%d/%m/%Y à %H:%M",
         )
         assert (

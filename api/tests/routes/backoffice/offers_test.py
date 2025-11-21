@@ -1658,9 +1658,6 @@ class EditOfferTest(PostEndpointHelper):
         offer_to_edit = offers_factories.OfferFactory(
             name="A Very Specific Name That Is Longer",
             criteria=[criteria[0]],
-            venue__postalCode="74000",
-            venue__departementCode="74",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         chosen_ranking_weight = 22
         base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": chosen_ranking_weight}
@@ -1696,9 +1693,6 @@ class EditOfferTest(PostEndpointHelper):
         offer_to_edit = offers_factories.OfferFactory(
             name="A Very Specific Name That Is Longer",
             criteria=[criteria[0]],
-            venue__postalCode="74000",
-            venue__departementCode="74",
-            subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
         chosen_ranking_weight = 22
         base_form = {"criteria": [criteria[0].id, criteria[1].id], "rankingWeight": chosen_ranking_weight}

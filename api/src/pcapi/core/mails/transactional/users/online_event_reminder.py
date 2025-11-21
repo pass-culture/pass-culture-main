@@ -5,8 +5,10 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core import mails
 from pcapi.core.bookings import models as booking_models
+from pcapi.core.geography import models as geography_models
 from pcapi.core.mails import transactional as mails_transactional
 from pcapi.core.mails.models import TransactionalEmailData
+from pcapi.core.offerers.models import OffererAddress
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Stock
@@ -26,17 +28,17 @@ class OnlineEventReminderData:
     withdrawal_details: str | None
 
     def __init__(self, booking: booking_models.Booking) -> None:
-        event_hour_utc = booking.stock.beginningDatetime
+        stock = booking.stock
+        event_hour_utc = stock.beginningDatetime
         event_hour_localized = (
-            date_utils.utc_datetime_to_department_timezone(
+            date_utils.default_timezone_to_local_datetime(
                 event_hour_utc,
-                booking.venue.departementCode,
+                booking.venue.offererAddress.address.timezone,
             )
             if event_hour_utc
             else None
         )
 
-        stock = booking.stock
         self.event_hour = event_hour_localized
         self.offer_name = stock.offer.name
         self.offer_url = stock.offer.url
@@ -83,7 +85,13 @@ def _get_online_bookings_happening_soon() -> sa_orm.query.Query:
         .join(Venue)
         .options(
             sa_orm.joinedload(booking_models.Booking.user, innerjoin=True),
-            sa_orm.contains_eager(booking_models.Booking.stock).contains_eager(Stock.offer).contains_eager(Offer.venue),
+            sa_orm.contains_eager(booking_models.Booking.stock)
+            .contains_eager(Stock.offer)
+            .contains_eager(Offer.venue)
+            .joinedload(Venue.offererAddress, innerjoin=True)
+            .load_only()
+            .joinedload(OffererAddress.address, innerjoin=True)
+            .load_only(geography_models.Address.timezone),
         )
         .filter(
             booking_models.Booking.status == booking_models.BookingStatus.CONFIRMED,

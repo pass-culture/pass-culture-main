@@ -154,7 +154,7 @@ class CGRStocks(LocalProvider):
                 providers_models.LocalProviderEventType.SyncError, f"Show {showtime_cgr_id} not found in shows list"
             )
             return
-        local_tz = utils_date.get_department_timezone(self.venue.departementCode)
+        local_tz = utils_date.get_department_timezone(self.venue.offererAddress.address.departmentCode)
         show_datetime = utils_date.local_datetime_to_default_timezone(
             datetime.datetime.combine(showtime.Date, showtime.Heure), local_tz
         )

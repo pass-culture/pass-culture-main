@@ -50,17 +50,13 @@ class Returns200Test:
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
         created_venue = db.session.query(offerers_models.Venue).one()
-        assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
-        assert created_venue.city == "Paris"
         assert created_venue.audioDisabilityCompliant is None
         assert created_venue.mentalDisabilityCompliant is None
         assert created_venue.motorDisabilityCompliant is None
         assert created_venue.visualDisabilityCompliant is None
         assert created_venue.comment is None
-        assert created_venue.departementCode == "75"
         assert created_venue.name == "MINISTERE DE LA CULTURE"
-        assert created_venue.postalCode == "75001"
         assert created_venue.publicName == "Pass Culture"
         assert created_venue.siret == "85331845900031"
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
@@ -79,8 +75,11 @@ class Returns200Test:
         mocked_get_address.assert_not_called()
         address = db.session.query(geography_models.Address).one()
         assert created_venue.offererAddress.addressId == address.id
-        assert address.street == "3 Rue de Valois"
+        assert address.street == REQUEST_BODY["address"]["street"]
         assert address.city == REQUEST_BODY["address"]["city"]
+        assert address.postalCode == REQUEST_BODY["address"]["postalCode"]
+        assert address.inseeCode == REQUEST_BODY["address"]["inseeCode"]
+        assert address.departmentCode == "75"
         assert address.isManualEdition is False
 
         assert created_venue.offererAddress.offererId == created_venue.managingOffererId
@@ -112,17 +111,13 @@ class Returns200Test:
         created_offerer = db.session.query(offerers_models.Offerer).one()
         assert not created_offerer.isValidated
         created_venue = db.session.query(offerers_models.Venue).one()
-        assert created_venue.street == "3 Rue de Valois"
         assert created_venue.bookingEmail == "pro@example.com"
-        assert created_venue.city == "Paris"
         assert created_venue.audioDisabilityCompliant is None
         assert created_venue.mentalDisabilityCompliant is None
         assert created_venue.motorDisabilityCompliant is None
         assert created_venue.visualDisabilityCompliant is None
         assert created_venue.comment is None
-        assert created_venue.departementCode == "75"
         assert created_venue.name == "MINISTERE DE LA CULTURE"
-        assert created_venue.postalCode == "75001"
         assert created_venue.publicName == "Pass Culture"
         assert created_venue.siret == "85331845900031"
         assert created_venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
@@ -142,6 +137,8 @@ class Returns200Test:
         assert created_venue.offererAddress.addressId == address.id
         assert address.street == REQUEST_BODY["address"]["street"]
         assert address.city == REQUEST_BODY["address"]["city"]
+        assert address.departmentCode == "75"
+        assert address.postalCode == REQUEST_BODY["address"]["postalCode"]
         assert address.isManualEdition is True
         assert address.inseeCode == "75056"
         assert address.banId is None

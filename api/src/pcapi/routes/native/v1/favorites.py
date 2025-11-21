@@ -122,7 +122,10 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
         .options(
             sa_orm.joinedload(Favorite.offer)
             .joinedload(Offer.venue)
-            .load_only(Venue.latitude, Venue.longitude, Venue.publicName, Venue.name)
+            .load_only(Venue.publicName, Venue.name)
+            .joinedload(Venue.offererAddress)
+            .load_only()
+            .joinedload(OffererAddress.address)
         )
         .options(
             sa_orm.joinedload(Favorite.offer)

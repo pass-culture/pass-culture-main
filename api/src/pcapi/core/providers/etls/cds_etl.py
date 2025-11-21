@@ -115,7 +115,9 @@ class CDSExtractTransformLoadProcess(
             if is_internet_sale_gauge_active:
                 remaining_quantity = show.internet_remaining_place
 
-            local_tz = date_utils.get_department_timezone(self.venue_provider.venue.departementCode)
+            local_tz = date_utils.get_department_timezone(
+                self.venue_provider.venue.offererAddress.address.departmentCode
+            )
             naive_utc_show_datetime = date_utils.local_datetime_to_default_timezone(show.showtime, local_tz).replace(
                 tzinfo=None
             )

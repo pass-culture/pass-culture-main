@@ -35,6 +35,8 @@ class BookingVenueResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
         if key == "name":
             return self._obj.common_name
+        if key == "timezone":
+            return self._obj.offererAddress.address.timezone
 
         return super().get(key, default)
 

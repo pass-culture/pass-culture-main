@@ -195,7 +195,7 @@ class GetCappedOffersForFiltersTest:
         cayenne_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="America/Cayenne")
         offer_in_cayenne = factories.OfferFactory(
             venue__managingOfferer=pro_attachment_to_offerer.offerer,
-            venue__postalCode="97300",
+            venue__offererAddress__address__postalCode="97300",
             offererAddress=cayenne_offerer_address,
         )
         cayenne_event_datetime = datetime.datetime(2020, 4, 22, 2, 0)
@@ -204,7 +204,7 @@ class GetCappedOffersForFiltersTest:
         mayotte_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="Indian/Mayotte")
         offer_in_mayotte = factories.OfferFactory(
             venue__managingOfferer=pro_attachment_to_offerer.offerer,
-            venue__postalCode="97600",
+            venue__offererAddress__address__postalCode="97600",
             offererAddress=mayotte_offerer_address,
         )
         mayotte_event_datetime = datetime.datetime(2020, 4, 20, 22, 0)
@@ -1109,18 +1109,14 @@ class IncomingEventStocksTest:
         address_overseas = geography_factories.AddressFactory(postalCode="97180", departmentCode="971")
 
         offerer_address = offerers_factories.OffererAddressFactory(address=address_paris)
-        offer = factories.OfferFactory(
-            venue__departementCode="75",
-            venue__postalCode="75002",
-            offererAddress=offerer_address,
-        )
+        offer = factories.OfferFactory(offererAddress=offerer_address)
         self.stock_today = factories.EventStockFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory.create_batch(2, stock=self.stock_today)
 
         overseas_offerer_address = offerers_factories.OffererAddressFactory(address=address_overseas)
         offer = factories.OfferFactory(
-            venue__departementCode="97",
-            venue__postalCode="97180",
+            venue__offererAddress__address__departmentCode="97",
+            venue__offererAddress__address__postalCode="97180",
             offererAddress=overseas_offerer_address,
         )
         self.stock_today_overseas = factories.EventStockFactory(beginningDatetime=today, offer=offer)
@@ -1227,7 +1223,7 @@ class IncomingEventStocksTest:
 
         # add digital offer
         today = date_utils.get_naive_utc_now() + datetime.timedelta(hours=1)
-        offer = factories.OfferFactory(venue__departementCode="97", venue__postalCode="97180")
+        offer = factories.OfferFactory()
         digital_stock = factories.StockWithActivationCodesFactory(beginningDatetime=today, offer=offer)
         bookings_factories.BookingFactory(stock=digital_stock)
 

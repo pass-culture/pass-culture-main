@@ -1242,7 +1242,6 @@ class CancelByBeneficiaryTest:
         providers_factories.OffererProviderFactory(provider=provider)
         stock = offers_factories.EventStockFactory(
             offer__lastProvider=provider,
-            offer__venue__street="1 boulevard Poissonniere",
             offer__ean="1234567890123",
             offer__withdrawalType=offers_models.WithdrawalTypeEnum.NO_TICKET,
             dnBookedQuantity=1,

@@ -3,6 +3,7 @@ import logging
 
 import googlemaps
 import pydantic
+import sqlalchemy.orm as sa_orm
 
 from pcapi import settings
 from pcapi.core.object_storage import delete_public_object
@@ -66,8 +67,11 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
             offerers_models.Offerer.isActive.is_(True),
             offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
         )
-        .join(offerers_models.Venue.offererAddress)
-        .join(offerers_models.OffererAddress.address)
+        .options(
+            sa_orm.joinedload(offerers_models.Venue.offererAddress, innerjoin=True)
+            .load_only()
+            .joinedload(offerers_models.OffererAddress.address, innerjoin=True)
+        )
         .order_by(offerers_models.Venue.id)
     )
 
@@ -187,7 +191,12 @@ def synchronize_venues_banners_with_google_places(
             except googlemaps.exceptions.ApiError as exc:
                 # https://developers.google.com/maps/documentation/places/web-service/place-id#id-errors
                 if exc.status == "NOT_FOUND":
-                    place_id = get_place_id(venue.common_name, venue.street, venue.city, venue.postalCode)
+                    place_id = get_place_id(
+                        venue.common_name,
+                        venue.offererAddress.address.street,
+                        venue.offererAddress.address.city,
+                        venue.offererAddress.address.postalCode,
+                    )
                     if not place_id:
                         continue
 

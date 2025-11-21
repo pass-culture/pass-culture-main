@@ -104,33 +104,6 @@ class VenueFactory(BaseFactory):
         offerer=factory.SelfAttribute("..managingOfferer"),
     )
 
-    # TODO: CLEAN_OA - section to be deleted - once these attributes are removed from Venue model, we can add abstraction to allow VenueFactory.create(address=...) or VenueFactory.create(street=...)
-    latitude: float | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.latitude if o.offererAddress and not o.isVirtual else None
-    )
-    longitude: float | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.longitude if o.offererAddress and not o.isVirtual else None
-    )
-    street: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.street if o.offererAddress and not o.isVirtual else None
-    )
-    banId: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.banId if o.offererAddress and not o.isVirtual else None
-    )
-    postalCode: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.postalCode if o.offererAddress and not o.isVirtual else "01000"
-    )
-    departementCode: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.departmentCode if o.offererAddress and not o.isVirtual else None
-    )
-    city: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.city if o.offererAddress and not o.isVirtual else None
-    )
-    timezone: str | None | factory.LazyAttribute = factory.LazyAttribute(
-        lambda o: o.offererAddress.address.timezone if o.offererAddress and not o.isVirtual else None
-    )
-    # TODO: CLEAN_OA - end of section to be deleted
-
     @factory.post_generation
     def pricing_point(
         self,
@@ -472,22 +445,40 @@ class OffererAddressFactory(BaseFactory):
     ) -> models.OffererAddress:
         offerer = kwargs.get("offerer")
         if venue := kwargs.get("venue"):
-            if offerer and offerer != venue.managingOfferer:
-                raise ValueError("venue must be consistent with offerer")
-            kwargs["offerer"] = venue.managingOfferer
+            if offerer:
+                if offerer != venue.managingOfferer:
+                    raise ValueError("venue must be consistent with offerer")
+            else:
+                kwargs["offerer"] = venue.managingOfferer
         elif not offerer:
             kwargs["offerer"] = OffererFactory()
         return super()._create(model_class, *args, **kwargs)
 
 
-class VenueLocationFactory(OffererAddressFactory):
+class _LocationFactory(OffererAddressFactory):
+    # TODO (prouzet, 2025-11-13) CLEAN_OA When venueId is mandatory, type always set and Venue.offererAddressId removed,
+    # this could be simplified and Venue created in OffererAddressFactory._create without reference to self.
+    @factory.post_generation
+    def venue(self, create: bool, extracted: models.Venue | None, **kwargs: typing.Any) -> models.Venue | None:
+        if not create:
+            return None
+        if extracted:
+            self.venue = extracted
+            if self.offerer != extracted.managingOfferer:  # type: ignore[attr-defined]
+                raise ValueError("venue must be consistent with offerer")
+        else:
+            self.venue = VenueFactory.create(managingOfferer=self.offerer, offererAddress=self)  # type: ignore[attr-defined]
+            db.session.add(self)
+            db.session.flush()
+        return self.venue
+
+
+class VenueLocationFactory(_LocationFactory):
     type = models.LocationType.VENUE_LOCATION
-    venue = factory.SubFactory(VenueFactory)
 
 
-class OfferLocationFactory(OffererAddressFactory):
+class OfferLocationFactory(_LocationFactory):
     type = models.LocationType.OFFER_LOCATION
-    venue = factory.SubFactory(VenueFactory)
 
 
 class OffererAddressOfVenueFactory(OffererAddressFactory):

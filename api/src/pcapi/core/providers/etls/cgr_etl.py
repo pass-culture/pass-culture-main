@@ -69,7 +69,9 @@ class CGRExtractTransformLoadProcess(CinemaETLProcessTemplate[CGRAPIClient, CGRE
                 continue
 
             for show in film.Seances:
-                local_tz = date_utils.get_department_timezone(self.venue_provider.venue.departementCode)
+                local_tz = date_utils.get_department_timezone(
+                    self.venue_provider.venue.offererAddress.address.departmentCode
+                )
                 show_datetime = date_utils.local_datetime_to_default_timezone(
                     datetime.datetime.combine(show.Date, show.Heure), local_tz
                 )

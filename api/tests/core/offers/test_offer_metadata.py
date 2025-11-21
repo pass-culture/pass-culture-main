@@ -224,11 +224,11 @@ class OfferMetadataTest:
         def should_have_offer_location_when_available(self):
             venue = offerers_factories.VenueFactory(
                 name="Le Poney qui tousse",
-                street="Rue du Poney qui tousse",
-                postalCode="75001",
-                city="Boulgourville",
-                latitude="47.097456",
-                longitude="-1.270040",
+                offererAddress__address__street="Rue du Poney qui tousse",
+                offererAddress__address__postalCode="75001",
+                offererAddress__address__city="Boulgourville",
+                offererAddress__address__latitude="47.097456",
+                offererAddress__address__longitude="-1.270040",
             )
             address = geography_factories.AddressFactory(
                 street="Rue du poney qui respire",

@@ -13,11 +13,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class MatchAcceslibreTest:
     @patch("pcapi.connectors.acceslibre.get_id_at_accessibility_provider")
     def test_match_acceslibre(self, mock_get_id_at_accessibility_provider):
-        venue = offerers_factories.VenueFactory(
-            name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
-        )
+        venue = offerers_factories.VenueFactory(name="Une librairie de test")
         slug = "mon-slug"
         mock_get_id_at_accessibility_provider.side_effect = [
             AcceslibreInfos(slug=slug, url=f"https://acceslibre.beta.gouv.fr/app/erps/{slug}/")

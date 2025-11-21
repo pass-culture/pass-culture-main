@@ -9,6 +9,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.mails.transactional.users import online_event_reminder
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_no_duplicated_queries
+from pcapi.core.testing import assert_num_queries
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import utc_datetime_to_department_timezone
 
@@ -79,7 +80,7 @@ class OnlineEventReminderTest:
 
         online_conference_data = email_data_by_stocks[online_conference_stock.id]
         expected_event_hour = utc_datetime_to_department_timezone(
-            self.in_50_minutes, online_conference.venue.departementCode
+            self.in_50_minutes, online_conference.venue.offererAddress.address.departmentCode
         )
         assert online_conference_data.offer_name == online_conference.name
         assert online_conference_data.offer_url == online_conference.url
@@ -89,7 +90,7 @@ class OnlineEventReminderTest:
 
         online_meetup_data = email_data_by_stocks[online_meetup_stock.id]
         expected_event_hour = utc_datetime_to_department_timezone(
-            self.in_35_minutes, online_meetup.venue.departementCode
+            self.in_35_minutes, online_meetup.venue.offererAddress.address.departmentCode
         )
         assert online_meetup_data.offer_name == online_meetup.name
         assert online_meetup_data.offer_url == online_meetup.url
@@ -103,11 +104,12 @@ class OnlineEventReminderTest:
         )
         stock = offers_factories.EventStockFactory(beginningDatetime=self.in_50_minutes, offer=online_conference)
         bookings_factories.BookingFactory(stock=stock)
-        online_event_reminder.send_online_event_event_reminder()
+        with assert_num_queries(1):
+            online_event_reminder.send_online_event_event_reminder()
         assert len(mails_testing.outbox) == 1
 
         expected_event_hour = utc_datetime_to_department_timezone(
-            self.in_50_minutes, online_conference.venue.departementCode
+            self.in_50_minutes, online_conference.venue.offererAddress.address.departmentCode
         )
 
         assert mails_testing.outbox[0]["params"] == {
@@ -123,5 +125,6 @@ class OnlineEventReminderTest:
         )
         stock = offers_factories.EventStockFactory(beginningDatetime=self.in_50_minutes, offer=online_conference)
         bookings_factories.BookingFactory(stock=stock, status=bookings_models.BookingStatus.CANCELLED)
-        online_event_reminder.send_online_event_event_reminder()
+        with assert_num_queries(1):
+            online_event_reminder.send_online_event_event_reminder()
         assert len(mails_testing.outbox) == 0

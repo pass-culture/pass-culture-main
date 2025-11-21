@@ -579,7 +579,6 @@ class FindByProUserTest:
             offerer=user_offerer.offerer,
         )
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300",
             venue__managingOfferer=user_offerer.offerer,
             venue__offererAddress=offerer_address_in_cayenne,
         )
@@ -596,7 +595,6 @@ class FindByProUserTest:
             offerer=user_offerer.offerer,
         )
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600",
             venue__managingOfferer=user_offerer.offerer,
             venue__offererAddress=offerer_address_in_mayotte,
         )
@@ -652,7 +650,6 @@ class FindByProUserTest:
         requested_booking_period_ending = datetime(2020, 4, 22, 20, 00).date()
 
         offer_in_cayenne = offers_factories.OfferFactory(
-            venue__postalCode="97300",
             venue__offererAddress__address__street="1 Rue de Rémire",
             venue__offererAddress__address__city="Cayenne",
             venue__offererAddress__address__postalCode="97300",
@@ -667,7 +664,6 @@ class FindByProUserTest:
         )
 
         offer_in_mayotte = offers_factories.OfferFactory(
-            venue__postalCode="97600",
             venue__offererAddress__address__street="Boulevard Halidi Sélémani",
             venue__offererAddress__address__city="Mamoudzou",
             venue__offererAddress__address__postalCode="97600",
@@ -702,7 +698,7 @@ class GetOfferBookingsByStatusCSVTest:
         offerer_address = booking.stock.offer.offererAddress
         location = f"{offerer_address.label or venue.common_name} - {offerer_address.address.street} {offerer_address.address.postalCode} {offerer_address.address.city}"
         assert data_dict["Localisation"] == location
-        booking.venueDepartmentCode = booking.venue.departementCode
+        booking.venueDepartmentCode = booking.venue.offererAddress.address.departmentCode
         booking.offerDepartmentCode = booking.stock.offer.offererAddress.address.departmentCode
         assert data_dict["Date de l'évènement"] == str(
             convert_booking_dates_utc_to_venue_timezone(booking.stock.beginningDatetime, booking)
@@ -1262,7 +1258,7 @@ def test_sould_return_user_offerer_timezones():
     offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Indian/Mayotte")
 
     # Venue with different timezone
-    offerers_factories.VenueFactory(managingOfferer=offerer, timezone="America/Cayenne", postalCode="97300")
+    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="America/Cayenne")
 
     timezones = booking_repository.get_pro_user_timezones(pro_user)
 
