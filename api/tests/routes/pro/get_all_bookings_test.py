@@ -371,6 +371,30 @@ class Returns400Test:
             )
             assert response.status_code == 400
 
+    def when_beginning_date_is_out_of_range(self, client: Any):
+        # Ensure that we don't crash because of timezone shift
+        user_offerer = offerers_factories.UserOffererFactory()
+        bookings_factories.UsedBookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.num_queries):
+            response = client.get(
+                "/bookings/pro?bookingPeriodBeginningDate=0001-01-01&bookingPeriodEndingDate=2025-11-21"
+            )
+            assert response.status_code == 400
+
+    def when_ending_date_is_out_of_range(self, client: Any):
+        # Ensure that we don't crash because of timezone shift
+        user_offerer = offerers_factories.UserOffererFactory()
+        bookings_factories.UsedBookingFactory(stock__offer__venue__managingOfferer=user_offerer.offerer)
+
+        client = client.with_session_auth(user_offerer.user.email)
+        with assert_num_queries(self.num_queries):
+            response = client.get(
+                "/bookings/pro?bookingPeriodBeginningDate=2025-11-21&bookingPeriodEndingDate=0001-01-01"
+            )
+            assert response.status_code == 400
+
     def when_booking_period_and_event_date_is_not_given(self, client: Any):
         pro = users_factories.ProFactory()
 
