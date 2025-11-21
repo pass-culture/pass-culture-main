@@ -427,6 +427,14 @@
                  data-bs-html="true"
                  data-bs-title="<strong>Explication de la prédiction</strong> : {{ offer.compliance.validation_status_prediction_reason }}"></i>
             {% endif %}
+            <div class="d-flex align-items-center text-muted mt-1"
+                 style="font-size: 0.85rem;
+                        line-height: 1.2">
+              <i class="bi bi-stars me-1 text-primary"></i>
+              <span>
+                Prédiction générée par IA &bull;&nbsp;<span class="text-body-secondary fw-medium">À vérifier</span>
+              </span>
+            </div>
           {% endcall %}
         {% endif %}
       {% endif %}
