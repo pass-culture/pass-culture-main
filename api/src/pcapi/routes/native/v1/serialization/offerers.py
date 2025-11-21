@@ -3,6 +3,7 @@ import typing
 
 import pydantic.v1 as pydantic_v1
 
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
@@ -46,6 +47,24 @@ class VenueResponseGetterDict(base.VenueResponseGetterDict):
         return super().get(key, default)
 
 
+class VenueResponseV2GetterDict(base.VenueResponseGetterDict):
+    def get(self, key: str, default: typing.Any = None) -> typing.Any:
+        if key == "name":
+            return self._obj.common_name
+
+        if key == "address":
+            return self._obj.street
+
+        if key == "accessibility":
+            return VenueAccessibilityModel(
+                audioDisability=self._obj.audioDisabilityCompliant,
+                mentalDisability=self._obj.mentalDisabilityCompliant,
+                motorDisability=self._obj.motorDisabilityCompliant,
+                visualDisability=self._obj.visualDisabilityCompliant,
+            )
+        return super().get(key, default)
+
+
 class VenueContactModel(offerers_schemas.VenueContactModel):
     phone_number: str | None
 
@@ -82,6 +101,28 @@ class VenueResponse(base.BaseVenueResponse):
     openingHours: dict | None
 
     isVirtual: bool  # duplicated to isolate it from its removal from PCPro
+
+    class Config:
+        getter_dict = VenueResponseGetterDict
+
+
+class VenueResponseV2(base.BaseVenueResponse):
+    id: int
+    address: str | None
+    # TODO (tcoudray-pass, 02/10/25): CLEAN_OA Delete when we are sure the
+    # beneficiary app does not use this data
+    street: str | None
+    city: str | None
+    latitude: float | None
+    longitude: float | None
+    postalCode: str | None
+
+    accessibility: VenueAccessibilityModel
+    activity: offerers_models.Activity | None
+    bannerMeta: offerers_schemas.BannerMetaModel | None
+    timezone: str
+    contact: VenueContactModel | None
+    openingHours: dict | None
 
     class Config:
         getter_dict = VenueResponseGetterDict

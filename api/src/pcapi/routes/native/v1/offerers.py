@@ -20,6 +20,16 @@ def get_venue(venue_id: int) -> serializers.VenueResponse:
     return serializers.VenueResponse.from_orm(venue)
 
 
+@blueprint.native_route("/venue/<int:venue_id>", version="v2", methods=["GET"])
+@spectree_serialize(response_model=serializers.VenueResponseV2, api=blueprint.api, on_error_statuses=[404])
+def get_venue_v2(venue_id: int) -> serializers.VenueResponseV2:
+    venue = offerers_repository.find_venue_by_id(venue_id)
+    if not venue or not venue.isPermanent or venue.managingOfferer.isClosed or not venue.managingOfferer.isActive:
+        abort(404)
+
+    return serializers.VenueResponseV2.from_orm(venue)
+
+
 @blueprint.native_route("/offerer/<int:offerer_id>/headline-offer", methods=["GET"])
 @atomic()
 @spectree_serialize(
