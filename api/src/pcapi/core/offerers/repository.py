@@ -23,6 +23,7 @@ from . import schemas
 logger = logging.getLogger(__name__)
 
 MAX_OFFERS_PER_OFFERER_FOR_COUNT = 500
+MAX_OFFERS_PER_VENUE_FOR_COUNT = 500
 
 
 def get_all_venue_labels() -> list[models.VenueLabel]:
@@ -1024,6 +1025,85 @@ def get_number_of_pending_collective_offers_for_offerer(offerer_id: int) -> int:
             .with_entities(educational_models.CollectiveOfferTemplate.id)
         )
         .limit(MAX_OFFERS_PER_OFFERER_FOR_COUNT)
+        .count()
+    )
+
+
+def get_number_of_bookable_offers_for_venue(venue_id: int) -> int:
+    return (
+        db.session.query(offers_models.Offer)
+        .with_entities(offers_models.Offer.id)
+        .filter(
+            offers_models.Offer.venueId == venue_id,
+            offers_models.Offer.is_offer_released_with_bookable_stock,
+        )
+        .limit(MAX_OFFERS_PER_VENUE_FOR_COUNT)
+        .count()
+    )
+
+
+def get_number_of_pending_offers_for_venue(venue_id: int) -> int:
+    return (
+        db.session.query(offers_models.Offer)
+        .with_entities(offers_models.Offer.id)
+        .filter(
+            offers_models.Offer.venueId == venue_id,
+            offers_models.Offer.validation == offer_mixin.OfferValidationStatus.PENDING,
+        )
+        .limit(MAX_OFFERS_PER_VENUE_FOR_COUNT)
+        .count()
+    )
+
+
+def get_number_of_bookable_collective_offers_for_venue(venue_id: int) -> int:
+    collective_offers_query = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(
+            educational_models.CollectiveOffer.venueId == venue_id,
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        )
+        .with_entities(educational_models.CollectiveOffer.id)
+    )
+
+    collective_offer_templates_query = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .filter(
+            educational_models.CollectiveOfferTemplate.venueId == venue_id,
+            educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.APPROVED,
+        )
+        .with_entities(educational_models.CollectiveOfferTemplate.id)
+    )
+
+    return (
+        collective_offers_query.union_all(collective_offer_templates_query)
+        .limit(MAX_OFFERS_PER_VENUE_FOR_COUNT)
+        .count()
+    )
+
+
+def get_number_of_pending_collective_offers_for_venue(venue_id: int) -> int:
+    collective_offers_query = (
+        db.session.query(educational_models.CollectiveOffer)
+        .filter(
+            educational_models.CollectiveOffer.venueId == venue_id,
+            educational_models.CollectiveOffer.validation == offer_mixin.OfferValidationStatus.PENDING,
+        )
+        .with_entities(educational_models.CollectiveOffer.id)
+    )
+
+    collective_offer_templates_query = (
+        db.session.query(educational_models.CollectiveOfferTemplate)
+        .join(models.Venue)
+        .filter(
+            educational_models.CollectiveOfferTemplate.venueId == venue_id,
+            educational_models.CollectiveOfferTemplate.validation == offer_mixin.OfferValidationStatus.PENDING,
+        )
+        .with_entities(educational_models.CollectiveOfferTemplate.id)
+    )
+
+    return (
+        collective_offers_query.union_all(collective_offer_templates_query)
+        .limit(MAX_OFFERS_PER_VENUE_FOR_COUNT)
         .count()
     )
 

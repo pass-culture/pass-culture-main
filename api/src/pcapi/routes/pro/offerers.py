@@ -275,8 +275,13 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
     on_success_status=200,
     api=blueprint.pro_private_schema,
     response_model=offerers_serialize.GetOffererV2StatsResponseModel,
+    deprecated=True,
 )
 def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2StatsResponseModel:
+    """
+    Deprecated.
+    Please use GET /venues/<venue_id>/offers-statistics instead.
+    """
     check_user_has_access_to_offerer(current_user, offerer_id)
     try:
         stats = api.get_offerer_v2_stats(offerer_id)
