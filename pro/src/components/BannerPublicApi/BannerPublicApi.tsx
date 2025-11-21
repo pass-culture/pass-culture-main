@@ -1,7 +1,7 @@
 import type React from 'react'
 
+import { Banner } from '@/design-system/Banner/Banner'
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './BannerPublicApi.module.scss'
@@ -15,15 +15,20 @@ export const BannerPublicApi = ({
   children,
   className,
 }: Props): JSX.Element => (
-  <Callout className={className}>
-    <div className={styles['banner-container']}>
-      <SvgIcon
-        src={logoPassCultureIcon}
-        alt=""
-        className={styles['banner-logo']}
-        viewBox="0 0 71 24"
-      />
-      {children}
-    </div>
-  </Callout>
+  <div className={className}>
+    <Banner
+      title=""
+      description={
+        <div className={styles['banner-container']}>
+          <SvgIcon
+            src={logoPassCultureIcon}
+            alt=""
+            className={styles['banner-logo']}
+            viewBox="0 0 71 24"
+          />
+          {children}
+        </div>
+      }
+    />
+  </div>
 )
