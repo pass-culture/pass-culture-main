@@ -40,6 +40,14 @@ describe('SignupJourneyRoutes::trackers', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
+    Object.defineProperty(window, 'location', {
+      value: {
+        reload: vi.fn(),
+      },
+      configurable: true,
+      enumerable: true,
+      writable: true,
+    })
   })
 
   it('should track logout', async () => {

@@ -25,6 +25,15 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+Object.defineProperty(window, 'location', {
+  value: {
+    reload: vi.fn(),
+  },
+  configurable: true,
+  enumerable: true,
+  writable: true,
+})
+
 const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
   renderWithProviders(
     <Routes>
