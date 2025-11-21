@@ -1,3 +1,4 @@
+import datetime
 import decimal
 import logging
 from functools import partial
@@ -122,12 +123,14 @@ def confirm_collective_booking(educational_booking_id: int) -> models.Collective
     )
 
     validation.check_collective_booking_status(collective_booking)
-    validation.check_confirmation_limit_date_has_not_passed(collective_booking)
+
+    confirmation_datetime = date_utils.get_naive_utc_now()
+    validation.check_confirmation_limit_date_has_not_passed(collective_booking, confirmation_datetime)
 
     if settings.EAC_CHECK_INSTITUTION_FUND:
-        _check_institution_fund(collective_booking)
+        _check_institution_fund_and_link_deposit(collective_booking, confirmation_datetime)
 
-    collective_booking.mark_as_confirmed()
+    collective_booking.mark_as_confirmed(confirmation_datetime)
 
     db.session.add(collective_booking)
     db.session.flush()
@@ -142,18 +145,19 @@ def confirm_collective_booking(educational_booking_id: int) -> models.Collective
     return collective_booking
 
 
-def _check_institution_fund(collective_booking: models.CollectiveBooking) -> None:
-    educational_institution_id = collective_booking.educationalInstitutionId
-    educational_year_id = collective_booking.educationalYearId
-    deposit = repository.get_and_lock_educational_deposit(educational_institution_id, educational_year_id)
-
-    validation.check_institution_fund(
-        educational_institution_id=educational_institution_id,
-        educational_year_id=educational_year_id,
-        booking_amount=collective_booking.collectiveStock.price,
-        deposit=deposit,
+def _check_institution_fund_and_link_deposit(
+    collective_booking: models.CollectiveBooking, confirmation_datetime: datetime.datetime
+) -> None:
+    deposit = repository.get_and_lock_educational_deposit(
+        educational_institution_id=collective_booking.educationalInstitutionId,
+        educational_year=collective_booking.educationalYear,
+        confirmation_datetime=confirmation_datetime,
     )
 
+    validation.check_institution_fund(booking_amount=collective_booking.collectiveStock.price, deposit=deposit)
+
+    # link the booking to the deposit so that we can easily get all confirmed bookings from a given deposit
+    # e.g in the institution fund check above
     collective_booking.educationalDeposit = deposit
 
 
