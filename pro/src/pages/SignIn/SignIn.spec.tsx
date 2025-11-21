@@ -9,7 +9,7 @@ import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import * as logoutModule from '@/commons/store/user/dispatchers/logout'
+import * as initializeUserModule from '@/commons/store/user/dispatchers/initializeUser'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -20,7 +20,6 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { Notification } from '@/components/Notification/Notification'
 
 import { SignIn } from './SignIn'
@@ -192,12 +191,10 @@ describe('SignIn', () => {
   })
 
   it('should call submit prop when user clicks on "Se connecter"', async () => {
-    const windowLocationReloadSpy = vi.fn()
-    vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      reload: windowLocationReloadSpy,
-    })
-    const logoutSpy = vi.spyOn(logoutModule, 'logout')
+    const initializeUserSpy = vi
+      .spyOn(initializeUserModule, 'initializeUser')
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Redux Thunk return type
+      .mockReturnValueOnce({ unwrap: () => Promise.resolve() } as any)
 
     renderSignIn()
 
@@ -211,23 +208,15 @@ describe('SignIn', () => {
       })
     )
 
-    expect(api.signin).toHaveBeenCalledWith({
+    expect(api.signin).toHaveBeenCalledExactlyOnceWith({
       identifier: 'MonPetitEmail@example.com',
       password: 'fakePassword',
       captchaToken: 'token',
     })
-    expect(logoutSpy).toHaveBeenCalledTimes(1)
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
+    expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({})
   })
 
   it('should display errors message and focus email input when login failed', async () => {
-    const windowLocationReloadSpy = vi.fn()
-    vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      reload: windowLocationReloadSpy,
-    })
-    const logoutSpy = vi.spyOn(logoutModule, 'logout')
-
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
@@ -260,19 +249,9 @@ describe('SignIn', () => {
     await waitFor(() => {
       expect(screen.getByLabelText('Adresse email')).toHaveFocus()
     })
-
-    expect(logoutSpy).toHaveBeenCalledTimes(1)
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
   })
 
   it('should display an error message when login rate limit exceeded', async () => {
-    const windowLocationReloadSpy = vi.fn()
-    vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      reload: windowLocationReloadSpy,
-    })
-    const logoutSpy = vi.spyOn(logoutModule, 'logout')
-
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
@@ -301,9 +280,6 @@ describe('SignIn', () => {
         name: 'Se connecter',
       })
     )
-
-    expect(logoutSpy).toHaveBeenCalledTimes(1)
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     expect(
       await screen.findByText(
@@ -351,39 +327,5 @@ describe('SignIn', () => {
         { from: '/connexion' }
       )
     })
-  })
-
-  it('should not read through local storage offerers if it is not available', async () => {
-    const windowLocationReloadSpy = vi.fn()
-    vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      reload: windowLocationReloadSpy,
-    })
-    const logoutSpy = vi.spyOn(logoutModule, 'logout')
-    vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
-      () => false
-    )
-
-    const getItemSpy = vi
-      .spyOn(Storage.prototype, 'getItem')
-      .mockResolvedValueOnce('')
-
-    renderSignIn()
-
-    const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'MonPetitEmail@example.com')
-
-    const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'fakePassword')
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Se connecter',
-      })
-    )
-
-    expect(getItemSpy).not.toHaveBeenLastCalledWith('homepageSelectedOffererId')
-    expect(logoutSpy).toHaveBeenCalledTimes(1)
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
   })
 })

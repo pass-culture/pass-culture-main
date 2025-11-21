@@ -84,8 +84,6 @@ const renderHomePage = (options?: RenderWithProvidersOptions) => {
 const mockLogEvent = vi.fn()
 
 describe('Homepage', () => {
-  const reloadFn = vi.fn()
-
   const baseOfferersNames = baseOfferers.map(
     (offerer): GetOffererNameResponseModel => ({
       id: offerer.id,
