@@ -14,7 +14,6 @@ import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
-import { logout } from '@/commons/store/user/dispatchers/logout'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
@@ -70,8 +69,6 @@ export const SignIn = (): JSX.Element => {
       await dispatch(initializeUser(user)).unwrap()
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
-        await dispatch(logout()).unwrap()
-
         if (isErrorAPIError(error)) {
           onHandleFail({ status: error.status, errors: error.body })
         } else {

@@ -16,6 +16,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
+import * as logoutModule from '../logout'
 import { setSelectedVenueById } from '../setSelectedVenueById'
 
 vi.mock('@/apiClient/api', () => ({
@@ -134,9 +135,15 @@ describe('setSelectedVenueById', () => {
 
   it('should throw when offererNames is null', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
+    const windowLocationReloadSpy = vi.fn()
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
     const getVenueSpy = vi.spyOn(api, 'getVenue')
     const getOffererSpy = vi.spyOn(api, 'getOfferer')
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+    const logoutSpy = vi.spyOn(logoutModule, 'logout')
 
     const store = configureTestStore({
       ...storeDataBase,
@@ -153,16 +160,11 @@ describe('setSelectedVenueById', () => {
       expect.any(FrontendError),
       'Une erreur est survenue lors du changement de la structure.'
     )
+    expect(logoutSpy).toHaveBeenCalledTimes(1)
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     expect(getVenueSpy).not.toHaveBeenCalled()
     expect(getOffererSpy).not.toHaveBeenCalled()
-
-    const state = store.getState()
-    expect(state.user.access).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.currentOffererName).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
@@ -170,6 +172,11 @@ describe('setSelectedVenueById', () => {
 
   it('should throw when nextSelectedOffererName is undefined', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
+    const windowLocationReloadSpy = vi.fn()
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 101, managingOffererId: 999 })
     )
@@ -180,6 +187,7 @@ describe('setSelectedVenueById', () => {
       isOnboarded: true,
     })
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+    const logoutSpy = vi.spyOn(logoutModule, 'logout')
 
     const store = configureTestStore({
       offerer: {
@@ -213,16 +221,11 @@ describe('setSelectedVenueById', () => {
       expect.any(FrontendError),
       'Une erreur est survenue lors du changement de la structure.'
     )
+    expect(logoutSpy).toHaveBeenCalledTimes(1)
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)
-
-    const state = store.getState()
-    expect(state.user.access).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.currentOffererName).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()

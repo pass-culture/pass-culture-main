@@ -24,15 +24,25 @@ vi.mock('@/commons/errors/handleError', () => ({
 }))
 
 describe('logout', () => {
+  const windowLocationReloadSpy = vi.fn()
+
   beforeEach(() => {
     vi.resetAllMocks()
     localStorage.clear()
+
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '1')
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '2')
   })
 
   it('should call signout, clear localStorage, and reset related slices when shouldCallSignout=true', async () => {
+    const sucessfulFetchMock = vi.fn(() => Promise.resolve(new Response()))
+    vi.spyOn(window, 'fetch').mockImplementation(sucessfulFetchMock)
+
     const store = configureTestStore({
       offerer: {
         currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
@@ -49,16 +59,12 @@ describe('logout', () => {
 
     await store.dispatch(logout()).unwrap()
 
-    expect(api.signout).toHaveBeenCalledTimes(1)
-
-    const state = store.getState()
-    expect(state.offerer.offererNames).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.currentOffererName).toBeNull()
-    expect(state.user.currentUser).toBeNull()
-    expect(state.user.access).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
+    expect(sucessfulFetchMock).toHaveBeenNthCalledWith(
+      1,
+      expect.stringMatching(/\/users\/signout$/),
+      { credentials: 'include' }
+    )
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     expect(
       localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
@@ -67,6 +73,8 @@ describe('logout', () => {
   })
 
   it('should handle signout error gracefully and still reset state', async () => {
+    const failedFetchMock = vi.fn(() => Promise.reject(new Error()))
+    vi.spyOn(window, 'fetch').mockImplementation(failedFetchMock)
     vi.spyOn(api, 'signout').mockRejectedValue(new Error())
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
 
@@ -78,6 +86,7 @@ describe('logout', () => {
       expect.any(Error),
       'Une erreur est survenue lors de la déconnexion.'
     )
+    expect(windowLocationReloadSpy).not.toHaveBeenCalled()
 
     const state = store.getState()
     expect(state.offerer.offererNames).toBeNull()

@@ -3,7 +3,6 @@ import { vi } from 'vitest'
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
 import { ApiError } from '@/apiClient/v1'
-import type { RootState } from '@/commons/store/store'
 import { configureTestStore } from '@/commons/store/testUtils'
 import {
   defaultGetOffererResponseModel,
@@ -15,6 +14,7 @@ import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactor
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 import { initializeUser } from '../initializeUser'
+import * as logoutModule from '../logout'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -250,7 +250,7 @@ describe('initializeUser', () => {
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
 
-  it('should logout and reset slices when getOfferer rejects with non-403 on venue path', async () => {
+  it('should logout when getOfferer rejects with non-403 on venue path', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: [getOffererNameFactory({ id: 100 })],
@@ -276,14 +276,6 @@ describe('initializeUser', () => {
 
     await store.dispatch(initializeUser(user)).unwrap()
 
-    const state = store.getState() as RootState
-    expect(state.user.access).toBeNull()
-    expect(state.user.currentUser).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.offererNames).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
-
     expect(
       localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
     ).toBeNull()
@@ -291,7 +283,13 @@ describe('initializeUser', () => {
   })
 
   it('should dispatch logout when initialization fails before selection', async () => {
+    const windowLocationReloadSpy = vi.fn()
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
     vi.spyOn(api, 'listOfferersNames').mockRejectedValue(new Error())
+    const logoutSpy = vi.spyOn(logoutModule, 'logout')
     vi.spyOn(api, 'signout').mockResolvedValue()
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '12')
@@ -300,6 +298,9 @@ describe('initializeUser', () => {
     const store = configureTestStore()
 
     await store.dispatch(initializeUser(user)).unwrap()
+
+    expect(logoutSpy).toHaveBeenCalledTimes(1)
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.user.access).toBeNull()

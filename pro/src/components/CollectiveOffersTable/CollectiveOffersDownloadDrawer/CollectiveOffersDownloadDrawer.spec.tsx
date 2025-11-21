@@ -3,7 +3,10 @@ import { userEvent } from '@testing-library/user-event'
 
 import { EacFormat } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import {
+  CancelablePromise,
+  CollectiveOfferDisplayedStatus,
+} from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
 import {
   CollectiveOfferTypeEnum,
@@ -155,13 +158,11 @@ describe('CollectiveOffersDownloadDrawer', () => {
 
   it('should disable button while downloading', async () => {
     let resolveDownload: (value: string) => void
-    const downloadPromise = new Promise<string>((resolve) => {
+    const downloadPromise = new CancelablePromise((resolve) => {
       resolveDownload = resolve
     })
 
-    vi.spyOn(api, 'getCollectiveOffersCsv').mockReturnValueOnce(
-      downloadPromise as any
-    )
+    vi.spyOn(api, 'getCollectiveOffersCsv').mockReturnValueOnce(downloadPromise)
 
     renderCollectiveOffersDownloadDrawer()
 

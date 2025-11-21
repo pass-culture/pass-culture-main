@@ -8,8 +8,9 @@ describe('getVenuePagePathToNavigateTo', () => {
     const originalPath = `/structures/${offererId}/lieux/${venueId}/page-partenaire`
     const expectedPath = `${originalPath}${subPath}`
 
-    Object.defineProperty(window, 'location', {
-      value: { pathname: originalPath },
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      pathname: originalPath,
     })
 
     expect(getVenuePagePathToNavigateTo(offererId, venueId, subPath)).toBe(

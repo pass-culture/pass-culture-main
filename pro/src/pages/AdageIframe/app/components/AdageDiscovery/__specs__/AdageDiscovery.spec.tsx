@@ -127,14 +127,6 @@ describe('AdageDiscovery', () => {
   })
 
   it('should call tracker for domains playlist element', async () => {
-    global.window = Object.create(window)
-    Object.defineProperty(window, 'location', {
-      value: {
-        href: '',
-      },
-      writable: true,
-    })
-
     renderAdageDiscovery(user)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))

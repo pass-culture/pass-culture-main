@@ -15,6 +15,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 
+import * as logoutModule from '../logout'
 import { setSelectedOffererById } from '../setSelectedOffererById'
 
 vi.mock('@/apiClient/api', () => ({
@@ -255,11 +256,17 @@ describe('setSelectedOffererById', () => {
 
   it('should throw when no offerer name matches the selected offerer', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
+    const windowLocationReloadSpy = vi.fn()
+    vi.spyOn(window, 'location', 'get').mockReturnValue({
+      ...window.location,
+      reload: windowLocationReloadSpy,
+    })
     const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
     const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
     const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
+    const logoutSpy = vi.spyOn(logoutModule, 'logout')
 
     localStorage.setItem(SAVED_OFFERER_ID_KEY, '100')
     localStorage.setItem(SAVED_VENUE_ID_KEY, '101')
@@ -289,18 +296,13 @@ describe('setSelectedOffererById', () => {
       expect.any(FrontendError),
       'Une erreur est survenue lors du changement de la structure.'
     )
+    expect(logoutSpy).toHaveBeenCalledTimes(1)
+    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
     expect(apiGetVenuesSpy).not.toHaveBeenCalled()
     expect(apiGetOffererSpy).not.toHaveBeenCalled()
     expect(apiGetVenueSpy).not.toHaveBeenCalled()
-
-    const state = store.getState()
-    expect(state.user.access).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.currentOffererName).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()

@@ -9,6 +9,7 @@ import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import * as initializeUserModule from '@/commons/store/user/dispatchers/initializeUser'
 import {
   defaultGetOffererResponseModel,
   getOffererNameFactory,
@@ -19,7 +20,6 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { Notification } from '@/components/Notification/Notification'
 
 import { SignIn } from './SignIn'
@@ -191,6 +191,11 @@ describe('SignIn', () => {
   })
 
   it('should call submit prop when user clicks on "Se connecter"', async () => {
+    const initializeUserSpy = vi
+      .spyOn(initializeUserModule, 'initializeUser')
+      // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Redux Thunk return type
+      .mockReturnValueOnce({ unwrap: () => Promise.resolve() } as any)
+
     renderSignIn()
 
     const email = screen.getByLabelText('Adresse email')
@@ -202,11 +207,13 @@ describe('SignIn', () => {
         name: 'Se connecter',
       })
     )
-    expect(api.signin).toHaveBeenCalledWith({
+
+    expect(api.signin).toHaveBeenCalledExactlyOnceWith({
       identifier: 'MonPetitEmail@example.com',
       password: 'fakePassword',
       captchaToken: 'token',
     })
+    expect(initializeUserSpy).toHaveBeenCalledExactlyOnceWith({})
   })
 
   it('should display errors message and focus email input when login failed', async () => {
@@ -320,31 +327,5 @@ describe('SignIn', () => {
         { from: '/connexion' }
       )
     })
-  })
-
-  it('should not read through local storage offerers if it is not available', async () => {
-    vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
-      () => false
-    )
-
-    const getItemSpy = vi
-      .spyOn(Storage.prototype, 'getItem')
-      .mockResolvedValueOnce('')
-
-    renderSignIn()
-
-    const email = screen.getByLabelText('Adresse email')
-    await userEvent.type(email, 'MonPetitEmail@example.com')
-
-    const password = screen.getByLabelText('Mot de passe')
-    await userEvent.type(password, 'fakePassword')
-
-    await userEvent.click(
-      screen.getByRole('button', {
-        name: 'Se connecter',
-      })
-    )
-
-    expect(getItemSpy).not.toHaveBeenLastCalledWith('homepageSelectedOffererId')
   })
 })
