@@ -7,9 +7,10 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetBookingResponse } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
+import { Banner } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import fullLinkIcon from '@/icons/full-link.svg'
 import { Button } from '@/ui-kit/Button/Button'
-import { Callout } from '@/ui-kit/Callout/Callout'
 
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
@@ -185,21 +186,22 @@ export const Desk = (): JSX.Element => {
               </div>
             </form>
           </div>
-          <Callout
-            links={[
-              {
-                href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
-                label: 'Modalités de retrait et CGU',
-                isExternal: true,
-              },
-            ]}
-            className={`${styles['desk-callout']}`}
-            title="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque."
-          >
-            Les pièces d’identité doivent impérativement être présentées
-            physiquement. Merci de ne pas accepter les pièces d’identité au
-            format numérique.
-          </Callout>
+          <div className={`${styles['desk-callout']}`}>
+            <Banner
+              actions={[
+                {
+                  href: 'https://aide.passculture.app/hc/fr/articles/4416062183569--Acteurs-Culturels-Modalités-de-retrait-et-CGU',
+                  label: 'Modalités de retrait et CGU',
+                  isExternal: true,
+                  type: 'link',
+                  icon: fullLinkIcon,
+                  iconAlt: 'Nouvelle fenêtre',
+                },
+              ]}
+              title="N’oubliez pas de vérifier l’identité du bénéficiaire avant de valider la contremarque."
+              description="Les pièces d’identité doivent impérativement être présentées physiquement. Merci de ne pas accepter les pièces d’identité au format numérique."
+            />
+          </div>
         </div>
       </BasicLayout>
     </HeadlineOfferContextProvider>

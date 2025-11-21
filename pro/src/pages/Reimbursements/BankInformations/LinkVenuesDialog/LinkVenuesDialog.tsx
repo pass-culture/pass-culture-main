@@ -10,12 +10,11 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { isEqual } from '@/commons/utils/isEqual'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { ManadgedVenueItem } from '../ManagedVenueItem/ManagedVenueItem'
@@ -128,14 +127,13 @@ export const LinkVenuesDialog = ({
           })}
         >
           {hasVenuesWithoutPricingPoint && (
-            <Callout
-              title="Certaines de vos structures n’ont pas de SIRET"
-              variant={CalloutVariant.ERROR}
-              className={styles['dialog-callout']}
-            >
-              Sélectionnez un SIRET pour chacune de ces structures avant de
-              pouvoir les rattacher à ce compte bancaire.
-            </Callout>
+            <div className={styles['dialog-callout']}>
+              <Banner
+                title="Certaines de vos structures n’ont pas de SIRET"
+                variant={BannerVariants.ERROR}
+                description="Sélectionnez un SIRET pour chacune de ces structures avant de pouvoir les rattacher à ce compte bancaire."
+              />
+            </div>
           )}
           <div className={styles['dialog-subtitle']}>
             Sélectionnez les structures dont les offres seront remboursées sur

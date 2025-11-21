@@ -12,12 +12,12 @@ import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import { Banner } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
 import type { VenueSettingsFormValues } from '@/pages/VenueSettings/commons/types'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -72,22 +72,22 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
   return (
     <>
       {!venue.pricingPoint && isBannerVisible && (
-        <Callout
-          links={[
-            {
-              href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
-              label: `Comment ajouter vos coordonnées bancaires sur une structure sans SIRET ?`,
-              isExternal: true,
-            },
-          ]}
-          className={`${styles['desk-callout']}`}
-        >
-          Si vous souhaitez vous faire rembourser les offres de votre structure
-          sans SIRET, vous devez sélectionner une structure avec SIRET dans
-          votre entité afin de permettre le calcul de votre barème de
-          remboursement. Attention, vous ne pourrez plus modifier votre
-          sélection après validation.
-        </Callout>
+        <div className={`${styles['desk-callout']}`}>
+          <Banner
+            title=""
+            actions={[
+              {
+                href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
+                label: `Comment ajouter vos coordonnées bancaires sur une structure sans SIRET ?`,
+                isExternal: true,
+                icon: fullLinkIcon,
+                iconAlt: 'Nouvelle fenêtre',
+                type: 'link',
+              },
+            ]}
+            description="Si vous souhaitez vous faire rembourser les offres de votre structure sans SIRET, vous devez sélectionner une structure avec SIRET dans votre entité afin de permettre le calcul de votre barème de remboursement. Attention, vous ne pourrez plus modifier votre sélection après validation."
+          />
+        </div>
       )}
 
       <ConfirmDialog

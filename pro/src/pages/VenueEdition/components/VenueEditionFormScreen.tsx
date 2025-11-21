@@ -1,8 +1,7 @@
 import { useLocation } from 'react-router'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
 import { VenueEditionForm } from './VenueEditionForm'
 import styles from './VenueEditionFormScreen.module.scss'
@@ -22,11 +21,10 @@ export const VenueEditionFormScreen = ({
 
   if (venue.isVirtual) {
     return (
-      <Callout title="Cette structure vous permet uniquement de créer des offres numériques, elle n’est pas visible sur l’application pass Culture.">
-        Vous n’avez pas d’informations à remplir à destination du grand public.
-        Si vous souhaitez modifier d’autres informations, vous pouvez vous
-        rendre dans la page "Paramètres généraux".
-      </Callout>
+      <Banner
+        title="Cette structure vous permet uniquement de créer des offres numériques, elle n’est pas visible sur l’application pass Culture."
+        description='Vous n’avez pas d’informations à remplir à destination du grand public. Si vous souhaitez modifier d’autres informations, vous pouvez vous rendre dans la page "Paramètres généraux".'
+      />
     )
   }
 
@@ -34,10 +32,11 @@ export const VenueEditionFormScreen = ({
     <>
       {shouldDisplayAccessToPageWarning && (
         <div className={styles['page-status']}>
-          <Callout variant={CalloutVariant.WARNING}>
-            Sans offre publiée, les jeunes n’ont pas accès à votre page sur
-            l’application.
-          </Callout>
+          <Banner
+            title=""
+            description="Sans offre publiée, les jeunes n’ont pas accès à votre page sur l’application."
+            variant={BannerVariants.WARNING}
+          />
         </div>
       )}
 
