@@ -344,16 +344,17 @@ class BookingListItemStockResponse(ConfiguredBaseModel):
 
 class BookingListItemResponse(ConfiguredBaseModel):
     id: int
-    date_created: datetime
     activation_code: ActivationCodeResponse | None
-    quantity: int
-    total_amount: int
     can_react: bool
-    date_used: datetime | None
     cancellation_date: datetime | None
     cancellation_reason: bookings_models.BookingCancellationReasons | None
-    user_reaction: ReactionTypeEnum | None
+    date_created: datetime
+    date_used: datetime | None
+    expiration_date: datetime | None
+    quantity: int
     stock: BookingListItemStockResponse
+    total_amount: int
+    user_reaction: ReactionTypeEnum | None
 
     _convert_total_amount = validator("total_amount", pre=True, allow_reuse=True)(convert_to_cent)
 
