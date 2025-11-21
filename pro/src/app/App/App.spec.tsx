@@ -59,14 +59,6 @@ const renderApp = (options?: RenderWithProvidersOptions) =>
     }
   )
 
-global.window = Object.create(window)
-Object.defineProperty(window, 'location', {
-  value: {
-    href: 'someurl',
-  },
-  writable: true,
-})
-
 const user = sharedCurrentUserFactory({ hasUserOfferer: true })
 
 describe('App', () => {
