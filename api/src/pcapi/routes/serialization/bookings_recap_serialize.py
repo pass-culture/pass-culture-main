@@ -3,7 +3,7 @@ from datetime import date
 from datetime import datetime
 from enum import Enum
 
-from pydantic.v1 import root_validator
+import pydantic.v1 as pydantic_v1
 
 from pcapi.core.bookings.models import Booking
 from pcapi.core.bookings.models import BookingExportType
@@ -190,7 +190,7 @@ class ListBookingsQueryModel(BaseModel):
         alias_generator = to_camel
         extra = "forbid"
 
-    @root_validator(pre=True)
+    @pydantic_v1.root_validator(pre=True)
     def booking_period_or_event_date_required(cls, values: dict) -> dict:
         event_date = values.get("eventDate")
         booking_period_beginning_date = values.get("bookingPeriodBeginningDate")
@@ -204,6 +204,13 @@ class ListBookingsQueryModel(BaseModel):
                 }
             )
         return values
+
+    @pydantic_v1.validator("booking_period_beginning_date", "booking_period_ending_date")
+    def validate_booking_period_date(cls, booking_period_date: date | None) -> date | None:
+        # Conversion to local timezone may crash when it would shift before 0001-01-01
+        if booking_period_date and booking_period_date < date(1, 1, 2):
+            raise ValueError("invalid date")
+        return booking_period_date
 
 
 def build_booking_status(booking: Booking) -> BookingRecapStatus:
