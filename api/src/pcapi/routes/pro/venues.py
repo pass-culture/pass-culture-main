@@ -83,8 +83,16 @@ def get_venue(venue_id: int) -> venues_serialize.GetVenueResponseModel:
 @private_api.route("/venues", methods=["GET"])
 @login_required
 @atomic()
-@spectree_serialize(response_model=venues_serialize.GetVenueListResponseModel, api=blueprint.pro_private_schema)
-def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.GetVenueListResponseModel:
+@spectree_serialize(
+    response_model=venues_serialize.deprecated.GetVenueListResponseModel,
+    api=blueprint.pro_private_schema,
+    deprecated=True,
+)
+def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.deprecated.GetVenueListResponseModel:
+    """[deprecated] please use /lite/venues instead
+
+    This route loads way too much data.
+    """
     venue_list = offerers_repository.get_filtered_venues(
         pro_user_id=current_user.id,
         active_offerers_only=query.active_offerers_only,
@@ -103,13 +111,29 @@ def get_venues(query: venues_serialize.VenueListQueryModel) -> venues_serialize.
     # venue_ids = [v.id for v in venue_list]
     # venue_ids_with_non_free_offers = offerers_repository.venues_have_non_free_offers(venue_ids)
     venue_ids_with_non_free_offers: set[int] = set()
-    return venues_serialize.GetVenueListResponseModel(
+    return venues_serialize.deprecated.GetVenueListResponseModel(
         venues=[
-            venues_serialize.VenueListItemResponseModel.build(
+            venues_serialize.deprecated.VenueListItemResponseModel.build(
                 venue, ids_of_venues_with_offers, venue_ids_with_non_free_offers
             )
             for venue in venue_list
         ]
+    )
+
+
+@private_api.route("/lite/venues", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=venues_serialize.GetVenueListLiteResponseModel, api=blueprint.pro_private_schema)
+def get_venues_lite(query: venues_serialize.VenueListQueryModel) -> venues_serialize.GetVenueListLiteResponseModel:
+    venue_list = offerers_repository.get_filtered_venues(
+        pro_user_id=current_user.id,
+        active_offerers_only=query.active_offerers_only,
+        offerer_id=query.offerer_id,
+        validated_offerer=query.validated,
+    )
+
+    return venues_serialize.GetVenueListLiteResponseModel(
+        venues=[venues_serialize.VenueListItemLiteResponseModel(id=venue.id, name=venue.name) for venue in venue_list]
     )
 
 
