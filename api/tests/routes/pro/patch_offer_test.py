@@ -58,7 +58,7 @@ class Returns200Test:
         assert response.status_code == 200, response.json
         assert response.json["id"] == offer.id
         assert response.json["venue"]["id"] == offer.venue.id
-        assert response.json["address"]["street"]
+        assert response.json["location"]["street"]
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.name == "Notre part de nuit"
@@ -220,7 +220,7 @@ class Returns200Test:
         )
 
         data = {
-            "address": {
+            "location": {
                 "city": "Saint-Pierre-des-Corps",
                 "latitude": 47.38,
                 "longitude": 0.72,
@@ -230,7 +230,7 @@ class Returns200Test:
                 "inseeCode": "37233",
                 "label": "",
                 "isManualEdition": False,
-                "isVenueAddress": False,
+                "isVenueLocation": False,
             }
         }
         client_session = client.with_session_auth("user1@example.com")
@@ -254,7 +254,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         offer = db.session.query(offers_models.Offer).one()
-        assert offer.offererAddress.address.city == data["address"]["city"]
+        assert offer.offererAddress.address.city == data["location"]["city"]
         address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
         assert address.isManualEdition == False
         assert address.city == "Saint-Pierre-des-Corps"
@@ -269,7 +269,7 @@ class Returns200Test:
         )
 
         data = {
-            "address": {
+            "location": {
                 "city": "saint-pierre-des-corps",
                 "latitude": 47.38,
                 "longitude": 0.72,
@@ -278,7 +278,7 @@ class Returns200Test:
                 "banId": None,
                 "label": "",
                 "isManualEdition": True,
-                "isVenueAddress": False,
+                "isVenueLocation": False,
             }
         }
         client_session = client.with_session_auth("user2@example.com")
@@ -303,10 +303,10 @@ class Returns200Test:
             assert response.status_code == 200
 
         offer = db.session.query(offers_models.Offer).order_by(Offer.id.desc()).first()
-        assert offer.offererAddress.address.city == data["address"]["city"].title()
+        assert offer.offererAddress.address.city == data["location"]["city"].title()
         address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
         assert address.isManualEdition == True
-        assert address.city == data["address"]["city"].title()
+        assert address.city == data["location"]["city"].title()
 
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer_3.offerer)
         offer = offers_factories.OfferFactory(
@@ -318,7 +318,7 @@ class Returns200Test:
         )
 
         data = {
-            "address": {
+            "location": {
                 "city": "SAINT-PIERRE-DES-CORPS",
                 "latitude": 47.38,
                 "longitude": 0.72,
@@ -327,7 +327,7 @@ class Returns200Test:
                 "banId": None,
                 "label": "",
                 "isManualEdition": True,
-                "isVenueAddress": False,
+                "isVenueLocation": False,
             }
         }
         client_session = client.with_session_auth("user3@example.com")
@@ -357,7 +357,7 @@ class Returns200Test:
             == 2
         )
         assert offer.offererAddress.address.isManualEdition == True
-        assert offer.offererAddress.address.city == data["address"]["city"].title()
+        assert offer.offererAddress.address.city == data["location"]["city"].title()
 
     def test_patch_offer_with_manually_edited_oa(self, client):
         LONGITUDE = "1.55"
@@ -381,7 +381,7 @@ class Returns200Test:
         )
 
         data = {
-            "address": {
+            "location": {
                 "city": "Rio",
                 "latitude": LATITUDE,
                 "longitude": LONGITUDE,
@@ -389,7 +389,7 @@ class Returns200Test:
                 "street": "666 rue du bug",
                 "label": "",
                 "isManualEdition": True,
-                "isVenueAddress": False,
+                "isVenueLocation": False,
             }
         }
         client_session = client.with_session_auth("user@example.com")
@@ -620,7 +620,7 @@ class Returns200Test:
             "name": "New name",
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
-            "address": {
+            "location": {
                 "street": "1 rue de la paix",
                 "city": "Paris",
                 "postalCode": "75102",
@@ -672,8 +672,8 @@ class Returns200Test:
             offererAddress=None,
         )
         data = {
-            "address": {
-                "isVenueAddress": True,
+            "location": {
+                "isVenueLocation": True,
                 "street": venue.offererAddress.address.street,
                 "city": venue.offererAddress.address.city,
                 "postalCode": venue.offererAddress.address.postalCode,
@@ -726,7 +726,7 @@ class Returns200Test:
             "name": "Visite des Marais Salins de Kô",
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
-            "address": {
+            "location": {
                 "street": "3, Chemin de la Plage",
                 "city": "Poum, Tiabet",
                 "postalCode": "98826",
@@ -746,9 +746,9 @@ class Returns200Test:
         updated_offer = db.session.get(Offer, offer.id)
         address = updated_offer.offererAddress.address
         assert updated_offer.offererAddress.label == "Marais Salins de Kô"
-        assert address.street == data["address"]["street"]
-        assert address.city == data["address"]["city"]
-        assert address.postalCode == data["address"]["postalCode"]
+        assert address.street == data["location"]["street"]
+        assert address.city == data["location"]["city"]
+        assert address.postalCode == data["location"]["postalCode"]
         assert address.inseeCode == "98826"
         assert address.latitude == Decimal("-20.08521")
         assert address.longitude == Decimal("164.03239")
@@ -771,7 +771,7 @@ class Returns200Test:
             "name": "Visite des Marais Salins de Kô",
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
-            "address": {
+            "location": {
                 "street": "3, Chemin de la Plage",
                 "city": "Poum, Tiabet",
                 "postalCode": "98826",
@@ -791,9 +791,9 @@ class Returns200Test:
         updated_offer = db.session.get(Offer, offer.id)
         address = updated_offer.offererAddress.address
         assert updated_offer.offererAddress.label == "Marais Salins de Kô"
-        assert address.street == data["address"]["street"]
-        assert address.city == data["address"]["city"]
-        assert address.postalCode == data["address"]["postalCode"]
+        assert address.street == data["location"]["street"]
+        assert address.city == data["location"]["city"]
+        assert address.postalCode == data["location"]["postalCode"]
         assert address.inseeCode == None
         assert address.latitude == Decimal("-20.08521")
         assert address.longitude == Decimal("164.03239")
@@ -838,14 +838,14 @@ class Returns200Test:
             "name": "New name",
             "externalTicketOfficeUrl": "http://example.net",
             "mentalDisabilityCompliant": True,
-            "address": {
+            "location": {
                 "street": "1 rue de la paix",
                 "city": "Paris",
                 "postalCode": "75102",
                 "latitude": 48.8566,
                 "longitude": 2.3522,
                 "label": label,
-                "isVenueAddress": not is_manual,
+                "isVenueLocation": not is_manual,
                 "isManualEdition": is_manual,
             },
         }
@@ -980,9 +980,9 @@ class Returns200Test:
         _ = [bookings_factories.BookingFactory(stock=stock) for _ in range(3)]
 
         data = {
-            "address": {
+            "location": {
                 "longitude": 1.3522,
-                "isVenueAddress": False,
+                "isVenueLocation": False,
                 "city": "Paris",
                 "label": "New label",
                 "latitude": 1.3040,

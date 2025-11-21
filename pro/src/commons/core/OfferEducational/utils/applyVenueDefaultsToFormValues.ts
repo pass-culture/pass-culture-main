@@ -27,24 +27,24 @@ export const applyVenueDefaultsToFormValues = (
 
   const locationFromSelectedVenue = {
     locationType: CollectiveLocationType.ADDRESS,
-    address: {
-      isVenueAddress: true,
-      id_oa: selectedVenue?.address?.id_oa.toString() ?? '',
+    location: {
+      isVenueLocation: true,
+      id: selectedVenue?.location?.id.toString() ?? '',
       isManualEdition: false,
       label: venue.name,
     },
   }
 
   const selectedVenueAddress = {
-    city: selectedVenue?.address?.city ?? '',
-    latitude: selectedVenue?.address?.latitude.toString() ?? '',
-    longitude: selectedVenue?.address?.longitude.toString() ?? '',
-    postalCode: selectedVenue?.address?.postalCode ?? '',
-    street: selectedVenue?.address?.street ?? '',
+    city: selectedVenue?.location?.city ?? '',
+    latitude: selectedVenue?.location?.latitude.toString() ?? '',
+    longitude: selectedVenue?.location?.longitude.toString() ?? '',
+    postalCode: selectedVenue?.location?.postalCode ?? '',
+    street: selectedVenue?.location?.street ?? '',
   }
   const isVenueAddress =
     values.location?.locationType === CollectiveLocationType.ADDRESS &&
-    values.location.address?.isVenueAddress
+    values.location.location?.isVenueLocation
 
   if (isOfferCreated) {
     //  In this case we are re-opening the first step during creation

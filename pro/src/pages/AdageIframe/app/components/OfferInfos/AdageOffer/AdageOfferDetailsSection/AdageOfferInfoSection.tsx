@@ -32,12 +32,12 @@ export function getLocation(
       : 'Le partenaire culturel se déplace dans les établissements scolaires.'
   }
 
-  const addressLabel = location.address?.label
+  const addressLabel = location.location?.label
   return (
     <div>
       {addressLabel ? `${addressLabel} - ` : ''}
-      {location.address?.street}, {location.address?.postalCode},{' '}
-      {location.address?.city}
+      {location.location?.street}, {location.location?.postalCode},{' '}
+      {location.location?.city}
     </div>
   )
 }

@@ -61,9 +61,9 @@ describe('getOfferTags', () => {
       ...templateOffer,
       location: {
         locationType: CollectiveLocationType.ADDRESS,
-        address: {
+        location: {
           isManualEdition: false,
-          id_oa: 1,
+          isVenueLocation: false,
           id: 1,
           label: 'Le nom du lieu 1',
           city: 'Paris',

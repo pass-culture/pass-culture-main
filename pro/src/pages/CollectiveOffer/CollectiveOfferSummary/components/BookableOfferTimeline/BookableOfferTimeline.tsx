@@ -56,7 +56,7 @@ export const BookableOfferTimeline = ({
   const { past, future } = offer.history
 
   const venueDepartmentCode =
-    offer.location?.address?.departmentCode ?? offer.venue.departementCode
+    offer.location?.location?.departmentCode ?? offer.venue.departementCode
 
   const pastSteps = past.map(({ datetime, status }, index) => {
     const statusLabel = statusLabelMapping[status]

@@ -298,9 +298,11 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
+                "location": {
+                    "banId": oa.address.banId,
                     "isVenueAddress": True,
                     "isManualEdition": False,
+                    "inseeCode": oa.address.inseeCode,
                     "city": oa.address.city,
                     "latitude": oa.address.latitude,
                     "longitude": oa.address.longitude,
@@ -317,7 +319,8 @@ class Returns200Test:
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
         )
 
-        assert offer.offererAddressId == oa.id
+        assert offer.offererAddress.addressId == oa.addressId
+        assert offer.offererAddress.label == oa.label
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -330,7 +333,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -354,7 +357,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -382,7 +385,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -414,9 +417,11 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
+                "location": {
+                    "banId": new_address.banId,
                     "isVenueAddress": True,
                     "isManualEdition": False,
+                    "inseeCode": new_address.inseeCode,
                     "city": new_address.city,
                     "latitude": new_address.latitude,
                     "longitude": new_address.longitude,
@@ -433,7 +438,8 @@ class Returns200Test:
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
         )
         assert offer.venueId == other_venue.id
-        assert offer.offererAddressId == other_venue.offererAddressId
+        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
+        assert offer.offererAddress.label == other_venue.offererAddress.label
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -742,7 +748,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": "FORBIDDEN COMMENT",
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -762,7 +768,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDEN COMMENT",
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -782,14 +788,14 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=payload)
 
         assert response.status_code == 400
-        assert response.json == {"location.address": ["address is required for the provided locationType"]}
+        assert response.json == {"location.location": ["address is required for the provided locationType"]}
 
     def test_patch_collective_offer_template_with_location_type_school_must_provide_intervention_area(self, client):
         offer_ctx = build_offer_context()
@@ -801,7 +807,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -822,7 +828,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -841,7 +847,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
@@ -868,7 +874,7 @@ class Returns400Test:
             "location": {
                 "locationType": location_type,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             }
         }
 
@@ -876,7 +882,7 @@ class Returns400Test:
             response = pro_client.patch(f"/collective/offers-template/{offer_id}", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.address": ["address is not allowed for the provided locationType"]}
+        assert response.json == {"location.location": ["address is not allowed for the provided locationType"]}
 
 
 class InvalidDatesTest:

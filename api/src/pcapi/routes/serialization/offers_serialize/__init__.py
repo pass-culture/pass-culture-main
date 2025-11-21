@@ -23,9 +23,10 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import highlight_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
+from pcapi.routes.serialization.address_serialize import LocationResponseModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.utils import NOW_LITERAL
@@ -80,7 +81,7 @@ class CategoryResponseModel(BaseModel):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    address: offerers_schemas.AddressBodyModel | None
+    location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
     description: str | None
@@ -190,7 +191,8 @@ class ListOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
-def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressResponseIsLinkedToVenueModel | None:
+def offer_location_getter_dict_helper(offer: offers_models.Offer) -> LocationResponseModel | None:
+    is_venue_location = False
     if offer.status == OfferStatus.DRAFT and not offer.offererAddressId:
         # The offer is still in the funnel creation and without any offererAddress defined
         # We don't want to blindly return venue.offererAddress
@@ -199,14 +201,20 @@ def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressRespo
     # TODO (prouzet, 2025-11-14) CLEAN_OA Remove second part of the condition when step 4.2 is completed
     if offer.offererAddress and (
         offer.offererAddress.addressId != offer.venue.offererAddress.addressId
-        or offer.offererAddress.label != offer.venue.offererAddress.label
+        or (
+            offer.offererAddress.label != offer.venue.offererAddress.label
+            and offer.offererAddress.label != offer.venue.publicName
+        )
     ):
         offerer_address = offer.offererAddress
     else:
         offerer_address = offer.venue.offererAddress
+        is_venue_location = True
     label = offer.venue.common_name if offerer_address._isLinkedToVenue else offerer_address.label
-    return AddressResponseIsLinkedToVenueModel(
-        **retrieve_address_info_from_oa(offerer_address), label=label, isLinkedToVenue=offerer_address._isLinkedToVenue
+    return LocationResponseModel(
+        **retrieve_address_info_from_oa(offerer_address),
+        label=label,
+        isVenueLocation=is_venue_location,
     )
 
 
@@ -223,8 +231,8 @@ class ListOffersOfferResponseModelsGetterDict(GetterDict):
             return False
         if key == "isHeadlineOffer":
             return self._obj.is_headline_offer
-        if key == "address":
-            return offer_address_getter_dict_helper(self._obj)
+        if key == "location":
+            return offer_location_getter_dict_helper(self._obj)
         if key == "bookingsCount":
             return sum([stock.dnBookedQuantity for stock in self._obj.stocks])
         if key == "highlightRequests":
@@ -254,7 +262,7 @@ class ListOffersOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
     isShowcase: bool | None
-    address: AddressResponseIsLinkedToVenueModel | None
+    location: LocationResponseModel | None
     isDigital: bool
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
@@ -436,8 +444,8 @@ class IndividualOfferResponseGetterDict(GetterDict):
 
 class IndividualOfferWithAddressResponseGetterDict(IndividualOfferResponseGetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "address":
-            return offer_address_getter_dict_helper(self._obj)
+        if key == "location":
+            return offer_location_getter_dict_helper(self._obj)
         if key == "isHeadlineOffer":
             return self._obj.is_headline_offer
         return super().get(key, default)
@@ -515,7 +523,7 @@ class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    address: AddressResponseIsLinkedToVenueModel | None
+    location: LocationResponseModel | None
     hasPendingBookings: bool
     isHeadlineOffer: bool
 
@@ -674,7 +682,7 @@ class OfferVideo(ConfiguredBaseModel):
 
 
 class PostOfferBodyModel(BaseModel):
-    address: offerers_schemas.AddressBodyModel | None
+    address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None

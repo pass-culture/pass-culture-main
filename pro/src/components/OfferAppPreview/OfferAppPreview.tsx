@@ -61,7 +61,7 @@ export const OfferAppPreview = ({
 
         {!offer.isDigital && (
           <VenueDetails
-            address={offer.address}
+            address={offer.location}
             withdrawalDetails={
               offer.withdrawalDetails
                 ? cropPreviewText(offer.withdrawalDetails)

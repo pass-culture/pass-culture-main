@@ -28,7 +28,7 @@ class Returns200Test:
         assert found_structure.get("siret") == DIFFUSIBLE_SIRET
         assert found_structure.get("isDiffusible") is True
         assert found_structure.get("name") is not None
-        assert found_structure.get("address") is not None
+        assert found_structure.get("location") is not None
 
     @patch("pcapi.connectors.api_adresse.find_ban_address", side_effect=api_adresse.AdresseException())
     def test_find_diffusible_structure_by_siret_with_no_address(self, _find_ban_address_mock, client):
@@ -42,7 +42,7 @@ class Returns200Test:
         assert found_structure.get("siret") == DIFFUSIBLE_SIRET
         assert found_structure.get("isDiffusible") is True
         assert found_structure.get("name") is not None
-        assert found_structure.get("address") is None
+        assert found_structure.get("location") is None
 
     @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.TestingBackend")
     def test_find_partially_diffusible_structure_by_siret(self, client):
@@ -56,8 +56,8 @@ class Returns200Test:
         assert found_structure.get("siret") == PARTIALLY_DIFFUSIBLE_SIRET
         assert found_structure.get("isDiffusible") is False
         assert found_structure.get("name") is None
-        assert found_structure.get("address") is not None
-        assert found_structure.get("address").get("street") == "Adresse non diffusée"
+        assert found_structure.get("location") is not None
+        assert found_structure.get("location").get("street") == "Adresse non diffusée"
 
     @patch("pcapi.connectors.api_adresse.find_ban_city", side_effect=api_adresse.AdresseException())
     def test_find_partially_diffusible_structure_by_siret_with_no_address(self, _find_ban_city_mock, client):
@@ -71,7 +71,7 @@ class Returns200Test:
         assert found_structure.get("siret") == PARTIALLY_DIFFUSIBLE_SIRET
         assert found_structure.get("isDiffusible") is False
         assert found_structure.get("name") is None
-        assert found_structure.get("address") is None
+        assert found_structure.get("location") is None
 
 
 class Returns400Test:

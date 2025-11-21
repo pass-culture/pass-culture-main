@@ -88,8 +88,8 @@ const offerLocationSerializer = (
       ...payload,
       location: {
         locationType: CollectiveLocationType.ADDRESS,
-        address: {
-          ...offer.location.address,
+        location: {
+          ...offer.location.location,
           banId: offer.banId ?? '',
           street: offer.street ?? '',
           postalCode: offer.postalCode ?? '',
@@ -101,8 +101,8 @@ const offerLocationSerializer = (
       },
     }
 
-    // remove id_oa key from location object as it is useful only on a form matter
-    delete newLocationPayload.location.address.id_oa
+    // remove id key from location object as it is useful only on a form matter
+    delete newLocationPayload.location.location.id
     return newLocationPayload
   }
 
@@ -178,6 +178,18 @@ export const createPatchOfferPayload = (
       }
     }
   })
+
+  return removeLocationDetailsIfVenueLocation(changedValues)
+}
+
+function removeLocationDetailsIfVenueLocation(
+  changedValues: PatchCollectiveOfferTemplateBodyModel
+) {
+  if (changedValues.location?.location?.isVenueLocation) {
+    changedValues.location.location = {
+      isVenueLocation: true,
+    }
+  }
   return changedValues
 }
 
@@ -235,5 +247,5 @@ export const createPatchOfferTemplatePayload = (
       ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
       : null
 
-  return changedValues
+  return removeLocationDetailsIfVenueLocation(changedValues)
 }

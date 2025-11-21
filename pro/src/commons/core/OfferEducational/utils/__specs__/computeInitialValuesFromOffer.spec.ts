@@ -10,7 +10,7 @@ import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 const venueAddress = {
   city: 'Paris',
   id: 1,
-  id_oa: 1994,
+  isVenueLocation: true,
   latitude: 3,
   longitude: 2,
   isManualEdition: false,
@@ -21,7 +21,7 @@ const venueAddress = {
 
 const venues = [
   venueListItemFactory({
-    address: venueAddress,
+    location: venueAddress,
     id: 2,
   }),
 ]
@@ -43,8 +43,6 @@ const offerVenue = {
 
 describe('computeInitialValuesFromOffer', () => {
   it('should return default values when no offer is provided', () => {
-    const venue = venues[0]
-
     expect(computeInitialValuesFromOffer(offerer, false, venues)).toEqual({
       ...getDefaultEducationalValues(),
       offererId: '1',
@@ -56,10 +54,10 @@ describe('computeInitialValuesFromOffer', () => {
       street: 'rue de la paix',
       location: {
         locationType: CollectiveLocationType.ADDRESS,
-        address: {
+        location: {
+          id: '1',
           isManualEdition: false,
-          isVenueAddress: true,
-          id_oa: venue.address?.id_oa.toString(),
+          isVenueLocation: true,
           label: 'Le nom du lieu 2',
         },
       },
@@ -203,12 +201,12 @@ describe('computeInitialValuesFromOffer', () => {
         getCollectiveOfferTemplateFactory({
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
+            location: {
               label: 'théâtre de savoie',
-              id_oa: 1995,
+              id: 1995,
+              isVenueLocation: false,
               city: 'Chambéry',
               street: "rue de l'espoir",
-              id: 14,
               isManualEdition: false,
               latitude: 12,
               longitude: 3,
@@ -228,10 +226,10 @@ describe('computeInitialValuesFromOffer', () => {
         postalCode: '31000',
         street: "rue de l'espoir",
         location: {
-          address: {
-            isVenueAddress: false,
+          location: {
+            isVenueLocation: false,
             isManualEdition: false,
-            id_oa: 'SPECIFIC_ADDRESS',
+            id: 'SPECIFIC_ADDRESS',
             label: 'théâtre de savoie',
           },
           locationType: 'ADDRESS',
@@ -249,7 +247,7 @@ describe('computeInitialValuesFromOffer', () => {
         getCollectiveOfferTemplateFactory({
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: venueAddress,
+            location: venueAddress,
           },
           venue: offerVenue,
         }),
@@ -264,10 +262,10 @@ describe('computeInitialValuesFromOffer', () => {
         postalCode: '75018',
         street: 'rue de la paix',
         location: {
-          address: {
-            isVenueAddress: true,
+          location: {
+            id: '1',
+            isVenueLocation: true,
             isManualEdition: false,
-            id_oa: '1994',
             label: 'Le nom du lieu 2',
           },
           locationType: 'ADDRESS',

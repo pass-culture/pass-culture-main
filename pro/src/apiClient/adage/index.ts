@@ -16,7 +16,6 @@ export { AdageFrontRoles } from './models/AdageFrontRoles';
 export { AdageHeaderLink } from './models/AdageHeaderLink';
 export type { AdageHeaderLogBody } from './models/AdageHeaderLogBody';
 export { AdagePlaylistType } from './models/AdagePlaylistType';
-export type { AddressResponseIsLinkedToVenueModel } from './models/AddressResponseIsLinkedToVenueModel';
 export type { AuthenticatedResponse } from './models/AuthenticatedResponse';
 export type { BookCollectiveOfferRequest } from './models/BookCollectiveOfferRequest';
 export type { BookCollectiveOfferResponse } from './models/BookCollectiveOfferResponse';
@@ -46,6 +45,7 @@ export type { ListCollectiveOfferTemplateResponseModel } from './models/ListColl
 export type { ListFeatureResponseModel } from './models/ListFeatureResponseModel';
 export type { LocalOfferersPlaylist } from './models/LocalOfferersPlaylist';
 export type { LocalOfferersPlaylistOffer } from './models/LocalOfferersPlaylistOffer';
+export type { LocationResponseModel } from './models/LocationResponseModel';
 export type { NationalProgramModel } from './models/NationalProgramModel';
 export type { OfferBody } from './models/OfferBody';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';

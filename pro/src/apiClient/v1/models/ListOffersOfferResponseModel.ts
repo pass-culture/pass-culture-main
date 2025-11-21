@@ -2,14 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { ListOffersStockResponseModel } from './ListOffersStockResponseModel';
 import type { ListOffersVenueResponseModel } from './ListOffersVenueResponseModel';
+import type { LocationResponseModel } from './LocationResponseModel';
 import type { OfferStatus } from './OfferStatus';
 import type { ShortHighlightResponseModel } from './ShortHighlightResponseModel';
 import type { SubcategoryIdEnum } from './SubcategoryIdEnum';
 export type ListOffersOfferResponseModel = {
-  address?: AddressResponseIsLinkedToVenueModel | null;
   bookingAllowedDatetime?: string | null;
   bookingsCount?: number | null;
   canBeEvent: boolean;
@@ -24,6 +23,7 @@ export type ListOffersOfferResponseModel = {
   isHeadlineOffer: boolean;
   isShowcase?: boolean | null;
   isThing: boolean;
+  location?: LocationResponseModel | null;
   name: string;
   productId?: number | null;
   productIsbn?: string | null;

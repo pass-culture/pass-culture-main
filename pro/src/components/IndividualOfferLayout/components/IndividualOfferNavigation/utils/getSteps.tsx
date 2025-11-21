@@ -42,7 +42,7 @@ const STEP_DEFINITIONS: StepDefinition[] = [
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
     label: 'Localisation',
-    buildCanGoBeyondStep: () => (offer) => Boolean(offer.address ?? offer.url),
+    buildCanGoBeyondStep: () => (offer) => Boolean(offer.location ?? offer.url),
   },
   {
     id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA,

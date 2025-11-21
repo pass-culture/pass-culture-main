@@ -23,7 +23,7 @@ const getLocationInformation = ({
 }: CollectiveOfferLocationSectionProps) => {
   const offerLocation = offer.location
   if (offerLocation?.locationType === CollectiveLocationType.ADDRESS) {
-    const { label, street, city, postalCode } = offerLocation.address || {}
+    const { label, street, city, postalCode } = offerLocation.location || {}
     return (
       <div className={styles['location-information']}>
         <p>Intitulé : {label ?? '-'}</p>

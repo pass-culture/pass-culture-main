@@ -77,7 +77,7 @@ class DMSApplicationForEAC(BaseModel):
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     activity: offerers_models.Activity | None
-    address: offerers_schemas.AddressBodyModel
+    address: address_serialize.LocationBodyModel
     bookingEmail: offerers_schemas.VenueBookingEmail
     comment: offerers_schemas.VenueComment | None
     isOpenToPublic: bool | None
@@ -224,14 +224,14 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
                     return pricing_link.pricingPoint
             return None
 
-        if key == "address":
+        if key == "location":
             offerer_address = venue.offererAddress
             if not offerer_address:
                 return None
-            return address_serialize.AddressResponseIsLinkedToVenueModel(
+            return address_serialize.LocationResponseModel(
                 **address_serialize.retrieve_address_info_from_oa(offerer_address),
                 label=venue.common_name,
-                isLinkedToVenue=True,
+                isVenueLocation=True,
             )
 
         if key == "collectiveDmsApplications":
@@ -312,7 +312,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     adageInscriptionDate: datetime | None
     bankAccount: BankAccountResponseModel | None
     hasOffers: bool
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    location: address_serialize.LocationResponseModel | None
     hasActiveIndividualOffer: bool
     isCaledonian: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None

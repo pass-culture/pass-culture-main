@@ -1,4 +1,4 @@
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 import { offererAddressFactory } from '@/commons/utils/factories/offererAddressFactories'
 
@@ -113,7 +113,7 @@ describe('computeVenueDisplayName', () => {
 describe('computeAddressDisplayName', () => {
   it('should format the address without the label', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
-      getAddressResponseIsLinkedToVenueModelFactory({ label: undefined })
+      getLocationResponseModel({ label: undefined })
     )
 
     expect(computedAddressDisplayName).toBe('ma super rue 75008 city')
@@ -121,7 +121,7 @@ describe('computeAddressDisplayName', () => {
 
   it('should format the address with the the label', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
-      getAddressResponseIsLinkedToVenueModelFactory({ label: 'Mon Label' })
+      getLocationResponseModel({ label: 'Mon Label' })
     )
 
     expect(computedAddressDisplayName).toBe(
@@ -131,7 +131,7 @@ describe('computeAddressDisplayName', () => {
 
   it('should format the address without the the label if `showAddress` is false', () => {
     const computedAddressDisplayName = computeAddressDisplayName(
-      getAddressResponseIsLinkedToVenueModelFactory({ label: 'Mon Label' }),
+      getLocationResponseModel({ label: 'Mon Label' }),
       false
     )
 

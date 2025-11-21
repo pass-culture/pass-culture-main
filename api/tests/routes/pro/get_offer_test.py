@@ -184,10 +184,9 @@ class Returns200Test:
             "subcategoryId": "SEANCE_CINE",
             "thumbUrl": None,
             "url": None,
-            "address": {
+            "location": {
                 "label": venue.common_name,
                 "id": venue.offererAddress.address.id,
-                "id_oa": venue.offererAddress.id,
                 "banId": venue.offererAddress.address.banId,
                 "departmentCode": venue.offererAddress.address.departmentCode,
                 "inseeCode": venue.offererAddress.address.inseeCode,
@@ -196,8 +195,8 @@ class Returns200Test:
                 "longitude": float(venue.offererAddress.address.longitude),
                 "postalCode": venue.offererAddress.address.postalCode,
                 "street": venue.offererAddress.address.street,
-                "isLinkedToVenue": venue.offererAddress.isLinkedToVenue,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
+                "isVenueLocation": venue.offererAddress.isLinkedToVenue,
             },
             "venue": {
                 "street": venue.offererAddress.address.street,
@@ -334,10 +333,9 @@ class Returns200Test:
             response = auth_client.get(f"/offers/{offer_id}")
             assert response.status_code == 200
 
-        assert response.json["address"] == {
+        assert response.json["location"] == {
             "label": offer_offerer_address.label,
             "id": offer_offerer_address.address.id,
-            "id_oa": offer_offerer_address.id,
             "banId": offer_offerer_address.address.banId,
             "departmentCode": offer_offerer_address.address.departmentCode,
             "inseeCode": offer_offerer_address.address.inseeCode,
@@ -346,7 +344,7 @@ class Returns200Test:
             "longitude": float(offer_offerer_address.address.longitude),
             "postalCode": offer_offerer_address.address.postalCode,
             "street": offer_offerer_address.address.street,
-            "isLinkedToVenue": offer_offerer_address.isLinkedToVenue,
+            "isVenueLocation": offer_offerer_address.isLinkedToVenue,
             "isManualEdition": offer_offerer_address.address.isManualEdition,
         }
 
@@ -366,10 +364,9 @@ class Returns200Test:
             response = auth_client.get(f"/offers/{offer_id}")
             assert response.status_code == 200
 
-        assert response.json["address"] == {
+        assert response.json["location"] == {
             "label": offer.venue.common_name,
             "id": offerer_address.address.id,
-            "id_oa": offerer_address.id,
             "banId": offerer_address.address.banId,
             "departmentCode": offerer_address.address.departmentCode,
             "inseeCode": offerer_address.address.inseeCode,
@@ -378,8 +375,8 @@ class Returns200Test:
             "longitude": float(offerer_address.address.longitude),
             "postalCode": offerer_address.address.postalCode,
             "street": offerer_address.address.street,
-            "isLinkedToVenue": offerer_address.isLinkedToVenue,
             "isManualEdition": offerer_address.address.isManualEdition,
+            "isVenueLocation": offerer_address.isLinkedToVenue,
         }
 
     @time_machine.travel("2020-10-15 00:00:00")

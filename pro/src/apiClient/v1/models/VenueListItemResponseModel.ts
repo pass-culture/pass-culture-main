@@ -2,12 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
+import type { LocationResponseModel } from './LocationResponseModel';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type VenueListItemResponseModel = {
-  address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;
   bookingEmail?: string | null;
@@ -20,6 +19,7 @@ export type VenueListItemResponseModel = {
   isPermanent: boolean;
   isValidated: boolean;
   isVirtual: boolean;
+  location?: LocationResponseModel | null;
   managingOffererId: number;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;

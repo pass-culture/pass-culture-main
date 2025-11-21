@@ -7,12 +7,12 @@ import { toPatchOfferBodyModel } from '../toPatchOfferBodyModel'
 
 describe('toPatchOfferBodyModel', () => {
   const formValuesBase = makeLocationFormValues({
-    address: {
+    location: {
       banId: '49759_1304_00002',
       city: 'Montpellier',
       inseeCode: '34172',
       isManualEdition: true,
-      isVenueAddress: false,
+      isVenueLocation: false,
       label: 'Centre commercial',
       latitude: '43.609296',
       longitude: '3.882445',

@@ -32,15 +32,15 @@ export const FormLocation = ({
 }: FormLocationProps): JSX.Element => {
   const { watch, setValue, register, getFieldState } =
     useFormContext<OfferEducationalFormValues>()
-  const isManualEdition = watch('location.address.isManualEdition')
+  const isManualEdition = watch('location.location.isManualEdition')
 
   const selectedVenue = venues.find((v) => v.id.toString() === watch('venueId'))
 
   const toggleManualAddressForm = () => {
-    setValue('location.address.isManualEdition', !isManualEdition)
+    setValue('location.location.isManualEdition', !isManualEdition)
     if (!isManualEdition) {
-      setValue('location.address.isVenueAddress', false)
-      setValue('location.address.isManualEdition', true)
+      setValue('location.location.isVenueLocation', false)
+      setValue('location.location.isManualEdition', true)
       resetReactHookFormAddressFields((name, defaultValue) =>
         setValue(name, defaultValue)
       )
@@ -48,29 +48,29 @@ export const FormLocation = ({
   }
 
   const setVenueAddressFields = () => {
-    const { address } = selectedVenue || {}
-    setValue('banId', address?.banId)
-    setValue('city', address?.city)
-    setValue('longitude', (address?.longitude || '').toString())
-    setValue('latitude', (address?.latitude || '').toString())
-    setValue('postalCode', address?.postalCode)
-    setValue('street', address?.street)
-    setValue('inseeCode', address?.inseeCode)
-    setValue('location.address.label', address?.label || undefined)
-    setValue('location.address.isVenueAddress', true)
-    setValue('location.address.isManualEdition', false)
-    setValue('coords', `${address?.latitude}, ${address?.longitude}`)
+    const { location } = selectedVenue || {}
+    setValue('banId', location?.banId)
+    setValue('city', location?.city)
+    setValue('longitude', (location?.longitude || '').toString())
+    setValue('latitude', (location?.latitude || '').toString())
+    setValue('postalCode', location?.postalCode)
+    setValue('street', location?.street)
+    setValue('inseeCode', location?.inseeCode)
+    setValue('location.location.label', location?.label || undefined)
+    setValue('location.location.isVenueLocation', true)
+    setValue('location.location.isManualEdition', false)
+    setValue('coords', `${location?.latitude}, ${location?.longitude}`)
   }
 
   const handleAddressLocationChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
-    setValue('location.address.id_oa', event.target.value)
+    setValue('location.location.id', event.target.value)
 
     const isSpecificAddress = event.target.value === 'SPECIFIC_ADDRESS'
 
     if (isSpecificAddress) {
-      setValue('location.address.label', '')
+      setValue('location.location.label', '')
       resetReactHookFormAddressFields((name, defaultValue) => {
         setValue(name, defaultValue)
       })
@@ -81,8 +81,8 @@ export const FormLocation = ({
   }
 
   const onAddressSelect = (data: AdresseData) => {
-    setValue('location.address.isVenueAddress', false)
-    setValue('location.address.isManualEdition', false)
+    setValue('location.location.isVenueLocation', false)
+    setValue('location.location.isManualEdition', false)
     setValue('street', data.address)
     setValue('postalCode', data.postalCode)
     setValue('city', data.city)
@@ -103,15 +103,15 @@ export const FormLocation = ({
           disabled={disableForm}
           label="Type d'adresse"
           variant="detailed"
-          checkedOption={watch('location.address.id_oa')}
-          name="location.address.id_oa"
+          checkedOption={watch('location.location.id')}
+          name="location.location.id"
           options={[
             {
               label: selectedVenue
-                ? `${selectedVenue.address?.label} - ${selectedVenue.address?.street}
-                  ${selectedVenue.address?.postalCode} ${selectedVenue.address?.city}`
+                ? `${selectedVenue.location?.label} - ${selectedVenue.location?.street}
+                  ${selectedVenue.location?.postalCode} ${selectedVenue.location?.city}`
                 : 'Adresse du lieu sélectionné',
-              value: selectedVenue?.address?.id_oa.toString() ?? '',
+              value: selectedVenue?.location?.id.toString() ?? '',
             },
             {
               label: 'Autre adresse',
@@ -120,9 +120,9 @@ export const FormLocation = ({
                 <div className={styles['specific-address']}>
                   <TextInput
                     label="Intitulé de la localisation"
-                    {...register('location.address.label')}
+                    {...register('location.location.label')}
                     error={
-                      getFieldState('location.address.label').error?.message
+                      getFieldState('location.location.label').error?.message
                     }
                     disabled={disableForm}
                   />
@@ -206,10 +206,10 @@ export const FormLocation = ({
       event.target.value as CollectiveLocationType
     )
     if (event.target.value === CollectiveLocationType.ADDRESS) {
-      const { address } = selectedVenue || {}
+      const { location } = selectedVenue || {}
       // If here, the user chose to use the venue address
       setVenueAddressFields()
-      setValue('location.address.id_oa', address?.id_oa.toString())
+      setValue('location.location.id', location?.id.toString())
       setValue('location.locationType', CollectiveLocationType.ADDRESS)
       setValue('location.locationComment', '')
       setValue('interventionArea', [])

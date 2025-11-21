@@ -215,7 +215,7 @@ class Returns200Test:
                 "obfuscatedIban": f"""XXXX XXXX XXXX {bank_account_link.bankAccount.iban[-4:]}""",
                 "status": bank_account_link.bankAccount.status.value,
             },
-            "address": {
+            "location": {
                 "id": venue.offererAddress.addressId,
                 "street": venue.offererAddress.address.street,
                 "postalCode": venue.offererAddress.address.postalCode,
@@ -226,9 +226,8 @@ class Returns200Test:
                 "longitude": float(venue.offererAddress.address.longitude),
                 "banId": venue.offererAddress.address.banId,
                 "label": venue.common_name,
-                "id_oa": venue.offererAddressId,
-                "isLinkedToVenue": True,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
+                "isVenueLocation": True,
             },
             "hasOffers": True,
             "isOpenToPublic": True,

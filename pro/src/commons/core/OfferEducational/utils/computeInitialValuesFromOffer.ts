@@ -98,15 +98,15 @@ export const computeInitialValuesFromOffer = (
     getDefaultEducationalValues(isMarseilleEnabled)
 
   const defaultVenue = venues.find((v) => v.id.toString() === initialVenueId)
-  const venueAddress = defaultVenue?.address
+  const venueAddress = defaultVenue?.location
   const offerLocationFromVenue = defaultVenue
     ? {
         locationType: CollectiveLocationType.ADDRESS,
-        address: {
-          isVenueAddress: true,
+        location: {
           isManualEdition: false,
           label: defaultVenue.name,
-          id_oa: defaultVenue.address?.id_oa.toString() ?? '',
+          isVenueLocation: true,
+          id: defaultVenue.location?.id.toString() ?? '',
         },
       }
     : defaultEducationalFormValues.location
@@ -141,20 +141,19 @@ export const computeInitialValuesFromOffer = (
     }
   }
 
-  const isVenueAddress =
-    offer.location?.address?.id_oa === defaultVenue?.address?.id_oa
+  const isVenueAddress = offer.location?.location?.isVenueLocation
 
   const offerLocationFromOffer = {
     locationType:
       offer.location?.locationType ??
       defaultEducationalFormValues.location?.locationType,
-    address: {
-      isVenueAddress,
-      label: offer.location?.address?.label ?? '',
-      id_oa: isVenueAddress
-        ? offer.location?.address?.id_oa.toString()
+    location: {
+      label: offer.location?.location?.label ?? '',
+      id: isVenueAddress
+        ? offer.location?.location?.id.toString()
         : 'SPECIFIC_ADDRESS',
-      isManualEdition: !!offer.location?.address?.isManualEdition,
+      isVenueLocation: offer.location?.location?.isVenueLocation,
+      isManualEdition: !!offer.location?.location?.isManualEdition,
     },
     locationComment: offer.location?.locationComment,
   }
@@ -168,7 +167,7 @@ export const computeInitialValuesFromOffer = (
   const phone = offer.contactPhone
   const domains = offer.domains.map(({ id }) => id.toString())
 
-  const offerAddress = offer.location?.address
+  const offerAddress = offer.location?.location
   const address = isVenueAddress ? venueAddress : offerAddress
 
   return {

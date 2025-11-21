@@ -125,10 +125,10 @@ class Returns200Test:
 
         # the response should contain updated info
         assert response.json["siret"] == venue.siret
-        assert response.json["address"]["street"] == new_address.street
-        assert response.json["address"]["banId"] == new_address.banId
-        assert response.json["address"]["city"] == new_address.city
-        assert response.json["address"]["postalCode"] == new_address.postalCode
+        assert response.json["location"]["street"] == new_address.street
+        assert response.json["location"]["banId"] == new_address.banId
+        assert response.json["location"]["city"] == new_address.city
+        assert response.json["location"]["postalCode"] == new_address.postalCode
 
         # an update request should be sent to Zendesk
         assert len(external_testing.sendinblue_requests) == 1
@@ -273,9 +273,9 @@ class Returns200Test:
         assert response.status_code == 200
 
         response = client_http.get(f"/venues/{venue.id}")
-        assert response.json["address"]["street"] == "11 Rue Jean Jaurès"
-        assert response.json["address"]["city"] == "Lavelanet"
-        assert response.json["address"]["postalCode"] == "09300"
+        assert response.json["location"]["street"] == "11 Rue Jean Jaurès"
+        assert response.json["location"]["city"] == "Lavelanet"
+        assert response.json["location"]["postalCode"] == "09300"
 
     def test_update_venue_location_with_manual_edition(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()
@@ -331,10 +331,10 @@ class Returns200Test:
         assert new_offerer_address.label is None
 
         assert response.json["siret"] == venue.siret
-        assert response.json["address"]["street"] == new_address.street
-        assert response.json["address"]["banId"] == new_address.banId
-        assert response.json["address"]["city"] == new_address.city
-        assert response.json["address"]["postalCode"] == new_address.postalCode
+        assert response.json["location"]["street"] == new_address.street
+        assert response.json["location"]["banId"] == new_address.banId
+        assert response.json["location"]["city"] == new_address.city
+        assert response.json["location"]["postalCode"] == new_address.postalCode
         assert len(venue.action_history) == 2
 
         update_action = [
@@ -419,10 +419,10 @@ class Returns200Test:
         assert venue.offererAddress.address.isManualEdition
 
         assert response.json["siret"] == venue.siret
-        assert response.json["address"]["street"] == current_address.street
-        assert response.json["address"]["banId"] == current_address.banId
-        assert response.json["address"]["city"] == current_address.city
-        assert response.json["address"]["postalCode"] == current_address.postalCode
+        assert response.json["location"]["street"] == current_address.street
+        assert response.json["location"]["banId"] == current_address.banId
+        assert response.json["location"]["city"] == current_address.city
+        assert response.json["location"]["postalCode"] == current_address.postalCode
 
         assert venue.action_history[0].actionType == history_models.ActionType.INFO_MODIFIED
         assert venue.action_history[0].venueId == venue_id

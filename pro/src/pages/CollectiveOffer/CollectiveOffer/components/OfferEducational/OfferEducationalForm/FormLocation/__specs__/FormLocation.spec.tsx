@@ -60,9 +60,9 @@ const initialValues: Pick<
   coords: '48.87004, 2.3785',
   location: {
     locationType: CollectiveLocationType.ADDRESS,
-    address: {
-      id_oa: '889',
-      isVenueAddress: true,
+    location: {
+      id: '889',
+      isVenueLocation: true,
       isManualEdition: false,
       label: '',
     },
@@ -100,14 +100,13 @@ function renderFormLocation(
 }
 
 describe('FormLocation', () => {
-  const address = {
+  const location = {
     banId: '',
     city: 'Paris',
     departmentCode: '75',
     id: 1,
-    id_oa: 889,
     inseeCode: null,
-    isLinkedToVenue: true,
+    isVenueLocation: true,
     isManualEdition: false,
     label: 'Venue 1',
     latitude: 48.87004,
@@ -117,7 +116,7 @@ describe('FormLocation', () => {
   }
 
   const venues: VenueListItemResponseModel[] = [
-    venueListItemFactory({ id: 1, address }),
+    venueListItemFactory({ id: 1, location }),
   ]
 
   const props: FormLocationProps = {
@@ -193,11 +192,11 @@ describe('FormLocation', () => {
       ...initialValues,
       location: {
         ...initialValues.location,
-        address: {
-          ...initialValues.location?.address,
-          id_oa: 'SPECIFIC_ADDRESS',
+        location: {
+          ...initialValues.location?.location,
+          id: 'SPECIFIC_ADDRESS',
           isManualEdition: true,
-          isVenueAddress: false,
+          isVenueLocation: false,
           label: 'mon adresse manuelle',
         },
       },
@@ -224,9 +223,9 @@ describe('FormLocation', () => {
         ...initialValues,
         location: {
           ...initialValues.location,
-          address: {
-            ...initialValues.location?.address,
-            id_oa: 'SPECIFIC_ADDRESS',
+          location: {
+            ...initialValues.location?.location,
+            id: 'SPECIFIC_ADDRESS',
             isManualEdition: true,
           },
         },
@@ -255,9 +254,9 @@ describe('FormLocation', () => {
       ...initialValues,
       location: {
         ...initialValues.location,
-        address: {
-          ...initialValues.location?.address,
-          id_oa: 'SPECIFIC_ADDRESS',
+        location: {
+          ...initialValues.location?.location,
+          id: 'SPECIFIC_ADDRESS',
         },
       },
     })

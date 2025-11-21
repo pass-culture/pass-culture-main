@@ -9,7 +9,7 @@ export const EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES: PhysicalAddressSubformValues
     coords: '',
     inseeCode: null,
     isManualEdition: false,
-    isVenueAddress: false,
+    isVenueLocation: false,
     label: null,
     latitude: '',
     longitude: '',

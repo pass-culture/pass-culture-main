@@ -51,14 +51,14 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
     venue: {
       ...offer.venue,
       coordinates: {
-        latitude: venue.address?.latitude,
-        longitude: venue.address?.longitude,
+        latitude: venue.location?.latitude,
+        longitude: venue.location?.longitude,
       },
       publicName: venue.publicName,
-      postalCode: venue.address?.postalCode,
-      city: venue.address?.city,
-      address: venue.address?.street,
-      departmentCode: venue.address?.departmentCode,
+      postalCode: venue.location?.postalCode,
+      city: venue.location?.city,
+      address: venue.location?.street,
+      departmentCode: venue.location?.departmentCode,
     },
     isTemplate: !isCollectiveOffer(offer),
     ...(isBookable && {

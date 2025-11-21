@@ -16,13 +16,12 @@ describe('CollectiveOfferLocationSection', () => {
           ...offer,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
+            location: {
               label: 'Théâtre de la Corniche',
               city: 'Marseille',
               street: '3 Rue Pimpim',
               postalCode: '13007',
-              id_oa: 372,
-              isLinkedToVenue: true,
+              isVenueLocation: true,
               latitude: 2,
               longitude: 5,
               id: 1234,
@@ -53,12 +52,11 @@ describe('CollectiveOfferLocationSection', () => {
           ...offer,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
+            location: {
               city: 'Marseille',
               street: '3 Rue Pimpim',
               postalCode: '13007',
-              id_oa: 372,
-              isLinkedToVenue: true,
+              isVenueLocation: true,
               latitude: 2,
               longitude: 5,
               id: 1234,

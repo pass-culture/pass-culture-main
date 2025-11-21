@@ -17,9 +17,10 @@ describe('toFormValues', () => {
     const formValues = toFormValues({
       venue: {
         ...venue,
-        address: {
+        location: {
           id: 978,
-          id_oa: 1012,
+          //id: 1012,
+          isVenueLocation: false,
           city: 'Montpellier',
           street: '79 Quai du Palladium',
           postalCode: '34000',
@@ -63,7 +64,7 @@ describe('toFormValues', () => {
     const formValues = toFormValues({
       venue: {
         ...venue,
-        address: null,
+        location: null,
       },
     })
 
@@ -87,8 +88,8 @@ describe('toFormValues', () => {
     const formValues = toFormValues({
       venue: {
         ...venue,
-        address: {
-          ...venue.address!, // Ensure address is not null
+        location: {
+          ...venue.location!, // Ensure address is not null
           inseeCode: undefined,
         },
       },
@@ -100,8 +101,8 @@ describe('toFormValues', () => {
     const formValues = toFormValues({
       venue: {
         ...venue,
-        address: {
-          ...venue.address!, // Ensure address is not null
+        location: {
+          ...venue.location!, // Ensure address is not null
           banId: undefined,
         },
       },
@@ -115,8 +116,8 @@ describe('toFormValues', () => {
         ...venue,
         isCaledonian: true,
         siret: 'NC0123456789XX',
-        address: {
-          ...venue.address!, // Ensure address is not null
+        location: {
+          ...venue.location!, // Ensure address is not null
           banId: undefined,
         },
       },
