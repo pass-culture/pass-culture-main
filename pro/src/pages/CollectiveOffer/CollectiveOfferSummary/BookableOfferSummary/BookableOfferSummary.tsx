@@ -110,7 +110,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const formatDateRangeWithTime = (): string => {
     const { startDatetime, endDatetime } = offer.collectiveStock || {}
     const venueDepartmentCode =
-      offer.location?.address?.departmentCode ?? offer.venue.departementCode
+      offer.location?.location?.departmentCode ?? offer.venue.departementCode
 
     if (!startDatetime || !endDatetime) {
       return DEFAULT_RECAP_VALUE

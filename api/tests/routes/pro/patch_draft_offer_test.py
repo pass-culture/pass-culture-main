@@ -384,7 +384,7 @@ class Returns200Test:
         assert response.status_code == 200
         assert response.json["status"] == OfferStatus.DRAFT.value
         assert response.json["id"] == draft_offer.id
-        assert not response.json.get("address")
+        assert not response.json.get("location")
         assert draft_offer.offererAddressId is None
         assert draft_offer.status is OfferStatus.DRAFT
 
@@ -400,7 +400,7 @@ class Returns200Test:
             "bookingEmail": None,
             "shouldSendMail": True,
             "bookingContact": "test@mail.com",
-            "address": {
+            "location": {
                 **address_payload,
                 "label": venue.common_name if address_payload["isVenueAddress"] else "Librairie des mangas",
             },
@@ -418,9 +418,8 @@ class Returns200Test:
 
         response = client.with_session_auth(user_email).get(f"/offers/{offer_id}")
         assert response.status_code == 200
-        assert response.json["address"]["id"] == created_address.id
-        assert response.json["address"]["id_oa"] == updated_draft_offer.offererAddressId
-        assert response.json["address"]["label"] == venue.common_name if is_venue_address else "Librairie des mangas"
+        assert response.json["location"]["id"] == created_address.id
+        assert response.json["location"]["label"] == venue.common_name if is_venue_address else "Librairie des mangas"
 
     def test_update_offer_accepts_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
@@ -486,7 +485,7 @@ class Returns200Test:
 
         updated_offer = db.session.get(Offer, offer.id)
         assert updated_offer.metaData.videoUrl == "https://www.youtube.com/watch?v=l73rmrLTHQc"
-        assert response.json["address"]["street"]
+        assert response.json["location"]["street"]
 
     def test_update_offer_accepts_video_url_for_synchronized_offer(self, app, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")

@@ -194,7 +194,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                           name="street"
                           label="Adresse postale"
                           disabled
-                          value={getFormattedAddress(venue.address)}
+                          value={getFormattedAddress(venue.location)}
                         />
                       </div>
                       <Callout

@@ -1,8 +1,8 @@
 import type {
-  AddressResponseIsLinkedToVenueModel,
   GetOffererAddressesResponseModel,
   GetOffererVenueResponseModel,
   ListOffersVenueResponseModel,
+  LocationResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
@@ -21,7 +21,7 @@ export const computeVenueDisplayName = (
 }
 
 type MinimalAddressResponseModelToDisplay = Pick<
-  AddressResponseIsLinkedToVenueModel,
+  LocationResponseModel,
   'label' | 'city' | 'street' | 'postalCode'
 >
 export const computeAddressDisplayName = (

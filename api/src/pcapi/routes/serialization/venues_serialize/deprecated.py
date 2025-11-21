@@ -24,7 +24,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasCreatedOffer: bool
     venueTypeCode: offerers_models.VenueTypeCode
     externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    location: address_serialize.LocationResponseModel | None
     isPermanent: bool
     isCaledonian: bool
     isActive: bool
@@ -49,7 +49,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "offererName": venue.managingOfferer.name,
             "hasCreatedOffer": venue.id in ids_of_venues_with_offers,
             "externalAccessibilityData": cls.build_external_accessibility_data(venue),
-            "address": cls.build_address(venue),
+            "location": cls.build_address(venue),
             "isCaledonian": venue.is_caledonian,
             "isActive": venue.managingOfferer.isActive,
             "isValidated": venue.managingOfferer.isValidated,
@@ -74,9 +74,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
         )
 
     @classmethod
-    def build_address(
-        cls, venue: offerers_models.Venue
-    ) -> address_serialize.AddressResponseIsLinkedToVenueModel | None:
+    def build_address(cls, venue: offerers_models.Venue) -> address_serialize.LocationResponseModel | None:
         offerer_address = venue.offererAddress
         if not offerer_address:
             return None
@@ -91,11 +89,11 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "street": offerer_address.address.street,
             "city": offerer_address.address.city,
             "label": venue.common_name,
-            "isLinkedToVenue": True,
             "isManualEdition": offerer_address.address.isManualEdition,
             "departmentCode": offerer_address.address.departmentCode,
+            "isVenueLocation": True,
         }
-        return address_serialize.AddressResponseIsLinkedToVenueModel(**data)
+        return address_serialize.LocationResponseModel(**data)
 
 
 # TODO(jbaudet - 11/2025): remove once (pro) GET /venues has been

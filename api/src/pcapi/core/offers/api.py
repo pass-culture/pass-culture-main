@@ -385,13 +385,14 @@ def create_offer(
     return offer
 
 
-def get_offerer_address_from_address_body(
-    address_body: offerers_schemas.AddressBodyModel | None, venue: offerers_models.Venue
+def get_or_create_offerer_address_from_address_body(
+    address_body: offerers_schemas.LocationModel | offerers_schemas.LocationOnlyOnVenueModel | None,
+    venue: offerers_models.Venue,
 ) -> offerers_models.OffererAddress | None:
     if not address_body:
         return None
 
-    if address_body.isVenueAddress:
+    if isinstance(address_body, offerers_schemas.LocationOnlyOnVenueModel):
         # TODO (prouzet, 2025-11-20) CLEAN_OA The following condition should not happen after step 4.5
         # but must be kept to avoid duplication before venues have their exclusive location.
         if venue.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION:
@@ -416,12 +417,14 @@ def update_offer(
     fields = body.dict(by_alias=True, exclude_unset=True)
 
     # updated using the pro interface
-    if body.address:
-        offerer_address_from_body = get_offerer_address_from_address_body(address_body=body.address, venue=offer.venue)
+    if body.location:
+        offerer_address_from_body = get_or_create_offerer_address_from_address_body(
+            address_body=body.location, venue=offer.venue
+        )
 
         if offerer_address_from_body is not None:
             fields["offererAddress"] = offerer_address_from_body
-            fields.pop("address", None)
+            fields.pop("location", None)
 
     should_send_mail = fields.pop("shouldSendMail", False)
 

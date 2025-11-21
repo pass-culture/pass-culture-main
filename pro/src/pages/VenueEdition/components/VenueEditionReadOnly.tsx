@@ -42,7 +42,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           <>
             <OpeningHoursAndAddressReadOnly
               openingHours={venue.openingHours}
-              address={venue.address}
+              address={venue.location}
             />
             <AccessibilityReadOnly venue={venue} />
           </>

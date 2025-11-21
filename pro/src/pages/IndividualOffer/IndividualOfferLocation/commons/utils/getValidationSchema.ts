@@ -46,7 +46,7 @@ export const PhysicalLocationValidationSchema = yup
     }),
     inseeCode: nonEmptyStringOrNull(),
     isManualEdition: yup.boolean().defined(),
-    isVenueAddress: yup
+    isVenueLocation: yup
       .boolean()
       .when('offerLocation', {
         is: (offerLocation: string) =>
@@ -92,7 +92,7 @@ export const PhysicalLocationValidationSchema = yup
 
 export const getValidationSchema = ({ isDigital }: { isDigital: boolean }) => {
   return yup.object<LocationFormValues>().shape({
-    address: yup
+    location: yup
       .mixed<PhysicalAddressSubformValues>()
       .nullable()
       .defined()

@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
 import type { GetOfferLastProviderResponseModel } from './GetOfferLastProviderResponseModel';
 import type { GetOfferMediationResponseModel } from './GetOfferMediationResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
+import type { LocationResponseModel } from './LocationResponseModel';
 import type { OfferStatus } from './OfferStatus';
 import type { PriceCategoryResponseModel } from './PriceCategoryResponseModel';
 import type { ShortHighlightResponseModel } from './ShortHighlightResponseModel';
@@ -14,7 +14,6 @@ import type { VideoData } from './VideoData';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type GetIndividualOfferWithAddressResponseModel = {
   activeMediation?: GetOfferMediationResponseModel | null;
-  address?: AddressResponseIsLinkedToVenueModel | null;
   audioDisabilityCompliant?: boolean | null;
   bookingAllowedDatetime?: string | null;
   bookingContact?: string | null;
@@ -41,6 +40,7 @@ export type GetIndividualOfferWithAddressResponseModel = {
   isNonFreeOffer?: boolean | null;
   isThing: boolean;
   lastProvider?: GetOfferLastProviderResponseModel | null;
+  location?: LocationResponseModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name: string;

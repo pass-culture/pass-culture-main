@@ -26,9 +26,10 @@ describe('getIndividualOfferColumns', () => {
     name: 'My Offer',
     status: OfferStatus.ACTIVE,
     thumbUrl: '/image.png',
-    address: {
+    location: {
       id: 1,
-      id_oa: 997,
+      //id: 997,
+      isVenueLocation: false,
       banId: '35288_7283_00001',
       inseeCode: '89001',
       label: 'Bureau',

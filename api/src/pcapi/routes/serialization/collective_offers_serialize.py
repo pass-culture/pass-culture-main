@@ -16,7 +16,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -98,7 +97,7 @@ class CollectiveOfferDatesModel(BaseModel):
 class GetCollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    location: address_serialize.LocationResponseModel | None
 
 
 def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
@@ -237,7 +236,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
 class CollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    address: offerers_schemas.AddressBodyModel | None
+    location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
 
     @validator("locationComment")
     def validate_location_comment(cls, location_comment: str | None, values: dict) -> str | None:
@@ -246,10 +245,12 @@ class CollectiveOfferLocationModel(BaseModel):
             raise ValueError("locationComment is not allowed for the provided locationType")
         return location_comment
 
-    @validator("address")
-    def validate_address(
-        cls, address: offerers_schemas.AddressBodyModel | None, values: dict
-    ) -> offerers_schemas.AddressBodyModel | None:
+    @validator("location")
+    def validate_location(
+        cls,
+        address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None,
+        values: dict,
+    ) -> address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None:
         location_type = values.get("locationType")
         if (
             location_type
@@ -302,17 +303,21 @@ class GetCollectiveOfferBookingResponseModel(BaseModel):
 def get_collective_offer_location_model(
     offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
 ) -> GetCollectiveOfferLocationModel:
-    address = None
+    location = None
     oa = offer.offererAddress
+    venue = offer.venue
     if oa is not None:
-        address = address_serialize.AddressResponseIsLinkedToVenueModel(
+        is_venue_location = False
+        if venue.offererAddress.addressId == oa.addressId and (oa.label is None or oa.label == venue.publicName):
+            is_venue_location = True
+        location = address_serialize.LocationResponseModel(
             **address_serialize.retrieve_address_info_from_oa(oa),
             label=offer.venue.common_name if oa._isLinkedToVenue else oa.label,
-            isLinkedToVenue=oa._isLinkedToVenue,
+            isVenueLocation=is_venue_location,
         )
 
     return GetCollectiveOfferLocationModel(
-        locationType=offer.locationType, locationComment=offer.locationComment, address=address
+        locationType=offer.locationType, locationComment=offer.locationComment, location=location
     )
 
 

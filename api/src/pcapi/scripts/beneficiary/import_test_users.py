@@ -26,6 +26,7 @@ from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import db
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications.internal.transactional import import_test_user_failure
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.users import ProUserCreationBodyV2Model
@@ -139,7 +140,7 @@ def _create_pro_user(row: dict) -> User:
     # Most of offerers are not validated on staging without this commit() - TODO: is this related to atomic? oa?
     db.session.commit()
 
-    address = offerers_schemas.AddressBodyModel(
+    address = address_serialize.LocationBodyModel(
         street=offerers_schemas.VenueAddress(offerer_creation_info.street),
         city=offerers_schemas.VenueCity(offerer_creation_info.city),
         postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postalCode),
@@ -150,6 +151,7 @@ def _create_pro_user(row: dict) -> User:
         label=None,
     )
 
+    # TODO(xordoquy): rename address to location ?
     venue_creation_info = venues_serialize.PostVenueBodyModel(
         activity=offerers_models.Activity.NOT_ASSIGNED,
         address=address,

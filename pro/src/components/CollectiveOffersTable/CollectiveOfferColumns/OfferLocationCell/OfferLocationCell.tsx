@@ -19,7 +19,7 @@ export const OfferLocationCell = ({
       return "Dans l'établissement"
     }
 
-    const { label, street, postalCode, city } = offerLocation?.address || {}
+    const { label, street, postalCode, city } = offerLocation?.location || {}
     return (
       <div className={styles['text-overflow-ellipsis']}>
         {label ? `${label} - ` : ''}

@@ -106,13 +106,13 @@ export const PartnerPage = ({
             {venue.publicName || venue.name}
           </h3>
 
-          {venue.address && (
+          {venue.location && (
             <address
               data-testid="venue-address"
               className={styles['venue-address']}
             >
-              {venue.address.street ? `${venue.address.street}, ` : ''}
-              {venue.address.postalCode} {venue.address.city}
+              {venue.location.street ? `${venue.location.street}, ` : ''}
+              {venue.location.postalCode} {venue.location.city}
             </address>
           )}
           <ButtonLink

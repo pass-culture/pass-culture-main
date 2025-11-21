@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 
 import { OpeningHoursAndAddressReadOnly } from '../OpeningHoursAndAddressReadOnly'
 import { OpeningHoursReadOnlyHours } from '../OpeningHoursReadOnlyHours/OpeningHoursReadOnlyHours'
@@ -9,7 +9,7 @@ import { OpeningHoursReadOnlyHours } from '../OpeningHoursReadOnlyHours/OpeningH
 const MOCK_DATA = {
   venue: {
     ...defaultGetVenue,
-    address: getAddressResponseIsLinkedToVenueModelFactory(),
+    address: getLocationResponseModel(),
     openingHours: {
       MONDAY: [['08:00', '20:00']],
       TUESDAY: [

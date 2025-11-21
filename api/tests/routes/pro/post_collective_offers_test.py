@@ -50,7 +50,7 @@ def base_offer_payload(
         "location": {
             "locationType": models.CollectiveLocationType.SCHOOL.value,
             "locationComment": None,
-            "address": None,
+            "location": None,
         },
         "students": ["Lycée - Seconde", "Lycée - Première"],
         "audioDisabilityCompliant": False,
@@ -204,9 +204,11 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": {
-                    "isVenueAddress": True,
+                "location": {
+                    "banId": oa.address.banId,
+                    "isVenueLocation": True,
                     "isManualEdition": False,
+                    "inseeCode": oa.address.inseeCode,
                     "city": oa.address.city,
                     "latitude": oa.address.latitude,
                     "longitude": oa.address.longitude,
@@ -236,7 +238,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -260,7 +262,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
 
@@ -287,7 +289,7 @@ class Returns200Test:
             "location": {
                 "locationType": models.CollectiveLocationType.TO_BE_DEFINED.value,
                 "locationComment": "Right here",
-                "address": None,
+                "location": None,
             },
         }
 
@@ -498,7 +500,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": "FORBIDDED COMMENT",
-                "address": None,
+                "location": None,
             },
         }
 
@@ -520,7 +522,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": "FORBIDDED COMMENT",
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
 
@@ -543,7 +545,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -564,7 +566,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.SCHOOL.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -584,7 +586,7 @@ class Returns400Test:
             "location": {
                 "locationType": models.CollectiveLocationType.ADDRESS.value,
                 "locationComment": None,
-                "address": None,
+                "location": None,
             },
         }
 
@@ -592,7 +594,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.address": ["address is required for the provided locationType"]}
+        assert response.json == {"location.location": ["address is required for the provided locationType"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
     @pytest.mark.parametrize(
@@ -611,7 +613,7 @@ class Returns400Test:
             "location": {
                 "locationType": location_type,
                 "locationComment": None,
-                "address": educational_testing.ADDRESS_DICT,
+                "location": educational_testing.ADDRESS_DICT,
             },
         }
 
@@ -619,7 +621,7 @@ class Returns400Test:
             response = client.with_session_auth("user@example.com").post("/collective/offers", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"location.address": ["address is not allowed for the provided locationType"]}
+        assert response.json == {"location.location": ["address is not allowed for the provided locationType"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
 

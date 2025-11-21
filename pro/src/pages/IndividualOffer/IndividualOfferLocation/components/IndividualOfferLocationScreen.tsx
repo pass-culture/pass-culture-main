@@ -87,7 +87,7 @@ export const IndividualOfferLocationScreen = ({
   ): Promise<void> => {
     if (
       offer.hasPendingBookings &&
-      form.getFieldState('address').isDirty &&
+      form.getFieldState('location').isDirty &&
       !isUpdateWarningDialogOpen
     ) {
       setIsUpdateWarningDialogOpen(true)

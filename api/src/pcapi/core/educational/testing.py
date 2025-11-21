@@ -144,16 +144,15 @@ ADDRESS_DICT = {
 }
 
 
-def get_serialized_address(offerer_address: "OffererAddress", label: str, is_linked_to_venue: bool) -> dict:
+def get_serialized_address(offerer_address: "OffererAddress", label: str, is_venue_location: bool) -> dict:
     address = offerer_address.address
 
     return {
-        "address": {
+        "location": {
             "id": address.id,
-            "id_oa": offerer_address.id,
             "inseeCode": address.inseeCode,
-            "isLinkedToVenue": is_linked_to_venue,
             "isManualEdition": False,
+            "isVenueLocation": is_venue_location,
             "city": address.city,
             "label": label,
             "latitude": float(address.latitude),

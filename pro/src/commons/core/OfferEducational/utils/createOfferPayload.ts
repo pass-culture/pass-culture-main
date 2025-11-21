@@ -54,16 +54,12 @@ export const serializeDates = (
 const getCommonOfferPayload = (
   offer: OfferEducationalFormValues
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel => {
-  // remove id_oa key from location object as it useful only on a form matter
-  delete offer.location?.address?.id_oa
-
   const getLocationPayload = () => {
     if (offer.location?.locationType === CollectiveLocationType.ADDRESS) {
-      return {
-        location: {
-          locationType: CollectiveLocationType.ADDRESS,
-          address: {
-            ...offer.location.address,
+      const location = offer.location.location?.isVenueLocation
+        ? { isVenueLocation: true }
+        : {
+            ...offer.location.location,
             banId: offer.banId,
             street: offer.street ?? '',
             postalCode: offer.postalCode ?? '',
@@ -71,7 +67,12 @@ const getCommonOfferPayload = (
             longitude: offer.longitude ?? '',
             city: offer.city ?? '',
             coords: offer.coords ?? '',
-          },
+          }
+
+      return {
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          location,
         },
       }
     }

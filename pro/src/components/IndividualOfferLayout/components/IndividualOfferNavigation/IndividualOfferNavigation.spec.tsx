@@ -9,7 +9,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   individualOfferContextValuesFactory,
@@ -120,7 +120,7 @@ describe('IndividualOfferNavigation', () => {
       const offerWithNumerousStepsBase = getIndividualOfferFactory({
         isEvent: true,
         priceCategories: [priceCategoryFactory()],
-        address: getAddressResponseIsLinkedToVenueModelFactory(),
+        location: getLocationResponseModel(),
         hasStocks: false,
       })
       const contextValuesWithNumerousSteps =
@@ -305,7 +305,7 @@ describe('IndividualOfferNavigation', () => {
         isEvent: true,
         offer: getIndividualOfferFactory({
           audioDisabilityCompliant: true,
-          address: getAddressResponseIsLinkedToVenueModelFactory(),
+          location: getLocationResponseModel(),
         }),
       })
 

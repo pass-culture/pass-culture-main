@@ -60,19 +60,19 @@ export const SiretOrCommentFields = ({
       }
 
       /* istanbul ignore next: DEBT, TO FIX */
-      const address = `${response.address?.street} ${response.address?.postalCode} ${response.address?.city}`
+      const address = `${response.location?.street} ${response.location?.postalCode} ${response.location?.city}`
       setIsFieldNameFrozen?.(
         response !== undefined && response.siret.length > 0
       )
       setValue('name', response?.name ?? '')
 
       setValue('addressAutocomplete', address)
-      setValue('street', response.address?.street ?? '')
-      setValue('postalCode', response.address?.postalCode ?? '')
-      setValue('city', response.address?.city ?? '')
-      setValue('latitude', response.address?.latitude.toString() ?? '')
-      setValue('longitude', response.address?.longitude.toString() ?? '')
-      setValue('inseeCode', response.address?.inseeCode ?? '')
+      setValue('street', response.location?.street ?? '')
+      setValue('postalCode', response.location?.postalCode ?? '')
+      setValue('city', response.location?.city ?? '')
+      setValue('latitude', response.location?.latitude.toString() ?? '')
+      setValue('longitude', response.location?.longitude.toString() ?? '')
+      setValue('inseeCode', response.location?.inseeCode ?? '')
     } catch (_e) {
       if (isError(_e)) {
         setError('siret', {

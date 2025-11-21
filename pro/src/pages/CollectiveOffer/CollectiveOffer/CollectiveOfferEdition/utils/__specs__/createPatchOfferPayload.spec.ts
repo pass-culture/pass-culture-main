@@ -39,11 +39,11 @@ describe('createPatchOfferPayload', () => {
     street: 'rue de la paix',
     location: {
       locationType: CollectiveLocationType.ADDRESS,
-      address: {
-        isVenueAddress: true,
+      location: {
+        isVenueLocation: true,
         isManualEdition: false,
         label: '',
-        id_oa: '123',
+        id: '123',
       },
     },
     participants: buildStudentLevelsMapWithDefaultValue(true),
@@ -99,9 +99,9 @@ describe('createPatchOfferPayload', () => {
     street: 'rue de la paix',
     location: {
       locationType: CollectiveLocationType.ADDRESS,
-      address: {
-        isVenueAddress: false,
-        id_oa: 'SPECIFIC_ADDRESS',
+      location: {
+        isVenueLocation: false,
+        id: 'SPECIFIC_ADDRESS',
         isManualEdition: false,
         label: 'Une autre adresse',
       },
@@ -174,17 +174,36 @@ describe('createPatchOfferPayload', () => {
       expect.objectContaining({
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          address: {
+          location: {
             city: 'Marseille',
             latitude: '3',
             longitude: '2',
             postalCode: '13007',
             street: 'rue de la paix',
-            isVenueAddress: false,
+            isVenueLocation: false,
             label: 'Une autre adresse',
             isManualEdition: false,
             banId: '',
             coords: '',
+          },
+        },
+      })
+    )
+  })
+
+  it('should return patch offer payload with minimal location key for isVenueLocation', () => {
+    const offerAtVenueLocation = {
+      ...offer,
+      location: { ...offer.location, location: { isVenueLocation: true } },
+    }
+    const payload = createPatchOfferPayload(offerAtVenueLocation, initialValues)
+
+    expect(payload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          location: {
+            isVenueLocation: true,
           },
         },
       })
@@ -201,13 +220,13 @@ describe('createPatchOfferPayload', () => {
       expect.objectContaining({
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          address: {
+          location: {
             city: 'Paris',
             latitude: '3',
             longitude: '2',
             postalCode: '13007',
             street: 'rue de la paix',
-            isVenueAddress: false,
+            isVenueLocation: false,
             label: 'Une autre adresse',
             isManualEdition: false,
             banId: '',
@@ -224,9 +243,9 @@ describe('createPatchOfferPayload', () => {
         ...offer,
         location: {
           locationType: CollectiveLocationType.SCHOOL,
-          address: {
+          location: {
             isManualEdition: false,
-            isVenueAddress: false,
+            isVenueLocation: false,
             label: '',
           },
         },
@@ -249,9 +268,9 @@ describe('createPatchOfferPayload', () => {
         ...offer,
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
-          address: {
+          location: {
             isManualEdition: false,
-            isVenueAddress: false,
+            isVenueLocation: false,
             label: '',
           },
           locationComment: 'toto',

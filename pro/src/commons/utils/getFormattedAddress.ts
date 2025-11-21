@@ -1,7 +1,7 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 
 export const getFormattedAddress = (
-  address: GetVenueResponseModel['address']
+  address: GetVenueResponseModel['location']
 ): string => {
   const street = address?.street ? `${address.street}, ` : ''
   const postalCode = address?.postalCode ? `${address.postalCode} ` : ''
