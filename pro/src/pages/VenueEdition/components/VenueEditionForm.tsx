@@ -20,8 +20,8 @@ import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Banner } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -197,15 +197,17 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                           value={getFormattedAddress(venue.location)}
                         />
                       </div>
-                      <Callout
-                        testId="address-callout"
+                      <div
+                        data-testid="address-callout"
                         className={
                           styles['opening-hours-subsubsection-callout']
                         }
                       >
-                        Pour modifier l’adresse de votre structure, rendez-vous
-                        dans votre page Paramètres généraux.
-                      </Callout>
+                        <Banner
+                          title=""
+                          description="Pour modifier l’adresse de votre structure, rendez-vous dans votre page Paramètres généraux."
+                        />
+                      </div>
                     </FormLayout.Row>
                     <FormLayout.Row>
                       <fieldset>

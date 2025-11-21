@@ -3,8 +3,8 @@ import { useLocation } from 'react-router'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullNextIcon from '@/icons/full-next.svg'
 
 import styles from '../../Homepage.module.scss'
 
@@ -27,11 +27,14 @@ export const BankAccountHasPendingCorrectionCallout = ({
 
   return (
     <div className={styles['reimbursements-banner']}>
-      <Callout
-        links={[
+      <Banner
+        title=""
+        actions={[
           {
             href: `/remboursements/informations-bancaires?structure=${offerer.id}`,
             label: 'Voir les corrections attendues',
+            type: 'link',
+            icon: fullNextIcon,
             onClick: () => {
               logEvent(
                 BankAccountEvents.CLICKED__BANK_ACCOUNT_HAS_PENDING_CORRECTIONS,
@@ -43,10 +46,9 @@ export const BankAccountHasPendingCorrectionCallout = ({
             },
           },
         ]}
-        variant={CalloutVariant.ERROR}
-      >
-        Compte bancaire incomplet
-      </Callout>
+        variant={BannerVariants.ERROR}
+        description="Compte bancaire incomplet"
+      />
     </div>
   )
 }

@@ -1,30 +1,25 @@
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from './BannerInvisibleSiren.module.scss'
 
-interface BannerInvisibleSirenProps {
-  isNewOnboarding?: boolean
-}
-
-export const BannerInvisibleSiren = ({
-  isNewOnboarding = false,
-}: BannerInvisibleSirenProps): JSX.Element => (
-  <Callout
-    links={[
-      {
-        href: 'https://statut-diffusion-sirene.insee.fr/',
-        label: `Modifier la visibilité de mon ${
-          isNewOnboarding ? 'SIRET' : 'SIREN'
-        }`,
-        isExternal: true,
-      },
-    ]}
-    variant={CalloutVariant.ERROR}
-    className={styles.banner}
-  >
-    Le {isNewOnboarding ? 'SIRET' : 'SIREN'} doit être rendu visible pour
-    valider votre inscription. Vous pouvez effectuer cette démarche sur le site
-    de l’INSEE.
-  </Callout>
+export const BannerInvisibleSiren = (): JSX.Element => (
+  <div className={styles.banner}>
+    <Banner
+      title=""
+      actions={[
+        {
+          href: 'https://statut-diffusion-sirene.insee.fr/',
+          label: `Modifier la visibilité de mon SIRET`,
+          isExternal: true,
+          icon: fullLinkIcon,
+          iconAlt: 'Nouvelle fenêtre',
+          type: 'link',
+        },
+      ]}
+      variant={BannerVariants.ERROR}
+      description="Le SIRET doit être rendu visible pour valider votre inscription. Vous pouvez
+      effectuer cette démarche sur le site de l’INSEE."
+    />
+  </div>
 )

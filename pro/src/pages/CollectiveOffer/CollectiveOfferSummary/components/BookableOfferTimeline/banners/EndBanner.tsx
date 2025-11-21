@@ -1,6 +1,10 @@
 import fullEditIcon from 'icons/full-edit.svg'
 
-import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import {
+  Banner,
+  type BannerLink,
+  BannerVariants,
+} from '@/design-system/Banner/Banner'
 
 import styles from '../BookableOfferTimeline.module.scss'
 
@@ -11,7 +15,7 @@ export const EndBanner = ({
   offerId: number
   canEditDiscount: boolean
 }) => {
-  const actions = canEditDiscount
+  const actions: BannerLink[] = canEditDiscount
     ? [
         {
           label: "Modifier à la baisse le prix ou le nombre d'élèves",

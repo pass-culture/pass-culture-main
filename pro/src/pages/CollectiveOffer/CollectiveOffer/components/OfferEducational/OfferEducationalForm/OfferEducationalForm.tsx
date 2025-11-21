@@ -25,10 +25,10 @@ import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 
 import type { DomainOption } from '../useOfferEducationalFormData'
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
@@ -151,10 +151,10 @@ export const OfferEducationalForm = ({
           </BannerPublicApi>
         )}
         {!userOfferer?.allowedOnAdage ? (
-          <Callout className={styles['no-offerer-callout']}>
-            Vous ne pouvez pas créer d’offre collective tant que votre entité
-            juridique n’est pas validée.
-          </Callout>
+          <Banner
+            title=""
+            description="Vous ne pouvez pas créer d’offre collective tant que votre entité juridique n’est pas validée."
+          />
         ) : (
           <>
             <FormLayout.MandatoryInfo />

@@ -5,10 +5,9 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { downloadBookableOffersFile } from '@/components/CollectiveOffersTable/utils/downloadBookableOffersFile'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import styles from './CollectiveOffersDownloadDrawer.module.scss'
@@ -53,10 +52,13 @@ export const CollectiveOffersDownloadDrawer = ({
         </Button>
       }
     >
-      <Callout variant={CalloutVariant.INFO} className={styles['callout']}>
-        Appliquez des filtres à votre tableau pour sélectionner les offres que
-        vous souhaitez télécharger.
-      </Callout>
+      <div className={styles['callout']}>
+        <Banner
+          title=""
+          description="Appliquez des filtres à votre tableau pour sélectionner les offres que
+          vous souhaitez télécharger."
+        />
+      </div>
       <DialogBuilder.Footer>
         <div className={styles['actions']}>
           <Dialog.Close asChild>

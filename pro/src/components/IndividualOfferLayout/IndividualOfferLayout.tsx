@@ -12,12 +12,11 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
@@ -115,23 +114,27 @@ export const IndividualOfferLayout = ({
       {offer && <OfferStatusBanner status={offer.status} />}
 
       {hasPublishedOfferWithSameEan && (
-        <Callout
-          variant={CalloutVariant.ERROR}
-          title="Votre brouillon d’offre est obsolète car vous avez déjà publié une offre avec cet EAN"
-          className={styles['ean-already-exists-callout']}
-        >
-          <p className={styles['ean-already-exists-callout-description']}>
-            Vous ne pouvez pas publier 2 offres avec un EAN similaire.
-          </p>
-          <Button
-            onClick={onDeleteOfferWithAlreadyExistingEan}
-            variant={ButtonVariant.TERNARY}
-            icon={fullTrashIcon}
-            className={styles['ean-already-exists-callout-button']}
-          >
-            Supprimer ce brouillon
-          </Button>
-        </Callout>
+        <div className={styles['ean-already-exists-callout']}>
+          <Banner
+            variant={BannerVariants.ERROR}
+            title="Votre brouillon d’offre est obsolète car vous avez déjà publié une offre avec cet EAN"
+            description={
+              <>
+                <p className={styles['ean-already-exists-callout-description']}>
+                  Vous ne pouvez pas publier 2 offres avec un EAN similaire.
+                </p>
+                <Button
+                  onClick={onDeleteOfferWithAlreadyExistingEan}
+                  variant={ButtonVariant.TERNARY}
+                  icon={fullTrashIcon}
+                  className={styles['ean-already-exists-callout-button']}
+                >
+                  Supprimer ce brouillon
+                </Button>
+              </>
+            }
+          />
+        </div>
       )}
 
       {shouldDisplayHighlightsBanner && (

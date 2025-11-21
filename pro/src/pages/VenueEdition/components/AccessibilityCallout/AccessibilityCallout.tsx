@@ -1,5 +1,6 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { Callout } from '@/ui-kit/Callout/Callout'
+import { Banner } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 
 interface AccessibilityCalloutProps {
   externalAccessibilityId?: GetVenueResponseModel['externalAccessibilityId']
@@ -26,18 +27,21 @@ export const AccessibilityCallout = ({
       }
 
   return (
-    <Callout
-      testId="accessibility-callout"
-      className={className}
-      links={[
-        {
-          href: callout.href,
-          label: callout.label,
-          isExternal: true,
-        },
-      ]}
-    >
-      {callout.content}
-    </Callout>
+    <div data-testid="accessibility-callout" className={className}>
+      <Banner
+        title=""
+        actions={[
+          {
+            href: callout.href,
+            label: callout.label,
+            isExternal: true,
+            icon: fullLinkIcon,
+            iconAlt: 'Nouvelle fenêtre',
+            type: 'link',
+          },
+        ]}
+        description={callout.content}
+      />
+    </div>
   )
 }

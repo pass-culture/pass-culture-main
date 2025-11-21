@@ -18,7 +18,9 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { Banner } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import fullLinkIcon from '@/icons/full-link.svg'
 import {
   MAYBE_APP_USER_APE_CODE,
   MAYBE_HIGHER_EDUCATION_INSTITUTION_CODE,
@@ -27,7 +29,6 @@ import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserD
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSiren'
@@ -238,23 +239,26 @@ export const Offerer = (): JSX.Element => {
               </ButtonLink>
             </FormLayout.Row>
           </FormLayout.Section>
-          {showInvisibleBanner && (
-            <BannerInvisibleSiren isNewOnboarding={true} />
-          )}
-          <Callout
+          {showInvisibleBanner && <BannerInvisibleSiren />}
+          <Banner
             title="Vous êtes un équipement d’une collectivité ou d’un établissement public ?"
-            links={[
+            actions={[
               {
                 href: 'https://aide.passculture.app/hc/fr/articles/4633420022300--Acteurs-Culturels-Collectivit%C3%A9-Lieu-rattach%C3%A9-%C3%A0-une-collectivit%C3%A9-S-inscrire-et-param%C3%A9trer-son-compte-pass-Culture-',
                 label: 'En savoir plus',
                 isExternal: true,
+                type: 'link',
+                icon: fullLinkIcon,
+                iconAlt: 'Nouvelle fenêtre',
               },
             ]}
-          >
-            <p className={styles['callout-content-info']}>
-              Renseignez le SIRET de la structure à laquelle vous êtes rattaché.
-            </p>
-          </Callout>
+            description={
+              <p className={styles['callout-content-info']}>
+                Renseignez le SIRET de la structure à laquelle vous êtes
+                rattaché.
+              </p>
+            }
+          />
           <ActionBar
             onClickNext={handleNextStep}
             isDisabled={isSubmitting}

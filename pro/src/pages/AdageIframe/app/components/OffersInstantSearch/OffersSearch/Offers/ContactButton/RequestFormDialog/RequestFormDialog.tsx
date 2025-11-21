@@ -9,11 +9,11 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { Banner } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
@@ -225,11 +225,12 @@ export const RequestFormDialog = ({
             <hr className={styles['separator']} />
             <MandatoryInfo className={styles['form-mandatory']} />
             {isPreview && (
-              <Callout className={styles['contact-callout']}>
-                Vous ne pouvez pas envoyer de demande de contact car ceci est un
-                aperçu de test du formulaire que verront les enseignants une
-                fois l’offre publiée.
-              </Callout>
+              <div className={styles['contact-callout']}>
+                <Banner
+                  title=""
+                  description="Vous ne pouvez pas envoyer de demande de contact car ceci est un aperçu de test du formulaire que verront les enseignants une fois l’offre publiée."
+                />
+              </div>
             )}
           </>
         )}
@@ -263,18 +264,21 @@ export const RequestFormDialog = ({
           </span>
           <MandatoryInfo className={styles['form-mandatory']} />
           {isPreview && (
-            <Callout className={styles['contact-callout']}>
-              Vous ne pouvez pas envoyer de demande de contact car ceci est un
-              aperçu de test du formulaire que verront les enseignants une fois
-              l’offre publiée.
-            </Callout>
+            <div className={styles['contact-callout']}>
+              <Banner
+                title=""
+                description="Vous ne pouvez pas envoyer de demande de contact car ceci est un aperçu de test du formulaire que verront les enseignants une fois l’offre publiée."
+              />
+            </div>
           )}
         </>
       ) : (
-        <Callout className={styles['contact-readonly']}>
-          Vous ne pouvez voir les informations de contact du partenaire car vous
-          n’avez pas les droits ADAGE adaptés
-        </Callout>
+        <div className={styles['contact-readonly']}>
+          <Banner
+            title=""
+            description="Vous ne pouvez voir les informations de contact du partenaire car vous n’avez pas les droits ADAGE adaptés"
+          />
+        </div>
       )}
     </div>
   )

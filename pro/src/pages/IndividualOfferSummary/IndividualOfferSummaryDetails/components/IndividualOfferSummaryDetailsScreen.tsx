@@ -20,10 +20,10 @@ import {
 import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { Banner } from '@/design-system/Banner/Banner'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferSummaryDetailsScreen.module.scss'
@@ -152,10 +152,10 @@ export function IndividualOfferSummaryDetailsScreen({
     <SummaryLayout>
       <SummaryContent>
         {cannotEditDetails && (
-          <Callout>
-            Les informations de cette page ne sont pas modifiables car elles
-            sont liées à l’EAN renseigné.
-          </Callout>
+          <Banner
+            title=""
+            description="Les informations de cette page ne sont pas modifiables car elles sont liées à l’EAN renseigné."
+          />
         )}
 
         <SummarySection

@@ -3,11 +3,9 @@ import { useFormContext } from 'react-hook-form'
 import type { AddressFormValues } from '@/commons/core/shared/types'
 import { getCoordsType, parseDms } from '@/commons/utils/coords'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from './AddressManual.module.scss'
 
@@ -92,22 +90,33 @@ export const AddressManual = ({
       </FormLayout.Row>
 
       {coords && (
-        <Callout variant={CalloutVariant.INFO} className={styles['callout']}>
-          <ButtonLink
-            to={`https://google.com/maps/place/${decodeURIComponent(coords)}`}
-            variant={ButtonVariant.TERNARY}
-            isExternal
-            opensInNewTab
-          >
-            Vérifiez la localisation en cliquant ici
-          </ButtonLink>
-        </Callout>
+        <div className={styles['callout']}>
+          <Banner
+            title=""
+            actions={[
+              {
+                href: `https://google.com/maps/place/${decodeURIComponent(coords)}`,
+                label: 'Vérifiez la localisation en cliquant ici',
+                isExternal: true,
+                icon: fullLinkIcon,
+                iconAlt: 'Nouvelle fenêtre',
+                type: 'link',
+              },
+            ]}
+          />
+        </div>
       )}
 
-      <Callout variant={CalloutVariant.WARNING} className={styles['callout']}>
-        {gpsCalloutMessage ??
-          'Les coordonnées GPS sont des informations à ne pas négliger. Elles vont permettre aux jeunes de pouvoir géolocaliser votre offre sur leur application.'}
-      </Callout>
+      <div className={styles['callout']}>
+        <Banner
+          title=""
+          variant={BannerVariants.WARNING}
+          description={
+            gpsCalloutMessage ??
+            'Les coordonnées GPS sont des informations à ne pas négliger. Elles vont permettre aux jeunes de pouvoir géolocaliser votre offre sur leur application.'
+          }
+        />
+      </div>
     </div>
   )
 }

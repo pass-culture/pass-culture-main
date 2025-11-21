@@ -11,14 +11,13 @@ import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityI
 import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -83,21 +82,19 @@ export const DetailsForm = ({
       <FormLayout.Section title="À propos de votre offre">
         {showAddVenueBanner && (
           <FormLayout.Row className={styles.row}>
-            <Callout
-              links={[
+            <Banner
+              title=""
+              actions={[
                 {
                   href: `/inscription/structure/recherche`,
-                  icon: {
-                    src: fullMoreIcon,
-                    alt: '',
-                  },
+                  icon: fullMoreIcon,
                   label: 'Ajouter une structure',
+                  type: 'link',
                 },
               ]}
-              variant={CalloutVariant.ERROR}
-            >
-              Pour créer une offre, vous devez d’abord créer une structure.
-            </Callout>
+              variant={BannerVariants.ERROR}
+              description="Pour créer une offre, vous devez d’abord créer une structure."
+            />
           </FormLayout.Row>
         )}
         {!showAddVenueBanner && (

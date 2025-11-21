@@ -3,8 +3,8 @@ import { useLocation } from 'react-router'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullNextIcon from '@/icons/full-next.svg'
 
 import styles from '../../Homepage.module.scss'
 
@@ -30,11 +30,15 @@ export const AddBankAccountCallout = ({
 
   return (
     <div className={styles['reimbursements-banner']}>
-      <Callout
-        links={[
+      <Banner
+        title=""
+        variant={BannerVariants.ERROR}
+        actions={[
           {
             href: '/remboursements/informations-bancaires',
             label: 'Ajouter un compte bancaire',
+            type: 'link',
+            icon: fullNextIcon,
             onClick: () => {
               logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
                 from: location.pathname,
@@ -43,10 +47,8 @@ export const AddBankAccountCallout = ({
             },
           },
         ]}
-        variant={CalloutVariant.ERROR}
-      >
-        Aucun compte bancaire configuré pour percevoir vos remboursements
-      </Callout>
+        description="Aucun compte bancaire configuré pour percevoir vos remboursements"
+      />
     </div>
   )
 }

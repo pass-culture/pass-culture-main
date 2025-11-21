@@ -3,11 +3,11 @@ import type {
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
 import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
+import { Banner } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { ContactButton } from '../../../OffersInstantSearch/OffersSearch/Offers/ContactButton/ContactButton'
@@ -89,15 +89,20 @@ export function AdageOfferPartnerPanel({
 
       <div className={styles['partner-panel-location']}>
         {(venue.city || venue.postalCode || distanceToSchool || isPreview) && (
-          <Callout>
-            Ce partenaire est situé{' '}
-            {(venue.city || venue.postalCode) &&
-              `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}
-            {(isPreview || distanceToSchool) &&
-              `à ${isPreview ? 'X km' : distanceToSchool} de votre
+          <Banner
+            title=""
+            description={
+              <>
+                Ce partenaire est situé{' '}
+                {(venue.city || venue.postalCode) &&
+                  `à ${venue.city ?? ''} ${venue.postalCode ?? ''}, `}
+                {(isPreview || distanceToSchool) &&
+                  `à ${isPreview ? 'X km' : distanceToSchool} de votre
             établissement scolaire`}
-            .
-          </Callout>
+                .
+              </>
+            }
+          />
         )}
       </div>
 

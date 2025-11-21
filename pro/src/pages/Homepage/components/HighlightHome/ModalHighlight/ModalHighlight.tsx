@@ -7,14 +7,13 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { AccessibleDate } from '@/ui-kit/AccessibleDate/AccessibleDate'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 import {
   DialogBuilder,
   type DialogBuilderProps,
@@ -45,20 +44,20 @@ export const ModalHighlight = ({
           Elle pourra se faire sur l’application et dans nos communications aux
           jeunes (newsletters, notifications, sélections, page d’accueil).
         </p>
-        <Callout
+        <div className={styles['callout']}></div>
+        <Banner
           title="Comment participer ?"
-          variant={CalloutVariant.INFO}
-          className={styles['callout']}
-        >
-          <ul>
-            <li>
-              - Créez votre offre d’évènement ou choisissez en une dans votre
-              liste d’offres
-            </li>
-            <li>- Ouvrez votre offre</li>
-            <li>- Choisissez le temps fort</li>
-          </ul>
-        </Callout>
+          description={
+            <ul>
+              <li>
+                - Créez votre offre d’évènement ou choisissez en une dans votre
+                liste d’offres
+              </li>
+              <li>- Ouvrez votre offre</li>
+              <li>- Choisissez le temps fort</li>
+            </ul>
+          }
+        />
         {isLoading ? (
           <Spinner />
         ) : (
