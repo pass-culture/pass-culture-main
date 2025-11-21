@@ -222,9 +222,6 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
     query = (
         db.session.query(models.Booking)
         .filter_by(userId=user.id)
-        .join(models.Booking.stock)
-        .join(offers_models.Stock.offer)
-        .outerjoin(models.Booking.activationCode)
         .options(
             sa_orm.load_only(
                 models.Booking.amount,
@@ -233,13 +230,18 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
                 models.Booking.dateCreated,
                 models.Booking.dateUsed,
                 models.Booking.quantity,
+                models.Booking.status,
             ),
             sa_orm.joinedload(models.Booking.activationCode).load_only(
                 offers_models.ActivationCode.code,
                 offers_models.ActivationCode.expirationDate,
             ),
             sa_orm.joinedload(models.Booking.stock)
-            .load_only(offers_models.Stock.beginningDatetime)
+            .load_only(
+                offers_models.Stock.id,
+                offers_models.Stock.beginningDatetime,
+                offers_models.Stock.offerId,
+            )
             .joinedload(offers_models.Stock.offer)
             .load_only(
                 offers_models.Offer.name,
@@ -247,9 +249,14 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
                 offers_models.Offer.withdrawalDelay,
                 offers_models.Offer.withdrawalType,
                 offers_models.Offer.isDuo,
+                offers_models.Offer.canExpire,
             )
             .options(
                 sa_orm.joinedload(offers_models.Offer.product),
+                sa_orm.joinedload(offers_models.Offer.venue).load_only(
+                    offerers_models.Venue.name,
+                    offerers_models.Venue.timezone,
+                ),
                 sa_orm.joinedload(offers_models.Offer.mediations),
             )
             .options(
@@ -257,11 +264,6 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
                 .load_only(offerers_models.OffererAddress.label)
                 .joinedload(offerers_models.OffererAddress.address)
                 .load_only(geography_models.Address.timezone, geography_models.Address.city),
-            ),
-            sa_orm.joinedload(models.Booking.venue).load_only(
-                offerers_models.Venue.name,
-                offerers_models.Venue.city,
-                offerers_models.Venue.timezone,
             ),
             sa_orm.joinedload(models.Booking.user).joinedload(users_models.User.reactions),
         )

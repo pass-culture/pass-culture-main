@@ -467,7 +467,7 @@ class GetBookingsListTest:
         offers_factories.MediationFactory(id=2, offer=ended_booking_1.stock.offer, thumbCount=1, credit="photo credit")
         offers_factories.MediationFactory(id=3, offer=ended_booking_2.stock.offer, thumbCount=1, credit="photo credit")
 
-        with assert_num_queries(4):  # user + bookings + stock + offer
+        with assert_num_queries(2):  # user + bookings
             response = client.with_token(self.identifier).get("/native/v2/bookings/ongoing")
 
         assert response.status_code == 200
@@ -568,7 +568,7 @@ class GetBookingsListTest:
 
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ended_booking.user, offer=ended_booking.stock.offer)
 
-        with assert_num_queries(4):  # user + bookings + stock + offer
+        with assert_num_queries(2):  # user + bookings
             response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
@@ -692,7 +692,7 @@ class GetBookingsListTest:
             id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
         )
 
-        with assert_num_queries(4):  # user + bookings + stock + offer
+        with assert_num_queries(2):  # user + bookings
             response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
@@ -774,7 +774,7 @@ class GetBookingsListTest:
             id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
         )
 
-        with assert_num_queries(4):  # user + bookings + stock + offer
+        with assert_num_queries(2):  # user + bookings
             response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
