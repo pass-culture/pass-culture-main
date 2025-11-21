@@ -228,10 +228,10 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
         .options(
             sa_orm.load_only(
                 models.Booking.amount,
-                models.Booking.dateCreated,
-                models.Booking.dateUsed,
                 models.Booking.cancellationDate,
                 models.Booking.cancellationReason,
+                models.Booking.dateCreated,
+                models.Booking.dateUsed,
                 models.Booking.quantity,
             ),
             sa_orm.joinedload(models.Booking.activationCode).load_only(

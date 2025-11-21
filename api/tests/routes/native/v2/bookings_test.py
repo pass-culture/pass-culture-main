@@ -467,7 +467,7 @@ class GetBookingsListTest:
         offers_factories.MediationFactory(id=2, offer=ended_booking_1.stock.offer, thumbCount=1, credit="photo credit")
         offers_factories.MediationFactory(id=3, offer=ended_booking_2.stock.offer, thumbCount=1, credit="photo credit")
 
-        with assert_num_queries(3):  # user + bookings + offer
+        with assert_num_queries(4):  # user + bookings + stock + offer
             response = client.with_token(self.identifier).get("/native/v2/bookings/ongoing")
 
         assert response.status_code == 200
@@ -485,6 +485,7 @@ class GetBookingsListTest:
             "id": ongoing_booking.id,
             "quantity": ongoing_booking.quantity,
             "dateUsed": ongoing_booking.dateUsed,
+            "expirationDate": ongoing_booking.expirationDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "stock": {
                 "beginningDatetime": ongoing_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
                 "offer": {
@@ -567,7 +568,7 @@ class GetBookingsListTest:
 
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ended_booking.user, offer=ended_booking.stock.offer)
 
-        with assert_num_queries(3):  # user + booking + offer
+        with assert_num_queries(4):  # user + bookings + stock + offer
             response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
@@ -587,6 +588,7 @@ class GetBookingsListTest:
             "id": ended_booking.id,
             "quantity": ended_booking.quantity,
             "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "expirationDate": None,
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "offer": {
@@ -690,7 +692,7 @@ class GetBookingsListTest:
             id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
         )
 
-        with assert_num_queries(3):  # user + booking + offer
+        with assert_num_queries(4):  # user + bookings + stock + offer
             response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
@@ -709,6 +711,7 @@ class GetBookingsListTest:
             "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%SZ")
             if ended_booking.dateUsed != None
             else ended_booking.dateUsed,
+            "expirationDate": None,
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "offer": {
@@ -771,7 +774,7 @@ class GetBookingsListTest:
             id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
         )
 
-        with assert_num_queries(3):  # user + booking + offer
+        with assert_num_queries(4):  # user + bookings + stock + offer
             response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
@@ -787,9 +790,8 @@ class GetBookingsListTest:
             "id": ended_booking.id,
             "quantity": ended_booking.quantity,
             "canReact": ended_booking.can_react,
-            "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-            if ended_booking.dateUsed != None
-            else ended_booking.dateUsed,
+            "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+            "expirationDate": None,
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "offer": {
