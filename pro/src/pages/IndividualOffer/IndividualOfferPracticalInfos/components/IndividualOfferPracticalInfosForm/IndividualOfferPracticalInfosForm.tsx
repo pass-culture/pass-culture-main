@@ -11,10 +11,10 @@ import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
+import fullLinkIcon from '@/icons/full-link.svg'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import type { IndividualOfferPracticalInfosFormValues } from '../../commons/types'
@@ -67,14 +67,11 @@ export function IndividualOfferPracticalInfosForm({
         ) : null}
         {!offer?.isEvent && (
           <FormLayout.Row mdSpaceAfter>
-            <Callout variant={CalloutVariant.WARNING}>
-              La validation de la contremarque est obligatoire
-              {offerWillBeReimbursed
-                ? ' pour que votre structure soit remboursée'
-                : ''}
-              , sinon la réservation sera automatiquement annulée et remise en
-              vente au bout de {reimbursmentDelay} jours.
-            </Callout>
+            <Banner
+              title=""
+              variant={BannerVariants.WARNING}
+              description={`La validation de la contremarque est obligatoire ${offerWillBeReimbursed ? ' pour que votre structure soit remboursée' : ''}, sinon la réservation sera automatiquement annulée et remise en vente au bout de ${reimbursmentDelay} jours.`}
+            ></Banner>
           </FormLayout.Row>
         )}
         <FormLayout.Row mdSpaceAfter>
@@ -90,19 +87,21 @@ export function IndividualOfferPracticalInfosForm({
       {isPhysicalAndOffline && (
         <FormLayout.Section>
           <FormLayout.Row mdSpaceAfter>
-            <Callout
-              variant={CalloutVariant.WARNING}
-              links={[
+            <Banner
+              title=""
+              variant={BannerVariants.WARNING}
+              actions={[
                 {
                   label: 'Consulter les conditions Générales d’Utilisation',
                   href: 'https://pass.culture.fr/cgu-professionnels',
                   isExternal: true,
+                  icon: fullLinkIcon,
+                  iconAlt: 'Nouvelle fenêtre',
+                  type: 'link',
                 },
               ]}
-            >
-              La livraison d’article est interdite. Pour plus d’informations,
-              veuillez consulter nos CGU.
-            </Callout>
+              description="La livraison d’article est interdite. Pour plus d’informations, veuillez consulter nos CGU."
+            />
           </FormLayout.Row>
         </FormLayout.Section>
       )}

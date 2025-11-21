@@ -3,15 +3,15 @@ import { useFormContext } from 'react-hook-form'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import fullNextIcon from '@/icons/full-next.svg'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {
   buildShowSubTypeOptions,
   hasMusicType,
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
@@ -84,19 +84,21 @@ export const DetailsSubForm = ({
     <>
       <div role="alert">
         {displayRedirectionCallout && (
-          <Callout
-            className={styles.callout}
-            links={[
-              {
-                href: '#eanSearch',
-                label: 'Scanner ou rechercher un produit par EAN',
-                isSectionLink: true,
-              },
-            ]}
-            variant={CalloutVariant.ERROR}
-          >
-            Cette catégorie nécessite un EAN.
-          </Callout>
+          <div className={styles.callout}>
+            <Banner
+              title=""
+              actions={[
+                {
+                  href: '#eanSearch',
+                  label: 'Scanner ou rechercher un produit par EAN',
+                  type: 'link',
+                  icon: fullNextIcon,
+                },
+              ]}
+              variant={BannerVariants.ERROR}
+              description="Cette catégorie nécessite un EAN."
+            />
+          </div>
         )}
       </div>
       {!displayRedirectionCallout && (

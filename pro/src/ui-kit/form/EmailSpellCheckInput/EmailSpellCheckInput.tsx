@@ -1,10 +1,10 @@
 import { type ForwardedRef, forwardRef, useState } from 'react'
 
+import { Banner } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { suggestEmail } from '@/ui-kit/form/EmailSpellCheckInput/suggestEmail'
 
 import styles from './EmailSpellCheckInput.module.scss'
@@ -72,21 +72,29 @@ export const EmailSpellCheckInput = forwardRef(
           onBlur={handleEmailValidationOnBlur} // Override props.onBlur() to handle internal behavior that shows the tip
         />
         {emailValidationTip && (
-          <Callout className={styles['email-validation-error']}>
-            <p>Voulez-vous plutôt dire {emailValidationTip} ?</p>
-            <Button
-              variant={ButtonVariant.TERNARY}
-              icon={fullNextIcon}
-              iconPosition={IconPositionEnum.LEFT}
-              onClick={() => {
-                onApplyTip(emailValidationTip)
-                resetEmailValidation()
-              }}
-              autoFocus
-            >
-              Appliquer la modification
-            </Button>
-          </Callout>
+          <div className={styles['email-validation-error']}>
+            <Banner
+              description={
+                <>
+                  <p>Voulez-vous plutôt dire {emailValidationTip} ?</p>
+                  {/* Can't this be added as an action ? (needs autofocus and href optional */}
+                  <Button
+                    variant={ButtonVariant.TERNARY}
+                    icon={fullNextIcon}
+                    iconPosition={IconPositionEnum.LEFT}
+                    onClick={() => {
+                      onApplyTip(emailValidationTip)
+                      resetEmailValidation()
+                    }}
+                    autoFocus
+                  >
+                    Appliquer la modification
+                  </Button>
+                </>
+              }
+              title=""
+            />
+          </div>
         )}
       </>
     )

@@ -7,16 +7,9 @@ import {
 
 const renderFormLayoutDescription = ({
   description,
-  isBanner,
   links,
 }: FormLayoutDescriptionProps) => {
-  render(
-    <FormLayoutDescription
-      description={description}
-      links={links}
-      isBanner={isBanner}
-    />
-  )
+  render(<FormLayoutDescription description={description} links={links} />)
 }
 
 describe('Description', () => {
@@ -29,12 +22,6 @@ describe('Description', () => {
   })
 
   it('should render the description as text', () => {
-    renderFormLayoutDescription(descriptionProps)
-    expect(screen.getByText('This is a description')).toBeInTheDocument()
-  })
-
-  it('should render the description as a banner', () => {
-    descriptionProps.isBanner = true
     renderFormLayoutDescription(descriptionProps)
     expect(screen.getByText('This is a description')).toBeInTheDocument()
   })

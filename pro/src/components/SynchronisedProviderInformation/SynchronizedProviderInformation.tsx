@@ -1,5 +1,5 @@
 import { getProviderInfo } from '@/commons/core/Providers/utils/getProviderInfo'
-import { Callout } from '@/ui-kit/Callout/Callout'
+import { Banner } from '@/design-system/Banner/Banner'
 
 import styles from './SynchronizedProviderInformation.module.scss'
 
@@ -16,19 +16,22 @@ export const SynchronizedProviderInformation = ({
   }
 
   return (
-    <Callout>
-      <div className={styles['banner-content']}>
-        {providerInfo.logo && (
-          <img
-            alt={providerInfo.name}
-            src={providerInfo.logo}
-            className={styles['provider-logo']}
-          />
-        )}
-        <p className={!providerInfo.logo ? styles['provider-text'] : ''}>
-          {providerInfo.synchronizedOfferMessage}
-        </p>
-      </div>
-    </Callout>
+    <Banner
+      title=""
+      description={
+        <div className={styles['banner-content']}>
+          {providerInfo.logo && (
+            <img
+              alt={providerInfo.name}
+              src={providerInfo.logo}
+              className={styles['provider-logo']}
+            />
+          )}
+          <p className={!providerInfo.logo ? styles['provider-text'] : ''}>
+            {providerInfo.synchronizedOfferMessage}
+          </p>
+        </div>
+      }
+    />
   )
 }
