@@ -281,57 +281,6 @@ def get(offerer_id: int) -> utils.BackofficeResponse:
     return _render_offerer_details(offerer_id)
 
 
-def get_stats_data(offerer: offerers_models.Offerer) -> utils.StatsData:
-    PLACEHOLDER = decimal.Decimal(-1)
-    offers_stats = offerers_api.get_offerer_offers_stats(offerer.id, max_offer_count=1000)
-    is_collective_too_big = offers_stats["collective_offer"]["active"] == -1
-    is_collective_too_big = is_collective_too_big or offers_stats["collective_offer_template"]["active"] == -1
-    is_individual_too_big = offers_stats["offer"]["active"] == -1
-
-    stats: utils.StatsData = {
-        "active": {
-            "collective": PLACEHOLDER,
-            "individual": PLACEHOLDER,
-            "total": PLACEHOLDER,
-        },
-        "inactive": {
-            "collective": PLACEHOLDER,
-            "individual": PLACEHOLDER,
-            "total": PLACEHOLDER,
-        },
-        "total_revenue": PLACEHOLDER,
-        "placeholder": PLACEHOLDER,
-    }
-
-    if not is_collective_too_big:
-        stats["active"]["collective"] = (
-            offers_stats["collective_offer"]["active"] + offers_stats["collective_offer_template"]["active"]
-        )
-        stats["inactive"]["collective"] = (
-            offers_stats["collective_offer"]["inactive"] + offers_stats["collective_offer_template"]["inactive"]
-        )
-    if not is_individual_too_big:
-        stats["active"]["individual"] = offers_stats["offer"]["active"]
-        stats["inactive"]["individual"] = offers_stats["offer"]["inactive"]
-
-    if not (is_collective_too_big or is_individual_too_big):
-        stats["active"]["total"] = stats["active"]["collective"] + stats["active"]["individual"]
-        stats["inactive"]["total"] = stats["inactive"]["collective"] + stats["inactive"]["individual"]
-
-    if not offerer.managedVenues:
-        stats["total_revenue"] = decimal.Decimal(0)
-    else:
-        try:
-            clickhouse_results = clickhouse_queries.TotalExpectedRevenueQuery().execute(
-                {"venue_ids": tuple(venue.id for venue in offerer.managedVenues)}
-            )
-            stats["total_revenue"] = clickhouse_results[0].expected_revenue
-        except ApiErrors:
-            stats["total_revenue"] = PLACEHOLDER
-
-    return stats
-
-
 @offerer_blueprint.route("/stats", methods=["GET"])
 def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     offerer = (
@@ -342,10 +291,12 @@ def get_stats(offerer_id: int) -> utils.BackofficeResponse:
     )
     if not offerer:
         raise NotFound()
-    data = get_stats_data(offerer)
+
+    venue_ids = typing.cast(tuple[int], tuple(venue.id for venue in offerer.managedVenues))
+    stats = offerers_api.get_venues_stats(venue_ids=venue_ids)
     return render_template(
         "offerer/get/stats.html",
-        stats=data,
+        stats=stats,
         offerer=offerer,
     )
 
