@@ -1,3 +1,5 @@
+@use "styles/mixins/_size.scss" as size;
+
 .share-link {
   display: flex;
   width: 100%;
@@ -22,4 +24,14 @@
 
 .container {
   width: 100%;
+}
+
+@media (max-width: size.$tablet) {
+  .share-link {
+    display: grid;
+
+    &-button {
+      justify-self: center;
+    }
+  }
 }

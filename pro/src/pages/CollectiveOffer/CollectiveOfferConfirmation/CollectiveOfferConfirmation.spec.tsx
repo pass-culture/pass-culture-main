@@ -1,12 +1,20 @@
 import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import * as reactRouter from 'react-router'
 
 import { api } from '@/apiClient/api'
-import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
+import {
+  CollectiveOfferDisplayedStatus,
+  CollectiveOfferTemplateAllowedAction,
+} from '@/apiClient/v1'
 import {
   defaultEducationalInstitution,
   getCollectiveOfferFactory,
+  getCollectiveOfferTemplateFactory,
 } from '@/commons/utils/factories/collectiveApiFactories'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 
 import { Component as CollectiveOfferConfirmation } from './CollectiveOfferConfirmation'
 
@@ -26,22 +34,38 @@ vi.mock('react-router', async () => ({
   }),
 }))
 
+const collectiveOfferTemplate = getCollectiveOfferTemplateFactory({
+  id: mockedOfferId,
+  displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
+})
+
+const renderCollectiveOfferCreation = async (
+  options?: RenderWithProvidersOptions
+) => {
+  renderWithProviders(<CollectiveOfferConfirmation />, { ...options })
+  await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+}
+
 describe('CollectiveOfferConfirmation', () => {
-  it('should render confirmation page when offer is pending', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
+  beforeEach(() => {
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({
-        id: mockedOfferId,
-        isTemplate: false,
-        displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         institution: {
           ...defaultEducationalInstitution,
           name: 'Collège Bellevue',
         },
       })
     )
+  })
 
-    renderWithProviders(<CollectiveOfferConfirmation />)
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+  it('should render confirmation page when offer is pending', async () => {
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
+      getCollectiveOfferFactory({
+        displayedStatus: CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+      })
+    )
+    await renderCollectiveOfferCreation()
 
     expect(
       screen.getByRole('heading', {
@@ -51,20 +75,7 @@ describe('CollectiveOfferConfirmation', () => {
   })
 
   it('should render confirmation page when offer is active and associated to an institution', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
-      getCollectiveOfferFactory({
-        id: mockedOfferId,
-        isTemplate: false,
-        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        institution: {
-          ...defaultEducationalInstitution,
-          name: 'Collège Bellevue',
-        },
-      })
-    )
-
-    renderWithProviders(<CollectiveOfferConfirmation />)
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+    await renderCollectiveOfferCreation()
 
     expect(
       screen.getByRole('heading', {
@@ -76,18 +87,27 @@ describe('CollectiveOfferConfirmation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render confirmation page when offer is active and associated to all institutions', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
+  it('should render confirmation page when offer is not associated to an institution', async () => {
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
       getCollectiveOfferFactory({
-        id: mockedOfferId,
-        isTemplate: false,
         displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
         institution: null,
       })
     )
+    await renderCollectiveOfferCreation()
 
-    renderWithProviders(<CollectiveOfferConfirmation />)
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+    expect(
+      screen.getByRole('heading', {
+        name: 'Votre offre a été publiée sur ADAGE',
+      })
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByText('de l’établissement scolaire', { exact: false })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should render confirmation page when offer is active and associated to all institutions', async () => {
+    await renderCollectiveOfferCreation()
 
     expect(
       screen.getByRole('heading', {
@@ -104,76 +124,64 @@ describe('CollectiveOfferConfirmation', () => {
     ).toBeInTheDocument()
   })
 
-  it('should render confirmation page when offer is active and template', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
-      getCollectiveOfferFactory({
-        id: mockedOfferId,
-        isTemplate: true,
-        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        institution: null,
-      })
-    )
-
-    renderWithProviders(<CollectiveOfferConfirmation />)
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
-
-    expect(
-      screen.getByRole('heading', {
-        name: 'Votre offre a été publiée sur ADAGE',
-      })
-    ).toBeInTheDocument()
-  })
-
   it('should render banner at the bottom of the page', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
-      getCollectiveOfferFactory({
-        id: mockedOfferId,
-        isTemplate: true,
-        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        institution: null,
-      })
-    )
-
-    renderWithProviders(<CollectiveOfferConfirmation />)
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+    await renderCollectiveOfferCreation()
 
     expect(
       screen.getByText('Quelle est la prochaine étape ?')
     ).toBeInTheDocument()
   })
 
-  it('should link to /offres/vitrines when offer is template', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
-      getCollectiveOfferFactory({
-        id: mockedOfferId,
-        isTemplate: true,
-        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        institution: null,
-      })
-    )
+  it('should link to /offres/collectives when isShowcase is false', async () => {
+    await renderCollectiveOfferCreation()
+    const link = screen.getByRole('link', { name: /voir mes offres/i })
+    expect(link).toHaveAttribute('href', '/offres/collectives')
+  })
+})
 
-    renderWithProviders(<CollectiveOfferConfirmation />)
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
+describe('CollectiveOfferConfirmation - template', () => {
+  beforeEach(() => {
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(
+      collectiveOfferTemplate
+    )
+    vi.spyOn(reactRouter, 'useParams').mockReturnValue({
+      offerId: `T-${mockedOfferId}`,
+    })
+  })
+
+  it('should display ShareTemplateOfferLink when feature flag WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled and offer is template', async () => {
+    vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
+      ...collectiveOfferTemplate,
+      allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
+    })
+
+    await renderCollectiveOfferCreation({
+      features: ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'],
+    })
+
+    expect(screen.getByText('Créer une offre')).toBeInTheDocument()
+    expect(screen.getByText('Offre de test')).toBeInTheDocument()
+    expect(screen.getByText('Lien de l’offre')).toBeInTheDocument()
+  })
+
+  it('should not display ShareTemplateOfferLink when feature flag WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is disabled and offer is template', async () => {
+    await renderCollectiveOfferCreation()
+
+    expect(screen.queryByText('Créer une offre')).not.toBeInTheDocument()
+    expect(screen.queryByText('Offre de test')).not.toBeInTheDocument()
+    expect(screen.queryByText('Lien de l’offre')).not.toBeInTheDocument()
+  })
+
+  it('should link to /offres/vitrines when offer is template', async () => {
+    await renderCollectiveOfferCreation()
 
     const link = screen.getByRole('link', { name: /voir mes offres/i })
     expect(link).toHaveAttribute('href', '/offres/vitrines')
   })
 
-  it('should link to /offres/collectives when isShowcase is false', async () => {
-    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValueOnce(
-      getCollectiveOfferFactory({
-        id: mockedOfferId,
-        isTemplate: false,
-        displayedStatus: CollectiveOfferDisplayedStatus.PUBLISHED,
-        institution: null,
-      })
-    )
+  it('should not display institution when offer is template', async () => {
+    await renderCollectiveOfferCreation()
 
-    renderWithProviders(<CollectiveOfferConfirmation />, {
-      features: [],
-    })
-    await waitForElementToBeRemoved(() => screen.getByTestId('spinner'))
-    const link = screen.getByRole('link', { name: /voir mes offres/i })
-    expect(link).toHaveAttribute('href', '/offres/collectives')
+    expect(screen.queryByText('établissement scolaire')).not.toBeInTheDocument()
   })
 })
