@@ -20,3 +20,12 @@ def sandbox(name: tuple[str], clean: str, clean_bucket: str, step_to_skip: tuple
         save_sandbox(name, with_clean, with_clean_bucket, step_to_skip)
     else:
         print("Sandbox is disabled on this environment")
+
+
+@blueprint.cli.command("import_sandbox")
+@click.option("-n", "--name", help="Sandbox name. Can provide multiple values", multiple=True)
+def import_sandbox(name: tuple[str]) -> None:
+    """
+    Same as sandbox above except that it's dedicated to import small sandboxes on top of existing data.
+    """
+    save_sandbox(name=name, with_clean=False, with_clean_bucket=False, steps_to_skip=None)

@@ -9,7 +9,7 @@ set -ex
 export IS_REBUILD_STAGING=1
 
 flask import_test_users --update
-flask sandbox --name beneficiaries --name accessibility_offers --clean false
+flask import_sandbox --name beneficiaries --name accessibility_offers
 
 flask add_permissions_to_staging_specific_roles
 
