@@ -6,6 +6,7 @@ from pcapi.core.educational.factories import EducationalDepositFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
+from pcapi.core.educational.factories import PendingCollectiveBookingFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.testing import assert_num_queries
 
@@ -68,7 +69,7 @@ class Returns200Test:
     def test_get_educational_institution_school(self, client):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             educationalYear=educational_year,
             educationalInstitution=educational_institution,
             collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.SCHOOL,
@@ -91,7 +92,7 @@ class Returns200Test:
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
         venue = VenueFactory()
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             educationalYear=educational_year,
             educationalInstitution=educational_institution,
             collectiveStock__collectiveOffer__venue=venue,
@@ -119,7 +120,7 @@ class Returns200Test:
     def test_get_educational_institution_to_be_defined(self, client):
         educational_year = EducationalYearFactory()
         educational_institution = EducationalInstitutionFactory()
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             educationalYear=educational_year,
             educationalInstitution=educational_institution,
             collectiveStock__collectiveOffer__locationType=models.CollectiveLocationType.TO_BE_DEFINED,
