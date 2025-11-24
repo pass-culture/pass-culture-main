@@ -49,6 +49,14 @@ export type StocksCalendarProps = {
   timetableTypeRadioGroupShown: boolean
 }
 
+export type stockQueryKeysType = [
+  string,
+  number,
+  number,
+  StocksTableFilters,
+  StocksTableSort,
+]
+
 export function StocksCalendar({
   offer,
   mode,
@@ -67,13 +75,13 @@ export function StocksCalendar({
 
   const departmentCode = getDepartmentCode(offer)
 
-  const stockQueryKeys: [
-    string,
-    number,
-    number,
-    StocksTableFilters,
-    StocksTableSort,
-  ] = [GET_STOCKS_QUERY_KEY, offer.id, page, appliedFilters, appliedSort]
+  const stockQueryKeys: stockQueryKeysType = [
+    GET_STOCKS_QUERY_KEY,
+    offer.id,
+    page,
+    appliedFilters,
+    appliedSort,
+  ]
 
   const { data, isLoading } = useSWR(
     stockQueryKeys,
@@ -157,11 +165,8 @@ export function StocksCalendar({
       venueId: offer.venue.id,
     })
 
-    await onSubmit(values, departmentCode, offer.id, notify)
+    await onSubmit(values, departmentCode, offer.id, notify, stockQueryKeys)
 
-    await mutate(stockQueryKeys, data, {
-      revalidate: true,
-    })
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
 
     setIsDialogOpen(false)
@@ -181,7 +186,7 @@ export function StocksCalendar({
           ) : (
             <h2 className={styles['title']}>{'Horaires'}</h2>
           )}
-          {offer.hasStocks && !isOfferSynchronized(offer) && (
+          {hasStocks && !isOfferSynchronized(offer) && (
             <DialogBuilderButton
               triggerLabel="Ajouter une ou plusieurs dates"
               triggerVariant={ButtonVariant.SECONDARY}
@@ -282,7 +287,7 @@ export function StocksCalendar({
 
         <StocksCalendarActionsBar
           checkedStocks={checkedStocks}
-          hasStocks={Boolean(data?.hasStocks)}
+          hasStocks={hasStocks}
           deleteStocks={deleteStocks}
           updateCheckedStocks={setCheckedStocks}
           mode={mode}

@@ -1,4 +1,5 @@
 import { format, sub } from 'date-fns'
+import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
@@ -10,6 +11,7 @@ import {
 } from '@/commons/utils/date'
 import { serializeDateTimeToUTCFromLocalDepartment } from '@/commons/utils/timezone'
 
+import type { stockQueryKeysType } from '../StocksCalendar'
 import {
   getDatesInInterval,
   getDatesWithMonthlyOption,
@@ -27,7 +29,8 @@ export const onSubmit = async (
   values: RecurrenceFormValues,
   departmentCode: string,
   offerId: number,
-  notify: ReturnType<typeof useNotification>
+  notify: ReturnType<typeof useNotification>,
+  stockQueryKeys: stockQueryKeysType
 ): Promise<StocksEvent[] | void> => {
   const dates = getRecurrenceDates(values)
   const generatedStocks = generateStocksForDates(values, dates, departmentCode)
@@ -53,16 +56,24 @@ export const onSubmit = async (
   // Upsert stocks if there are stocks to upsert
   if (serializedStocksToAdd.length > 0) {
     try {
-      const { stocks_count } = await api.bulkCreateEventStocks({
-        offerId,
-        stocks: serializedStocksToAdd,
-      })
+      const data = await mutate(
+        stockQueryKeys,
+        api.bulkCreateEventStocks({
+          offerId,
+          stocks: serializedStocksToAdd,
+        }),
+        {
+          revalidate: false,
+        }
+      )
+
+      const stockCount = data?.stockCount ?? 0
       notify.success(
-        stocks_count > 1
+        stockCount > 1
           ? `${new Intl.NumberFormat('fr-FR').format(
-              stocks_count
+              stockCount
             )} nouvelles dates ont été ajoutées`
-          : `${stocks_count} nouvelle date a été ajoutée`
+          : `${stockCount} nouvelle date a été ajoutée`
       )
     } catch (error) {
       notify.error(
