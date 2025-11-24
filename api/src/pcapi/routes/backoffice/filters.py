@@ -1946,6 +1946,10 @@ def format_chronicle_club_type(club_type: chronicles_models.ChronicleClubType) -
             return "Livres"
         case chronicles_models.ChronicleClubType.CINE_CLUB:
             return "Cinéma"
+        case chronicles_models.ChronicleClubType.ALBUM_CLUB:
+            return "Musique - albums"
+        case chronicles_models.ChronicleClubType.CONCERT_CLUB:
+            return "Musique - concerts"
         case _:
             return club_type.value
 

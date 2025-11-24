@@ -48,6 +48,14 @@ def _get_chronicle_query() -> sa_orm.Query:
         .scalar_subquery()
     )
 
+    offer_subquery = (
+        sa.select(sa.func.array_agg(offers_models.Offer.name))
+        .select_from(chronicles_models.OfferChronicle)
+        .join(offers_models.Offer, offers_models.Offer.id == chronicles_models.OfferChronicle.offerId)
+        .filter(chronicles_models.OfferChronicle.chronicleId == chronicles_models.Chronicle.id)
+        .scalar_subquery()
+    )
+
     query = db.session.query(
         chronicles_models.Chronicle.id,
         chronicles_models.Chronicle.content,
@@ -56,6 +64,7 @@ def _get_chronicle_query() -> sa_orm.Query:
         chronicles_models.Chronicle.isActive,
         chronicles_models.Chronicle.isSocialMediaDiffusible,
         product_subquery.label("products"),
+        offer_subquery.label("offers"),
     )
     return query
 
@@ -182,11 +191,17 @@ def details(chronicle_id: int) -> utils.BackofficeResponse:
         .all()
     )
     product_name = None
-    for product in chronicle.products:
-        product_identifier = chronicles_api.get_product_identifier(chronicle, product)
-        if product_identifier == chronicle.productIdentifier:
-            product_name = product.name
-            break
+    if chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.OFFER_ID:
+        for offer in chronicle.offers:
+            if chronicle.productIdentifier == offer.id:
+                product_name = offer.name
+                break
+    else:
+        for product in chronicle.products:
+            product_identifier = chronicles_api.get_product_identifier(chronicle, product)
+            if product_identifier == chronicle.productIdentifier:
+                product_name = product.name
+                break
 
     return render_template(
         "chronicles/details.html",
