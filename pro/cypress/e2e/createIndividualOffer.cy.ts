@@ -311,7 +311,7 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate stocks step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@patchOffer', '@patchNonEventStocks', '@getOffer'], {
+    cy.wait(['@patchOffer', '@patchNonEventStocks'], {
       responseTimeout: 30 * 1000,
     })
 
