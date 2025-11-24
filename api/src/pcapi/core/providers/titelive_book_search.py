@@ -7,6 +7,7 @@ import pcapi.core.fraud.models as fraud_models
 from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
+from pcapi.connectors.serialization.titelive_serializers import TiteliveArticle
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.connectors.titelive import get_by_ean_list
 from pcapi.core.categories.subcategories import LIVRE_PAPIER
@@ -155,7 +156,7 @@ def extract_eans_from_titelive_response(json_response: list[dict]) -> set[str]:
 EMPTY_GTL = GenreTitelive(code="".zfill(8), libelle="Empty GTL")
 
 
-def get_gtl_id(article: TiteLiveBookArticle) -> str:
+def get_gtl_id(article: TiteliveArticle) -> str:
     if not article.gtl or not article.gtl.first:
         return EMPTY_GTL.code
     most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: gtl.code)

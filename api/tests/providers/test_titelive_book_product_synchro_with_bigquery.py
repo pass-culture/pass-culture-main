@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.core.bookings.factories as bookings_factories
-from pcapi.connectors.big_query.queries.product import BigQueryProductModel
+from pcapi.connectors.big_query.queries.product import BigQueryTiteliveBookProductModel
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.fraud.factories import ProductWhitelistFactory
@@ -13,7 +13,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
-from pcapi.core.providers.titelive_bq_book_search import BigQueryProductSync
+from pcapi.core.providers.titelive_bq_book_search import BigQueryTiteliveBookProductSync
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
@@ -22,13 +22,13 @@ from tests.connectors.titelive.fixtures import build_titelive_one_book_response
 
 
 @pytest.mark.usefixtures("db_session")
-class BigQueryProductSyncTest:
+class BigQueryTiteliveBookProductSyncTest:
     EAN_TEST = "9782370730541"
     SCHOLAR_BOOK_GTL_ID = providers_constants.GTL_LEVEL_01_SCHOOL + "040300"
     EXTRACURRICULAR_GTL_ID = providers_constants.GTL_LEVEL_01_EXTRACURRICULAR + "080000"
     BATCH_SIZE = 100
 
-    def _prepare_bq_product_from_fixture(self, fixture: dict) -> BigQueryProductModel:
+    def _prepare_bq_product_from_fixture(self, fixture: dict) -> BigQueryTiteliveBookProductModel:
         work_data = fixture["result"][0]
         article_data = work_data["article"]["1"]
         merged_data = {
@@ -37,13 +37,13 @@ class BigQueryProductSyncTest:
             "titre": work_data["titre"],
             "auteurs_multi": work_data["auteurs_multi"],
         }
-        return BigQueryProductModel.parse_obj(merged_data)
+        return BigQueryTiteliveBookProductModel.parse_obj(merged_data)
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
     def test_synchronize_products_success_logs_events(self, mock_gcp_data, mock_gcp_backend, db_session):
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
-        sync_manager = BigQueryProductSync()
+        sync_manager = BigQueryTiteliveBookProductSync()
 
         with patch.object(sync_manager, "run_synchronization") as mock_run:
             sync_manager.synchronize_products(batch_size=self.BATCH_SIZE)
@@ -58,11 +58,11 @@ class BigQueryProductSyncTest:
         assert events[1].type == providers_models.LocalProviderEventType.SyncEnd
         assert events[1].provider.id == provider.id
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
     def test_synchronize_products_failure_logs_error_event(self, mock_gcp_data, mock_gcp_backend, db_session):
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
-        sync_manager = BigQueryProductSync()
+        sync_manager = BigQueryTiteliveBookProductSync()
 
         with patch.object(sync_manager, "run_synchronization") as mock_run:
             mock_run.side_effect = ValueError("Something went wrong")
@@ -80,17 +80,19 @@ class BigQueryProductSyncTest:
         assert events[1].provider.id == provider.id
         assert events[1].payload == "paper : ValueError"
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_create_1_product(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
         providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = build_titelive_one_book_response(ean=self.EAN_TEST)
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product is not None
@@ -106,9 +108,9 @@ class BigQueryProductSyncTest:
         assert product.extraData.get("langueiso") == "fra"
         assert product.extraData.get("gtl_id") == "03020300"
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_handle_bad_product_by_truncating_it(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
         providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         long_title = "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la description"
@@ -116,17 +118,19 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         expected_truncated_title = "L'Arabe du futur Tome 2 : une jeunesse au Moyen-Orient (1984-1985) - Edition spéciale avec un titre très long pour tester la longueur de la…"
         assert product.name == expected_truncated_title
         assert len(product.name) == 140
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_create_1_thing_when_gtl_not_has_lpad_zero(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
         providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         unpadded_gtl = "3020300"
@@ -136,15 +140,17 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.extraData.get("gtl_id") == expected_padded_gtl
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     @pytest.mark.parametrize(
         "auteurs_multi_from_bq, expected_author_string",
         [
@@ -163,15 +169,17 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.extraData.get("author") == expected_author_string
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_does_not_create_product_when_product_is_gtl_school_book(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -180,14 +188,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     @pytest.mark.parametrize("taux_tva", ["20", "20.00"])
     def test_does_not_create_product_when_product_is_vat_20(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings, taux_tva
@@ -197,14 +207,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_does_not_create_product_when_product_is_extracurricular(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -213,14 +225,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     @pytest.mark.parametrize(
         "support_code",
         [
@@ -239,14 +253,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_does_not_create_product_when_product_is_lectorat_eighteen(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -257,14 +273,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     @pytest.mark.parametrize(
         "level_02_code_gtl",
         [
@@ -281,14 +299,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     @pytest.mark.parametrize("title", ["Le guide officiel du test TOEIC", "Réussir le TOEFL"])
     def test_does_not_create_product_when_product_is_toeic_or_toefl(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings, title
@@ -298,14 +318,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_does_not_create_product_when_product_is_paper_press(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -316,14 +338,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_creates_product_when_ineligible_but_in_whitelist(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -333,16 +357,18 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert db.session.query(offers_models.Product).count() == 1
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product is not None
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_update_offers_extra_data_from_thing(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         initial_extra_data = {
@@ -360,8 +386,10 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.extraData.get("date_parution") == "2015-06-11"
@@ -369,9 +397,9 @@ class BigQueryProductSyncTest:
         assert product.extraData.get("bookFormat") == providers_constants.BookFormat.BEAUX_LIVRES.name
         assert product.extraData.get("editeur") == "ALLARY"
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_update_should_not_override_fraud_incompatibility(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -386,16 +414,18 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         assert product.name == "Titre Mis à Jour"
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_should_reject_product_when_it_becomes_ineligible(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -405,14 +435,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_should_reject_product_and_cancel_bookings(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory.create(ean=self.EAN_TEST, lastProviderId=provider.id)
@@ -423,16 +455,18 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.PROVIDER_INCOMPATIBLE
         assert offer.validation == OfferValidationStatus.REJECTED
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_should_approve_product_when_it_becomes_eligible(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -446,14 +480,16 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert product.isGcuCompatible == True
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_should_approve_product_and_offers(self, mock_execute, mock_gcp_data, mock_gcp_backend, settings):
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         product = offers_factories.ProductFactory.create(
@@ -470,15 +506,17 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert product.isGcuCompatible == True
         assert offer.validation == OfferValidationStatus.APPROVED
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_approval_should_not_override_fraud_incompatibility(
         self, mock_execute, mock_gcp_data, mock_gcp_backend, settings
     ):
@@ -492,17 +530,19 @@ class BigQueryProductSyncTest:
         bq_product = self._prepare_bq_product_from_fixture(fixture)
         mock_execute.return_value = iter([bq_product])
 
-        with patch.object(BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid):
-            BigQueryProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
+        with patch.object(
+            BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        ):
+            BigQueryTiteliveBookProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
         assert product.gcuCompatibilityType == offers_models.GcuCompatibilityType.FRAUD_INCOMPATIBLE
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
     @patch(
-        "pcapi.core.providers.titelive_bq_book_search.BigQueryProductSync._copy_image_from_data_bucket_to_backend_bucket"
+        "pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductSync._copy_image_from_data_bucket_to_backend_bucket"
     )
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_creates_images_for_new_product(self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend):
         mock_copy_image.side_effect = lambda uuid: uuid
         providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
@@ -516,7 +556,7 @@ class BigQueryProductSyncTest:
         bq_product.has_verso_image = True
         mock_execute.return_value = iter([bq_product])
 
-        BigQueryProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
+        BigQueryTiteliveBookProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one()
         mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
@@ -527,12 +567,12 @@ class BigQueryProductSyncTest:
         mock_copy_image.assert_any_call(recto_uuid)
         mock_copy_image.assert_any_call(verso_uuid)
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
     @patch(
-        "pcapi.core.providers.titelive_bq_book_search.BigQueryProductSync._copy_image_from_data_bucket_to_backend_bucket"
+        "pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductSync._copy_image_from_data_bucket_to_backend_bucket"
     )
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_replaces_all_images_on_full_update(self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend):
         mock_copy_image.side_effect = lambda uuid: uuid
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
@@ -553,7 +593,7 @@ class BigQueryProductSyncTest:
         bq_product.has_verso_image = True
         mock_execute.return_value = iter([bq_product])
 
-        BigQueryProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
+        BigQueryTiteliveBookProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
 
         mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
         assert len(mediations) == 2
@@ -563,12 +603,12 @@ class BigQueryProductSyncTest:
         mock_copy_image.assert_any_call(new_recto_uuid)
         mock_copy_image.assert_any_call(new_verso_uuid)
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
     @patch(
-        "pcapi.core.providers.titelive_bq_book_search.BigQueryProductSync._copy_image_from_data_bucket_to_backend_bucket"
+        "pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductSync._copy_image_from_data_bucket_to_backend_bucket"
     )
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_replaces_only_provided_images_on_partial_update(
         self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend
     ):
@@ -591,7 +631,7 @@ class BigQueryProductSyncTest:
         bq_product.has_verso_image = False
         mock_execute.return_value = iter([bq_product])
 
-        BigQueryProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
+        BigQueryTiteliveBookProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
 
         mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
         assert len(mediations) == 2
@@ -600,12 +640,12 @@ class BigQueryProductSyncTest:
         assert mediation_map[offers_models.ImageType.VERSO] == "old-verso-uuid"
         mock_copy_image.assert_called_once_with(new_recto_uuid)
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
     @patch(
-        "pcapi.core.providers.titelive_bq_book_search.BigQueryProductSync._copy_image_from_data_bucket_to_backend_bucket"
+        "pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductSync._copy_image_from_data_bucket_to_backend_bucket"
     )
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_does_not_change_images_when_uuids_are_null(
         self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend
     ):
@@ -626,7 +666,7 @@ class BigQueryProductSyncTest:
         bq_product.has_verso_image = False
         mock_execute.return_value = iter([bq_product])
 
-        BigQueryProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
+        BigQueryTiteliveBookProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
 
         mediations = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).all()
         assert len(mediations) == 2
@@ -635,9 +675,9 @@ class BigQueryProductSyncTest:
         assert mediation_map[offers_models.ImageType.VERSO] == "old-verso-uuid"
         mock_copy_image.assert_not_called()
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_gcp_exception_during_image_copy_is_caught_and_does_not_crash_sync(
         self, mock_execute, mock_gcp_data_class, mock_gcp_backend_class
     ):
@@ -656,7 +696,7 @@ class BigQueryProductSyncTest:
         bq_product.has_verso_image = False
         mock_execute.return_value = iter([bq_product])
 
-        sync_manager = BigQueryProductSync()
+        sync_manager = BigQueryTiteliveBookProductSync()
         sync_manager.run_synchronization(batch_size=self.BATCH_SIZE)
 
         product = db.session.query(offers_models.Product).filter_by(ean=self.EAN_TEST).one_or_none()
@@ -664,9 +704,9 @@ class BigQueryProductSyncTest:
         mediations_count = db.session.query(offers_models.ProductMediation).filter_by(productId=product.id).count()
         assert mediations_count == 0
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_gcp_exception_during_image_update_does_not_delete_old_image(
         self, mock_execute, mock_gcp_data_class, mock_gcp_backend_class
     ):
@@ -688,7 +728,7 @@ class BigQueryProductSyncTest:
         mock_gcp_data_instance.object_exists.return_value = True
         mock_gcp_data_instance.copy_object_to.side_effect = Exception("Simulated GCP BUCKET FAILURE")
 
-        sync_manager = BigQueryProductSync()
+        sync_manager = BigQueryTiteliveBookProductSync()
         sync_manager.run_synchronization(batch_size=self.BATCH_SIZE)
 
         assert product.name == "New Updated Name"
@@ -697,9 +737,9 @@ class BigQueryProductSyncTest:
         assert mediations[0].imageType == offers_models.ImageType.RECTO
         assert mediations[0].uuid == old_recto_uuid
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_batch_transaction_failure_triggers_individual_retry_success(
         self, mock_execute, mock_gcp_data, mock_gcp_backend
     ):
@@ -719,9 +759,9 @@ class BigQueryProductSyncTest:
                 None,  # individual commit for product 2
             ]
             with patch.object(
-                BigQueryProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+                BigQueryTiteliveBookProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
             ):
-                sync_manager = BigQueryProductSync()
+                sync_manager = BigQueryTiteliveBookProductSync()
                 sync_manager.run_synchronization(batch_size=self.BATCH_SIZE)
 
         product1 = db.session.query(offers_models.Product).filter_by(ean=EAN_1).one_or_none()
@@ -732,9 +772,9 @@ class BigQueryProductSyncTest:
         assert product2.name == "Product 2"
         assert mock_commit.call_count == 3
 
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPBackend")
-    @patch("pcapi.core.providers.titelive_bq_book_search.GCPData")
-    @patch("pcapi.core.providers.titelive_bq_book_search.ProductsToSyncQuery.execute")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
+    @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
+    @patch("pcapi.core.providers.titelive_bq_book_search.BigQueryTiteliveBookProductDeltaQuery.execute")
     def test_sync_images_cleans_up_duplicates_when_correct_mediation_exists(
         self, mock_execute, mock_gcp_data, mock_gcp_backend
     ):
@@ -760,7 +800,7 @@ class BigQueryProductSyncTest:
         bq_product.has_verso_image = True
         mock_execute.return_value = iter([bq_product])
 
-        BigQueryProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
+        BigQueryTiteliveBookProductSync().run_synchronization(batch_size=self.BATCH_SIZE)
 
         assert len(product.productMediations) == 2
         assert correct_recto_uuid in product.images[offers_models.ImageType.RECTO.value]
