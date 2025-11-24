@@ -1,5 +1,4 @@
 /* istanbul ignore file: Those are test helpers, their coverage is not relevant */
-
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
@@ -17,6 +16,7 @@ import {
   type GetOfferManagingOffererResponseModel,
   type GetOfferStockResponseModel,
   type GetOfferVenueResponseModel,
+  type GetStocksResponseModel,
   type ListOffersOfferResponseModel,
   type ListOffersStockResponseModel,
   type ManagedVenues,
@@ -492,4 +492,23 @@ export const defaultVenueProvider: VenueProviderResponse = {
   quantity: 0,
   isDuo: true,
   price: 0,
+}
+
+export function getStocksResponseFactory(
+  customGetStocksResponse: Partial<GetStocksResponseModel> = {}
+): GetStocksResponseModel {
+  return {
+    hasStocks: true,
+    stocks: [
+      {
+        bookingsQuantity: 0,
+        hasActivationCode: false,
+        id: 1,
+        isEventDeletable: true,
+        price: 666,
+      },
+    ],
+    stockCount: 1,
+    ...customGetStocksResponse,
+  }
 }

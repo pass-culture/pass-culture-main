@@ -10,12 +10,14 @@ import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
 from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import repository as offers_repository
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.models.utils import get_or_404_from_query
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.repository import transaction
@@ -124,13 +126,13 @@ def update_thing_stock(
 @login_required
 @spectree_serialize(
     on_success_status=201,
-    response_model=stock_serialize.StocksResponseModel,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def bulk_create_event_stocks(
     body: stock_serialize.EventStocksBulkCreateBodyModel,
-) -> stock_serialize.StocksResponseModel:
+) -> offers_serialize.GetStocksResponseModel:
     offer: offers_models.Offer = get_or_404_from_query(
         db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
         body.offer_id,
@@ -163,8 +165,16 @@ def bulk_create_event_stocks(
         )
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
 
-    return stock_serialize.StocksResponseModel(stocks_count=created_stocks_count)
+    return offers_serialize.GetStocksResponseModel(stock_count=created_stocks_count, has_stocks=True, stocks=stocks)
 
 
 @private_api.route("/stocks/bulk", methods=["PATCH"])
