@@ -3,6 +3,8 @@ import pytest
 from pcapi.core.educational import models
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
+from pcapi.core.educational.factories import EducationalDepositFirstPeriodFactory
+from pcapi.core.educational.factories import EducationalDepositSecondPeriodFactory
 from pcapi.core.educational.factories import EducationalInstitutionFactory
 from pcapi.core.educational.factories import EducationalRedactorFactory
 from pcapi.core.educational.factories import EducationalYearFactory
@@ -32,13 +34,13 @@ class Returns200Test:
             amount=2000,
             isFinal=True,
         )
-        EducationalInstitutionFactory()
         booking = CollectiveBookingFactory(
             educationalRedactor=redactor,
             educationalYear=educational_year,
             educationalInstitution=educational_institution,
         )
-        other_educational_year = EducationalYearFactory(adageId="toto")
+
+        other_educational_year = EducationalYearFactory()
         other_educational_institution = EducationalInstitutionFactory(institutionId="tata")
         CollectiveBookingFactory(educationalYear=other_educational_year)
         CollectiveBookingFactory(educationalInstitution=other_educational_institution)
@@ -64,6 +66,62 @@ class Returns200Test:
             "credit": 2000,
             "isFinal": True,
             "prebookings": [expected_serialized_prebooking(booking)],
+            "deposits": [
+                {
+                    "credit": 2000,
+                    "isFinal": True,
+                    "period": {
+                        "start": educational_year.beginningDate.isoformat() + "Z",
+                        "end": educational_year.expirationDate.isoformat() + "Z",
+                    },
+                }
+            ],
+        }
+
+    def test_get_educational_institution_two_periods(self, client):
+        educational_year = EducationalYearFactory()
+        educational_institution = EducationalInstitutionFactory()
+        booking = PendingCollectiveBookingFactory(
+            educationalYear=educational_year, educationalInstitution=educational_institution
+        )
+        deposit_first_period = EducationalDepositFirstPeriodFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            amount=2000,
+        )
+        deposit_second_period = EducationalDepositSecondPeriodFactory(
+            educationalInstitution=educational_institution,
+            educationalYear=educational_year,
+            amount=2500,
+        )
+
+        response = client.with_eac_token().get(
+            f"/adage/v1/years/{educational_year.adageId}/educational_institution/{educational_institution.institutionId}"
+        )
+
+        assert response.status_code == 200
+        assert response.json == {
+            "credit": 2000,
+            "isFinal": True,
+            "prebookings": [expected_serialized_prebooking(booking)],
+            "deposits": [
+                {
+                    "credit": 2000,
+                    "isFinal": True,
+                    "period": {
+                        "start": deposit_first_period.period.lower.isoformat() + "Z",
+                        "end": deposit_first_period.period.upper.isoformat() + "Z",
+                    },
+                },
+                {
+                    "credit": 2500,
+                    "isFinal": True,
+                    "period": {
+                        "start": deposit_second_period.period.lower.isoformat() + "Z",
+                        "end": deposit_second_period.period.upper.isoformat() + "Z",
+                    },
+                },
+            ],
         }
 
     def test_get_educational_institution_school(self, client):
@@ -86,6 +144,7 @@ class Returns200Test:
             "credit": 0,
             "isFinal": False,
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Dans l'établissement scolaire"}],
+            "deposits": [],
         }
 
     def test_get_educational_institution_address(self, client):
@@ -115,6 +174,7 @@ class Returns200Test:
                     "address": offer.offererAddress.address.fullAddress,
                 }
             ],
+            "deposits": [],
         }
 
     def test_get_educational_institution_to_be_defined(self, client):
@@ -137,6 +197,7 @@ class Returns200Test:
             "credit": 0,
             "isFinal": False,
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Somewhere in Paris"}],
+            "deposits": [],
         }
 
     def test_get_educational_institution_num_queries(self, client):
@@ -197,6 +258,7 @@ class Returns200Test:
             "credit": 0,
             "isFinal": False,
             "prebookings": [],
+            "deposits": [],
         }
 
 

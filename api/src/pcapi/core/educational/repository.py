@@ -103,6 +103,22 @@ def get_confirmed_collective_bookings_amount(educational_institution_id: int, ed
     return result.amount if (result and result.amount) else Decimal(0)
 
 
+def get_confirmed_collective_bookings_amount_for_deposit(deposit: models.EducationalDeposit) -> Decimal:
+    query = (
+        db.session.query(sa.func.sum(models.CollectiveStock.price).label("amount"))
+        .join(models.CollectiveBooking, models.CollectiveStock.collectiveBookings)
+        .filter(
+            models.CollectiveBooking.educationalDepositId == deposit.id,
+            models.CollectiveBooking.status.not_in(
+                [models.CollectiveBookingStatus.CANCELLED, models.CollectiveBookingStatus.PENDING]
+            ),
+        )
+    )
+
+    result = query.first()
+    return result.amount if (result and result.amount) else Decimal(0)
+
+
 def find_collective_booking_by_id(booking_id: int) -> models.CollectiveBooking | None:
     query = _get_bookings_for_adage_base_query()
     query = query.filter(models.CollectiveBooking.id == booking_id)
@@ -124,17 +140,17 @@ def find_educational_institution_by_uai_code(uai_code: str | None) -> models.Edu
     return db.session.query(models.EducationalInstitution).filter_by(institutionId=uai_code).one_or_none()
 
 
-def find_educational_deposit_by_institution_id_and_year(
-    educational_institution_id: int,
-    educational_year_id: str,
-) -> models.EducationalDeposit | None:
+def find_educational_deposits_by_institution_id_and_year(
+    educational_institution_id: int, educational_year_id: str
+) -> list[models.EducationalDeposit]:
     return (
         db.session.query(models.EducationalDeposit)
         .filter(
             models.EducationalDeposit.educationalInstitutionId == educational_institution_id,
             models.EducationalDeposit.educationalYearId == educational_year_id,
         )
-        .one_or_none()
+        .order_by(models.EducationalDeposit.period)
+        .all()
     )
 
 
@@ -144,6 +160,7 @@ def get_educational_deposits_by_year(year_id: str) -> list[models.EducationalDep
         .join(models.EducationalDeposit.educationalInstitution)
         .filter(models.EducationalDeposit.educationalYearId == year_id)
         .options(sa_orm.joinedload(models.EducationalDeposit.educationalInstitution))
+        .order_by(models.EducationalDeposit.period)
         .all()
     )
 

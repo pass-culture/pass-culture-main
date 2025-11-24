@@ -1,11 +1,8 @@
-from datetime import datetime
-
 import pytest
 import time_machine
 
-import pcapi.core.educational.api.institution as api
-import pcapi.core.educational.factories as educational_factories
-from pcapi.utils import date as date_utils
+from pcapi.core.educational import factories
+from pcapi.core.educational.api import institution as api
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -19,18 +16,15 @@ def freeze_fixture():
 
 @pytest.fixture(name="current_year_deposit")
 def current_year_deposit_fixture(freeze):
-    now = date_utils.get_naive_utc_now()
+    educational_year = factories.EducationalCurrentYearFactory()
 
-    return educational_factories.EducationalDepositFactory(
-        educationalYear__beginningDate=datetime(now.year, 9, 1),
-        educationalYear__expirationDate=datetime(now.year + 1, 8, 31),
-    )
+    return factories.EducationalDepositFactory(educationalYear=educational_year)
 
 
 class GetEducationalInstitutionRemainingCreditTest:
     def test_used_offer(self, current_year_deposit):
         institution = current_year_deposit.educationalInstitution
-        booking = educational_factories.UsedCollectiveBookingFactory(
+        booking = factories.UsedCollectiveBookingFactory(
             educationalInstitution=institution, educationalYear=current_year_deposit.educationalYear
         )
 
@@ -43,10 +37,10 @@ class GetEducationalInstitutionRemainingCreditTest:
         """
         institution = current_year_deposit.educationalInstitution
 
-        educational_factories.CancelledCollectiveBookingFactory(
+        factories.CancelledCollectiveBookingFactory(
             educationalInstitution=institution, educationalYear=current_year_deposit.educationalYear
         )
-        used_booking = educational_factories.UsedCollectiveBookingFactory(
+        used_booking = factories.UsedCollectiveBookingFactory(
             educationalInstitution=institution, educationalYear=current_year_deposit.educationalYear
         )
 

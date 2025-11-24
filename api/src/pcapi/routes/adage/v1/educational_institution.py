@@ -5,6 +5,7 @@ from pcapi.core.educational.serialization import collective_booking as collectiv
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage.security import adage_api_key_required
 from pcapi.routes.adage.v1.serialization.educational_institution import EducationalInstitutionResponse
+from pcapi.routes.adage.v1.serialization.educational_institution import serialize_deposit
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -34,12 +35,15 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
     collective_bookings = repository.find_collective_bookings_for_adage(uai_code=uai_code, year_id=year_id)
     prebookings = collective_booking_serialize.serialize_collective_bookings(collective_bookings)
 
-    educational_deposit = repository.find_educational_deposit_by_institution_id_and_year(
+    educational_deposits = repository.find_educational_deposits_by_institution_id_and_year(
         educational_year_id=year_id, educational_institution_id=educational_institution.id
     )
+    # credit and isFinal fields will be removed soon, for now we fill them using the first deposit
+    educational_deposit = educational_deposits[0] if educational_deposits else None
 
     return EducationalInstitutionResponse(
         credit=educational_deposit.amount if educational_deposit else 0,  # type: ignore[arg-type]
         isFinal=educational_deposit.isFinal if educational_deposit else False,
         prebookings=prebookings,
+        deposits=[serialize_deposit(deposit) for deposit in educational_deposits],
     )

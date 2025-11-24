@@ -1,19 +1,20 @@
 import typing
 
-from pcapi.core.educational.schemas import AdageBaseResponseModel
+from pcapi.core.educational import schemas
 
 
 if typing.TYPE_CHECKING:
     from pcapi.core.educational.models import EducationalDeposit
 
 
-class EducationalDepositResponse(AdageBaseResponseModel):
+class EducationalDepositResponse(schemas.AdageBaseResponseModel):
     uai: str
     deposit: float
     isFinal: bool
+    period: schemas.EducationalDepositPeriodResponse
 
 
-class EducationalDepositsResponse(AdageBaseResponseModel):
+class EducationalDepositsResponse(schemas.AdageBaseResponseModel):
     deposits: list[EducationalDepositResponse]
 
     class Config:
@@ -27,8 +28,14 @@ def serialize_educational_deposits(
 
 
 def serialize_educational_deposit(educational_deposit: "EducationalDeposit") -> EducationalDepositResponse:
+    # TODO(jcicurel): deposit period should be non-nullable
+    assert educational_deposit.period is not None
+
     return EducationalDepositResponse(
         deposit=float(educational_deposit.amount),
         uai=educational_deposit.educationalInstitution.institutionId,
         isFinal=educational_deposit.isFinal,
+        period=schemas.EducationalDepositPeriodResponse(
+            start=educational_deposit.period.lower, end=educational_deposit.period.upper
+        ),
     )
