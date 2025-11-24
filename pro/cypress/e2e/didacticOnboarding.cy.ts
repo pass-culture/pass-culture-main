@@ -237,7 +237,7 @@ function fromOnBoardingGoToCollectiveModal() {
   cy.findByRole('link', { name: /Déposer un dossier/ }).should(
     'have.attr',
     'href',
-    'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage'
+    'https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage'
   )
 }
 

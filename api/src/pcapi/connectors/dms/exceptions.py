@@ -31,4 +31,4 @@ class DmsGraphQLAPIConnectError(DmsGraphQLApiError):
 
     @property
     def message(self) -> str | None:
-        return f"La connexion à Démarches-Simplifiées a échoué : {self._message}"
+        return f"La connexion à Démarche Numérique a échoué : {self._message}"

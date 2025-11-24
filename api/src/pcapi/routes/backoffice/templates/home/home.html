@@ -76,12 +76,12 @@
     {% if has_permission("MANAGE_ACCOUNT_UPDATE_REQUEST") and current_user.backoffice_profile.dsInstructorId %}
       <div class="row row-cols-4 g-3 py-4">
         {{ stats_card(pending_unassigned_update_requests_count,
-                "dossier DS non affecté",
-                "dossiers DS non affectés",
+                "dossier DN non affecté",
+                "dossiers DN non affectés",
                 url_for("backoffice_web.account_update.list_account_update_requests", status=["draft", "on_going"], only_unassigned="on") ) }}
         {{ stats_card(pending_self_update_requests_count,
-                "dossier DS suivi",
-                "dossiers DS suivis",
+                "dossier DN suivi",
+                "dossiers DN suivis",
                 url_for("backoffice_web.account_update.list_account_update_requests", status=["draft", "on_going"], last_instructor=current_user.id) ) }}
       </div>
     {% endif %}

@@ -101,7 +101,7 @@ class HandleDmsApplicationTest:
         "\n"
         "Merci de corriger ton dossier.\n"
         "\n"
-        'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+        'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>\n'
         "\n"
         "Nous te souhaitons une belle journée.\n"
         "\n"
@@ -280,7 +280,7 @@ class HandleDmsApplicationTest:
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+            user_message="Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -362,7 +362,7 @@ class HandleDmsApplicationTest:
         fraud_check = db.session.query(subscription_models.BeneficiaryFraudCheck).filter_by(user=user).one()
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
@@ -407,7 +407,7 @@ class HandleDmsApplicationTest:
 
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
@@ -841,7 +841,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message=f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel.",
+            user_message=f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarche Numérique pour être informé en temps réel.",
             call_to_action=None,
             pop_over_icon=subscription_schemas.PopOverIcon.FILE,
             updated_at=fraud_check.updatedAt,
@@ -861,7 +861,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Il semblerait que ta date de naissance soit erronée. Tu peux te rendre sur le site demarches-simplifiees.fr pour la rectifier.",
+            user_message="Il semblerait que ta date de naissance soit erronée. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour la rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -882,7 +882,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Il semblerait que tes numéro de pièce d'identité et date de naissance soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier.",
+            user_message="Il semblerait que tes numéro de pièce d'identité et date de naissance soient erronés. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour les rectifier.",
             call_to_action=subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -928,7 +928,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
+            user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
             call_to_action=None,
             pop_over_icon=subscription_schemas.PopOverIcon.ERROR,
             updated_at=fraud_check.updatedAt,
@@ -961,7 +961,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé. Tu peux contacter le support pour plus d’informations.",
+            user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé. Tu peux contacter le support pour plus d’informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
                 link=subscription_messages.MAILTO_SUPPORT
@@ -1020,7 +1020,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé.",
+            user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé.",
             call_to_action=None,
             pop_over_icon=subscription_schemas.PopOverIcon.ERROR,
             updated_at=fraud_check.updatedAt,
@@ -2237,7 +2237,7 @@ class HandleInactiveApplicationTest:
                 "Sous réserve d’être encore éligible, tu peux si tu le "
                 "souhaites refaire une demande d’inscription. Nous t'"
                 "invitons à soumettre un nouveau dossier en suivant ce lien : "
-                f"https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
+                f"https://demarche.numerique.gouv.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
                 "\n"
                 "Tu trouveras toutes les informations dans notre FAQ pour "
                 "t'accompagner dans cette démarche : "
@@ -2325,7 +2325,7 @@ class HandleInactiveApplicationTest:
                 "Sous réserve d’être encore éligible, tu peux si tu le "
                 "souhaites refaire une demande d’inscription. Nous t'"
                 "invitons à soumettre un nouveau dossier en suivant ce lien : "
-                f"https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
+                f"https://demarche.numerique.gouv.fr/dossiers/new?procedure_id={inactive_application.procedure.number}\n"
                 "\n"
                 "Tu trouveras toutes les informations dans notre FAQ pour "
                 "t'accompagner dans cette démarche : "

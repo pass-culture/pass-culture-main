@@ -199,7 +199,7 @@ describe('BankInformations page', () => {
 
     expect(
       screen.queryByText(
-        'Vous allez être redirigé vers le site demarches-simplifiees.fr'
+        'Vous allez être redirigé vers le site demarche.numerique.gouv.fr'
       )
     ).not.toBeInTheDocument()
 
@@ -207,7 +207,7 @@ describe('BankInformations page', () => {
 
     expect(
       screen.getByText(
-        'Vous allez être redirigé vers le site demarches-simplifiees.fr'
+        'Vous allez être redirigé vers le site demarche.numerique.gouv.fr'
       )
     ).toBeInTheDocument()
 
@@ -217,7 +217,7 @@ describe('BankInformations page', () => {
 
     expect(
       screen.queryByText(
-        'Vous allez être redirigé vers le site demarches-simplifiees.fr'
+        'Vous allez être redirigé vers le site demarche.numerique.gouv.fr'
       )
     ).not.toBeInTheDocument()
   })

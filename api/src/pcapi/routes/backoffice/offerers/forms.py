@@ -85,7 +85,7 @@ class OffererValidationListForm(utils.PCForm):
     class Meta:
         csrf = False
 
-    q = fields.PCOptSearchField("Nom, SIREN, code postal, dép., ville, email, nom de compte pro, ID DMS CB")
+    q = fields.PCOptSearchField("Nom, SIREN, code postal, dép., ville, email, nom de compte pro, ID DN CB")
     regions = fields.PCSelectMultipleField("Régions", choices=get_regions_choices())
     tags = fields.PCQuerySelectMultipleField(
         "Tags",
@@ -111,7 +111,7 @@ class OffererValidationListForm(utils.PCForm):
         endpoint="backoffice_web.autocomplete_bo_users",
     )
     dms_adage_status = fields.PCSelectMultipleField(
-        "États du dossier DMS ADAGE",
+        "États du dossier DN ADAGE",
         choices=utils.choices_from_enum(GraphQLApplicationStates, filters.format_dms_application_status),
     )
     from_date = fields.PCDateField("Demande à partir du", validators=(wtforms.validators.Optional(),))
@@ -151,10 +151,10 @@ class OffererValidationListForm(utils.PCForm):
                 5,  # postal code
                 siren_utils.RID7_LENGTH,
                 siren_utils.SIREN_LENGTH,
-                12,  # DMS
+                12,  # Démarche Numérique
             ):
                 raise wtforms.validators.ValidationError(
-                    "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DMS CB"
+                    "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DN CB"
                 )
         return q
 

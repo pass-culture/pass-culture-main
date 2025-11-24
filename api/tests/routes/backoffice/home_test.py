@@ -102,8 +102,8 @@ class HomePageTest:
             "2 offres individuelles en attente CONSULTER",
             "3 offres collectives en attente CONSULTER",
             "4 offres collectives vitrine en attente CONSULTER",
-            "0 dossier DS non affecté CONSULTER",
-            "0 dossier DS suivi CONSULTER",
+            "0 dossier DN non affecté CONSULTER",
+            "0 dossier DN suivi CONSULTER",
         ]
         # No card for "entité juridique en attente de conformité" because tag "conformité" does not exist
 
@@ -128,8 +128,8 @@ class HomePageTest:
             "0 offre collective en attente CONSULTER",
             "0 offre collective vitrine en attente CONSULTER",
             "1 entité juridique en attente de conformité CONSULTER",
-            "0 dossier DS non affecté CONSULTER",
-            "0 dossier DS suivi CONSULTER",
+            "0 dossier DN non affecté CONSULTER",
+            "0 dossier DN suivi CONSULTER",
         ]
 
     def test_view_home_page_with_user_account_update_requests_stats(self, legit_user, authenticated_client):
@@ -145,8 +145,8 @@ class HomePageTest:
             "0 offre individuelle en attente CONSULTER",
             "0 offre collective en attente CONSULTER",
             "0 offre collective vitrine en attente CONSULTER",
-            "2 dossiers DS non affectés CONSULTER",
-            "1 dossier DS suivi CONSULTER",
+            "2 dossiers DN non affectés CONSULTER",
+            "1 dossier DN suivi CONSULTER",
         ]
 
     def test_view_home_page_without_user_account_update_requests_stats(self, legit_user, authenticated_client):

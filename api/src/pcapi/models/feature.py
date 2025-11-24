@@ -68,11 +68,9 @@ class FeatureToggle(enum.Enum):
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 15-17 ans"
     )
-    ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION = (
-        "Active le refus automatique des dossiers DS (DMS) de crédit en fonction de l'annotation d'un instructeur"
-    )
+    ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION = "Active le refus automatique des dossiers Démarche Numérique (ex-DMS) de crédit en fonction de l'annotation d'un instructeur"
     ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS = (
-        "Active la synchronisation des demandes de modifications avec DS (DMS)"
+        "Active la synchronisation des demandes de modifications avec Démarche Numérique (ex-DMS)"
     )
     ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
     ENABLE_FRONT_IMAGE_RESIZING = "Active le redimensionnement sur demande des images par l'app et le web"

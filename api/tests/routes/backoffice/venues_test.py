@@ -2693,7 +2693,7 @@ class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
         assert len(rows) == 2
         assert rows[0]["ID"] == str(expired_application.application)
         assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{expired_application.procedure}/dossiers/{expired_application.application}"
+            f"https://demarche.numerique.gouv.fr/procedures/{expired_application.procedure}/dossiers/{expired_application.application}"
             in str(response.data)
         )
         assert rows[0]["Date de dépôt"] == expired_application.depositDate.strftime("%d/%m/%Y")
@@ -2701,7 +2701,7 @@ class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
         assert rows[0]["Date de dernière mise à jour"] == expired_application.lastChangeDate.strftime("%d/%m/%Y")
         assert rows[1]["ID"] == str(accepted_application.application)
         assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{accepted_application.procedure}/dossiers/{accepted_application.application}"
+            f"https://demarche.numerique.gouv.fr/procedures/{accepted_application.procedure}/dossiers/{accepted_application.application}"
             in str(response.data)
         )
         assert rows[1]["Date de dépôt"] == accepted_application.depositDate.strftime("%d/%m/%Y")

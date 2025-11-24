@@ -2,7 +2,7 @@
 {% from "components/forms.html" import build_filters_form_ng with context %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% set procedure_id = get_setting("DS_USER_ACCOUNT_UPDATE_PROCEDURE_ID") %}
-{% set link = "https://www.demarches-simplifiees.fr/procedures/" + procedure_id|string %}
+{% set link = "https://demarche.numerique.gouv.fr/procedures/" + procedure_id|string %}
 {% set pagination = True %}
 {% set rows_count = rows.total %}
 {% set page_title = "Demandes de modifications – démarche "~procedure_id~"" %}
@@ -11,7 +11,7 @@
     class="link-primary"
     target="_blank"
     rel="noreferrer noopener"
-    title="Ouvrir la démarche DS">{{ procedure_id }}
+    title="Ouvrir la Démarche Numérique">{{ procedure_id }}
   <i class="bi bi-box-arrow-up-right">
   </i>
 </a>

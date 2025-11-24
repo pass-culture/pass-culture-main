@@ -22,7 +22,7 @@ export const CollectiveDmsTimeline = ({
   hasAdageIdForMoreThan30Days: boolean
   adageInscriptionDate?: string | null
 }) => {
-  const collectiveDmsApplicationLink = `https://www.demarches-simplifiees.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
+  const collectiveDmsApplicationLink = `https://demarche.numerique.gouv.fr/dossiers/${collectiveDmsApplication.application}/messagerie`
   const collectiveDmsContactSupport =
     'https://aide.passculture.app/hc/fr/articles/8491401511708'
 
@@ -92,7 +92,7 @@ export const CollectiveDmsTimeline = ({
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
           }
         >
-          Consulter ma messagerie sur Démarches Simplifiées
+          Consulter ma messagerie sur Démarche Numérique
         </ButtonLink>
         <ButtonLink
           variant={ButtonVariant.TERNARY}
@@ -128,7 +128,7 @@ export const CollectiveDmsTimeline = ({
           isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
         >
-          Consulter ma messagerie sur Démarches Simplifiées
+          Consulter ma messagerie sur Démarche Numérique
         </ButtonLink>
       </>
     ),
@@ -168,7 +168,7 @@ export const CollectiveDmsTimeline = ({
           isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
         >
-          Consulter ma messagerie sur Démarches Simplifiées
+          Consulter ma messagerie sur Démarche Numérique
         </ButtonLink>
       </>
     ),
@@ -245,7 +245,7 @@ export const CollectiveDmsTimeline = ({
       links={[
         {
           href: collectiveDmsApplicationLink,
-          label: 'Consulter ma messagerie sur Démarches Simplifiées',
+          label: 'Consulter ma messagerie sur Démarche Numérique',
           isExternal: true,
           onClick: () => logClickOnDmsLink(DMSApplicationstatus.REFUSE),
         },
@@ -259,7 +259,7 @@ export const CollectiveDmsTimeline = ({
       Votre demande de référencement a été refusée le {processingDate} par la
       commission régionale de référencement qui rassemble des représentants du
       rectorat et de la DRAC de votre territoire. Nous vous invitons à consulter
-      votre messagerie sur Démarches Simplifiées afin d’en savoir plus sur les
+      votre messagerie sur Démarche Numérique afin d’en savoir plus sur les
       raisons de ce refus.
     </Callout>
   )
@@ -271,7 +271,7 @@ export const CollectiveDmsTimeline = ({
       links={[
         {
           href: collectiveDmsApplicationLink,
-          label: 'Consulter ma messagerie sur Démarches Simplifiées',
+          label: 'Consulter ma messagerie sur Démarche Numérique',
           isExternal: true,
           onClick: () => logClickOnDmsLink(DMSApplicationstatus.SANS_SUITE),
         },
@@ -283,7 +283,7 @@ export const CollectiveDmsTimeline = ({
         },
       ]}
     >
-      Nous vous invitons à consulter votre messagerie sur Démarches Simplifiées
+      Nous vous invitons à consulter votre messagerie sur Démarche Numérique
       afin d’en savoir plus.
     </Callout>
   )

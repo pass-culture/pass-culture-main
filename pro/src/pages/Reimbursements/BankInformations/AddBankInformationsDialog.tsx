@@ -31,8 +31,8 @@ export const AddBankInformationsDialog = ({
 
   return (
     <Dialog
-      title="Vous allez être redirigé vers le site demarches-simplifiees.fr"
-      explanation="Démarches Simplifiées est une plateforme sécurisée de démarches administratives en ligne qui permet de déposer votre dossier de compte bancaire."
+      title="Vous allez être redirigé vers le site demarche.numerique.gouv.fr"
+      explanation="Démarche Numérique est une plateforme sécurisée de démarches administratives en ligne qui permet de déposer votre dossier de compte bancaire."
       icon={strokeLinkIcon}
       onCancel={closeDialog}
       open={isDialogOpen}
@@ -55,7 +55,7 @@ export const AddBankInformationsDialog = ({
           })
         }}
       >
-        Continuer sur demarches-simplifiees.fr
+        Continuer sur demarche.numerique.gouv.fr
       </ButtonLink>
     </Dialog>
   )

@@ -86,8 +86,8 @@ export const ReimbursementBankAccount = ({
           <ButtonLink
             to={
               bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
-                ? `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}`
-                : `https://www.demarches-simplifiees.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`
+                ? `https://demarche.numerique.gouv.fr/dossiers/${bankAccount.dsApplicationId}`
+                : `https://demarche.numerique.gouv.fr/dossiers/${bankAccount.dsApplicationId}/messagerie`
             }
             isExternal
             aria-label="Nouvelle fenêtre"

@@ -1206,7 +1206,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             parsed_html.find("div", class_="pc-script-user-accounts-additional-data-main-fraud-check")
         )
         assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
+            f"https://demarche.numerique.gouv.fr/procedures/{old_dms.source_data().procedure_number}/dossiers/{old_dms.thirdPartyId}"
             in main_dossier_card
         )
 
@@ -1223,7 +1223,7 @@ class GetPublicAccountTest(GetEndpointHelper):
             parsed_html.find("div", class_="pc-script-user-accounts-additional-data-main-fraud-check")
         )
         assert (
-            f"https://www.demarches-simplifiees.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
+            f"https://demarche.numerique.gouv.fr/procedures/{new_dms.source_data().procedure_number}/dossiers/{new_dms.thirdPartyId}"
             in main_dossier_card
         )
 

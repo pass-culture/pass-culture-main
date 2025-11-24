@@ -472,7 +472,7 @@ class MarkWithoutApplicationTooOldApplicationsTest:
             ],
             "messages": [
                 {
-                    "email": "contact@demarches-simplifiees.fr",
+                    "email": "contact.demarche.numerique@example.com",
                     "createdAt": fields_application,
                 },
                 {

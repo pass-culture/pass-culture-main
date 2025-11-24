@@ -14,7 +14,7 @@ from pcapi.utils import date as date_utils
 
 DEFAULT_MESSAGES = [
     {
-        "email": "contact@demarches-simplifiees.fr",
+        "email": "contact.demarche.numerique@example.com",
         "createdAt": "2021-09-14T16:02:33+02:00",
     }
 ]
@@ -445,8 +445,8 @@ def make_new_application():
         "messages": [
             {
                 "id": "Q29tbWVudGFpcmUtMTM2NjYzNDQ=",
-                "email": "contact@demarches-simplifiees.fr",
-                "body": '[Votre demande de crédit pour le pass Culture a bien été reçue]<br><br><div>&nbsp;Bonjour Jean,<br><br></div><div>L\'équipe du pass Culture vous confirme la bonne réception de votre dossier nº 5718303.&nbsp;<br><br></div><div><strong>Votre dossier sera examiné le plus rapidement possible, et vous recevrez un réponse au plus tard dans les semaines à venir. <br><br>Cela ne sert à rien de nous relancer : nos services sont extrêmement sollicités, et nous faisons vraiment de notre mieux pour vous répondre au plus vite !<br><br>Si vous avez&nbsp; prochainement 19 ans, ne vous inquiétez pas : si vous avez déposé votre dossier alors que vous aviez encore 18 ans, il sera bien validé !<br></strong><br>Un mail de confirmation vous sera envoyé lors de la mise en place des 300€ sur votre pass Culture.&nbsp;<br><br>À tout moment, vous pouvez consulter l\'avancée de votre dossier : <a target="_blank" rel="noopener" href="https://www.demarches-simplifiees.fr/dossiers/5718303">https://www.demarches-simplifiees.fr/dossiers/5718303</a></div><div><br>Vous avez des questions ?Nous vous invitons à consulter notre FAQ, vous y trouverez toutes les informations relatives au pass Culture : <a href="https://docs.passculture.app/experimentateurs/pre-inscription-au-pass-culture">https://aide.passculture.app</a></div><div><br>Bonne journée,</div><div><br>L\'équipe du pass Culture</div>',
+                "email": "contact.demarche.numerique@example.com",
+                "body": '[Votre demande de crédit pour le pass Culture a bien été reçue]<br><br><div>&nbsp;Bonjour Jean,<br><br></div><div>L\'équipe du pass Culture vous confirme la bonne réception de votre dossier nº 5718303.&nbsp;<br><br></div><div><strong>Votre dossier sera examiné le plus rapidement possible, et vous recevrez un réponse au plus tard dans les semaines à venir. <br><br>Cela ne sert à rien de nous relancer : nos services sont extrêmement sollicités, et nous faisons vraiment de notre mieux pour vous répondre au plus vite !<br><br>Si vous avez&nbsp; prochainement 19 ans, ne vous inquiétez pas : si vous avez déposé votre dossier alors que vous aviez encore 18 ans, il sera bien validé !<br></strong><br>Un mail de confirmation vous sera envoyé lors de la mise en place des 300€ sur votre pass Culture.&nbsp;<br><br>À tout moment, vous pouvez consulter l\'avancée de votre dossier : <a target="_blank" rel="noopener" href="https://demarche.numerique.gouv.fr/dossiers/5718303">https://demarche.numerique.gouv.fr/dossiers/5718303</a></div><div><br>Vous avez des questions ?Nous vous invitons à consulter notre FAQ, vous y trouverez toutes les informations relatives au pass Culture : <a href="https://docs.passculture.app/experimentateurs/pre-inscription-au-pass-culture">https://aide.passculture.app</a></div><div><br>Bonne journée,</div><div><br>L\'équipe du pass Culture</div>',
                 "createdAt": "2021-09-14T16:02:33+02:00",
                 "attachment": None,
             }

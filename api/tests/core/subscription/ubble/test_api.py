@@ -1393,7 +1393,7 @@ class SubscriptionMessageTest:
         ) == subscription_schemas.SubscriptionMessage(
             user_message=ubble_errors.UBBLE_DEFAULT.not_retryable_user_message,
             call_to_action=subscription_schemas.CallToActionMessage(
-                title="Accéder au site Démarches-Simplifiées",
+                title="Accéder au site Démarche Numérique",
                 link=f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees",
                 icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
@@ -1443,7 +1443,7 @@ class SubscriptionMessageTest:
         ) == subscription_schemas.SubscriptionMessage(
             user_message=ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message,
             call_to_action=subscription_schemas.CallToActionMessage(
-                title="Accéder au site Démarches-Simplifiées",
+                title="Accéder au site Démarche Numérique",
                 link=f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees",
                 icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),

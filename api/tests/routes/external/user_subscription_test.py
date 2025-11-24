@@ -364,7 +364,7 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon == subscription_schemas.PopOverIcon.FILE
         assert (
             message.user_message
-            == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+            == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarche Numérique pour être informé en temps réel."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -398,7 +398,7 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon == subscription_schemas.PopOverIcon.FILE
         assert (
             message.user_message
-            == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel."
+            == f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.strftime('%d/%m/%Y')}. Rends-toi sur la messagerie du site Démarche Numérique pour être informé en temps réel."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -433,7 +433,7 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon == subscription_schemas.PopOverIcon.ERROR
         assert (
             message.user_message
-            == "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé. Tu peux contacter le support pour plus d’informations."
+            == "Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé. Tu peux contacter le support pour plus d’informations."
         )
         assert (
             message.call_to_action.link
@@ -477,9 +477,9 @@ class DmsWebhookApplicationTest:
             " - ton code postal\n"
             "\n"
             "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
-            "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t’invitons à consulter les articles suivants :\n"
-            'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
-            'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
+            "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarche Numérique, nous t’invitons à consulter les articles suivants :\n"
+            'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarche Numérique ?</a>\n'
+            'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarche Numérique ?</a>\n'
             "\n"
             "Ton code postal doit être renseigné sous format 5 chiffres uniquement, sans lettre ni espace\n"
             '<a href="https://aide.passculture.app/hc/fr/articles/4411998995985--Jeunes-Comment-bien-renseigner-mon-adresse-et-mon-code-postal-lors-de-l-inscription-">Comment bien renseigner mon adresse et mon code postal lors de l’inscription ? </a>\n'
@@ -489,7 +489,7 @@ class DmsWebhookApplicationTest:
             "\n"
             "Merci de corriger ton dossier.\n"
             "\n"
-            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>\n'
             "\n"
             "Nous te souhaitons une belle journée.\n"
             "\n"
@@ -508,7 +508,7 @@ class DmsWebhookApplicationTest:
         assert message.pop_over_icon is None
         assert (
             message.user_message
-            == "Il semblerait que tes numéro de pièce d'identité et code postal soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
+            == "Il semblerait que tes numéro de pièce d'identité et code postal soient erronés. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour les rectifier."
         )
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
 
@@ -624,7 +624,7 @@ class DmsWebhookApplicationTest:
             "\n"
             "Merci de corriger ton dossier.\n"
             "\n"
-            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>\n'
             "\n"
             "Nous te souhaitons une belle journée.\n"
             "\n"
@@ -637,7 +637,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
+            == "Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -669,7 +669,7 @@ class DmsWebhookApplicationTest:
             "Nous avons bien reçu ton dossier, mais il y a une erreur dans le champ contenant ton prénom, inscrit sur le formulaire en ligne :\n"
             "Merci de corriger ton dossier.\n"
             "\n"
-            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>\n'
             "\n"
             "Nous te souhaitons une belle journée.\n"
             "\n"
@@ -681,7 +681,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que ton prénom soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
+            == "Il semblerait que ton prénom soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -719,13 +719,13 @@ class DmsWebhookApplicationTest:
             " - ton nom de famille\n"
             "\n"
             "Pour que ton dossier soit traité, tu dois le modifier en faisant bien attention à remplir correctement toutes les informations.\n"
-            "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarches Simplifiées, nous t’invitons à consulter les articles suivants :\n"
-            'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
-            'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarches Simplifiées?</a>\n'
+            "Pour avoir plus d’informations sur les étapes de ton inscription sur Démarche Numérique, nous t’invitons à consulter les articles suivants :\n"
+            'Jeune de 18 ans : <a href="https://aide.passculture.app/hc/fr/articles/4411991957521--Jeunes-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes] Comment remplir le formulaire sur Démarche Numérique ?</a>\n'
+            'Jeune de 15 à 17 ans : <a href="https://aide.passculture.app/hc/fr/articles/4404373671324--Jeunes-15-17-ans-Comment-remplir-le-formulaire-sur-D%C3%A9marches-Simplifi%C3%A9es-">[Jeunes 15-17 ans] Comment remplir le formulaire sur Démarche Numérique ?</a>\n'
             "\n"
             "Merci de corriger ton dossier.\n"
             "\n"
-            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>\n'
             "\n"
             "Nous te souhaitons une belle journée.\n"
             "\n"
@@ -738,7 +738,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que tes prénom et nom de famille soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
+            == "Il semblerait que tes prénom et nom de famille soient erronés. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour les rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -772,7 +772,7 @@ class DmsWebhookApplicationTest:
             "\n"
             "Merci de corriger ton dossier.\n"
             "\n"
-            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>\n'
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>\n'
             "\n"
             "Nous te souhaitons une belle journée.\n"
             "\n"
@@ -784,7 +784,7 @@ class DmsWebhookApplicationTest:
         assert message.call_to_action == subscription_messages.REDIRECT_TO_DMS_CALL_TO_ACTION
         assert (
             message.user_message
-            == "Il semblerait que ton code postal soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier."
+            == "Il semblerait que ton code postal soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier."
         )
 
     @patch.object(api_dms.DMSGraphQLClient, "execute_query")
@@ -818,7 +818,7 @@ class DmsWebhookApplicationTest:
             f"Nous avons bien reçu ton dossier, mais la date de naissance que tu as renseignée ({birthday_date}) indique que tu n’as pas l’âge requis pour profiter du pass Culture (tu dois avoir entre 15 et 18 ans).\n"
             f"S’il s’agit d’une erreur, tu peux modifier ton dossier.\n"
             "\n"
-            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarches Simplifiées ?</a>'
+            'Tu trouveras de l’aide dans cet article : <a href="https://aide.passculture.app/hc/fr/articles/4411999116433--Jeunes-Où-puis-je-trouver-de-l-aide-concernant-mon-dossier-d-inscription-sur-Démarches-Simplifiées-">Où puis-je trouver de l’aide concernant mon dossier d’inscription sur Démarche Numérique ?</a>'
             "\n"
             "Bonne journée,\n"
             "\n"
@@ -2419,7 +2419,7 @@ class UbbleWebhookTest:
         assert message.user_message == ubble_errors.UBBLE_CODE_ERROR_MAPPING[reason_code].not_retryable_user_message
         assert message.call_to_action.link == f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees"
         assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EXTERNAL
-        assert message.call_to_action.title == "Accéder au site Démarches-Simplifiées"
+        assert message.call_to_action.title == "Accéder au site Démarche Numérique"
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["template"]["id_prod"] == 760

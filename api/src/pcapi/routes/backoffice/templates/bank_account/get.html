@@ -26,7 +26,7 @@
                    rel="noreferrer noopener"
                    class="card-link">
                   <button class="btn btn-outline-primary lead fw-bold mt-2 mx-3"
-                          type="button">ACCÉDER AU DOSSIER DMS CB</button>
+                          type="button">ACCÉDER AU DOSSIER DN CB</button>
                 </a>
               {% endif %}
             </div>
@@ -58,26 +58,26 @@
                 </p>
                 {% if dms_stats %}
                   <p class="mb-1">
-                    <span class="fw-bold">Statut DMS CB :</span>
+                    <span class="fw-bold">Statut DN CB :</span>
                     {{ dms_stats.status | format_dms_status }}
                   </p>
                   {% if dms_stats.status == "accepte" %}
                     <p class="mb-4">
-                      <span class="fw-bold">Date de validation du dossier DMS CB :</span>
+                      <span class="fw-bold">Date de validation du dossier DN CB :</span>
                       {{ dms_stats.lastChangeDate | format_date }}
                     </p>
                   {% else %}
                     <p class="mb-4">
-                      <span class="fw-bold">Date de dépôt du dossier DMS CB :</span>
+                      <span class="fw-bold">Date de dépôt du dossier DN CB :</span>
                       {{ dms_stats.subscriptionDate | format_date }}
                     </p>
                   {% endif %}
                 {% else %}
                   <p class="mb-4">
                     {% if dms_error %}
-                      <span class="fw-bold">Erreur DMS CB :</span> {{ dms_error }}
+                      <span class="fw-bold">Erreur DN CB :</span> {{ dms_error }}
                     {% else %}
-                      <span class="fw-bold">Pas de dossier DMS CB</span>
+                      <span class="fw-bold">Pas de dossier DN CB</span>
                     {% endif %}
                   </p>
                 {% endif %}

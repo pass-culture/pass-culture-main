@@ -844,7 +844,7 @@ def format_fraud_review_status(status: subscription_models.FraudReviewStatus) ->
         case subscription_models.FraudReviewStatus.KO:
             return "KO"
         case subscription_models.FraudReviewStatus.REDIRECTED_TO_DMS:
-            return "Redirigé vers DMS"
+            return "Redirigé vers Démarche Numérique"
         case _:
             return status.value
 
@@ -1163,7 +1163,7 @@ def format_fraud_check_url(id_check_item: serialization_accounts.IdCheckItemMode
             return f"https://dashboard.ubble.ai/identity-verifications/{id_check_item.thirdPartyId}"
         return f"https://dashboard.ubble.ai/identifications/{id_check_item.thirdPartyId}"
     if id_check_item.type == subscription_models.FraudCheckType.DMS.value and id_check_item.technicalDetails:
-        return f"https://www.demarches-simplifiees.fr/procedures/{id_check_item.technicalDetails['procedure_number']}/dossiers/{id_check_item.thirdPartyId}"
+        return f"https://demarche.numerique.gouv.fr/procedures/{id_check_item.technicalDetails['procedure_number']}/dossiers/{id_check_item.thirdPartyId}"
     return ""
 
 
@@ -1176,7 +1176,7 @@ def format_fraud_action_dict_url(fraud_action_dict: dict) -> str:
         fraud_action_dict["type"] == subscription_models.FraudCheckType.DMS.value
         and fraud_action_dict["technicalDetails"]
     ):
-        return f"https://www.demarches-simplifiees.fr/procedures/{fraud_action_dict['technicalDetails']['procedure_number']}/dossiers/{fraud_action_dict['techId']}"
+        return f"https://demarche.numerique.gouv.fr/procedures/{fraud_action_dict['technicalDetails']['procedure_number']}/dossiers/{fraud_action_dict['techId']}"
     return ""
 
 

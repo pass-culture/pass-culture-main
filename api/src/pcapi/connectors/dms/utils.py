@@ -19,7 +19,11 @@ def import_ds_applications(
     set_without_continuation: bool = False,
     forced_since: datetime.datetime | None = None,
 ) -> None:
-    logger.info("[DS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
+    logger.info(
+        "[DS] Start import of all applications from Démarche Numérique for procedure %s",
+        procedure_number,
+        extra={"procedure": procedure_number},
+    )
     last_import = (
         db.session.query(ds_models.LatestDmsImport)
         .filter(ds_models.LatestDmsImport.procedureId == procedure_number)

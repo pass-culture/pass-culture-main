@@ -354,7 +354,7 @@ def get_accept_form(ds_application_id: int) -> utils.BackofficeResponse:
         include_template="accounts/modal/accept_update_request.html",
         button_text="Appliquer les modifications et accepter" if can_be_accepted else None,
         target_id=f"#request-row-{ds_application_id}",
-        title=f"Accepter le dossier Démarches-Simplifiées n°{ds_application_id}",
+        title=f"Accepter le dossier Démarche Numérique n°{ds_application_id}",
         div_id=f"accept-{update_request.dsApplicationId}",
         ds_application_id=ds_application_id,
         update_request=update_request,

@@ -57,7 +57,7 @@ INACTIVITY_MESSAGE = """Aucune activité n’a eu lieu sur ton dossier depuis pl
 
 Conformément à nos CGUs, en cas d’absence de réponse ou de justification insuffisante, nous nous réservons le droit de refuser ta création de compte. Aussi nous avons classé sans suite ton dossier n°{application_number}.
 
-Sous réserve d’être encore éligible, tu peux si tu le souhaites refaire une demande d’inscription. Nous t'invitons à soumettre un nouveau dossier en suivant ce lien : https://www.demarches-simplifiees.fr/dossiers/new?procedure_id={procedure_id}
+Sous réserve d’être encore éligible, tu peux si tu le souhaites refaire une demande d’inscription. Nous t'invitons à soumettre un nouveau dossier en suivant ce lien : https://demarche.numerique.gouv.fr/dossiers/new?procedure_id={procedure_id}
 
 Tu trouveras toutes les informations dans notre FAQ pour t'accompagner dans cette démarche : https://aide.passculture.app/hc/fr/sections/4411991878545-Inscription-et-modification-d-information-sur-Démarches-Simplifiées
 """
@@ -726,14 +726,14 @@ def _import_all_dms_applications_initial_import(procedure_id: int) -> None:
     )
     repository.save(new_import_record)
     logger.info(
-        "[DMS] End import of all applications from Démarches Simplifiées for procedure %s - Processed %s applications",
+        "[DMS] End import of all applications from Démarche Numérique for procedure %s - Processed %s applications",
         procedure_id,
         len(processed_applications),
     )
 
 
 def import_all_updated_dms_applications(procedure_number: int, forced_since: datetime.datetime | None = None) -> None:
-    logger.info("[DMS] Start import of all applications from Démarches Simplifiées for procedure %s", procedure_number)
+    logger.info("[DMS] Start import of all applications from Démarche Numérique for procedure %s", procedure_number)
 
     latest_dms_import_record: dms_models.LatestDmsImport | None = (
         db.session.query(dms_models.LatestDmsImport)
@@ -744,9 +744,7 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
     if latest_dms_import_record is None:
         logger.info("[DMS] No previous import found for procedure %s. Running first import.", procedure_number)
         _import_all_dms_applications_initial_import(procedure_number)
-        logger.info(
-            "[DMS] End import of all applications from Démarches Simplifiées for procedure %s", procedure_number
-        )
+        logger.info("[DMS] End import of all applications from Démarche Numérique for procedure %s", procedure_number)
         return
 
     new_import_datetime = None
@@ -795,7 +793,7 @@ def import_all_updated_dms_applications(procedure_number: int, forced_since: dat
     db.session.flush()
 
     logger.info(
-        "[DMS] End import of all applications from Démarches Simplifiées for procedure %s - Processed %s applications",
+        "[DMS] End import of all applications from Démarche Numérique for procedure %s - Processed %s applications",
         procedure_number,
         len(processed_applications),
     )

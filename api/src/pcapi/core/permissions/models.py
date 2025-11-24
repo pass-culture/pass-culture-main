@@ -254,7 +254,7 @@ class BackOfficeUserProfile(Model):
         server_default="{}",
     )
 
-    # instructor id on Démarches Simplifiées, used to change application status
+    # instructor id on Démarche Numérique, used to change application status
     dsInstructorId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=True, index=True, unique=True)
 
     @property

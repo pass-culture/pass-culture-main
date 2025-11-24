@@ -102,7 +102,7 @@ export const OnboardingCollectiveModal = ({
               OnboardingDidacticEvents.HAS_CLICKED_SUBMIT_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
             )
           }
-          to="https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage"
+          to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
         >
           Déposer un dossier
         </ButtonLink>

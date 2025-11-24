@@ -52,7 +52,7 @@ def _generate_form_field_error(
         field = error_field_details[0]
         if not field:
             logger.error("Unknown field error key: %s", error_fields[0].key)
-            return "Ton dossier déposé sur le site demarches-simplifiees.fr contient des erreurs."
+            return "Ton dossier déposé sur le site demarche.numerique.gouv.fr contient des erreurs."
         user_message = (
             error_text_singular_masculine.format(formatted_error_fields=field.label)
             if (field.gender == NounGender.MASCULINE)
@@ -71,7 +71,7 @@ def get_application_received_message(
     fraud_check: subscription_models.BeneficiaryFraudCheck,
 ) -> subscription_schemas.SubscriptionMessage:
     return subscription_schemas.SubscriptionMessage(
-        user_message=f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarches-Simplifiées pour être informé en temps réel.",
+        user_message=f"Nous avons bien reçu ton dossier le {fraud_check.dateCreated.date():%d/%m/%Y}. Rends-toi sur la messagerie du site Démarche Numérique pour être informé en temps réel.",
         pop_over_icon=subscription_schemas.PopOverIcon.FILE,
         call_to_action=None,
         updated_at=fraud_check.updatedAt,
@@ -84,15 +84,15 @@ def get_error_updatable_message(
     updated_at: datetime.datetime | None,
 ) -> subscription_schemas.SubscriptionMessage:
     if not application_content or not (application_content.field_errors or birth_date_error):
-        user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr contient des erreurs. Tu peux te rendre sur le site pour le rectifier."
+        user_message = "Ton dossier déposé sur le site demarche.numerique.gouv.fr contient des erreurs. Tu peux te rendre sur le site pour le rectifier."
     else:
         errors = application_content.field_errors or []
         errors.extend([birth_date_error] if birth_date_error else [])
 
         user_message = _generate_form_field_error(
-            "Il semblerait que ton {formatted_error_fields} soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
-            "Il semblerait que ta {formatted_error_fields} soit erronée. Tu peux te rendre sur le site demarches-simplifiees.fr pour la rectifier.",
-            "Il semblerait que tes {formatted_error_fields} soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier.",
+            "Il semblerait que ton {formatted_error_fields} soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier.",
+            "Il semblerait que ta {formatted_error_fields} soit erronée. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour la rectifier.",
+            "Il semblerait que tes {formatted_error_fields} soient erronés. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour les rectifier.",
             errors,
         )
 
@@ -112,7 +112,7 @@ def get_error_not_updatable_message(
     updated_at: datetime.datetime | None,
 ) -> subscription_schemas.SubscriptionMessage:
     if not application_content or not (application_content.field_errors or birth_date_error):
-        user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr contient des erreurs."
+        user_message = "Ton dossier déposé sur le site demarche.numerique.gouv.fr contient des erreurs."
     else:
         user_message = ""
         if application_content.field_errors:
@@ -142,7 +142,7 @@ def get_error_processed_message(
     birth_date_error: dms_schemas.DmsFieldErrorDetails | None,
     updated_at: datetime.datetime | None,
 ) -> subscription_schemas.SubscriptionMessage:
-    user_message = "Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé"
+    user_message = "Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé"
     pop_over_icon: subscription_schemas.PopOverIcon | None = subscription_schemas.PopOverIcon.ERROR
     call_to_action: subscription_schemas.CallToActionMessage | None = (
         subscription_messages.compute_support_call_to_action(user.id)
