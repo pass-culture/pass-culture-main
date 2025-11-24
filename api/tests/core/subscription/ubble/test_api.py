@@ -1469,7 +1469,7 @@ class SubscriptionMessageTest:
 
 
 @pytest.mark.usefixtures("db_session")
-@patch("pcapi.core.subscription.ubble.api.update_ubble_workflow")
+@patch("pcapi.core.subscription.ubble.tasks.update_ubble_workflow_task.delay")
 def test_pending_and_created_fraud_checks_are_updated(update_ubble_workflow_mock):
     yesterday = datetime.date.today() - relativedelta(hours=13)
     created_fraud_check = BeneficiaryFraudCheckFactory(
@@ -1481,4 +1481,10 @@ def test_pending_and_created_fraud_checks_are_updated(update_ubble_workflow_mock
 
     ubble_subscription_api.recover_pending_ubble_applications()
 
-    update_ubble_workflow_mock.assert_has_calls([call(created_fraud_check), call(pending_fraud_check)], any_order=True)
+    update_ubble_workflow_mock.assert_has_calls(
+        [
+            call(payload={"beneficiary_fraud_check_id": created_fraud_check.id}),
+            call(payload={"beneficiary_fraud_check_id": pending_fraud_check.id}),
+        ],
+        any_order=True,
+    )
