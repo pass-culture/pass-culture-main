@@ -232,10 +232,11 @@ def create_institutions_with_deposits_by_period() -> None:
 
     # case 5: deposit for year, 2 periods, first period is passed
     institution = next(institutions)
+    passed_period_end = datetime.datetime(2025, 10, 31, 23, 59, 59)
     educational_factories.EducationalDepositFactory.create(
         educationalInstitution=institution,
         educationalYear=year,
-        period=make_timerange(start=year.beginningDate, end=datetime.datetime(2025, 11, 1)),
+        period=make_timerange(start=year.beginningDate, end=passed_period_end),
         amount=3000,
     )
     educational_factories.EducationalDepositFactory.create(
@@ -250,7 +251,7 @@ def create_institutions_with_deposits_by_period() -> None:
     educational_factories.EducationalDepositFactory.create(
         educationalInstitution=institution,
         educationalYear=year,
-        period=make_timerange(start=year.beginningDate, end=datetime.datetime(2025, 11, 1)),
+        period=make_timerange(start=year.beginningDate, end=passed_period_end),
         amount=3000,
     )
 

@@ -1,15 +1,38 @@
+import typing
+
 from pydantic.v1.fields import Field
 
-import pcapi.core.educational.schemas as educational_schemas
-from pcapi.serialization.utils import to_camel
+from pcapi.core.educational import schemas
 
 
-class EducationalInstitutionResponse(educational_schemas.AdageBaseResponseModel):
+if typing.TYPE_CHECKING:
+    from pcapi.core.educational.models import EducationalDeposit
+
+
+class EducationalInstitutionDepositResponse(schemas.AdageBaseResponseModel):
+    credit: float = Field(description="Total credit granted to the educational institution")
+    isFinal: bool = Field(description="Flag to know if the credit has been approved and is now final")
+    period: schemas.EducationalDepositPeriodResponse = Field(description="Period of this deposit")
+
+
+def serialize_deposit(deposit: "EducationalDeposit") -> EducationalInstitutionDepositResponse:
+    # TODO(jcicurel): deposit period should be non-nullable
+    assert deposit.period is not None
+
+    return EducationalInstitutionDepositResponse(
+        credit=float(deposit.amount),
+        isFinal=deposit.isFinal,
+        period=schemas.EducationalDepositPeriodResponse(start=deposit.period.lower, end=deposit.period.upper),
+    )
+
+
+class EducationalInstitutionResponse(schemas.AdageBaseResponseModel):
+    # TODO(jcicurel): remove credit and isFinal as they are now set on each deposit
+    # we keep these fields here for now so that the change is non-breaking for Adage
     credit: int = Field(description="Total credit granted to the educational institution")
     isFinal: bool = Field(description="Flag to know if the credit has been approved and is now final")
-    prebookings: list[educational_schemas.EducationalBookingResponse]
+    prebookings: list[schemas.EducationalBookingResponse]
+    deposits: list[EducationalInstitutionDepositResponse]
 
     class Config:
         title = "School response model"
-        alias_generator = to_camel
-        allow_population_by_field_name = True
