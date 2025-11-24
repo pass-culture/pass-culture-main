@@ -7,6 +7,7 @@ import time_machine
 
 from pcapi.core import testing
 from pcapi.core.bookings.models import Booking
+from pcapi.core.educational.factories import CancelledNotConfirmedCollectiveBookingFactory
 from pcapi.core.educational.factories import CollectiveBookingFactory
 from pcapi.core.educational.factories import EducationalCurrentYearFactory
 from pcapi.core.educational.factories import EducationalDepositFactory
@@ -261,11 +262,7 @@ class ReturnsErrorTest:
 
     @time_machine.travel("2021-10-15 09:00:00")
     def test_no_deposit_for_collective_bookings(self, client) -> None:
-        booking = CollectiveBookingFactory(
-            collectiveStock__price=Decimal(20.00),
-            status=CollectiveBookingStatus.PENDING,
-            confirmationLimitDate=datetime(2021, 10, 15, 10),
-        )
+        booking = PendingCollectiveBookingFactory(confirmationLimitDate=datetime(2021, 10, 15, 10))
 
         client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
@@ -286,11 +283,10 @@ class ReturnsErrorTest:
             amount=Decimal(100.00),
             isFinal=True,
         )
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
@@ -313,11 +309,10 @@ class ReturnsErrorTest:
             amount=Decimal(400.00),
             isFinal=False,
         )
-        booking = CollectiveBookingFactory(
+        booking = PendingCollectiveBookingFactory(
             collectiveStock__price=Decimal(400.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
-            status=CollectiveBookingStatus.PENDING,
             confirmationLimitDate=datetime(2021, 10, 15, 10),
         )
 
@@ -331,7 +326,7 @@ class ReturnsErrorTest:
         assert booking.educationalDepositId is None
 
     def test_collective_booking_is_cancelled(self, client) -> None:
-        booking = CollectiveBookingFactory(status=CollectiveBookingStatus.CANCELLED)
+        booking = CancelledNotConfirmedCollectiveBookingFactory()
 
         client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")
@@ -344,9 +339,7 @@ class ReturnsErrorTest:
 
     @time_machine.travel("2021-08-05 15:00:00")
     def test_confirmation_limit_date_has_passed_for_collective_bookings(self, client) -> None:
-        booking: Booking = CollectiveBookingFactory(
-            confirmationLimitDate=datetime(2021, 8, 5, 14), status=CollectiveBookingStatus.PENDING
-        )
+        booking: Booking = PendingCollectiveBookingFactory(confirmationLimitDate=datetime(2021, 8, 5, 14))
 
         client = client.with_eac_token()
         response = client.post(f"/adage/v1/prebookings/{booking.id}/confirm")

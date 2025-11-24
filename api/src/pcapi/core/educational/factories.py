@@ -197,9 +197,10 @@ class CollectiveStockFactory(BaseFactory[models.CollectiveStock]):
 class EducationalYearFactory(BaseFactory[models.EducationalYear]):
     class Meta:
         model = models.EducationalYear
+        sqlalchemy_get_or_create = ["adageId", "beginningDate", "expirationDate"]
 
     adageId: factory.declarations.BaseDeclaration = factory.Sequence(
-        lambda number: str(_get_current_educational_year_adage_id() + number)
+        lambda number: str(int(_get_current_educational_year_adage_id()) + number)
     )
     beginningDate: factory.declarations.BaseDeclaration = factory.Sequence(
         lambda number: datetime.datetime(_get_current_educational_year(), 9, 1) + relativedelta(years=number)
@@ -225,7 +226,7 @@ def _get_current_educational_year() -> int:
 
 def create_educational_year(date_time: datetime.datetime) -> models.EducationalYear:
     beginning_year = _get_educational_year_beginning(date_time)
-    adage_id = beginning_year - ADAGE_STARTING_EDUCATIONAL_YEAR
+    adage_id = str(beginning_year - ADAGE_STARTING_EDUCATIONAL_YEAR)
 
     return EducationalYearFactory.create(
         beginningDate=datetime.datetime(beginning_year, 9, 1),
@@ -234,8 +235,8 @@ def create_educational_year(date_time: datetime.datetime) -> models.EducationalY
     )
 
 
-def _get_current_educational_year_adage_id() -> int:
-    return _get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR
+def _get_current_educational_year_adage_id() -> str:
+    return str(_get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR)
 
 
 class EducationalCurrentYearFactory(EducationalYearFactory):
@@ -249,6 +250,7 @@ class EducationalCurrentYearFactory(EducationalYearFactory):
 class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
     class Meta:
         model = models.EducationalDeposit
+        sqlalchemy_get_or_create = ["educationalInstitution", "educationalYear", "period"]
 
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
     educationalYear = factory.SubFactory(EducationalYearFactory)
@@ -289,17 +291,38 @@ class CollectiveBookingFactory(BaseFactory[models.CollectiveBooking]):
         lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
     )
     educationalInstitution = factory.SubFactory(EducationalInstitutionFactory)
-    educationalYear = factory.SubFactory(EducationalYearFactory)
+    educationalYear = factory.LazyAttribute(lambda booking: _get_booking_year(booking))
     educationalRedactor = factory.SubFactory(EducationalRedactorFactory)
     confirmationDate: factory.declarations.BaseDeclaration | None = factory.LazyFunction(
         lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
     )
+    educationalDeposit = factory.LazyAttribute(lambda booking: _get_booking_deposit(booking))
+
+
+def _get_booking_year(booking: models.CollectiveBooking) -> models.EducationalYear | None:
+    start_datetime = booking.collectiveStock.startDatetime
+    return create_educational_year(start_datetime)
+
+
+def _get_booking_deposit(booking: models.CollectiveBooking) -> models.EducationalDeposit | None:
+    if booking.confirmationDate is None:
+        return None
+
+    institution = booking.educationalInstitution
+    year = booking.educationalYear
+    period = db_utils.make_timerange(year.beginningDate, year.expirationDate)
+
+    return EducationalDepositFactory.create(educationalInstitution=institution, educationalYear=year, period=period)
 
 
 class CancelledCollectiveBookingFactory(CollectiveBookingFactory):
     status = models.CollectiveBookingStatus.CANCELLED
     cancellationDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(hours=1))
     cancellationReason = factory.Iterator(models.CollectiveBookingCancellationReasons)
+
+
+class CancelledNotConfirmedCollectiveBookingFactory(CancelledCollectiveBookingFactory):
+    confirmationDate = None
 
 
 class PendingCollectiveBookingFactory(CollectiveBookingFactory):
