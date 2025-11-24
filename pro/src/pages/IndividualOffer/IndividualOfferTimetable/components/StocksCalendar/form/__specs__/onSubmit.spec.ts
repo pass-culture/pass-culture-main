@@ -356,7 +356,7 @@ describe('onSubmit', () => {
             stockCount: expectedStocks.length,
           })
         )
-        await onSubmit(formValues, '75', 66, notify)
+        await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
 
         expect(api.bulkCreateEventStocks).toBeCalledWith({
           offerId: 66,
@@ -447,7 +447,7 @@ describe('onSubmit', () => {
   errorCases.forEach(({ errorMessage, formValues }) =>
     it(`should raise error if ${errorMessage}`, async () => {
       try {
-        await onSubmit(formValues, '75', 66, notify)
+        await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
       } catch (error) {
         expect(isError(error)).toBeTruthy()
         if (isError(error)) {
@@ -473,7 +473,13 @@ describe('onSubmit', () => {
       stocks: ['Erreur'],
     })
 
-    const result = await onSubmit(formValues, '75', 66, notify)
+    const result = await onSubmit(formValues, '75', 66, notify, [
+      'queryKey',
+      1,
+      1,
+      {},
+      {},
+    ])
 
     expect(mockErrorNotification).toHaveBeenCalledWith(
       `Une erreur est survenue lors de l’enregistrement de vos stocks.`
