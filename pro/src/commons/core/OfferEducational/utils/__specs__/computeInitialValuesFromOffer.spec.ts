@@ -3,14 +3,14 @@ import { OfferContactFormEnum } from '@/apiClient/v1'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from '@/commons/utils/date'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
 const venueAddress = {
   city: 'Paris',
   id: 1,
-  id_oa: 1994,
+  venueLocation: false,
   latitude: 3,
   longitude: 2,
   isManualEdition: false,
@@ -20,8 +20,8 @@ const venueAddress = {
 }
 
 const venues = [
-  venueListItemFactory({
-    address: venueAddress,
+  makeVenueListItem({
+    location: venueAddress,
     id: 2,
   }),
 ]
@@ -59,7 +59,7 @@ describe('computeInitialValuesFromOffer', () => {
         address: {
           isManualEdition: false,
           isVenueAddress: true,
-          id_oa: venue.address?.id_oa.toString(),
+          id: venue.location?.id.toString(),
           label: 'Le nom du lieu 2',
         },
       },
@@ -203,9 +203,10 @@ describe('computeInitialValuesFromOffer', () => {
         getCollectiveOfferTemplateFactory({
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
+            location: {
               label: 'théâtre de savoie',
-              id_oa: 1995,
+              // id: 1995,
+              venueLocation: false,
               city: 'Chambéry',
               street: "rue de l'espoir",
               id: 14,
@@ -231,7 +232,7 @@ describe('computeInitialValuesFromOffer', () => {
           address: {
             isVenueAddress: false,
             isManualEdition: false,
-            id_oa: 'SPECIFIC_ADDRESS',
+            id: 'SPECIFIC_ADDRESS',
             label: 'théâtre de savoie',
           },
           locationType: 'ADDRESS',
@@ -249,7 +250,7 @@ describe('computeInitialValuesFromOffer', () => {
         getCollectiveOfferTemplateFactory({
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: venueAddress,
+            location: venueAddress,
           },
           venue: offerVenue,
         }),
@@ -267,7 +268,7 @@ describe('computeInitialValuesFromOffer', () => {
           address: {
             isVenueAddress: true,
             isManualEdition: false,
-            id_oa: '1994',
+            id: '1994',
             label: 'Le nom du lieu 2',
           },
           locationType: 'ADDRESS',

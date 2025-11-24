@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { OfferStatus } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   listOffersOfferFactory,
   listOffersStockFactory,
@@ -110,7 +110,7 @@ describe('OfferNameCell', () => {
           beginningDatetime: date,
         }),
       ],
-      address: getAddressResponseIsLinkedToVenueModelFactory({
+      location: getLocationResponseModel({
         departmentCode: 'FR',
       }),
     })
@@ -142,7 +142,7 @@ describe('OfferNameCell', () => {
           beginningDatetime: '2024-12-12T13:00:00',
         }),
       ],
-      address: getAddressResponseIsLinkedToVenueModelFactory({
+      location: getLocationResponseModel({
         departmentCode: 'FR',
       }),
     })
@@ -164,7 +164,7 @@ describe('OfferNameCell', () => {
           beginningDatetime: '2024-10-01T10:00:00.000Z', // this datetime is UTC
         }),
       ],
-      address: getAddressResponseIsLinkedToVenueModelFactory({
+      location: getLocationResponseModel({
         departmentCode: '972', // Fort-de-France (Martinique) department code (UTC-4 EDT)
       }),
       name: 'Individual offer',

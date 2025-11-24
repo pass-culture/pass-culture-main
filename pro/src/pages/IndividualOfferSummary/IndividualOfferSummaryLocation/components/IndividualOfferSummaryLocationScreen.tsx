@@ -46,12 +46,12 @@ export function IndividualOfferSummaryLocationScreen({
                 descriptions={[
                   {
                     title: 'Intitulé',
-                    text: offer.address?.label || '-',
+                    text: offer.location?.label || '-',
                   },
                   {
                     title: 'Adresse',
-                    text: offer.address
-                      ? computeAddressDisplayName(offer.address, false)
+                    text: offer.location
+                      ? computeAddressDisplayName(offer.location, false)
                       : '-',
                   },
                 ]}

@@ -54,7 +54,7 @@ export const collectiveOfferFactory = (
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     location: {
       locationType: CollectiveLocationType.SCHOOL,
-      address: null,
+      location: null,
       locationComment: null,
     },
     ...customCollectiveOffer,
@@ -78,7 +78,7 @@ export const collectiveOfferTemplateFactory = (
     allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_ARCHIVE],
     location: {
       locationType: CollectiveLocationType.SCHOOL,
-      address: null,
+      location: null,
       locationComment: null,
     },
     ...customCollectiveOfferTemplate,

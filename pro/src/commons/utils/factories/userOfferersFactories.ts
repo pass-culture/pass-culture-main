@@ -70,7 +70,7 @@ const addressBodyModelFactory = (
     city: 'Paris',
     inseeCode: '75056',
     isManualEdition: false,
-    isVenueAddress: true,
+    venueLocation: true,
     label: 'Ma super maison',
     latitude: 48.869440910282734,
     longitude: 2.3087717501609233,

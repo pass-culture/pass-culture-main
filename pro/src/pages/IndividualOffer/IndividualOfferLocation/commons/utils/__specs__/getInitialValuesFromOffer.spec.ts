@@ -1,6 +1,6 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   makeVenueListItem,
@@ -28,8 +28,7 @@ describe('getInitialValuesFromOffer', () => {
         const offer = {
           ...offerBase,
           address: {
-            id: 1,
-            id_oa: 997,
+            id: 997,
             banId: '35288_7283_00001',
             inseeCode: '89001',
             label: 'Bureau',
@@ -74,13 +73,12 @@ describe('getInitialValuesFromOffer', () => {
       })
 
       it('should include selected venue OA ID if available', () => {
-        const id_oa = 2
+        const id = 2
 
         const offer = {
           ...offerBase,
           address: {
-            id: 1,
-            id_oa,
+            id,
             banId: '35288_7283_00001',
             inseeCode: '89001',
             label: 'Bureau',
@@ -97,8 +95,8 @@ describe('getInitialValuesFromOffer', () => {
           ...paramsWithOfflineSubcategory,
           offerVenue: makeVenueListItem({
             id: 2,
-            address: getAddressResponseIsLinkedToVenueModelFactory({
-              id_oa,
+            address: getLocationResponseModel({
+              id,
             }),
           }),
         }
@@ -107,7 +105,7 @@ describe('getInitialValuesFromOffer', () => {
 
         expect(result.address).toEqual(
           expect.objectContaining({
-            offerLocation: String(id_oa),
+            offerLocation: String(id),
           })
         )
       })
@@ -122,7 +120,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should include selected venue address when available', () => {
         const offerVenue = makeVenueListItem({
           id: 2,
-          address: getAddressResponseIsLinkedToVenueModelFactory(),
+          address: getLocationResponseModel(),
         })
 
         const params = {
@@ -141,7 +139,7 @@ describe('getInitialValuesFromOffer', () => {
             label: offerVenue.address.label,
             latitude: String(offerVenue.address.latitude),
             longitude: String(offerVenue.address.longitude),
-            offerLocation: String(offerVenue.address.id_oa),
+            offerLocation: String(offerVenue.address.id),
             postalCode: offerVenue.address.postalCode,
             street: offerVenue.address.street,
           },
@@ -152,7 +150,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should handle missing address props in selected venue', () => {
         const offerVenue = makeVenueListItem({
           id: 2,
-          address: getAddressResponseIsLinkedToVenueModelFactory({
+          address: getLocationResponseModel({
             banId: undefined,
             inseeCode: undefined,
             label: undefined,
@@ -181,12 +179,12 @@ describe('getInitialValuesFromOffer', () => {
     it('should accept any url format when offline', () => {
       const offerVenue = makeVenueListItem({
         id: 2,
-        address: getAddressResponseIsLinkedToVenueModelFactory(),
+        address: getLocationResponseModel(),
       })
       const params = { ...paramsWithOfflineSubcategory, offerVenue }
 
       const result = getInitialValuesFromOffer(
-        { ...offerBase, address: undefined, url: 'not-a-url' },
+        { ...offerBase, location: undefined, url: 'not-a-url' },
         params
       )
 
@@ -198,8 +196,7 @@ describe('getInitialValuesFromOffer', () => {
     const mockOfferWithAddress = {
       ...offerBase,
       address: {
-        id: 1,
-        id_oa: 997,
+        id: 997,
         banId: '35288_7283_00001',
         inseeCode: '89001',
         label: 'Bureau',

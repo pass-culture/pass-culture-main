@@ -72,13 +72,13 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
       .when(
         [
           'location.locationType',
-          'location.address.id_oa',
+          'location.address.id',
           'location.address.isManualEdition',
         ],
         {
-          is: (locationType: string, id_oa: string, isManualEdition: boolean) =>
+          is: (locationType: string, id: string, isManualEdition: boolean) =>
             locationType === CollectiveLocationType.ADDRESS &&
-            id_oa === 'SPECIFIC_ADDRESS' &&
+            id === 'SPECIFIC_ADDRESS' &&
             !isManualEdition,
           then: (schema) =>
             schema.required(

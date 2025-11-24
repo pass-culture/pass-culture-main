@@ -353,17 +353,17 @@ describe('OfferActionsCells', () => {
         nationalProgramId: 1,
         interventionArea: [],
         location: {
-          address: {
+          location: {
             banId: undefined,
             city: '',
             coords: 'undefined, undefined',
             isManualEdition: false,
-            isVenueAddress: true,
             label: 'Structure 4',
             latitude: '',
             longitude: '',
             postalCode: '',
             street: '',
+            venueLocation: true,
           },
           locationType: 'ADDRESS',
         },

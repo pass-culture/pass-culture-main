@@ -8,22 +8,22 @@ export const toFormValues = ({
 }: {
   venue: GetVenueResponseModel
 }): VenueSettingsFormValues => {
-  const autoCompleteStreet = venue.address?.street
-    ? `${venue.address.street} `
+  const autoCompleteStreet = venue.location?.street
+    ? `${venue.location.street} `
     : ''
 
   return {
-    street: venue.address?.street || '',
-    postalCode: venue.address?.postalCode || '',
-    inseeCode: venue.address?.inseeCode || null,
-    city: venue.address?.city || '',
-    addressAutocomplete: `${autoCompleteStreet}${venue.address?.postalCode} ${venue.address?.city}`,
-    'search-addressAutocomplete': `${autoCompleteStreet}${venue.address?.postalCode} ${venue.address?.city}`,
-    coords: `${venue.address?.latitude}, ${venue.address?.longitude}`,
-    latitude: String(venue.address?.latitude) || '',
-    longitude: String(venue.address?.longitude) || '',
-    banId: venue.address?.banId || null,
-    manuallySetAddress: venue.address?.isManualEdition,
+    street: venue.location?.street || '',
+    postalCode: venue.location?.postalCode || '',
+    inseeCode: venue.location?.inseeCode || null,
+    city: venue.location?.city || '',
+    addressAutocomplete: `${autoCompleteStreet}${venue.location?.postalCode} ${venue.location?.city}`,
+    'search-addressAutocomplete': `${autoCompleteStreet}${venue.location?.postalCode} ${venue.location?.city}`,
+    coords: `${venue.location?.latitude}, ${venue.location?.longitude}`,
+    latitude: String(venue.location?.latitude) || '',
+    longitude: String(venue.location?.longitude) || '',
+    banId: venue.location?.banId || null,
+    manuallySetAddress: venue.location?.isManualEdition,
     comment: venue.comment || '',
     bookingEmail: venue.bookingEmail || '',
     name: venue.name,

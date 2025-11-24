@@ -39,11 +39,11 @@ describe('createPatchOfferPayload', () => {
     street: 'rue de la paix',
     location: {
       locationType: CollectiveLocationType.ADDRESS,
-      address: {
-        isVenueAddress: true,
+      location: {
+        venueLocation: true,
         isManualEdition: false,
         label: '',
-        id_oa: '123',
+        id: '123',
       },
     },
     participants: buildStudentLevelsMapWithDefaultValue(true),
@@ -99,9 +99,9 @@ describe('createPatchOfferPayload', () => {
     street: 'rue de la paix',
     location: {
       locationType: CollectiveLocationType.ADDRESS,
-      address: {
-        isVenueAddress: false,
-        id_oa: 'SPECIFIC_ADDRESS',
+      location: {
+        venueLocation: false,
+        id: 'SPECIFIC_ADDRESS',
         isManualEdition: false,
         label: 'Une autre adresse',
       },
@@ -224,9 +224,9 @@ describe('createPatchOfferPayload', () => {
         ...offer,
         location: {
           locationType: CollectiveLocationType.SCHOOL,
-          address: {
+          location: {
             isManualEdition: false,
-            isVenueAddress: false,
+            venueLocation: false,
             label: '',
           },
         },
@@ -249,9 +249,9 @@ describe('createPatchOfferPayload', () => {
         ...offer,
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
-          address: {
+          location: {
             isManualEdition: false,
-            isVenueAddress: false,
+            venueLocation: false,
             label: '',
           },
           locationComment: 'toto',

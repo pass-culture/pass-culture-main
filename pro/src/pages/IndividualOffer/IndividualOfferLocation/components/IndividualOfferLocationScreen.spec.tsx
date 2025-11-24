@@ -51,7 +51,6 @@ const renderIndividualOfferLocationScreen: RenderComponentFunction<
         banId: '75101_9575_00003',
         city: 'Paris',
         id: 945,
-        id_oa: 1,
         inseeCode: '75056',
         isLinkedToVenue: false,
         isManualEdition: false,
@@ -217,7 +216,6 @@ describe('<IndividualOfferLocationScreen />', () => {
         const offlineOfferWithPendingBookings = {
           ...offlineOffer,
           address: {
-            id: 11,
             banId: '12',
             inseeCode: '13',
             postalCode: '12345',
@@ -227,7 +225,7 @@ describe('<IndividualOfferLocationScreen />', () => {
             longitude: 4.56,
             departmentCode: '12',
             label: 'Etiquette de lieu',
-            id_oa: 14,
+            id: 14,
             isLinkedToVenue: false,
             isManualEdition: false,
           },

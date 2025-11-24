@@ -10,9 +10,9 @@ const offer = {
   ...getDefaultEducationalValues(),
   location: {
     locationType: CollectiveLocationType.ADDRESS,
-    address: {
-      isVenueAddress: true,
-      id_oa: '123',
+    location: {
+      venueLocation: true,
+      id: '123',
       isManualEdition: false,
       label: '',
     },
@@ -130,7 +130,7 @@ describe('createOfferPayload', () => {
       ...offer,
       location: {
         ...offer.location,
-        address: { ...offer.location.address, label: 'théâtre' },
+        location: { ...offer.location.location, label: 'théâtre' },
       },
     })
 
@@ -160,7 +160,7 @@ describe('createOfferPayload', () => {
       ...offer,
       location: {
         locationType: CollectiveLocationType.SCHOOL,
-        address: { isManualEdition: false, isVenueAddress: false, label: '' },
+        location: { isManualEdition: false, venueLocation: false, label: '' },
       },
     })
 

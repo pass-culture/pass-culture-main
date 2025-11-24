@@ -42,7 +42,7 @@ export function getIndividualOfferColumns(
       id: 'address',
       label: 'Localisation',
       render: (offer) =>
-        offer.address ? computeAddressDisplayName(offer.address) : '-',
+        offer.location ? computeAddressDisplayName(offer.location) : '-',
     },
     {
       id: 'stocks',

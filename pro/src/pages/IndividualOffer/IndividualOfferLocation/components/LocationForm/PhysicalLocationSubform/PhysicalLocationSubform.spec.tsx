@@ -67,8 +67,7 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
     : makeVenueListItem({
         id: 2,
         address: {
-          id: 1,
-          id_oa: 10,
+          id: 10,
           city: 'Paris',
           isManualEdition: false,
           label: '10 Rue de Paris 75000 Paris',
@@ -91,7 +90,7 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
       label: null,
       latitude: '48.8566',
       longitude: '2.3522',
-      offerLocation: venue.address?.id_oa?.toString() || '',
+      offerLocation: venue.location?.id?.toString() || '',
       postalCode: '75000',
       'search-addressAutocomplete': null,
       street: '10 Rue de Paris',

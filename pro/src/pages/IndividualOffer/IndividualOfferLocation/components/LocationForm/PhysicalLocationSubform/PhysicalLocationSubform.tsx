@@ -47,26 +47,26 @@ export const PhysicalLocationSubform = ({
     const willBeVenueAddress = !isVenueAddress
 
     if (willBeVenueAddress) {
-      if (!venue.address) {
+      if (!venue.location) {
         return handleUnexpectedError(
           new FrontendError('`venue.address` is nullish.')
         )
       }
 
-      setValue('address.inseeCode', venue.address.inseeCode ?? null)
-      setValue('address.banId', venue.address.banId ?? null)
-      setValue('address.city', venue.address.city)
-      setValue('address.latitude', venue.address.latitude.toString())
-      setValue('address.longitude', venue.address.longitude.toString())
+      setValue('address.inseeCode', venue.location.inseeCode ?? null)
+      setValue('address.banId', venue.location.banId ?? null)
+      setValue('address.city', venue.location.city)
+      setValue('address.latitude', venue.location.latitude.toString())
+      setValue('address.longitude', venue.location.longitude.toString())
       setValue(
         'address.coords',
-        `${venue.address.latitude}, ${venue.address.longitude}`
+        `${venue.location.latitude}, ${venue.location.longitude}`
       )
-      setValue('address.postalCode', venue.address.postalCode)
+      setValue('address.postalCode', venue.location.postalCode)
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
-      setValue('address.street', venue.address.street ?? null)
-      setValue('address.label', venue.address.label ?? null)
-      setValue('address.offerLocation', venue.address.id_oa.toString())
+      setValue('address.street', venue.location.street ?? null)
+      setValue('address.label', venue.location.label ?? null)
+      setValue('address.offerLocation', venue.location.id.toString())
     } else {
       setValue('address', EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
     }
@@ -105,7 +105,7 @@ export const PhysicalLocationSubform = ({
   }
 
   const venueFullText = `${venue.publicName || venue.name} – ${
-    venue.address ? computeAddressDisplayName(venue.address, false) : null
+    venue.location ? computeAddressDisplayName(venue.location, false) : null
   }`
 
   return (
@@ -117,7 +117,7 @@ export const PhysicalLocationSubform = ({
         options={[
           {
             label: venueFullText,
-            value: venue?.address?.id_oa.toString() ?? '',
+            value: venue?.location?.id.toString() ?? '',
           },
           {
             label: 'À une autre adresse',

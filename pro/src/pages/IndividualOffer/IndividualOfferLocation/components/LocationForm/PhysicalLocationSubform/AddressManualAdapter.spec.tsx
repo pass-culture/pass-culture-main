@@ -101,9 +101,10 @@ const LABELS = {
 describe('AddressManualAdapter', () => {
   const offerBase = getIndividualOfferFactory({
     id: 1,
-    address: {
+    location: {
       id: 2,
-      id_oa: 3,
+      //id: 3,
+      venueLocation: false,
       street: '12 rue du Test',
       postalCode: '34567',
       city: 'Test-sur-Seine',
