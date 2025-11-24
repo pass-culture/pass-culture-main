@@ -14,6 +14,7 @@ describe('Didactic Onboarding feature', () => {
     )
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+    cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as('patchStocks')
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   })
 
@@ -185,12 +186,11 @@ describe('Didactic Onboarding feature', () => {
         cy.findByLabelText(/Prix/).type('42')
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@patchOffer'])
+        cy.wait(['@getOffer', '@patchOffer', '@patchStocks'])
 
         //  USEFUL INFO STEP
         cy.url().should('contain', '/creation/informations_pratiques')
         cy.findByText('Enregistrer et continuer').click()
-        cy.wait('@getOffer')
 
         //  SUMMARY STEP
         cy.findByRole('heading', { level: 2, name: 'Description' })

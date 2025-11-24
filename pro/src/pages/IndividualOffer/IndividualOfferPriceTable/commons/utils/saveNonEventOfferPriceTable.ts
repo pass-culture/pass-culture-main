@@ -2,7 +2,10 @@ import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
-import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import {
+  GET_OFFER_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 
 import type { PriceTableFormValues } from '../schemas'
@@ -16,8 +19,13 @@ export const saveNonEventOfferPriceTable = async (
     offer: GetIndividualOfferWithAddressResponseModel
   }
 ) => {
-  await api.patchOffer(offer.id, { isDuo: formValues.isDuo })
-  await mutate([GET_OFFER_QUERY_KEY, offer.id])
+  await mutate(
+    [GET_OFFER_QUERY_KEY, offer.id],
+    api.patchOffer(offer.id, { isDuo: formValues.isDuo }),
+    {
+      revalidate: false,
+    }
+  )
 
   const departementCode = getDepartmentCode(offer)
 
@@ -25,4 +33,5 @@ export const saveNonEventOfferPriceTable = async (
     offer.id,
     toThingStocksBulkUpsertBodyModel(formValues, { departementCode })
   )
+  await mutate([GET_STOCKS_QUERY_KEY, offer.id])
 }

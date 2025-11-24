@@ -44,7 +44,6 @@ export const StockSection = ({
     !offer.isEvent ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
     () => api.getStocks(offer.id),
     {
-      revalidate: false,
       onError: () => notification.error(error),
     }
   )
@@ -52,7 +51,6 @@ export const StockSection = ({
     offer.isEvent ? [GET_STOCKS_EVENT_STATS_QUERY_KEY, offer.id] : null,
     () => api.getStocksStats(offer.id),
     {
-      revalidate: false,
       onError: () => notification.error(error),
     }
   )
