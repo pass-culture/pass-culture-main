@@ -27,6 +27,7 @@ export const ShareTemplateOfferLink = ({
         link={fullLink}
         label="Lien de l’offre"
         notifySuccessMessage={notifySuccessMessage}
+        offerId={offerId}
       />
       <div className={styles['callout-container']}>
         <Callout
