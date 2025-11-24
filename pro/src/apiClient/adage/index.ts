@@ -27,6 +27,7 @@ export type { CollectiveOfferResponseModel } from './models/CollectiveOfferRespo
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
 export type { CollectiveRequestBody } from './models/CollectiveRequestBody';
 export type { CollectiveRequestResponseModel } from './models/CollectiveRequestResponseModel';
+export type { ConsultOfferBody } from './models/ConsultOfferBody';
 export type { Coordinates } from './models/Coordinates';
 export { EacFormat } from './models/EacFormat';
 export type { EducationalInstitutionProgramModel } from './models/EducationalInstitutionProgramModel';

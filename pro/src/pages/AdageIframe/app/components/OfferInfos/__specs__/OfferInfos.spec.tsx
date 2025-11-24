@@ -20,6 +20,7 @@ vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getCollectiveOfferTemplate: vi.fn(),
     getCollectiveOffer: vi.fn(),
+    logConsultOffer: vi.fn(),
   },
 }))
 

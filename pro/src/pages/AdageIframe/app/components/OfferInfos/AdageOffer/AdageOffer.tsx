@@ -1,8 +1,12 @@
+import { useEffect } from 'react'
+import { useLocation } from 'react-router'
+
 import type {
   AuthenticatedResponse,
   CollectiveOfferResponseModel,
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import strokeArticleIcon from '@/icons/stroke-article.svg'
 import strokeInfoIcon from '@/icons/stroke-info.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
@@ -37,6 +41,27 @@ export const AdageOffer = ({
   playlistId,
 }: AdageOfferProps) => {
   const isOfferBookable = isCollectiveOfferBookable(offer)
+  const { pathname, state, search } = useLocation()
+  const params = new URLSearchParams(search)
+
+  useEffect(() => {
+    if (!isPreview) {
+      trackConsultOffer()
+    }
+  }, [])
+
+  const trackConsultOffer = () => {
+    const sourceValue = params.get('source')
+    const queryId = state?.queryId
+
+    apiAdage.logConsultOffer({
+      iframeFrom: pathname,
+      offerId: offer.id,
+      playlistId,
+      ...(queryId !== undefined && { queryId }),
+      ...(sourceValue && { source: sourceValue }),
+    })
+  }
 
   return (
     <div className={styles['offer']}>

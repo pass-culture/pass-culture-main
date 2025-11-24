@@ -13,6 +13,7 @@ import type { CollectiveOfferResponseModel } from '../models/CollectiveOfferResp
 import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveOfferTemplateResponseModel';
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
+import type { ConsultOfferBody } from '../models/ConsultOfferBody';
 import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { HighlightBannerBody } from '../models/HighlightBannerBody';
@@ -317,6 +318,27 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/catalog-view',
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * log_consult_offer <POST>
+   * @param requestBody
+   * @returns void
+   * @throws ApiError
+   */
+  public logConsultOffer(
+    requestBody: ConsultOfferBody,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/adage-iframe/logs/consult-offer',
       body: requestBody,
       mediaType: 'application/json',
       errors: {
