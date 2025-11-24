@@ -198,6 +198,34 @@ class ListChroniclesTest(GetEndpointHelper):
         assert len(rows) == 1
         assert rows[0]["ID"] == str(chronicle_to_find.id)
 
+    def test_chronicle_with_offer(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        chronicles_factories.ChronicleFactory(
+            offers=[offer],
+        )
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["Titres des œuvres"] == offer.name
+
+    def test_chronicle_with_offer_and_products(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+        product = offers_factories.ProductFactory()
+        chronicles_factories.ChronicleFactory(
+            products=[product],
+            offers=[offer],
+        )
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint))
+            assert response.status_code == 200
+
+        rows = html_parser.extract_table_rows(response.data)
+
+        assert rows[0]["Titres des œuvres"] == f"{product.name}{offer.name}"
+
 
 class GetChronicleDetailsTest(GetEndpointHelper):
     endpoint = "backoffice_web.chronicles.details"

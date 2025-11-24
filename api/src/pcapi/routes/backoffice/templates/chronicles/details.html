@@ -185,7 +185,7 @@
               <thead>
                 <tr>
                   {% if has_permission("MANAGE_CHRONICLE") %}<th scope="col"></th>{% endif %}
-                  {% if chronicle.productIdentifierType.value != "EAN" %}
+                  {% if chronicle.productIdentifierType.value not in ("EAN", "OFFER_ID") %}
                     <th scope="col-2">{{ chronicle.productIdentifierType | format_chronicle_product_identifier_type }}</th>
                   {% endif %}
                   <th scope="col-2">EAN</th>
@@ -194,7 +194,6 @@
               </thead>
               <tbody>
                 {% for product in chronicle.products %}
-                  {% set product_identifier = chronicle | get_chronicle_product_identifier(product) %}
                   <tr>
                     {% if has_permission("MANAGE_CHRONICLE") %}
                       <td>
@@ -215,8 +214,9 @@
                         </div>
                       </td>
                     {% endif %}
-                    {% if chronicle.productIdentifierType.value != "EAN" %}
+                    {% if chronicle.productIdentifierType.value not in ("EAN", "OFFER_ID") %}
                       <td>
+                        {% set product_identifier = chronicle | get_chronicle_product_identifier(product) %}
                         {% if product_identifier %}
                           {% if product_identifier == chronicle.productIdentifier %}
                             <b>{{ product_identifier }}</b>
@@ -229,8 +229,8 @@
                       </td>
                     {% endif %}
                     <td>
-                      {% if chronicle.productIdentifierType.value == "EAN" and product_identifier == chronicle.productIdentifier %}
-                        <b>{{ product_identifier }}</b>
+                      {% if chronicle.productIdentifierType.value == "EAN" and product.ean == chronicle.productIdentifier %}
+                        <b>{{ product.ean }}</b>
                       {% elif product.ean %}
                         {{ product.ean }}
                       {% else %}

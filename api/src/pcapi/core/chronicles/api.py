@@ -47,6 +47,20 @@ def import_cine_club_chronicles() -> None:
         save_cine_club_chronicle(form)
 
 
+def import_album_club_chronicles() -> None:
+    form_id = constants.ALBUM_CLUB_FORM_ID
+    get_last_chronicle_date = partial(_get_last_chronicle_date, models.ChronicleClubType.ALBUM_CLUB)
+    for form in typeform.get_responses_generator(get_last_chronicle_date, form_id):
+        save_album_club_chronicle(form)
+
+
+def import_concert_club_chronicles() -> None:
+    form_id = constants.CONCERT_CLUB_FORM_ID
+    get_last_chronicle_date = partial(_get_last_chronicle_date, models.ChronicleClubType.CONCERT_CLUB)
+    for form in typeform.get_responses_generator(get_last_chronicle_date, form_id):
+        save_concert_club_chronicle(form)
+
+
 def _get_last_chronicle_date(club_type: models.ChronicleClubType) -> datetime | None:
     return (
         db.session.query(models.Chronicle.dateCreated)
@@ -57,7 +71,7 @@ def _get_last_chronicle_date(club_type: models.ChronicleClubType) -> datetime | 
     )
 
 
-def _extract_book_club_ean(answer: typeform.TypeformAnswer) -> str | None:
+def _extract_ean(answer: typeform.TypeformAnswer) -> str | None:
     ean = None
     if not answer.choice_id:
         return None
@@ -75,7 +89,26 @@ def _extract_book_club_ean(answer: typeform.TypeformAnswer) -> str | None:
     return ean
 
 
-def _extract_cine_club_movie_identifier(answer: typeform.TypeformAnswer) -> str | None:
+def _extract_offer_id(answer: typeform.TypeformAnswer) -> str | None:
+    offer_id = None
+    if not answer.choice_id:
+        return None
+    # an example of text that would match: `my super event - 12345678`
+    if answer.text and (match := search(pattern=r"(^|[^\da-zA-Z])([0-9]{6,})([^\da-zA-Z]|$)", string=answer.text)):
+        offer_id = match.group(2)
+        return offer_id
+    # Try to find the offer_id in db by its choice id.
+    # This case could happen if the answer was deleted by an admin in typeform.
+    offer_id = (
+        db.session.query(models.Chronicle.productIdentifier)
+        .filter(models.Chronicle.identifierChoiceId == answer.choice_id)
+        .limit(1)
+        .scalar()
+    )
+    return offer_id
+
+
+def _extract_allocine_id(answer: typeform.TypeformAnswer) -> str | None:
     if not answer.choice_id:
         return None
     if answer.text:
@@ -95,21 +128,17 @@ def _extract_cine_club_movie_identifier(answer: typeform.TypeformAnswer) -> str 
 @atomic()
 def save_chronicle(
     form: typeform.TypeformResponse,
-    club_constants: Type[constants.BookClub] | Type[constants.CineClub],
+    club_constants: Type[constants.BookClub]
+    | Type[constants.CineClub]
+    | Type[constants.AlbumClub]
+    | Type[constants.ConcertClub],
     club_type: models.ChronicleClubType,
     product_identifier_type: models.ChronicleProductIdentifierType,
 ) -> None:
-    club_name = "Book Club" if club_constants == constants.BookClub else "Cine Club"
-
-    if club_type == models.ChronicleClubType.BOOK_CLUB:
-        product_identifier_field = constants.BookClub.BOOK_EAN_ID.value
-    else:
-        product_identifier_field = constants.CineClub.MOVIE_ID.value
-
     logger.info(
         "Import chronicle: starting",
         extra={
-            "club_name": club_name,
+            "club_name": f"{club_type.value.lower()} club",
             "response_id": form.response_id,
         },
     )
@@ -123,6 +152,10 @@ def save_chronicle(
             age = int(answer_dict.get(club_constants.AGE_ID.value, EMPTY_ANSWER).text)
         except (TypeError, ValueError):
             age = None
+
+    city = None
+    if hasattr(club_constants, "CITY_ID"):
+        city = answer_dict.get(club_constants.CITY_ID.value, EMPTY_ANSWER).text
 
     is_identity_diffusible = (
         answer_dict.get(club_constants.DIFFUSIBLE_PERSONAL_DATA_QUESTION_ID.value, EMPTY_ANSWER).choice_id
@@ -146,23 +179,25 @@ def save_chronicle(
             .scalar()
         )
 
-    product_choice_id = answer_dict.get(product_identifier_field, EMPTY_ANSWER).choice_id
+    product_choice_id = answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER).choice_id
 
     match product_identifier_type:
         case models.ChronicleProductIdentifierType.EAN:
-            product_identifier = _extract_book_club_ean(answer_dict.get(product_identifier_field, EMPTY_ANSWER))
+            product_identifier = _extract_ean(
+                answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER)
+            )
         case models.ChronicleProductIdentifierType.ALLOCINE_ID:
-            product_identifier = _extract_cine_club_movie_identifier(
-                answer_dict.get(product_identifier_field, EMPTY_ANSWER)
+            product_identifier = _extract_allocine_id(
+                answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER)
+            )
+        case models.ChronicleProductIdentifierType.OFFER_ID:
+            product_identifier = _extract_offer_id(
+                answer_dict.get(club_constants.PRODUCT_IDENTIFIER_FIELD_ID.value, EMPTY_ANSWER)
             )
         case _:
             product_identifier = None
 
     try:
-        city = None
-        if hasattr(club_constants, "CITY_ID"):
-            city = answer_dict.get(club_constants.CITY_ID.value, EMPTY_ANSWER).text
-
         if content and product_identifier and form.email:
             chronicle = models.Chronicle(
                 age=age,
@@ -175,20 +210,20 @@ def save_chronicle(
                 externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
+                offers=_get_offers(product_identifier_type, product_identifier),
                 products=get_products(product_identifier_type, product_identifier),
                 userId=user_id,
                 isActive=False,
                 productIdentifierType=product_identifier_type,
                 productIdentifier=product_identifier,
                 clubType=club_type,
-                offers=_get_offers(product_identifier_type, product_identifier),
             )
             db.session.add(chronicle)
             db.session.flush()
             logger.info(
                 "Import chronicle: success",
                 extra={
-                    "club_name": club_name,
+                    "club_name": f"{club_type.value.lower()} club",
                     "response_id": form.response_id,
                 },
             )
@@ -196,7 +231,7 @@ def save_chronicle(
             logger.info(
                 "Import chronicle: ignored",
                 extra={
-                    "club_name": club_name,
+                    "club_name": f"{club_type.value.lower()} club",
                     "response_id": form.response_id,
                     "has_product_identifier": bool(product_identifier),
                     "has_content": bool(content),
@@ -235,6 +270,16 @@ def _get_offers(
             .options(sa.orm.load_only(offers_models.Offer.id))
             .all()
         )
+
+    # if it is the first chronicle on this product identifier
+    if product_identifier_type == models.ChronicleProductIdentifierType.OFFER_ID:
+        return (
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.id == product_identifier)
+            .options(sa.orm.load_only(offers_models.Offer.id))
+            .all()
+        )
+
     return []
 
 
@@ -299,6 +344,24 @@ def save_cine_club_chronicle(form: typeform.TypeformResponse) -> None:
         club_constants=constants.CineClub,
         club_type=models.ChronicleClubType.CINE_CLUB,
         product_identifier_type=models.ChronicleProductIdentifierType.ALLOCINE_ID,
+    )
+
+
+def save_album_club_chronicle(form: typeform.TypeformResponse) -> None:
+    save_chronicle(
+        form=form,
+        club_constants=constants.AlbumClub,
+        club_type=models.ChronicleClubType.ALBUM_CLUB,
+        product_identifier_type=models.ChronicleProductIdentifierType.EAN,
+    )
+
+
+def save_concert_club_chronicle(form: typeform.TypeformResponse) -> None:
+    save_chronicle(
+        form=form,
+        club_constants=constants.ConcertClub,
+        club_type=models.ChronicleClubType.CONCERT_CLUB,
+        product_identifier_type=models.ChronicleProductIdentifierType.OFFER_ID,
     )
 
 
