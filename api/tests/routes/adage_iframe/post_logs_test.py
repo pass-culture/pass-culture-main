@@ -551,3 +551,28 @@ class LogsTest:
             "user_role": AdageFrontRoles.READONLY,
             "banner": "TFMAC-2025",
         }
+
+    def test_log_consult_offer(self, test_client, caplog):
+        with caplog.at_level(logging.INFO):
+            response = test_client.post(
+                url_for("adage_iframe.log_consult_offer"),
+                json={
+                    "offerId": 42,
+                    "iframeFrom": "search",
+                    "queryId": "5678b",
+                },
+            )
+
+        assert response.status_code == 204
+        assert caplog.records[0].message == "ConsultOffer"
+        assert caplog.records[0].extra == {
+            "analyticsSource": "adage",
+            "offerId": 42,
+            "playlistId": None,
+            "queryId": "5678b",
+            "source": None,
+            "from": "search",
+            "userId": get_hashed_user_id(EMAIL),
+            "uai": UAI,
+            "user_role": AdageFrontRoles.READONLY,
+        }

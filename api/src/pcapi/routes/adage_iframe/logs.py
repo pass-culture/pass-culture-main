@@ -468,3 +468,27 @@ def log_open_highlight_banner(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
         user_email=authenticated_information.email,
     )
+
+
+@blueprint.adage_iframe.route("/logs/consult-offer", methods=["POST"])
+@atomic()
+@spectree_serialize(api=blueprint.api, on_error_statuses=[404], on_success_status=204)
+@adage_jwt_required
+def log_consult_offer(
+    authenticated_information: AuthenticatedInformation,
+    body: serialization.ConsultOfferBody,
+) -> None:
+    institution = find_educational_institution_by_uai_code(authenticated_information.uai)
+    educational_utils.log_information_for_data_purpose(
+        event_name="ConsultOffer",
+        extra_data={
+            "from": body.iframeFrom,
+            "queryId": body.queryId,
+            "offerId": body.offerId,
+            "playlistId": body.playlistId,
+            "source": body.source,
+        },
+        uai=authenticated_information.uai,
+        user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
+        user_email=authenticated_information.email,
+    )
