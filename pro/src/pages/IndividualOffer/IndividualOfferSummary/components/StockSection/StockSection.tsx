@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
+import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import type {
-  GetIndividualOfferWithAddressResponseModel,
-  GetOfferStockResponseModel,
-  StockStatsResponseModel,
-} from '@/apiClient/v1'
+import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
+import {
+  GET_STOCKS_EVENT_STATS_QUERY_KEY,
+  GET_STOCKS_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -34,52 +34,30 @@ export const StockSection = ({
 }: StockSectionProps): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const [isLoading, setIsLoading] = useState(false)
-  const [stocksEventsStats, setStocksEventsStats] = useState<
-    StockStatsResponseModel | undefined
-  >(undefined)
-  const [stockThing, setStockThing] = useState<GetOfferStockResponseModel>()
   const notification = useNotification()
 
   const departmentCode = getDepartmentCode(offer)
+  const error =
+    'Une erreur est survenue lors de la récupération des informations de votre stock'
 
-  useEffect(() => {
-    async function getStockThing() {
-      setIsLoading(true)
-      try {
-        const reponse = await api.getStocks(offer.id)
-        setStockThing(reponse.stocks[0])
-      } catch {
-        notification.error(
-          'Une erreur est survenue lors de la récupération des informations de votre stock'
-        )
-      }
-      setIsLoading(false)
+  const getStockThingQuery = useSWR(
+    !offer.isEvent ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
+    () => api.getStocks(offer.id),
+    {
+      revalidate: false,
+      onError: () => notification.error(error),
     }
-
-    async function getStocksEventsStats() {
-      setIsLoading(true)
-      try {
-        const reponse = await api.getStocksStats(offer.id)
-        setStocksEventsStats(reponse)
-      } catch {
-        notification.error(
-          'Une erreur est survenue lors de la récupération des informations de vos stocks'
-        )
-      }
-      setIsLoading(false)
+  )
+  const getStocksEventStatsQuery = useSWR(
+    offer.isEvent ? [GET_STOCKS_EVENT_STATS_QUERY_KEY, offer.id] : null,
+    () => api.getStocksStats(offer.id),
+    {
+      revalidate: false,
+      onError: () => notification.error(error),
     }
+  )
 
-    if (offer.isEvent) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getStocksEventsStats()
-    } else {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      getStockThing()
-    }
-  }, [notification, offer.id, offer.isEvent])
-
-  if (isLoading) {
+  if (getStockThingQuery.isLoading || getStocksEventStatsQuery.isLoading) {
     return <Spinner />
   }
 
@@ -107,12 +85,12 @@ export const StockSection = ({
 
       {offer.isEvent ? (
         <RecurrenceSection
-          stocksStats={stocksEventsStats}
+          stocksStats={getStocksEventStatsQuery.data}
           departementCode={departmentCode}
         />
       ) : (
         <StockThingSection
-          stock={stockThing}
+          stock={getStockThingQuery.data?.stocks[0]}
           canBeDuo={canBeDuo}
           isDuo={offer.isDuo}
         />
