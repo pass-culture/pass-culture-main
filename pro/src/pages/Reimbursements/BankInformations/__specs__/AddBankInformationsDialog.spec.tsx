@@ -31,16 +31,16 @@ describe('AddBankInformationsDialog', () => {
 
     expect(
       screen.getByText(
-        'Vous allez être redirigé vers le site demarches-simplifiees.fr'
+        'Vous allez être redirigé vers le site demarche.numerique.gouv.fr'
       )
     ).toBeInTheDocument()
     expect(
       screen.getByText(
-        'Démarches Simplifiées est une plateforme sécurisée de démarches administratives en ligne qui permet de déposer votre dossier de compte bancaire.'
+        'Démarche Numérique est une plateforme sécurisée de démarches administratives en ligne qui permet de déposer votre dossier de compte bancaire.'
       )
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Continuer sur demarches-simplifiees.fr')
+      screen.getByText('Continuer sur demarche.numerique.gouv.fr')
     ).toBeInTheDocument()
   })
 
@@ -58,7 +58,7 @@ describe('AddBankInformationsDialog', () => {
     )
 
     await userEvent.click(
-      screen.getByText('Continuer sur demarches-simplifiees.fr')
+      screen.getByText('Continuer sur demarche.numerique.gouv.fr')
     )
 
     expect(mockLogEvent).toHaveBeenCalledWith(
@@ -80,7 +80,7 @@ describe('AddBankInformationsDialog', () => {
       />
     )
 
-    const link = screen.getByText('Continuer sur demarches-simplifiees.fr')
+    const link = screen.getByText('Continuer sur demarche.numerique.gouv.fr')
 
     expect(link).toHaveAttribute('href', 'https://ds-nouvelle-caledonie.fr')
   })
@@ -95,7 +95,7 @@ describe('AddBankInformationsDialog', () => {
         isDialogOpen
       />
     )
-    const link = screen.getByText('Continuer sur demarches-simplifiees.fr')
+    const link = screen.getByText('Continuer sur demarche.numerique.gouv.fr')
 
     expect(link).toHaveAttribute('href', 'https://ds.fr')
   })

@@ -163,7 +163,7 @@ class AccountUpdateRequestSearchForm(utils.PCForm):
 
 
 class AccountUpdateRequestAcceptForm(utils.PCForm):
-    motivation = fields.PCOptCommentField("Explication facultative envoyée au demandeur sur Démarches-Simplifiées")
+    motivation = fields.PCOptCommentField("Explication facultative envoyée au demandeur sur Démarche Numérique")
 
 
 class CorrectionReasonOptions(enum.Enum):

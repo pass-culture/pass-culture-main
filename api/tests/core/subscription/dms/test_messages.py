@@ -18,23 +18,23 @@ class DmsMessagesTest:
         [
             (
                 dms_schemas.DmsFieldErrorKeyEnum.birth_date,
-                "Il semblerait que ta date de naissance soit erronée. Tu peux te rendre sur le site demarches-simplifiees.fr pour la rectifier.",
+                "Il semblerait que ta date de naissance soit erronée. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour la rectifier.",
             ),
             (
                 dms_schemas.DmsFieldErrorKeyEnum.first_name,
-                "Il semblerait que ton prénom soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+                "Il semblerait que ton prénom soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier.",
             ),
             (
                 dms_schemas.DmsFieldErrorKeyEnum.id_piece_number,
-                "Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+                "Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier.",
             ),
             (
                 dms_schemas.DmsFieldErrorKeyEnum.last_name,
-                "Il semblerait que ton nom de famille soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+                "Il semblerait que ton nom de famille soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier.",
             ),
             (
                 dms_schemas.DmsFieldErrorKeyEnum.postal_code,
-                "Il semblerait que ton code postal soit erroné. Tu peux te rendre sur le site demarches-simplifiees.fr pour le rectifier.",
+                "Il semblerait que ton code postal soit erroné. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour le rectifier.",
             ),
         ],
     )
@@ -61,7 +61,7 @@ class DmsMessagesTest:
             dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.first_name, value="¯\\_(ツ)_/¯"),
         ]
         application_content = subscription_factories.DMSContentFactory(field_errors=errors)
-        expected_error_message = "Il semblerait que tes date de naissance et prénom soient erronés. Tu peux te rendre sur le site demarches-simplifiees.fr pour les rectifier."
+        expected_error_message = "Il semblerait que tes date de naissance et prénom soient erronés. Tu peux te rendre sur le site demarche.numerique.gouv.fr pour les rectifier."
         expected_message = subscription_schemas.SubscriptionMessage(
             user_message=expected_error_message,
             call_to_action=messages.REDIRECT_TO_DMS_CALL_TO_ACTION,
@@ -108,7 +108,7 @@ class DmsMessagesTest:
         ]
         application_content = subscription_factories.DMSContentFactory(field_errors=errors)
         expected_message = subscription_schemas.SubscriptionMessage(
-            user_message=f"Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé{u_nbsp}: {expected_error_message} Tu peux contacter le support pour mettre à jour ton dossier.",
+            user_message=f"Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé{u_nbsp}: {expected_error_message} Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
@@ -137,7 +137,7 @@ class DmsMessagesTest:
         ]
         application_content = subscription_factories.DMSContentFactory(field_errors=errors)
         expected_message = subscription_schemas.SubscriptionMessage(
-            user_message=f"Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé{u_nbsp}: le format des date de naissance et prénom renseignés est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
+            user_message=f"Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé{u_nbsp}: le format des date de naissance et prénom renseignés est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
@@ -162,7 +162,7 @@ class DmsMessagesTest:
         user = users_factories.UserFactory()
         application_content = subscription_factories.DMSContentFactory()
         expected_message = subscription_schemas.SubscriptionMessage(
-            user_message=f"Ton dossier déposé sur le site demarches-simplifiees.fr a été refusé{u_nbsp}: le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations.",
+            user_message=f"Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé{u_nbsp}: le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
                 link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",

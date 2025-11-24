@@ -90,7 +90,7 @@ class GraphqlResponseTest:
         assert len(results) == 2
         assert results[0].messages == [
             dms_models.DMSMessage(
-                created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact@demarches-simplifiees.fr"
+                created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact.demarche.numerique@example.com"
             )
         ]
         assert results[0].state == dms_models.GraphQLApplicationStates.accepted
@@ -115,7 +115,7 @@ class GraphqlResponseTest:
         assert client.execute_query.call_count == 1
         assert result.messages == [
             dms_models.DMSMessage(
-                created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact@demarches-simplifiees.fr"
+                created_at=datetime.datetime(2021, 9, 14, 14, 2, 33), email="contact.demarche.numerique@example.com"
             )
         ]
         assert result.state == dms_models.GraphQLApplicationStates.accepted

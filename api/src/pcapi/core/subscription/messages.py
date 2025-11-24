@@ -20,7 +20,7 @@ MAINTENANCE_PAGE_MESSAGE = subscription_schemas.SubscriptionMessage(
 )
 
 REDIRECT_TO_DMS_CALL_TO_ACTION = subscription_schemas.CallToActionMessage(
-    title="Accéder au site Démarches-Simplifiées",
+    title="Accéder au site Démarche Numérique",
     link=f"{settings.WEBAPP_V2_URL}/verification-identite/demarches-simplifiees",
     icon=subscription_schemas.CallToActionIcon.EXTERNAL,
 )

@@ -50,7 +50,7 @@ class DmsStats(BaseModel):
 class DMSGraphQLClient:
     def __init__(self, retries: int = DEFAULT_RETRIES, timeout: int | None = None) -> None:
         transport = requests.CustomGqlTransport(
-            url="https://www.demarches-simplifiees.fr/api/v2/graphql",
+            url="https://demarche.numerique.gouv.fr/api/v2/graphql",
             headers={"Authorization": f"Bearer {settings.DMS_TOKEN}"},
             retries=retries,
         )
@@ -501,9 +501,9 @@ def get_dms_stats(dms_application_id: int | None, api_v4: bool = False) -> DmsSt
             date_field = "dateDerniereModification"
 
     if api_v4:
-        api_url = f"https://www.demarches-simplifiees.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}"
+        api_url = f"https://demarche.numerique.gouv.fr/procedures/{settings.DMS_VENUE_PROCEDURE_ID_V4}/dossiers/{dms_application_id}"
     else:
-        api_url = f"https://www.demarches-simplifiees.fr/procedures/{settings.DS_BANK_ACCOUNT_PROCEDURE_ID}/dossiers/{dms_application_id}"
+        api_url = f"https://demarche.numerique.gouv.fr/procedures/{settings.DS_BANK_ACCOUNT_PROCEDURE_ID}/dossiers/{dms_application_id}"
 
     return DmsStats(
         status=state,

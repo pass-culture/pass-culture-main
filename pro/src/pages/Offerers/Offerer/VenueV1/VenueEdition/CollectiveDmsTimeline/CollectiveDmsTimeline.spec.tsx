@@ -137,7 +137,7 @@ describe('CollectiveDmsTimeline', () => {
         },
       })
       const dmsLink = screen.getByRole('link', {
-        name: /Consulter ma messagerie sur Démarches Simplifiées/,
+        name: /Consulter ma messagerie sur Démarche Numérique/,
       })
 
       dmsLink.addEventListener('click', (e) => {

@@ -148,7 +148,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
             className={styles['pending-offerer-callout']}
             links={[
               {
-                href: 'https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage',
+                href: 'https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage',
                 label: 'Faire une demande de référencement',
                 isExternal: true,
               },

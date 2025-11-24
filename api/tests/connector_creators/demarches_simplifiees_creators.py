@@ -58,7 +58,7 @@ def get_bank_info_response_procedure_v5(
                                 "label": "RIB",
                                 "stringValue": "",
                                 "file": {
-                                    "url": "https://static.demarches-simplifiees.fr:443/v1/AUTH_db3cbfc79c914f87b192ff7c6bb176f0/ds_activestorage_backup/2023/10/26/Ws/WscW3LjQ2zJd824mF7FDhw95wKwC?temp_url_sig=62e7ef36caebbc88292bed98ce4438c2bad29e2b&temp_url_expires=1699356787&filename=Mon%20RIB.png&inline",
+                                    "url": "https://static.demarche.numerique.gouv.fr:443/v1/AUTH_db3cbfc79c914f87b192ff7c6bb176f0/ds_activestorage_backup/2023/10/26/Ws/WscW3LjQ2zJd824mF7FDhw95wKwC?temp_url_sig=62e7ef36caebbc88292bed98ce4438c2bad29e2b&temp_url_expires=1699356787&filename=Mon%20RIB.png&inline",
                                     "checksum": "vtbp0+ODQtL3qzbeYx6s3g==",
                                     "contentType": "image/png",
                                     "filename": "Mon RIB.png",
@@ -127,7 +127,7 @@ def get_bank_info_response_procedure_v5(
                         "messages": messages
                         or [
                             {
-                                "email": "contact@demarches-simplifiees.fr",
+                                "email": "contact.demarche.numerique@example.com",
                                 "createdAt": last_modification_date,
                             },
                         ],

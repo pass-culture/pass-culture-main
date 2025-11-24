@@ -626,7 +626,7 @@ class InstructTest(PostEndpointHelper):
         )
 
         message = (
-            "HTTPSConnectionPool(host='www.demarches-simplifiees.fr', port=443): Max retries exceeded with url: "
+            "HTTPSConnectionPool(host='demarche.numerique.gouv.fr', port=443): Max retries exceeded with url: "
             "/api/v2/graphql (Caused by ProtocolError('Connection aborted.', RemoteDisconnected('Remote end closed"
             " connection without response')))"
         )
@@ -643,7 +643,7 @@ class InstructTest(PostEndpointHelper):
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            f"Le dossier 1234567 ne peut pas passer en instruction : La connexion à Démarches-Simplifiées a échoué : {message}"
+            f"Le dossier 1234567 ne peut pas passer en instruction : La connexion à Démarche Numérique a échoué : {message}"
             in alerts["warning"]
         )
 
@@ -1399,7 +1399,7 @@ class AskForCorrectionTest(PostEndpointHelper):
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : La connexion à Démarches-Simplifiées a échoué :"
+            f"Le dossier {update_request.dsApplicationId} ne peut pas recevoir de demande de correction : La connexion à Démarche Numérique a échoué :"
             in alerts["warning"]
         )
 

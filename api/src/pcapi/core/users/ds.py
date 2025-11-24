@@ -67,7 +67,7 @@ Une photo de ta pièce d'identité bien lisible.
 Attention : Tu disposes de 30 jours pour nous transmettre ce justificatif. Si tu as besoin de conseils pour prendre une photo conforme, tu peux consulter notre article https://aide.passculture.app/hc/fr/articles/4411991953681--Jeunes-Comment-faire-pour-me-prendre-en-photo-avec-ma-pi%C3%A8ce-d-identit%C3%A9""",
     "missing-file": """Nous avons bien reçu ta demande de modification, mais nous n’avons pas pu la finaliser, car il manque un ou plusieurs documents.
 
-Pour que nous puissions traiter ta demande, il faut que tu t’assures que ces deux éléments figurent dans ton dossier Démarches Simplifiées :
+Pour que nous puissions traiter ta demande, il faut que tu t’assures que ces deux éléments figurent dans ton dossier Démarche Numérique :
 Un document officiel qui justifie ton changement de nom ou prénom (par exemple : acte d’état civil, jugement, certificat de changement de prénom, etc.)
 Une photo de ta nouvelle pièce d’identité ou de ton passeport avec ton nom ou prénom à jour, bien lisible.
 

@@ -67,7 +67,7 @@ MENU_SECTIONS = [
                 permissions=["READ_PUBLIC_ACCOUNT"],
             ),
             MenuItem(
-                label="Demandes de modifications DS",
+                label="Demandes de modifications DN",
                 url_name="backoffice_web.account_update.list_account_update_requests",
                 permissions=["MANAGE_ACCOUNT_UPDATE_REQUEST"],
             ),

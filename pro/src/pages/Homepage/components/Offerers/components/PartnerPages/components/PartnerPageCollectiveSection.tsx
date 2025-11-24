@@ -76,7 +76,7 @@ export function PartnerPageCollectiveSection({
         <ButtonLink
           variant={ButtonVariant.TERNARY}
           icon={fullLinkIcon}
-          to="https://www.demarches-simplifiees.fr/commencer/demande-de-referencement-sur-adage"
+          to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
           isExternal
           opensInNewTab
           className={styles['details-link']}

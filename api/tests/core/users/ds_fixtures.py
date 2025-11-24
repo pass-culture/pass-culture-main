@@ -129,7 +129,7 @@ DS_RESPONSE_EMAIL_CHANGED = {
                     "messages": [
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxMzMzOTA=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21163559 a bien \u00e9t\u00e9 d\u00e9pos\u00e9 (TEST - Modification d'informations sur mo...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21163559 <strong>a bien \u00e9t\u00e9 d\u00e9pos\u00e9</strong>.\u00a0<br>Si besoin est, vous pouvez encore y apporter des modifications.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T09:31:35+01:00",
                             "correction": None,
@@ -252,7 +252,7 @@ DS_RESPONSE_EMAIL_CHANGED_DUPLICATE = {
                     "messages": [
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxMzMzOTA=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21163559 a bien \u00e9t\u00e9 d\u00e9pos\u00e9 (TEST - Modification d'informations sur mo...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21163559 <strong>a bien \u00e9t\u00e9 d\u00e9pos\u00e9</strong>.\u00a0<br>Si besoin est, vous pouvez encore y apporter des modifications.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T09:31:35+01:00",
                             "correction": None,
@@ -369,22 +369,22 @@ DS_RESPONSE_FIRSTNAME_CHANGED_DUPLICATE = {
                     "messages": [
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI1NDg=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21167090 a bien \u00e9t\u00e9 d\u00e9pos\u00e9 (TEST - Modification d'informations sur mo...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a bien \u00e9t\u00e9 d\u00e9pos\u00e9</strong>.\u00a0<br>Si besoin est, vous pouvez encore y apporter des modifications.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:19:35+01:00",
                             "correction": None,
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI3NDA=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21167090 va \u00eatre examin\u00e9 (TEST - Modification d'informations sur mon ...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 a bien \u00e9t\u00e9 re\u00e7u et<strong>pris en charge</strong>. Il va maintenant \u00eatre examin\u00e9 par le service.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:21:24+01:00",
                             "correction": None,
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI3OTU=",
-                            "email": "contact@demarches-simplifiees.fr",
-                            # "body": '<p>[Votre dossier n\u00ba 21167090 a \u00e9t\u00e9 accept\u00e9 (TEST - Modification d\'informations sur mon co...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a \u00e9t\u00e9 accept\u00e9</strong> le 26/11/2024.\u00a0<br><br>\n</div><div>\u00c0 tout moment, vous pouvez consulter votre dossier et les \u00e9ventuels messages de l\'administration \u00e0 cette adresse : <a target="_blank" rel="noopener" href="https://www.demarches-simplifiees.fr/dossiers/21167090">https://www.demarches-simplifiees.fr/dossiers/21167090</a>\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br>\u00a0\u00a0<br><br>\n</div>',
+                            "email": "contact.demarche.numerique@example.com",
+                            # "body": '<p>[Votre dossier n\u00ba 21167090 a \u00e9t\u00e9 accept\u00e9 (TEST - Modification d\'informations sur mon co...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a \u00e9t\u00e9 accept\u00e9</strong> le 26/11/2024.\u00a0<br><br>\n</div><div>\u00c0 tout moment, vous pouvez consulter votre dossier et les \u00e9ventuels messages de l\'administration \u00e0 cette adresse : <a target="_blank" rel="noopener" href="https://demarche.numerique.gouv.fr/dossiers/21167090">https://demarche.numerique.gouv.fr/dossiers/21167090</a>\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br>\u00a0\u00a0<br><br>\n</div>',
                             "createdAt": "2024-11-26T11:21:45+01:00",
                             "correction": None,
                         },
@@ -521,22 +521,22 @@ DS_RESPONSE_FIRSTNAME_LASTNAME_CHANGED_DUPLICATE = {
                     "messages": [
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI1NDg=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21167090 a bien \u00e9t\u00e9 d\u00e9pos\u00e9 (TEST - Modification d'informations sur mo...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a bien \u00e9t\u00e9 d\u00e9pos\u00e9</strong>.\u00a0<br>Si besoin est, vous pouvez encore y apporter des modifications.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:19:35+01:00",
                             "correction": None,
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI3NDA=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21167090 va \u00eatre examin\u00e9 (TEST - Modification d'informations sur mon ...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 a bien \u00e9t\u00e9 re\u00e7u et<strong>pris en charge</strong>. Il va maintenant \u00eatre examin\u00e9 par le service.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:21:24+01:00",
                             "correction": None,
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI3OTU=",
-                            "email": "contact@demarches-simplifiees.fr",
-                            # "body": '<p>[Votre dossier n\u00ba 21167090 a \u00e9t\u00e9 accept\u00e9 (TEST - Modification d\'informations sur mon co...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a \u00e9t\u00e9 accept\u00e9</strong> le 26/11/2024.\u00a0<br><br>\n</div><div>\u00c0 tout moment, vous pouvez consulter votre dossier et les \u00e9ventuels messages de l\'administration \u00e0 cette adresse : <a target="_blank" rel="noopener" href="https://www.demarches-simplifiees.fr/dossiers/21167090">https://www.demarches-simplifiees.fr/dossiers/21167090</a>\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br>\u00a0\u00a0<br><br>\n</div>',
+                            "email": "contact.demarche.numerique@example.com",
+                            # "body": '<p>[Votre dossier n\u00ba 21167090 a \u00e9t\u00e9 accept\u00e9 (TEST - Modification d\'informations sur mon co...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a \u00e9t\u00e9 accept\u00e9</strong> le 26/11/2024.\u00a0<br><br>\n</div><div>\u00c0 tout moment, vous pouvez consulter votre dossier et les \u00e9ventuels messages de l\'administration \u00e0 cette adresse : <a target="_blank" rel="noopener" href="https://demarche.numerique.gouv.fr/dossiers/21167090">https://demarche.numerique.gouv.fr/dossiers/21167090</a>\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br>\u00a0\u00a0<br><br>\n</div>',
                             "createdAt": "2024-11-26T11:21:45+01:00",
                             "correction": None,
                         },
@@ -668,14 +668,14 @@ DS_RESPONSE_PHONE_NUMBER_CHANGED = {
                     "messages": [
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDA5MzM=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21166546 a bien \u00e9t\u00e9 d\u00e9pos\u00e9 (TEST - Modification d'informations sur mo...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21166546 <strong>a bien \u00e9t\u00e9 d\u00e9pos\u00e9</strong>.\u00a0<br>Si besoin est, vous pouvez encore y apporter des modifications.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:02:46+01:00",
                             "correction": None,
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDA5ODk=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21166546 va \u00eatre examin\u00e9 (TEST - Modification d'informations sur mon ...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21166546 a bien \u00e9t\u00e9 re\u00e7u et<strong>pris en charge</strong>. Il va maintenant \u00eatre examin\u00e9 par le service.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:03:14+01:00",
                             "correction": None,
@@ -800,22 +800,22 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                     "messages": [
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI1NDg=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21167090 a bien \u00e9t\u00e9 d\u00e9pos\u00e9 (TEST - Modification d'informations sur mo...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a bien \u00e9t\u00e9 d\u00e9pos\u00e9</strong>.\u00a0<br>Si besoin est, vous pouvez encore y apporter des modifications.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:19:35+01:00",
                             "correction": None,
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI3NDA=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21167090 va \u00eatre examin\u00e9 (TEST - Modification d'informations sur mon ...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 a bien \u00e9t\u00e9 re\u00e7u et<strong>pris en charge</strong>. Il va maintenant \u00eatre examin\u00e9 par le service.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:21:24+01:00",
                             "correction": None,
                         },
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI3OTU=",
-                            "email": "contact@demarches-simplifiees.fr",
-                            # "body": '<p>[Votre dossier n\u00ba 21167090 a \u00e9t\u00e9 accept\u00e9 (TEST - Modification d\'informations sur mon co...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a \u00e9t\u00e9 accept\u00e9</strong> le 26/11/2024.\u00a0<br><br>\n</div><div>\u00c0 tout moment, vous pouvez consulter votre dossier et les \u00e9ventuels messages de l\'administration \u00e0 cette adresse : <a target="_blank" rel="noopener" href="https://www.demarches-simplifiees.fr/dossiers/21167090">https://www.demarches-simplifiees.fr/dossiers/21167090</a>\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br>\u00a0\u00a0<br><br>\n</div>',
+                            "email": "contact.demarche.numerique@example.com",
+                            # "body": '<p>[Votre dossier n\u00ba 21167090 a \u00e9t\u00e9 accept\u00e9 (TEST - Modification d\'informations sur mon co...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167090 <strong>a \u00e9t\u00e9 accept\u00e9</strong> le 26/11/2024.\u00a0<br><br>\n</div><div>\u00c0 tout moment, vous pouvez consulter votre dossier et les \u00e9ventuels messages de l\'administration \u00e0 cette adresse : <a target="_blank" rel="noopener" href="https://demarche.numerique.gouv.fr/dossiers/21167090">https://demarche.numerique.gouv.fr/dossiers/21167090</a>\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br>\u00a0\u00a0<br><br>\n</div>',
                             "createdAt": "2024-11-26T11:21:45+01:00",
                             "correction": None,
                         },
@@ -925,7 +925,7 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                     "messages": [
                         {
                             # "id": "Q29tbWVudGFpcmUtNTAxNDI2ODc=",
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             # "body": "<p>[Votre dossier n\u00ba 21167148 a bien \u00e9t\u00e9 d\u00e9pos\u00e9 (TEST - Modification d'informations sur mo...]</p><div>Bonjour,<br><br>\n</div><div>Votre dossier n\u00ba 21167148 <strong>a bien \u00e9t\u00e9 d\u00e9pos\u00e9</strong>.\u00a0<br>Si besoin est, vous pouvez encore y apporter des modifications.\u00a0<br><br>\n</div><div>Bonne journ\u00e9e,<br><br><br>\n</div>",
                             "createdAt": "2024-11-26T11:20:50+01:00",
                             "correction": None,
@@ -994,7 +994,7 @@ DS_RESPONSE_ACCOUNT_HAS_SAME = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T16:14:14+01:00",
                             "correction": None,
                         }
@@ -1048,12 +1048,12 @@ DS_RESPONSE_APPLIED_BY_PROXY = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T16:43:28+01:00",
                             "correction": None,
                         },
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T16:54:29+01:00",
                             "correction": None,
                         },
@@ -1117,7 +1117,7 @@ DS_RESPONSE_CORRECTION_RESOLVED = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T17:04:27+01:00",
                             "correction": None,
                         },
@@ -1181,7 +1181,7 @@ DS_RESPONSE_MISSING_VALUE = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T18:19:42+01:00",
                             "correction": None,
                         }
@@ -1235,7 +1235,7 @@ DS_RESPONSE_INVALID_VALUE = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-27T15:25:03+01:00",
                             "correction": None,
                         }
@@ -1298,7 +1298,7 @@ DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2025-01-16T09:31:35+01:00",
                             "correction": None,
                         },
@@ -1369,7 +1369,7 @@ DS_RESPONSE_FIRSTNAME_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2025-01-16T09:31:35+01:00",
                             "correction": None,
                         },
@@ -1441,7 +1441,7 @@ DS_RESPONSE_EMAIL_CHANGED_FROM_DRAFT_WITH_SET_WITHOUT_CONTINUATION = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2025-01-16T09:31:35+01:00",
                             "correction": None,
                         },
@@ -1513,17 +1513,17 @@ DS_RESPONSE_ARCHIVED = {
                     ],
                     "messages": [
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T11:52:44+01:00",
                             "correction": None,
                         },
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T11:54:16+01:00",
                             "correction": None,
                         },
                         {
-                            "email": "contact@demarches-simplifiees.fr",
+                            "email": "contact.demarche.numerique@example.com",
                             "createdAt": "2024-11-26T11:54:32+01:00",
                             "correction": None,
                         },

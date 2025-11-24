@@ -2038,21 +2038,21 @@ class GetOffererBankAccountTest(GetEndpointHelper):
 
         assert rows[0]["ID"] == str(bank2.id)
         assert rows[0]["Intitulé du compte bancaire"] == bank2.label
-        assert rows[0]["Statut du dossier DMS CB"] == "En instruction"
+        assert rows[0]["Statut du dossier DN CB"] == "En instruction"
         assert rows[0]["Date de dernière mise à jour"].startswith(
             (now - datetime.timedelta(days=2)).strftime("%d/%m/%Y à")
         )
 
         assert rows[1]["ID"] == str(bank1.id)
         assert rows[1]["Intitulé du compte bancaire"] == bank1.label
-        assert rows[1]["Statut du dossier DMS CB"] == "Accepté"
+        assert rows[1]["Statut du dossier DN CB"] == "Accepté"
         assert rows[1]["Date de dernière mise à jour"].startswith(
             (now - datetime.timedelta(days=3)).strftime("%d/%m/%Y à")
         )
 
         assert rows[2]["ID"] == str(bank_with_no_history.id)
         assert rows[2]["Intitulé du compte bancaire"] == bank_with_no_history.label
-        assert rows[2]["Statut du dossier DMS CB"] == "Accepté"
+        assert rows[2]["Statut du dossier DN CB"] == "Accepté"
         assert rows[2]["Date de dernière mise à jour"] == ""
 
 
@@ -2294,19 +2294,19 @@ class ListOfferersToValidateTest(GetEndpointHelper):
 
             dms_adage_data = html_parser.extract(response.data, tag="tr", class_="collapse accordion-collapse")[0]
             assert (
-                f"Nom : {venue.name} SIRET : {accepted_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(accepted_application.lastChangeDate)}"
+                f"Nom : {venue.name} SIRET : {accepted_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(accepted_application.lastChangeDate)}"
                 in dms_adage_data
             )
             assert (
-                f"Nom : {other_venue.name} SIRET : {other_accepted_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(other_accepted_application.lastChangeDate)}"
+                f"Nom : {other_venue.name} SIRET : {other_accepted_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(other_accepted_application.lastChangeDate)}"
                 in dms_adage_data
             )
             assert (
-                f"Nom : {other_venue.name} SIRET : {other_rejected_application.siret} Statut du dossier DMS ADAGE : Refusé Date de dernière modification : {format_date_time(other_rejected_application.lastChangeDate)}"
+                f"Nom : {other_venue.name} SIRET : {other_rejected_application.siret} Statut du dossier DN ADAGE : Refusé Date de dernière modification : {format_date_time(other_rejected_application.lastChangeDate)}"
                 in dms_adage_data
             )
             assert (
-                f"Dossier sans partenaire culturel SIRET : {venueless_application.siret} Statut du dossier DMS ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
+                f"Dossier sans partenaire culturel SIRET : {venueless_application.siret} Statut du dossier DN ADAGE : Accepté Date de dernière modification : {format_date_time(venueless_application.lastChangeDate)}"
                 in dms_adage_data
             )
 
@@ -2516,7 +2516,7 @@ class ListOfferersToValidateTest(GetEndpointHelper):
                 assert response.status_code == 400
 
             assert (
-                "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DMS CB"
+                "Le nombre de chiffres ne correspond pas à un SIREN, RID7, code postal, département ou ID DN CB"
                 in response.data.decode("utf-8")
             )
 
@@ -2830,7 +2830,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert (
-            "Un dossier de coordonnées bancaires est en cours sur Démarches-Simplifiées pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : "
+            "Un dossier de coordonnées bancaires est en cours sur Démarche Numérique pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : "
             f"Dossier n°{bank_account.dsApplicationId} : En instruction" in content
         )
 
@@ -2849,7 +2849,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert (
-            "3 dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas"
+            "3 dossiers de coordonnées bancaires sont en cours sur Démarche Numérique pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas"
             in content
         )
 
@@ -2871,7 +2871,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert (
-            "Un dossier ADAGE est en cours sur Démarches-Simplifiées pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : "
+            "Un dossier ADAGE est en cours sur Démarche Numérique pour cette entité juridique, son traitement n'est pas automatique, ne l'oublions pas : "
             f"Dossier n°{collective_application.application} : En instruction" in content
         )
 
@@ -2891,7 +2891,7 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert (
-            "2 dossiers ADAGE sont en cours sur Démarches-Simplifiées pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas"
+            "2 dossiers ADAGE sont en cours sur Démarche Numérique pour cette entité juridique, leur traitement n'est pas automatique, ne les oublions pas"
             in content
         )
 
@@ -4075,10 +4075,10 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
 
         content = html_parser.content_as_text(response.data)
         assert (
-            "2 dossiers de coordonnées bancaires sont en cours sur Démarches-Simplifiées pour ces entités juridiques, leur traitement n'est pas automatique, ne les oublions pas : "
+            "2 dossiers de coordonnées bancaires sont en cours sur Démarche Numérique pour ces entités juridiques, leur traitement n'est pas automatique, ne les oublions pas : "
             f"Dossier n°{bank_account_1.dsApplicationId} : En construction"
             f"Dossier n°{bank_account_2.dsApplicationId} : À corriger"
-            "Un dossier ADAGE est en cours sur Démarches-Simplifiées pour ces entités juridiques, son traitement n'est pas automatique, ne l'oublions pas : "
+            "Un dossier ADAGE est en cours sur Démarche Numérique pour ces entités juridiques, son traitement n'est pas automatique, ne l'oublions pas : "
             f"Dossier n°{collective_application.application} : En construction" in content
         )
 

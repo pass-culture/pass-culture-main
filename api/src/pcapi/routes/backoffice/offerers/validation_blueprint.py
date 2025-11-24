@@ -141,18 +141,18 @@ def _get_validation_action_information(offerer_ids: typing.Collection[int]) -> s
     if bank_accounts:
         if len(bank_accounts) == 1:
             information = Markup(
-                "Un dossier de <strong>coordonnées bancaires</strong> est en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "Un dossier de <strong>coordonnées bancaires</strong> est en cours sur Démarche Numérique pour {offerers_text}, "
                 "son traitement n'est pas automatique, ne l'oublions pas : <ul>"
             ).format(offerers_text=offerers_text)
         else:
             information = Markup(
-                "{count} dossiers de <strong>coordonnées bancaires</strong> sont en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "{count} dossiers de <strong>coordonnées bancaires</strong> sont en cours sur Démarche Numérique pour {offerers_text}, "
                 "leur traitement n'est pas automatique, ne les oublions pas : <ul>"
             ).format(count=len(bank_accounts), offerers_text=offerers_text)
 
         for pending_bank_account in bank_accounts:
             information += Markup(
-                '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
+                '<li class="my-1"><a href="https://demarche.numerique.gouv.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
             ).format(
                 procedure_number=settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
                 application_number=pending_bank_account.dsApplicationId,
@@ -178,18 +178,18 @@ def _get_validation_action_information(offerer_ids: typing.Collection[int]) -> s
     if collective_applications:
         if len(collective_applications) == 1:
             information += Markup(
-                "Un dossier <strong>ADAGE</strong> est en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "Un dossier <strong>ADAGE</strong> est en cours sur Démarche Numérique pour {offerers_text}, "
                 "son traitement n'est pas automatique, ne l'oublions pas : <ul>"
             ).format(offerers_text=offerers_text)
         else:
             information += Markup(
-                "{count} dossiers <strong>ADAGE</strong> sont en cours sur Démarches-Simplifiées pour {offerers_text}, "
+                "{count} dossiers <strong>ADAGE</strong> sont en cours sur Démarche Numérique pour {offerers_text}, "
                 "leur traitement n'est pas automatique, ne les oublions pas : <ul>"
             ).format(count=len(collective_applications), offerers_text=offerers_text)
 
         for collective_application in collective_applications:
             information += Markup(
-                '<li class="my-1"><a href="https://www.demarches-simplifiees.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
+                '<li class="my-1"><a href="https://demarche.numerique.gouv.fr/procedures/{procedure_number}/dossiers/{application_number}" target="_blank" class="link-primary">Dossier n°{application_number}</a> : {status}</li>'
             ).format(
                 procedure_number=collective_application.procedure,
                 application_number=collective_application.application,
