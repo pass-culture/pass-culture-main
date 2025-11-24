@@ -151,7 +151,6 @@ export const IndividualOfferPriceTableScreen = ({
           />
         </form>
       </FormProvider>
-
       <RouteLeavingGuardIndividualOffer
         when={form.formState.isDirty && !form.formState.isSubmitting}
       />
