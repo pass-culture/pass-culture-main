@@ -17,7 +17,7 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 # always leave some bandwidth for manual Ubble call through native app
-UBBLE_TASK_RATE_LIMIT = int(settings.UBBLE_RATE_LIMIT * 0.8)
+UBBLE_TASK_RATE_LIMIT = int(settings.UBBLE_RATE_LIMIT * 0.9)
 
 
 @celery_async_task(
@@ -30,31 +30,23 @@ UBBLE_TASK_RATE_LIMIT = int(settings.UBBLE_RATE_LIMIT * 0.8)
 def update_ubble_workflow_task(payload: ubble_schemas.UpdateWorkflowPayload) -> None:
     fraud_check_stmt = (
         sa.select(subscription_models.BeneficiaryFraudCheck)
-        .where(subscription_models.BeneficiaryFraudCheck.id.in_(payload.beneficiary_fraud_check_ids))
+        .where(subscription_models.BeneficiaryFraudCheck.id == payload.beneficiary_fraud_check_id)
         .options(
             sa.orm.joinedload(subscription_models.BeneficiaryFraudCheck.user)
             .selectinload(users_models.User.deposits)
             .selectinload(finance_models.Deposit.recredits)
         )
     )
-    fraud_checks_to_update = db.session.scalars(fraud_check_stmt).all()
+    fraud_check = db.session.scalars(fraud_check_stmt).one()
 
-    for fraud_check in fraud_checks_to_update:
-        try:
-            with atomic():
-                ubble_api.update_ubble_workflow(fraud_check)
-        except Exception as e:
-            logger.error(
-                "Error while updating pending ubble application",
-                extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId, "exc": str(e)},
-            )
-            continue
+    with atomic():
+        ubble_api.update_ubble_workflow(fraud_check)
 
-        if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
-            logger.error(
-                "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
-                extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
-            )
+    if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
+        logger.error(
+            "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
+            extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+        )
 
 
 def update_ubble_workflow_if_needed(
@@ -68,16 +60,14 @@ def update_ubble_workflow_if_needed(
     """
     if status in ubble_api.PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
-        db.session.commit()
         return
 
     if status in ubble_api.CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
-        db.session.commit()
         return
 
     if status not in ubble_api.CONCLUSIVE_STATUSES:
         return
 
-    payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_ids=[fraud_check.id])
-    update_ubble_workflow_task.delay(payload.dict())
+    payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check.id)
+    update_ubble_workflow_task.delay(payload.model_dump())

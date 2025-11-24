@@ -129,4 +129,4 @@ class UbbleContent(subscription_schemas.IdentityCheckContent):
 
 
 class UpdateWorkflowPayload(BaseModelV2):
-    beneficiary_fraud_check_ids: list[int]
+    beneficiary_fraud_check_id: int

@@ -632,6 +632,7 @@ def _update_fraud_check_eligibility_with_history(
         eligibilityType=eligibility,
     )
     db.session.add(new_fraud_check)
+    db.session.flush()
 
     # Cancel the old fraud check
     fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
