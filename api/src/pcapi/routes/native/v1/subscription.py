@@ -4,7 +4,7 @@ from functools import partial
 
 from pydantic.v1 import ValidationError
 
-from pcapi.celery_tasks.api_particulier import get_quotient_familial_task
+from pcapi.celery_tasks import api_particulier as api_particulier_tasks
 from pcapi.connectors.beneficiaries import ubble as ubble_connector
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription import api as subscription_api
@@ -210,4 +210,5 @@ def create_quotient_familial_bonus_credit_fraud_check(
         birth_city_cog_code=body.birth_city_cog_code,
         origin="enrolled from /subscription/bonus/quotient_familial endpoint",
     )
-    on_commit(partial(get_quotient_familial_task.delay, fraud_check.id))
+    payload = api_particulier_tasks.GetQuotientFamilialTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+    on_commit(partial(api_particulier_tasks.get_quotient_familial_task.delay, payload))
