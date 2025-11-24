@@ -1,6 +1,9 @@
 import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
-import { StocksEventFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getStocksResponseFactory,
+  StocksEventFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 
 import { onSubmit } from '../onSubmit'
 import {
@@ -348,9 +351,11 @@ describe('onSubmit', () => {
   cases.forEach(
     ({ description, formValues, expectedStocks, expectedNotification }) => {
       it(`should ${description}`, async () => {
-        vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce({
-          stocks_count: expectedStocks.length,
-        })
+        vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce(
+          getStocksResponseFactory({
+            stockCount: expectedStocks.length,
+          })
+        )
         await onSubmit(formValues, '75', 66, notify)
 
         expect(api.bulkCreateEventStocks).toBeCalledWith({

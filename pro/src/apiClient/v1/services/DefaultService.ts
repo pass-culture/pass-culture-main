@@ -2385,12 +2385,12 @@ export class DefaultService {
   /**
    * bulk_create_event_stocks <POST>
    * @param requestBody
-   * @returns StocksResponseModel Created
+   * @returns GetStocksResponseModel Created
    * @throws ApiError
    */
   public bulkCreateEventStocks(
     requestBody: EventStocksBulkCreateBodyModel,
-  ): CancelablePromise<StocksResponseModel> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/stocks/bulk',

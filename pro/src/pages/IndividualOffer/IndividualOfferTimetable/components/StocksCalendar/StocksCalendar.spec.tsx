@@ -8,6 +8,7 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
+  getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
@@ -37,7 +38,9 @@ function renderStocksCalendar(
     hasStocks: stocks.length > 0,
   })
 
-  vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue({ stocks_count: 20 })
+  vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue(
+    getStocksResponseFactory({ stockCount: 20 })
+  )
 
   renderWithProviders(
     <>
