@@ -79,6 +79,7 @@ export enum Events {
   FAKE_DOOR_VIDEO_INTERESTED = 'fakeDoorVideoInterested',
   CLICKED_SORT_STOCKS_TABLE = 'hasClickedSortStocksTable',
   OFFER_FORM_VIDEO_URL_ERROR = 'videoUrlError',
+  CLICKED_COPY_TEMPLATE_OFFER_LINK = 'hasClickedCopyTemplateOfferLink',
 }
 
 export enum VenueEvents {
