@@ -1,11 +1,12 @@
 // Back-End Model Enums
-import { OnboardingActivity } from '@/apiClient/v1/models/OnboardingActivityWIP'
-// Client Mappings
-import { _OnboardingActivityMappings } from '@/commons/mappings/OnboardingActivity'
+import { DisplayedActivity } from '@/apiClient/v1/models/DisplayedActivity'
+import { OnboardingActivity } from '@/apiClient/v1/models/OnboardingActivity'
 
+// Client Mappings
+import { _DisplayedActivityMappings } from './DisplayedActivity'
+import { _OnboardingActivityMappings } from './OnboardingActivity'
+//
 import { buildFilteredMap } from './utils/buildFilteredMap'
 
-export const OnboardingActivityMap = buildFilteredMap(
-  OnboardingActivity,
-  _OnboardingActivityMappings
-)
+export const DisplayedActivityMap = buildFilteredMap(DisplayedActivity, _DisplayedActivityMappings) // biome-ignore format:.
+export const OnboardingActivityMap = buildFilteredMap(OnboardingActivity, _OnboardingActivityMappings) // biome-ignore format:.
