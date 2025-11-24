@@ -63,6 +63,7 @@ class OfferChronicle(PcObject, Model):
 
 class ChronicleProductIdentifierType(enum.Enum):
     ALLOCINE_ID = "ALLOCINE_ID"
+    OFFER_ID = "OFFER_ID"
     EAN = "EAN"
     VISA = "VISA"
 
@@ -70,6 +71,8 @@ class ChronicleProductIdentifierType(enum.Enum):
 class ChronicleClubType(enum.Enum):
     BOOK_CLUB = "BOOK"
     CINE_CLUB = "CINE"
+    ALBUM_CLUB = "ALBUM"
+    CONCERT_CLUB = "CONCERT"
 
 
 class Chronicle(PcObject, Model, DeactivableMixin):
