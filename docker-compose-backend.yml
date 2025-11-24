@@ -10,7 +10,18 @@ services:
       - db_nw
     ports:
       - 5434:5432 # This port is used outside docker compose network (E2E tests and developers launching flask api on their local machines)
-    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on
+    command: >
+      postgres
+      -c logging_collector=on
+      -c log_destination=stderr
+      -c log_min_duration_statement=0
+      -c log_statement=all
+      -c log_duration=on
+      -c synchronous_commit=off
+      -c fsync=off
+      -c full_page_writes=off
+      -c max_wal_size=4GB
+      -c shared_buffers=512MB
 
   postgres-test:
     image: postgis/postgis:15-3.4-alpine
