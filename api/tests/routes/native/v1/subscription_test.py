@@ -791,4 +791,4 @@ class BonusTest:
         }
 
         mocked_task.assert_called_once()
-        mocked_task.assert_called_with(bonus_fraud_check.id)
+        mocked_task.assert_called_with({"fraud_check_id": bonus_fraud_check.id})
