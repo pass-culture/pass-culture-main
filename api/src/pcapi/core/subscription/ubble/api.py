@@ -188,8 +188,8 @@ def start_ubble_workflow(
         content = _reattempt_identity_verification(ubble_fraud_check, first_name, last_name, redirect_url, webhook_url)
     except ubble.UbbleConflictError:
         # resync the identity verification
-        ubble_tasks.update_ubble_workflow_task(
-            ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_ids=[ubble_fraud_check.id])
+        ubble_tasks.update_ubble_workflow_task.delay(
+            payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=ubble_fraud_check.id).model_dump()
         )
 
         raise
@@ -450,16 +450,12 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
     pending_ubble_application_counter = 0
     for pending_ubble_application_fraud_checks in _get_pending_fraud_checks_pages():
         pending_ubble_application_counter += len(pending_ubble_application_fraud_checks)
-        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-            ubble_tasks.update_ubble_workflow_task(
-                ubble_schemas.UpdateWorkflowPayload(
-                    beneficiary_fraud_check_ids=[
-                        fraud_check.id for fraud_check in pending_ubble_application_fraud_checks
-                    ]
+        for fraud_check in pending_ubble_application_fraud_checks:
+            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
+                ubble_tasks.update_ubble_workflow_task.delay(
+                    payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check.id).model_dump()
                 )
-            )
-        else:
-            for fraud_check in pending_ubble_application_fraud_checks:
+            else:
                 try:
                     with atomic():
                         update_ubble_workflow(fraud_check)
