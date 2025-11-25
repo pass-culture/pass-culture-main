@@ -386,7 +386,7 @@ def create_offer(
 
 
 def get_offerer_address_from_address_body(
-    address_body: offerers_schemas.AddressBodyModel | None, venue: offerers_models.Venue
+    address_body: offerers_schemas.LocationBodyModel | None, venue: offerers_models.Venue
 ) -> offerers_models.OffererAddress | None:
     if not address_body:
         return None

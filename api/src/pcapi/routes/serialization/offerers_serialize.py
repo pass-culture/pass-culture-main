@@ -276,7 +276,7 @@ class CreateOffererQueryModel(BaseModel):
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
     activity: offerers_models.OnboardingActivity | None
-    address: offerers_schemas.AddressBodyModel
+    address: offerers_schemas.LocationBodyModel
     createVenueWithoutSiret: bool = False
     isOpenToPublic: bool
     publicName: str | None

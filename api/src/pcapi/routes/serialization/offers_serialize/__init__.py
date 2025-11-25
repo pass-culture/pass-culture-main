@@ -80,7 +80,7 @@ class CategoryResponseModel(BaseModel):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    location: offerers_schemas.AddressBodyModel | None
+    location: offerers_schemas.LocationBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
     description: str | None
@@ -684,7 +684,7 @@ class OfferVideo(ConfiguredBaseModel):
 
 
 class PostOfferBodyModel(BaseModel):
-    address: offerers_schemas.AddressBodyModel | None
+    address: offerers_schemas.LocationBodyModel | None
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None

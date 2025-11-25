@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressBodyModel } from './AddressBodyModel';
+import type { LocationBodyModel } from './LocationBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PatchOfferBodyModel = {
   audioDisabilityCompliant?: boolean | null;
@@ -15,7 +15,7 @@ export type PatchOfferBodyModel = {
   extraData?: any;
   isDuo?: boolean | null;
   isNational?: boolean | null;
-  location?: AddressBodyModel | null;
+  location?: LocationBodyModel | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;

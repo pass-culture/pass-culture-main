@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type AddressBodyModel = {
+export type LocationBodyModel = {
   banId?: string | null;
   city: string;
   inseeCode?: string | null;

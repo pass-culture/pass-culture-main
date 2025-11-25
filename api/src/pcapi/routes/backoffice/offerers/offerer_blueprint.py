@@ -1041,7 +1041,7 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
 
     attachment_address = attachment_venue.offererAddress.address
 
-    address_body_model = offerers_schemas.AddressBodyModel(
+    address_body_model = offerers_schemas.LocationBodyModel(
         street=offerers_schemas.VenueAddress(attachment_address.street),
         city=offerers_schemas.VenueCity(attachment_address.city),
         postalCode=offerers_schemas.VenuePostalCode(attachment_address.postalCode),

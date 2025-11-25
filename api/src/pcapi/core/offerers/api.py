@@ -3193,7 +3193,7 @@ def create_offerer_address(offerer_id: int, address_id: int, label: str | None =
     return offerer_address
 
 
-def create_offerer_address_from_address_api(address: offerers_schemas.AddressBodyModel) -> geography_models.Address:
+def create_offerer_address_from_address_api(address: offerers_schemas.LocationBodyModel) -> geography_models.Address:
     try:
         insee_code = (
             address.inseeCode
@@ -3216,7 +3216,7 @@ def create_offerer_address_from_address_api(address: offerers_schemas.AddressBod
 
 
 def get_offer_location_from_address(
-    offerer_id: int, address: offerers_schemas.AddressBodyModel
+    offerer_id: int, address: offerers_schemas.LocationBodyModel
 ) -> offerers_models.OffererAddress:
     assert offerer_id
     if not address.label:
@@ -3406,7 +3406,7 @@ def find_structure_data(search_input: str) -> sirene_models.SiretInfo:
 
 def find_ban_address_from_insee_address(
     diffusible: bool, insee_address: sirene_models.SireneAddress
-) -> offerers_schemas.AddressBodyModel | None:
+) -> offerers_schemas.LocationBodyModel | None:
     try:
         is_manual_address = False
         if diffusible:
@@ -3441,7 +3441,7 @@ def find_ban_address_from_insee_address(
         return (
             None
             if ban_address is None
-            else offerers_schemas.AddressBodyModel(
+            else offerers_schemas.LocationBodyModel(
                 isManualEdition=is_manual_address,
                 banId=offerers_schemas.VenueBanId(ban_address.id) if not is_manual_address else None,
                 city=offerers_schemas.VenueCity(ban_address.city),

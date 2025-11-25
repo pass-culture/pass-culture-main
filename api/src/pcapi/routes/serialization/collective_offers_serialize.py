@@ -259,7 +259,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
 class CollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    location: offerers_schemas.AddressBodyModel | None
+    location: offerers_schemas.LocationBodyModel | None
 
     @validator("locationComment")
     def validate_location_comment(cls, location_comment: str | None, values: dict) -> str | None:
@@ -270,8 +270,8 @@ class CollectiveOfferLocationModel(BaseModel):
 
     @validator("location")
     def validate_address(
-        cls, address: offerers_schemas.AddressBodyModel | None, values: dict
-    ) -> offerers_schemas.AddressBodyModel | None:
+        cls, address: offerers_schemas.LocationBodyModel | None, values: dict
+    ) -> offerers_schemas.LocationBodyModel | None:
         location_type = values.get("locationType")
         if (
             location_type

@@ -12,7 +12,7 @@ from pcapi.serialization.utils import to_camel
 
 
 class PostOfferBodyModel(BaseModel):
-    address: offerers_schemas.AddressBodyModel | None
+    address: offerers_schemas.LocationBodyModel | None
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None
