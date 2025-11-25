@@ -1,7 +1,7 @@
 import {
   checkAndParseUploadedFile,
   fileReader,
-} from '../ActivationCodeFormDialog/ActivationCodeFileChecker'
+} from './ActivationCodeFileChecker'
 
 describe('checkAndParseUploadedFile', () => {
   it('should raise an error when no file was provided', async () => {

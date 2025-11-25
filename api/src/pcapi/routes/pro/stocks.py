@@ -14,7 +14,6 @@ from pcapi.core.offers import repository as offers_repository
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.utils import first_or_404
-from pcapi.models.utils import get_or_404
 from pcapi.models.utils import get_or_404_from_query
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -85,41 +84,6 @@ def _filter_out_stock_duplicates(
         return list(filter(lambda stock: not _stock_already_exists(stock, matching_event_stocks), stocks_list))
 
     return stocks_list
-
-
-@private_api.route("/stocks", methods=["POST"])
-@login_required
-@spectree_serialize(
-    on_success_status=201,
-    response_model=stock_serialize.StockIdResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def create_thing_stock(body: stock_serialize.ThingStockCreateBodyModel) -> stock_serialize.StockIdResponseModel:
-    offer: offers_models.Offer = get_or_404(offers_models.Offer, body.offer_id)
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    input_data = body.dict()
-    input_data.pop("offer_id")
-    stock = offers_api.create_stock(offer, **input_data)
-    return stock_serialize.StockIdResponseModel.from_orm(stock)
-
-
-@private_api.route("/stocks/<int:stock_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    on_success_status=200,
-    response_model=stock_serialize.StockIdResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def update_thing_stock(
-    stock_id: int,
-    body: stock_serialize.ThingStockUpdateBodyModel,
-) -> stock_serialize.StockIdResponseModel:
-    stock: offers_models.Stock = get_or_404(offers_models.Stock, stock_id)
-    check_user_has_access_to_offerer(current_user, stock.offer.venue.managingOffererId)
-    offers_api.edit_stock(stock, **body.dict(exclude_unset=True))
-    return stock_serialize.StockIdResponseModel.from_orm(stock)
 
 
 @private_api.route("/stocks/bulk", methods=["POST"])
