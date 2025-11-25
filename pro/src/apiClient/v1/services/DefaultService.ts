@@ -111,9 +111,7 @@ import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StructureDataBodyModel } from '../models/StructureDataBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
-import type { ThingStockCreateBodyModel } from '../models/ThingStockCreateBodyModel';
 import type { ThingStocksBulkUpsertBodyModel } from '../models/ThingStocksBulkUpsertBodyModel';
-import type { ThingStockUpdateBodyModel } from '../models/ThingStockUpdateBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -2343,26 +2341,6 @@ export class DefaultService {
     });
   }
   /**
-   * create_thing_stock <POST>
-   * @param requestBody
-   * @returns StockIdResponseModel Created
-   * @throws ApiError
-   */
-  public createThingStock(
-    requestBody: ThingStockCreateBodyModel,
-  ): CancelablePromise<StockIdResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/stocks',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * bulk_update_event_stocks <PATCH>
    * @param requestBody
    * @returns StocksResponseModel OK
@@ -2417,31 +2395,6 @@ export class DefaultService {
       path: {
         'stock_id': stockId,
       },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * update_thing_stock <PATCH>
-   * @param stockId
-   * @param requestBody
-   * @returns StockIdResponseModel OK
-   * @throws ApiError
-   */
-  public updateThingStock(
-    stockId: number,
-    requestBody: ThingStockUpdateBodyModel,
-  ): CancelablePromise<StockIdResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/stocks/{stock_id}',
-      path: {
-        'stock_id': stockId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

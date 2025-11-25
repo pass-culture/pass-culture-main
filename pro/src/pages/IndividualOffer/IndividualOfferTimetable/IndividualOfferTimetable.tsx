@@ -8,7 +8,6 @@ import {
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
-import { StocksThing } from '@/components/IndividualOffer/StocksThing/StocksThing'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -53,16 +52,12 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout offer={offer}>
-      {offer.isEvent ? (
-        <IndividualOfferTimetableScreen
-          offer={offer}
-          mode={mode}
-          openingHours={openingHoursData?.openingHours}
-          venue={venueQuery.data}
-        />
-      ) : (
-        <StocksThing offer={offer} stocks={[]} />
-      )}
+      <IndividualOfferTimetableScreen
+        offer={offer}
+        mode={mode}
+        openingHours={openingHoursData?.openingHours}
+        venue={venueQuery.data}
+      />
     </IndividualOfferLayout>
   )
 }

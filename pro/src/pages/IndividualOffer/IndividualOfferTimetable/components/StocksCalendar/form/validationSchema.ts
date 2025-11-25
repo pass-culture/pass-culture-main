@@ -1,7 +1,7 @@
 import { getToday, isDateValid, removeTime } from '@/commons/utils/date'
 import { yup } from '@/commons/utils/yup'
-import { MAX_STOCKS_QUANTITY } from '@/components/IndividualOffer/StocksThing/validationSchema'
 
+import { MAX_STOCKS_QUANTITY } from '../StocksCalendarTable/StocksCalendarTableEditStock/validationSchema'
 import {
   type MonthlyOption,
   type RecurrenceDays,
