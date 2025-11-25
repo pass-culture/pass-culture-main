@@ -254,7 +254,7 @@ describe('Offerer', () => {
       ],
     })
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue({
-      address: null,
+      location: null,
       apeCode: '75',
       isDiffusible: true,
       name: 'name',
@@ -288,7 +288,7 @@ describe('Offerer', () => {
       ],
     })
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue({
-      address: null,
+      location: null,
       apeCode: '75',
       isDiffusible: true,
       name: 'name',

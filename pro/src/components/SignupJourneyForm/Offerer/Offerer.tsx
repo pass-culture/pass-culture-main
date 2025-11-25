@@ -120,17 +120,17 @@ export const Offerer = (): JSX.Element => {
         await api.getVenuesOfOffererFromSiret(formattedSiret)
 
       const addressValues = {
-        street: offererSiretData.address?.street ?? '',
-        city: offererSiretData.address?.city ?? '',
-        latitude: offererSiretData.address
-          ? parseFloat(String(offererSiretData.address.latitude))
+        street: offererSiretData.location?.street ?? '',
+        city: offererSiretData.location?.city ?? '',
+        latitude: offererSiretData.location
+          ? parseFloat(String(offererSiretData.location.latitude))
           : null,
-        longitude: offererSiretData.address
-          ? parseFloat(String(offererSiretData.address.longitude))
+        longitude: offererSiretData.location
+          ? parseFloat(String(offererSiretData.location.longitude))
           : null,
-        postalCode: offererSiretData.address?.postalCode ?? '',
-        inseeCode: offererSiretData.address?.inseeCode ?? null,
-        banId: offererSiretData.address?.banId ?? null,
+        postalCode: offererSiretData.location?.postalCode ?? '',
+        inseeCode: offererSiretData.location?.inseeCode ?? null,
+        banId: offererSiretData.location?.banId ?? null,
       }
 
       setInitialAddress({
