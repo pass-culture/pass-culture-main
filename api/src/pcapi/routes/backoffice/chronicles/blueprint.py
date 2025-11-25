@@ -1,5 +1,7 @@
 import datetime
 from functools import partial
+from random import randint
+from time import time
 
 import sqlalchemy as sa
 from flask import flash
@@ -18,6 +20,7 @@ from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.offers import models as offers_models
 from pcapi.core.permissions import models as perm_models
+from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.utils import get_or_404
 from pcapi.routes.backoffice import search_utils
@@ -150,6 +153,7 @@ def list_chronicles() -> utils.BackofficeResponse:
         "chronicles/list.html",
         rows=paginated_chronicles,
         form=form,
+        create_chronicle_form=forms.CreateChronicleForm(),
         next_pages_urls=next_pages_urls,
         chronicle_publication_form=EmptyForm(),
     )
@@ -315,7 +319,7 @@ def attach_product(chronicle_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        redirect(
+        return redirect(
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="product"), code=303
         )
 
@@ -440,7 +444,9 @@ def attach_offer(chronicle_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        redirect(url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303)
+        return redirect(
+            url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="offer"), code=303
+        )
 
     offers_subquery = (
         sa.select(sa.func.array_agg(chronicles_models.OfferChronicle.offerId))
@@ -529,7 +535,7 @@ def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        redirect(
+        return redirect(
             url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
         )
 
@@ -542,3 +548,57 @@ def comment_chronicle(chronicle_id: int) -> utils.BackofficeResponse:
     return redirect(
         url_for("backoffice_web.chronicles.details", chronicle_id=chronicle_id, active_tab="history"), code=303
     )
+
+
+@chronicles_blueprint.route("/create", methods=["POST"])
+@permission_required(perm_models.Permissions.MANAGE_CHRONICLE)
+def create_chronicle() -> utils.BackofficeResponse:
+    form = forms.CreateChronicleForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
+
+    unique_random_value = str(int(time())) + str(randint(100_000, 1_000_000))
+    user_id = (
+        db.session.query(
+            users_models.User.id,
+        )
+        .filter(
+            users_models.User.email == form.email.data,
+        )
+        .limit(1)
+        .scalar()
+    )
+
+    product_identifier_type = getattr(
+        chronicles_models.ChronicleProductIdentifierType, form.product_identifier_type.data
+    )
+
+    chronicle = chronicles_models.Chronicle(
+        age=form.age.data,
+        city=form.city.data,
+        content=form.content.data,
+        identifierChoiceId=unique_random_value,
+        email=form.email.data,
+        firstName=form.first_name.data,
+        externalId=unique_random_value,
+        isIdentityDiffusible=form.is_identity_diffusible.data,
+        isSocialMediaDiffusible=form.is_social_media_diffusible.data,
+        offers=chronicles_api.get_offers(
+            product_identifier_type=product_identifier_type,
+            product_identifier=str(form.product_identifier.data),
+        ),
+        products=chronicles_api.get_products(
+            product_identifier_type=product_identifier_type,
+            product_identifier=str(form.product_identifier.data),
+        ),
+        userId=user_id,
+        isActive=False,
+        productIdentifierType=product_identifier_type,
+        productIdentifier=str(form.product_identifier.data),
+        clubType=getattr(chronicles_models.ChronicleClubType, form.club_type.data),
+    )
+
+    db.session.add(chronicle)
+    return redirect(url_for("backoffice_web.chronicles.list_chronicles"), code=303)
