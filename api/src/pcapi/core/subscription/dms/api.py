@@ -676,13 +676,18 @@ def _process_instructor_annotation(application_content: dms_schemas.DMSContent, 
         # Ignore to avoid unconsistency between user fields and the reason to refuse.
         return False
 
-    match application_content.instructor_annotation.value:
-        case dms_schemas.DmsInstructorAnnotationEnum.NEL:
-            motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_USER_NOT_ELIGIBLE
-        case dms_schemas.DmsInstructorAnnotationEnum.IDP:
-            motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_ID_EXPIRED
-        case _:
-            return False
+    values = (
+        application_content.instructor_annotation.value
+        if isinstance(application_content.instructor_annotation.value, list)
+        else [application_content.instructor_annotation.value]
+    )
+
+    if dms_schemas.DmsInstructorAnnotationEnum.NEL in values:
+        motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_USER_NOT_ELIGIBLE
+    elif dms_schemas.DmsInstructorAnnotationEnum.IDP in values:
+        motivation = dms_internal_mailing.DMS_MESSAGE_REFUSED_ID_EXPIRED
+    else:
+        return False
 
     # Can be rejected automatically since an instructor has checked details before manually setting an annotation
     client = dms_connector_api.DMSGraphQLClient(timeout=UPDATE_STATE_TIMEOUT)

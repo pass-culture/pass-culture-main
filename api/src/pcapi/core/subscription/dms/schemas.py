@@ -30,7 +30,8 @@ class DmsInstructorAnnotationEnum(enum.Enum):
 
 
 class DmsInstructorAnnotation(pydantic_v1.BaseModel):
-    value: DmsInstructorAnnotationEnum
+    # Support multiple choices and legacy single choice (when parsing DMSContent in saved applications)
+    value: list[DmsInstructorAnnotationEnum] | DmsInstructorAnnotationEnum
     updated_datetime: datetime.datetime | None
 
 

@@ -151,9 +151,10 @@ def parse_beneficiary_information_graphql(
             )
         elif remote_annotation.label.startswith(DMS_INSTRUCTOR_ANNOTATION_SLUG):
             if remote_annotation_value := remote_annotation.value.strip() if remote_annotation.value else None:
+                split_values = remote_annotation_value.split(", ")
                 try:
                     instructor_annotation = dms_schemas.DmsInstructorAnnotation(
-                        value=dms_schemas.DmsInstructorAnnotationEnum(remote_annotation_value),
+                        value=[dms_schemas.DmsInstructorAnnotationEnum(v) for v in split_values],
                         updated_datetime=remote_annotation.updated_datetime,
                     )
                 except ValueError:
