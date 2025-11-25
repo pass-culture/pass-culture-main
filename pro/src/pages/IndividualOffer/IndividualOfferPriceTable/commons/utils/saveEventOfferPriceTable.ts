@@ -24,7 +24,7 @@ export const saveEventOfferPriceTable = async (
       { revalidate: false }
     )
   }
-  if (form.formState.dirtyFields.entries) {
+  if (form.formState.dirtyFields) {
     await mutate(
       [GET_OFFER_QUERY_KEY, offer.id],
       api.postPriceCategories(offer.id, toPriceCategoryBody(formValues)),
