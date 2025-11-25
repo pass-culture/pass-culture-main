@@ -33,21 +33,33 @@ class Snippet(BaseModel):
     thumbnails: Thumbnails
 
 
-def parse_iso8601_duration_to_seconds(duration_str: str) -> int:
-    match = re.match(r"PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?", duration_str)
+def parse_iso8601_duration_to_seconds(duration_str: str | None) -> int | None:
+    def get_match_value(match: re.Match[str], group: str) -> int:
+        return int(match.group(group)) if match.group(group) else 0
+
+    if not duration_str:
+        return None
+
+    match = re.match(
+        r"^P(\d+Y)?(\d+M)?((?P<days>\d+)D)?(T((?P<hours>\d+)H)?((?P<minutes>\d+)M)?((?P<seconds>\d+)S)?)?((?P<weeks>\d+)W)?$",
+        duration_str,
+    )
+
     if not match:
         raise ValueError(f"Invalid ISO 8601 duration format: {duration_str}")
 
-    hours = int(match.group(1)) if match.group(1) else 0
-    minutes = int(match.group(2)) if match.group(2) else 0
-    seconds = int(match.group(3)) if match.group(3) else 0
-
-    duration = datetime.timedelta(hours=hours, minutes=minutes, seconds=seconds)
+    # We ignore years, and months because they have variable duration.
+    duration = datetime.timedelta(
+        days=get_match_value(match, "weeks") * 7 + get_match_value(match, "days"),
+        hours=get_match_value(match, "hours"),
+        minutes=get_match_value(match, "minutes"),
+        seconds=get_match_value(match, "seconds"),
+    )
     return int(duration.total_seconds())
 
 
 class ContentDetails(BaseModel):
-    duration: int
+    duration: int | None
 
     _parse_duration = validator("duration", pre=True)(parse_iso8601_duration_to_seconds)
 

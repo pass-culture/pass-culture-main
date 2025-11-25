@@ -44,6 +44,30 @@ class GetVideoMetadataTest:
         )
 
     @mock.patch("pcapi.connectors.youtube.requests.get")
+    def test_get_video_metadata_without_duration(self, mock_requests_get, settings):
+        mock_response = mock.Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "items": [
+                {
+                    "id": "test_video_id",
+                    "snippet": {
+                        "title": "Test Video",
+                        "thumbnails": {
+                            "high": {"url": "https://example.com/high.jpg"},
+                        },
+                    },
+                    "contentDetails": {},
+                }
+            ]
+        }
+        mock_requests_get.return_value = mock_response
+
+        metadata = youtube.YoutubeBackend().get_video_metadata("test_video_id")
+
+        assert metadata.duration is None
+
+    @mock.patch("pcapi.connectors.youtube.requests.get")
     def test_get_video_metadata_api_error(self, mock_requests_get):
         mock_requests_get.side_effect = requests.exceptions.RequestException
         with pytest.raises(requests.ExternalAPIException):
@@ -74,10 +98,15 @@ class SerializerTest:
     @pytest.mark.parametrize(
         "duration_str,expected_seconds",
         [
-            ("PT1M30S", 90),
-            ("PT2H", 7200),
+            ("P1Y5M", 0),
+            ("P1D", 86400),
+            ("P1W", 7 * 86400),
+            ("P1D1W", 86400 + 7 * 86400),
+            ("PT1M30S", 60 + 30),
+            ("PT2H", 2 * 3600),
             ("PT45S", 45),
-            ("PT1H2M3S", 3723),
+            ("PT1H2M3S", 3600 + 2 * 60 + 3),
+            ("P1Y1M1DT1H2M3S1W", 86400 + 3600 + 2 * 60 + 3 + 7 * 86400),
         ],
     )
     def test_parse_iso8601_duration(self, duration_str, expected_seconds):
@@ -85,4 +114,4 @@ class SerializerTest:
 
     def test_parse_iso8601_duration_invalid(self):
         with pytest.raises(ValueError):
-            parse_iso8601_duration_to_seconds("P1D")
+            parse_iso8601_duration_to_seconds("P1W1D")

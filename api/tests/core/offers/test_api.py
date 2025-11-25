@@ -1513,6 +1513,27 @@ class UpdateDraftOfferTest:
         assert offer.metaData.videoDuration == 100
         assert offer.metaData.videoUrl == video_url
 
+    @mock.patch("pcapi.core.videos.api.get_video_metadata_from_cache")
+    def test_new_video_url_without_duration(self, get_video_metadata_from_cache_mock):
+        video_id = "WtM4OW2qVjY"
+        video_url = f"https://www.youtube.com/watch?v={video_id}"
+        get_video_metadata_from_cache_mock.return_value = youtube.YoutubeVideoMetadata(
+            id=video_id,
+            title="Title",
+            thumbnail_url="thumbnail url",
+            duration=None,
+        )
+        offer = factories.OfferFactory(
+            name="Name",
+            subcategoryId=subcategories.ESCAPE_GAME.id,
+            description="description",
+        )
+        body = offers_schemas.deprecated.PatchDraftOfferBodyModel(videoUrl=video_url)
+        offer = api.update_draft_offer(offer, body)
+        db.session.flush()
+
+        assert offer.metaData.videoDuration is None
+
     def test_can_delete_video_url(self):
         meta_data = factories.OfferMetaDataFactory(videoUrl="https://www.youtube.com/watch?v=WtM4OW2qVjY")
 
