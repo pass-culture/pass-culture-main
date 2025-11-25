@@ -138,7 +138,7 @@ export const serializeOfferSectionData = (
   // Could be simpler with lodash.pick
   if (offer.location) {
     offerAddressData = {
-      address: {
+      location: {
         label: offer.location.label,
         city: offer.location.city,
         street: offer.location.street,

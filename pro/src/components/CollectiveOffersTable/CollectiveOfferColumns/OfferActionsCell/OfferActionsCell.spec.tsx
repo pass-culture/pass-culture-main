@@ -366,6 +366,7 @@ describe('OfferActionsCells', () => {
           location: {
             banId: undefined,
             city: '',
+            id: '',
             coords: 'undefined, undefined',
             isManualEdition: false,
             label: 'Structure 4',

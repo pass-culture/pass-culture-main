@@ -106,6 +106,7 @@ export const computeInitialValuesFromOffer = (
           isManualEdition: false,
           label: defaultVenue.name,
           venueLocation: true,
+          id: defaultVenue.location?.id.toString() ?? '',
         },
       }
     : defaultEducationalFormValues.location

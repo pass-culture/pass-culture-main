@@ -27,8 +27,8 @@ export const applyVenueDefaultsToFormValues = (
 
   const locationFromSelectedVenue = {
     locationType: CollectiveLocationType.ADDRESS,
-    address: {
-      isVenueAddress: true,
+    location: {
+      venueLocation: true,
       id: selectedVenue?.location?.id.toString() ?? '',
       isManualEdition: false,
       label: venue.name,

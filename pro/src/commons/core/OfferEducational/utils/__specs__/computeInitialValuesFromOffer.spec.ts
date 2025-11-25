@@ -43,8 +43,6 @@ const offerVenue = {
 
 describe('computeInitialValuesFromOffer', () => {
   it('should return default values when no offer is provided', () => {
-    const venue = venues[0]
-
     expect(computeInitialValuesFromOffer(offerer, false, venues)).toEqual({
       ...getDefaultEducationalValues(),
       offererId: '1',
@@ -57,6 +55,7 @@ describe('computeInitialValuesFromOffer', () => {
       location: {
         locationType: CollectiveLocationType.ADDRESS,
         location: {
+          id: '1',
           isManualEdition: false,
           venueLocation: true,
           label: 'Le nom du lieu 2',
@@ -264,6 +263,7 @@ describe('computeInitialValuesFromOffer', () => {
         street: 'rue de la paix',
         location: {
           location: {
+            id: '1',
             venueLocation: true,
             isManualEdition: false,
             label: 'Le nom du lieu 2',

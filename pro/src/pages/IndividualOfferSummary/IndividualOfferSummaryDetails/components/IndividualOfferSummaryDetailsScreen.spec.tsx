@@ -114,7 +114,7 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
     const offer = {
       ...offerBase,
       subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
-      address: {
+      location: {
         ...getLocationResponseModel({
           label: 'mon adresse',
           city: 'ma ville',
@@ -137,7 +137,7 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
     const offer = {
       ...offerBase,
       subcategoryId: MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE.id,
-      address: {
+      location: {
         ...getLocationResponseModel({
           label: 'mon adresse',
           city: 'ma ville',

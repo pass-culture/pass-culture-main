@@ -30,10 +30,9 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
     // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
     //  then set this OA id in form field (so it will be checked by default)
     //  Else, we can assume it's an "other" address
-    const offerLocation =
-      offerVenue?.location && offerVenue.location.id === offer.location.id
-        ? offer.location.id
-        : OFFER_LOCATION.OTHER_ADDRESS
+    const offerLocation = offer.location.venueLocation
+      ? String(offer.location.id)
+      : OFFER_LOCATION.OTHER_ADDRESS
 
     return {
       addressAutocomplete,
@@ -46,7 +45,7 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       label: offer.location.label ?? null,
       latitude: String(offer.location.latitude),
       longitude: String(offer.location.longitude),
-      offerLocation: String(offerLocation),
+      offerLocation,
       postalCode: offer.location.postalCode,
       'search-addressAutocomplete': addressAutocomplete,
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive an offer address without street since it's mandatory.

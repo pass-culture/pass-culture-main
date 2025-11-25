@@ -89,7 +89,7 @@ describe('getInitialValuesFromOffer', () => {
             isManualEdition: true,
             latitude: 48.85332,
             longitude: 2.348979,
-            venueLocation: false,
+            venueLocation: true,
           },
           isDigital: false,
         }
@@ -208,6 +208,7 @@ describe('getInitialValuesFromOffer', () => {
         isManualEdition: true,
         latitude: 48.85332,
         longitude: 2.348979,
+        venueLocation: false,
       },
       url: 'https://passculture.app',
       isDigital: true,
