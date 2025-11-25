@@ -112,10 +112,8 @@ class CineofficeContext(PivotContext):
             client = CineDigitalServiceAPIClient(cinema_id="", account_id=account_id, cinema_api_token=api_token)
             client.get_rating()
             flash("Connexion à l'API OK.", "success")
-            return
         except (requests.exceptions.RequestException, CineDigitalServiceAPIException) as exc:
-            logger.exception(
+            logger.warning(
                 "Network error on checking CDS API information", extra={"exc": exc, "account_id": account_id}
             )
-
-        flash("Connexion à l'API KO.", "warning")
+            flash(Markup("Connexion à l'API KO : {error}").format(error=exc), "warning")
