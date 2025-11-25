@@ -49,9 +49,9 @@ def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, err
     at_least_one_uppercase = "(?=.*?[A-Z])"
     at_least_one_lowercase = "(?=.*?[a-z])"
     at_least_one_digit = "(?=.*?[0-9])"
-    min_length = ".{12,}"
+    length = ".{12,72}"
 
-    regex = "^" + at_least_one_uppercase + at_least_one_lowercase + at_least_one_digit + min_length + "$"
+    regex = "^" + at_least_one_uppercase + at_least_one_lowercase + at_least_one_digit + length + "$"
 
     # Special characters: !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~
     at_least_one_special_char = len(set(field_value).intersection(set(string.punctuation))) > 0
@@ -60,7 +60,7 @@ def _ensure_new_password_is_strong_enough(field_name: str, field_value: str, err
         errors.add_error(
             field_name,
             "Le mot de passe doit contenir au moins :\n"
-            "- 12 caractères\n"
+            "- Entre 12 et 72 caractères\n"
             "- Un chiffre\n"
             "- Une majuscule et une minuscule\n"
             "- Un caractère spécial",

@@ -39,7 +39,7 @@ class CheckPasswordValidityTest:
         # then
         assert api_errors.value.errors["newPassword"] == [
             "Le mot de passe doit contenir au moins :\n"
-            "- 12 caractères\n"
+            "- Entre 12 et 72 caractères\n"
             "- Un chiffre\n"
             "- Une majuscule et une minuscule\n"
             "- Un caractère spécial",
@@ -108,6 +108,7 @@ class EnsureNewPasswordIsStrongEnoughTest:
             "NO-LOWER_CASE.L3TT3R",
             "MIXED.case-WITHOUT_digits",
             "MIXEDcaseWITHOUTSP3C14lchars",
+            "P4$$word" * 13,
         ],
     )
     def test_should_add_errors_when_password_is_not_valid(self, newPassword):
@@ -120,7 +121,7 @@ class EnsureNewPasswordIsStrongEnoughTest:
         # then
         assert api_errors.errors["newPassword"] == [
             "Le mot de passe doit contenir au moins :\n"
-            "- 12 caractères\n"
+            "- Entre 12 et 72 caractères\n"
             "- Un chiffre\n"
             "- Une majuscule et une minuscule\n"
             "- Un caractère spécial"
