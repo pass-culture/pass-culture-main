@@ -242,15 +242,7 @@ class BaseFinanceBackend:
             .join(finance_models.Pricing.cashflows)
             .join(finance_models.Cashflow.invoices)
             .join(educational_models.CollectiveBooking.educationalInstitution)
-            .join(
-                educational_models.EducationalDeposit,
-                sa.and_(
-                    educational_models.EducationalDeposit.educationalYearId
-                    == educational_models.CollectiveBooking.educationalYearId,
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                ),
-            )
+            .join(educational_models.CollectiveBooking.educationalDeposit)
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
             .outerjoin(
                 educational_models.EducationalInstitutionProgramAssociation,
