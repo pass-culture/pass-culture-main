@@ -5,6 +5,7 @@ import pytest
 import requests_mock
 
 import pcapi.connectors.api_particulier as api_particulier
+import pcapi.core.finance.models as finance_models
 import pcapi.core.subscription.bonus.api as bonus_api
 import pcapi.core.subscription.bonus.schemas as bonus_schemas
 import pcapi.core.subscription.factories as subscription_factories
@@ -64,6 +65,9 @@ class GetQuotientFamilialTest:
                 provider="CNAF", value=2550, year=2023, month=6, computation_year=2024, computation_month=12
             ),
         )
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
 
     def test_minimum_quotient_familial_retained(self):
         child_data = bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE["data"]["enfants"][0]
@@ -95,6 +99,9 @@ class GetQuotientFamilialTest:
             bonus_fraud_check.source_data().quotient_familial.value
             == bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE["data"]["quotient_familial"]["valeur"]
         )
+        assert finance_models.RecreditType.BONUS_CREDIT in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
 
     def test_custodian_not_found(self):
         user = users_factories.BeneficiaryFactory()
@@ -114,6 +121,9 @@ class GetQuotientFamilialTest:
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
         assert bonus_fraud_check.source_data().quotient_familial is None
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
 
     def test_user_not_in_tax_household(self):
         user = users_factories.BeneficiaryFactory()
@@ -133,6 +143,9 @@ class GetQuotientFamilialTest:
         assert bonus_fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert bonus_fraud_check.reasonCodes == [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
         assert bonus_fraud_check.source_data().quotient_familial is None
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]
 
     def test_user_quotient_familial_too_high(self):
         child_data = bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE["data"]["enfants"][0]
@@ -162,3 +175,6 @@ class GetQuotientFamilialTest:
         assert bonus_fraud_check.source_data().quotient_familial == bonus_schemas.QuotientFamilialContent(
             provider="CNAF", value=9_999_999, year=2023, month=6, computation_year=2024, computation_month=12
         )
+        assert finance_models.RecreditType.BONUS_CREDIT not in [
+            recredit.recreditType for recredit in user.deposit.recredits
+        ]

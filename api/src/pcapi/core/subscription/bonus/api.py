@@ -3,6 +3,7 @@ import logging
 from dateutil.relativedelta import relativedelta
 
 from pcapi.connectors import api_particulier
+from pcapi.core.finance import deposit_api
 from pcapi.core.subscription import fraud_check_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
@@ -17,11 +18,14 @@ QUOTIENT_FAMILIAL_THRESHOLD = 3000
 
 
 def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    user = quotient_familial_fraud_check.user
+    if not deposit_api.can_receive_bonus_credit(user):
+        return
+
     source_data = quotient_familial_fraud_check.source_data()
     if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
         raise ValueError(f"BonusCreditContent was expected while {type(source_data)} was given")
 
-    user = quotient_familial_fraud_check.user
     quotient_familial_content: bonus_schemas.QuotientFamilialContent | None = None
     try:
         quotient_familial_content = _get_user_quotient_familial_content(source_data.custodian, user)
@@ -42,6 +46,19 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
     if not quotient_familial_fraud_check.resultContent.get("quotient_familial"):
         quotient_familial_fraud_check.resultContent["quotient_familial"] = {}
     quotient_familial_fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
+
+    if status != subscription_models.FraudCheckStatus.OK:
+        return
+
+    given_recredit = deposit_api.recredit_bonus_credit(user)
+    if not given_recredit and deposit_api.can_receive_bonus_credit(user):
+        logger.error(
+            f"Failed to recredit user with bonus credit despite {status = } Quotient Familial fraud check",
+            extra={"user_id": user.id, "beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
+        )
+
+    if given_recredit:
+        logger.info("Recredited user %s with bonus credit", user.id)
 
 
 def _get_user_quotient_familial_content(
