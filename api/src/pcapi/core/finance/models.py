@@ -155,6 +155,7 @@ class RecreditType(enum.Enum):
     RECREDIT_16 = "Recredit16"
     RECREDIT_17 = "Recredit17"
     RECREDIT_18 = "Recredit18"
+    BONUS_CREDIT = "BonusCredit"
     MANUAL_MODIFICATION = "ManualModification"
     PREVIOUS_DEPOSIT = "PreviousDeposit"
     FINANCE_INCIDENT_RECREDIT = "FinanceIncidentRecredit"
@@ -181,6 +182,18 @@ class Recredit(PcObject, Model):
     )
 
     comment: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
+    __table_args__ = (
+        sa.Index(
+            "ix_unique_deposit_recredit_type",
+            "depositId",
+            "recreditType",
+            postgresql_where=sa.and_(
+                recreditType != RecreditType.MANUAL_MODIFICATION, recreditType != RecreditType.FINANCE_INCIDENT_RECREDIT
+            ),
+            unique=True,
+        ),
+    )
 
 
 class FinanceEventStatus(enum.Enum):
