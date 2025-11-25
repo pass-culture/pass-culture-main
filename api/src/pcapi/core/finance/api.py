@@ -1485,15 +1485,7 @@ def _generate_payments_file(batch: models.CashflowBatch) -> pathlib.Path:
             )
             .join(models.BankAccount.offerer)
             .join(educational_models.CollectiveBooking.educationalInstitution)
-            .join(
-                educational_models.EducationalDeposit,
-                sa.and_(
-                    educational_models.EducationalDeposit.educationalYearId
-                    == educational_models.CollectiveBooking.educationalYearId,
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                ),
-            )
+            .join(educational_models.CollectiveBooking.educationalDeposit)
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
             .outerjoin(
                 educational_models.EducationalInstitutionProgramAssociation,
@@ -1956,15 +1948,7 @@ def generate_invoice_file(batch: models.CashflowBatch) -> pathlib.Path:
             query.join(models.Pricing.lines)
             .join(educational_models.CollectiveBooking.collectiveStock)
             .join(educational_models.CollectiveBooking.educationalInstitution)
-            .join(
-                educational_models.EducationalDeposit,
-                sa.and_(
-                    educational_models.EducationalDeposit.educationalYearId
-                    == educational_models.CollectiveBooking.educationalYearId,
-                    educational_models.EducationalDeposit.educationalInstitutionId
-                    == educational_models.EducationalInstitution.id,
-                ),
-            )
+            .join(educational_models.CollectiveBooking.educationalDeposit)
             # max 1 program because of unique constraint on EducationalInstitutionProgramAssociation.institutionId
             .outerjoin(
                 educational_models.EducationalInstitutionProgramAssociation,

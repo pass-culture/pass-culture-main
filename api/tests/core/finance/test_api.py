@@ -2250,6 +2250,7 @@ def test_generate_payments_file(clean_temp_files):
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         collectiveBooking__educationalInstitution=deposit_menjs.educationalInstitution,
         collectiveBooking__educationalYear=deposit_menjs.educationalYear,
+        collectiveBooking__educationalDeposit=deposit_menjs,
     )
     factories.CollectivePricingFactory(
         amount=-700,  # rate = 100 %
@@ -2260,6 +2261,7 @@ def test_generate_payments_file(clean_temp_files):
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         collectiveBooking__educationalInstitution=deposit_menjs.educationalInstitution,
         collectiveBooking__educationalYear=deposit_menjs.educationalYear,
+        collectiveBooking__educationalDeposit=deposit_menjs,
     )
     factories.CollectivePricingFactory(
         amount=-300,  # rate = 100 %
@@ -2270,6 +2272,7 @@ def test_generate_payments_file(clean_temp_files):
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         collectiveBooking__educationalInstitution=deposit_ma.educationalInstitution,
         collectiveBooking__educationalYear=deposit_ma.educationalYear,
+        collectiveBooking__educationalDeposit=deposit_ma,
     )
     factories.CollectivePricingFactory(
         amount=-500,  # rate = 100 %
@@ -2280,6 +2283,7 @@ def test_generate_payments_file(clean_temp_files):
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         collectiveBooking__educationalInstitution=deposit_meg.educationalInstitution,
         collectiveBooking__educationalYear=deposit_meg.educationalYear,
+        collectiveBooking__educationalDeposit=deposit_meg,
     )
     factories.CollectivePricingFactory(
         amount=-600,  # rate = 100 %
@@ -2290,6 +2294,7 @@ def test_generate_payments_file(clean_temp_files):
         collectiveBooking__collectiveStock__collectiveOffer__venue=venue1,
         collectiveBooking__educationalInstitution=deposit_previously_meg.educationalInstitution,
         collectiveBooking__educationalYear=deposit_previously_meg.educationalYear,
+        collectiveBooking__educationalDeposit=deposit_previously_meg,
     )
 
     venue2 = offerers_factories.VenueFactory(
@@ -2977,6 +2982,7 @@ def test_generate_invoice_file(clean_temp_files):
         collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
         collectiveBooking__educationalInstitution=deposit.educationalInstitution,
         collectiveBooking__educationalYear=deposit.educationalYear,
+        collectiveBooking__educationalDeposit=deposit,
         status=models.PricingStatus.VALIDATED,
     )
     coll_pline1 = factories.PricingLineFactory(pricing=collective_pricing, amount=-3300)
@@ -3004,6 +3010,7 @@ def test_generate_invoice_file(clean_temp_files):
         collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=8),
         collectiveBooking__educationalInstitution=educational_institution_with_program,
         collectiveBooking__educationalYear=deposit_with_program.educationalYear,
+        collectiveBooking__educationalDeposit=deposit_with_program,
         status=models.PricingStatus.VALIDATED,
     )
     program_pline = factories.PricingLineFactory(pricing=program_pricing, amount=-2345)
@@ -3029,6 +3036,7 @@ def test_generate_invoice_file(clean_temp_files):
         collectiveBooking__collectiveStock__startDatetime=date_utils.get_naive_utc_now() - datetime.timedelta(days=8),
         collectiveBooking__educationalInstitution=educational_institution_with_program_left,
         collectiveBooking__educationalYear=deposit_with_program_left.educationalYear,
+        collectiveBooking__educationalDeposit=deposit_with_program_left,
         status=models.PricingStatus.VALIDATED,
     )
     program_pline_left = factories.PricingLineFactory(pricing=program_pricing_left, amount=-3456)
