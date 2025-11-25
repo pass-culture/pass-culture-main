@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 
 from pcapi.utils import crypto
@@ -50,6 +52,15 @@ class ProdEnvironmentPasswordHasherTest:
         hashed = crypto.hash_public_api_key("secret")
         assert not crypto.check_public_api_key("wrong", hashed)
         assert crypto.check_public_api_key("secret", hashed)
+
+    @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=False)
+    def test_check_long_password(self):
+        password = "p" * 73
+        # bcrypt crashes on password longer than 72 char, returns false instead of checking in
+        # that case.
+        with mock.patch("pcapi.utils.crypto.bcrypt.checkpw") as hasher:
+            assert not crypto.check_password(password, b"hashed")
+            hasher.assert_not_called()
 
     def test_no_password_leak(self):
         non_unicode_password = "user@AZERTY123\udee0"
