@@ -723,8 +723,7 @@ class CanBeRecreditedTest:
         user = users_factories.BaseUserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, months=1)
         )
-        deposit = users_factories.DepositGrantFactory(user=user)
-        factories.RecreditFactory(deposit=deposit, amount=150, recreditType=models.RecreditType.RECREDIT_18)
+        users_factories.DepositGrantFactory(user=user)
 
         assert not api._can_be_recredited(user)
 

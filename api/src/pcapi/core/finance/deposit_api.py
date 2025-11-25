@@ -531,3 +531,36 @@ def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recr
             return latest_age_recredit
 
     return None
+
+
+def can_receive_bonus_credit(user: users_models.User) -> bool:
+    deposit = user.deposit
+    if not deposit:
+        return False
+
+    if deposit.type != models.DepositType.GRANT_17_18:
+        return False
+
+    has_received_bonus = models.RecreditType.BONUS_CREDIT in [recredit.recreditType for recredit in deposit.recredits]
+    return not has_received_bonus
+
+
+def recredit_bonus_credit(user: users_models.User) -> models.Recredit | None:
+    deposit = user.deposit
+    if not deposit:
+        return None
+
+    if not can_receive_bonus_credit(user):
+        return None
+
+    recredit = models.Recredit(
+        deposit=deposit,
+        amount=conf.BONUS_CREDIT_AMOUNT,
+        recreditType=models.RecreditType.BONUS_CREDIT,
+    )
+    deposit.amount += recredit.amount
+
+    db.session.add(recredit)
+    db.session.flush()
+
+    return recredit

@@ -73,6 +73,8 @@ RECREDIT_TYPE_AMOUNT_MAPPING = {
     models.RecreditType.RECREDIT_17: GRANTED_DEPOSIT_AMOUNT_17,
 }
 
+BONUS_CREDIT_AMOUNT = decimal.Decimal("30")
+
 
 def get_credit_amount_per_age(age: int) -> decimal.Decimal | None:
     return _get_deposit_17_18_credit_amount_per_age(age)
