@@ -9,6 +9,7 @@ class AllocineMovieGenre(Enum):
     ACTION = "ACTION"
     ADVENTURE = "ADVENTURE"
     ANIMATION = "ANIMATION"
+    BALLET = "BALLET"
     BIOPIC = "BIOPIC"
     BOLLYWOOD = "BOLLYWOOD"
     CARTOON = "CARTOON"
