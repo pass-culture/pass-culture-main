@@ -18,7 +18,7 @@ class YoutubeVideoMetadata:
     id: str
     title: str
     thumbnail_url: str
-    duration: int
+    duration: int | None
 
 
 class BaseBackend:
