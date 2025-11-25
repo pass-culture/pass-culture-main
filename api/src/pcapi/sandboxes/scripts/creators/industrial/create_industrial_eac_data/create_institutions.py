@@ -5,6 +5,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
+from pcapi.utils.db import make_timerange
 
 
 # store here UAIs with a ministry that is not EDUCATION_NATIONALE
@@ -166,6 +167,128 @@ def create_institutions() -> list[educational_models.EducationalInstitution]:
 
     create_deposits(institutions)
     return institutions
+
+
+def create_institutions_with_deposits_by_period() -> None:
+    test_datetime = datetime.datetime(2025, 12, 1)
+    year = educational_factories.create_educational_year(test_datetime)
+    next_year = educational_factories.create_educational_year(test_datetime.replace(year=test_datetime.year + 1))
+
+    institution_data = (
+        ("CLG", "ANDRE MALRAUX", "ASNIERES-SUR-SEINE", "0921545E"),
+        ("CLG", "LUCIE AUBRAC", "ARGENTEUIL", "0951356H"),
+        ("LGT", "JULIE-VICTOIRE DAUBIE", "ARGENTEUIL", "0950640E"),
+        ("LP", "SIMONE WEIL", "CONFLANS-SAINTE-HONORINE", "0783447Y"),
+        ("LGT", "ROSA PARKS", "MONTGERON", "0910625K"),
+        ("LPO", "LYC METIER GUSTAVE MONOD", "ENGHIEN-LES-BAINS", "0952196W"),
+        ("LPO", "JEAN-JACQUES ROUSSEAU", "SARCELLES", "0950650R"),
+        ("LGT", "JEAN-BAPTISTE COROT", "SAVIGNY-SUR-ORGE", "0910627M"),
+        ("CLG", "JEAN RACINE", "VIROFLAY", "0780184B"),
+        ("CLG", "PAUL ELUARD", "SAINTE-GENEVIEVE-DES-BOIS", "0911042N"),
+    )
+
+    institutions = (
+        educational_factories.EducationalInstitutionFactory.create(
+            institutionId=uai, institutionType=institution_type, name=name, city=city
+        )
+        for institution_type, name, city, uai in institution_data
+    )
+
+    # case 1: no deposit for year
+    institution = next(institutions)
+
+    # case 2: deposit for year, 2 periods
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=year,
+        period=educational_factories.get_educational_year_first_period(year),
+        amount=3000,
+    )
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=year,
+        period=educational_factories.get_educational_year_second_period(year),
+        amount=7000,
+    )
+
+    # case 3: deposit for year, first period only
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=year,
+        period=educational_factories.get_educational_year_first_period(year),
+        amount=3000,
+    )
+
+    # case 4: deposit for year, period = educational year
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=year,
+        period=make_timerange(start=year.beginningDate, end=year.expirationDate),
+        amount=10_000,
+    )
+
+    # case 5: deposit for year, 2 periods, first period is passed
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=year,
+        period=make_timerange(start=year.beginningDate, end=datetime.datetime(2025, 11, 1)),
+        amount=3000,
+    )
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=year,
+        period=make_timerange(start=datetime.datetime(2025, 11, 1), end=year.expirationDate),
+        amount=7000,
+    )
+
+    # case 6: deposit for year, first period only, passed
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=year,
+        period=make_timerange(start=year.beginningDate, end=datetime.datetime(2025, 11, 1)),
+        amount=3000,
+    )
+
+    # case 7: no deposit for next_year
+    institution = next(institutions)
+
+    # case 8: deposit for next_year, 2 periods
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=next_year,
+        period=educational_factories.get_educational_year_first_period(next_year),
+        amount=3000,
+    )
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=next_year,
+        period=educational_factories.get_educational_year_second_period(next_year),
+        amount=7000,
+    )
+
+    # case 9: deposit for next_year, first period only
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=next_year,
+        period=educational_factories.get_educational_year_first_period(next_year),
+        amount=3000,
+    )
+
+    # case 10: deposit for next_year, period = educational year
+    institution = next(institutions)
+    educational_factories.EducationalDepositFactory.create(
+        educationalInstitution=institution,
+        educationalYear=next_year,
+        period=make_timerange(start=next_year.beginningDate, end=next_year.expirationDate),
+        amount=10_000,
+    )
 
 
 def create_deposits(institutions: list[educational_models.EducationalInstitution]) -> None:
