@@ -1,7 +1,7 @@
 import decimal
 
 import pcapi.core.finance.conf as finance_conf
-from pcapi.core.finance.utils import XPR_TO_EUR_RATE
+from pcapi.core.finance.utils import XPF_TO_EUR_RATE
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.shared.price import convert_to_cent
@@ -31,7 +31,7 @@ def get_deposit_amounts_by_age() -> DepositAmountsByAge:
 
 
 class Rates(BaseModel):
-    pacificFrancToEuro = XPR_TO_EUR_RATE
+    pacificFrancToEuro = XPF_TO_EUR_RATE
 
 
 class SettingsResponse(ConfiguredBaseModel):
