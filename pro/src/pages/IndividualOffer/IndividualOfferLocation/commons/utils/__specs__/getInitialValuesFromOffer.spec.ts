@@ -27,7 +27,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should include offer address', () => {
         const offer = {
           ...offerBase,
-          address: {
+          location: {
             id: 997,
             banId: '35288_7283_00001',
             inseeCode: '89001',
@@ -37,13 +37,14 @@ describe('getInitialValuesFromOffer', () => {
             postalCode: '75001',
             isManualEdition: true,
             latitude: 48.85332,
+            venueLocation: false,
             longitude: 2.348979,
           },
           isDigital: false,
         }
 
         const addressAutocomplete = computeAddressDisplayName(
-          offer.address,
+          offer.location,
           false
         )
 
@@ -53,20 +54,20 @@ describe('getInitialValuesFromOffer', () => {
         )
 
         expect(result).toMatchObject({
-          address: {
+          location: {
             'search-addressAutocomplete': addressAutocomplete,
             addressAutocomplete,
-            banId: offer.address.banId,
-            city: offer.address.city,
-            coords: `${offer.address.latitude}, ${offer.address.longitude}`,
-            inseeCode: offer.address.inseeCode,
-            isManualEdition: offer.address.isManualEdition,
-            label: offer.address.label,
-            latitude: String(offer.address.latitude),
-            longitude: String(offer.address.longitude),
+            banId: offer.location.banId,
+            city: offer.location.city,
+            coords: `${offer.location.latitude}, ${offer.location.longitude}`,
+            inseeCode: offer.location.inseeCode,
+            isManualEdition: offer.location.isManualEdition,
+            label: offer.location.label,
+            latitude: String(offer.location.latitude),
+            longitude: String(offer.location.longitude),
             offerLocation: OFFER_LOCATION.OTHER_ADDRESS,
-            postalCode: offer.address.postalCode,
-            street: offer.address.street,
+            postalCode: offer.location.postalCode,
+            street: offer.location.street,
           },
           url: null,
         })
@@ -77,7 +78,7 @@ describe('getInitialValuesFromOffer', () => {
 
         const offer = {
           ...offerBase,
-          address: {
+          location: {
             id,
             banId: '35288_7283_00001',
             inseeCode: '89001',
@@ -88,6 +89,7 @@ describe('getInitialValuesFromOffer', () => {
             isManualEdition: true,
             latitude: 48.85332,
             longitude: 2.348979,
+            venueLocation: false,
           },
           isDigital: false,
         }
@@ -95,7 +97,7 @@ describe('getInitialValuesFromOffer', () => {
           ...paramsWithOfflineSubcategory,
           offerVenue: makeVenueListItem({
             id: 2,
-            address: getLocationResponseModel({
+            location: getLocationResponseModel({
               id,
             }),
           }),
@@ -103,7 +105,7 @@ describe('getInitialValuesFromOffer', () => {
 
         const result = getInitialValuesFromOffer(offer, params)
 
-        expect(result.address).toEqual(
+        expect(result.location).toEqual(
           expect.objectContaining({
             offerLocation: String(id),
           })
@@ -114,13 +116,13 @@ describe('getInitialValuesFromOffer', () => {
     describe('when offer has NO address', () => {
       const offerWithoutAddress = {
         ...offerBase,
-        address: undefined,
+        location: undefined,
       }
 
       it('should include selected venue address when available', () => {
         const offerVenue = makeVenueListItem({
           id: 2,
-          address: getLocationResponseModel(),
+          location: getLocationResponseModel(),
         })
 
         const params = {
@@ -131,17 +133,17 @@ describe('getInitialValuesFromOffer', () => {
         const result = getInitialValuesFromOffer(offerWithoutAddress, params)
 
         expect(result).toMatchObject({
-          address: {
-            banId: offerVenue.address.banId,
-            city: offerVenue.address.city,
-            coords: `${offerVenue.address.latitude}, ${offerVenue.address.longitude}`,
-            inseeCode: offerVenue.address.inseeCode,
-            label: offerVenue.address.label,
-            latitude: String(offerVenue.address.latitude),
-            longitude: String(offerVenue.address.longitude),
-            offerLocation: String(offerVenue.address.id),
-            postalCode: offerVenue.address.postalCode,
-            street: offerVenue.address.street,
+          location: {
+            banId: offerVenue.location.banId,
+            city: offerVenue.location.city,
+            coords: `${offerVenue.location.latitude}, ${offerVenue.location.longitude}`,
+            inseeCode: offerVenue.location.inseeCode,
+            label: offerVenue.location.label,
+            latitude: String(offerVenue.location.latitude),
+            longitude: String(offerVenue.location.longitude),
+            offerLocation: String(offerVenue.location.id),
+            postalCode: offerVenue.location.postalCode,
+            street: offerVenue.location.street,
           },
           url: null,
         })
@@ -150,7 +152,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should handle missing address props in selected venue', () => {
         const offerVenue = makeVenueListItem({
           id: 2,
-          address: getLocationResponseModel({
+          location: getLocationResponseModel({
             banId: undefined,
             inseeCode: undefined,
             label: undefined,
@@ -166,7 +168,7 @@ describe('getInitialValuesFromOffer', () => {
         const result = getInitialValuesFromOffer(offerWithoutAddress, params)
 
         expect(result).toMatchObject({
-          address: {
+          location: {
             banId: null,
             inseeCode: null,
             label: null,
@@ -179,7 +181,7 @@ describe('getInitialValuesFromOffer', () => {
     it('should accept any url format when offline', () => {
       const offerVenue = makeVenueListItem({
         id: 2,
-        address: getLocationResponseModel(),
+        location: getLocationResponseModel(),
       })
       const params = { ...paramsWithOfflineSubcategory, offerVenue }
 
@@ -195,7 +197,7 @@ describe('getInitialValuesFromOffer', () => {
   it('should NOT include offer address when the offer is digital', () => {
     const mockOfferWithAddress = {
       ...offerBase,
-      address: {
+      location: {
         id: 997,
         banId: '35288_7283_00001',
         inseeCode: '89001',
@@ -214,23 +216,23 @@ describe('getInitialValuesFromOffer', () => {
     const result = getInitialValuesFromOffer(mockOfferWithAddress, paramsBase)
 
     expect(result).toMatchObject({
-      address: null,
+      location: null,
       url: 'https://passculture.app',
     })
   })
 
   it('should return EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES when neither offer nor venue has address (offline)', () => {
-    const offer = { ...offerBase, address: undefined }
+    const offer = { ...offerBase, location: undefined }
     const params = {
       offerVenue: makeVenueListItem({
         id: 2,
-        address: undefined,
+        location: undefined,
       }),
       isDigital: false,
     }
 
     const result = getInitialValuesFromOffer(offer, params)
 
-    expect(result.address).toEqual(EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
+    expect(result.location).toEqual(EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
   })
 })

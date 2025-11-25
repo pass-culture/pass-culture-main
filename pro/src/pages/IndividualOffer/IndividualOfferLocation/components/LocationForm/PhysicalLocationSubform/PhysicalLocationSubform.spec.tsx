@@ -80,14 +80,14 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
       })
 
   const defaultValues = makeLocationFormValues({
-    address: {
+    location: {
       addressAutocomplete: null,
       banId: null,
       city: 'Paris',
       coords: '48.8566, 2.3522',
       inseeCode: null,
       isManualEdition: false,
-      isVenueAddress: true,
+      venueLocation: true,
       label: null,
       latitude: '48.8566',
       longitude: '2.3522',
@@ -180,14 +180,14 @@ describe('<PhysicalLocationSubform />', () => {
   it('should enable manual edition and display manual address fields', async () => {
     renderPhysicalLocationSubform({
       formDefaults: {
-        address: {
+        location: {
           addressAutocomplete: null,
           banId: null,
           city: 'Paris',
           coords: '',
           inseeCode: null,
           isManualEdition: false,
-          isVenueAddress: false,
+          venueLocation: false,
           label: null,
           latitude: '48.8566',
           longitude: '2.3522',
@@ -234,14 +234,14 @@ describe('<PhysicalLocationSubform />', () => {
   it('should toggle manual edition off and hide manual fields keeping other address mode', async () => {
     renderPhysicalLocationSubform({
       formDefaults: {
-        address: {
+        location: {
           addressAutocomplete: null,
           banId: null,
           city: 'Paris',
           coords: '',
           inseeCode: null,
           isManualEdition: false,
-          isVenueAddress: false,
+          venueLocation: false,
           label: null,
           latitude: '48.8566',
           longitude: '2.3522',
@@ -283,14 +283,14 @@ describe('<PhysicalLocationSubform />', () => {
   it('should disable address select (combobox) when manual edition is enabled and keep manual street input enabled', async () => {
     renderPhysicalLocationSubform({
       formDefaults: {
-        address: {
+        location: {
           addressAutocomplete: null,
           banId: null,
           city: 'Paris',
           coords: '',
           inseeCode: null,
           isManualEdition: false,
-          isVenueAddress: false,
+          venueLocation: false,
           label: null,
           latitude: '48.8566',
           longitude: '2.3522',
@@ -333,14 +333,14 @@ describe('<PhysicalLocationSubform />', () => {
     renderPhysicalLocationSubform({
       props: { isDisabled: true },
       formDefaults: {
-        address: {
+        location: {
           addressAutocomplete: null,
           banId: null,
           city: 'Paris',
           coords: '',
           inseeCode: null,
           isManualEdition: true,
-          isVenueAddress: false,
+          venueLocation: false,
           label: null,
           latitude: '48.8566',
           longitude: '2.3522',
@@ -388,14 +388,14 @@ describe('<PhysicalLocationSubform />', () => {
     renderPhysicalLocationSubform({
       props: { isDisabled: true },
       formDefaults: {
-        address: {
+        location: {
           addressAutocomplete: null,
           banId: null,
           city: 'Paris',
           coords: '',
           inseeCode: null,
           isManualEdition: false,
-          isVenueAddress: false,
+          venueLocation: false,
           label: null,
           latitude: '48.8566',
           longitude: '2.3522',
@@ -425,21 +425,21 @@ describe('<PhysicalLocationSubform />', () => {
     // Start on venue address, go to other, then back (error path when venue.address is undefined)
     const venueWithoutAddress = makeVenueListItem({
       id: 2,
-      address: undefined,
+      location: undefined,
     })
     renderPhysicalLocationSubform({
       props: {
         venue: venueWithoutAddress as unknown as VenueListItemResponseModel,
       },
       formDefaults: {
-        address: {
+        location: {
           addressAutocomplete: null,
           banId: null,
           city: '',
           coords: '',
           inseeCode: null,
           isManualEdition: false,
-          isVenueAddress: true,
+          venueLocation: true,
           label: null,
           latitude: '',
           longitude: '',
@@ -467,14 +467,14 @@ describe('<PhysicalLocationSubform />', () => {
   it('should render manual edition fields on mount when defaults set isManualEdition=true', () => {
     renderPhysicalLocationSubform({
       formDefaults: {
-        address: {
+        location: {
           addressAutocomplete: null,
           banId: null,
           city: 'Paris',
           coords: '',
           inseeCode: null,
           isManualEdition: true,
-          isVenueAddress: false,
+          venueLocation: false,
           label: null,
           latitude: '48.8566',
           longitude: '2.3522',

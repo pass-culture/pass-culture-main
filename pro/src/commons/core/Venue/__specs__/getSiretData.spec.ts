@@ -8,7 +8,7 @@ describe('getsiretData', () => {
     const response = await getSiretData(siret)
 
     expect(response).toStrictEqual({
-      address: null,
+      location: null,
       apeCode: null,
       isDiffusible: false,
       name: null,

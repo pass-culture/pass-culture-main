@@ -42,7 +42,7 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       coords,
       inseeCode: offer.location.inseeCode ?? null,
       isManualEdition: offer.location.isManualEdition,
-      isVenueAddress: String(offerLocation) !== OFFER_LOCATION.OTHER_ADDRESS,
+      venueLocation: String(offerLocation) !== OFFER_LOCATION.OTHER_ADDRESS,
       label: offer.location.label ?? null,
       latitude: String(offer.location.latitude),
       longitude: String(offer.location.longitude),
@@ -61,7 +61,7 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
       coords: `${offerVenue.location.latitude}, ${offerVenue.location.longitude}`,
       inseeCode: offerVenue.location.inseeCode ?? null,
       isManualEdition: false,
-      isVenueAddress: true,
+      venueLocation: true,
       label: offerVenue.location.label ?? null,
       latitude: String(offerVenue.location.latitude),
       longitude: String(offerVenue.location.longitude),
@@ -93,7 +93,7 @@ export function getInitialValuesFromOffer(
   // Build initial values without enforcing required constraints at mount time.
   // Normalize URL but allow null (CREATION mode can start without URL for online offers).
   return {
-    address: physicalAddressInitialValues,
+    location: physicalAddressInitialValues,
     url: offer.url ?? null,
   }
 }

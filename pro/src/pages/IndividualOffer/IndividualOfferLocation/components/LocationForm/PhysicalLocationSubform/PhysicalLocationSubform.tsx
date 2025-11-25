@@ -36,8 +36,8 @@ export const PhysicalLocationSubform = ({
     setValue,
     formState: { errors },
   } = useFormContext<LocationFormValues>()
-  const isManualEdition = watch('address.isManualEdition')
-  const isVenueAddress = watch('address.isVenueAddress')
+  const isManualEdition = watch('location.isManualEdition')
+  const isVenueAddress = watch('location.venueLocation')
 
   const readOnlyFieldsForAddressManual = isDisabled
     ? ['street', 'postalCode', 'city', 'coords']
@@ -49,57 +49,57 @@ export const PhysicalLocationSubform = ({
     if (willBeVenueAddress) {
       if (!venue.location) {
         return handleUnexpectedError(
-          new FrontendError('`venue.address` is nullish.')
+          new FrontendError('`venue.location` is nullish.')
         )
       }
 
-      setValue('address.inseeCode', venue.location.inseeCode ?? null)
-      setValue('address.banId', venue.location.banId ?? null)
-      setValue('address.city', venue.location.city)
-      setValue('address.latitude', venue.location.latitude.toString())
-      setValue('address.longitude', venue.location.longitude.toString())
+      setValue('location.inseeCode', venue.location.inseeCode ?? null)
+      setValue('location.banId', venue.location.banId ?? null)
+      setValue('location.city', venue.location.city)
+      setValue('location.latitude', venue.location.latitude.toString())
+      setValue('location.longitude', venue.location.longitude.toString())
       setValue(
-        'address.coords',
+        'location.coords',
         `${venue.location.latitude}, ${venue.location.longitude}`
       )
-      setValue('address.postalCode', venue.location.postalCode)
-      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
-      setValue('address.street', venue.location.street ?? null)
-      setValue('address.label', venue.location.label ?? null)
-      setValue('address.offerLocation', venue.location.id.toString())
+      setValue('location.postalCode', venue.location.postalCode)
+      // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue location without street since it's mandatory.
+      setValue('location.street', venue.location.street ?? null)
+      setValue('location.label', venue.location.label ?? null)
+      setValue('location.offerLocation', venue.location.id.toString())
     } else {
-      setValue('address', EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
+      setValue('location', EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES)
     }
 
-    setValue('address.isManualEdition', false)
-    setValue('address.isVenueAddress', willBeVenueAddress)
+    setValue('location.isManualEdition', false)
+    setValue('location.venueLocation', willBeVenueAddress)
   }
 
   const toggleIsManualEdition = () => {
     const willBeManualEdition = !isManualEdition
 
     if (willBeManualEdition) {
-      resetField('address', {
+      resetField('location', {
         defaultValue: {
           ...EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES,
           isManualEdition: true,
-          label: watch('address.label'),
+          label: watch('location.label'),
         },
       })
     } else {
-      setValue('address.isManualEdition', false)
+      setValue('location.isManualEdition', false)
     }
   }
 
   const updateAddressFromAutocomplete = (nextAddress: AdresseData) => {
-    setValue('address.banId', nextAddress.id)
-    setValue('address.city', nextAddress.city)
-    setValue('address.inseeCode', nextAddress.inseeCode)
-    setValue('address.isManualEdition', false)
-    setValue('address.latitude', String(nextAddress.latitude))
-    setValue('address.longitude', String(nextAddress.longitude))
-    setValue('address.postalCode', nextAddress.postalCode)
-    setValue('address.street', nextAddress.address, {
+    setValue('location.banId', nextAddress.id)
+    setValue('location.city', nextAddress.city)
+    setValue('location.inseeCode', nextAddress.inseeCode)
+    setValue('location.isManualEdition', false)
+    setValue('location.latitude', String(nextAddress.latitude))
+    setValue('location.longitude', String(nextAddress.longitude))
+    setValue('location.postalCode', nextAddress.postalCode)
+    setValue('location.street', nextAddress.address, {
       shouldValidate: true,
     })
   }
@@ -124,7 +124,7 @@ export const PhysicalLocationSubform = ({
             value: OFFER_LOCATION.OTHER_ADDRESS,
           },
         ]}
-        checkedOption={watch('address.offerLocation')}
+        checkedOption={watch('location.offerLocation')}
         onChange={toggleIsVenueAddress}
         disabled={isDisabled}
       />
@@ -133,7 +133,7 @@ export const PhysicalLocationSubform = ({
         <div className={styles['other-address-wrapper']}>
           <FormLayout.Row className={styles['location-row']}>
             <TextInput
-              {...register('address.label')}
+              {...register('location.label')}
               label="Intitulé de la localisation"
               disabled={isDisabled}
             />
@@ -146,10 +146,10 @@ export const PhysicalLocationSubform = ({
               `Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?`
             */}
             <AddressSelect
-              {...register('address.addressAutocomplete')}
+              {...register('location.addressAutocomplete')}
               className={styles['location-field']}
               disabled={isManualEdition || isDisabled}
-              error={errors.address?.addressAutocomplete?.message}
+              error={errors.location?.addressAutocomplete?.message}
               label="Adresse postale"
               onAddressChosen={updateAddressFromAutocomplete}
             />
