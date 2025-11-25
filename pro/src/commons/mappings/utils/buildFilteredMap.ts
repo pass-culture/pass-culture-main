@@ -5,11 +5,10 @@ export function buildFilteredMap(
   // Checks if keys between backend model and frontend mappings are exactly the same (it will throw if not)
   ensureMappingsMatch(enumObject, mappingsObject)
 
-  return Identity(mappingsObject)
-    .map(Object.entries)
-    .map(sortEntriesByValue('fr-FR'))
-    .map(putKeyAtTheEnd('OTHER'))
-    .fold(Object.fromEntries)
+  const entries = Object.entries(mappingsObject)
+  const sortedEntries = sortEntriesByValue('fr-FR')(entries)
+  const finalEntries = putKeyAtTheEnd('OTHER')(sortedEntries)
+  return Object.fromEntries(finalEntries)
 }
 
 /**
@@ -23,12 +22,12 @@ function ensureMappingsMatch(
   const backEndKeys = new Set(Object.keys(backEndKeysObject))
   const frontEndKeys = new Set(Object.keys(frontEndKeysObject))
 
-  const difference = backEndKeys.symmetricDifference(frontEndKeys)
+  const diff = symmetricDifference(backEndKeys, frontEndKeys)
 
-  const backEndExtraKeys = backEndKeys.difference(frontEndKeys)
-  const frontEndExtraKeys = frontEndKeys.difference(backEndKeys)
+  const backEndExtraKeys = difference(backEndKeys, frontEndKeys)
+  const frontEndExtraKeys = difference(frontEndKeys, backEndKeys)
 
-  if (difference.size > 0) {
+  if (diff.size > 0) {
     throw new Error(
       `[OnboardingActivity Mapper] Mismatch keys between back-end and front-end:\n` +
         (backEndExtraKeys.size > 0
@@ -43,13 +42,6 @@ function ensureMappingsMatch(
 
 type Entries = [string, string][]
 
-function Identity<T>(val: T) {
-  return {
-    map: <U>(fn: (val: T) => U) => Identity<U>(fn(val)),
-    fold: <U>(fn: (val: T) => U) => fn(val),
-  }
-}
-
 function sortEntriesByValue(locale: string): (val: Entries) => Entries {
   const compareFn = new Intl.Collator(locale).compare
   return (val: Entries): Entries => {
@@ -63,4 +55,14 @@ function putKeyAtTheEnd(key: string): (val: Entries) => Entries {
     const other = val[otherIndex]
     return otherIndex > -1 ? val.toSpliced(otherIndex, 1).concat([other]) : val
   }
+}
+
+// TODO (jclery, 2025-11-25):
+//  Can be removed once support of `Set.prototype.symmetricDifference` and `Set.prototype.difference` both fit with our own supports rules.
+function symmetricDifference(setA: Set<string>, setB: Set<string>) {
+  return new Set([...setA, ...setB].filter((x) => !setA.has(x) || !setB.has(x)))
+}
+
+function difference(setA: Set<string>, setB: Set<string>) {
+  return new Set([...setA].filter((x) => !setB.has(x)))
 }
