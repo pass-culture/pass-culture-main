@@ -2814,13 +2814,10 @@ def set_accessibility_infos_from_provider_id(venue: models.Venue) -> None:
         last_update, accessibility_data = accessibility_provider.get_accessibility_infos(
             slug=venue.accessibilityProvider.externalAccessibilityId
         )
-        venue.accessibilityProvider.externalAccessibilityData = (
-            accessibility_data.dict() if accessibility_data else None
-        )
-        # FIXME handle the case when last_update is None
-        assert last_update, "the accessibility provider did not respond"  # lie to mypy
-        venue.accessibilityProvider.lastUpdateAtProvider = last_update
-        db.session.add(venue.accessibilityProvider)
+        if last_update and accessibility_data:
+            venue.accessibilityProvider.externalAccessibilityData = accessibility_data.dict()
+            venue.accessibilityProvider.lastUpdateAtProvider = last_update
+            db.session.add(venue.accessibilityProvider)
 
 
 def count_open_to_public_venues_with_accessibility_provider() -> int:
