@@ -1220,8 +1220,9 @@ class CegidFinanceBackendTest:
         assert request_matcher.call_count == 2
         assert mock_cegid_auth.call_count == 2
 
-    def test_push_bank_account(self, cegid_config, requests_mock, mock_cegid_auth, faker):
-        offerer = offerers_factories.OffererFactory(name="Structure avec de nombreux remboursements", siren="000009837")
+    @pytest.mark.parametrize("siren,expected_result", [("000009837", "CD512000"), ("NC0009837", "BCI")])
+    def test_push_bank_account(self, cegid_config, requests_mock, mock_cegid_auth, faker, siren, expected_result):
+        offerer = offerers_factories.OffererFactory(name="Structure avec de nombreux remboursements", siren=siren)
         bank_account = finance_factories.BankAccountFactory(offerer=offerer)
         vendor_uuid = str(faker.uuid4())
         main_contact_uuid = str(faker.uuid4())
@@ -1282,7 +1283,7 @@ class CegidFinanceBackendTest:
             "ShippingAddressOverride": {"value": False},
             "ShippingContactOverride": {"value": False},
             "ShippingTerms": {},
-            "Siret": {"value": "000009837"},
+            "Siret": {"value": siren},
             "Status": {"value": "Active"},
             "TaxCalculationMode": {"value": "Net"},
             "TaxRegistrationID": {},
@@ -1321,7 +1322,7 @@ class CegidFinanceBackendTest:
 
         assert request_matcher_create_vendor.call_count == 1
         request_json = request_matcher_create_vendor.request_history[0].json()
-        assert request_json["CashAccount"] == {"value": "CD512000"}
+        assert request_json["CashAccount"] == {"value": expected_result}
         assert request_json["CurrencyID"] == {"value": "EUR"}
         assert request_json["LegalName"] == {"value": "Structure avec de nombreux remboursements"}
         assert request_json["MainContact"] == {
