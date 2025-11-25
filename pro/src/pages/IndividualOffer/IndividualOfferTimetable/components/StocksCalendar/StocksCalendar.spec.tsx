@@ -32,14 +32,18 @@ function renderStocksCalendar(
   stocks = defaultStocks,
   props?: Partial<StocksCalendarProps>
 ) {
-  vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-    stocks: stocks,
-    stockCount: stocks.length,
-    hasStocks: stocks.length > 0,
-  })
+  vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+    getStocksResponseFactory({
+      stocks: stocks,
+      stockCount: stocks.length,
+    })
+  )
 
   vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue(
-    getStocksResponseFactory({ stockCount: 20 })
+    getStocksResponseFactory({
+      stocks: stocks,
+      stockCount: 20,
+    })
   )
 
   renderWithProviders(
@@ -57,6 +61,11 @@ function renderStocksCalendar(
   )
 }
 
+const LABEL = {
+  noDateAction: 'Ajouter une ou plusieurs dates',
+  dateAction: 'Définir le calendrier',
+}
+
 describe('StocksCalendar', () => {
   it('should display a button to add calendar infos when there are no stocks yet', async () => {
     renderStocksCalendar([])
@@ -66,7 +75,7 @@ describe('StocksCalendar', () => {
     })
 
     expect(
-      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
+      screen.getByRole('button', { name: LABEL.dateAction })
     ).toBeInTheDocument()
   })
 
@@ -104,12 +113,12 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
+      screen.getByRole('button', { name: LABEL.dateAction })
     )
 
     expect(
       screen.getByRole('heading', {
-        name: 'Ajouter une ou plusieurs dates',
+        name: LABEL.dateAction,
       })
     ).toBeInTheDocument()
   })
@@ -122,12 +131,12 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
+      screen.getByRole('button', { name: LABEL.noDateAction })
     )
 
     expect(
       screen.getByRole('heading', {
-        name: 'Ajouter une ou plusieurs dates',
+        name: LABEL.noDateAction,
       })
     ).toBeInTheDocument()
   })
@@ -186,7 +195,7 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
+      screen.getByRole('button', { name: LABEL.dateAction })
     )
 
     await userEvent.type(
@@ -202,7 +211,7 @@ describe('StocksCalendar', () => {
 
     expect(
       screen.queryByRole('heading', {
-        name: 'Ajouter une ou plusieurs dates',
+        name: LABEL.dateAction,
       })
     ).not.toBeInTheDocument()
   })
@@ -303,7 +312,7 @@ describe('StocksCalendar', () => {
     })
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Ajouter une ou plusieurs dates' })
+      screen.getByRole('button', { name: LABEL.dateAction })
     )
 
     await userEvent.type(
@@ -403,7 +412,7 @@ describe('StocksCalendar', () => {
     })
 
     expect(
-      screen.queryByRole('button', { name: 'Ajouter une ou plusieurs dates' })
+      screen.queryByRole('button', { name: LABEL.noDateAction })
     ).not.toBeInTheDocument()
   })
 })

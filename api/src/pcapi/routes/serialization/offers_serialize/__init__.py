@@ -535,7 +535,6 @@ class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel
 class GetStocksResponseModel(ConfiguredBaseModel):
     stocks: list[GetOfferStockResponseModel]
     stock_count: int
-    has_stocks: bool
 
     class Config:
         json_encoders = {datetime.datetime: format_into_utc_date}

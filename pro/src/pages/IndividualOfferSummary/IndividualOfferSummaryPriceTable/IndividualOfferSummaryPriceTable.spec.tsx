@@ -7,6 +7,7 @@ import {
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
+  getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -80,11 +81,12 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
   })
 
   it('should render layout, screen and action bar when stocks loaded', async () => {
-    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-      hasStocks: true,
-      stockCount: 1,
-      stocks: [getOfferStockFactory({ id: 2 })],
-    })
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+      getStocksResponseFactory({
+        stockCount: 1,
+        stocks: [getOfferStockFactory({ id: 2 })],
+      })
+    )
 
     const offer = getIndividualOfferFactory({
       id: 1,
@@ -104,11 +106,12 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
   })
 
   it('should not call stocks for an event offer', () => {
-    vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-      hasStocks: true,
-      stockCount: 1,
-      stocks: [getOfferStockFactory({ id: 2 })],
-    })
+    vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+      getStocksResponseFactory({
+        stockCount: 1,
+        stocks: [getOfferStockFactory({ id: 2 })],
+      })
+    )
 
     const offer = getIndividualOfferFactory({
       id: 1,
