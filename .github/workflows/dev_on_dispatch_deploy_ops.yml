@@ -19,6 +19,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: opsv2
+      environment_short_name: opsv2
       app_version: ${{ inputs.pcapi_image_tag }}
       cluster_name: gke-infra-prd-eu9
       location: europe-west9
@@ -31,5 +32,7 @@ jobs:
     secrets:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }} # to delete after migration
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }} # to delete after migration
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.PCAPI_CI_SERVICE_ACCOUNT_OPSV2 }}
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT: ${{ secrets.PCAPI_CI_SERVICE_ACCOUNT_OPSV2 }}
