@@ -10,6 +10,8 @@ from celery import shared_task
 from pydantic import BaseModel as BaseModelV2
 
 import pcapi.celery_tasks.metrics as metrics
+from pcapi import settings
+from pcapi.utils import requests
 from pcapi.utils.rate_limit import RateLimitedError
 from pcapi.utils.rate_limit import rate_limit
 
@@ -23,12 +25,18 @@ MAX_RETRY_DURATION = 1200
 logger = logging.getLogger(__name__)
 
 
+class CloudTaskRetryException(Exception):
+    pass
+
+
 def celery_async_task(
     name: str,
     # (tcoudray-pass, 10/11/25) TODO: Remove `type[pydantic_v1.BaseModel]` when all models are using pydantic V2
     model: type[pydantic_v1.BaseModel | BaseModelV2] | None = None,
     autoretry_for: tuple[type[Exception], ...] = tuple(),
     retry_backoff: bool = True,
+    retry_backoff_max: int = settings.CELERY_TASK_RETRY_BACKOFF_MAX,
+    max_retries: int = settings.CELERY_TASK_MAX_RETRIES,
     time_window_size: int = 60,
     max_per_time_window: int | None = None,
 ) -> typing.Callable:
@@ -45,13 +53,22 @@ def celery_async_task(
     max_per_time_window: the maximum number of tasks which can run during a time window. When the maximum is reached, tasks will be retried.
     """
 
+    autoretry_for += (CloudTaskRetryException,)
+
     # Since tasks above "max_per_time_window" will be retried in "time_window_size" time, time_window_size cannot be above the visibility_timeout setting of redis
     # See https://docs.celeryq.dev/en/stable/getting-started/backends-and-brokers/redis.html#id3 for more details
     if time_window_size > MAX_TIME_WINDOW_SIZE:
         raise ValueError("task rate limit time_window_size above maximum")
 
     def decorator(f: typing.Callable) -> typing.Callable:
-        @shared_task(bind=True, name=name, autoretry_for=autoretry_for, retry_backoff=retry_backoff)
+        @shared_task(
+            bind=True,
+            name=name,
+            autoretry_for=autoretry_for,
+            retry_backoff=retry_backoff,
+            retry_backoff_max=retry_backoff_max,
+            max_retries=max_retries,
+        )
         @wraps(f)
         def task(self: Task, payload: dict) -> None:
             metrics.tasks_counter.labels(task=name).inc()
@@ -96,6 +113,11 @@ def celery_async_task(
                 time_to_wait_before_retry = exp.time_window_size * nb_time_windows_to_skip
                 metrics.tasks_rate_limited_counter.labels(task=name).inc()
                 self.retry(exc=exp, countdown=min(time_to_wait_before_retry, MAX_RETRY_DURATION))
+            # FIXME (tcoudray-pass, 25/11/25) To support a cloud tasks retry behavior
+            # Should be removed once all the tasks have been migrated
+            except requests.ExternalAPIException as exc:
+                if exc.is_retryable:
+                    raise CloudTaskRetryException()
             except Exception:
                 metrics.tasks_failed_counter.labels(task=name).inc()
                 raise
