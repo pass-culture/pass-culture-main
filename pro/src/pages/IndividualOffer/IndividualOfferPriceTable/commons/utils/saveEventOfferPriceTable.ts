@@ -17,17 +17,18 @@ export const saveEventOfferPriceTable = async (
     offer: GetIndividualOfferWithAddressResponseModel
   }
 ) => {
-  if (form.formState.dirtyFields.isDuo) {
+  const { dirtyFields } = form.formState
+  if (dirtyFields.isDuo) {
     await mutate(
       [GET_OFFER_QUERY_KEY, offer.id],
       api.patchOffer(offer.id, { isDuo: formValues.isDuo }),
       { revalidate: false }
     )
   }
-  if (form.formState.dirtyFields.entries) {
+  if (dirtyFields) {
     await mutate(
       [GET_OFFER_QUERY_KEY, offer.id],
-      api.postPriceCategories(offer.id, toPriceCategoryBody(formValues)),
+      api.upsertOfferPriceCategories(offer.id, toPriceCategoryBody(formValues)),
       { revalidate: false }
     )
   }

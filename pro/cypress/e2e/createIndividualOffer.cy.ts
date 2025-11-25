@@ -47,6 +47,12 @@ describe('Create individual offers new flow', () => {
       'getOfferersNames'
     )
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
+      'getCategories'
+    )
+    cy.intercept({ method: 'PATCH', url: '/offers/*/price_categories' }).as(
+      'upsertOfferPriceCategories'
+    )
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
@@ -129,6 +135,7 @@ describe('Create individual offers new flow', () => {
     cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
     cy.findByText('Ajouter un tarif').click()
     cy.findByText('Ajouter un tarif').click()
+    cy.findByText('Ajouter un tarif').click()
 
     cy.findAllByLabelText('Intitulé du tarif').eq(0).clear()
     cy.findAllByLabelText('Intitulé du tarif').eq(0).type('Carré Or')
@@ -139,6 +146,9 @@ describe('Create individual offers new flow', () => {
 
     cy.findAllByLabelText('Intitulé du tarif').eq(2).type('Fosse Sceptique')
     cy.findAllByRole('checkbox', { name: 'Gratuit' }).eq(2).click()
+    // add a price category to delete it later
+    cy.findAllByLabelText('Intitulé du tarif').eq(3).type('Prix à supprimer')
+    cy.findAllByLabelText(/Prix/).eq(3).type('40')
 
     cy.findByText('Accepter les réservations “Duo“').should('exist')
     cy.injectAxe(DEFAULT_AXE_CONFIG)
@@ -146,6 +156,25 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate the price categories step' })
     cy.findByText('Enregistrer et continuer').click()
+    cy.wait('@upsertOfferPriceCategories')
+
+    cy.findAllByText('Définir le calendrier').should('exist')
+    // we go back to price categories step to delete a price category
+    cy.findByText('Retour').should('exist').should('be.visible').click()
+    // we click on delete button of the last price category
+    cy.findByTestId('remove-price-table-entry-button-3')
+      .should('exist')
+      .should('be.visible')
+      .click()
+    cy.findAllByLabelText('Intitulé du tarif').should('have.length', 3)
+    cy.stepLog({
+      message: 'I validate the price categories step after deletion',
+    })
+    cy.findByText('Enregistrer et continuer').click()
+    // we assert that only 3 priceCategories are present in the response
+    cy.wait(['@upsertOfferPriceCategories'])
+      .its('response.body.priceCategories')
+      .should('have.length', 3)
 
     //  RECURRENCE FORM DIALOG
     cy.stepLog({ message: 'I fill in the recurrence form' })

@@ -2863,3 +2863,81 @@ def upsert_highlight_requests(
     except sa_exc.IntegrityError:
         raise exceptions.HighlightRequestAlreadyExistsException()
     return highlight_requests
+
+
+def upsert_offer_price_categories(
+    offer: models.Offer,
+    inputs: list[offers_schemas.PriceCategoryInput],
+) -> models.Offer:
+    """
+    Update all price categories of an offer.
+
+    - If a price category exists in the DB but not in `inputs`, it is deleted.
+    - Otherwise, price categories are updated or created as needed.
+    """
+
+    existing_price_categories = {pc.id: pc for pc in offer.priceCategories}
+
+    price_category_inputs = list(inputs)
+
+    price_category_inputs_to_create = [
+        price_category_input for price_category_input in price_category_inputs if price_category_input.get("id") is None
+    ]
+    price_category_inputs_to_update = [
+        price_category_input
+        for price_category_input in price_category_inputs
+        if price_category_input.get("id") is not None
+    ]
+
+    new_labels_and_prices = {
+        (p["label"], p["price"])
+        for p in price_category_inputs_to_create
+        if p["label"] is not None and p["price"] is not None
+    }
+    validation.check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
+
+    for input in price_category_inputs_to_update:
+        if input["id"] not in existing_price_categories:
+            raise exceptions.OfferException({"price_category_id": ["Le tarif avec l'id %s n'existe pas" % input["id"]]})
+        edit_price_category(
+            offer,
+            price_category=existing_price_categories[input["id"]],
+            label=input["label"] if input["label"] is not None else UNCHANGED,
+            price=input["price"] if input["price"] is not None else UNCHANGED,
+        )
+    price_category_ids_to_delete = set(existing_price_categories) - {
+        price_category_input["id"] for price_category_input in price_category_inputs_to_update
+    }
+
+    for price_category_input in price_category_inputs_to_create:
+        if price_category_input["label"] is not None and price_category_input["price"] is not None:
+            create_price_category(
+                offer,
+                label=price_category_input["label"],
+                price=price_category_input["price"],
+            )
+
+    for price_category_id in price_category_ids_to_delete:
+        price_category_to_delete = existing_price_categories[price_category_id]
+        delete_price_category(offer, price_category_to_delete)
+        if price_category_to_delete in offer.priceCategories:
+            offer.priceCategories.remove(price_category_to_delete)
+
+    # Since we modified the price categories, we need to push the changes to the database
+    # so that the response does include them
+    db.session.flush()
+    load_options: offers_repository.OFFER_LOAD_OPTIONS = [
+        "mediations",
+        "product",
+        "price_category",
+        "venue",
+        "bookings_count",
+        "offerer_address",
+        "future_offer",
+        "pending_bookings",
+        "headline_offer",
+        "meta_data",
+    ]
+    offer = offers_repository.get_offer_by_id(offer.id, load_options=load_options)
+
+    return offer
