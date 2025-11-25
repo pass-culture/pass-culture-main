@@ -150,7 +150,7 @@ class CegidFinanceBackend(BaseFinanceBackend):
         params = {"$expand": "PaymentInstructions"}
 
         body = {
-            "CashAccount": {"value": "CD512000"},
+            "CashAccount": {"value": "BCI" if bank_account.offerer.is_caledonian else "CD512000"},
             "CurrencyID": {"value": "EUR"},
             "LegalName": {"value": finance_utils.clean_names_for_SEPA(bank_account.offerer.name)[:70]},
             "LocationName": {"value": "Emplacement principal"},
