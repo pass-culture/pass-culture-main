@@ -15,6 +15,7 @@ Script which imports Caledonian offerers and venues from a CSV file.
 
 import argparse
 import csv
+import functools
 import logging
 import os
 from decimal import Decimal
@@ -24,6 +25,7 @@ from pydantic import BaseModel
 
 import pcapi.utils.email as email_utils
 from pcapi.app import app
+from pcapi.core import search
 from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.geography import models as geography_models
@@ -288,10 +290,9 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
 
         offerers_api.link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
 
-        # Do not index Caledonian venues before launch date -- see WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE
-        # on_commit(
-        #     functools.partial(search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_CREATION)
-        # )
+        on_commit(
+            functools.partial(search.async_index_venue_ids, [venue.id], reason=search.IndexationReason.VENUE_CREATION)
+        )
 
         if venue.bookingEmail:
             booking_email = str(venue.bookingEmail)

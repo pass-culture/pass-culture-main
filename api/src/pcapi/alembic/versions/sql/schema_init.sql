@@ -8253,7 +8253,6 @@ INSERT INTO public.feature VALUES (118, 'WIP_ENABLE_FINANCE_INCIDENT', 'Active l
 INSERT INTO public.feature VALUES (119, 'ENABLE_SWITCH_ALLOCINE_SYNC_TO_EMS_SYNC', 'Activer le passage automatique des synchronisations Allociné à EMS', false);
 INSERT INTO public.feature VALUES (123, 'VENUE_REGULARIZATION', 'Déplacement de n''importe quelle offre vers une autre venue', false);
 INSERT INTO public.feature VALUES (124, 'WIP_ENABLE_OHO', 'Activer la création d''offre individuelle sur plages horaires', false);
-INSERT INTO public.feature VALUES (125, 'WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE', 'Permettre l''indexation et la réservation des offres en Nouvelle-Calédonie', false);
 INSERT INTO public.feature VALUES (126, 'WIP_ENABLE_NEW_FINANCE_WORKFLOW', 'Active le nouveau workflow finance', false);
 INSERT INTO public.feature VALUES (128, 'ENABLE_MARSEILLE', 'Activer Marseille en grand dans le front', true);
 INSERT INTO public.feature VALUES (130, 'WIP_ENABLE_NEW_COLLECTIVE_OFFERS_AND_BOOKINGS_STRUCTURE', 'Activer la nouvelle structure des offres et réservations collectives', false);

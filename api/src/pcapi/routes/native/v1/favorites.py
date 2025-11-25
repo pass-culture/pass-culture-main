@@ -135,7 +135,6 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
                 Offerer.validationStatus,
                 Offerer.isActive,
                 Offerer.name,
-                Offerer.siren,  # Remove along with WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE
             )
         )
         .options(
