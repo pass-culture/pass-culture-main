@@ -125,30 +125,26 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
             status_code=404,
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    has_stocks = offers_repository.offer_has_stocks(offer_id=offer_id)
-    if has_stocks:
-        filtered_stocks = offers_repository.get_filtered_stocks(
-            offer=offer,
-            date=query.date,
-            time=query.time,
-            price_category_id=query.price_category_id,
-            order_by=query.order_by,
-            order_by_desc=query.order_by_desc,
-            venue=offer.venue,
-        )
-        stocks_count = filtered_stocks.count()
-        filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(
-            stocks_query=filtered_stocks,
-            page=query.page,
-            stocks_limit_per_page=query.stocks_limit_per_page,
-        )
-        stocks = [
-            offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
-        ]
-    else:
-        stocks = []
-        stocks_count = 0
-    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, has_stocks=has_stocks)
+
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        date=query.date,
+        time=query.time,
+        price_category_id=query.price_category_id,
+        order_by=query.order_by,
+        order_by_desc=query.order_by_desc,
+        venue=offer.venue,
+    )
+    stocks_count = filtered_stocks.count()
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(
+        stocks_query=filtered_stocks,
+        page=query.page,
+        stocks_limit_per_page=query.stocks_limit_per_page,
+    )
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])

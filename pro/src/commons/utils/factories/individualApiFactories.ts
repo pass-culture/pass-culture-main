@@ -498,7 +498,6 @@ export function getStocksResponseFactory(
   customGetStocksResponse: Partial<GetStocksResponseModel> = {}
 ): GetStocksResponseModel {
   return {
-    hasStocks: true,
     stocks: [
       {
         bookingsQuantity: 0,

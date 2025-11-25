@@ -2,7 +2,10 @@ import { screen } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getStocksResponseFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -40,11 +43,7 @@ describe('IndividialOfferPracticalInfos', () => {
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(api, 'getStocks').mockResolvedValue({
-      stocks: [],
-      hasStocks: false,
-      stockCount: 0,
-    })
+    vi.spyOn(api, 'getStocks').mockResolvedValue(getStocksResponseFactory())
 
     renderIndividualOfferMedia()
 

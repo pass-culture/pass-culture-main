@@ -35,6 +35,7 @@ import {
   getIndividualOfferFactory,
   getOfferStockFactory,
   getOfferVenueFactory,
+  getStocksResponseFactory,
   individualOfferContextValuesFactory,
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
@@ -61,11 +62,12 @@ const renderStockThingScreen = (
   contextValue: IndividualOfferContextValues,
   storeOverrides?: DeepPartial<RootState>
 ) => {
-  vi.spyOn(api, 'getStocks').mockResolvedValue({
-    stocks,
-    stockCount: stocks.length,
-    hasStocks: true,
-  })
+  vi.spyOn(api, 'getStocks').mockResolvedValue(
+    getStocksResponseFactory({
+      stocks,
+      stockCount: stocks.length,
+    })
+  )
   renderWithProviders(
     <>
       <Routes>
