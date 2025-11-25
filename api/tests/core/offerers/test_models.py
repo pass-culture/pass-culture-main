@@ -158,15 +158,7 @@ class VenueIsEligibleForSearchTest:
             offers_factories.OfferFactory(venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
-        @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=False)
-        def test_caledonian_venue_is_note_eligible_for_search_before_launch_date(self):
-            venue = factories.CaledonianVenueFactory(venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
-            offers_factories.OfferFactory(venue=venue)
-
-            assert venue.is_eligible_for_search is False
-
-        @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=True)
-        def test_caledonian_venue_is_eligible_for_search_after_launch_date(self):
+        def test_caledonian_venue_is_eligible_for_search(self):
             venue = factories.CaledonianVenueFactory(venueTypeCode=offerers_schemas.VenueTypeCode.BOOKSTORE)
             offers_factories.OfferFactory(venue=venue)
 

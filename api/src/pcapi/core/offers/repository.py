@@ -345,7 +345,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.validationStatus,
                 offerers_models.Offerer.isActive,
-                offerers_models.Offerer.siren,  # Remove along with WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE
             )
         )
         .options(sa_orm.joinedload(models.Offer.venue).joinedload(offerers_models.Venue.googlePlacesInfo))

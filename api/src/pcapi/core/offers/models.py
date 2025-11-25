@@ -37,7 +37,6 @@ from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.accessibility_mixin import AccessibilityMixin
 from pcapi.models.deactivable_mixin import DeactivableMixin
-from pcapi.models.feature import FeatureToggle
 from pcapi.models.has_thumb_mixin import HasThumbMixin
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -1060,8 +1059,6 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     @hybrid_property
     def isReleased(self) -> bool:
         offerer = self.venue.managingOfferer
-        if offerer.is_caledonian and not FeatureToggle.WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE.is_active():
-            return False
         return self._released and offerer.isActive and offerer.isValidated
 
     @isReleased.inplace.expression
