@@ -47,9 +47,25 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        assert response.json == {"stocks_count": 1}
-
         updated_stock = db.session.query(offers_models.Stock).first()
+        assert response.json == {
+            "stockCount": 1,
+            "stocks": [
+                {
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": format_into_utc_date(updated_stock.beginningDatetime),
+                    "bookingLimitDatetime": format_into_utc_date(updated_stock.bookingLimitDatetime),
+                    "bookingsQuantity": 0,
+                    "hasActivationCode": False,
+                    "id": updated_stock.id,
+                    "isEventDeletable": updated_stock.isEventDeletable,
+                    "price": 23.0,
+                    "priceCategoryId": updated_stock.priceCategoryId,
+                    "quantity": updated_stock.quantity,
+                    "remainingQuantity": updated_stock.remainingQuantity,
+                }
+            ],
+        }
         assert offer.id == updated_stock.offerId
         assert updated_stock.priceCategoryId == price_category.id
         assert updated_stock.quantity == 14
@@ -96,7 +112,40 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        assert response.json == {"stocks_count": 0}
+        updated_stocks = db.session.query(offers_models.Stock).all()
+        first_stock = updated_stocks[0]
+        second_stock = updated_stocks[1]
+        assert response.json == {
+            "stockCount": 0,
+            "stocks": [
+                {
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": format_into_utc_date(first_stock.beginningDatetime),
+                    "bookingLimitDatetime": format_into_utc_date(first_stock.bookingLimitDatetime),
+                    "bookingsQuantity": 0,
+                    "hasActivationCode": False,
+                    "id": first_stock.id,
+                    "isEventDeletable": first_stock.isEventDeletable,
+                    "price": 10.1,
+                    "priceCategoryId": first_stock.priceCategoryId,
+                    "quantity": first_stock.quantity,
+                    "remainingQuantity": first_stock.remainingQuantity,
+                },
+                {
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": format_into_utc_date(second_stock.beginningDatetime),
+                    "bookingLimitDatetime": format_into_utc_date(second_stock.bookingLimitDatetime),
+                    "bookingsQuantity": 0,
+                    "hasActivationCode": False,
+                    "id": second_stock.id,
+                    "isEventDeletable": second_stock.isEventDeletable,
+                    "price": 10.1,
+                    "priceCategoryId": second_stock.priceCategoryId,
+                    "quantity": second_stock.quantity,
+                    "remainingQuantity": second_stock.remainingQuantity,
+                },
+            ],
+        }
         assert existing_stock.beginningDatetime == beginning  # didn't change
         assert existing_stock.quantity == 10  # didn't change
 
@@ -127,9 +176,26 @@ class Returns200Test:
             )
 
         assert response.status_code == 200
-        assert response.json == {"stocks_count": 1}
 
         edited_stock = db.session.query(offers_models.Stock).first()
+        assert response.json == {
+            "stockCount": 1,
+            "stocks": [
+                {
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": format_into_utc_date(edited_stock.beginningDatetime),
+                    "bookingLimitDatetime": format_into_utc_date(edited_stock.bookingLimitDatetime),
+                    "bookingsQuantity": 0,
+                    "hasActivationCode": False,
+                    "id": edited_stock.id,
+                    "isEventDeletable": edited_stock.isEventDeletable,
+                    "price": 25.0,
+                    "priceCategoryId": edited_stock.priceCategoryId,
+                    "quantity": edited_stock.quantity,
+                    "remainingQuantity": edited_stock.remainingQuantity,
+                }
+            ],
+        }
         assert offer.id == edited_stock.offerId
         assert db.session.query(offers_models.Stock).count() == 1
         assert edited_stock.priceCategory == new_price_category
@@ -181,11 +247,28 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        assert response.json == {"stocks_count": 1}
 
-        stock = db.session.query(offers_models.Stock).one()
-        assert stock.beginningDatetime == beginning
-        assert stock.bookingLimitDatetime == beginning
+        edited_stock = db.session.query(offers_models.Stock).one()
+        assert response.json == {
+            "stockCount": 1,
+            "stocks": [
+                {
+                    "activationCodesExpirationDatetime": None,
+                    "beginningDatetime": format_into_utc_date(edited_stock.beginningDatetime),
+                    "bookingLimitDatetime": format_into_utc_date(edited_stock.bookingLimitDatetime),
+                    "bookingsQuantity": edited_stock.dnBookedQuantity,
+                    "hasActivationCode": False,
+                    "id": edited_stock.id,
+                    "isEventDeletable": edited_stock.isEventDeletable,
+                    "price": 10.1,
+                    "priceCategoryId": edited_stock.priceCategoryId,
+                    "quantity": edited_stock.quantity,
+                    "remainingQuantity": edited_stock.remainingQuantity,
+                }
+            ],
+        }
+        assert edited_stock.beginningDatetime == beginning
+        assert edited_stock.bookingLimitDatetime == beginning
 
         assert len(mails_testing.outbox) == 2
         assert mails_testing.outbox[0]["template"] == dataclasses.asdict(

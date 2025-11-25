@@ -138,7 +138,7 @@ export function StocksCalendar({
         stocks: [stock],
       })
 
-      if (updatedStocks.stocks_count === 0) {
+      if (updatedStocks.stockCount === 0) {
         notify.error('Aucune date n’a pu être modifiée')
         return
       }

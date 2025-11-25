@@ -145,13 +145,13 @@ def bulk_create_event_stocks(
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    response_model=stock_serialize.StocksResponseModel,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def bulk_update_event_stocks(
     body: stock_serialize.EventStocksBulkUpdateBodyModel,
-) -> stock_serialize.StocksResponseModel:
+) -> offers_serialize.GetStocksResponseModel:
     offer: offers_models.Offer = get_or_404_from_query(
         db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
         body.offer_id,
@@ -205,14 +205,22 @@ def bulk_update_event_stocks(
         assert edited_stock  # to make mypy happy
         offers_api.handle_event_stock_beginning_datetime_update(edited_stock)
 
-    return stock_serialize.StocksResponseModel(stocks_count=edited_stocks_count)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(stock_count=edited_stocks_count, stocks=stocks)
 
 
 @private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
 @atomic()
 @login_required
-@spectree_serialize(response_model=stock_serialize.StockIdResponseModel, api=blueprint.pro_private_schema)
-def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
+@spectree_serialize(response_model=offers_serialize.GetStocksResponseModel, api=blueprint.pro_private_schema)
+def delete_stock(stock_id: int) -> offers_serialize.GetStocksResponseModel:
     stock = first_or_404(
         offers_models.Stock.queryNotSoftDeleted().filter_by(id=stock_id).join(offers_models.Offer).join(Venue)
     )
@@ -221,4 +229,12 @@ def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
     offers_api.delete_stock(stock, current_user.real_user.id, current_user.is_impersonated)
 
-    return stock_serialize.StockIdResponseModel.from_orm(stock)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=stock.offer,
+        venue=stock.offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(stock_count=filtered_stocks.count(), stocks=stocks)

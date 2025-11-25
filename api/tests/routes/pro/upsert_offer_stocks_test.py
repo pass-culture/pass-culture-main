@@ -13,7 +13,7 @@ from pcapi.utils.date import format_into_utc_date
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204Test:
+class Returns200Test:
     def test_create_single_stock(self, client):
         offer = offers_factories.ThingOfferFactory()
         user = users_factories.UserFactory()
@@ -35,7 +35,7 @@ class Returns204Test:
         response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
         db.session.refresh(offer)
 
-        assert response.status_code == 204
+        assert response.status_code == 200
         assert len(offer.activeStocks) == 1
         created_stock = offer.activeStocks[0]
         assert created_stock.price == decimal.Decimal("12.5")
@@ -74,7 +74,7 @@ class Returns204Test:
         response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
         db.session.refresh(offer)
 
-        assert response.status_code == 204
+        assert response.status_code == 200
         updated_stock = db.session.get(offers_models.Stock, stock_to_update.id)
         deleted_stock = db.session.get(offers_models.Stock, stock_to_delete.id)
         assert deleted_stock.isSoftDeleted is True
@@ -107,7 +107,7 @@ class Returns204Test:
         }
         response = client.with_session_auth(user.email).patch(f"/offers/{offer.id}/stocks/", json=payload)
 
-        assert response.status_code == 204
+        assert response.status_code == 200
         db.session.refresh(offer)
         assert len(offer.activeStocks) == 1
         created_stock = offer.activeStocks[0]

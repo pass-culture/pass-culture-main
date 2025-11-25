@@ -225,10 +225,8 @@ export type { ShortHighlightResponseModel } from './models/ShortHighlightRespons
 export { SimplifiedBankAccountStatus } from './models/SimplifiedBankAccountStatus';
 export type { StatisticsModel } from './models/StatisticsModel';
 export type { StatisticsQueryModel } from './models/StatisticsQueryModel';
-export type { StockIdResponseModel } from './models/StockIdResponseModel';
 export { StocksOrderedBy } from './models/StocksOrderedBy';
 export type { StocksQueryModel } from './models/StocksQueryModel';
-export type { StocksResponseModel } from './models/StocksResponseModel';
 export type { StockStatsResponseModel } from './models/StockStatsResponseModel';
 export type { StructureDataBodyModel } from './models/StructureDataBodyModel';
 export { StudentLevels } from './models/StudentLevels';

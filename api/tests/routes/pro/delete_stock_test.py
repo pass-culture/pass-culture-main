@@ -30,7 +30,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert response.json == {"id": stock.id}
+        assert response.json == {"stocks": [], "stockCount": 0}
         assert stock.isSoftDeleted
         assert stock.bookings[0].cancellationUser == user_offerer.user
         assert push_testing.requests[-1] == {
@@ -59,7 +59,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert response.json == {"id": stock.id}
+        assert response.json == {"stocks": [], "stockCount": 0}
         assert stock.isSoftDeleted
         assert stock.bookings[0].cancellationUser == user_offerer.user
         cancel_notification_requests = [req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"]
@@ -92,7 +92,7 @@ class Returns200Test:
 
         # then
         assert response.status_code == 200
-        assert response.json == {"id": stock.id}
+        assert response.json == {"stocks": [], "stockCount": 0}
         assert stock.isSoftDeleted
         assert stock.bookings[0].cancellationUser == admin
 

@@ -362,9 +362,12 @@ describe('StocksCalendar', () => {
   })
 
   it('should show an error message when none of the stocks were updated', async () => {
-    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValueOnce({
-      stocks_count: 0,
-    })
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValueOnce(
+      getStocksResponseFactory({
+        stocks: [],
+        stockCount: 0,
+      })
+    )
 
     renderStocksCalendar(
       [
