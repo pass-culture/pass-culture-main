@@ -210,7 +210,7 @@ def save_chronicle(
                 externalId=form.response_id,
                 isIdentityDiffusible=is_identity_diffusible,
                 isSocialMediaDiffusible=is_social_media_diffusible,
-                offers=_get_offers(product_identifier_type, product_identifier),
+                offers=get_offers(product_identifier_type, product_identifier),
                 products=get_products(product_identifier_type, product_identifier),
                 userId=user_id,
                 isActive=False,
@@ -243,7 +243,7 @@ def save_chronicle(
         mark_transaction_as_invalid()
 
 
-def _get_offers(
+def get_offers(
     product_identifier_type: models.ChronicleProductIdentifierType, product_identifier: str | None
 ) -> list[offers_models.Offer]:
     if not product_identifier:

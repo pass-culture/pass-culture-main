@@ -223,3 +223,28 @@ la convoitise.
             isSocialMediaDiffusible=bool(i % 4 == 0),
             user=user,
         )
+
+    logger.info("Creating 'Concert' type chronicles with and without offers")
+    offers: dict[int, offers_models.Offer] = dict(
+        db.session.query(offers_models.Offer.id, offers_models.Offer).filter(
+            offers_models.Offer.id.in_((6, 8)),
+        )  # type: ignore[arg-type]
+    )
+
+    for i in range(5):
+        chronicles_factories.ChronicleFactory.create(
+            age=(15 + (i % 5)),
+            city=user.city,
+            content=f"Chronique sur l'offer id {i + 5}",
+            identifierChoiceId=hashlib.sha256(ean.encode()).hexdigest()[:20],
+            productIdentifier=str(i + 5),
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.OFFER_ID,
+            clubType=chronicles_models.ChronicleClubType.CONCERT_CLUB,
+            email=user.email,
+            firstName=user.firstName,
+            isActive=bool(i % 5 == 0),
+            isIdentityDiffusible=bool(i % 2 == 0),
+            isSocialMediaDiffusible=bool(i % 3 == 0),
+            user=user,
+            offers=([offers[i + 5]] if (i + 5) in offers else []),
+        )

@@ -1,8 +1,11 @@
 import enum
 import typing
 
+from wtforms.validators import DataRequired
 from wtforms.validators import Length
+from wtforms.validators import NumberRange
 from wtforms.validators import Optional
+from wtforms.validators import ValidationError
 
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.routes.backoffice import filters
@@ -106,3 +109,67 @@ class AttachOfferForm(forms_utils.PCForm):
 
 class CommentForm(forms_utils.PCForm):
     comment = fields.PCCommentField("Commentaire interne pour la chronique")
+
+
+class CreateChronicleForm(forms_utils.PCForm):
+    club_type = fields.PCSelectField(
+        "Club",
+        choices=(
+            forms_utils.choices_from_enum(
+                chronicles_models.ChronicleClubType, formatter=filters.format_chronicle_club_type
+            )
+        ),
+        default=chronicles_models.ChronicleClubType.CINE_CLUB,
+        validators=[
+            DataRequired("Information obligatoire"),
+        ],
+    )
+    email = fields.PCStringField(
+        "Adresse email",
+        validators=[
+            DataRequired("Information obligatoire"),
+            Length(min=1, max=150, message="Doit contenir entre %(min)d et %(max)d caractères"),
+        ],
+    )
+    first_name = fields.PCStringField("Prénom")
+    age = fields.PCIntegerField(
+        "Age",
+        validators=[
+            Optional(""),
+            NumberRange(min=15, max=23, message="Doit être entre %(min)d et %(max)d"),
+        ],
+    )
+    city = fields.PCStringField(
+        "Ville",
+        validators=[
+            Optional(""),
+            Length(max=100, message="Doit contenir entre %(min)d et %(max)d caractères"),
+        ],
+    )
+    is_identity_diffusible = fields.PCSwitchBooleanField("Accord de diffusion de l'identité")
+    is_social_media_diffusible = fields.PCSwitchBooleanField("Accord de diffusion résaux sociaux")
+    content = fields.PCTextareaField(
+        "Texte de la chronique",
+        validators=[
+            DataRequired("Information obligatoire"),
+            Length(min=10, max=10_000, message="Doit contenir entre %(min)d et %(max)d caractères"),
+        ],
+    )
+    product_identifier_type = fields.PCSelectField(
+        "Type d'identifiant",
+        choices=forms_utils.choices_from_enum(
+            enum_cls=chronicles_models.ChronicleProductIdentifierType,
+            formatter=filters.format_chronicle_product_identifier_type,
+        ),
+        default=chronicles_models.ChronicleProductIdentifierType.EAN.name,
+        validators=[
+            DataRequired("Information obligatoire"),
+        ],
+    )
+    product_identifier = fields.PCIntegerField("Identifiant")
+
+    def validate_product_identifier(self, product_identifier_field: fields.PCStringField) -> fields.PCStringField:
+        if self.product_identifier_type.data == chronicles_models.ChronicleProductIdentifierType.EAN.value:
+            if not len(str(product_identifier_field.data)) == 13:
+                raise ValidationError("Un EAN doit être composé de 13 chiffres")
+        return product_identifier_field
