@@ -45,7 +45,6 @@ class Returns200Test:
     num_queries += 1  # select offer
     num_queries += 1  # select venue
     num_queries += 1  # check user has rights on venue
-    num_queries += 1  # checks active stocks exists
     num_queries += 1  # select count(*) from active stocks
     num_queries += 1  # select stocks
 
@@ -80,7 +79,6 @@ class Returns200Test:
 
         assert response.json == {
             "stockCount": 2,
-            "hasStocks": True,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -129,7 +127,6 @@ class Returns200Test:
 
         assert response.json == {
             "stockCount": 1,
-            "hasStocks": True,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -154,36 +151,11 @@ class Returns200Test:
 
         client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries - 2):  # no active stock exists
+        with testing.assert_num_queries(self.num_queries):
             response = client.get(f"/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
         assert len(response.json["stocks"]) == 0
-
-    def test_returns_false_if_no_stocks(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
-
-        client = client.with_session_auth(email=user_offerer.user.email)
-        offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries - 2):  # no stock exists
-            response = client.get(f"/offers/{offer_id}/stocks/")
-            assert response.status_code == 200
-
-        assert response.json["hasStocks"] == False
-
-    def test_returns_false_if_all_stocks_are_soft_deleted(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
-        offers_factories.StockFactory.create_batch(3, offer=offer, isSoftDeleted=True)
-
-        client = client.with_session_auth(email=user_offerer.user.email)
-        offer_id = offer.id
-        with testing.assert_num_queries(self.num_queries - 2):  # no active stock exists
-            response = client.get(f"/offers/{offer_id}/stocks")
-            assert response.status_code == 200
-
-        assert response.json["hasStocks"] == False
 
     def test_returns_true_if_stock_exists_outside_filter(self, client):
         date_1 = date_utils.get_naive_utc_now()
@@ -201,7 +173,6 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert len(response.json["stocks"]) == 0
-        assert response.json["hasStocks"] == True
 
     def test_should_return_total_stock_count_when_unfiltered(self, client):
         date_1 = date_utils.get_naive_utc_now()
@@ -241,7 +212,6 @@ class Returns200Test:
 
         assert response.json == {
             "stockCount": 5,
-            "hasStocks": True,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,

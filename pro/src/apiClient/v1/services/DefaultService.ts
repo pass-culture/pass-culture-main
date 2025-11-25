@@ -105,9 +105,7 @@ import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardin
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
 import type { StatisticsModel } from '../models/StatisticsModel';
-import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
-import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StructureDataBodyModel } from '../models/StructureDataBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
@@ -2215,13 +2213,13 @@ export class DefaultService {
    * - If a stock exists in the DB but not in `stocks`, it is soft-deleted. - Otherwise, stocks are updated or created as needed.
    * @param offerId
    * @param requestBody
-   * @returns void
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public upsertOfferStocks(
     offerId: number,
     requestBody: ThingStocksBulkUpsertBodyModel,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}/stocks/',
@@ -2343,12 +2341,12 @@ export class DefaultService {
   /**
    * bulk_update_event_stocks <PATCH>
    * @param requestBody
-   * @returns StocksResponseModel OK
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public bulkUpdateEventStocks(
     requestBody: EventStocksBulkUpdateBodyModel,
-  ): CancelablePromise<StocksResponseModel> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/stocks/bulk',
@@ -2383,12 +2381,12 @@ export class DefaultService {
   /**
    * delete_stock <DELETE>
    * @param stockId
-   * @returns StockIdResponseModel OK
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public deleteStock(
     stockId: number,
-  ): CancelablePromise<StockIdResponseModel> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/stocks/{stock_id}',

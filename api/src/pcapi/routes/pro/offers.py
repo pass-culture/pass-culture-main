@@ -150,14 +150,13 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
-    api=blueprint.pro_private_schema,
+    on_success_status=200, api=blueprint.pro_private_schema, response_model=offers_serialize.GetStocksResponseModel
 )
 @atomic()
 def upsert_offer_stocks(
     offer_id: int,
     body: stock_serialize.ThingStocksBulkUpsertBodyModel,
-) -> None:
+) -> offers_serialize.GetStocksResponseModel:
     """
     Upsert all price categories stocks of a non-event offer.
 
@@ -181,6 +180,15 @@ def upsert_offer_stocks(
         stock_inputs.append(typing.cast(offers_schemas.ThingStockUpsertInput, data))
 
     offers_api.upsert_offer_thing_stocks(offer, stock_inputs)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(stock_count=filtered_stocks.count(), stocks=stocks)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
