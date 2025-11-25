@@ -580,8 +580,9 @@ class HandleDmsApplicationTest:
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
+    @pytest.mark.parametrize("annotation", ["NEL", "IDP, NEL", "NEL, IDM"])
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
-    def test_process_instructor_annotation_NEL(self, mock_make_refused):
+    def test_process_instructor_annotation_NEL(self, mock_make_refused, annotation):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
@@ -592,7 +593,7 @@ class HandleDmsApplicationTest:
                 {
                     "id": "Q2hhbXAtNTAxNTA2Mw==",
                     "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
-                    "stringValue": dms_schemas.DmsInstructorAnnotationEnum.NEL.value,
+                    "stringValue": annotation,
                     "updatedAt": "2025-03-04T15:30:03+01:00",
                 },
                 {
@@ -623,8 +624,9 @@ class HandleDmsApplicationTest:
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
+    @pytest.mark.parametrize("annotation", ["IDP", "IDP, S"])
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
-    def test_process_instructor_annotation_IDP(self, mock_make_refused):
+    def test_process_instructor_annotation_IDP(self, mock_make_refused, annotation):
         user = users_factories.UserFactory()
         dms_response = make_parsed_graphql_application(
             application_number=1,
@@ -634,7 +636,7 @@ class HandleDmsApplicationTest:
                 {
                     "id": "Q2hhbXAtNTAxNTA2Mw==",
                     "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
-                    "stringValue": dms_schemas.DmsInstructorAnnotationEnum.IDP.value,
+                    "stringValue": annotation,
                     "updatedAt": "2025-03-04T15:30:03+01:00",
                 }
             ],
@@ -676,8 +678,9 @@ class HandleDmsApplicationTest:
         mock_make_refused.assert_not_called()
 
     @pytest.mark.features(ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION=True)
+    @pytest.mark.parametrize("annotation", ["NEL", "IDM, NEL"])
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
-    def test_process_instructor_annotation_without_user_account(self, mock_make_refused):
+    def test_process_instructor_annotation_without_user_account(self, mock_make_refused, annotation):
         dms_response = make_parsed_graphql_application(
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
             application_number=1,
@@ -687,7 +690,7 @@ class HandleDmsApplicationTest:
                 {
                     "id": "Q2hhbXAtNTAxNTA2Mw==",
                     "label": f"{dms_serializer.DMS_INSTRUCTOR_ANNOTATION_SLUG}: Code de l'annotation instructeur",
-                    "stringValue": dms_schemas.DmsInstructorAnnotationEnum.NEL.value,
+                    "stringValue": annotation,
                     "updatedAt": "2025-03-13T16:00:03+01:00",
                 },
             ],
