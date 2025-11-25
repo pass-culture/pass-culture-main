@@ -3,9 +3,10 @@ import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import { isDateValid, removeTime } from '@/commons/utils/date'
-import { MAX_STOCKS_QUANTITY } from '@/components/IndividualOffer/StocksThing/validationSchema'
 
 import type { EditStockFormValues } from './StocksCalendarTableEditStock'
+
+export const MAX_STOCKS_QUANTITY = 1000000
 
 export const validationSchema: ObjectSchema<EditStockFormValues> = yup
   .object()
