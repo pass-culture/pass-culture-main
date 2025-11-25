@@ -198,6 +198,14 @@ class BeneficiaryFraudCheck(PcObject, Model):
         "User", foreign_keys=[userId], back_populates="beneficiaryFraudChecks"
     )
 
+    __table_args__ = (
+        sa.Index(
+            "ix_fraud_check_type_initiated_status",
+            eligibilityType,
+            postgresql_where=status.in_((FraudCheckStatus.STARTED, FraudCheckStatus.PENDING)),
+        ),
+    )
+
     def get_detailed_source(self) -> str:
         if self.type == FraudCheckType.DMS.value:
             return f"démarches simplifiées dossier [{self.thirdPartyId}]"
