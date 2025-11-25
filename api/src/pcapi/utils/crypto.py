@@ -14,6 +14,9 @@ def _hash_password_with_bcrypt(clear_text: str) -> bytes:
 
 
 def _check_password_with_bcrypt(clear_text: str, hashed: bytes) -> bool:
+    if len(clear_text.encode("utf-8")) > 72:
+        # bcrypt cannot hash more than 72 bytes
+        return False
     return bcrypt.checkpw(clear_text.encode("utf-8"), hashed)
 
 
