@@ -54,10 +54,6 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
 /** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
 /** @deprecated Use `OfferStatus` enum from the API client instead. */
-export const OFFER_STATUS_PENDING = OfferStatus.PENDING
-/** @deprecated Use `OfferStatus` enum from the API client instead. */
-export const OFFER_STATUS_REJECTED = OfferStatus.REJECTED
-/** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 
 const ALL_OFFERS = ''
