@@ -3,14 +3,14 @@ import { OfferContactFormEnum } from '@/apiClient/v1'
 import { getDefaultEducationalValues } from '@/commons/core/OfferEducational/constants'
 import { formatShortDateForInput } from '@/commons/utils/date'
 import { getCollectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
-import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
+import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { computeInitialValuesFromOffer } from '../computeInitialValuesFromOffer'
 
 const venueAddress = {
   city: 'Paris',
   id: 1,
-  venueLocation: false,
+  venueLocation: true,
   latitude: 3,
   longitude: 2,
   isManualEdition: false,
@@ -20,7 +20,7 @@ const venueAddress = {
 }
 
 const venues = [
-  makeVenueListItem({
+  venueListItemFactory({
     location: venueAddress,
     id: 2,
   }),
@@ -56,10 +56,9 @@ describe('computeInitialValuesFromOffer', () => {
       street: 'rue de la paix',
       location: {
         locationType: CollectiveLocationType.ADDRESS,
-        address: {
+        location: {
           isManualEdition: false,
-          isVenueAddress: true,
-          id: venue.location?.id.toString(),
+          venueLocation: true,
           label: 'Le nom du lieu 2',
         },
       },
@@ -205,11 +204,10 @@ describe('computeInitialValuesFromOffer', () => {
             locationType: CollectiveLocationType.ADDRESS,
             location: {
               label: 'théâtre de savoie',
-              // id: 1995,
+              id: 1995,
               venueLocation: false,
               city: 'Chambéry',
               street: "rue de l'espoir",
-              id: 14,
               isManualEdition: false,
               latitude: 12,
               longitude: 3,
@@ -229,8 +227,8 @@ describe('computeInitialValuesFromOffer', () => {
         postalCode: '31000',
         street: "rue de l'espoir",
         location: {
-          address: {
-            isVenueAddress: false,
+          location: {
+            venueLocation: false,
             isManualEdition: false,
             id: 'SPECIFIC_ADDRESS',
             label: 'théâtre de savoie',
@@ -265,10 +263,9 @@ describe('computeInitialValuesFromOffer', () => {
         postalCode: '75018',
         street: 'rue de la paix',
         location: {
-          address: {
-            isVenueAddress: true,
+          location: {
+            venueLocation: true,
             isManualEdition: false,
-            id: '1994',
             label: 'Le nom du lieu 2',
           },
           locationType: 'ADDRESS',

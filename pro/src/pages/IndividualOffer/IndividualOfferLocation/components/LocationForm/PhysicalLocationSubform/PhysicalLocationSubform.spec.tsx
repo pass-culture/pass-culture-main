@@ -66,7 +66,7 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
     ? (props.venue as VenueListItemResponseModel)
     : makeVenueListItem({
         id: 2,
-        address: {
+        location: {
           id: 10,
           city: 'Paris',
           isManualEdition: false,
@@ -75,6 +75,7 @@ const renderPhysicalLocationSubform: RenderComponentFunction<
           street: '10 Rue de Paris',
           latitude: 48.8566,
           longitude: 2.3522,
+          venueLocation: false,
         },
       })
 

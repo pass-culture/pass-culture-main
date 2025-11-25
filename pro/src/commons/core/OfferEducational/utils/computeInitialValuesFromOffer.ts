@@ -102,11 +102,10 @@ export const computeInitialValuesFromOffer = (
   const offerLocationFromVenue = defaultVenue
     ? {
         locationType: CollectiveLocationType.ADDRESS,
-        address: {
-          isVenueAddress: true,
+        location: {
           isManualEdition: false,
           label: defaultVenue.name,
-          id: defaultVenue.location?.id.toString() ?? '',
+          venueLocation: true,
         },
       }
     : defaultEducationalFormValues.location
@@ -147,13 +146,12 @@ export const computeInitialValuesFromOffer = (
     locationType:
       offer.location?.locationType ??
       defaultEducationalFormValues.location?.locationType,
-    address: {
-      isVenueAddress,
+    location: {
       label: offer.location?.location?.label ?? '',
       id: isVenueAddress
         ? offer.location?.location?.id.toString()
         : 'SPECIFIC_ADDRESS',
-      venueAddress: offer.location?.location?.venueLocation,
+      venueLocation: offer.location?.location?.venueLocation,
       isManualEdition: !!offer.location?.location?.isManualEdition,
     },
     locationComment: offer.location?.locationComment,

@@ -138,13 +138,14 @@ describe('createOfferPayload', () => {
       expect.objectContaining({
         location: {
           locationType: CollectiveLocationType.ADDRESS,
-          address: {
+          location: {
+            id: '123',
             city: 'Paris',
             latitude: '3',
             longitude: '2',
             postalCode: '75018',
             street: 'rue de la paix',
-            isVenueAddress: true,
+            venueLocation: true,
             isManualEdition: false,
             label: 'théâtre',
             banId: '',

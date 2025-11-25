@@ -653,7 +653,7 @@ describe('IndividualOfferSummaryScreen', () => {
       const contextValues = {
         offer: {
           ...offerBase,
-          address: {
+          location: {
             ...getLocationResponseModel({
               label: 'mon adresse',
               city: 'ma ville',
