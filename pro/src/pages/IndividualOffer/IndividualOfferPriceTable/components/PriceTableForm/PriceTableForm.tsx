@@ -374,6 +374,7 @@ export const PriceTableForm = ({
                 !areAllFieldsDisabledButQuantity && (
                   <div className={styles['button-action']}>
                     <ListIconButton
+                      dataTestid={`remove-price-table-entry-button-${index}`}
                       icon={fullTrashIcon}
                       onClick={() => askForRemovalConfirmationOrRemove(index)}
                       tooltipContent={

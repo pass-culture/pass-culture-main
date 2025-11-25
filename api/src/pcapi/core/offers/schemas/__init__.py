@@ -167,3 +167,9 @@ class ThingStockUpsertInput(typing.TypedDict):
     booking_limit_datetime: datetime.datetime | None
     price: decimal.Decimal | None
     quantity: int | None
+
+
+class PriceCategoryInput(typing.TypedDict):
+    id: int | None
+    label: str | None
+    price: decimal.Decimal | None

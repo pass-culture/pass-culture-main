@@ -2096,6 +2096,32 @@ export class DefaultService {
     });
   }
   /**
+   * Upsert all price categories of an offer.
+   * - If a price category exists in the DB but not in `price_categories`, it is soft-deleted. - Otherwise, price categories are updated or created as needed.
+   * @param offerId
+   * @param requestBody
+   * @returns GetIndividualOfferWithAddressResponseModel OK
+   * @throws ApiError
+   */
+  public upsertOfferPriceCategories(
+    offerId: number,
+    requestBody: PriceCategoryBody,
+  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
+    return this.httpRequest.request({
+      method: 'PATCH',
+      url: '/offers/{offer_id}/price_categories',
+      path: {
+        'offer_id': offerId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
    * post_price_categories <POST>
    * @param offerId
    * @param requestBody
