@@ -1101,14 +1101,6 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
     )
 
 
-def offer_has_stocks(offer_id: int) -> bool:
-    return db.session.query(
-        db.session.query(models.Stock)
-        .filter(models.Stock.offerId == offer_id, sa.not_(models.Stock.isSoftDeleted))
-        .exists()
-    ).scalar()
-
-
 def offer_has_bookable_stocks(offer_id: int) -> bool:
     return db.session.query(
         db.session.query(models.Stock).filter(models.Stock.offerId == offer_id, models.Stock._bookable).exists()

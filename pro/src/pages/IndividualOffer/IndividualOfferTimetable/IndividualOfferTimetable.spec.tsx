@@ -10,6 +10,7 @@ import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
+  getStocksResponseFactory,
   individualOfferContextValuesFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -50,11 +51,12 @@ describe('IndividualOfferTimetable', () => {
       offer,
     })
 
-    vi.spyOn(api, 'getStocks').mockResolvedValue({
-      stocks: [],
-      hasStocks: false,
-      stockCount: 0,
-    })
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
+      getStocksResponseFactory({
+        stocks: [],
+        stockCount: 0,
+      })
+    )
   })
 
   it('should render the content of the offer timetable form', async () => {
