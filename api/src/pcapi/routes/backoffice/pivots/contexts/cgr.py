@@ -121,6 +121,6 @@ class CGRContext(PivotContext):
             return num_cine
         # it could be an unexpected XML parsing error
         except Exception as exc:
-            logger.exception("Error while checking CGR API information", extra={"exc": exc})
-        flash("Connexion à l'API KO.", "warning")
-        return None
+            logger.warning("Error while checking CGR API information", extra={"exc": exc})
+            flash(Markup("Connexion à l'API KO : {error}").format(error=exc), "warning")
+            return None

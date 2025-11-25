@@ -108,13 +108,12 @@ class BoostContext(PivotContext):
             client = BoostAPIClient("", cinema_details=pivot)
             client.test_jwt_token_generation()
             flash("Connexion à l'API OK.", "success")
-            return
         except BoostAPIException as exc:
-            logger.exception(
+            logger.warning(
                 "Network error on checking Boost API information",
                 extra={"exc": exc, "cinema_url": pivot.cinemaUrl},
             )
-        flash("Connexion à l'API KO.", "warning")
+            flash(Markup("Connexion à l'API KO : {error}").format(error=exc), "warning")
 
     @classmethod
     def delete_pivot(cls, pivot_id: int) -> bool:
