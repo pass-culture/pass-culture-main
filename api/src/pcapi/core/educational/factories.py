@@ -3,6 +3,7 @@ import re
 import typing
 
 import factory
+import psycopg2.extras
 from dateutil.relativedelta import relativedelta
 
 from pcapi.core.categories.models import EacFormat
@@ -206,7 +207,7 @@ class EducationalYearFactory(BaseFactory[models.EducationalYear]):
         lambda number: datetime.datetime(_get_current_educational_year(), 9, 1) + relativedelta(years=number)
     )
     expirationDate: factory.declarations.BaseDeclaration = factory.Sequence(
-        lambda number: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59)
+        lambda number: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
         + relativedelta(years=number),
     )
 
@@ -245,6 +246,21 @@ class EducationalCurrentYearFactory(EducationalYearFactory):
         lambda: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
     )
     adageId = factory.LazyFunction(_get_current_educational_year_adage_id)
+
+
+def get_educational_year_first_period(educational_year: models.EducationalYear) -> psycopg2.extras.DateTimeRange:
+    """Get the period 01/09 -> 31/12 of the given educational year"""
+    period_start = educational_year.beginningDate
+    # period end is the start of second civil year as the timerange bounds are [)
+    period_end = educational_year.beginningDate.replace(year=educational_year.beginningDate.year + 1, month=1, day=1)
+    return db_utils.make_timerange(period_start, period_end)
+
+
+def get_educational_year_second_period(educational_year: models.EducationalYear) -> psycopg2.extras.DateTimeRange:
+    """Get the period 01/01 -> 31/08 of the given educational year"""
+    period_start = educational_year.beginningDate.replace(year=educational_year.beginningDate.year + 1, month=1, day=1)
+    period_end = educational_year.expirationDate
+    return db_utils.make_timerange(period_start, period_end)
 
 
 class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
