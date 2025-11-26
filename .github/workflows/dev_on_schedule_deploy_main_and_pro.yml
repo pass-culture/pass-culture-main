@@ -176,12 +176,12 @@ jobs:
       environment: testing
       environment_short_name: tst
       app_version: ${{ github.sha }}
-      cluster_name: gke-infra-prd-eu9
+      workflow_cluster_name: gke-infra-prd-eu9
+      workflow_project_id: pc-infra-prd
+      app_cluster_name: gke-backend-tst-eu9
+      app_project_id: pc-backend-tst
       location: europe-west9
-      gcp_project_id: pc-infra-prd
       is_new_infra: true
-      cluster_scope: gke-backend-tst-eu9
-      cluster_project_id: pc-backend-tst
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
       apply_algolia_config: true
       deploy_api: true
@@ -206,15 +206,16 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: opsv2
+      environment_short_name: opsv2
       app_version: ${{ github.sha }}
-      cluster_name: gke-infra-prd-eu9
-      location: europe-west9
-      gcp_project_id: pc-infra-prd
-      is_new_infra: true
       workload_identity_provider_secret_name: gcp_metier_ops_workload_identity_provider # to delete after migration
+      workflow_cluster_name: gke-infra-prd-eu9
+      workflow_project_id: pc-infra-prd
+      app_cluster_name: gke-backend-tst-eu9
+      app_project_id: pc-backend-tst
+      location: europe-west9
+      is_new_infra: true
       deploy_api: true
-      cluster_scope: gke-backend-tst-eu9
-      cluster_project_id: pc-backend-tst
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
