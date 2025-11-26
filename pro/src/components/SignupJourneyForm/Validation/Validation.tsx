@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
@@ -15,6 +14,7 @@ import {
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -38,7 +38,9 @@ export const Validation = (): JSX.Element | undefined => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const userAccess: UserAccess = useSelector((store: any) => store.user.access)
+  const userAccess: UserAccess = useAppSelector(
+    (store: any) => store.user.access
+  )
 
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()

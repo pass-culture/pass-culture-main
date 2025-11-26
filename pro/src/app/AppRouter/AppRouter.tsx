@@ -1,10 +1,10 @@
 import * as Sentry from '@sentry/react'
-import { useSelector } from 'react-redux'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 
 import { App } from '@/app/App/App'
 import { AppRouterGuard } from '@/app/AppRouter/AppRouterGuard'
 import { routes } from '@/app/AppRouter/routesMap'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectActiveFeatures } from '@/commons/store/features/selectors'
 
 import { ErrorBoundary } from './ErrorBoundary'
@@ -14,7 +14,7 @@ const sentryCreateBrowserRouter =
   Sentry.wrapCreateBrowserRouterV7(createBrowserRouter)
 
 export const AppRouter = (): JSX.Element => {
-  const activeFeatures = useSelector(selectActiveFeatures)
+  const activeFeatures = useAppSelector(selectActiveFeatures)
 
   const activeRoutes = routes.filter(
     (route) => !route.featureName || activeFeatures.includes(route.featureName)

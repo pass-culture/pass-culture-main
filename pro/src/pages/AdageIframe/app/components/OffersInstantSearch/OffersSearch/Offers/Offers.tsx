@@ -4,7 +4,6 @@ import {
   useInstantSearch,
   useStats,
 } from 'react-instantsearch'
-import { useDispatch, useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 import useSWR from 'swr'
 
@@ -16,6 +15,8 @@ import {
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { setSearchView } from '@/commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from '@/commons/store/adageFilter/selectors'
@@ -68,9 +69,9 @@ export const Offers = ({
   indexId,
   venue,
 }: OffersProps): JSX.Element | null => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
-  const adageViewType = useSelector(adageSearchViewSelector)
+  const adageViewType = useAppSelector(adageSearchViewSelector)
   const { currentPageHits: hits } = useInfiniteHits()
   const { nbHits } = useStats()
   const { scopedResults, results: nonScopedResult } = useInstantSearch()

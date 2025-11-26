@@ -1,7 +1,8 @@
 import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
-import { useSelector } from 'react-redux'
+
+import { useAppSelector } from './useAppSelector'
 
 export const useIsCaledonian = () => {
-  const offerer = useSelector(selectCurrentOfferer)
+  const offerer = useAppSelector(selectCurrentOfferer)
   return offerer?.isCaledonian ?? false
 }

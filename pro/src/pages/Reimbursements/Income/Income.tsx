@@ -1,11 +1,11 @@
 import classnames from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -31,7 +31,7 @@ type VenueFormValues = {
 export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const {
     data: venuesData,

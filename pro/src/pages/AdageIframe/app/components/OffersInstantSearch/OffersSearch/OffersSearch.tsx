@@ -7,7 +7,6 @@ import {
 } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useInstantSearch } from 'react-instantsearch'
-import { useDispatch, useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router'
 import useSWRMutation from 'swr/mutation'
 
@@ -17,6 +16,8 @@ import { LOG_TRACKING_FILTER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
@@ -58,7 +59,7 @@ export const OffersSearch = ({
   setGeoRadius,
   initialFilters,
 }: SearchProps): JSX.Element => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const [searchParams, setSearchParams] = useSearchParams()
 
@@ -66,7 +67,7 @@ export const OffersSearch = ({
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
 
   const notification = useNotification()
-  const adageQueryFromSelector = useSelector(adageQuerySelector)
+  const adageQueryFromSelector = useAppSelector(adageQuerySelector)
 
   const { scopedResults } = useInstantSearch()
 

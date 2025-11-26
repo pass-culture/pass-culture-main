@@ -1,11 +1,12 @@
 import cn from 'classnames'
 import { useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { updateUserAccess } from '@/commons/store/user/reducer'
 import fullNextIcon from '@/icons/full-next.svg'
@@ -29,10 +30,10 @@ export const OnboardingCollectiveModal = ({
 }: OnboardingCollectiveModalProps): JSX.Element => {
   const [errorMessage, setErrorMessage] = useState<null | string>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const currentOffererId = useSelector(selectCurrentOffererId)
+  const currentOffererId = useAppSelector(selectCurrentOffererId)
   const navigate = useNavigate()
   const { logEvent } = useAnalytics()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   if (currentOffererId === null) {
     return <Spinner />

@@ -1,11 +1,11 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
 import type React from 'react'
-import { useSelector } from 'react-redux'
 
 import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
 import { Header } from '@/app/App/layouts/components/Header/Header'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 
@@ -21,7 +21,7 @@ export interface FunnelLayoutProps {
 }
 
 export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
 
   return (
     <div className={styles.layout}>

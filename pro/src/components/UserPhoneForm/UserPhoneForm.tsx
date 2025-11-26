@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
-import { useDispatch } from 'react-redux'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { updateUser } from '@/commons/store/user/reducer'
@@ -28,7 +28,7 @@ export const UserPhoneForm = ({
   initialValues,
 }: UserPhoneFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const notify = useNotification()
 
   const hookForm = useForm({

@@ -1,13 +1,13 @@
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 export const useBeamer = (consentedToBeamer: boolean) => {
   const isBeamerEnabled = useActiveFeature('ENABLE_BEAMER')
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
   const location = useLocation()
 
   useEffect(() => {

@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation, useOutletContext } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
@@ -11,6 +10,7 @@ import {
   GET_OFFERER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
@@ -28,7 +28,7 @@ export const BankInformations = (): JSX.Element => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =

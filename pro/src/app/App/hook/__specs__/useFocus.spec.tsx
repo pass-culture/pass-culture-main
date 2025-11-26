@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import * as reactRedux from 'react-redux'
 import { Link, Route, Routes } from 'react-router'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -11,7 +10,6 @@ import { BasicLayout } from '../../layouts/BasicLayout/BasicLayout'
 import { SignUpLayout } from '../../layouts/logged-out/SignUpLayout/SignUpLayout'
 import { useFocus } from '../useFocus'
 
-vi.mock('react-redux', { spy: true })
 // Avoid "document.getElementById(...).scrollTo is not a function" error.
 Element.prototype.scrollTo = () => {}
 
@@ -87,24 +85,21 @@ const renderUseFocusRoutes = (url = '/accueil') => {
         }
       />
     </Routes>,
-    { initialRouterEntries: [url] }
+    {
+      initialRouterEntries: [url],
+      storeOverrides: {
+        offerer: {
+          offererNames: [{ id: 456, name: 'Offerer', allowedOnAdage: false }],
+        },
+        user: {
+          currentUser: { id: 123 },
+        },
+      },
+    }
   )
 }
 
 describe('useFocus', () => {
-  beforeEach(() => {
-    vi.spyOn(reactRedux, 'useSelector').mockImplementation((ev) => {
-      switch (ev.name) {
-        case 'selectCurrentOffererId':
-          return 456
-        case 'selectOffererNames':
-          return [{ id: 456, name: 'Offerer', allowedOnAdage: false }]
-        default:
-          return { id: 123 }
-      }
-    })
-  })
-
   it('should focus on back to nav link when user navigates to another page', async () => {
     renderUseFocusRoutes('/connection')
     expect(

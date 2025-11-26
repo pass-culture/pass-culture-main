@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { usePagination } from 'react-instantsearch'
-import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router'
 
 import { PaginationType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setAdagePageSaved } from '@/commons/store/adageFilter/reducer'
 import { adagePageSavedSelector } from '@/commons/store/adageFilter/selectors'
 import { Pagination } from '@/design-system/Pagination/Pagination'
@@ -14,8 +15,8 @@ interface CustomPaginationProps {
 }
 
 export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
-  const dispatch = useDispatch()
-  const adagePageSavedFromSelector = useSelector(adagePageSavedSelector)
+  const dispatch = useAppDispatch()
+  const adagePageSavedFromSelector = useAppSelector(adagePageSavedSelector)
 
   const { currentRefinement, nbPages, refine } = usePagination()
   const { siret, venueId } = useParams<{

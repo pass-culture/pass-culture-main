@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
@@ -20,6 +19,7 @@ import {
 import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
   selectCurrentOfferer,
@@ -70,8 +70,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
-  const offerer = useSelector(selectCurrentOfferer)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const offerer = useAppSelector(selectCurrentOfferer)
 
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const duplicateButtonRef = useRef<HTMLButtonElement>(null)

@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
@@ -8,6 +7,7 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -24,7 +24,7 @@ export const RejectedBanner = ({
 }) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const notify = useNotification()
 
   return (

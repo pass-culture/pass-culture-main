@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router'
 import useSWR from 'swr'
 
@@ -12,6 +11,7 @@ import {
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getDateToFrenchText } from '@/commons/utils/date'
@@ -27,7 +27,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
 

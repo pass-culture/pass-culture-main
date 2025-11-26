@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -6,10 +5,12 @@ import { api } from '@/apiClient/api'
 import { GET_MUSIC_TYPES_QUERY_KEY } from '../config/swrQueryKeys'
 import { updateMusicTypes } from '../store/staticData/reducer'
 import { selectMusicTypes } from '../store/staticData/selectors'
+import { useAppDispatch } from './useAppDispatch'
+import { useAppSelector } from './useAppSelector'
 
 export function useMusicTypes() {
-  const dispatch = useDispatch()
-  const musicTypes = useSelector(selectMusicTypes)
+  const dispatch = useAppDispatch()
+  const musicTypes = useAppSelector(selectMusicTypes)
   const shouldFetchMusicTypes = musicTypes === undefined
 
   const { data } = useSWR(

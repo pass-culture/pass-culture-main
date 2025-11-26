@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
 import { Navigate, useParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
-import type { AppDispatch } from '@/commons/store/store'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
@@ -13,9 +13,9 @@ type Params = { token: string }
 // TODO (igabriele, 2025-10-21): Not sure we need this component and its logic, the new auth flow should able to handle that automtically.
 export const SignupValidation = (): JSX.Element | null => {
   const { token } = useParams<Params>()
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
   const [urlToRedirect, setUrlToRedirect] = useState<string>()
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useAppDispatch()
 
   const tokenConsumed = useRef(false)
 

@@ -1,9 +1,9 @@
-import { useDispatch } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { updateUserAccess } from '@/commons/store/user/reducer'
 import { RedirectDialog } from '@/components/RedirectDialog/RedirectDialog'
 import fullWaitIcon from '@/icons/full-wait.svg'
@@ -26,7 +26,7 @@ export const RedirectToBankAccountDialog = ({
   const { logEvent } = useAnalytics()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   return (
     <RedirectDialog

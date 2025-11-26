@@ -1,7 +1,7 @@
 import classNames from 'classnames'
-import { useSelector } from 'react-redux'
 
 import { orejime } from '@/app/App/analytics/orejime'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -20,7 +20,7 @@ type FooterProps = {
     | 'sign-up'
 }
 export const Footer = ({ layout }: FooterProps) => {
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
 
   return (
     <footer

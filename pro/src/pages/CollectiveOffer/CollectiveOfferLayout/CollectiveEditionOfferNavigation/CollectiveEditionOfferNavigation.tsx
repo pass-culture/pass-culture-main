@@ -1,6 +1,5 @@
 import cn from 'classnames'
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 import { mutate } from 'swr'
 
@@ -26,6 +25,7 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -70,7 +70,7 @@ export const CollectiveEditionOfferNavigation = ({
     'WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'
   )
 
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
 

@@ -1,13 +1,13 @@
-import { useSelector } from 'react-redux'
 import { Link } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 
 import styles from './Sitemap.module.scss'
 
 export const Sitemap = () => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   return (
     <BasicLayout mainHeading="Plan du site">

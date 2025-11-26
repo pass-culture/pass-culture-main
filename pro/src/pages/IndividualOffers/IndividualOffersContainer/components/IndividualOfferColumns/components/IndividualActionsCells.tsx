@@ -1,5 +1,4 @@
 import { useCallback, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -15,6 +14,7 @@ import {
 import { OFFER_STATUS_DRAFT } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
@@ -48,7 +48,7 @@ export const IndividualActionsCells = ({
   const { storedFilters } = getStoredFilterConfig('individual')
   const { isHeadlineOfferAllowedForOfferer, upsertHeadlineOffer } =
     useHeadlineOfferContext()
-  const selectedOffererId = useSelector(ensureCurrentOfferer).id
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
     ...urlSearchFilters,

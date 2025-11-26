@@ -1,7 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate, useSearchParams } from 'react-router'
 import { useSWRConfig } from 'swr'
 
@@ -16,6 +15,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
@@ -58,7 +58,7 @@ export const IndividualOfferSummaryScreen = ({
   const { subCategories, hasPublishedOfferWithSameEan } =
     useIndividualOfferContext()
   const [searchParams, setSearchParams] = useSearchParams()
-  const currentOfferer = useSelector(selectCurrentOfferer)
+  const currentOfferer = useAppSelector(selectCurrentOfferer)
 
   const onPublish = async (values: EventPublicationFormValues) => {
     const departmentCode = getDepartmentCode(offer)

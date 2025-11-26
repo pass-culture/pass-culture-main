@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { mutate, useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -12,6 +11,7 @@ import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -135,7 +135,7 @@ export const IndividualOffersActionsBar = ({
   }
 
   const { mutate } = useSWRConfig()
-  const selectedOffererId = useSelector(ensureCurrentOfferer).id
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const dactivateButtonRef = useRef<HTMLButtonElement>(null)
