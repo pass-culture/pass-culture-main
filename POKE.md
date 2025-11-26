@@ -22,5 +22,15 @@ cd ..
 
 ## Seed
 
+### Base entities
+
+- user
+- deposit
+- offerer
+- address
+- offerer_address
+
 ```sh
+python ./scripts/seed/01-seed_base_entities.py --port 5434 --num-users 100 --num-offerers 100
+python ./scripts/seed/01-seed_base_entities.py --port 5435 --num-users 100 --num-offerers 100
 ```
