@@ -152,7 +152,6 @@ class FeatureToggle(enum.Enum):
     )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
-    WIP_ENABLE_NEW_OFFER_CREATION_FLOW = "Activer le nouveau parcours de création d'offre"
     # TODO (prouzet, 2025-09-25) Remove feature flag after pass Culture is launched in NC
     WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE = "Permettre l'indexation et la réservation des offres en Nouvelle-Calédonie"
 

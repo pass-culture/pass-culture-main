@@ -8263,7 +8263,7 @@ INSERT INTO public.feature VALUES (133, 'USE_UNIVERSAL_LINKS', 'Utiliser les Uni
 INSERT INTO public.feature VALUES (134, 'ENABLE_BANK_ACCOUNT_SYNC', 'Active la synchronisation des comptes bancaires avec l''outil finance externe (Cegid XRP Flex)', false);
 INSERT INTO public.feature VALUES (135, 'WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED', 'Désactiver la notification push Batch pour les favoris non-réservés', false);
 INSERT INTO public.feature VALUES (136, 'WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY', 'Autoriser l''ajout de nouvelle structure seulement pour les collectivités', false);
-INSERT INTO public.feature VALUES (137, 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', 'Activer le nouveau parcours de création d''offre', true);
+INSERT INTO public.feature VALUES (137, 'WIP_ENABLE_NEW_OFFER_CREATION_FLOW', 'Activer le nouveau parcours de création d''offre', false);
 INSERT INTO public.feature VALUES (138, 'SEND_ALL_EMAILS_TO_EHP', 'Envoyer tous les emails en testing et staging. À activer temporairement lors de phase de test', false);
 INSERT INTO public.feature VALUES (139, 'WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION', 'Désactiver la notification push Batch pour l''annulation d''une réservation', false);
 INSERT INTO public.feature VALUES (140, 'ENABLE_MOVIE_FESTIVAL_RATE', 'Activer les tarifs spéciaux pour un festival cinéma', false);
