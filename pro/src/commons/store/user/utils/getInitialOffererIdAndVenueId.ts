@@ -19,10 +19,10 @@ export const getInitialOffererIdAndVenueId = (
   // TODO (igabriele, 2025-10-28): Handle that case properly before `WIP_SWITCH_VENUE` is enabled in production.
 
   const urlSearchParams = new URLSearchParams(window.location.search)
-  const selectedOfererIdFromUrl = Number(urlSearchParams.get('structure'))
-  if (selectedOfererIdFromUrl) {
+  const selectedOffererIdFromUrl = Number(urlSearchParams.get('structure'))
+  if (selectedOffererIdFromUrl) {
     return {
-      initialOffererId: selectedOfererIdFromUrl,
+      initialOffererId: selectedOffererIdFromUrl,
       initialVenueId: null,
     }
   }
@@ -63,7 +63,7 @@ export const getInitialOffererIdAndVenueId = (
   }
 
   // ---------------------------------------------------------------------------
-  // Priority 4: If there are venues in the store (= from the API), we get the first venue.
+  // Priority 4: If there are venues in the store (= from the API), we get the first active venue.
 
   const firstVenue = venues.at(0)
   if (firstVenue) {
