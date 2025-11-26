@@ -8,12 +8,10 @@ from flask_login import login_required
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
-from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import repository as offers_repository
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404_from_query
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import offers_serialize
@@ -214,27 +212,3 @@ def bulk_update_event_stocks(
         offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
     ]
     return offers_serialize.GetStocksResponseModel(stock_count=edited_stocks_count, stocks=stocks)
-
-
-@private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
-@atomic()
-@login_required
-@spectree_serialize(response_model=offers_serialize.GetStocksResponseModel, api=blueprint.pro_private_schema)
-def delete_stock(stock_id: int) -> offers_serialize.GetStocksResponseModel:
-    stock = first_or_404(
-        offers_models.Stock.queryNotSoftDeleted().filter_by(id=stock_id).join(offers_models.Offer).join(Venue)
-    )
-
-    offerer_id = stock.offer.venue.managingOffererId
-    check_user_has_access_to_offerer(current_user, offerer_id)
-    offers_api.delete_stock(stock, current_user.real_user.id, current_user.is_impersonated)
-
-    filtered_stocks = offers_repository.get_filtered_stocks(
-        offer=stock.offer,
-        venue=stock.offer.venue,
-    )
-    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
-    stocks = [
-        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
-    ]
-    return offers_serialize.GetStocksResponseModel(stock_count=filtered_stocks.count(), stocks=stocks)
