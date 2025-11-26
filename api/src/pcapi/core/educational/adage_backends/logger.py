@@ -136,21 +136,19 @@ class AdageLoggerClient(AdageClient):
 
     def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/etablissement-culturel/?ansco={ansco}")
-        if ansco == "6":
-            return [
-                serialize.AdageEducationalInstitution(
-                    uai="0470009E",
-                    sigle="COLLEGE",
-                    libelle="DE LA TOUR0",
-                    communeLibelle="PARIS",
-                    courriel="contact+collegelatour@example.com",
-                    telephone="0600000000",
-                    codePostal="75000",
-                    latitude=decimal.Decimal("48.8534"),
-                    longitude=decimal.Decimal("2.3488"),
-                )
-            ]
-        raise exceptions.AdageEducationalInstitutionNotFound("Requested educational institution not found for Adage")
+        return [
+            serialize.AdageEducationalInstitution(
+                uai="0470009E",
+                sigle="COLLEGE",
+                libelle="DE LA TOUR0",
+                communeLibelle="PARIS",
+                courriel="contact+collegelatour@example.com",
+                telephone="0600000000",
+                codePostal="75000",
+                latitude=decimal.Decimal("48.8534"),
+                longitude=decimal.Decimal("2.3488"),
+            )
+        ]
 
     def get_adage_educational_redactor_from_uai(self, uai: str) -> list[dict[str, str]]:
         api_url = f"{self.base_url}/v1/redacteurs-projets/{uai}"

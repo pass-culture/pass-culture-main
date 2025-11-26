@@ -1,4 +1,5 @@
 import csv
+import enum
 import logging
 import os
 import typing
@@ -12,6 +13,7 @@ from pcapi.core.educational import adage_backends as adage_client
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.educational import utils
 from pcapi.core.educational.adage_backends.serialize import AdageEducationalInstitution
 from pcapi.core.educational.constants import INSTITUTION_TYPES
 from pcapi.models import db
@@ -54,8 +56,24 @@ def search_educational_institution(
     )
 
 
+class ImportDepositPeriodOption(enum.Enum):
+    # period = full educational year
+    EDUCATIONAL_YEAR_FULL = "EDUCATIONAL_YEAR_FULL"
+    # period = educational year first period (september start -> december end)
+    EDUCATIONAL_YEAR_FIRST_PERIOD = "EDUCATIONAL_YEAR_FIRST_PERIOD"
+    # period = educational year second period (january start -> august end)
+    EDUCATIONAL_YEAR_SECOND_PERIOD = "EDUCATIONAL_YEAR_SECOND_PERIOD"
+
+
 def import_deposit_institution_csv(
-    *, path: str, year: int, ministry: str, conflict: str, final: bool, program_name: str | None
+    *,
+    path: str,
+    year: int,
+    ministry: str,
+    period_option: ImportDepositPeriodOption,
+    conflict: str,
+    final: bool,
+    program_name: str | None,
 ) -> Decimal:
     """
     Import deposits from csv file and update institutions according to adage data
@@ -77,6 +95,7 @@ def import_deposit_institution_csv(
         data=data,
         educational_year=educational_year,
         ministry=models.Ministry[ministry],
+        period_option=period_option,
         conflict=conflict,
         final=final,
     )
@@ -130,14 +149,18 @@ def import_deposit_institution_data(
     data: dict[str, Decimal],
     educational_year: models.EducationalYear,
     ministry: models.Ministry,
+    period_option: ImportDepositPeriodOption,
     final: bool,
     conflict: str,
 ) -> Decimal:
+    period_start, period_end = _get_import_deposit_period_bounds(period_option, educational_year)
+    period = db_utils.make_timerange(period_start, period_end)
+
     adage_institutions = {
         i.uai: i for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
     }
     db_institutions = {
-        institution.institutionId: institution for institution in db.session.query(models.EducationalInstitution).all()
+        institution.institutionId: institution for institution in db.session.query(models.EducationalInstitution)
     }
 
     not_found_uais = [uai for uai in data if uai not in adage_institutions]
@@ -180,11 +203,20 @@ def import_deposit_institution_data(
                 .filter(
                     models.EducationalDeposit.educationalYearId == educational_year.adageId,
                     models.EducationalDeposit.educationalInstitutionId == db_institution.id,
+                    models.EducationalDeposit.period.op("&&")(period),
                 )
                 .one_or_none()
             )
 
         if deposit:
+            # we cannot have two deposits with periods that overlap for the same education year and institution
+            assert deposit.period is not None
+            if deposit.period.lower != period_start or deposit.period.upper != period_end:
+                raise ValueError(
+                    f"Deposit with id {deposit.id} has a period that overlaps (and is different from) input period"
+                )
+
+            # update the deposit
             if deposit.ministry != ministry and conflict == "replace":
                 logger.warning(
                     "Ministry changed from '%s' to '%s' for deposit %s",
@@ -199,6 +231,7 @@ def import_deposit_institution_data(
             deposit = models.EducationalDeposit(
                 educationalYear=educational_year,
                 educationalInstitution=db_institution,
+                period=period,
                 amount=amount,
                 ministry=ministry,
                 isFinal=final,
@@ -209,6 +242,23 @@ def import_deposit_institution_data(
 
     db.session.flush()
     return total_amount
+
+
+def _get_import_deposit_period_bounds(
+    period_option: ImportDepositPeriodOption, educational_year: models.EducationalYear
+) -> tuple[datetime, datetime]:
+    match period_option:
+        case ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL:
+            return (educational_year.beginningDate, educational_year.expirationDate)
+
+        case ImportDepositPeriodOption.EDUCATIONAL_YEAR_FIRST_PERIOD:
+            return utils.get_educational_year_first_period_bounds(educational_year)
+
+        case ImportDepositPeriodOption.EDUCATIONAL_YEAR_SECOND_PERIOD:
+            return utils.get_educational_year_second_period_bounds(educational_year)
+
+        case _:
+            raise ValueError("Unexpected deposit period option")
 
 
 def _update_institutions_educational_program(

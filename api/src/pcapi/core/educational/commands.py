@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 from decimal import Decimal
 
 import click
@@ -50,37 +51,81 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool, uai: str | N
 @click.option(
     "--year",
     type=int,
-    help="Year of start of the edcational year (example: 2023 for educational year 2023-2024).",
     required=True,
+    help="Year of start of the edcational year (example: 2023 for educational year 2023-2024).",
 )
 @click.option(
     "--ministry",
-    type=click.Choice([m.name for m in educational_models.Ministry], case_sensitive=False),
-    help="Ministry for this deposit.",
+    type=click.Choice([m.name for m in educational_models.Ministry]),
     required=True,
+    help="Ministry for this deposit.",
 )
-@click.option("--path", type=str, required=True, help="Path to the CSV to import.")
+@click.option(
+    "--period-option",
+    type=click.Choice([p.name for p in institution_api.ImportDepositPeriodOption]),
+    required=True,
+    help="""
+        Deposit period option
+        - EDUCATIONAL_YEAR_FULL: period = full educational year
+        - EDUCATIONAL_YEAR_FIRST_PERIOD: period = educational year first period (september start -> december end)
+        - EDUCATIONAL_YEAR_SECOND_PERIOD: period = educational year second period (january start -> august end)
+    """,
+)
+@click.option("--filename", type=str, required=True, help="Name of the CSV to import.")
 @click.option(
     "--conflict",
-    type=click.Choice(("keep", "replace"), case_sensitive=False),
+    type=click.Choice(("keep", "replace")),
     default="keep",
     help="Overide previous ministry if needed.",
+)
+@click.option(
+    "--educational-program-name",
+    type=click.Choice([educational_models.PROGRAM_MARSEILLE_EN_GRAND]),
+    help="Link the institutions to a program, if given.",
 )
 @click.option("--final", is_flag=True, help="Flag deposits as final.")
 @click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
 def import_deposit_csv(
-    *, path: str, year: int, ministry: str, conflict: str, final: bool, not_dry: bool = False
+    *,
+    year: int,
+    ministry: str,
+    period_option: str,
+    filename: str,
+    conflict: str,
+    educational_program_name: str,
+    final: bool,
+    not_dry: bool = False,
 ) -> None:
     """
-    import CSV deposits and update institution according to adage data.
-
-    CSV format change every time we try to work with it.
+    Import CSV deposits and update institution according to adage data
     """
-    institution_api.import_deposit_institution_csv(
-        path=path, year=year, ministry=ministry, conflict=conflict, final=final, program_name=None
+    args = f"{year=}, {ministry=}, {period_option=}, {filename=}, {conflict=}, {educational_program_name=}, {final=}, {not_dry=}"
+    logger.info("Starting import deposit csv with args %s", args)
+
+    namespace_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = f"{namespace_dir}/{filename}"
+
+    total_amount = institution_api.import_deposit_institution_csv(
+        path=file_path,
+        year=year,
+        ministry=ministry,
+        period_option=institution_api.ImportDepositPeriodOption[period_option],
+        conflict=conflict,
+        final=final,
+        program_name=educational_program_name,
     )
+
+    output_dir = os.environ.get("OUTPUT_DIRECTORY")
+    if output_dir:
+        with open(f"{output_dir}/total_amount.txt", "w", encoding="utf8") as f:
+            f.write(f"Total imported amount: {total_amount}")
+
     if not_dry:
+        logger.info("Finished import deposit csv, committing")
         db.session.commit()
+    else:
+        logger.info("Finished dry run for import budget, rollback")
+        db.session.rollback()
 
 
 @blueprint.cli.command("check_deposit_csv")
