@@ -758,17 +758,11 @@ def get_music_types() -> offers_serialize.GetMusicTypesResponse:
     )
 
 
-def _get_offer_for_price_categories_upsert(
-    offer_id: int, price_category_edition_payload: list[offers_serialize.EditPriceCategoryModel]
-) -> models.Offer | None:
+def _get_offer_for_price_categories_upsert(offer_id: int,) -> models.Offer | None:
     return (
         db.session.query(models.Offer)
         .outerjoin(models.Offer.stocks.and_(sqla.not_(models.Stock.isEventExpired)))
-        .outerjoin(
-            models.Offer.priceCategories.and_(
-                models.PriceCategory.id.in_([price_category.id for price_category in price_category_edition_payload])
-            )
-        )
+        .outerjoin(models.Offer.priceCategories)
         .outerjoin(models.PriceCategoryLabel, models.PriceCategory.priceCategoryLabel)
         .options(sa_orm.contains_eager(models.Offer.stocks))
         .options(
@@ -804,12 +798,31 @@ def post_price_categories(
     new_labels_and_prices = {(p.label, p.price) for p in price_categories_to_create}
     validation.check_for_duplicated_price_categories(new_labels_and_prices, offer_id)
 
-    offer = _get_offer_for_price_categories_upsert(offer_id, price_categories_to_edit)
+    offer = _get_offer_for_price_categories_upsert(offer_id)
     if not offer:
         raise api_errors.ApiErrors({"offer_id": ["L'offre avec l'id %s n'existe pas" % offer_id]}, status_code=400)
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
+    # categories id in the request (to preserve)
+    price_category_to_edit_ids = {
+        pc.id for pc in price_categories_to_edit
+        if hasattr(pc, 'id') and pc.id is not None
+    }
+
     existing_price_categories_by_id = {category.id: category for category in offer.priceCategories}
+
+    # get all existing price categories to delete, if their ids are not in the sent ids 
+    categories_to_delete = [
+        existing_category for existing_id, existing_category in existing_price_categories_by_id.items()
+        if existing_id not in price_category_to_edit_ids
+    ]
+
+    # for each existing category not in the request, delete it
+    for category in categories_to_delete:
+        offers_api.delete_price_category(offer, category)
+        # if category exist, we delete item in offer
+        if category in offer.priceCategories:
+            offer.priceCategories.remove(category)
 
     for price_category_to_create in price_categories_to_create:
         offers_api.create_price_category(offer, price_category_to_create.label, price_category_to_create.price)
