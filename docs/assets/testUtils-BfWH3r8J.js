@@ -1,0 +1,1 @@
+import{c as a,i as e,a as r}from"./store-8U-io0Hd.js";import{i as o}from"./reducer-Cz1kPx4C.js";const c=t=>{const i={features:{...e,initialized:!0},notification:o,user:r};return a({...i,...t}).store};export{c};
