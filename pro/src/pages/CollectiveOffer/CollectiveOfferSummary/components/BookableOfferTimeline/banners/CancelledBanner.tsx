@@ -1,5 +1,4 @@
 import { useMemo } from 'react'
-import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router'
 
 import {
@@ -12,6 +11,7 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -30,7 +30,7 @@ export const CancelledBanner = ({
 }) => {
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const notify = useNotification()
 
   const message = useMemo(() => {

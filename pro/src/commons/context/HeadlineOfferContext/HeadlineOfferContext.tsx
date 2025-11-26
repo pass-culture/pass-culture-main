@@ -1,5 +1,4 @@
 import { createContext, useContext } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 import useSWR, { useSWRConfig } from 'swr'
 
@@ -11,6 +10,7 @@ import {
   GET_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { noopAsync } from '@/commons/utils/noop'
@@ -46,7 +46,7 @@ type HeadlineOfferContextProviderProps = { children: React.ReactNode }
 export function HeadlineOfferContextProvider({
   children,
 }: HeadlineOfferContextProviderProps) {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
   const notify = useNotification()
   const { logEvent } = useAnalytics()

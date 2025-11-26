@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 
 import { BookingStatusFilter } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
@@ -22,7 +22,7 @@ function isBookingStatusFilter(
 export function useBookingsFilters() {
   const navigate = useNavigate()
   const location = useLocation()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const initialAppliedFilters: PreFiltersParams = useMemo(
     () => ({

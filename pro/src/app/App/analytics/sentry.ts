@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/browser'
 import { reactRouterV7BrowserTracingIntegration } from '@sentry/react'
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import {
   createRoutesFromChildren,
   matchRoutes,
@@ -9,6 +8,7 @@ import {
   useNavigationType,
 } from 'react-router'
 
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import {
   ENVIRONMENT_NAME,
@@ -162,7 +162,7 @@ export const initializeSentry = () => {
 }
 
 export const useSentry = () => {
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
 
   useEffect(() => {
     if (currentUser?.id) {

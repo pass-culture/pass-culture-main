@@ -1,5 +1,4 @@
-import { useSelector } from 'react-redux'
-
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -33,7 +32,7 @@ export const ErrorLayout = ({
   errorIcon,
   redirect = '/',
 }: ErrorLayoutProps) => {
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
   const isConnected = !!currentUser
 
   return (

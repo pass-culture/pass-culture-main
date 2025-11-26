@@ -1,6 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import { api } from '@/apiClient/api'
 import {
@@ -10,6 +9,7 @@ import {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
 import { downloadFile } from '@/commons/utils/downloadFile'
@@ -52,7 +52,7 @@ export const DownloadBookingsModal = ({
       ? priceCategoryAndScheduleCountByDate[0].eventDate
       : undefined
   )
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
 

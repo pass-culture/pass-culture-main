@@ -1,4 +1,3 @@
-import { useSelector } from 'react-redux'
 import { useParams } from 'react-router'
 import useSWR from 'swr'
 
@@ -9,6 +8,7 @@ import {
   GET_VENUE_QUERY_KEY,
   GET_VENUE_TYPES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -19,7 +19,7 @@ const VenueSettings = (): JSX.Element | null => {
     venueId: string
   }>()
 
-  const offerer = useSelector(selectCurrentOfferer)
+  const offerer = useAppSelector(selectCurrentOfferer)
 
   const venueQuery = useSWR(
     [GET_VENUE_QUERY_KEY, venueId],

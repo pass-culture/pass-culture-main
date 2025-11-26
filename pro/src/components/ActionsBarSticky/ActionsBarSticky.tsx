@@ -1,7 +1,7 @@
 import classnames from 'classnames'
 import { useEffect } from 'react'
-import { useDispatch } from 'react-redux'
 
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { setIsStickyBarOpen } from '@/commons/store/notifications/reducer'
 
 import style from './ActionsBarSticky.module.scss'
@@ -19,7 +19,7 @@ export const ActionsBarSticky = ({
   className,
   hasSideNav = true,
 }: ActionsBarStickyProps): JSX.Element => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   useEffect(() => {
     dispatch(setIsStickyBarOpen(true))
     return () => {

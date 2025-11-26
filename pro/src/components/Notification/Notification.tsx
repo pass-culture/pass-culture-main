@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import { NOTIFICATION_TRANSITION_DURATION } from '@/commons/core/Notification/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import {
   isStickyBarOpenSelector,
@@ -11,8 +11,8 @@ import { NotificationToaster } from '@/ui-kit/NotificationToaster/NotificationTo
 
 export const Notification = (): JSX.Element | null => {
   const [isVisible, setIsVisible] = useState(false)
-  const isStickyBarOpen = useSelector(isStickyBarOpenSelector)
-  const notification = useSelector(notificationSelector)
+  const isStickyBarOpen = useAppSelector(isStickyBarOpenSelector)
+  const notification = useAppSelector(notificationSelector)
   const notificationHook = useNotification()
 
   useEffect(() => {

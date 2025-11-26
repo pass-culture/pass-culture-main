@@ -1,8 +1,8 @@
 import { memo, type ReactNode } from 'react'
-import { useSelector } from 'react-redux'
 import { Navigate, useLocation, useSearchParams } from 'react-router'
 
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import type { UserAccess } from '@/commons/store/user/reducer'
 
 type AppRouterGuardProps = {
@@ -15,7 +15,9 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const currentRoute = findCurrentRoute(location)
-  const userAccess: UserAccess = useSelector((store: any) => store.user.access)
+  const userAccess: UserAccess = useAppSelector(
+    (store: any) => store.user.access
+  )
 
   if (currentRoute) {
     if (!userAccess && !currentRoute?.meta?.public) {

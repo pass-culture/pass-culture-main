@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 export const useFocus = (): void => {
@@ -11,7 +11,7 @@ export const useFocus = (): void => {
   const currentRoute = findCurrentRoute(location)
   const isErrorPage = currentRoute?.isErrorPage
 
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
   const isConnected = !!currentUser
 
   useEffect(() => {

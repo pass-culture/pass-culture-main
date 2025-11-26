@@ -1,9 +1,9 @@
 import { useMemo, useRef } from 'react'
-import { useSelector } from 'react-redux'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
 import { Newsletter } from '@/components/Newsletter/Newsletter'
@@ -41,7 +41,7 @@ export const Homepage = (): JSX.Element => {
     })) ?? []
   )
 
-  const selectedOfferer = useSelector(selectCurrentOfferer)
+  const selectedOfferer = useAppSelector(selectCurrentOfferer)
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)

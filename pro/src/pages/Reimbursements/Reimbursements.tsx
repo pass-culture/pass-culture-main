@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux'
 import { Outlet } from 'react-router'
 
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
 
@@ -13,7 +13,7 @@ export type ReimbursementsContextProps = {
 }
 
 export const Reimbursements = (): JSX.Element => {
-  const selectedOfferer = useSelector(selectCurrentOfferer)
+  const selectedOfferer = useAppSelector(selectCurrentOfferer)
 
   return (
     <BasicLayout mainHeading="Gestion financière">

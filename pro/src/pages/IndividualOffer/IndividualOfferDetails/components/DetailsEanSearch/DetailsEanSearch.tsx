@@ -1,11 +1,11 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 
 import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -42,7 +42,7 @@ export const DetailsEanSearch = ({
   onEanSearch,
   onEanReset,
 }: DetailsEanSearchProps): JSX.Element => {
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const [wasCleared, setWasCleared] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
 

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -8,6 +7,7 @@ import { GET_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -31,7 +31,7 @@ export const HeadlineOfferImageDialogs = ({
   setIsFirstDialogOpen,
   offer,
 }: HeadlineOfferImageDialogsProps) => {
-  const selectedOffererId = useSelector(ensureCurrentOfferer).id
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const { mutate } = useSWRConfig()
 
   const { headlineOffer, upsertHeadlineOffer } = useHeadlineOfferContext()

@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 import { postImageToVenue } from 'repository/pcapi/pcapi'
 import { useSWRConfig } from 'swr'
 
@@ -8,6 +7,7 @@ import type { BannerMetaModel, GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
@@ -69,7 +69,7 @@ export const VenueEditionHeader = ({
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const notify = useNotification()
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const [imageValues, setImageValues] =

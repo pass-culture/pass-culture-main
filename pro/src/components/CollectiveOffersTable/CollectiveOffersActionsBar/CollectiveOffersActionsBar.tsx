@@ -1,5 +1,4 @@
 import { useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { useSWRConfig } from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -15,6 +14,7 @@ import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -101,7 +101,7 @@ export function CollectiveOffersActionsBar<
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
 
-  const selectedOffererId = useSelector(ensureCurrentOfferer).id
+  const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const archiveButtonRef = useRef<HTMLButtonElement>(null)
   const deActivateButtonRef = useRef<HTMLButtonElement>(null)
 

@@ -17,10 +17,10 @@ import {
 } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useInstantSearch, useSearchBox } from 'react-instantsearch'
-import { useDispatch } from 'react-redux'
 
 import { SuggestionType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import {
   setAdagePageSaved,
   setAdageQuery,
@@ -89,7 +89,7 @@ export const Autocomplete = ({
   initialQuery,
   handleSubmit,
 }: AutocompleteProps) => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const { refine } = useSearchBox()
   const { refresh } = useInstantSearch()

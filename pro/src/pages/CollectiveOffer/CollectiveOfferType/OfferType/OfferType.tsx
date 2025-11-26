@@ -1,5 +1,4 @@
 import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router'
 
 import { api } from '@/apiClient/api'
@@ -48,7 +47,7 @@ export const OfferTypeScreen = () => {
 
   const { handleSubmit } = methods
 
-  const offerer = useSelector(selectCurrentOfferer)
+  const offerer = useAppSelector(selectCurrentOfferer)
 
   const onSubmit = async ({ offer }: OfferTypeFormValues) => {
     if (offer.collectiveOfferSubtype === COLLECTIVE_OFFER_SUBTYPE.TEMPLATE) {

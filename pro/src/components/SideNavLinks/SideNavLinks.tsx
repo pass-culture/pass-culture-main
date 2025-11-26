@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
 import classnames from 'classnames'
 import { useEffect } from 'react'
-import { useSelector } from 'react-redux'
 import { NavLink, useLocation } from 'react-router'
 
 import {
@@ -114,7 +113,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     }
   }, [sideNavCollapseSize, location.pathname, dispatch])
 
-  const reduxStoredPartnerPageId = useSelector(selectSelectedPartnerPageId)
+  const reduxStoredPartnerPageId = useAppSelector(selectSelectedPartnerPageId)
   const savedPartnerPageVenueId = getSavedPartnerPageVenueId(
     'partnerPage',
     selectedOfferer?.id

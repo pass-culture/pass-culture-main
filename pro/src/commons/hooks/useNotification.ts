@@ -1,13 +1,14 @@
 /* istanbul ignore file */
 
 import { useCallback, useMemo } from 'react'
-import { useDispatch } from 'react-redux'
 
 import { NOTIFICATION_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import {
   closeNotification,
   showNotification,
 } from '@/commons/store/notifications/reducer'
+
+import { useAppDispatch } from './useAppDispatch'
 
 export enum NotificationTypeEnum {
   SUCCESS = 'success',
@@ -20,7 +21,7 @@ interface Options {
 }
 
 export const useNotification = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   const notify = useCallback(
     (

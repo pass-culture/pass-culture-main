@@ -16,10 +16,10 @@ import {
   type RemoteConfig,
 } from '@firebase/remote-config'
 import { useCallback, useEffect, useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import { isError } from '@/apiClient/helpers'
 import { firebaseConfig } from '@/commons/config/firebase'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useUtmQueryParams } from '@/commons/hooks/useUtmQueryParams'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
@@ -50,8 +50,8 @@ export const destroyFirebase = async () => {
 }
 
 export const useFirebase = (consentedToFirebase: boolean) => {
-  const currentUser = useSelector(selectCurrentUser)
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const currentUser = useAppSelector(selectCurrentUser)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const [isFirebaseInitialized, setIsFirebaseInitialized] =
     useState<boolean>(false)
 

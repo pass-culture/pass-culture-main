@@ -1,6 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
+import type { DeepPartial } from '@/commons/custom_types/utils'
+import type { RootState } from '@/commons/store/store'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -11,15 +13,6 @@ vi.mock('@/apiClient/api', () => ({
     listOfferersNames: vi.fn(),
   },
 }))
-
-const mockDispatch = vi.fn()
-vi.mock('react-redux', async () => {
-  const actual = await vi.importActual('react-redux')
-  return {
-    ...actual,
-    useDispatch: () => mockDispatch,
-  }
-})
 
 const user = sharedCurrentUserFactory()
 
@@ -40,7 +33,7 @@ const TestComponent = () => {
 }
 
 const renderComponent = (
-  overrides: any = {
+  overrides: DeepPartial<RootState> = {
     offerer: {
       offererNames: null,
     },
@@ -67,16 +60,13 @@ describe('useOffererNamesQuery', () => {
       offerersNames: mockOffererNames,
     })
 
-    renderComponent()
+    const { store } = renderComponent()
 
     await waitFor(() => {
       expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
-      expect(mockDispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          payload: mockOffererNames,
-        })
-      )
     })
+
+    expect(store.getState().offerer.offererNames).toEqual(mockOffererNames)
 
     expect(screen.getByText('Offerer 1')).toBeInTheDocument()
     expect(screen.getByText('Offerer 2')).toBeInTheDocument()
@@ -100,6 +90,5 @@ describe('useOffererNamesQuery', () => {
     })
 
     expect(api.listOfferersNames).not.toHaveBeenCalled()
-    expect(mockDispatch).not.toHaveBeenCalled()
   })
 })

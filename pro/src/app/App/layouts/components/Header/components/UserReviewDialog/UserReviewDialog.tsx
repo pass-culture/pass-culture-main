@@ -2,10 +2,10 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
@@ -68,7 +68,7 @@ export const UserReviewDialog = ({
     resolver: yupResolver(validationSchema),
   })
 
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const location = useLocation()
 
   const group: IconRadioGroupValues[] = [

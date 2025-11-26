@@ -1,12 +1,12 @@
 import { liteClient } from 'algoliasearch/lite'
 import { useEffect, useState } from 'react'
 import { Configure, Index, InstantSearch } from 'react-instantsearch'
-import { useSelector } from 'react-redux'
 
 import type { VenueResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { DEFAULT_MARSEILLE_STUDENTS } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { adageFilterSelector } from '@/commons/store/adageFilter/selectors'
 import {
@@ -69,7 +69,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
     (prog) => prog.name === MARSEILLE_EN_GRAND
   )
 
-  const adageFilterFromSelector = useSelector(adageFilterSelector)
+  const adageFilterFromSelector = useAppSelector(adageFilterSelector)
 
   const notification = useNotification()
 

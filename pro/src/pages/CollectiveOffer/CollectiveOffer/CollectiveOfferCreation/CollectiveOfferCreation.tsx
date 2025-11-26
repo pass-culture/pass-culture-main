@@ -1,7 +1,7 @@
-import { useSelector } from 'react-redux'
 import { useLocation } from 'react-router'
 
 import { Mode } from '@/commons/core/OfferEducational/types'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
@@ -20,7 +20,7 @@ export const CollectiveOfferCreation = ({
 }: OptionalCollectiveOfferFromParamsProps): JSX.Element => {
   const location = useLocation()
   const { requete: requestId } = queryParamsFromOfferer(location)
-  const selectedOffererId = useSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const offererId = selectedOffererId?.toString()
   const { isReady, ...offerEducationalFormData } = useOfferEducationalFormData(
     Number(offererId),

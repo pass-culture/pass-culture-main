@@ -2,7 +2,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import classNames from 'classnames'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSelector } from 'react-redux'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -12,6 +11,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -32,7 +32,7 @@ type UserEmailFormValues = {
 }
 
 export const Collaborators = (): JSX.Element | null => {
-  const offererId = useSelector(selectCurrentOffererId)
+  const offererId = useAppSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
   const notify = useNotification()

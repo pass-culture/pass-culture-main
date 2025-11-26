@@ -1,7 +1,14 @@
 import { act, renderHook } from '@testing-library/react'
+import type { ReactNode } from 'react'
+import { Provider } from 'react-redux'
 
 import { api } from '@/apiClient/api'
+import type {
+  GetCollectiveOfferResponseModel,
+  GetCollectiveOfferTemplateResponseModel,
+} from '@/apiClient/v1'
 import * as useNotification from '@/commons/hooks/useNotification'
+import { configureTestStore } from '@/commons/store/testUtils'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -32,19 +39,31 @@ vi.spyOn(useNotification, 'useNotification').mockImplementation(
   () => mockUseNotification
 )
 
-const mockDispatch = vi.fn()
+const renderUseCollectiveOfferImageUploadWrapper = ({
+  offer,
+  isTemplate = false,
+}: {
+  offer:
+    | GetCollectiveOfferResponseModel
+    | GetCollectiveOfferTemplateResponseModel
+  isTemplate?: boolean
+}) => {
+  const store = configureTestStore({})
 
-vi.mock('react-redux', () => ({
-  ...vi.importActual('react-redux'),
-  useSelector: vi.fn(),
-  useDispatch: () => mockDispatch,
-}))
+  const wrapper = ({ children }: { children: ReactNode }) => (
+    <Provider store={store}>{children}</Provider>
+  )
+
+  return renderHook(() => useCollectiveOfferImageUpload(offer, isTemplate), {
+    wrapper,
+  })
+}
 
 describe('useCollectiveOfferImageUpload', () => {
   it('should initialize with current image', () => {
     const offer = getCollectiveOfferFactory()
 
-    const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))
+    const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
     expect(result.current.imageOffer?.url).toBe(offer.imageUrl)
   })
 
@@ -55,7 +74,7 @@ describe('useCollectiveOfferImageUpload', () => {
       imageUrl: 'https://example.com/image.jpg',
     })
 
-    const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))
+    const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
     act(() => {
       result.current.onImageUpload(image)
     })
@@ -74,9 +93,10 @@ describe('useCollectiveOfferImageUpload', () => {
       imageUrl: 'https://example.com/image.jpg',
     })
 
-    const { result } = renderHook(() =>
-      useCollectiveOfferImageUpload(offer, true)
-    )
+    const { result } = renderUseCollectiveOfferImageUploadWrapper({
+      offer,
+      isTemplate: true,
+    })
     act(() => {
       result.current.onImageUpload(image)
     })
@@ -91,7 +111,7 @@ describe('useCollectiveOfferImageUpload', () => {
   it('should delete image in case of normal offer', async () => {
     const offer = getCollectiveOfferFactory()
 
-    const { result } = renderHook(() => useCollectiveOfferImageUpload(offer))
+    const { result } = renderUseCollectiveOfferImageUploadWrapper({ offer })
     act(() => {
       result.current.onImageDelete()
     })
@@ -106,9 +126,10 @@ describe('useCollectiveOfferImageUpload', () => {
   it('should delete image in case of template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory()
 
-    const { result } = renderHook(() =>
-      useCollectiveOfferImageUpload(offer, true)
-    )
+    const { result } = renderUseCollectiveOfferImageUploadWrapper({
+      offer,
+      isTemplate: true,
+    })
     act(() => {
       result.current.onImageDelete()
     })
@@ -123,9 +144,10 @@ describe('useCollectiveOfferImageUpload', () => {
   it('should not delete image if offer initially had one and onImageDelete was not called', async () => {
     const offer = getCollectiveOfferTemplateFactory()
 
-    const { result } = renderHook(() =>
-      useCollectiveOfferImageUpload(offer, true)
-    )
+    const { result } = renderUseCollectiveOfferImageUploadWrapper({
+      offer,
+      isTemplate: true,
+    })
 
     await act(async () => {
       await result.current.handleImageOnSubmit(3)

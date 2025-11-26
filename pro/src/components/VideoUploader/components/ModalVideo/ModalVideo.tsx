@@ -1,9 +1,9 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { useState } from 'react'
-import { useSelector } from 'react-redux'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { useVideoUploaderContext } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
@@ -26,7 +26,7 @@ export const ModalVideo = ({
   const [error, setError] = useState<string>()
   const { videoUrl, onVideoUpload, setVideoUrl, offerId } =
     useVideoUploaderContext()
-  const currentUser = useSelector(selectCurrentUser)
+  const currentUser = useAppSelector(selectCurrentUser)
   const { logEvent } = useAnalytics()
 
   return (
