@@ -145,6 +145,7 @@ export function StocksCalendar({
 
       notify.success('Les modifications ont été enregistrées')
 
+      // TODO: could not mutate this, stockCount is not what it is in others routes
       await mutate(stockQueryKeys)
       if (mode === OFFER_WIZARD_MODE.EDITION) {
         await mutate([GET_OFFER_QUERY_KEY, offer.id])

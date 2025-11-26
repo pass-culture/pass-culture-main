@@ -2379,27 +2379,6 @@ export class DefaultService {
     });
   }
   /**
-   * delete_stock <DELETE>
-   * @param stockId
-   * @returns GetStocksResponseModel OK
-   * @throws ApiError
-   */
-  public deleteStock(
-    stockId: number,
-  ): CancelablePromise<GetStocksResponseModel> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/stocks/{stock_id}',
-      path: {
-        'stock_id': stockId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * get_structure_data <GET>
    * @param searchInput
    * @returns StructureDataBodyModel OK
