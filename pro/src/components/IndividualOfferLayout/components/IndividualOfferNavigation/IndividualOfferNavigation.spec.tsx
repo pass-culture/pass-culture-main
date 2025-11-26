@@ -149,7 +149,7 @@ describe('IndividualOfferNavigation', () => {
   describe('on edition mode', () => {
     const path = getIndividualOfferPath({
       step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
-      mode: OFFER_WIZARD_MODE.READ_ONLY,
+      mode: OFFER_WIZARD_MODE.EDITION,
     })
 
     it('should display all steps as links', () => {
@@ -166,7 +166,7 @@ describe('IndividualOfferNavigation', () => {
       const bookingStep = screen
         .getAllByRole('listitem')
         .find((listitem) => listitem.textContent?.match(LABELS.BOOKING))
-      expect(bookingStep).toBeDefined()
+      expect(bookingStep).not.toBeDefined()
     })
 
     it('should never display "Récapitulatif" step', () => {
