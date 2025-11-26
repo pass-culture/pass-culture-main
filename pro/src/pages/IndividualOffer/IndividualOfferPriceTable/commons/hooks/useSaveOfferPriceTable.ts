@@ -60,7 +60,7 @@ export const useSaveOfferPriceTable = ({
         if (offer.isEvent) {
           await saveEventOfferPriceTable(formValues, form, { offer })
         } else {
-          await saveNonEventOfferPriceTable(formValues, {
+          await saveNonEventOfferPriceTable(formValues, form, {
             offer,
           })
         }
