@@ -14,6 +14,7 @@ import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
@@ -52,6 +53,8 @@ export const IndividualOffersContainer = ({
   categories,
   offers = [],
 }: IndividualOffersContainerProps): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('individual')
   const [selectedOfferIds, setSelectedOfferIds] = useState<
     Set<string | number>
@@ -70,7 +73,7 @@ export const IndividualOffersContainer = ({
 
   const hasFilters = hasSearchFilters({
     searchFilters: initialSearchFilters,
-    ignore: ['nameOrIsbn'],
+    ignore: withSwitchVenueFeature ? ['nameOrIsbn', 'venueId'] : ['nameOrIsbn'],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
