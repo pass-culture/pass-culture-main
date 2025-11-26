@@ -7,10 +7,14 @@ import pytest
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.educational.api.institution import ImportDepositPeriodOption
+from pcapi.core.educational.api.institution import create_default_institution_deposits
 from pcapi.core.educational.api.institution import import_deposit_institution_csv
 from pcapi.core.educational.api.institution import import_deposit_institution_data
 from pcapi.models import db
 from pcapi.utils import date as date_utils
+
+
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def _get_deposit(year, institution) -> educational_models.EducationalDeposit:
@@ -25,7 +29,6 @@ def _get_deposit(year, institution) -> educational_models.EducationalDeposit:
     )
 
 
-@pytest.mark.usefixtures("db_session")
 class ImportDepositInstitutionDataTest:
     def test_create_institution(self) -> None:
         ansco = educational_factories.EducationalYearFactory()
@@ -210,7 +213,7 @@ class ImportDepositInstitutionDataTest:
                 import_deposit_institution_csv(
                     path=f.name,
                     year=ansco.beginningDate.year,
-                    ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+                    ministry=educational_models.Ministry.EDUCATION_NATIONALE,
                     period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
                     final=False,
                     conflict="replace",
@@ -257,7 +260,6 @@ class ImportDepositInstitutionDataTest:
         assert deposit_new_uai.period.upper == ansco.expirationDate
 
 
-@pytest.mark.usefixtures("db_session")
 class ImportDepositPeriodTest:
     @pytest.mark.parametrize("with_existing_deposit", (True, False))
     def test_deposit_educational_year(self, with_existing_deposit):
@@ -454,3 +456,77 @@ class ImportDepositPeriodTest:
         )
         assert deposit_second_period.period.upper == year.expirationDate
         assert deposit_second_period.amount == Decimal(1250)
+
+
+class CreateDefaultDepositTest:
+    def test_create_default_deposit_educational_year(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+
+        create_default_institution_deposits(
+            year=year.beginningDate.year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+        )
+
+        deposit = _get_deposit(year, institution)
+        assert deposit.period.lower == year.beginningDate
+        assert deposit.period.upper == year.expirationDate
+        assert deposit.amount == 0
+
+    def test_create_default_deposit_first_civil_year(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+
+        create_default_institution_deposits(
+            year=year.beginningDate.year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FIRST_PERIOD,
+        )
+
+        deposit = _get_deposit(year, institution)
+        assert deposit.period.lower == year.beginningDate
+        assert deposit.period.upper == year.beginningDate.replace(month=12, day=31, hour=23, minute=59, second=59)
+        assert deposit.amount == 0
+
+    def test_create_default_deposit_second_civil_year(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+
+        create_default_institution_deposits(
+            year=year.beginningDate.year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_SECOND_PERIOD,
+        )
+
+        deposit = _get_deposit(year, institution)
+        assert deposit.period.lower == year.beginningDate.replace(year=year.beginningDate.year + 1, month=1, day=1)
+        assert deposit.period.upper == year.expirationDate
+        assert deposit.amount == 0
+
+    @pytest.mark.parametrize(
+        "period_option,existing_deposit_factory",
+        (
+            (ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL, educational_factories.EducationalDepositFactory),
+            (
+                ImportDepositPeriodOption.EDUCATIONAL_YEAR_FIRST_PERIOD,
+                educational_factories.EducationalDepositFirstPeriodFactory,
+            ),
+            (
+                ImportDepositPeriodOption.EDUCATIONAL_YEAR_SECOND_PERIOD,
+                educational_factories.EducationalDepositSecondPeriodFactory,
+            ),
+        ),
+    )
+    def test_create_default_deposit_error(self, period_option, existing_deposit_factory):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+        existing_deposit_factory(educationalInstitution=institution, educationalYear=year)
+
+        with pytest.raises(ValueError) as ex:
+            create_default_institution_deposits(
+                year=year.beginningDate.year,
+                ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+                period_option=period_option,
+            )
+        assert str(ex.value) == "Found some existing deposit on this period"

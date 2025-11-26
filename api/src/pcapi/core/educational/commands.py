@@ -108,7 +108,7 @@ def import_deposit_csv(
     total_amount = institution_api.import_deposit_institution_csv(
         path=file_path,
         year=year,
-        ministry=ministry,
+        ministry=educational_models.Ministry[ministry],
         period_option=institution_api.ImportDepositPeriodOption[period_option],
         conflict=conflict,
         final=final,
@@ -133,6 +133,49 @@ def import_deposit_csv(
 def check_deposit_csv(path: str) -> None:
     data = institution_api.get_import_deposit_data(path)
     logger.info("CSV is valid, found %s UAIs for a total amount of %s", len(data.keys()), sum(data.values()))
+
+
+@blueprint.cli.command("create_default_deposit")
+@click.option(
+    "--year",
+    type=int,
+    required=True,
+    help="Year of start of the edcational year (example: 2023 for educational year 2023-2024).",
+)
+@click.option(
+    "--ministry",
+    type=click.Choice([m.name for m in educational_models.Ministry]),
+    required=True,
+    help="Ministry for this deposit.",
+)
+@click.option(
+    "--period-option",
+    type=click.Choice([p.name for p in institution_api.ImportDepositPeriodOption]),
+    required=True,
+    help="""
+        Deposit period option
+        - EDUCATIONAL_YEAR_FULL: period = full educational year
+        - EDUCATIONAL_YEAR_FIRST_PERIOD: period = educational year first period (september start -> december end)
+        - EDUCATIONAL_YEAR_SECOND_PERIOD: period = educational year second period (january start -> august end)
+    """,
+)
+@click.option("--not-dry", is_flag=True, help="Do not commit the changes.")
+def create_default_deposit(*, year: int, ministry: str, period_option: str, not_dry: bool = False) -> None:
+    args = f"{year=}, {ministry=}, {period_option=}, {not_dry=}"
+    logger.info("Starting create default deposit with args %s", args)
+
+    institution_api.create_default_institution_deposits(
+        year=year,
+        ministry=educational_models.Ministry[ministry],
+        period_option=institution_api.ImportDepositPeriodOption[period_option],
+    )
+
+    if not_dry:
+        logger.info("Finished creating default deposit, committing")
+        db.session.commit()
+    else:
+        logger.info("Finished dry run for default deposit, rollback")
+        db.session.rollback()
 
 
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")

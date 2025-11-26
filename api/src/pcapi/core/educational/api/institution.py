@@ -69,7 +69,7 @@ def import_deposit_institution_csv(
     *,
     path: str,
     year: int,
-    ministry: str,
+    ministry: models.Ministry,
     period_option: ImportDepositPeriodOption,
     conflict: str,
     final: bool,
@@ -94,7 +94,7 @@ def import_deposit_institution_csv(
     total_amount = import_deposit_institution_data(
         data=data,
         educational_year=educational_year,
-        ministry=models.Ministry[ministry],
+        ministry=ministry,
         period_option=period_option,
         conflict=conflict,
         final=final,
@@ -320,6 +320,49 @@ def _update_institutions_educational_program(
             )
 
     db.session.flush()
+
+
+def create_default_institution_deposits(
+    year: int,
+    ministry: models.Ministry,
+    period_option: ImportDepositPeriodOption,
+) -> None:
+    try:
+        educational_year = repository.get_educational_year_beginning_at_given_year(year)
+    except exceptions.EducationalYearNotFound:
+        raise ValueError(f"Educational year not found for year {year}")
+
+    # check that there is no existing deposit for this period
+    period_start, period_end = _get_import_deposit_period_bounds(period_option, educational_year)
+    period = db_utils.make_timerange(period_start, period_end)
+    existing_deposit_query = db.session.query(models.EducationalDeposit).filter(
+        models.EducationalDeposit.educationalYearId == educational_year.adageId,
+        models.EducationalDeposit.ministry == ministry,
+        models.EducationalDeposit.period.op("&&")(period),
+    )
+    if existing_deposit_query.count() != 0:
+        raise ValueError("Found some existing deposit on this period")
+
+    # create deposits for institutions that are both present in Adage and in DB
+    adage_institution_uais = {
+        i.uai for i in adage_client.get_adage_educational_institutions(ansco=educational_year.adageId)
+    }
+    db_institution_uais = {institution.institutionId for institution in db.session.query(models.EducationalInstitution)}
+    uais = adage_institution_uais & db_institution_uais
+
+    data = {uai: Decimal(0) for uai in uais}
+
+    total_amount = import_deposit_institution_data(
+        data=data,
+        educational_year=educational_year,
+        ministry=ministry,
+        period_option=period_option,
+        conflict="keep",
+        final=False,
+    )
+
+    if total_amount != 0:
+        raise ValueError("Total amount should be zero")
 
 
 def get_current_year_remaining_credit(institution: models.EducationalInstitution) -> Decimal:
