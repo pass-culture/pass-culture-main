@@ -22,7 +22,7 @@ export const initializeUser = createAsyncThunk<
 >('user/initializeUser', async (user, { dispatch }) => {
   try {
     const offererNamesResponse = await api.listOfferersNames()
-    const venuesResponse = await api.getVenues()
+    const venuesResponse = await api.getVenues(null, true) // only active venues
 
     dispatch(updateOffererNames(offererNamesResponse.offerersNames))
     dispatch(setVenues(venuesResponse.venues))
