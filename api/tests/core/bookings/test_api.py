@@ -416,15 +416,7 @@ class BookOfferTest:
             "user_id": beneficiary.id,
         }
 
-    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=False)
-    def test_caledonian_offer_is_not_bookable_before_launch_date(self):
-        stock = offers_factories.StockFactory(offer__venue=offerers_factories.CaledonianVenueFactory())
-
-        with pytest.raises(exceptions.StockIsNotBookable):
-            api.book_offer(beneficiary=users_factories.BeneficiaryGrant18Factory(), stock_id=stock.id, quantity=1)
-
-    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=True)
-    def test_caledonian_offer_is_bookable_after_launch_date(self):
+    def test_caledonian_offer_is_bookable(self):
         stock = offers_factories.StockFactory(offer__venue=offerers_factories.CaledonianVenueFactory())
 
         booking = api.book_offer(beneficiary=users_factories.BeneficiaryGrant18Factory(), stock_id=stock.id, quantity=1)

@@ -4196,7 +4196,6 @@ class GetOfferDetailsTest(GetEndpointHelper):
             expired_stock_2.beginningDatetime, "%d/%m/%Y à %Hh%M"
         )
 
-    @pytest.mark.features(WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE=True)
     @pytest.mark.parametrize(
         "quantity,booked_quantity,expected_remaining,venue_factory,expected_price,expected_timezone",
         [
