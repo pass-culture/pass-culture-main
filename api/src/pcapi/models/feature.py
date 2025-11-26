@@ -154,6 +154,7 @@ class FeatureToggle(enum.Enum):
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
     # TODO (prouzet, 2025-09-25) Remove feature flag after pass Culture is launched in NC
     WIP_ENABLE_CALEDONIAN_OFFERS_BOOKABLE = "Permettre l'indexation et la réservation des offres en Nouvelle-Calédonie"
+    WIP_VENUE_ACTIVITY = "Active la nouvelle liste d'activité principale pour les structures"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -224,6 +225,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_HIGHLIGHT,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
+    FeatureToggle.WIP_VENUE_ACTIVITY,
     # Please keep alphabetic order
 )
 
