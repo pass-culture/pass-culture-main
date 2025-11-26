@@ -5,9 +5,6 @@ on:
       environment:
         type: string
         required: true
-      environment_short_name: # Required for deploying to new infra
-        type: string
-        required: false
       app_version:
         type: string
         required: true
@@ -39,6 +36,9 @@ on:
         required: false
         default: "api/documentation"
       # Variables used for the new infra
+      environment_short_name: # Required for deploying to new infra
+        type: string
+        required: false
       is_new_infra:
         type: boolean
         required: false
@@ -47,13 +47,16 @@ on:
         type: string
         required: false
         default: europe-west9
-      cluster_name:
+      workflow_cluster_name:
         type: string
         required: false
-      gcp_project_id:
+      workflow_project_id:
         type: string
         required: false
-      cluster_project_id:
+      app_project_id:
+        type: string
+        required: false
+      app_cluster_name:
         type: string
         required: false
     secrets:
@@ -106,12 +109,12 @@ jobs:
         with:
           environment: ${{ inputs.environment_short_name }}
           app_version: ${{ inputs.app_version }}
-          GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER }}
-          GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT }}
-          cluster_name: ${{ inputs.cluster_name }}
-          cluster_scope: ${{ inputs.cluster_scope }}
-          gcp_project_id: ${{ inputs.gcp_project_id }}
-          cluster_project_id: ${{ inputs.cluster_project_id}}
+          service_account: ${{ secrets.NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER }}
+          workflow_cluster_name: ${{ inputs.workflow_cluster_name }}
+          workflow_project_id: ${{ inputs.workflow_project_id }}
+          app_cluster_name: ${{ inputs.app_cluster_name }}
+          app_project_id: ${{ inputs.app_project_id }}
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"
@@ -315,12 +318,14 @@ jobs:
             pc-firestore-cli
           permission-contents: read
 
-      - name: "Connect to cluster"
-        uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
+      - name: Authenticate to GKE cluster
+        uses: google-github-actions/get-gke-credentials@v3
         with:
-          cluster_scope: ${{ inputs.cluster_scope }}
-          cluster_environment: ${{ inputs.cluster_environment }}
-          api_token_github: ${{ steps.github-token.outputs.token }}
+          cluster_name: ${{ inputs.app_cluster_name }}
+          project_id: ${{ inputs.app_project_id }}
+          location: ${{ inputs.location }}
+          namespace: pcapi-${{ inputs.environment_short_name }}
+          use_dns_based_endpoint: true
 
       - name: "Configure algolia"
         id: "set_algolia_settings"
@@ -330,23 +335,24 @@ jobs:
           max_attempts: 3
           command: |
             ENV=${{ inputs.environment}}
-            POD_NAME=$(kubectl -n $ENV get pods -l role=api --field-selector=status.phase==Running -o json | jq -r '.items[] | "\(.metadata.name)"' | head -n 1)
+            NS=pcapi-${{ inputs.environment_short_name }}
+            POD_NAME=$(kubectl -n $NS get pods -l role=api --field-selector=status.phase==Running -o json | jq -r '.items[] | "\(.metadata.name)"' | head -n 1)
             FAIL=0
             echo "flask commands runs on ${POD_NAME}"
 
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings artists --not-dry; then
+            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings artists --not-dry; then
                 echo "Failed to apply algolia settings for artists"
                 FAIL=1
             fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings offers --not-dry; then
+            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings offers --not-dry; then
                 echo "Failed to apply algolia settings for offers"
                 FAIL=1
             fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings collective_offers --not-dry; then
+            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings collective_offers --not-dry; then
                 echo "Failed to apply algolia settings for collective_offers"
                 FAIL=1
             fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings venues --not-dry; then
+            if ! kubectl exec -it -n $NS ${POD_NAME} -- flask set_algolia_settings venues --not-dry; then
                 echo "Failed to apply algolia settings for venues"
                 FAIL=1
             fi

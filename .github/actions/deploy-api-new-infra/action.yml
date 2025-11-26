@@ -3,42 +3,45 @@ description: "Deploy the Pass Culture API to Kubernetes"
 
 inputs:
   environment:
-    type: string
+    description: "Name of the environment in abbreviated format (tst,stg etc..)"
     required: true
   app_version:
-    type: string
+    description: "Tag of the application to deploy"
     required: true
   location:
-    type: string
+    description: "GCP Region"
     required: true
     default: europe-west9
-  cluster_name: # Argo WF cluster
-    type: string
+  workflow_project_id:
+    description: "ID of the project that hosts our workflow engine"
     required: true
-  gcp_project_id: # Argo WF project
-    type: string
+  workflow_cluster_name:
+    description: "Name of the cluster that hosts our workflow engine"
     required: true
-  GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+  service_account:
+    description: "PCAPI deployment service account"
     required: true
-  GCP_EHP_SERVICE_ACCOUNT:
+  workload_identity_provider:
+    description: "Workload identity provider to perform authentication to GCP"
     required: true
   argo_template:
-    type: string
+    description: "Name of the workflow template to run"
     required: false
     default: wfw-pcapi-full-deploy
   argo_cli_version:
-    type: string
+    description: "Version of the workflow CLI"
     required: false
     default: "3.6.5"
-  cluster_scope:
-    description: "Cluster scope"
-    required: true
-  cluster_project_id:
-    description: "Cluster project_id"
-    required: true
   argo_namespace:
-    required: true
+    description: "Namespace in which the workflow will run"
+    required: false
     default: infra-cd-prd
+  app_project_id:
+    description: "ID of the project where the application is hosted"
+    required: true
+  app_cluster_name:
+    description: "Name of the cluster that hosts the application"
+    required: true
 runs:
   using: composite
   steps:
@@ -56,16 +59,15 @@ runs:
     - name: "OpenID Connect Authentication"
       uses: "google-github-actions/auth@v3"
       with:
-        project_id: ${{ inputs.gcp_project_id }}
-        workload_identity_provider: ${{ inputs.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ inputs.GCP_EHP_SERVICE_ACCOUNT }}
+        service_account: ${{ inputs.service_account }}
+        workload_identity_provider: ${{ inputs.workload_identity_provider}}
 
     # Trigger pre-migrations #
     - name: Authenticate to GKE cluster
       uses: google-github-actions/get-gke-credentials@v3
       with:
-        cluster_name: ${{ inputs.cluster_scope }}
-        project_id: ${{ inputs.cluster_project_id }}
+        cluster_name: ${{ inputs.app_cluster_name }}
+        project_id: ${{ inputs.project_id }}
         location: ${{ inputs.location }}
         use_dns_based_endpoint: true
 
@@ -76,15 +78,14 @@ runs:
         app_version: ${{ inputs.app_version }}
         migration_type: pre
         artifact_registry: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
-
     # End Trigger pre-migrations #
 
     # Trigger WF #
     - name: Authenticate to GKE cluster
       uses: google-github-actions/get-gke-credentials@v3
       with:
-        cluster_name: ${{ inputs.cluster_name }}
-        project_id: ${{ inputs.gcp_project_id }}
+        cluster_name: ${{ inputs.workflow_cluster_name }}
+        project_id: ${{ inputs.workflow_project_id }}
         location: ${{ inputs.location }}
         namespace: ${{ inputs.argo_namespace }}
         use_dns_based_endpoint: true
@@ -96,14 +97,13 @@ runs:
           --log --wait \
           -p environment=${{ inputs.environment }} \
           -p pcapi_version=${{ inputs.app_version }}
-
     # End Trigger WF #
     # Trigger post-migrations #
     - name: Authenticate to GKE cluster
       uses: google-github-actions/get-gke-credentials@v3
       with:
-        cluster_name: ${{ inputs.cluster_scope }}
-        project_id: ${{ inputs.cluster_project_id }}
+        cluster_name: ${{ inputs.app_cluster_name }}
+        project_id: ${{ inputs.app_project_id }}
         location: ${{ inputs.location }}
         use_dns_based_endpoint: true
 
