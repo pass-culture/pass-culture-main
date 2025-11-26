@@ -3,6 +3,7 @@
 
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
+import { useNavigate } from 'react-router'
 
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -17,9 +18,22 @@ import dropdownStyles from '../HeaderDropdown/HeaderDropdown.module.scss'
 import styles from './HeaderVenuesDropdown.module.scss'
 
 export const HeaderVenuesDropdown = () => {
+  const navigate = useNavigate()
+
   const dispatch = useAppDispatch()
   const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
   const venues = useAppSelector((state) => state.user.venues)
+
+  const setSelectedVenueByIdAndRedirect = async (
+    nextSelectedVenueId: string
+  ) => {
+    const nextUserAccess = await dispatch(
+      setSelectedVenueById(Number(nextSelectedVenueId))
+    ).unwrap()
+    if (nextUserAccess === 'full') {
+      navigate('/accueil')
+    }
+  }
 
   if (!venues?.length || !selectedVenue) {
     return null
@@ -44,9 +58,7 @@ export const HeaderVenuesDropdown = () => {
         >
           <div className={cn(dropdownStyles['menu'], styles['menu'])}>
             <DropdownMenu.RadioGroup
-              onValueChange={(nextSelectedVenueId) =>
-                dispatch(setSelectedVenueById(Number(nextSelectedVenueId)))
-              }
+              onValueChange={setSelectedVenueByIdAndRedirect}
               className={dropdownStyles['menu-group']}
               value={selectedVenue.id.toString()}
             >

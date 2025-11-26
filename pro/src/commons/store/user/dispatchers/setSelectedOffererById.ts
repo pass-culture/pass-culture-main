@@ -86,17 +86,17 @@ export const setSelectedOffererById = createAsyncThunk<
       )
       const nextSelectedVenue = await api.getVenue(nextSelectedVenueListItem.id)
 
-      const newAccess = nextCurrentOfferer.isOnboarded
+      const nextUserAccess = nextCurrentOfferer.isOnboarded
         ? 'full'
         : 'no-onboarding'
-      dispatch(updateUserAccess(newAccess))
+      dispatch(updateUserAccess(nextUserAccess))
       dispatch(setCurrentOffererName(nextCurrentOffererName))
       dispatch(setSelectedVenue(nextSelectedVenue))
 
       localStorage.setItem(SAVED_OFFERER_ID_KEY, String(nextSelectedOffererId))
       localStorage.setItem(SAVED_VENUE_ID_KEY, String(nextSelectedVenue.id))
 
-      return newAccess
+      return nextUserAccess
     } catch (err: unknown) {
       // TODO (igabriele, 2025-10-28): Handle that case properly (via a `VenueListItemResponseModel` prop in `get_venues` route) before `WIP_SWITCH_VENUE` is enabled in production.
       if (isErrorAPIError(err) && err.status === 403) {
