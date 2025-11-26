@@ -15,11 +15,11 @@ import {
   updateCurrentOfferer,
 } from '../../offerer/reducer'
 import type { AppThunkApiConfig } from '../../store'
-import { setSelectedVenue, updateUserAccess } from '../reducer'
+import { setSelectedVenue, type UserAccess, updateUserAccess } from '../reducer'
 import { logout } from './logout'
 
 export const setSelectedVenueById = createAsyncThunk<
-  void,
+  UserAccess | null,
   number,
   AppThunkApiConfig
 >(
@@ -32,7 +32,7 @@ export const setSelectedVenueById = createAsyncThunk<
       assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedVenue = state.user.selectedVenue
       if (nextSelectedVenueId === previousSelectedVenue?.id) {
-        return
+        return null
       }
 
       const nextSelectedVenue = await api.getVenue(nextSelectedVenueId)
@@ -47,11 +47,10 @@ export const setSelectedVenueById = createAsyncThunk<
         '`nextSelectedOffererName` is undefined.'
       )
 
-      dispatch(
-        updateUserAccess(
-          nextSelectedOfferer.isOnboarded ? 'full' : 'no-onboarding'
-        )
-      )
+      const nextUserAccess: UserAccess = nextSelectedOfferer.isOnboarded
+        ? 'full'
+        : 'no-onboarding'
+      dispatch(updateUserAccess(nextUserAccess))
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
       // TODO (igabriele, 2025-10-28): Handle that case properly before the end of `WIP_SWITCH_VENUE`.
       dispatch(setCurrentOffererName(nextSelectedOffererName))
@@ -65,6 +64,8 @@ export const setSelectedVenueById = createAsyncThunk<
         LOCAL_STORAGE_KEY.SELECTED_VENUE_ID,
         String(nextSelectedVenue.id)
       )
+
+      return nextUserAccess
     } catch (err) {
       handleError(
         err,
@@ -74,6 +75,8 @@ export const setSelectedVenueById = createAsyncThunk<
       if (isErrorAPIError(err) || err instanceof FrontendError) {
         dispatch(logout())
       }
+
+      return null
     }
   }
 )
