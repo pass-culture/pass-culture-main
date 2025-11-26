@@ -15,8 +15,8 @@ from pcapi.models import Model
 
 logger = logging.getLogger(__name__)
 
-TIMESCALEDB_DATABASE_URL = os.environ.get("TIMESCALEDB_DATABASE_URL")
-DATABASE_URL = TIMESCALEDB_DATABASE_URL or settings.DATABASE_URL
+DATABASE_URL_OVERRIDE = os.environ.get("DATABASE_URL_OVERRIDE")
+DATABASE_URL = DATABASE_URL_OVERRIDE or settings.DATABASE_URL
 
 target_metadata = Model.metadata
 
