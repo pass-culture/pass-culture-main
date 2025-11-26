@@ -125,6 +125,7 @@ export function StocksCalendar({
         ? 'Une date a été supprimée'
         : `${ids.length} dates ont été supprimées`
     )
+    // TODO (rchaffal 26/12/2025) could not mutate since 'he retrun of deleteStocks is still not good
     await mutate(stockQueryKeys)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
