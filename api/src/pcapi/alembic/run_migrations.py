@@ -1,4 +1,5 @@
 import logging
+import os
 import sys
 import time
 import typing
@@ -13,6 +14,9 @@ from pcapi.models import Model
 
 
 logger = logging.getLogger(__name__)
+
+TIMESCALEDB_DATABASE_URL = os.environ.get("TIMESCALEDB_DATABASE_URL")
+DATABASE_URL = TIMESCALEDB_DATABASE_URL or settings.DATABASE_URL
 
 target_metadata = Model.metadata
 
@@ -56,7 +60,7 @@ def run_online_migrations() -> None:
     if settings.DB_MIGRATION_STATEMENT_TIMEOUT:
         db_options.append("-c statement_timeout=%i" % settings.DB_MIGRATION_STATEMENT_TIMEOUT)
 
-    connectable = create_engine(settings.DATABASE_URL, connect_args={"options": " ".join(db_options)})  # type: ignore[arg-type]
+    connectable = create_engine(DATABASE_URL, connect_args={"options": " ".join(db_options)})  # type: ignore[arg-type]
     logger.warning(
         "Alembic will use a DB connection with these settings: lock_timeout = %d ms, statement_timeout = %d ms",
         settings.DB_MIGRATION_LOCK_TIMEOUT,
@@ -115,5 +119,5 @@ def run_online_migrations() -> None:
 
 def run_offline_migrations() -> None:
     """Run migrations *without* a SQL connection."""
-    context.configure(url=settings.DATABASE_URL, literal_binds=True, transaction_per_migration=True)
+    context.configure(url=DATABASE_URL, literal_binds=True, transaction_per_migration=True)
     context.run_migrations()
