@@ -352,7 +352,7 @@ class TestingBackend(BaseBackend):
 
 
 class ApiAdresseBackend(BaseBackend):
-    base_url = "https://api-adresse.data.gouv.fr"
+    base_url = "https://data.geopf.fr/geocodage"
 
     def _request(
         self,
