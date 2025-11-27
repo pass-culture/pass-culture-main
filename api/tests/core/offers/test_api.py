@@ -928,14 +928,15 @@ class DeleteStockTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_delete_stock_basics(self, mocked_async_index_offer_ids, caplog):
         stock = factories.EventStockFactory()
+        stock_id = stock.id
+        offer = stock.offer
 
         with caplog.at_level(logging.INFO):
             api.delete_stock(stock)
 
-        stock = db.session.query(models.Stock).one()
-        assert stock.isSoftDeleted
+        assert db.session.query(models.Stock).count() == 0
         mocked_async_index_offer_ids.assert_called_once_with(
-            [stock.offerId],
+            [offer.id],
             reason=IndexationReason.STOCK_DELETION,
         )
 
@@ -944,7 +945,7 @@ class DeleteStockTest:
         assert last_record.technical_message_id == "stock.deleted"
         assert last_record.message == "Deleted stock and cancelled its bookings"
         assert last_record.extra == {
-            "stock": stock.id,
+            "stock": stock_id,
             "bookings": [],
             "author_id": None,
             "user_connect_as": False,
@@ -1075,16 +1076,14 @@ class DeleteStockTest:
 
         api.delete_stock(stock)
 
-        stock = db.session.query(models.Stock).one()
-        assert stock.isSoftDeleted
+        assert db.session.query(models.Stock).count() == 0
 
     def test_can_delete_if_event_ended_recently(self):
         recently = date_utils.get_naive_utc_now() - timedelta(days=1)
         stock = factories.EventStockFactory(beginningDatetime=recently)
 
         api.delete_stock(stock)
-        stock = db.session.query(models.Stock).one()
-        assert stock.isSoftDeleted
+        assert db.session.query(models.Stock).count() == 0
 
     def test_cannot_delete_if_too_late(self):
         too_long_ago = date_utils.get_naive_utc_now() - timedelta(days=3)
@@ -1273,7 +1272,8 @@ class UpsertOfferThingStocksTest:
         db.session.refresh(offer)
 
         deleted_stock = db.session.get(models.Stock, stock_to_be_deleted.id)
-        assert deleted_stock.isSoftDeleted
+        assert not deleted_stock
+
         udpated_stock = db.session.get(models.Stock, stock_to_be_updated.id)
         assert udpated_stock.price == decimal.Decimal("9") and udpated_stock.quantity == 10
         created_stocks = [s for s in offer.activeStocks if s.id not in (stock_to_be_updated.id, stock_to_be_deleted.id)]

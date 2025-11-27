@@ -1188,15 +1188,18 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
     # Otherwise, you will break some dashboards
-    logger.info(
-        "Deleted stock and cancelled its bookings",
-        extra={
-            "stock": stock.id,
-            "bookings": [b.id for b in cancelled_bookings],
-            "author_id": author_id,
-            "user_connect_as": bool(user_connect_as),
-        },
-        technical_message_id="stock.deleted",
+    on_commit(
+        partial(
+            logger.info,
+            "Deleted stock and cancelled its bookings",
+            extra={
+                "stock": stock.id,
+                "bookings": [b.id for b in cancelled_bookings],
+                "author_id": author_id,
+                "user_connect_as": bool(user_connect_as),
+            },
+            technical_message_id="stock.deleted",
+        )
     )
 
     if cancelled_bookings:
@@ -1212,6 +1215,14 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
                     [booking.id for booking in cancelled_bookings],
                 )
             )
+
+    # do not keep stocks without any booking: they have never been used,
+    # there is no need to keep useless rows inside the database.
+    stock_has_bookings = db.session.query(
+        db.session.query(bookings_models.Booking).filter(bookings_models.Booking.stockId == stock.id).exists()
+    ).scalar()
+    if not stock_has_bookings:
+        db.session.delete(stock)
 
     on_commit(
         partial(
