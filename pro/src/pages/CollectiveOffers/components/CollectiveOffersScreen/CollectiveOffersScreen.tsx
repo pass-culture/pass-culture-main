@@ -17,6 +17,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
@@ -68,6 +69,8 @@ export const CollectiveOffersScreen = ({
   urlSearchFilters,
   offers,
 }: CollectiveOffersScreenProps): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const { onApplyFilters, onResetFilters } = useStoredFilterConfig('collective')
   const [selectedOffers, setSelectedOffers] = useState<
     CollectiveOfferResponseModel[]
@@ -88,7 +91,13 @@ export const CollectiveOffersScreen = ({
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
     defaultFilters: DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-    ignore: ['nameOrIsbn', 'collectiveOfferType'],
+    ignore: [
+      'nameOrIsbn',
+      'collectiveOfferType',
+      ...((withSwitchVenueFeature
+        ? ['venueId']
+        : []) satisfies (keyof CollectiveSearchFiltersParams)[]),
+    ],
   })
   const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
 
