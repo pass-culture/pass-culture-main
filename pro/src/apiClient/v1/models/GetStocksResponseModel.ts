@@ -6,5 +6,6 @@ import type { GetOfferStockResponseModel } from './GetOfferStockResponseModel';
 export type GetStocksResponseModel = {
   stockCount: number;
   stocks: Array<GetOfferStockResponseModel>;
+  touchedStockCount: number;
 };
 

@@ -11,7 +11,7 @@ from pcapi.models import db
 
 
 @pytest.mark.usefixtures("db_session")
-class Returns204Test:
+class Returns200Test:
     def test_delete_multiple_stocks_by_offer_id(self, client):
         # Given
         offer = offers_factories.OfferFactory()
@@ -27,7 +27,7 @@ class Returns204Test:
         response = client.with_session_auth(user.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 200
         assert all(stock.isSoftDeleted for stock in db.session.query(offer_models.Stock).all())
         assert booking_1.cancellationUser == user
         assert booking_2.cancellationUser == user
@@ -59,7 +59,7 @@ class Returns204Test:
         response = client.with_session_auth(user.email).post(f"/offers/{offer.id}/stocks/delete", json=data)
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 200
         assert all(stock.isSoftDeleted for stock in db.session.query(offer_models.Stock).all())
         assert booking_1.cancellationUser == admin
         assert booking_2.cancellationUser == admin
@@ -79,7 +79,7 @@ class Returns204Test:
         )
 
         # Then
-        assert response.status_code == 204
+        assert response.status_code == 200
 
         assert all(not stock.isSoftDeleted for stock in db.session.query(offer_models.Stock).all())
 

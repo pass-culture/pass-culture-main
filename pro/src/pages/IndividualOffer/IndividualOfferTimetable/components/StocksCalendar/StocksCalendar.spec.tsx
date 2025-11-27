@@ -144,7 +144,12 @@ describe('StocksCalendar', () => {
   it('should delete a stock from the stock line trash button', async () => {
     renderStocksCalendar()
 
-    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce()
+    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
+      getStocksResponseFactory({
+        stocks: [],
+        stockCount: 0,
+      })
+    )
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
@@ -166,7 +171,12 @@ describe('StocksCalendar', () => {
   it('should delete all the checked stocks', async () => {
     renderStocksCalendar()
 
-    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce()
+    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
+      getStocksResponseFactory({
+        stocks: [],
+        stockCount: 0,
+      })
+    )
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
@@ -366,6 +376,7 @@ describe('StocksCalendar', () => {
       getStocksResponseFactory({
         stocks: [],
         stockCount: 0,
+        touchedStockCount: 0,
       })
     )
 

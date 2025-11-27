@@ -144,7 +144,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     stocks = [
         offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
     ]
-    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count)
+    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, touched_stock_count=0)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])
@@ -188,17 +188,20 @@ def upsert_offer_stocks(
     stocks = [
         offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
     ]
-    return offers_serialize.GetStocksResponseModel(stock_count=filtered_stocks.count(), stocks=stocks)
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=0
+    )
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
+    on_success_status=200,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> None:
+def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> offers_serialize.GetStocksResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
@@ -212,6 +215,17 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
     offers_api.batch_delete_stocks(stocks_to_delete, current_user.real_user.id, current_user.is_impersonated)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=len(stocks_to_delete)
+    )
 
 
 @private_api.route("/offers/<int:offer_id>/stocks-stats", methods=["GET"])

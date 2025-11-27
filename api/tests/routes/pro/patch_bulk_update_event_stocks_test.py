@@ -50,6 +50,7 @@ class Returns200Test:
         updated_stock = db.session.query(offers_models.Stock).first()
         assert response.json == {
             "stockCount": 1,
+            "touchedStockCount": 1,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -116,7 +117,8 @@ class Returns200Test:
         first_stock = updated_stocks[0]
         second_stock = updated_stocks[1]
         assert response.json == {
-            "stockCount": 0,
+            "stockCount": 2,
+            "touchedStockCount": 0,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -180,6 +182,7 @@ class Returns200Test:
         edited_stock = db.session.query(offers_models.Stock).first()
         assert response.json == {
             "stockCount": 1,
+            "touchedStockCount": 1,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -251,6 +254,7 @@ class Returns200Test:
         edited_stock = db.session.query(offers_models.Stock).one()
         assert response.json == {
             "stockCount": 1,
+            "touchedStockCount": 1,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,

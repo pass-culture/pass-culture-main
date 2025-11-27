@@ -2237,13 +2237,13 @@ export class DefaultService {
    * delete_stocks <POST>
    * @param offerId
    * @param requestBody
-   * @returns void
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public deleteStocks(
     offerId: number,
     requestBody: DeleteStockListBody,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/{offer_id}/stocks/delete',
