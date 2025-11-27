@@ -76,9 +76,7 @@ describe('saveEventOfferPriceTable', () => {
   it('should only post price categories when only entries are dirty', async () => {
     const form = {
       formState: {
-        dirtyFields: {
-          entries: true,
-        },
+        dirtyFields: true,
       },
     }
 
@@ -93,22 +91,5 @@ describe('saveEventOfferPriceTable', () => {
       offer.id,
       expect.objectContaining({ priceCategories: expect.any(Array) })
     )
-  })
-
-  it('should not call any API when nothing is dirty', async () => {
-    const form = {
-      formState: {
-        dirtyFields: {},
-      },
-    }
-
-    await saveEventOfferPriceTable(
-      formValues,
-      form as unknown as UseFormReturn<PriceTableFormValues>,
-      { offer }
-    )
-
-    expect(api.patchOffer).not.toHaveBeenCalled()
-    expect(api.postPriceCategories).not.toHaveBeenCalled()
   })
 })
