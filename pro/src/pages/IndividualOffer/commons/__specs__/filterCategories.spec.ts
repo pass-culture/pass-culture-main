@@ -25,12 +25,11 @@ describe('getOfferSubtypeFromParam', () => {
     INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD,
   ]
 
-  it.each(cases)(
-    'should deduce the offer subtype %s from the query param',
-    (offerSubtype) => {
-      expect(getOfferSubtypeFromParam(offerSubtype)).toBe(offerSubtype)
-    }
-  )
+  it.each(
+    cases
+  )('should deduce the offer subtype %s from the query param', (offerSubtype) => {
+    expect(getOfferSubtypeFromParam(offerSubtype)).toBe(offerSubtype)
+  })
 
   it('should return null if the query param is not a valid offer subtype', () => {
     expect(getOfferSubtypeFromParam('Not a valid offer subtype')).toBe(null)
@@ -47,27 +46,25 @@ describe('getCategoryStatusFromOfferSubtype', () => {
     INDIVIDUAL_OFFER_SUBTYPE.PHYSICAL_GOOD,
   ]
 
-  it.each(physicalCases)(
-    'should return category offline for physical cases',
-    (offerSubtype) => {
-      expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
-        CATEGORY_STATUS.OFFLINE
-      )
-    }
-  )
+  it.each(
+    physicalCases
+  )('should return category offline for physical cases', (offerSubtype) => {
+    expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
+      CATEGORY_STATUS.OFFLINE
+    )
+  })
   const virtualCases = [
     INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_EVENT,
     INDIVIDUAL_OFFER_SUBTYPE.VIRTUAL_GOOD,
   ]
 
-  it.each(virtualCases)(
-    'should return category online for virtual cases',
-    (offerSubtype) => {
-      expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
-        CATEGORY_STATUS.ONLINE
-      )
-    }
-  )
+  it.each(
+    virtualCases
+  )('should return category online for virtual cases', (offerSubtype) => {
+    expect(getCategoryStatusFromOfferSubtype(offerSubtype)).toBe(
+      CATEGORY_STATUS.ONLINE
+    )
+  })
 
   it('should return both category when subtype is not defined', () => {
     expect(getCategoryStatusFromOfferSubtype(null)).toBe(

@@ -82,25 +82,22 @@ describe('FormDates', () => {
       beginningDate: undefined,
       endingDate: undefined,
     },
-  ])(
-    'should not show the dates selection form section when the offer is permanent',
-    (dates) => {
-      renderFormDates(
-        { ...defaultProps, dateCreated: '2021-01-01' },
-        {
-          ...getDefaultEducationalValues(),
-          isTemplate: true,
-          ...dates,
-          datesType: 'permanent',
-        }
+  ])('should not show the dates selection form section when the offer is permanent', (dates) => {
+    renderFormDates(
+      { ...defaultProps, dateCreated: '2021-01-01' },
+      {
+        ...getDefaultEducationalValues(),
+        isTemplate: true,
+        ...dates,
+        datesType: 'permanent',
+      }
+    )
+    expect(
+      screen.queryByText(
+        'Votre offre sera désactivée automatiquement à l’issue des dates précisées ci-dessous.'
       )
-      expect(
-        screen.queryByText(
-          'Votre offre sera désactivée automatiquement à l’issue des dates précisées ci-dessous.'
-        )
-      ).not.toBeInTheDocument()
-    }
-  )
+    ).not.toBeInTheDocument()
+  })
 
   it('should initially be set as a permanent offer', () => {
     renderFormDates(

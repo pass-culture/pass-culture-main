@@ -128,17 +128,19 @@ describe('PriceInput', () => {
       { value: '20.504', expectedNumber: 20.504 },
       { value: '20.5.2', expectedNumber: 20.52 },
     ]
-    it.each(setNumberPriceValue)(
-      'should only type numbers for price input',
-      async ({ value, expectedNumber }) => {
-        renderPriceInput({})
+    it.each(
+      setNumberPriceValue
+    )('should only type numbers for price input', async ({
+      value,
+      expectedNumber,
+    }) => {
+      renderPriceInput({})
 
-        const input = screen.getByRole('spinbutton', { name: LABELS.input })
-        await userEvent.type(input, value)
-        await userEvent.tab()
-        expect(input).toHaveValue(expectedNumber)
-      }
-    )
+      const input = screen.getByRole('spinbutton', { name: LABELS.input })
+      await userEvent.type(input, value)
+      await userEvent.tab()
+      expect(input).toHaveValue(expectedNumber)
+    })
   })
 
   describe('Currency', () => {
@@ -146,16 +148,16 @@ describe('PriceInput', () => {
       { currency: 'EUR', sign: '€' },
       { currency: 'XPF', sign: 'F' },
     ]
-    it.each(setCurrencyValue)(
-      `should display the correct currency icon`,
-      ({ currency, sign }) => {
-        renderPriceInput({
-          showFreeCheckbox: false,
-          currency: currency,
-        })
+    it.each(setCurrencyValue)(`should display the correct currency icon`, ({
+      currency,
+      sign,
+    }) => {
+      renderPriceInput({
+        showFreeCheckbox: false,
+        currency: currency,
+      })
 
-        expect(screen.getByText(`Prix (en ${sign})`)).toBeInTheDocument()
-      }
-    )
+      expect(screen.getByText(`Prix (en ${sign})`)).toBeInTheDocument()
+    })
   })
 })

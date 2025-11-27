@@ -62,21 +62,22 @@ describe('checkAndParseUploadedFile', () => {
     expect(errorMessage).toBe('Le fichier ne contient aucun code d’activation.')
   })
 
-  it.each([',', ';', '.'])(
-    'should raise an error when CSV contains "%s"',
-    async (c) => {
-      const csv = new Blob([`${c}\n`], { type: 'text/csv' })
+  it.each([
+    ',',
+    ';',
+    '.',
+  ])('should raise an error when CSV contains "%s"', async (c) => {
+    const csv = new Blob([`${c}\n`], { type: 'text/csv' })
 
-      const { errorMessage } = await checkAndParseUploadedFile({
-        fileReader,
-        currentFile: csv,
-      })
+    const { errorMessage } = await checkAndParseUploadedFile({
+      fileReader,
+      currentFile: csv,
+    })
 
-      expect(errorMessage).toBe(
-        'Le fichier ne respecte pas le format attendu. Merci de vous rapporter au gabarit CSV disponible au téléchargement.'
-      )
-    }
-  )
+    expect(errorMessage).toBe(
+      'Le fichier ne respecte pas le format attendu. Merci de vous rapporter au gabarit CSV disponible au téléchargement.'
+    )
+  })
 
   it('should raise an error when csv is correct but with duplicates values', async () => {
     const csv = new Blob(['kikou_1\nkikou_2\nkikou_3\nkikou_2'], {

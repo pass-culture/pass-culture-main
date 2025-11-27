@@ -12,10 +12,11 @@ describe('isValidEmail', () => {
     expect(isValidEmail(email)).toEqual(false)
   })
 
-  it.each(['test@test.co', 'a.test@test.com', 'test@test.test.com'])(
-    'should validate the following email address : %s',
-    (email) => {
-      expect(isValidEmail(email)).toEqual(true)
-    }
-  )
+  it.each([
+    'test@test.co',
+    'a.test@test.com',
+    'test@test.test.com',
+  ])('should validate the following email address : %s', (email) => {
+    expect(isValidEmail(email)).toEqual(true)
+  })
 })

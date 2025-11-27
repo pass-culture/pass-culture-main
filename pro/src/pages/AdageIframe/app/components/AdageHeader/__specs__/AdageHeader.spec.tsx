@@ -133,24 +133,23 @@ describe('AdageHeader', () => {
       headerLinkName: AdageHeaderLink.ADAGE_LINK,
     },
   ]
-  it.each(headerLinks)(
-    'should log click on header link',
-    async (headerLink: HeaderLinkProps) => {
-      renderAdageHeader(user)
-      await waitFor(() =>
-        expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
-      )
+  it.each(
+    headerLinks
+  )('should log click on header link', async (headerLink: HeaderLinkProps) => {
+    renderAdageHeader(user)
+    await waitFor(() =>
+      expect(screen.getByText('Solde prévisionnel')).toBeInTheDocument()
+    )
 
-      await userEvent.click(
-        screen.getByRole('link', { name: headerLink.headerLinkLabel })
-      )
-      expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledTimes(1)
-      expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledWith({
-        iframeFrom: '/',
-        header_link_name: headerLink.headerLinkName,
-      })
-    }
-  )
+    await userEvent.click(
+      screen.getByRole('link', { name: headerLink.headerLinkLabel })
+    )
+    expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledTimes(1)
+    expect(apiAdage.logHeaderLinkClick).toHaveBeenCalledWith({
+      iframeFrom: '/',
+      header_link_name: headerLink.headerLinkName,
+    })
+  })
   it('should not display budget when user is readonly ', async () => {
     renderAdageHeader({ ...user, role: AdageFrontRoles.READONLY })
 

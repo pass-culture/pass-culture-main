@@ -102,15 +102,15 @@ describe('VenuePlaylist', () => {
       distance: 30,
       title: 'À environ 1h de transport de mon établissement',
     },
-  ])(
-    'should display the playlist title based on the maximum venue distance',
-    async ({ distance, title }) => {
-      vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValueOnce({
-        venues: [{ ...mockLocalOfferersPlaylistOffer, distance }],
-      })
-      renderNewOfferPlaylist()
+  ])('should display the playlist title based on the maximum venue distance', async ({
+    distance,
+    title,
+  }) => {
+    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValueOnce({
+      venues: [{ ...mockLocalOfferersPlaylistOffer, distance }],
+    })
+    renderNewOfferPlaylist()
 
-      expect(await screen.findByText(title)).toBeInTheDocument()
-    }
-  )
+    expect(await screen.findByText(title)).toBeInTheDocument()
+  })
 })

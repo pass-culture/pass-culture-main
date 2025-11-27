@@ -180,11 +180,11 @@ describe('getIndividualOfferUrl', () => {
       },
     ]
 
-    it.each(onBoardingTestCases)(
-      'should return right url',
-      ({ props, expectedUrl }) => {
-        expect(getIndividualOfferUrl(props)).toBe(expectedUrl)
-      }
-    )
+    it.each(onBoardingTestCases)('should return right url', ({
+      props,
+      expectedUrl,
+    }) => {
+      expect(getIndividualOfferUrl(props)).toBe(expectedUrl)
+    })
   })
 })

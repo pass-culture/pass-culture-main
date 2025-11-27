@@ -169,27 +169,24 @@ describe('RecurrenceForm', () => {
       label: /fin de la récurrence/i,
       errorMessage: 'Veuillez renseigner une date de fin',
     },
-  ])(
-    'should handle error messages for monthly recurrence date inputs: %s',
-    async (data) => {
-      const { label, errorMessage } = data
-      renderRecurrenceForm()
+  ])('should handle error messages for monthly recurrence date inputs: %s', async (data) => {
+    const { label, errorMessage } = data
+    renderRecurrenceForm()
 
-      await userEvent.click(screen.getByLabelText('Tous les mois'))
+    await userEvent.click(screen.getByLabelText('Tous les mois'))
 
-      await userEvent.click(screen.getByLabelText(label))
-      await userEvent.tab()
+    await userEvent.click(screen.getByLabelText(label))
+    await userEvent.tab()
 
-      expect(screen.getByText(errorMessage)).toBeInTheDocument()
+    expect(screen.getByText(errorMessage)).toBeInTheDocument()
 
-      await userEvent.type(
-        screen.getByLabelText(label),
-        format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
-      )
+    await userEvent.type(
+      screen.getByLabelText(label),
+      format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
+    )
 
-      expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
-    }
-  )
+    expect(screen.queryByText(errorMessage)).not.toBeInTheDocument()
+  })
 
   it('should handle error messages for monthly recurrence details', async () => {
     renderRecurrenceForm()

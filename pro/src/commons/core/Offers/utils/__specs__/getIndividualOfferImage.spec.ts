@@ -35,16 +35,16 @@ describe('getIndividualOfferImage', () => {
     },
   ]
 
-  it.each(serializeOfferApiImageDataSet)(
-    'using image from mediation',
-    ({ activeMediation, expectedImage }) => {
-      const offerApi = getIndividualOfferFactory({
-        activeMediation,
-      })
+  it.each(serializeOfferApiImageDataSet)('using image from mediation', ({
+    activeMediation,
+    expectedImage,
+  }) => {
+    const offerApi = getIndividualOfferFactory({
+      activeMediation,
+    })
 
-      expect(getIndividualOfferImage(offerApi)).toEqual(expectedImage)
-    }
-  )
+    expect(getIndividualOfferImage(offerApi)).toEqual(expectedImage)
+  })
 
   it('using image from thumbUrl', () => {
     const offer = getIndividualOfferFactory({

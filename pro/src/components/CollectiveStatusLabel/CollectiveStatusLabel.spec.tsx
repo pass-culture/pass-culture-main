@@ -58,13 +58,13 @@ describe('CollectiveStatusLabel', () => {
     },
   ]
 
-  it.each(testCases)(
-    'should render %s status',
-    ({ displayedStatus, expectedLabel }: TestCaseProps) => {
-      renderWithProviders(
-        <CollectiveStatusLabel offerDisplayedStatus={displayedStatus} />
-      )
-      expect(screen.getByText(expectedLabel)).toBeInTheDocument()
-    }
-  )
+  it.each(testCases)('should render %s status', ({
+    displayedStatus,
+    expectedLabel,
+  }: TestCaseProps) => {
+    renderWithProviders(
+      <CollectiveStatusLabel offerDisplayedStatus={displayedStatus} />
+    )
+    expect(screen.getByText(expectedLabel)).toBeInTheDocument()
+  })
 })

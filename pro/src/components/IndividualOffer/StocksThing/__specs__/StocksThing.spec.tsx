@@ -497,17 +497,19 @@ describe('screens:StocksThing', () => {
     { value: '2fsqjk', expectedNumber: 2 },
     { value: '2fsqm0', expectedNumber: 20 },
   ]
-  it.each(setNumberQuantityValue)(
-    'should only type numbers for quantity input',
-    async ({ value, expectedNumber }) => {
-      await renderStockThingScreen([], props, contextValue)
+  it.each(
+    setNumberQuantityValue
+  )('should only type numbers for quantity input', async ({
+    value,
+    expectedNumber,
+  }) => {
+    await renderStockThingScreen([], props, contextValue)
 
-      const quantityInput = screen.getByLabelText('Quantité')
-      await userEvent.type(quantityInput, value)
-      await userEvent.tab()
-      expect(quantityInput).toHaveValue(expectedNumber)
-    }
-  )
+    const quantityInput = screen.getByLabelText('Quantité')
+    await userEvent.type(quantityInput, value)
+    await userEvent.tab()
+    expect(quantityInput).toHaveValue(expectedNumber)
+  })
 
   it('should not block when going outside and form is not touched', async () => {
     vi.spyOn(api, 'createThingStock').mockResolvedValue({

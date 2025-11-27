@@ -195,27 +195,28 @@ describe('createOfferPayload', () => {
     )
   })
 
-  it.each([null, undefined, ''])(
-    'should create a template offer payload with location infos and locationType is TO_BE_DEFINED and comment is empty',
-    (comment) => {
-      const offerPayload = createCollectiveOfferTemplatePayload({
-        ...offer,
+  it.each([
+    null,
+    undefined,
+    '',
+  ])('should create a template offer payload with location infos and locationType is TO_BE_DEFINED and comment is empty', (comment) => {
+    const offerPayload = createCollectiveOfferTemplatePayload({
+      ...offer,
+      location: {
+        locationType: CollectiveLocationType.TO_BE_DEFINED,
+        locationComment: comment,
+      },
+    })
+
+    expect(offerPayload).toEqual(
+      expect.objectContaining({
         location: {
           locationType: CollectiveLocationType.TO_BE_DEFINED,
-          locationComment: comment,
+
+          locationComment: null,
         },
+        interventionArea: ['44'],
       })
-
-      expect(offerPayload).toEqual(
-        expect.objectContaining({
-          location: {
-            locationType: CollectiveLocationType.TO_BE_DEFINED,
-
-            locationComment: null,
-          },
-          interventionArea: ['44'],
-        })
-      )
-    }
-  )
+    )
+  })
 })

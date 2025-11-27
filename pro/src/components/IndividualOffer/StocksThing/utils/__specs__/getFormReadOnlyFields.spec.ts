@@ -18,28 +18,27 @@ describe('StockThingForm::utils::getFormReadOnlyFields', () => {
     currentStock = {} as StockThingFormValues
   })
   const disabledStatus = [OfferStatus.REJECTED, OfferStatus.PENDING]
-  it.each(disabledStatus)(
-    'should disabled field for disable statuts "%s"',
-    (status: OfferStatus) => {
-      offer.status = status
-      const readOnlyFields = getFormReadOnlyFields(
-        offer,
-        [getOfferStockFactory()],
-        currentStock
-      )
-      expect(readOnlyFields).toEqual([
-        'stockId',
-        'remainingQuantity',
-        'bookingsQuantity',
-        'bookingLimitDatetime',
-        'quantity',
-        'price',
-        'activationCodes',
-        'activationCodesExpirationDatetime',
-        'isDuo',
-      ])
-    }
-  )
+  it.each(
+    disabledStatus
+  )('should disabled field for disable statuts "%s"', (status: OfferStatus) => {
+    offer.status = status
+    const readOnlyFields = getFormReadOnlyFields(
+      offer,
+      [getOfferStockFactory()],
+      currentStock
+    )
+    expect(readOnlyFields).toEqual([
+      'stockId',
+      'remainingQuantity',
+      'bookingsQuantity',
+      'bookingLimitDatetime',
+      'quantity',
+      'price',
+      'activationCodes',
+      'activationCodesExpirationDatetime',
+      'isDuo',
+    ])
+  })
 
   it('should disabled field synchronized offer', () => {
     offer.lastProvider = {

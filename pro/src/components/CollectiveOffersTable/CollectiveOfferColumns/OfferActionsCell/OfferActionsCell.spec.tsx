@@ -425,22 +425,21 @@ describe('OfferActionsCells', () => {
       actions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
       name: 'institution',
     },
-  ])(
-    'should show edition button when the $name edition action is allowed',
-    async ({ actions }) => {
-      renderOfferActionsCell({
-        offer: collectiveOfferFactory({
-          allowedActions: actions,
-        }),
-      })
+  ])('should show edition button when the $name edition action is allowed', async ({
+    actions,
+  }) => {
+    renderOfferActionsCell({
+      offer: collectiveOfferFactory({
+        allowedActions: actions,
+      }),
+    })
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Voir les actions' })
-      )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Voir les actions' })
+    )
 
-      expect(screen.getByText('Modifier')).toBeInTheDocument()
-    }
-  )
+    expect(screen.getByText('Modifier')).toBeInTheDocument()
+  })
 
   it('should not show edition button when no edition action is allowed', async () => {
     renderOfferActionsCell({
