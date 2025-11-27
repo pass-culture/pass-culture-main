@@ -24,6 +24,7 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getActivityLabel } from '@/commons/mappings/mappings'
+import type { RootState } from '@/commons/store/store'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
@@ -44,9 +45,7 @@ export const Validation = (): JSX.Element | undefined => {
   const { logEvent } = useAnalytics()
   const notify = useNotification()
   const navigate = useNavigate()
-  const userAccess: UserAccess = useAppSelector(
-    (store: any) => store.user.access
-  )
+  const userAccess = useAppSelector((store: RootState) => store.user.access)
 
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
