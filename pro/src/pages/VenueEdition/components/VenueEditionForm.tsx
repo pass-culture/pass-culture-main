@@ -9,7 +9,10 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useNotification } from '@/commons/hooks/useNotification'
+import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -36,11 +39,15 @@ interface VenueFormProps {
 }
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const navigate = useNavigate()
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
+
+  const dispatch = useAppDispatch()
 
   const initialValues = setInitialFormValues(venue)
 
@@ -64,7 +71,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const onSubmit = async (values: VenueEditionFormValues) => {
     try {
-      await api.editVenue(
+      const updatedVenue = await api.editVenue(
         venue.id,
         serializeEditVenueBodyModel(
           values,
@@ -73,7 +80,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         )
       )
 
-      await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
+      if (withSwitchVenueFeature) {
+        dispatch(setSelectedVenue(updatedVenue))
+      } else {
+        await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
+      }
 
       const path = getVenuePagePathToNavigateTo(
         venue.managingOfferer.id,

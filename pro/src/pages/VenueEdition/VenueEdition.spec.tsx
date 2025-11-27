@@ -16,6 +16,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
+import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 
 import { VenueEdition } from './VenueEdition'
 
@@ -92,6 +93,16 @@ vi.mock('react-router', async () => ({
   useNavigate: () => mockUseNavigate,
 }))
 
+vi.mock('@/commons/utils/savedPartnerPageVenueId', async () => {
+  const actual = await vi.importActual<
+    typeof import('@/commons/utils/savedPartnerPageVenueId')
+  >('@/commons/utils/savedPartnerPageVenueId')
+  return {
+    ...actual,
+    setSavedPartnerPageVenueId: vi.fn(),
+  }
+})
+
 const selectCurrentOffererId = vi.hoisted(() => vi.fn())
 vi.mock('@/commons/store/offerer/selectors', async () => ({
   ...(await vi.importActual('@/commons/store/offerer/selectors')),
@@ -128,6 +139,8 @@ describe('VenueEdition', () => {
     })
     vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
     selectCurrentOffererId.mockReturnValue(defaultGetOffererResponseModel.id)
+    mockUseNavigate.mockClear()
+    vi.mocked(setSavedPartnerPageVenueId).mockClear()
   })
 
   describe('about title (main heading / h1)', () => {
@@ -362,23 +375,19 @@ describe('VenueEdition', () => {
     })
   })
 
-  // TODO: This test is probably deprecated, and outputs as a false positive,
-  // since "Barème de remboursement" is rendered in a sub component that is not
-  // used in VenueEdition.
-  it('should not render reimbursement fields when FF bank details is enabled and venue has no siret', async () => {
-    vi.spyOn(api, 'getVenue').mockResolvedValueOnce({
-      ...baseVenue,
-      siret: '11111111111111',
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const optionsBase: RenderWithProvidersOptions = {
+      features: ['WIP_SWITCH_VENUE'],
+    }
+
+    it('should get the venue from the store instead of the API', async () => {
+      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+      renderVenueEdition({ options: optionsBase })
+
+      await screen.findByRole('heading', { name: 'First Venue' })
+
+      expect(apiGetVenueSpy).not.toHaveBeenCalled()
     })
-
-    renderVenueEdition()
-
-    await screen.findByRole('heading', {
-      name: 'Cinéma des iles',
-    })
-
-    expect(
-      screen.queryByText(/Barème de remboursement/)
-    ).not.toBeInTheDocument()
   })
 })
