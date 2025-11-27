@@ -210,15 +210,6 @@ jobs:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
-  update-jira-issue:
-    name: "Update Jira issue"
-    if: ${{ always() && github.ref == 'refs/heads/master' }}
-    concurrency: update-jira-issue-${{ github.workflow }}-${{ github.ref }}
-    uses: ./.github/workflows/dev_on_workflow_update_jira_issues.yml
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
   tag-rc:
     runs-on: ubuntu-latest
     needs:
