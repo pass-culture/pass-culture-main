@@ -364,16 +364,6 @@ describe('OfferActionsCells', () => {
         interventionArea: [],
         location: {
           location: {
-            banId: undefined,
-            city: '',
-            id: '',
-            coords: 'undefined, undefined',
-            isManualEdition: false,
-            label: 'Structure 4',
-            latitude: '',
-            longitude: '',
-            postalCode: '',
-            street: '',
             venueLocation: true,
           },
           locationType: 'ADDRESS',

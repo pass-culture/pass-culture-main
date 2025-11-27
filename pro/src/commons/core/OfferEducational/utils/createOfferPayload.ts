@@ -56,10 +56,9 @@ const getCommonOfferPayload = (
 ): PostCollectiveOfferBodyModel | PostCollectiveOfferTemplateBodyModel => {
   const getLocationPayload = () => {
     if (offer.location?.locationType === CollectiveLocationType.ADDRESS) {
-      return {
-        location: {
-          locationType: CollectiveLocationType.ADDRESS,
-          location: {
+      const location = offer.location.location?.venueLocation
+        ? { venueLocation: true }
+        : {
             ...offer.location.location,
             banId: offer.banId,
             street: offer.street ?? '',
@@ -68,7 +67,12 @@ const getCommonOfferPayload = (
             longitude: offer.longitude ?? '',
             city: offer.city ?? '',
             coords: offer.coords ?? '',
-          },
+          }
+
+      return {
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          location,
         },
       }
     }

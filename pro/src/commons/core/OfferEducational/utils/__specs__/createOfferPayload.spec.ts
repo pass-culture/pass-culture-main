@@ -139,17 +139,7 @@ describe('createOfferPayload', () => {
         location: {
           locationType: CollectiveLocationType.ADDRESS,
           location: {
-            id: '123',
-            city: 'Paris',
-            latitude: '3',
-            longitude: '2',
-            postalCode: '75018',
-            street: 'rue de la paix',
             venueLocation: true,
-            isManualEdition: false,
-            label: 'théâtre',
-            banId: '',
-            coords: '',
           },
         },
       })
