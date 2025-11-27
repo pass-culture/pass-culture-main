@@ -17,7 +17,10 @@ import type { Address } from '@/commons/core/shared/types'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import * as utils from '@/commons/utils/recaptcha'
-import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import {
+  type RenderWithProvidersOptions,
+  renderWithProviders,
+} from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
@@ -47,7 +50,10 @@ const addressInformations: Address = {
   banId: '75118_5995_00043',
 }
 
-const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
+const renderValidationScreen = (
+  contextValue: SignupJourneyContextValues,
+  options?: RenderWithProvidersOptions
+) => {
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -73,6 +79,7 @@ const renderValidationScreen = (contextValue: SignupJourneyContextValues) => {
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/confirmation'],
+      ...options,
     }
   )
 }
@@ -302,6 +309,33 @@ describe('ValidationScreen', () => {
         isOpenToPublic: false,
         phoneNumber: '',
       })
+    })
+
+    it('should send activity when feature is active and offerer is open to public', async () => {
+      if (contextValue.offerer) {
+        contextValue.offerer.publicName = 'nom public'
+        contextValue.offerer.isOpenToPublic = 'true'
+      }
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      const saveNewOnboardingDataMock = vi
+        .spyOn(api, 'saveNewOnboardingData')
+        .mockResolvedValue({} as PostOffererResponseModel)
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+
+      renderValidationScreen(contextValue, { features: ['WIP_VENUE_ACTIVITY'] })
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      expect(screen.getByText('Musée')).toBeInTheDocument()
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+      expect(saveNewOnboardingDataMock).toHaveBeenCalledTimes(1)
+      const [[payload]] = saveNewOnboardingDataMock.mock.calls
+      expect(payload.activity).toBe('MUSEUM')
+      expect(payload.venueTypeCode).toBeUndefined()
     })
 
     it('should see the data from the previous forms for validation without public name', async () => {
