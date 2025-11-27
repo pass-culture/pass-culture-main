@@ -85,7 +85,10 @@ def validate_user(token: str) -> None:
         raise ResourceNotFoundError(errors={"global": "Le lien est invalide ou a expiré. Veuillez recommencer."})
     discard_session()
     login_user(user)
-    stamp_session(user)
+    stamp_session(
+        user=user,
+        duration=settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS,
+    )
     flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     users_api.update_last_connection_date(user)
 
@@ -259,7 +262,10 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 
     discard_session()
     login_user(user)
-    stamp_session(user)
+    stamp_session(
+        user=user,
+        duration=settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS,
+    )
     flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     users_api.update_last_connection_date(user)
 
@@ -341,7 +347,10 @@ def connect_as(token: str) -> Response:
     discard_session()
     logout_user()
     login_user(user)
-    stamp_session(user)
+    stamp_session(
+        user=user,
+        duration=settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS,
+    )
     flask.session["internal_admin_email"] = token_data.internal_admin_email
     flask.session["internal_admin_id"] = token_data.internal_admin_id
     flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
