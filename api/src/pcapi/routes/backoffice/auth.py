@@ -26,6 +26,9 @@ from . import blueprint
 from . import utils
 
 
+# a french worker cannot work for more than 12 hours so disconnecting them after 13 hours is safe
+MAXIMUM_SESSION_LENGTH_HOURS = 13
+
 logger = logging.getLogger(__name__)
 
 
@@ -50,7 +53,7 @@ def login() -> utils.BackofficeResponse:
         db.session.flush()
 
         login_user(local_admin, remember=True)
-        login_manager.stamp_session(local_admin)
+        login_manager.stamp_session(user=local_admin, duration=datetime.timedelta(hours=MAXIMUM_SESSION_LENGTH_HOURS))
         return werkzeug.utils.redirect(url_for(".home"))
 
     redirect_uri = url_for(".authorize", _external=True)
@@ -111,13 +114,16 @@ def authorize() -> utils.BackofficeResponse:
     )
 
     login_user(user, remember=True)
-    login_manager.stamp_session(user)
+    login_manager.stamp_session(user=user, duration=datetime.timedelta(hours=MAXIMUM_SESSION_LENGTH_HOURS))
     return redirect(url_for(".home"))
 
 
 @blueprint.backoffice_web.route("/logout", methods=["POST"])
 @utils.custom_login_required(redirect_to=".home")
 def logout() -> utils.BackofficeResponse:
+    from pcapi.utils import login_manager
+
+    login_manager.discard_session()
     logout_user()
     return redirect(url_for(".home"), code=303)
 
