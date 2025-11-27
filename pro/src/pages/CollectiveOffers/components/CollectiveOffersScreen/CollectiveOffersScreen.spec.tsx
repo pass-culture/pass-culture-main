@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { expect } from 'vitest'
 
@@ -396,6 +396,22 @@ describe('CollectiveOffersScreen', () => {
       })
 
       expect(screen.queryByText('En attente de')).not.toBeInTheDocument()
+    })
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const optionsBase: RenderWithProvidersOptions = {
+      features: ['WIP_SWITCH_VENUE'],
+    }
+
+    it('should not display the filters button as active when no filters are applied', () => {
+      renderOffers(props, optionsBase)
+
+      const filtersButton = screen.getByRole('button', { name: /Filtrer/ })
+      expect(filtersButton).toBeInTheDocument()
+      expect(
+        within(filtersButton).queryByText('actifs')
+      ).not.toBeInTheDocument()
     })
   })
 })

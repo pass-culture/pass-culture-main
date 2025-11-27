@@ -76,6 +76,7 @@ export const OffersTableSearch = ({
         >
           Filtrer
           {hasActiveFilters && (
+            // TODO (igabriele, 2025-11-27): Check "Filtrer actifs" wording + accessibility.
             <span className={styles['visually-hidden']}>actifs</span>
           )}
         </ButtonFilter>
