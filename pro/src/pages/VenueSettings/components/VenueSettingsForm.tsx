@@ -142,13 +142,7 @@ export const VenueSettingsForm = ({
           <FormLayout.Row>
             <Select
               {...register('venueType')}
-              options={[
-                {
-                  value: '',
-                  label: 'Sélectionnez celui qui correspond à votre lieu',
-                },
-                ...venueTypes,
-              ]}
+              options={venueTypes}
               label="Activité principale"
               disabled={venue.isVirtual}
               error={errors.venueType?.message}
