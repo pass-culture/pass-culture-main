@@ -1,35 +1,14 @@
 import logging
 
 from pcapi import settings
-from pcapi.core.external import sendinblue
-from pcapi.core.mails.transactional.send_transactional_email import send_transactional_email
 from pcapi.tasks.decorator import task
 from pcapi.tasks.serialization.external_pro_tasks import UpdateProAttributesRequest
-from pcapi.tasks.serialization.sendinblue_tasks import SendTransactionalEmailRequest
-from pcapi.tasks.serialization.sendinblue_tasks import UpdateSendinblueContactRequest
 
 
 logger = logging.getLogger(__name__)
 
-SENDINBLUE_CONTACTS_QUEUE_NAME = settings.GCP_SENDINBLUE_CONTACTS_QUEUE_NAME
+
 SENDINBLUE_PRO_QUEUE_NAME = settings.GCP_SENDINBLUE_PRO_QUEUE_NAME
-SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME = settings.GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME
-SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME = settings.GCP_SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME
-
-
-@task(SENDINBLUE_CONTACTS_QUEUE_NAME, "/sendinblue/update_contact_attributes")
-def update_contact_attributes_task_cloud_tasks(payload: UpdateSendinblueContactRequest) -> None:
-    sendinblue.make_update_request(payload)
-
-
-@task(SENDINBLUE_TRANSACTIONAL_EMAILS_PRIMARY_QUEUE_NAME, "/sendinblue/send-transactional-email-primary")
-def send_transactional_email_primary_task_cloud_tasks(payload: SendTransactionalEmailRequest) -> None:
-    send_transactional_email(payload)
-
-
-@task(SENDINBLUE_TRANSACTIONAL_EMAILS_SECONDARY_QUEUE_NAME, "/sendinblue/send-transactional-email-secondary")
-def send_transactional_email_secondary_task_cloud_tasks(payload: SendTransactionalEmailRequest) -> None:
-    send_transactional_email(payload)
 
 
 # De-duplicate and delay by 12 hours, to avoid collecting pro attributes and making an update request to Sendinblue
