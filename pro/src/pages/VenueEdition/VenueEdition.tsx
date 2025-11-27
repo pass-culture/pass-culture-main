@@ -41,17 +41,19 @@ export const VenueEdition = (): JSX.Element | null => {
     offererId: string
     venueId: string
   }>()
-  const selectedVenueIdFromStore = useAppSelector(ensureSelectedVenue).id
+  const selectedVenueFromStore = useAppSelector(ensureSelectedVenue)
   const selectedVenueId = withSwitchVenueFeature
-    ? selectedVenueIdFromStore
+    ? selectedVenueFromStore.id
     : selectedVenueIdFromQueryParams
   const venues = useAppSelector(ensureVenues)
 
   const venueQuery = useSWR(
-    [GET_VENUE_QUERY_KEY, selectedVenueId],
+    withSwitchVenueFeature ? null : [GET_VENUE_QUERY_KEY, selectedVenueId],
     ([, venueIdParam]) => api.getVenue(Number(venueIdParam))
   )
-  const venue = venueQuery.data
+  const venue = withSwitchVenueFeature
+    ? selectedVenueFromStore
+    : venueQuery.data
 
   const context = location.pathname.includes('collectif')
     ? 'collective'
