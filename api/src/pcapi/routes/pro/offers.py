@@ -758,7 +758,9 @@ def get_music_types() -> offers_serialize.GetMusicTypesResponse:
     )
 
 
-def _get_offer_for_price_categories_upsert(offer_id: int,) -> models.Offer | None:
+def _get_offer_for_price_categories_upsert(
+    offer_id: int,
+) -> models.Offer | None:
     return (
         db.session.query(models.Offer)
         .outerjoin(models.Offer.stocks.and_(sqla.not_(models.Stock.isEventExpired)))
@@ -823,14 +825,12 @@ def post_price_categories(
         )
 
     # categories id in the request (to preserve)
-    price_category_to_edit_ids = {
-        pc.id for pc in price_categories_to_edit
-        if hasattr(pc, 'id') and pc.id is not None
-    }
+    price_category_to_edit_ids = {pc.id for pc in price_categories_to_edit if hasattr(pc, "id") and pc.id is not None}
 
     # get all existing price categories to delete, if their ids are not in the sent ids
     categories_to_delete = [
-        existing_category for existing_id, existing_category in existing_price_categories_by_id.items()
+        existing_category
+        for existing_id, existing_category in existing_price_categories_by_id.items()
         if existing_id not in price_category_to_edit_ids
     ]
 
