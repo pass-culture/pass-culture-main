@@ -4,7 +4,6 @@ from functools import partial
 
 from pydantic.v1 import ValidationError
 
-from pcapi.celery_tasks import api_particulier as api_particulier_tasks
 from pcapi.connectors.beneficiaries import ubble as ubble_connector
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.subscription import api as subscription_api
@@ -13,6 +12,7 @@ from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import profile_options
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
+from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
@@ -210,5 +210,5 @@ def create_quotient_familial_bonus_credit_fraud_check(
         birth_city_cog_code=body.birth_city_cog_code,
         origin="enrolled from /subscription/bonus/quotient_familial endpoint",
     )
-    payload = api_particulier_tasks.GetQuotientFamilialTaskPayload(fraud_check_id=fraud_check.id).model_dump()
-    on_commit(partial(api_particulier_tasks.get_quotient_familial_task.delay, payload))
+    payload = bonus_tasks.GetQuotientFamilialTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))

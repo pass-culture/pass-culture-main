@@ -17,6 +17,10 @@ class ParticulierApiException(Exception):
     pass
 
 
+class ParticulierApiQuotientFamilialNotFound(ParticulierApiException):
+    pass
+
+
 class ParticulierApiUnavailable(ParticulierApiException):
     pass
 
@@ -66,6 +70,7 @@ class QuotientFamilialResponse(BaseModel):
 def get_quotient_familial(
     last_name: str,
     first_names: list[str],
+    common_name: str | None,
     birth_date: date,
     gender: users_models.GenderEnum,
     country_insee_code: str,
@@ -73,7 +78,7 @@ def get_quotient_familial(
     quotient_familial_date: date,
 ) -> QuotientFamilialResponse:
     """
-    Get the Quotient Familial from a tax household, using a custodian name.
+    Get the Quotient Familial from a tax household, using a custodian personal information.
 
     See https://particulier.api.gouv.fr/developpeurs/openapi#tag/Quotient-familial-CAF-and-MSA
     """
@@ -87,6 +92,7 @@ def get_quotient_familial(
         "recipient": settings.PASS_CULTURE_SIRET,
         "nomNaissance": last_name.upper(),
         "prenoms[]": [first_name.upper() for first_name in first_names],
+        "nomUsage": common_name,
         "anneeDateNaissance": birth_date.year,
         "moisDateNaissance": birth_date.month,
         "jourDateNaissance": birth_date.day,
@@ -101,8 +107,12 @@ def get_quotient_familial(
         headers={"Authorization": f"Bearer {settings.PARTICULIER_API_TOKEN}"},
         params={key: value for (key, value) in query_params.items() if value},
     )
+
+    if response.status_code == 404:
+        raise ParticulierApiQuotientFamilialNotFound("Custodian not found")
     if response.status_code == 429:
         raise ParticulierApiRateLimitExceeded("Particulier API rate limit exceeded")
+
     if response.status_code // 100 == 4:
         raise ParticulierApiQueryError("Invalid query for Particulier API")
     if response.status_code // 100 == 5:
@@ -110,5 +120,4 @@ def get_quotient_familial(
     elif response.status_code // 100 != 2:
         raise ParticulierApiException("Unexpected response from Particulier API")
 
-    quotient_familial = QuotientFamilialResponse.model_validate(response.json())
-    return quotient_familial
+    return QuotientFamilialResponse.model_validate(response.json())
