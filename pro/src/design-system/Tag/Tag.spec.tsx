@@ -41,15 +41,16 @@ describe('Tag', () => {
     expect(container.querySelector('svg')).not.toBeInTheDocument()
   })
 
-  it.each([TagVariant.BOOKCLUB, TagVariant.HEADLINE, TagVariant.LIKE])(
-    'should always render an icon for specific variant: %s',
-    (variant) => {
-      const { container } = renderTag({
-        label: 'Département',
-        variant: variant,
-      })
+  it.each([
+    TagVariant.BOOKCLUB,
+    TagVariant.HEADLINE,
+    TagVariant.LIKE,
+  ])('should always render an icon for specific variant: %s', (variant) => {
+    const { container } = renderTag({
+      label: 'Département',
+      variant: variant,
+    })
 
-      expect(container.querySelector('svg')).toBeInTheDocument()
-    }
-  )
+    expect(container.querySelector('svg')).toBeInTheDocument()
+  })
 })

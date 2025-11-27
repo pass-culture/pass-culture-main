@@ -9,10 +9,10 @@ describe('getTitle', () => {
     { mode: OFFER_WIZARD_MODE.EDITION, expected: 'Modifier l’offre' },
   ]
 
-  it.each(testCases)(
-    'return right title with mode %s',
-    ({ mode, expected }) => {
-      expect(getTitle(mode)).toEqual(expected)
-    }
-  )
+  it.each(testCases)('return right title with mode %s', ({
+    mode,
+    expected,
+  }) => {
+    expect(getTitle(mode)).toEqual(expected)
+  })
 })

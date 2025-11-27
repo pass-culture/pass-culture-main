@@ -53,12 +53,13 @@ describe('isActionAllowedOnCollectiveOffer', () => {
       action: CollectiveOfferTemplateAllowedAction.CAN_CREATE_BOOKABLE_OFFER,
       expected: false,
     },
-  ])(
-    'should return $expected for $description',
-    ({ offer, action, expected }) => {
-      expect(isActionAllowedOnCollectiveOffer(offer, action)).toBe(expected)
-    }
-  )
+  ])('should return $expected for $description', ({
+    offer,
+    action,
+    expected,
+  }) => {
+    expect(isActionAllowedOnCollectiveOffer(offer, action)).toBe(expected)
+  })
 })
 
 describe('isCollectiveOfferDetailsEditable', () => {

@@ -47,24 +47,21 @@ describe('AddBankAccountCallout', () => {
       venuesWithNonFreeOffersWithoutBankAccounts: [1],
       hasPendingBankAccount: true,
     },
-  ])(
-    `should not render the add bank account banner if the offerer has no valid bank account and some unlinked venues but a pending bank account`,
-    () => {
-      const offerer = {
-        ...defaultGetOffererResponseModel,
-        hasValidBankAccount: false,
-        venuesWithNonFreeOffersWithoutBankAccounts: [1],
-        hasPendingBankAccount: true,
-      }
-      renderWithProviders(<AddBankAccountCallout offerer={offerer} />)
-
-      expect(
-        screen.queryByText(
-          'Aucun compte bancaire configuré pour percevoir vos remboursements'
-        )
-      ).not.toBeInTheDocument()
+  ])(`should not render the add bank account banner if the offerer has no valid bank account and some unlinked venues but a pending bank account`, () => {
+    const offerer = {
+      ...defaultGetOffererResponseModel,
+      hasValidBankAccount: false,
+      venuesWithNonFreeOffersWithoutBankAccounts: [1],
+      hasPendingBankAccount: true,
     }
-  )
+    renderWithProviders(<AddBankAccountCallout offerer={offerer} />)
+
+    expect(
+      screen.queryByText(
+        'Aucun compte bancaire configuré pour percevoir vos remboursements'
+      )
+    ).not.toBeInTheDocument()
+  })
 
   it('should render the add bank account banner if the offerer has no valid bank account and some unlinked venues', () => {
     const offerer = {

@@ -36,14 +36,15 @@ describe('getStockWarningText', () => {
       expected: false,
     },
   ]
-  it.each(testData)(
-    'should render $expected',
-    ({ offerStatus, hasStocks, expected }) => {
-      const result = getStockWarningText(
-        getIndividualOfferFactory({ status: offerStatus, hasStocks })
-      )
+  it.each(testData)('should render $expected', ({
+    offerStatus,
+    hasStocks,
+    expected,
+  }) => {
+    const result = getStockWarningText(
+      getIndividualOfferFactory({ status: offerStatus, hasStocks })
+    )
 
-      expect(result).toStrictEqual(expected)
-    }
-  )
+    expect(result).toStrictEqual(expected)
+  })
 })

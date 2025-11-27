@@ -43,25 +43,22 @@ describe('LinkVenueCallout', () => {
         hasValidBankAccount: false,
         venuesWithNonFreeOffersWithoutBankAccounts: [1],
       },
-    ])(
-      'should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts',
-      ({
+    ])('should not render the add link venue banner if the offerer  hasValidBankAccount = $hasValidBankAccount and venuesWithNonFreeOffersWithoutBankAccounts = $venuesWithNonFreeOffersWithoutBankAccounts', ({
+      hasValidBankAccount,
+      venuesWithNonFreeOffersWithoutBankAccounts,
+      ...rest
+    }) => {
+      props.offerer = {
+        ...rest,
         hasValidBankAccount,
         venuesWithNonFreeOffersWithoutBankAccounts,
-        ...rest
-      }) => {
-        props.offerer = {
-          ...rest,
-          hasValidBankAccount,
-          venuesWithNonFreeOffersWithoutBankAccounts,
-        }
-        renderWithProviders(<LinkVenueCallout {...props} />)
-
-        expect(
-          screen.queryByText(/Dernière étape pour vous faire rembourser/)
-        ).not.toBeInTheDocument()
       }
-    )
+      renderWithProviders(<LinkVenueCallout {...props} />)
+
+      expect(
+        screen.queryByText(/Dernière étape pour vous faire rembourser/)
+      ).not.toBeInTheDocument()
+    })
 
     it('should render LinkVenueCallout', () => {
       props.offerer = {

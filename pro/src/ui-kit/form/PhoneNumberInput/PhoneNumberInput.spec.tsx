@@ -109,17 +109,18 @@ describe('PhoneNumberInput', () => {
         prefix: '+687',
         phoneNumber: '751234',
       },
-    ])(
-      'should split value $value into $prefix and $phoneNumber',
-      ({ value, prefix, phoneNumber }) => {
-        renderPhoneNumberInput({ value })
-        const countryCodeSelect = screen.getByRole('combobox')
-        const phoneNumberInput = screen.getByRole('textbox')
+    ])('should split value $value into $prefix and $phoneNumber', ({
+      value,
+      prefix,
+      phoneNumber,
+    }) => {
+      renderPhoneNumberInput({ value })
+      const countryCodeSelect = screen.getByRole('combobox')
+      const phoneNumberInput = screen.getByRole('textbox')
 
-        expect(countryCodeSelect).toHaveValue(prefix)
-        expect(phoneNumberInput).toHaveValue(phoneNumber)
-      }
-    )
+      expect(countryCodeSelect).toHaveValue(prefix)
+      expect(phoneNumberInput).toHaveValue(phoneNumber)
+    })
   })
 
   it('should give the correct value to the "onChange" functions', async () => {

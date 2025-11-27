@@ -4,11 +4,12 @@ import * as yup from 'yup'
  * Extract the type of a collection item from a collection type,
  * or null | undefined if the collection type itself is null or undefined.
  */
-type ItemType<T> = T extends Array<infer U>
-  ? U
-  : T extends null | undefined
-    ? null | undefined
-    : never
+type ItemType<T> =
+  T extends Array<infer U>
+    ? U
+    : T extends null | undefined
+      ? null | undefined
+      : never
 
 declare module 'yup' {
   // Match Yup v1.x ArraySchema generic arity to avoid mismatches (omit constraints/defaults)
