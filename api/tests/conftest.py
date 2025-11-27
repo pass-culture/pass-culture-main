@@ -8,6 +8,7 @@ import time
 import typing
 import urllib.parse
 from dataclasses import dataclass
+from datetime import timedelta
 from pathlib import Path
 from pprint import pprint
 from unittest.mock import MagicMock
@@ -109,7 +110,7 @@ def build_backoffice_app():
             user = db.session.query(User).filter_by(id=user_id).one()
 
             login_user(user, remember=True)
-            login_manager.stamp_session(user)
+            login_manager.stamp_session(user, timedelta(minutes=15))
 
             return ""
 

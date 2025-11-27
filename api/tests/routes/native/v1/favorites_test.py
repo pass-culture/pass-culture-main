@@ -345,8 +345,7 @@ class GetTest:
             client.post(FAVORITES_URL, json={"offerId": offer.id})
             # 1: Fetch the user for auth
             # 1: Fetch the favorites
-            num_queries = 1  # Get session
-            num_queries += 1  # Get user
+            num_queries = 1  # Get user
             num_queries += 1  # Get favorites
             with assert_num_queries(num_queries):
                 response = client.get(FAVORITES_URL)

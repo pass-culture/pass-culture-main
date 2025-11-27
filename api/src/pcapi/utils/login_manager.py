@@ -1,8 +1,10 @@
 import logging
 import uuid
 from datetime import datetime
+from datetime import timedelta
 
 import flask
+import sqlalchemy as sa
 import werkzeug.datastructures
 from flask import current_app as app
 from flask_login import logout_user
@@ -43,7 +45,10 @@ def get_user_with_id(user_id: str) -> users_models.User | None:
 
     flask.session.permanent = True
     session_uuid = flask.session.get("session_uuid")
-    user_session = db.session.query(users_models.UserSession).filter_by(userId=user_id, uuid=session_uuid).one_or_none()
+    user_session = get_session(
+        user_id=user_id,
+        session_uuid=session_uuid,
+    )
 
     if not user_session:
         return None
@@ -70,11 +75,32 @@ def send_401() -> tuple[flask.Response, int]:
     return flask.jsonify(e.errors), 401
 
 
-def stamp_session(user: users_models.User) -> None:
+def get_session(user_id: str, session_uuid: str | None) -> users_models.UserSession | None:
+    if not user_id or not session_uuid:
+        return None
+    return (
+        db.session.query(users_models.UserSession)
+        .filter(
+            users_models.UserSession.userId == int(user_id),
+            users_models.UserSession.uuid == session_uuid,
+            sa.or_(
+                users_models.UserSession.expirationDatetime > date_utils.get_naive_utc_now(),
+                users_models.UserSession.expirationDatetime == None,
+            ),
+        )
+        .one_or_none()
+    )
+
+
+def stamp_session(user: users_models.User, duration: timedelta) -> None:
     session_uuid = uuid.uuid4()
     flask.session["session_uuid"] = session_uuid
     flask.session["user_id"] = user.id
-    db.session.add(users_models.UserSession(userId=user.id, uuid=session_uuid))
+    db.session.add(
+        users_models.UserSession(
+            userId=user.id, uuid=session_uuid, expirationDatetime=date_utils.get_naive_utc_now() + duration
+        )
+    )
     db.session.commit()
 
 
@@ -101,6 +127,7 @@ def manage_pro_session(user: users_models.User | None) -> users_models.User | No
     current_timestamp = date_utils.get_naive_utc_now().timestamp()
     last_login = datetime.fromtimestamp(flask.session.get("last_login", current_timestamp))
     last_api_call = datetime.fromtimestamp(flask.session.get("last_api_call", current_timestamp))
+
     valid_session = compute_pro_session_validity(last_login, last_api_call)
 
     if "last_login" not in flask.session:
