@@ -207,6 +207,47 @@ def create_eac_offers(
     search.index_all_collective_offers_and_templates()
 
 
+@log_func_duration
+def create_eac_offers_by_period(
+    offerers: list[offerers_models.Offerer], deposits: list[educational_models.EducationalDeposit]
+) -> None:
+    now = date_utils.get_naive_utc_now()
+    offerer = next(o for o in offerers if o.name == "eac_with_deposits_by_period")
+    [venue] = offerer.managedVenues
+
+    for deposit in deposits:
+        assert deposit.period is not None
+
+        year = deposit.educationalYear
+        institution = deposit.educationalInstitution
+
+        # if the deposit period is in the current educational year and in the future, it cannot have a related confirmed booking
+        if year.beginningDate <= now <= year.expirationDate and now < deposit.period.lower:
+            continue
+
+        # if the educational year is in the future, only the first deposit of the year can have a related confirmed booking
+        if now < year.beginningDate < deposit.period.lower:
+            continue
+
+        # if the deposit period is passed, the confirmation must have occured during the period
+        if deposit.period.upper < now:
+            confirmation_date = deposit.period.lower + timedelta(days=5)
+        else:
+            confirmation_date = now
+
+        educational_factories.ConfirmedCollectiveBookingFactory(
+            educationalInstitution=institution,
+            educationalYear=year,
+            educationalDeposit=deposit,
+            confirmationDate=confirmation_date,
+            collectiveStock__price=1000,
+            collectiveStock__startDatetime=year.expirationDate - timedelta(days=15),
+            collectiveStock__collectiveOffer__venue=venue,
+            collectiveStock__collectiveOffer__institution=institution,
+            collectiveStock__collectiveOffer__name=f"Offre confirmée pour l'UAI {institution.institutionId}",
+        )
+
+
 def create_offers_base_list(
     *,
     provider: providers_models.Provider,

@@ -421,6 +421,16 @@ def create_eac_venues(offerer_list: list[offerers_models.Offerer]) -> None:
         siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0002"),
         pricing_point="self",
     )
+    # eac_with_deposits_by_period
+    offerer = next(offerer_iterator)
+    create_venue(
+        managingOfferer=offerer,
+        name=offerer.name,
+        venueEducationalStatusId=next(educational_status_iterator),
+        collectiveInterventionArea=ALL_INTERVENTION_AREA,
+        siret=siren_utils.complete_siren_or_siret(f"{offerer.siren}0001"),
+        adageId="123599",
+    )
 
 
 def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offerers_models.Venue:
