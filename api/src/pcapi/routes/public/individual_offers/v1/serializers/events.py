@@ -14,13 +14,8 @@ from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1 import base_serialization
 from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
-from pcapi.routes.public.serialization.utils import StrEnum
+from pcapi.routes.public.individual_offers.v1.serializers.constants import EventCategoryEnum
 from pcapi.serialization import utils as serialization_utils
-
-
-EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
-    "EventCategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
-)
 
 
 class DecimalPriceGetterDict(GetterDict):
@@ -325,13 +320,14 @@ class PriceCategoryEdition(serialization.ConfiguredBaseModel):
 
 
 class EventCategoryResponse(serialization.ConfiguredBaseModel):
-    id: EventCategoryEnum  # type: ignore[valid-type]
+    id: EventCategoryEnum
     conditional_fields: dict[str, bool] = fields.EVENT_CONDITIONAL_FIELDS
 
     @classmethod
     def build_category(cls, subcategory: subcategories.Subcategory) -> "EventCategoryResponse":
+        assert subcategory.id in EventCategoryEnum  # to help mypy
         return cls(
-            id=subcategory.id,
+            id=EventCategoryEnum[subcategory.id],
             conditional_fields={
                 field: condition.is_required_in_external_form
                 for field, condition in subcategory.conditional_fields.items()
