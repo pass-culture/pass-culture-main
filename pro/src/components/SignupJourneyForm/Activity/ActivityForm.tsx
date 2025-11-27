@@ -1,6 +1,10 @@
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
+import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { OnboardingActivityMap } from '@/commons/mappings/mappings'
+import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -34,8 +38,12 @@ export interface ActivityFormProps {
 export const ActivityForm = ({
   venueTypes,
 }: ActivityFormProps): JSX.Element => {
+  const { offerer } = useSignupJourneyContext()
+
   const { register, control, formState, watch, setValue, trigger, setFocus } =
     useFormContext<ActivityFormValues>()
+
+  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -44,6 +52,10 @@ export const ActivityForm = ({
 
   const watchSocialUrls = watch('socialUrls')
 
+  const mainActivityOptions =
+    isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
+      ? buildSelectOptions(OnboardingActivityMap)
+      : venueTypes
   return (
     <FormLayout.Section>
       <FormLayout.Row mdSpaceAfter>
@@ -53,7 +65,7 @@ export const ActivityForm = ({
               value: '',
               label: 'Sélectionnez votre activité principale',
             },
-            ...venueTypes,
+            ...mainActivityOptions,
           ]}
           {...register('venueTypeCode')}
           error={formState.errors.venueTypeCode?.message}

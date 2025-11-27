@@ -10,5 +10,4 @@ import { buildFilteredMap } from './utils/buildFilteredMap'
 
 // ts-unused-exports:disable-next-line
 export const DisplayedActivityMap = buildFilteredMap(DisplayedActivity, _DisplayedActivityMappings) // biome-ignore format:.
-// ts-unused-exports:disable-next-line
 export const OnboardingActivityMap = buildFilteredMap(OnboardingActivity, _OnboardingActivityMappings) // biome-ignore format:.

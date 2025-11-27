@@ -3,7 +3,11 @@ import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
-import { type SaveNewOnboardingDataQueryModel, Target } from '@/apiClient/v1'
+import {
+  type OnboardingActivity,
+  type SaveNewOnboardingDataQueryModel,
+  Target,
+} from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
@@ -13,11 +17,13 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
+import { OnboardingActivityMap } from '@/commons/mappings/mappings'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { type UserAccess, updateUser } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
@@ -44,6 +50,8 @@ export const Validation = (): JSX.Element | undefined => {
 
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
+
+  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
     api.getVenueTypes()
@@ -85,6 +93,11 @@ export const Validation = (): JSX.Element | undefined => {
     return
   }
 
+  const activityLabel = isVenueActivityFeatureActive
+    ? new Map(Object.entries(OnboardingActivityMap)).get(activity.venueTypeCode)
+    : venueTypes.find((venueType) => venueType.value === activity.venueTypeCode)
+        ?.label
+
   const onSubmit = async () => {
     setLoading(true)
     try {
@@ -95,9 +108,18 @@ export const Validation = (): JSX.Element | undefined => {
         isOpenToPublic: offerer.isOpenToPublic === 'true',
         publicName: offerer.publicName || null,
         siret: offerer.siret.replaceAll(' ', ''),
-        venueTypeCode:
-          /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-          activity.venueTypeCode,
+        ...(isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
+          ? {
+              activity:
+                /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
+                activity.venueTypeCode as OnboardingActivity, // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
+            }
+          : {
+              venueTypeCode:
+                /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
+                activity.venueTypeCode,
+            }),
+
         webPresence: activity.socialUrls.join(', '),
         target:
           /* istanbul ignore next: the form validation already handles this */
@@ -199,13 +221,7 @@ export const Validation = (): JSX.Element | undefined => {
           </ButtonLink>
         </div>
         <div className={styles['data-displaying']}>
-          <div className={styles['data-line']}>
-            {
-              venueTypes.find(
-                (venueType) => venueType.value === activity.venueTypeCode
-              )?.label
-            }
-          </div>
+          <div className={styles['data-line']}>{activityLabel}</div>
           {activity.socialUrls.map((url) => (
             <div className={styles['data-line']} key={url}>
               {url}
