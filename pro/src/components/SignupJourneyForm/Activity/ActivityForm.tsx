@@ -3,7 +3,7 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { OnboardingActivityMap } from '@/commons/mappings/mappings'
+import { getActivities } from '@/commons/mappings/mappings'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
@@ -54,7 +54,7 @@ export const ActivityForm = ({
 
   const mainActivityOptions =
     isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
-      ? buildSelectOptions(OnboardingActivityMap)
+      ? buildSelectOptions(getActivities())
       : venueTypes
   return (
     <FormLayout.Section>

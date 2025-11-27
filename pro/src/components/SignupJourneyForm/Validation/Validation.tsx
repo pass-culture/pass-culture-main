@@ -23,9 +23,9 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
-import { OnboardingActivityMap } from '@/commons/mappings/mappings'
+import { getActivityLabel } from '@/commons/mappings/mappings'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
-import { type UserAccess, updateUser } from '@/commons/store/user/reducer'
+import { updateUser } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -94,7 +94,7 @@ export const Validation = (): JSX.Element | undefined => {
   }
 
   const activityLabel = isVenueActivityFeatureActive
-    ? new Map(Object.entries(OnboardingActivityMap)).get(activity.venueTypeCode)
+    ? getActivityLabel(activity.venueTypeCode as OnboardingActivity) // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
     : venueTypes.find((venueType) => venueType.value === activity.venueTypeCode)
         ?.label
 
@@ -112,7 +112,7 @@ export const Validation = (): JSX.Element | undefined => {
           ? {
               activity:
                 /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-                activity.venueTypeCode as OnboardingActivity, // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
+                activity.venueTypeCode as OnboardingActivity, // TODO (jclery, 2025-11-27): Also TEMPORARY (see above)
             }
           : {
               venueTypeCode:

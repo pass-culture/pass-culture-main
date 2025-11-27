@@ -19,3 +19,5 @@ export const _OnboardingActivityMappings = {
   SCIENCE_CENTRE: 'Centre de culture scientifique, technique et industrielle',
   TOURIST_INFORMATION_CENTRE: 'Office de tourisme',
 }
+
+export type OnboardingActivityType = keyof typeof _OnboardingActivityMappings
