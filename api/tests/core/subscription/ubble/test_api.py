@@ -1474,10 +1474,16 @@ class SubscriptionMessageTest:
 def test_pending_and_created_fraud_checks_are_updated(update_ubble_workflow_mock):
     yesterday = datetime.date.today() - relativedelta(hours=13)
     created_fraud_check = BeneficiaryFraudCheckFactory(
-        type=FraudCheckType.UBBLE, status=FraudCheckStatus.STARTED, dateCreated=yesterday
+        type=FraudCheckType.UBBLE,
+        status=FraudCheckStatus.STARTED,
+        dateCreated=yesterday,
+        updatedAt=yesterday,
     )
     pending_fraud_check = BeneficiaryFraudCheckFactory(
-        type=FraudCheckType.UBBLE, status=FraudCheckStatus.PENDING, dateCreated=yesterday
+        type=FraudCheckType.UBBLE,
+        status=FraudCheckStatus.PENDING,
+        dateCreated=yesterday,
+        updatedAt=yesterday,
     )
 
     ubble_subscription_api.recover_pending_ubble_applications()

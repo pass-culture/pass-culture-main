@@ -45,6 +45,7 @@ from . import messages
 
 logger = logging.getLogger(__name__)
 PAGE_SIZE = 20_000
+CELERY_PAGE_SIZE = 3_000
 
 PENDING_STATUSES = [
     ubble_schemas.UbbleIdentificationStatus.PROCESSING,
@@ -75,10 +76,12 @@ def update_ubble_workflow_with_status(
     """
     if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
+        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
         return
 
     if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
+        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
         return
 
     if status not in CONCLUSIVE_STATUSES:
@@ -97,10 +100,12 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
     status = content.status
     if status in PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
+        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
         return
 
     if status in CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
+        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
         return
 
     if status not in CONCLUSIVE_STATUSES:
@@ -447,30 +452,38 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
     """
     from pcapi.core.subscription.ubble import tasks as ubble_tasks
 
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
+        stale_ubble_fraud_check_ids = _get_stale_fraud_checks_ids(CELERY_PAGE_SIZE)
+        for fraud_check_id in stale_ubble_fraud_check_ids:
+            ubble_tasks.update_ubble_workflow_task.delay(
+                payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id).model_dump()
+            )
+
+        logger.warning(
+            "Found %d stale ubble application older than 12 hours and tried to update them.",
+            len(stale_ubble_fraud_check_ids),
+        )
+        return
+
     pending_ubble_application_counter = 0
-    for pending_ubble_application_fraud_checks in _get_pending_fraud_checks_pages():
-        pending_ubble_application_counter += len(pending_ubble_application_fraud_checks)
-        for fraud_check in pending_ubble_application_fraud_checks:
-            if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-                ubble_tasks.update_ubble_workflow_task.delay(
-                    payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check.id).model_dump()
+    for pending_ubble_fraud_check_ids in _get_pending_fraud_checks_pages():
+        pending_ubble_application_counter += len(pending_ubble_fraud_check_ids)
+        for fraud_check in pending_ubble_fraud_check_ids:
+            try:
+                with atomic():
+                    update_ubble_workflow(fraud_check)
+            except Exception as exc:
+                logger.error(
+                    "Error while updating pending ubble application",
+                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId, "exc": str(exc)},
                 )
-            else:
-                try:
-                    with atomic():
-                        update_ubble_workflow(fraud_check)
-                except Exception as exc:
-                    logger.error(
-                        "Error while updating pending ubble application",
-                        extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId, "exc": str(exc)},
-                    )
-                    continue
-                db.session.refresh(fraud_check)
-                if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
-                    logger.error(
-                        "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
-                        extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
-                    )
+                continue
+            db.session.refresh(fraud_check)
+            if fraud_check.status == subscription_models.FraudCheckStatus.PENDING:
+                logger.error(
+                    "Pending ubble application still pending after 12 hours. This is a problem on the Ubble side.",
+                    extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+                )
 
     if pending_ubble_application_counter > 0:
         logger.warning(
@@ -479,6 +492,38 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
         )
     else:
         logger.info("No pending ubble application found older than 12 hours. This is good.")
+
+
+def _get_stale_fraud_checks_ids(page_size: int) -> typing.Sequence[int]:
+    """
+    Returns the `page_size` first stale and pending fraud checks.
+    This function only returns the first page, and is meant to be called every hour by recovery workers.
+    """
+    from pcapi.celery_tasks.tasks import MAX_RETRY_DURATION
+    from pcapi.core.subscription.ubble import tasks as ubble_tasks
+
+    # Celery workers keep all rate limited tasks in memory so we need to limit task stacking lest the workers get OOMKilled
+    page_size_limit = ubble_tasks.UBBLE_TASK_RATE_LIMIT * (MAX_RETRY_DURATION / 60)  # ~ 3500 elements
+    if page_size > page_size_limit:
+        raise ValueError(f"{page_size = } is above {page_size_limit = }")
+
+    # Ubble guarantees an application is processed after 3 hours.
+    # We give ourselves some extra time and we retrieve the applications that are still pending after 12 hours.
+    twelve_hours_ago = datetime.date.today() - datetime.timedelta(hours=12)
+    stale_fraud_check_ids_stmt = (
+        sa.select(subscription_models.BeneficiaryFraudCheck.id)
+        .filter(
+            subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
+            subscription_models.BeneficiaryFraudCheck.status.in_(
+                [subscription_models.FraudCheckStatus.STARTED, subscription_models.FraudCheckStatus.PENDING]
+            ),
+            subscription_models.BeneficiaryFraudCheck.updatedAt < twelve_hours_ago,
+        )
+        .order_by(subscription_models.BeneficiaryFraudCheck.id)
+        .limit(page_size)
+    )
+
+    return db.session.scalars(stale_fraud_check_ids_stmt).all()
 
 
 def _get_pending_fraud_checks_pages() -> typing.Generator[list[subscription_models.BeneficiaryFraudCheck], None, None]:
