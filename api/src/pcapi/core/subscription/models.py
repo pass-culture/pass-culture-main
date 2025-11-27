@@ -200,9 +200,9 @@ class BeneficiaryFraudCheck(PcObject, Model):
 
     __table_args__ = (
         sa.Index(
-            "ix_fraud_check_type_initiated_status",
-            eligibilityType,
-            postgresql_where=status.in_((FraudCheckStatus.STARTED, FraudCheckStatus.PENDING)),
+            "ix_beneficiary_fraud_check_type_initiated_status",
+            type,
+            postgresql_where=sa.or_(status == FraudCheckStatus.STARTED, status == FraudCheckStatus.PENDING),
         ),
     )
 
