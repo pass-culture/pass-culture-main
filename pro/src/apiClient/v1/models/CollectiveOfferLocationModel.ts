@@ -4,8 +4,9 @@
 /* eslint-disable */
 import type { CollectiveLocationType } from './CollectiveLocationType';
 import type { LocationBodyModel } from './LocationBodyModel';
+import type { LocationOnlyOnVenueBodyModel } from './LocationOnlyOnVenueBodyModel';
 export type CollectiveOfferLocationModel = {
-  location?: LocationBodyModel | null;
+  location?: (LocationBodyModel | LocationOnlyOnVenueBodyModel) | null;
   locationComment?: string | null;
   locationType: CollectiveLocationType;
 };

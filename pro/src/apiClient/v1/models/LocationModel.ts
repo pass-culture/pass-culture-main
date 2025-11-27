@@ -2,10 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type LocationBodyModel = {
+export type LocationModel = {
   banId?: string | null;
   city: string;
-  departmentCode?: string | null;
   inseeCode?: string | null;
   isManualEdition?: boolean;
   label?: string | null;

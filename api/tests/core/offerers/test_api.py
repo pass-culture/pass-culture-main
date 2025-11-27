@@ -2684,7 +2684,7 @@ class CreateFromOnboardingDataTest:
         self, create_venue_without_siret: bool
     ) -> offerers_serialize.SaveNewOnboardingDataQueryModel:
         return offerers_serialize.SaveNewOnboardingDataQueryModel(
-            address=offerers_schemas.LocationBodyModel(
+            address=offerers_schemas.LocationModel(
                 label="",
                 banId="75101_9575_00003",
                 city=offerers_schemas.VenueCity("Paris"),

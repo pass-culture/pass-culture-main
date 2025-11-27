@@ -77,7 +77,7 @@ class DMSApplicationForEAC(BaseModel):
 
 class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     activity: offerers_models.Activity | None
-    address: offerers_schemas.LocationBodyModel
+    address: address_serialize.LocationBodyModel
     bookingEmail: offerers_schemas.VenueBookingEmail
     comment: offerers_schemas.VenueComment | None
     isOpenToPublic: bool | None

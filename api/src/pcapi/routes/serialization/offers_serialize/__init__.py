@@ -23,6 +23,7 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
@@ -80,7 +81,7 @@ class CategoryResponseModel(BaseModel):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    location: offerers_schemas.LocationBodyModel | None
+    location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
     description: str | None
@@ -684,7 +685,7 @@ class OfferVideo(ConfiguredBaseModel):
 
 
 class PostOfferBodyModel(BaseModel):
-    address: offerers_schemas.LocationBodyModel | None
+    address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None

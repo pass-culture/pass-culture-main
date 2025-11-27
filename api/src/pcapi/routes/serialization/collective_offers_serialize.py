@@ -16,7 +16,6 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.educational import validation as educational_validation
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
@@ -259,7 +258,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
 class CollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    location: offerers_schemas.LocationBodyModel | None
+    location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
 
     @validator("locationComment")
     def validate_location_comment(cls, location_comment: str | None, values: dict) -> str | None:
@@ -270,8 +269,10 @@ class CollectiveOfferLocationModel(BaseModel):
 
     @validator("location")
     def validate_address(
-        cls, address: offerers_schemas.LocationBodyModel | None, values: dict
-    ) -> offerers_schemas.LocationBodyModel | None:
+        cls,
+        address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None,
+        values: dict,
+    ) -> address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None:
         location_type = values.get("locationType")
         if (
             location_type

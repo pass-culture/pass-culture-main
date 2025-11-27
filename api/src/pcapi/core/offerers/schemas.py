@@ -127,7 +127,7 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
     max_length = 500
 
 
-class LocationBodyModel(BaseModel):
+class LocationModel(BaseModel):
     venueLocation: bool = False
     isManualEdition: bool = False
     banId: str | None

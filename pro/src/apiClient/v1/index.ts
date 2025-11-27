@@ -175,6 +175,8 @@ export type { ListProviderResponse } from './models/ListProviderResponse';
 export type { ListVenueProviderQuery } from './models/ListVenueProviderQuery';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
 export type { LocationBodyModel } from './models/LocationBodyModel';
+export type { LocationModel } from './models/LocationModel';
+export type { LocationOnlyOnVenueBodyModel } from './models/LocationOnlyOnVenueBodyModel';
 export type { LocationResponseModel } from './models/LocationResponseModel';
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenues } from './models/ManagedVenues';

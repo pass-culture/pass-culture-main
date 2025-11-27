@@ -70,8 +70,8 @@ export const SiretOrCommentFields = ({
       setValue('street', response.location?.street ?? '')
       setValue('postalCode', response.location?.postalCode ?? '')
       setValue('city', response.location?.city ?? '')
-      setValue('latitude', response.location?.latitude.toString() ?? '')
-      setValue('longitude', response.location?.longitude.toString() ?? '')
+      setValue('latitude', response.location?.latitude?.toString() ?? '')
+      setValue('longitude', response.location?.longitude?.toString() ?? '')
       setValue('inseeCode', response.location?.inseeCode ?? '')
     } catch (_e) {
       if (isError(_e)) {

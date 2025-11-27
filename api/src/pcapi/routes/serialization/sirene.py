@@ -1,4 +1,4 @@
-from pcapi.core.offerers.schemas import LocationBodyModel
+from pcapi.core.offerers.schemas import LocationModel
 from pcapi.routes import serialization
 from pcapi.serialization.utils import to_camel
 
@@ -27,5 +27,5 @@ class StructureDataBodyModel(serialization.BaseModel):
     siren: str | None
     name: str | None
     apeCode: str | None
-    location: LocationBodyModel | None
+    location: LocationModel | None
     isDiffusible: bool

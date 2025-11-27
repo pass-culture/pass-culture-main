@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { LocationBodyModel } from './LocationBodyModel';
+import type { LocationOnlyOnVenueBodyModel } from './LocationOnlyOnVenueBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PatchOfferBodyModel = {
   audioDisabilityCompliant?: boolean | null;
@@ -15,7 +16,7 @@ export type PatchOfferBodyModel = {
   extraData?: any;
   isDuo?: boolean | null;
   isNational?: boolean | null;
-  location?: LocationBodyModel | null;
+  location?: (LocationBodyModel | LocationOnlyOnVenueBodyModel) | null;
   mentalDisabilityCompliant?: boolean | null;
   motorDisabilityCompliant?: boolean | null;
   name?: string | null;
