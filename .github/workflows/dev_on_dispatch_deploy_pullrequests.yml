@@ -11,6 +11,7 @@ on:
         options:
           - empty
           - industrial
+          - tiny
       sandbox-args:
         description: "Arguments passed to the sandbox command"
         required: false
@@ -378,6 +379,7 @@ jobs:
 
           echo "=== exec: flask sandbox -n ${{ inputs.sandbox }} ${{ inputs.sandbox-args }}"
           export DATE=$(date +"%Y-%m-%d-%H-%M-%S")
+          export SANDBOX_NAME='${{ inputs.sandbox }}'
           export SANDBOX_ARGS='${{ inputs.sandbox-args }}'
           start=$(date +%s.%N)
           envsubst < .github/workflows/templates/pullrequest-db-init-sandbox.yaml | kubectl -n pcapi-pr-${{ needs.deploy-preview-env-init.outputs.resource_label }} apply -f -

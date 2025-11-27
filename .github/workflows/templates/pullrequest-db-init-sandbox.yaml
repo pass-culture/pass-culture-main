@@ -9,36 +9,36 @@ spec:
     spec:
       activeDeadlineSeconds: 3600
       containers:
-      - name: pcapi
-        image: ${IMAGE}
-        imagePullPolicy: Always
-        resources:
-          requests:
-            memory: 768Mi
-            cpu: 1
-          limits:
-            memory: 768Mi
-            cpu: 1
-        env:
-          - name: REDIS_URL
-            value: "redis://redis-${PRID}.pcapi-pr-${PRID}.svc.cluster.local:6379"
-          - name: DATABASE_URL
-            value: "postgresql://postgres:$(PGSQL_PWD)@pgsql-pr-${PRID}.pcapi-pr-${PRID}.svc.cluster.local:5432/postgres"
-        envFrom:
-        - configMapRef:
-            name: testing-pcapi-api
-        - configMapRef:
-            name: testing-pcapi-api-specific
-            optional: true
-        - secretRef:
-            name: testing-pcapi
-        - secretRef:
-            name: testing-pcapi-pgsql
-        command:
-          - "/bin/bash"
-        args:
-          - "-c"
-          - |
-            set -e
-            flask sandbox -n industrial ${SANDBOX_ARGS}
+        - name: pcapi
+          image: ${IMAGE}
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: 768Mi
+              cpu: 1
+            limits:
+              memory: 768Mi
+              cpu: 1
+          env:
+            - name: REDIS_URL
+              value: "redis://redis-${PRID}.pcapi-pr-${PRID}.svc.cluster.local:6379"
+            - name: DATABASE_URL
+              value: "postgresql://postgres:$(PGSQL_PWD)@pgsql-pr-${PRID}.pcapi-pr-${PRID}.svc.cluster.local:5432/postgres"
+          envFrom:
+            - configMapRef:
+                name: testing-pcapi-api
+            - configMapRef:
+                name: testing-pcapi-api-specific
+                optional: true
+            - secretRef:
+                name: testing-pcapi
+            - secretRef:
+                name: testing-pcapi-pgsql
+          command:
+            - "/bin/bash"
+          args:
+            - "-c"
+            - |
+              set -e
+              flask sandbox -n ${SANDBOX_NAME} ${SANDBOX_ARGS}
       restartPolicy: Never
