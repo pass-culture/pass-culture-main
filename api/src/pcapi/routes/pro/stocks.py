@@ -136,7 +136,9 @@ def bulk_create_event_stocks(
         offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
     ]
 
-    return offers_serialize.GetStocksResponseModel(stock_count=created_stocks_count, stocks=stocks)
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=created_stocks_count
+    )
 
 
 @private_api.route("/stocks/bulk", methods=["PATCH"])
@@ -211,4 +213,6 @@ def bulk_update_event_stocks(
     stocks = [
         offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
     ]
-    return offers_serialize.GetStocksResponseModel(stock_count=edited_stocks_count, stocks=stocks)
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=edited_stocks_count
+    )

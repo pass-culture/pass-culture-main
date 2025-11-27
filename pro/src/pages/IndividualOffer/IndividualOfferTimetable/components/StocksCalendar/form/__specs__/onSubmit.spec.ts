@@ -354,6 +354,7 @@ describe('onSubmit', () => {
         vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce(
           getStocksResponseFactory({
             stockCount: expectedStocks.length,
+            touchedStockCount: expectedStocks.length,
           })
         )
         await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])

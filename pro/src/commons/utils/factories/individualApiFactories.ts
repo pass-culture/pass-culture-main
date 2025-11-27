@@ -508,6 +508,7 @@ export function getStocksResponseFactory(
       },
     ],
     stockCount: 1,
+    touchedStockCount: 1,
     ...customGetStocksResponse,
   }
 }

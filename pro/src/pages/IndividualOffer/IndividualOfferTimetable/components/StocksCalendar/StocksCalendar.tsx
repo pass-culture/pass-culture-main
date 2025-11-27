@@ -109,7 +109,11 @@ export function StocksCalendar({
   )
 
   async function deleteStocks(ids: number[]) {
-    await api.deleteStocks(offer.id, { ids_to_delete: ids })
+    await mutate(
+      stockQueryKeys,
+      api.deleteStocks(offer.id, { ids_to_delete: ids }),
+      { revalidate: false }
+    )
 
     if (
       page > 1 &&
@@ -125,30 +129,34 @@ export function StocksCalendar({
         ? 'Une date a été supprimée'
         : `${ids.length} dates ont été supprimées`
     )
-    // TODO (rchaffal 26/12/2025) could not mutate since 'he retrun of deleteStocks is still not good
-    await mutate(stockQueryKeys)
     if (mode === OFFER_WIZARD_MODE.EDITION) {
+      // update offer status
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
     }
   }
 
   async function updateStock(stock: EventStockUpdateBodyModel) {
     try {
-      const updatedStocks = await api.bulkUpdateEventStocks({
-        offerId: offer.id,
-        stocks: [stock],
-      })
+      const updatedStocks = await mutate(
+        stockQueryKeys,
+        api.bulkUpdateEventStocks({
+          offerId: offer.id,
+          stocks: [stock],
+        }),
+        {
+          revalidate: false,
+        }
+      )
 
-      if (updatedStocks.stockCount === 0) {
+      if (updatedStocks?.touchedStockCount === 0) {
         notify.error('Aucune date n’a pu être modifiée')
         return
       }
 
       notify.success('Les modifications ont été enregistrées')
 
-      // TODO: could not mutate this, stockCount is not what it is in others routes
-      await mutate(stockQueryKeys)
       if (mode === OFFER_WIZARD_MODE.EDITION) {
+        // update offer status
         await mutate([GET_OFFER_QUERY_KEY, offer.id])
       }
     } catch {

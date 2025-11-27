@@ -79,6 +79,7 @@ class Returns200Test:
 
         assert response.json == {
             "stockCount": 2,
+            "touchedStockCount": 0,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -127,6 +128,7 @@ class Returns200Test:
 
         assert response.json == {
             "stockCount": 1,
+            "touchedStockCount": 0,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -212,6 +214,7 @@ class Returns200Test:
 
         assert response.json == {
             "stockCount": 5,
+            "touchedStockCount": 0,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
