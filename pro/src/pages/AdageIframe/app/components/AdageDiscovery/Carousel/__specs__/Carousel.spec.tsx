@@ -69,12 +69,11 @@ describe('Carousel', () => {
 
   it('should emit an event when the last element is seen entirely', () => {
     vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
-      true,
-      true,
+      true, // first element visible
     ])
     vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
-      true,
-      true,
+      true, // last element visible
+      true, // last element changed
     ])
 
     const mockEmittedEnvent = vi.fn()
@@ -85,6 +84,26 @@ describe('Carousel', () => {
       />
     )
 
-    expect(mockEmittedEnvent).toHaveBeenCalled()
+    expect(mockEmittedEnvent).toHaveBeenCalledOnce()
+  })
+
+  it('should not emit an event when the last element seen has not changed', () => {
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
+      true, // first element visible
+    ])
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible').mockReturnValueOnce([
+      true, // last element visible
+      false, // last element did not change
+    ])
+
+    const mockEmittedEnvent = vi.fn()
+    render(
+      <Carousel
+        elements={mockCarouselElements}
+        onLastCarouselElementVisible={mockEmittedEnvent}
+      />
+    )
+
+    expect(mockEmittedEnvent).not.toHaveBeenCalled()
   })
 })

@@ -75,7 +75,6 @@ vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
     logConsultPlaylistElement: vi.fn(),
-    logHasSeenWholePlaylist: vi.fn(),
     newTemplateOffersPlaylist: vi.fn(),
   },
   api: {

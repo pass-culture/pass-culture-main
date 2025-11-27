@@ -27,7 +27,6 @@ vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logHasSeenAllPlaylist: vi.fn(),
     logConsultPlaylistElement: vi.fn(),
-    logHasSeenWholePlaylist: vi.fn(),
     newTemplateOffersPlaylist: vi.fn(),
   },
   api: {
@@ -146,27 +145,5 @@ describe('AdageDiscovery', () => {
         iframeFrom: '/',
       })
     )
-  })
-
-  it('should trigger a log when the last element of a playlist is seen', async () => {
-    renderAdageDiscovery(user)
-
-    // log for each playlist
-    vi.spyOn(useIsElementVisible, 'useIsElementVisible')
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-      .mockReturnValueOnce([true, true])
-
-    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
-
-    //  Log called once for each playlist
-    expect(apiAdage.logHasSeenWholePlaylist).toHaveBeenCalledTimes(4)
   })
 })

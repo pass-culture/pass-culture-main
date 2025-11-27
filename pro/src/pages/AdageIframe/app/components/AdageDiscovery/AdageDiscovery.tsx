@@ -1,4 +1,4 @@
-import { createRef, useRef } from 'react'
+import { useRef } from 'react'
 
 import { AdagePlaylistType } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -28,7 +28,7 @@ export const AdageDiscovery = () => {
   const hasSeenAllPlaylist = useRef<boolean>(false)
   const params = new URLSearchParams(location.search)
 
-  const footerSuggestion = createRef<HTMLDivElement>()
+  const footerSuggestion = useRef<HTMLDivElement>(null)
   const [isFooterSuggestionVisible] = useIsElementVisible(footerSuggestion)
 
   const notification = useNotification()

@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { createRef } from 'react'
+import { useRef } from 'react'
 
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
 import fullArrowLeftIcon from '@/icons/full-arrow-left.svg'
@@ -28,9 +28,9 @@ export function Carousel({
   className,
   observableRef,
 }: CarouselProps) {
-  const listRef = createRef<HTMLUListElement>()
-  const firstElementRef = createRef<HTMLLIElement>()
-  const lastElementRef = createRef<HTMLLIElement>()
+  const listRef = useRef<HTMLUListElement>(null)
+  const firstElementRef = useRef<HTMLLIElement>(null)
+  const lastElementRef = useRef<HTMLLIElement>(null)
 
   const observerOptions = {
     threshold: 0.99,

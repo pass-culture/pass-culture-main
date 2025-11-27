@@ -1,33 +1,36 @@
-import { type RefObject, useEffect, useState } from 'react'
+import { type MutableRefObject, useEffect, useRef, useState } from 'react'
 
 // Hook that return whether an element is visible or not in viewport
 export const useIsElementVisible = (
-  elementWatched: RefObject<Element>,
+  elementWatched: MutableRefObject<HTMLLIElement | HTMLDivElement | null>,
   observerOptions?: IntersectionObserverInit
 ) => {
   const [isElementVisible, setIsElementVisible] = useState(false)
   const [hasVisibilityChanged, setHasVisibilityChanged] = useState(false)
 
+  const prevVisibilityRef = useRef<boolean | null>(null)
+
   useEffect(() => {
-    /* istanbul ignore next */
     const callback = (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries
-      setHasVisibilityChanged(entry.isIntersecting !== isElementVisible)
-      setIsElementVisible(entry.isIntersecting)
+      const isVisible = entries[0].isIntersecting
+
+      if (prevVisibilityRef.current !== null) {
+        setHasVisibilityChanged(prevVisibilityRef.current !== isVisible)
+      }
+
+      prevVisibilityRef.current = isVisible
+      setIsElementVisible(isVisible)
     }
+
     const observer = new IntersectionObserver(callback, observerOptions)
     const element = elementWatched.current
+
     if (element) {
       observer.observe(element)
     }
 
-    return () => {
-      if (element) {
-        observer.unobserve(element)
-        observer.disconnect()
-      }
-    }
-  }, [elementWatched, isElementVisible, observerOptions])
+    return () => observer.disconnect()
+  }, [elementWatched, observerOptions])
 
   return [isElementVisible, hasVisibilityChanged]
 }
