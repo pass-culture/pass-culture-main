@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 import sqlalchemy as sa
@@ -60,10 +61,12 @@ def update_ubble_workflow_if_needed(
     """
     if status in ubble_api.PENDING_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.PENDING
+        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
         return
 
     if status in ubble_api.CANCELED_STATUSES:
         fraud_check.status = subscription_models.FraudCheckStatus.CANCELED
+        fraud_check.updatedAt = datetime.datetime.now(datetime.timezone.utc)
         return
 
     if status not in ubble_api.CONCLUSIVE_STATUSES:

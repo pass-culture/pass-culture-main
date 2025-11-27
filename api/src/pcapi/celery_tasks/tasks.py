@@ -19,8 +19,8 @@ from pcapi.utils.rate_limit import rate_limit
 # These values will prevent retrying tasks too far in the future as this can have negative effects
 # because they are loaded by the worker. These can be increased memory consumption and risk of losing tasks.
 # (https://docs.celeryq.dev/en/latest/userguide/calling.html#eta-and-countdown)
-MAX_TIME_WINDOW_SIZE = 600
-MAX_RETRY_DURATION = 1200
+MAX_TIME_WINDOW_SIZE = 600  # 10 minutes
+MAX_RETRY_DURATION = 1200  # 20 minutes
 
 logger = logging.getLogger(__name__)
 
