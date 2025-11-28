@@ -46,7 +46,7 @@ class Returns200Test:
                     "publicName": venue.publicName,
                 },
                 "location": {
-                    "address": None,
+                    "location": None,
                     "locationComment": None,
                     "locationType": "TO_BE_DEFINED",
                 },
@@ -82,7 +82,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == {"address": None, "locationComment": None, "locationType": "SCHOOL"}
+        assert offer_json["location"] == {"location": None, "locationComment": None, "locationType": "SCHOOL"}
 
     def test_one_collective_offer_location_venue_address(self, client):
         user_offerer = offerers_factories.UserOffererFactory()

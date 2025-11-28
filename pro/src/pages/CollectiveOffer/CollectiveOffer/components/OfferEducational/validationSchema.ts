@@ -72,13 +72,13 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
       .when(
         [
           'location.locationType',
-          'location.address.id_oa',
-          'location.address.isManualEdition',
+          'location.location.id',
+          'location.location.isManualEdition',
         ],
         {
-          is: (locationType: string, id_oa: string, isManualEdition: boolean) =>
+          is: (locationType: string, id: string, isManualEdition: boolean) =>
             locationType === CollectiveLocationType.ADDRESS &&
-            id_oa === 'SPECIFIC_ADDRESS' &&
+            id === 'SPECIFIC_ADDRESS' &&
             !isManualEdition,
           then: (schema) =>
             schema.required(
@@ -241,7 +241,7 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
       .string()
       .nullable()
       .trim()
-      .when(['location.locationType', 'location.address.isManualEdition'], {
+      .when(['location.locationType', 'location.location.isManualEdition'], {
         is: (locationType: string, isManualEdition: boolean) =>
           locationType === CollectiveLocationType.ADDRESS && isManualEdition,
         then: (schema) =>
@@ -250,7 +250,7 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
     postalCode: yup
       .string()
       .trim()
-      .when(['location.locationType', 'location.address.isManualEdition'], {
+      .when(['location.locationType', 'location.location.isManualEdition'], {
         is: (locationType: string, isManualEdition: boolean) =>
           locationType === CollectiveLocationType.ADDRESS && isManualEdition,
         then: (schema) =>
@@ -263,7 +263,7 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
     city: yup
       .string()
       .trim()
-      .when(['location.locationType', 'location.address.isManualEdition'], {
+      .when(['location.locationType', 'location.location.isManualEdition'], {
         is: (locationType: string, isManualEdition: boolean) =>
           locationType === CollectiveLocationType.ADDRESS && isManualEdition,
         then: (schema) => schema.required('Veuillez renseigner une ville'),
@@ -271,7 +271,7 @@ export function getOfferEducationalValidationSchema(): ObjectSchema<OfferEducati
     coords: yup
       .string()
       .trim()
-      .when(['location.locationType', 'location.address.isManualEdition'], {
+      .when(['location.locationType', 'location.location.isManualEdition'], {
         is: (locationType: string, isManualEdition: boolean) =>
           locationType === CollectiveLocationType.ADDRESS && isManualEdition,
         then: (schema) =>

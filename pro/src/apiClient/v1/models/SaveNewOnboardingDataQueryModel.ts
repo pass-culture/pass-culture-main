@@ -2,12 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressBodyModel } from './AddressBodyModel';
+import type { LocationBodyModel } from './LocationBodyModel';
 import type { OnboardingActivity } from './OnboardingActivity';
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
   activity?: OnboardingActivity | null;
-  address: AddressBodyModel;
+  address: LocationBodyModel;
   createVenueWithoutSiret?: boolean;
   isOpenToPublic: boolean;
   phoneNumber?: string | null;

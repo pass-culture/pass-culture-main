@@ -1,8 +1,8 @@
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 
 import { getFormattedAddress } from '../getFormattedAddress'
 
-const MOCK_ADDRESS = getAddressResponseIsLinkedToVenueModelFactory()
+const MOCK_ADDRESS = getLocationResponseModel()
 
 describe('getFormattedAddress', () => {
   it('should return formatted address with complete info', () => {

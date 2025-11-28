@@ -3,18 +3,18 @@ import type { LocationFormValues } from '../types'
 
 export const makeLocationFormValues = <
   T extends Partial<
-    Omit<LocationFormValues, 'address'> & {
-      address: Partial<LocationFormValues['address']>
+    Omit<LocationFormValues, 'location'> & {
+      location: Partial<LocationFormValues['location']>
     }
   >,
 >(
   overrides: T
 ): Omit<LocationFormValues, keyof T> & T => {
   return {
-    address: overrides.address
+    location: overrides.location
       ? {
           ...EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES,
-          ...overrides.address,
+          ...overrides.location,
         }
       : null,
     url: overrides.url ?? null,
