@@ -55,4 +55,41 @@ describe('saveEventOfferPriceTable', () => {
       expect.objectContaining({ priceCategories: expect.any(Array) })
     )
   })
+
+  it('should only patch offer when only isDuo is dirty', async () => {
+    const form = {
+      formState: {
+        dirtyFields: {
+          isDuo: true,
+        },
+      },
+    }
+    await saveEventOfferPriceTable(
+      formValues,
+      form as unknown as UseFormReturn<PriceTableFormValues>,
+      { offer }
+    )
+
+    expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
+  })
+
+  it('should only post price categories when only entries are dirty', async () => {
+    const form = {
+      formState: {
+        dirtyFields: true,
+      },
+    }
+
+    await saveEventOfferPriceTable(
+      formValues,
+      form as unknown as UseFormReturn<PriceTableFormValues>,
+      { offer }
+    )
+
+    expect(api.patchOffer).not.toHaveBeenCalled()
+    expect(api.postPriceCategories).toHaveBeenCalledWith(
+      offer.id,
+      expect.objectContaining({ priceCategories: expect.any(Array) })
+    )
+  })
 })

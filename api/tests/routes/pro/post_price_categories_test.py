@@ -146,6 +146,27 @@ class Returns200Test:
         assert all((stock.price == 25 for stock in offer.stocks if not stock.isEventExpired))
         assert expired_stock.price != 25
 
+    def test_delete_price_category(self, client):
+        offer = offers_factories.DraftOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        offers_factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="To be deleted", venue=offer.venue),
+        )
+
+        data = {
+            "priceCategories": [],
+        }
+
+        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        assert response.status_code == 200
+        price_categories = db.session.query(offers_models.PriceCategory).all()
+        assert len(price_categories) == 0
+
 
 class Returns400Test:
     def test_create_too_expensive_price_category(self, client):
