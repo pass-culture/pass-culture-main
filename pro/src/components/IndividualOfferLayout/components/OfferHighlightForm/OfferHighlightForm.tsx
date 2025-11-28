@@ -56,7 +56,7 @@ export function OfferHighlightForm({
   const {
     watch,
     setValue,
-    formState: { isDirty },
+    formState: { isDirty, isSubmitting },
   } = form
 
   const onSubmit = async (values: OfferHighlightFormValues) => {
@@ -157,7 +157,9 @@ export function OfferHighlightForm({
             <Dialog.Close asChild>
               <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
             </Dialog.Close>
-            <Button type="submit">Valider la sélection</Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Valider la sélection
+            </Button>
           </div>
         </DialogBuilder.Footer>
       </form>

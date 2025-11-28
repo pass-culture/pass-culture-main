@@ -5,6 +5,7 @@ import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import type {
+  CancelablePromise,
   GetIndividualOfferWithAddressResponseModel,
   HighlightResponseModel,
   ShortHighlightResponseModel,
@@ -261,6 +262,28 @@ describe('OfferHighlightForm', () => {
       expect(mockNotify.error).toHaveBeenCalledWith(
         'Une erreur est survenue lors de la sélection des temps forts'
       )
+    })
+  })
+
+  it('should disable the submit button during submission', async () => {
+    postHighlightRequestOfferMock.mockReturnValue(
+      new Promise(
+        () => {}
+      ) as unknown as CancelablePromise<GetIndividualOfferWithAddressResponseModel>
+    )
+
+    renderOfferHighlightForm({ offerId: 1 })
+
+    const checkbox = await screen.findByText(mockedHighlights[0].name)
+    await userEvent.click(checkbox)
+
+    const submitButton = screen.getByRole('button', {
+      name: 'Valider la sélection',
+    })
+    userEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(submitButton).toBeDisabled()
     })
   })
 })

@@ -1052,6 +1052,15 @@ def post_highlight_request_offer(
         raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'existe pas"]}, status_code=400)
     except exceptions.UnavailableHighlightException:
         raise api_errors.ApiErrors(errors={"global": ["Un des temps fort n'est pas disponible"]}, status_code=400)
+    # Potential Race Condition Warning
+    # Should not occur: The upsert_highlight_requests function is designed to ignore existing requests, which should prevent this.
+    # Edge Case: This can happen if two simultaneous HTTP requests hit this route,
+    #   and the second request starts processing before the first one has fully completed its database operation (the upsert).
+    except exceptions.HighlightRequestAlreadyExistsException:
+        raise api_errors.ApiErrors(
+            errors={"global": ["Une demande de participation existe déjà pour cette offre et ce temps fort"]},
+            status_code=400,
+        )
 
     load_options: offers_repository.OFFER_LOAD_OPTIONS = [
         "bookings_count",
