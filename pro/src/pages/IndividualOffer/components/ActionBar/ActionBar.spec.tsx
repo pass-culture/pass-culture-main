@@ -14,7 +14,6 @@ const renderActionBar = ({
   props: ActionBarProps
   url?: string
   features?: string[]
-  isEvent?: boolean
 }) => {
   return renderWithProviders(<ActionBar {...props} />, {
     features: features,
@@ -98,8 +97,9 @@ describe('IndividualOffer::ActionBar', () => {
       expect(onClickNextMock).toHaveBeenCalled()
     })
 
-    it('should render the component for stock page', async () => {
-      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+    it('should render the component for tarifs page', async () => {
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+      props.isEvent = false
 
       renderActionBar({ props, url: '/edition/url' })
 
@@ -120,8 +120,8 @@ describe('IndividualOffer::ActionBar', () => {
       expect(buttonBack).toHaveAttribute('href', '/offres')
     })
 
-    it('should show a button to go back read only when editing stocks', async () => {
-      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS
+    it('should show a button to go back read only when editing stocks (timetable)', async () => {
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
       props.isEvent = true
 
       renderActionBar({

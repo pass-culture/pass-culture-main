@@ -40,10 +40,18 @@ const renderStockSection = (
       />
       <Route
         path={getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
-        element={<div>Offer creation: page stocks</div>}
+        element={<div>Offer creation: page tarifs</div>}
+      />
+
+      <Route
+        path={getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+        element={<div>Offer creation: page horaires</div>}
       />
     </Routes>,
     { initialRouterEntries: [url] }
@@ -211,7 +219,7 @@ describe('Summary stock section', () => {
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
-        screen.getByText(/Offer creation: page stocks/)
+        screen.getByText(/Offer creation: page tarifs/)
       ).toBeInTheDocument()
     })
 
@@ -305,7 +313,7 @@ describe('Summary stock section', () => {
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
-        screen.getByText(/Offer creation: page stocks/)
+        screen.getByText(/Offer creation: page horaires/)
       ).toBeInTheDocument()
     })
   })
