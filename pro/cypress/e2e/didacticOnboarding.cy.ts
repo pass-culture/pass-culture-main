@@ -186,6 +186,7 @@ describe('Didactic Onboarding feature', () => {
         cy.findByLabelText(/Prix/).type('42')
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
+        cy.wait(['@patchStocks'])
 
         //  USEFUL INFO STEP
         cy.url().should('contain', '/creation/informations_pratiques')
