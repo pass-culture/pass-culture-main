@@ -1614,10 +1614,7 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
     page = 0
     limit = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
     while True:
-        offers = offers_repository.get_expired_offers(interval)
-        offers = offers.offset(page * limit).limit(limit)
-        offer_ids = [offer_id for (offer_id,) in offers.with_entities(models.Offer.id)]
-
+        offer_ids = offers_repository.get_expired_offers(interval, offset=page * limit, limit=limit)
         if not offer_ids:
             break
 
