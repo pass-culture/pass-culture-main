@@ -1602,6 +1602,11 @@ class OffererAddress(PcObject, Model):
             unique=True,
             postgresql_where=(type == LocationType.VENUE_LOCATION),
         ),
+        sa.Index(
+            "ix_offerer_address_venueId_type",
+            "venueId",
+            "type",
+        ),
     )
 
     @hybrid_property
