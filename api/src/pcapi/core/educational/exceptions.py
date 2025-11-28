@@ -148,10 +148,6 @@ class NoCollectiveBookingToCancel(Exception):
     pass
 
 
-class AdageEducationalInstitutionNotFound(Exception):
-    pass
-
-
 class BookingIsAlreadyRefunded(Exception):
     pass
 
