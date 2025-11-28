@@ -29,11 +29,7 @@ import {
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
-import {
-  normalizeStrForSearch,
-  type SelectOptionNormalized,
-  searchPatternInOptions,
-} from '@/commons/utils/searchPatternInOptions'
+import { searchPatternInOptions } from '@/commons/utils/searchPatternInOptions'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -76,11 +72,7 @@ export interface CollectiveOfferVisibilityProps {
   offer: GetCollectiveOfferResponseModel
   requestId?: string | null
 }
-interface InstitutionOption extends SelectOptionNormalized {
-  postalCode?: string
-  city?: string
-  name: string
-  institutionType?: string
+interface InstitutionOption extends SelectOption {
   institutionId: string
 }
 
@@ -122,12 +114,7 @@ export const CollectiveOfferVisibilityScreen = ({
           })
           return {
             label: label,
-            normalizedLabel: normalizeStrForSearch(label),
             value: String(id),
-            city,
-            postalCode,
-            name,
-            institutionType: institutionType ?? '',
             institutionId: institutionId,
           }
         }
@@ -249,6 +236,11 @@ export const CollectiveOfferVisibilityScreen = ({
   const institution = watch('institution')
   const selectedInstitution = institutionsOptions.find(
     (_institution) => _institution.value === institution
+  )
+
+  const teacher = watch('teacher')
+  const selectedTeacher = teachersOptions.find(
+    (_teacher) => _teacher.value === teacher
   )
 
   const { isLoading: isPreloadingRedactors } = useSWR(
@@ -381,26 +373,25 @@ export const CollectiveOfferVisibilityScreen = ({
                 ) : (
                   <SelectAutocomplete
                     name="institution"
-                    options={institutionsOptions}
+                    options={institutionsOptions.map((option) => option.label)}
                     label="Nom de l’établissement scolaire ou code UAI"
                     description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
-                    onReset={() => {
-                      setValue('institution', '')
-                      setValue('teacher', '')
-                    }}
-                    onChange={(event) => {
-                      setValue('institution', event.target.value, {
+                    resetOnOpen={true}
+                    onBlur={(event) => {
+                      const newInstitution = institutionsOptions.find(
+                        (option) => option.label === event.target.value
+                      )
+                      setValue('institution', newInstitution?.value ?? '', {
                         shouldDirty: true,
                         shouldValidate: true,
                       })
-
-                      setValue('teacher', undefined)
+                      setValue('teacher', '')
                     }}
                     disabled={!canEditInstitution}
                     searchInOptions={(options, pattern) =>
                       searchPatternInOptions(options, pattern, 300)
                     }
-                    value={watch('institution')}
+                    value={selectedInstitution?.label ?? ''}
                     error={errors.institution?.message}
                   />
                 )}
@@ -408,26 +399,31 @@ export const CollectiveOfferVisibilityScreen = ({
               <FormLayout.Row className={styles['row-layout']}>
                 <SelectAutocomplete
                   name="teacher"
-                  options={teachersOptions}
+                  key={institution || 'no-institution'}
+                  options={teachersOptions.map((option) => option.label)}
                   label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                   required={false}
                   description="Ex: Camille Dupont"
-                  onReset={() => {
-                    setValue('teacher', '')
-                  }}
-                  onSearch={onSearchTeacher}
+                  resetOnOpen={true}
                   disabled={
                     !canEditInstitution ||
-                    !watch('institution') ||
+                    !selectedInstitution ||
                     isPreloadingRedactors
                   }
                   onChange={(event) => {
-                    setValue('teacher', event.target.value, {
+                    void onSearchTeacher(event.target.value)
+                  }}
+                  onBlur={(event) => {
+                    const newTeacher = teachersOptions.find(
+                      (option) => option.label === event.target.value
+                    )
+
+                    setValue('teacher', newTeacher?.value ?? '', {
                       shouldDirty: true,
                       shouldValidate: true,
                     })
                   }}
-                  value={watch('institution') ? watch('teacher') : undefined}
+                  value={selectedTeacher?.label ?? ''}
                   error={errors.teacher?.message}
                 />
               </FormLayout.Row>
@@ -448,10 +444,7 @@ export const CollectiveOfferVisibilityScreen = ({
                 </ButtonLink>
               </ActionsBarSticky.Left>
               <ActionsBarSticky.Right dirtyForm={isDirty} mode={mode}>
-                <Button
-                  type="submit"
-                  disabled={!watch('institution') || !canEditInstitution}
-                >
+                <Button type="submit" disabled={!canEditInstitution}>
                   Enregistrer et continuer
                 </Button>
               </ActionsBarSticky.Right>
