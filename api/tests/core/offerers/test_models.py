@@ -541,7 +541,7 @@ class OffererAddressTest:
             address=offerer_address.address,
             label="Other label",
             type=models.LocationType.VENUE_LOCATION,
-            venue=offerer_address.venue,
+            venue=factories.VenueFactory(managingOfferer=offerer_address.offerer),
         )
 
         factories.OffererAddressFactory(
@@ -559,6 +559,15 @@ class OffererAddressTest:
             type=models.LocationType.VENUE_LOCATION,
             venue=factories.VenueFactory(managingOfferer=offerer_address.offerer),
         )
+
+    def test_unique_venue_location_per_venue_id(self):
+        offerer_address = factories.VenueLocationFactory()
+
+        with pytest.raises(IntegrityError):
+            factories.VenueLocationFactory(
+                offerer=offerer_address.offerer,
+                venue=offerer_address.venue,
+            )
 
 
 class OffererRid7Test:

@@ -1578,6 +1578,12 @@ class OffererAddress(PcObject, Model):
             postgresql_where=label.is_not(None),
             postgresql_nulls_not_distinct=True,
         ),
+        sa.Index(
+            "ix_offerer_address_unique_venue_location_per_venue_id",
+            "venueId",
+            unique=True,
+            postgresql_where=(type == LocationType.VENUE_LOCATION),
+        ),
     )
 
     @hybrid_property
