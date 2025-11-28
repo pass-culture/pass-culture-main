@@ -75,9 +75,11 @@ class Returns204Test:
         db.session.refresh(offer)
 
         assert response.status_code == 204
+
         updated_stock = db.session.get(offers_models.Stock, stock_to_update.id)
         deleted_stock = db.session.get(offers_models.Stock, stock_to_delete.id)
-        assert deleted_stock.isSoftDeleted is True
+
+        assert not deleted_stock
         assert updated_stock.price == decimal.Decimal("9.99") and updated_stock.quantity == 15
         assert updated_stock.bookingLimitDatetime == updated_stock_booking_limit_datetime.replace(tzinfo=None)
         created_stocks = [s for s in offer.activeStocks if s.id not in (stock_to_update.id, stock_to_delete.id)]
