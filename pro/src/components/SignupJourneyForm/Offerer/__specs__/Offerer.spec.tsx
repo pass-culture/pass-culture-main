@@ -25,7 +25,7 @@ import { Offerer } from '../Offerer'
 const fetchMock = createFetchMock(vi)
 fetchMock.enableMocks()
 
-// Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
+// Mock l’appel à https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
 vi.mock('@/apiClient/adresse/apiAdresse', () => ({
   getDataFromAddressParts: () =>
