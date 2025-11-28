@@ -23,9 +23,10 @@ describe('<Toggle />', () => {
       disabled: false,
       isOpen: false,
       toggleField,
+      fieldName: 'name',
     })
 
-    expect(screen.getByRole('button').querySelector('svg')).toHaveAttribute(
+    expect(screen.getByRole('button')).toHaveAttribute(
       'aria-label',
       'Afficher les options'
     )
@@ -44,6 +45,7 @@ describe('<Toggle />', () => {
       disabled: true,
       isOpen: false,
       toggleField,
+      fieldName: 'name',
     })
 
     const user = userEvent.setup()
@@ -58,9 +60,10 @@ describe('<Toggle />', () => {
       disabled: false,
       isOpen: true,
       toggleField: vi.fn(),
+      fieldName: 'name',
     })
 
-    expect(screen.getByRole('button').querySelector('svg')).toHaveAttribute(
+    expect(screen.getByRole('button')).toHaveAttribute(
       'aria-label',
       'Masquer les options'
     )
