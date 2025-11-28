@@ -82,7 +82,6 @@ jobs:
       group: deploy-pcapi-${{ inputs.environment }}-${{ inputs.is_new_infra }}
       cancel-in-progress: false
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
@@ -285,6 +284,8 @@ jobs:
             fi
             exit $FAIL
 
+
+
   apply-algolia-config:
     name: "apply Algolia settings"
     needs: deploy-api
@@ -357,6 +358,8 @@ jobs:
             fi
             exit $FAIL
 
+
+
   # Image resizing cannot be deployed as python 3.9 is not supported by app engine.
   # deploy-image-resizing-ehp:
   #   name: "Deploy image-resizing EHP"
@@ -393,3 +396,18 @@ jobs:
   #   secrets:
   #     GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
   #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+
+  deploys-outcome:
+    needs: [deploy-api, deploy-api-doc-on-firebase, deploy-pro-on-firebase-testing, deploy-pro-on-firebase]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }} # GitHub will create a deployment for this environment
+    if: always()
+    steps:
+      - name: Check deploy jobs status
+        run: |
+          if [ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" = "true" ]; then
+            echo "Not all deploy jobs have succeeded :("
+            exit 1
+          fi
+      - name: Deployments Success
+        run: echo "All deploy jobs for ${{ inputs.environment }} are successful !"
