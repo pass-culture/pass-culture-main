@@ -744,24 +744,42 @@ def find_event_stocks_day(start: datetime.datetime, end: datetime.datetime) -> s
     )
 
 
-def get_expired_offers(interval: list[datetime.datetime]) -> sa_orm.Query:
+def get_expired_offers(
+    interval: list[datetime.datetime], offset: int | None = None, limit: int | None = None
+) -> list[int]:
     """Return a query of offers whose latest booking limit occurs within
     the given interval.
 
     Inactive or deleted offers are ignored.
     """
-    return (
-        db.session.query(models.Offer)
-        .join(models.Stock)
-        .filter(
-            models.Offer.isActive,
+    exists_future_stock = (
+        sa.select(models.Stock.id)
+        .where(
+            models.Stock.offerId == models.Offer.id,
+            models.Stock.bookingLimitDatetime > interval[-1],
+            models.Stock.isSoftDeleted.is_(False),
+        )
+        .exists()
+        .correlate(models.Offer)
+    )
+    query = (
+        sa.select(models.Offer.id.distinct())
+        .select_from(models.Offer)
+        .join(models.Offer.stocks)
+        .where(
+            models.Offer.publicationDatetime.is_not(None),
             models.Stock.isSoftDeleted.is_(False),
             models.Stock.bookingLimitDatetime.is_not(None),
+            models.Stock.bookingLimitDatetime.between(*interval),
+            sa.not_(exists_future_stock),
         )
-        .having(sa.func.max(models.Stock.bookingLimitDatetime).between(*interval))  # type: ignore[arg-type]
-        .group_by(models.Offer.id)
         .order_by(models.Offer.id)
     )
+    if offset:
+        query = query.offset(offset)
+    if limit:
+        query = query.limit(limit)
+    return db.session.execute(query).scalars().all()
 
 
 def find_today_event_stock_ids_metropolitan_france(
