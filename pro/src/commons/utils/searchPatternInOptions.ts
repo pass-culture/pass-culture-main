@@ -1,7 +1,3 @@
-import type { SelectOption } from '@/commons/custom_types/form'
-
-export type SelectOptionNormalized = SelectOption & { normalizedLabel?: string }
-
 export const normalizeStrForAdressSearch = (str: string): string => {
   return normalizeStrForSearch(str).replace(/[^\w ]/, '')
 }
@@ -19,11 +15,11 @@ export const normalizeStrForSearch = (str: string): string => {
 }
 
 export const searchPatternInOptions = (
-  options: SelectOptionNormalized[],
+  options: string[],
   pattern: string,
   maxDisplayedCount?: number
-): SelectOptionNormalized[] => {
-  const matchingOptions: SelectOptionNormalized[] = []
+): string[] => {
+  const matchingOptions: string[] = []
 
   for (let i = 0; i < options.length; i++) {
     //  Only search for matches while there are less matches found than max expected results
@@ -31,8 +27,7 @@ export const searchPatternInOptions = (
       break
     }
 
-    const normalizedOptionLabel =
-      options[i].normalizedLabel ?? normalizeStrForSearch(options[i].label)
+    const normalizedOptionLabel = normalizeStrForSearch(options[i])
 
     //  Look for options containing all of the pattern words
     const isLabelMatchingPattern = normalizeStrForSearch(pattern || '')

@@ -16,24 +16,21 @@ describe('SelectAutocomplete', () => {
     label: 'Département',
     name: 'departement',
     options: [
-      { value: '01', label: 'Ain' },
-      { value: '02', label: 'Aisne' },
-      { value: '03', label: 'Allier' },
-      {
-        value: '04',
-        label: 'Alpes-de-Haute-Provence',
-      },
-      { value: '05', label: 'Hautes-Alpes' },
-      { value: '06', label: 'Alpes-Maritimes' },
-      { value: '07', label: 'Ardèche' },
-      { value: '08', label: 'Ardennes' },
-      { value: '09', label: 'Ariège' },
-      { value: '10', label: 'Aube' },
-      { value: '11', label: 'Aude' },
-      { value: '12', label: 'Aveyron' },
-      { value: '13', label: 'Bouches-du-Rhône' },
-      { value: '14', label: 'Calvados' },
-      { value: '15', label: 'Cantal' },
+      'Ain',
+      'Aisne',
+      'Allier',
+      'Alpes-de-Haute-Provence',
+      'Hautes-Alpes',
+      'Alpes-Maritimes',
+      'Ardèche',
+      'Ardennes',
+      'Ariège',
+      'Aube',
+      'Aude',
+      'Aveyron',
+      'Bouches-du-Rhône',
+      'Calvados',
+      'Cantal',
     ],
     searchInOptions: searchPatternInOptions,
   }
@@ -194,7 +191,7 @@ describe('SelectAutocomplete', () => {
     })
   })
 
-  it('should call "onChange" and "onBlur" when user selects a valid option', async () => {
+  it('should call "onBlur" when user selects a valid option', async () => {
     const onBlur = vi.fn()
     const onChange = vi.fn()
 
@@ -211,17 +208,13 @@ describe('SelectAutocomplete', () => {
     ).querySelector('span')
     await user.click(option!)
 
-    expect(onChange).toHaveBeenCalledWith({
-      type: 'change',
-      target: { name: 'departement', value: '02' },
-    })
     expect(onBlur).toHaveBeenCalledWith({
       type: 'blur',
-      target: { name: 'departement', value: '02' },
+      target: { name: 'departement', value: 'Aisne' },
     })
   })
 
-  it('should call "onBlur" with an empty value when user types an invalid value', async () => {
+  it('should call "onBlur" when user tabs out of the field', async () => {
     const onBlur = vi.fn()
     const onChange = vi.fn()
 
@@ -236,7 +229,7 @@ describe('SelectAutocomplete', () => {
 
     expect(onBlur).toHaveBeenCalledWith({
       type: 'blur',
-      target: { name: 'departement', value: '' },
+      target: { name: 'departement', value: 'Paris' },
     })
     expect(onChange).toHaveBeenCalled()
   })
@@ -246,12 +239,12 @@ describe('SelectAutocomplete', () => {
       <SelectAutocomplete
         {...{
           ...props,
-          value: '02',
+          value: 'Aisne',
           resetOnOpen: false,
-          onReset: undefined,
+
           ref: (ref) => {
             if (ref) {
-              ref.defaultValue = '02'
+              ref.defaultValue = 'Aisne'
             }
             return ref
           },

@@ -12,24 +12,21 @@ import { OptionsList, type OptionsListProps } from './OptionsList'
 const DEFAULT_PROPS: OptionsListProps = {
   fieldName: 'departement',
   filteredOptions: [
-    { value: '01', label: 'Ain' },
-    { value: '02', label: 'Aisne' },
-    { value: '03', label: 'Allier' },
-    {
-      value: '04',
-      label: 'Alpes-de-Haute-Provence',
-    },
-    { value: '05', label: 'Hautes-Alpes' },
-    { value: '06', label: 'Alpes-Maritimes' },
-    { value: '07', label: 'Ardèche' },
-    { value: '08', label: 'Ardennes' },
-    { value: '09', label: 'Ariège' },
-    { value: '10', label: 'Aube' },
-    { value: '11', label: 'Aude' },
-    { value: '12', label: 'Aveyron' },
-    { value: '13', label: 'Bouches-du-Rhône' },
-    { value: '14', label: 'Calvados' },
-    { value: '15', label: 'Cantal' },
+    'Ain',
+    'Aisne',
+    'Allier',
+    'Alpes-de-Haute-Provence',
+    'Hautes-Alpes',
+    'Alpes-Maritimes',
+    'Ardèche',
+    'Ardennes',
+    'Ariège',
+    'Aube',
+    'Aude',
+    'Aveyron',
+    'Bouches-du-Rhône',
+    'Calvados',
+    'Cantal',
   ],
   setHoveredOptionIndex: vi.fn(),
   hoveredOptionIndex: 0,
@@ -60,9 +57,9 @@ describe('<OptionsList />', () => {
     renderOptionsList(DEFAULT_PROPS)
 
     const options = screen.getAllByRole('option')
-    expect(options[0]).toHaveAttribute('data-value', '01')
+    expect(options[0]).toHaveAttribute('data-value', 'Ain')
     expect(options[0]).toHaveAttribute('data-selected', 'true')
-    expect(options[1]).toHaveAttribute('data-value', '02')
+    expect(options[1]).toHaveAttribute('data-value', 'Aisne')
     expect(options[1]).toHaveAttribute('data-selected', 'false')
   })
 
@@ -84,6 +81,6 @@ describe('<OptionsList />', () => {
 
     const optionSpan = screen.getByText('Hautes-Alpes').closest('span')
     await user.click(optionSpan!)
-    expect(DEFAULT_PROPS.selectOption).toHaveBeenCalledWith('05')
+    expect(DEFAULT_PROPS.selectOption).toHaveBeenCalledWith('Hautes-Alpes')
   })
 })

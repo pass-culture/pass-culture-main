@@ -4,7 +4,6 @@ import { type PropsWithChildren, useState } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import * as yup from 'yup'
 
-import type { SelectOption } from '@/commons/custom_types/form'
 
 import { SelectAutocomplete } from './SelectAutocomplete'
 
@@ -26,25 +25,22 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
   return <FormProvider {...hookForm}>{children}</FormProvider>
 }
 
-const options: SelectOption[] = [
-  { value: '01', label: 'Ain' },
-  { value: '02', label: 'Aisne' },
-  { value: '03', label: 'Allier' },
-  {
-    value: '04',
-    label: 'Alpes-de-Haute-Provence test de libellé très long',
-  },
-  { value: '05', label: 'Hautes-Alpes' },
-  { value: '06', label: 'Alpes-Maritimes' },
-  { value: '07', label: 'Ardèche' },
-  { value: '08', label: 'Ardennes' },
-  { value: '09', label: 'Ariège' },
-  { value: '10', label: 'Aube' },
-  { value: '11', label: 'Aude' },
-  { value: '12', label: 'Aveyron' },
-  { value: '13', label: 'Bouches-du-Rhône' },
-  { value: '14', label: 'Calvados' },
-  { value: '15', label: 'Cantal' },
+const options: string[] = [
+  'Ain',  
+  'Aisne',    
+  'Allier',
+  'Alpes-de-Haute-Provence test de libellé très long',
+ 'Hautes-Alpes',
+  'Alpes-Maritimes',
+  'Ardèche',
+ 'Ardennes',
+  'Ariège',
+  'Aube',
+  'Aude',
+  'Aveyron',
+  'Bouches-du-Rhône',
+  'Calvados',
+  'Cantal',
 ]
 
 export default {
@@ -83,7 +79,6 @@ export const NoResetOnOpen: StoryObj<typeof SelectAutocomplete> = {
     label: 'Département',
     options,
     required: false,
-    resetOnOpen: false,
     value: '05',
   },
 }
@@ -104,7 +99,9 @@ export const WithOnsearchTrigger: StoryObj<typeof SelectAutocomplete> = {
           name="departement"
           options={options}
           required={false}
-          onSearch={(text) => setSearchText(text)}
+          onChange={(event) => {
+            setSearchText(event.target.value)
+          }}
         />
       </>
     )
