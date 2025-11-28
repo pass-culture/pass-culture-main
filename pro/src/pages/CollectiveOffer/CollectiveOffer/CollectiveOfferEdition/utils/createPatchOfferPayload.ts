@@ -178,6 +178,18 @@ export const createPatchOfferPayload = (
       }
     }
   })
+
+  return removeLocationDetailsIfVenueLocation(changedValues)
+}
+
+function removeLocationDetailsIfVenueLocation(
+  changedValues: PatchCollectiveOfferTemplateBodyModel
+) {
+  if (changedValues.location?.location?.venueLocation) {
+    changedValues.location.location = {
+      venueLocation: true,
+    }
+  }
   return changedValues
 }
 
@@ -235,5 +247,5 @@ export const createPatchOfferTemplatePayload = (
       ? serializeDates(offer.beginningDate, offer.endingDate, offer.hour)
       : null
 
-  return changedValues
+  return removeLocationDetailsIfVenueLocation(changedValues)
 }

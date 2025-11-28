@@ -191,6 +191,25 @@ describe('createPatchOfferPayload', () => {
     )
   })
 
+  it('should return patch offer payload with minimal location key for venueLocation', () => {
+    const offerAtVenueLocation = {
+      ...offer,
+      location: { ...offer.location, location: { venueLocation: true } },
+    }
+    const payload = createPatchOfferPayload(offerAtVenueLocation, initialValues)
+
+    expect(payload).toEqual(
+      expect.objectContaining({
+        location: {
+          locationType: CollectiveLocationType.ADDRESS,
+          location: {
+            venueLocation: true,
+          },
+        },
+      })
+    )
+  })
+
   it('should return patch offer payload with location key when city has changed', () => {
     const payload = createPatchOfferPayload(
       { ...offer, city: 'Paris' },
