@@ -14,9 +14,11 @@ import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearc
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
+import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
+import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
@@ -138,6 +140,9 @@ export const TemplateCollectiveOffersScreen = ({
 
   const columns = getCollectiveOfferColumns(urlSearchFilters)
 
+  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
+    usePaginationScroll(page, pageCount, { selector: '#content-wrapper' })
+
   return (
     <div>
       <TemplateOffersSearchFilters
@@ -149,7 +154,6 @@ export const TemplateCollectiveOffersScreen = ({
         selectedFilters={selectedFilters}
         setSelectedFilters={setSelectedFilters}
       />
-
       <output aria-live="polite">
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
           <Callout className={styles['offers-table-callout']}>
@@ -170,52 +174,56 @@ export const TemplateCollectiveOffersScreen = ({
           </div>
         )}
       </output>
-      <Table
-        columns={columns}
-        data={currentPageItems}
-        allData={sortedOffers}
-        isLoading={isLoading}
-        selectable={true}
-        selectedIds={selectedOfferIds}
-        onSelectionChange={(rows) => {
-          setSelectedOffers(rows)
-          setSelectedOfferIds(new Set(rows.map((r) => r.id)))
-        }}
-        isRowSelectable={(row: CollectiveOfferTemplateResponseModel) =>
-          isCollectiveOfferSelectable(row)
-        }
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucune offre trouvée pour votre recherche',
-          resetMessage: 'Afficher toutes les offres',
-          onFilterReset: resetFilters,
-        }}
-        noData={{
-          hasNoData: userHasNoOffers,
-          message: {
-            icon: strokeNoBooking,
-            title: 'Vous n’avez pas encore créé d’offre',
-            subtitle: '',
-          },
-        }}
-      />
-
+      <AccessibleScrollContainer
+        containerRef={contentWrapperRef}
+        liveMessage={liveMessage}
+      >
+        <Table
+          columns={columns}
+          data={currentPageItems}
+          allData={sortedOffers}
+          isLoading={isLoading}
+          selectable={true}
+          selectedIds={selectedOfferIds}
+          onSelectionChange={(rows) => {
+            setSelectedOffers(rows)
+            setSelectedOfferIds(new Set(rows.map((r) => r.id)))
+          }}
+          isRowSelectable={(row: CollectiveOfferTemplateResponseModel) =>
+            isCollectiveOfferSelectable(row)
+          }
+          variant={TableVariant.COLLAPSE}
+          noResult={{
+            message: 'Aucune offre trouvée pour votre recherche',
+            resetMessage: 'Afficher toutes les offres',
+            onFilterReset: resetFilters,
+          }}
+          noData={{
+            hasNoData: userHasNoOffers,
+            message: {
+              icon: strokeNoBooking,
+              title: 'Vous n’avez pas encore créé d’offre',
+              subtitle: '',
+            },
+          }}
+        />
+      </AccessibleScrollContainer>
       {hasOffers && (
         <div className={styles['offers-pagination']}>
           <Pagination
             currentPage={page}
             pageCount={pageCount}
-            onPageClick={(page) =>
+            onPageClick={(page) => {
               applyUrlFiltersAndRedirect({
                 ...urlSearchFilters,
                 offererId: offererId?.toString() ?? '',
                 page,
               })
-            }
+              scrollToContentWrapper()
+            }}
           />
         </div>
       )}
-
       <output>
         {selectedOfferIds.size > 0 && (
           <CollectiveOffersActionsBar
