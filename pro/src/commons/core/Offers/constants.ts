@@ -35,7 +35,6 @@ export enum INDIVIDUAL_OFFER_WIZARD_STEP_IDS {
   LOCALISATION = 'localisation',
   MEDIA = 'media',
   TARIFS = 'tarifs',
-  STOCKS = 'stocks',
   TIMETABLE = 'horaires',
   PRACTICAL_INFOS = 'informations_pratiques',
   SUMMARY = 'recapitulatif',

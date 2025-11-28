@@ -113,7 +113,7 @@ describe('Edit digital individual offers', () => {
 
     it('I should be able to change offer date and it should change date in bookings', () => {
       const newDate = format(addDays(new Date(), 15), 'yyyy-MM-dd')
-      logInAndGoToPage(login2, '/offre/individuelle/2/edition/stocks')
+      logInAndGoToPage(login2, '/offre/individuelle/2/edition/horaires')
 
       cy.contains('Modifier l’offre')
       cy.findAllByTestId('spinner').should('not.exist')
