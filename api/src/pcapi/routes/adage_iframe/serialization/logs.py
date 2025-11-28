@@ -54,6 +54,7 @@ class PlaylistBody(AdageBaseModel):
     venueId: int | None
     domainId: int | None
     index: int | None
+    numberOfTiles: int | None
 
 
 class SearchBody(AdageBaseModel):

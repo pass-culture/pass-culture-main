@@ -111,6 +111,7 @@ class LogsTest:
                     "queryId": "1234a",
                     "playlistId": 99,
                     "playlistType": "offer",
+                    "numberOfTiles": 10,
                 },
             )
 
@@ -124,6 +125,7 @@ class LogsTest:
             "user_role": AdageFrontRoles.READONLY,
             "userId": get_hashed_user_id(EMAIL),
             "playlistId": 99,
+            "numberOfTiles": 10,
         }
 
     def test_log_search_button(self, test_client, caplog):
