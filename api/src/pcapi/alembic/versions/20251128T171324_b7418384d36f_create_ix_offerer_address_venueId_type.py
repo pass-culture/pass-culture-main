@@ -1,6 +1,5 @@
-"""Create index: ix_offerer_address_unique_venue_location_per_venue_id"""
+"""Create index: ix_offerer_address_venueId_type"""
 
-import sqlalchemy as sa
 from alembic import op
 
 from pcapi import settings
@@ -8,8 +7,8 @@ from pcapi import settings
 
 # pre/post deployment: post
 # revision identifiers, used by Alembic.
-revision = "2cb884d0afc9"
-down_revision = "9a9d34c60788"
+revision = "b7418384d36f"
+down_revision = "2cb884d0afc9"
 branch_labels: tuple[str] | None = None
 depends_on: list[str] | None = None
 
@@ -18,11 +17,10 @@ def upgrade() -> None:
     with op.get_context().autocommit_block():
         op.execute("SET SESSION statement_timeout='300s'")
         op.create_index(
-            "ix_offerer_address_unique_venue_location_per_venue_id",
+            "ix_offerer_address_venueId_type",
             "offerer_address",
-            ["venueId"],
-            unique=True,
-            postgresql_where=sa.text("type = 'VENUE_LOCATION'"),
+            ["venueId", "type"],
+            unique=False,
             postgresql_concurrently=True,
             if_not_exists=True,
         )
@@ -32,7 +30,7 @@ def upgrade() -> None:
 def downgrade() -> None:
     with op.get_context().autocommit_block():
         op.drop_index(
-            "ix_offerer_address_unique_venue_location_per_venue_id",
+            "ix_offerer_address_venueId_type",
             table_name="offerer_address",
             postgresql_concurrently=True,
             if_exists=True,
