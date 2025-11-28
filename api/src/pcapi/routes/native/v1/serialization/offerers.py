@@ -49,6 +49,24 @@ class VenueResponseGetterDict(base.VenueResponseGetterDict):
         return super().get(key, default)
 
 
+class VenueResponseV2GetterDict(base.VenueResponseGetterDict):
+    def get(self, key: str, default: typing.Any = None) -> typing.Any:
+        if key == "name":
+            return self._obj.common_name
+
+        if key == "address":
+            return self._obj.street
+
+        if key == "accessibility":
+            return VenueAccessibilityModel(
+                audioDisability=self._obj.audioDisabilityCompliant,
+                mentalDisability=self._obj.mentalDisabilityCompliant,
+                motorDisability=self._obj.motorDisabilityCompliant,
+                visualDisability=self._obj.visualDisabilityCompliant,
+            )
+        return super().get(key, default)
+
+
 class VenueContactModel(offerers_schemas.VenueContactModel):
     phone_number: str | None
 

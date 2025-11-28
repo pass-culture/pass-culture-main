@@ -1,19 +1,17 @@
 import pytest
 
-import pcapi.core.offerers.factories as offerers_factories
-import pcapi.core.offers.factories as offers_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
-from pcapi.core import testing
-from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.testing import assert_num_queries
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class VenuesTest:
-    expected_num_queries = 5  # venue + google_places_info + venue_contact + accessibility_provider + opening_hours
-    route_version = "v1"
+class GetVenueTest:
+    expected_num_queries = 1  # venue with joined tables
+    expected_num_queries += 1  # opening hours (selectinload)
 
     def test_get_venue(self, client):
         venue = offerers_factories.VenueFactory(
@@ -21,7 +19,6 @@ class VenuesTest:
             bannerMeta={
                 "author_id": 1,
                 "original_image_url": "https://ou.ps",
-                # only this field should be sent
                 "image_credit": "Wikimedia Commons CC By",
             },
             isOpenToPublic=True,
@@ -51,33 +48,12 @@ class VenuesTest:
         venue_id = venue.id
 
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
         assert response.json == {
             "id": venue.id,
-            "name": "Public name",
-            "latitude": float(venue.offererAddress.address.latitude),
-            "longitude": float(venue.offererAddress.address.longitude),
-            "city": venue.offererAddress.address.city,
-            "publicName": "Public name",
-            "isOpenToPublic": venue.isOpenToPublic,
-            "isPermanent": venue.isPermanent,
-            "isVirtual": False,
-            "withdrawalDetails": venue.withdrawalDetails,
-            "address": venue.offererAddress.address.street,
-            "street": venue.offererAddress.address.street,
-            "postalCode": venue.offererAddress.address.postalCode,
-            "timezone": venue.offererAddress.address.timezone,
-            "venueTypeCode": "OTHER",
-            "description": venue.description,
-            "contact": {
-                "email": venue.contact.email,
-                "phoneNumber": venue.contact.phone_number,
-                "website": venue.contact.website,
-                "socialMedias": venue.contact.social_medias,
-            },
-            "externalAccessibilityData": {
+            "accessibilityData": {
                 "isAccessibleMotorDisability": True,
                 "isAccessibleAudioDisability": True,
                 "isAccessibleVisualDisability": True,
@@ -103,19 +79,27 @@ class VenuesTest:
                 },
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
-            "externalAccessibilityId": venue.accessibilityProvider.externalAccessibilityId,
-            "externalAccessibilityUrl": venue.accessibilityProvider.externalAccessibilityUrl,
-            "accessibility": {
-                "audioDisability": venue.audioDisabilityCompliant,
-                "mentalDisability": venue.mentalDisabilityCompliant,
-                "motorDisability": venue.motorDisabilityCompliant,
-                "visualDisability": venue.visualDisabilityCompliant,
-            },
+            "accessibilityUrl": venue.accessibilityProvider.externalAccessibilityUrl,
+            "activity": venue.activity,
+            "bannerCredit": "Wikimedia Commons CC By",
+            "bannerIsFromGoogle": False,
             "bannerUrl": venue.bannerUrl,
-            "bannerMeta": {
-                "image_credit": venue.bannerMeta["image_credit"],
+            "city": venue.offererAddress.address.city,
+            "contact": {
+                "email": venue.contact.email,
+                "phoneNumber": venue.contact.phone_number,
+                "website": venue.contact.website,
+                "socialMedias": venue.contact.social_medias,
             },
+            "description": venue.description,
+            "isOpenToPublic": venue.isOpenToPublic,
+            "isPermanent": venue.isPermanent,
+            "name": "Public name",
             "openingHours": venue.opening_hours,
+            "postalCode": venue.offererAddress.address.postalCode,
+            "street": venue.offererAddress.address.street,
+            "timezone": venue.timezone,
+            "withdrawalDetails": venue.withdrawalDetails,
         }
 
     def test_get_venue_google_banner_meta(self, client):
@@ -127,15 +111,12 @@ class VenuesTest:
 
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
+        assert response.json["bannerCredit"] == "Henri"
+        assert response.json["bannerIsFromGoogle"] is True
         assert response.json["bannerUrl"] == venue.bannerUrl
-        assert response.json["bannerMeta"] == {
-            "image_credit": "Henri",
-            "image_credit_url": "http://python.org",
-            "is_from_google": True,
-        }
 
     def test_get_venue_google_banner_meta_multiple_attributions(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=True)
@@ -151,31 +132,29 @@ class VenuesTest:
 
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
+        assert response.json["bannerCredit"] == "Henri"
+        assert response.json["bannerIsFromGoogle"] is True
         assert response.json["bannerUrl"] == venue.bannerUrl
-        assert response.json["bannerMeta"] == {
-            "image_credit": "Henri",
-            "image_credit_url": "http://python.org",
-            "is_from_google": True,
-        }
 
     def test_get_venue_google_banner_meta_not_from_google(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=True, _bannerMeta={"image_credit": "Henri"})
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
+        assert response.json["bannerCredit"] == "Henri"
+        assert response.json["bannerIsFromGoogle"] is False
         assert response.json["bannerUrl"] == venue.bannerUrl
-        assert response.json["bannerMeta"] == {"image_credit": "Henri"}
 
     def test_get_non_permanent_venue(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=False)
         venue_id = venue.id
         with assert_num_queries(1):  # venue
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 404
 
     def test_get_venue_closed_offerer(self, client):
@@ -184,14 +163,14 @@ class VenuesTest:
         )
         venue_id = venue.id
         with assert_num_queries(1):  # venue
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 404
 
     def test_get_venue_suspended_offerer(self, client):
         venue = offerers_factories.VenueFactory(isPermanent=True, isOpenToPublic=True, managingOfferer__isActive=False)
         venue_id = venue.id
         with assert_num_queries(1):  # venue
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 404
 
     def test_get_non_existing_venue(self, client):
@@ -199,60 +178,19 @@ class VenuesTest:
             response = client.get("/native/v1/venue/123456789")
             assert response.status_code == 404
 
-    def test_get_venue_always_has_banner_url(self, client):
-        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE)
+    def test_get_venue_returns_default_banner_url(self, client):
+        venue = offerers_factories.VenueFactory(venueTypeCode=VenueTypeCode.BOOKSTORE, isPermanent=True)
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
 
         assert response.json["bannerUrl"] is not None
 
     def test_venue_supports_phone_numbers(self, client):
         invalid_phone_number = "+33594282769"  # invalid phone number from real data
-        venue = offerers_factories.VenueFactory(
-            venueTypeCode=VenueTypeCode.BOOKSTORE, contact__phone_number=invalid_phone_number
-        )
+        venue = offerers_factories.VenueFactory(contact__phone_number=invalid_phone_number, isPermanent=True)
         venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = client.get(f"/native/{self.route_version}/venue/{venue_id}")
+            response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
-
-
-class OffererHeadlineOfferTest:
-    num_queries = testing.AUTHENTICATION_QUERIES
-    num_queries += 1  # check user_offerer
-    num_queries += 1  # get headline offer
-
-    def test_get_offerer_headline_offer_success(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        pro = user_offerer.user
-        offerer = user_offerer.offerer
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
-        offer = offers_factories.OfferFactory(venue=venue)
-        headline_offer = offers_factories.HeadlineOfferFactory(offer=offer, venue=venue)
-
-        client = client.with_session_auth(email=pro.email)
-        with assert_num_queries(self.num_queries):
-            response = client.get(f"/offerers/{offerer.id}/headline-offer")
-
-        assert response.status_code == 200
-        assert response.json == {
-            "name": offer.name,
-            "id": offer.id,
-            "image": {
-                "credit": offer.image.credit,
-                "url": offer.image.url,
-            },
-            "venueId": headline_offer.venueId,
-        }
-
-    def test_get_offerer_headline_offer_not_found(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        pro = user_offerer.user
-        offerer = user_offerer.offerer
-
-        client = client.with_session_auth(email=pro.email)
-        with assert_num_queries(self.num_queries + 2):  # +2 for atomic rollback
-            response = client.get(f"/offerers/{offerer.id}/headline-offer")
-            assert response.status_code == 404
