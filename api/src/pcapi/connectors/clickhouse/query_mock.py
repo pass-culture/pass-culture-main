@@ -1,6 +1,9 @@
 import json
 from decimal import Decimal
 
+from .queries import count_bookings
+from .queries import count_offers
+
 
 class MockAggregatedRevenueQueryResult:
     year: int
@@ -64,3 +67,15 @@ class MockTotalExpectedRevenueQueryResult:
 
 
 TOTAL_EXPECTED_REVENUE = [MockTotalExpectedRevenueQueryResult()]
+
+
+COUNT_INDIVIDUAL_BOOKINGS = [count_bookings.CountIndividualBooking(quantity=876)]
+COUNT_COLLECTIVE_BOOKINGS = [count_bookings.CountCollectiveBooking(quantity=678)]
+COUNT_OFFERS = [
+    count_offers.CountOffers(
+        active_individual_offers=125,
+        inactive_individual_offers=12,
+        active_collective_offers=54,
+        inactive_collective_offers=2,
+    ),
+]
