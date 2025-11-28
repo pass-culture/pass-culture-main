@@ -19,4 +19,8 @@ $dropdown-icon-size: rem.torem(20px);
     cursor: default;
     opacity: 0.5;
   }
+
+  &--open {
+    transform: rotate(180deg);
+  }
 }
