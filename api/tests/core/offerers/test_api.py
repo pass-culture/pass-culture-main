@@ -3381,6 +3381,54 @@ class AccessibilityProviderTest:
             acceslibre_connector.ExpectedFieldsEnum.ENTRANCE_ONE_LEVEL,
         ]
 
+    @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
+    def test_do_not_set_accessibility_infos_from_provider_id_when_data_is_none(self, mock_get_accessibility_infos):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="mock-slug",
+            externalAccessibilityUrl="https://example.com/mock-slug",
+            lastUpdateAtProvider=datetime.datetime(2024, 3, 2, 1, 0),
+        )
+
+        mock_get_accessibility_infos.side_effect = [(datetime.datetime(2025, 4, 3, 2, 1), None)]
+
+        offerers_api.set_accessibility_infos_from_provider_id(venue)
+
+        assert venue.accessibilityProvider.lastUpdateAtProvider == datetime.datetime(2024, 3, 2, 1, 0)
+        assert venue.accessibilityProvider.externalAccessibilityId == "mock-slug"
+        assert venue.accessibilityProvider.externalAccessibilityUrl == "https://example.com/mock-slug"
+
+    @patch("pcapi.connectors.acceslibre.get_accessibility_infos")
+    def test_do_not_set_accessibility_infos_from_provider_id_when_last_update_is_none(
+        self, mock_get_accessibility_infos
+    ):
+        venue = offerers_factories.VenueFactory(
+            name="Une librairie de test",
+            postalCode="75001",
+            city="Paris",
+        )
+        offerers_factories.AccessibilityProviderFactory(
+            venue=venue,
+            externalAccessibilityId="mock-slug",
+            externalAccessibilityUrl="https://example.com/mock-slug",
+            lastUpdateAtProvider=datetime.datetime(2024, 3, 2, 1, 0),
+        )
+
+        mock_get_accessibility_infos.side_effect = [
+            (None, acceslibre_connector.AcceslibreInfos(slug="another-slug", url="https://example.com/another-slug"))
+        ]
+
+        offerers_api.set_accessibility_infos_from_provider_id(venue)
+
+        assert venue.accessibilityProvider.lastUpdateAtProvider == datetime.datetime(2024, 3, 2, 1, 0)
+        assert venue.accessibilityProvider.externalAccessibilityId == "mock-slug"
+        assert venue.accessibilityProvider.externalAccessibilityUrl == "https://example.com/mock-slug"
+
     def test_synchronize_accessibility_provider_no_data(self):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
