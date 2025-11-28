@@ -1,11 +1,9 @@
 import classNames from 'classnames'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
 
-import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/adage'
 import { AdagePlaylistType } from '@/apiClient/adage/models/AdagePlaylistType'
 import { apiAdage } from '@/apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { GET_NEW_OFFERS_PLAYLIST_KEY } from '@/commons/config/swrQueryKeys'
 
 import { Carousel } from '../../Carousel/Carousel'
 import { NEW_OFFER_PLAYLIST } from '../../constant'
@@ -29,29 +27,11 @@ export const NewOfferPlaylist = ({
   trackPlaylistElementClicked,
   observableRef,
 }: NewOfferPlaylistProps) => {
-  const [offers, setOffers] = useState<CollectiveOfferTemplateResponseModel[]>(
-    []
+  const { data: playlist, isLoading } = useSWR(
+    [GET_NEW_OFFERS_PLAYLIST_KEY],
+    () => apiAdage.newTemplateOffersPlaylist(),
+    { fallbackData: { collectiveOffers: [] } }
   )
-  const [loading, setLoading] = useState<boolean>(false)
-  const { error } = useNotification()
-
-  useEffect(() => {
-    const getNewOfferPlaylist = async () => {
-      setLoading(true)
-      try {
-        const result = await apiAdage.newTemplateOffersPlaylist()
-
-        setOffers(result.collectiveOffers)
-      } catch {
-        return error(GET_DATA_ERROR_MESSAGE)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    getNewOfferPlaylist()
-  }, [error])
 
   return (
     <Carousel
@@ -61,17 +41,17 @@ export const NewOfferPlaylist = ({
         </h2>
       }
       className={classNames(styles['playlist-carousel'], {
-        [styles['playlist-carousel-loading']]: loading,
+        [styles['playlist-carousel-loading']]: isLoading,
       })}
       observableRef={observableRef}
-      loading={loading}
+      loading={isLoading}
       onLastCarouselElementVisible={() =>
         onWholePlaylistSeen({
           playlistId: NEW_OFFER_PLAYLIST,
           playlistType: AdagePlaylistType.OFFER,
         })
       }
-      elements={offers.map((offer, index) => (
+      elements={playlist.collectiveOffers.map((offer, index) => (
         <OfferCardComponent
           onCardClicked={() =>
             trackPlaylistElementClicked({
