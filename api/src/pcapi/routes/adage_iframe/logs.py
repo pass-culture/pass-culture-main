@@ -228,6 +228,7 @@ def log_has_seen_whole_playlist(
             "playlistId": body.playlistId,
             "from": body.iframeFrom,
             "queryId": body.queryId,
+            "numberOfTiles": body.numberOfTiles,
         },
         user_email=authenticated_information.email,
         uai=authenticated_information.uai,
