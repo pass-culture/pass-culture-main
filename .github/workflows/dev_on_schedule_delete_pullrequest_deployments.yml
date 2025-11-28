@@ -87,8 +87,8 @@ jobs:
           git config --global user.email "PassCulture-SA@passculture.team"
           git config --global user.name "PassCulture-SA"
           cd ./rendered-manifests
-          # Look for deployments older than 4 hours by looking at pcapi-pr namespaces created prior that delay
-          pullrequests_ids=$(kubectl get ns -o go-template --template '{{range .items}}{{.metadata.name}} {{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | awk '{if ($1 ~ "pcapi-pr") print $0}' | awk '$2 <= "'$(date -d'now-12 hours' -Ins --utc | sed 's/+0000/Z/')'" { print $1 }' | cut -d "-" -f3)
+          # Look for deployments older than 24 hours by looking at pcapi-pr namespaces created prior that delay
+          pullrequests_ids=$(kubectl get ns -o go-template --template '{{range .items}}{{.metadata.name}} {{.metadata.creationTimestamp}}{{"\n"}}{{end}}' | awk '{if ($1 ~ "pcapi-pr") print $0}' | awk '$2 <= "'$(date -d'now-24 hours' -Ins --utc | sed 's/+0000/Z/')'" { print $1 }' | cut -d "-" -f3)
 
           files_modified=false
           for id in $pullrequests_ids; do
