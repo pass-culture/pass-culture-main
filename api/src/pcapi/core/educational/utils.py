@@ -11,6 +11,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational.constants import COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS
 from pcapi.core.users.utils import ALGORITHM_RS_256
 from pcapi.utils import date as date_utils
+from pcapi.utils import db as db_utils
 from pcapi.utils import requests
 
 
@@ -128,3 +129,30 @@ def format_collective_offer_displayed_status(
     displayed_status: models.CollectiveOfferDisplayedStatus,
 ) -> str:
     return COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS.get(displayed_status) or displayed_status.value
+
+
+def get_educational_year_first_period_bounds(educational_year: models.EducationalYear) -> tuple[datetime, datetime]:
+    period_start = educational_year.beginningDate
+    # Set the time at 23:59:59 to be consistent with educational year expirationDate
+    period_end = educational_year.beginningDate.replace(month=12, day=31, hour=23, minute=59, second=59)
+
+    return period_start, period_end
+
+
+def get_educational_year_second_period_bounds(educational_year: models.EducationalYear) -> tuple[datetime, datetime]:
+    period_start = educational_year.beginningDate.replace(year=educational_year.beginningDate.year + 1, month=1, day=1)
+    period_end = educational_year.expirationDate
+
+    return period_start, period_end
+
+
+def get_educational_year_first_period(educational_year: models.EducationalYear) -> DateTimeRange:
+    """Get the period 01/09 -> 31/12 of the given educational year"""
+    period_start, period_end = get_educational_year_first_period_bounds(educational_year)
+    return db_utils.make_timerange(period_start, period_end)
+
+
+def get_educational_year_second_period(educational_year: models.EducationalYear) -> DateTimeRange:
+    """Get the period 01/01 -> 31/08 of the given educational year"""
+    period_start, period_end = get_educational_year_second_period_bounds(educational_year)
+    return db_utils.make_timerange(period_start, period_end)

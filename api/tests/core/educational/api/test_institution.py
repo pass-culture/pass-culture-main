@@ -25,7 +25,9 @@ class GetEducationalInstitutionRemainingCreditTest:
     def test_used_offer(self, current_year_deposit):
         institution = current_year_deposit.educationalInstitution
         booking = factories.UsedCollectiveBookingFactory(
-            educationalInstitution=institution, educationalYear=current_year_deposit.educationalYear
+            educationalInstitution=institution,
+            educationalYear=current_year_deposit.educationalYear,
+            educationalDeposit=current_year_deposit,
         )
 
         res = api.get_current_year_remaining_credit(institution)
@@ -37,11 +39,19 @@ class GetEducationalInstitutionRemainingCreditTest:
         """
         institution = current_year_deposit.educationalInstitution
 
+        factories.PendingCollectiveBookingFactory(
+            educationalInstitution=institution,
+            educationalYear=current_year_deposit.educationalYear,
+        )
         factories.CancelledCollectiveBookingFactory(
-            educationalInstitution=institution, educationalYear=current_year_deposit.educationalYear
+            educationalInstitution=institution,
+            educationalYear=current_year_deposit.educationalYear,
+            educationalDeposit=current_year_deposit,
         )
         used_booking = factories.UsedCollectiveBookingFactory(
-            educationalInstitution=institution, educationalYear=current_year_deposit.educationalYear
+            educationalInstitution=institution,
+            educationalYear=current_year_deposit.educationalYear,
+            educationalDeposit=current_year_deposit,
         )
 
         res = api.get_current_year_remaining_credit(institution)
