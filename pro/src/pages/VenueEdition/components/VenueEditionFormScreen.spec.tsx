@@ -90,7 +90,7 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   },
 ])
 
-// Mock l’appel à https://api-adresse.data.gouv.fr/search/?limit=${limit}&q=${address}
+// Mock l’appel à https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
 fetchMock.mockResponse(
   JSON.stringify({
