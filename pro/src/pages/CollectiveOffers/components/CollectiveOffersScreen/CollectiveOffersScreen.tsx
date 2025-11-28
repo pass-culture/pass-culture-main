@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
   CollectiveOfferDisplayedStatus,
@@ -18,8 +18,8 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { usePagination } from '@/commons/hooks/usePagination'
+import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -29,6 +29,7 @@ import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOff
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { CollectiveOffersDownloadDrawer } from '@/components/CollectiveOffersTable/CollectiveOffersDownloadDrawer/CollectiveOffersDownloadDrawer'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { ScrollContainer } from '@/components/ScrollContainer/ScrollContainer'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
 import { Callout } from '@/ui-kit/Callout/Callout'
@@ -79,14 +80,6 @@ export const CollectiveOffersScreen = ({
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
   const searchButtonRef = useRef<HTMLButtonElement>(null)
-  const tableContainerRef = useRef<HTMLDivElement>(null)
-  const tableLiveRegionInitializedRef = useRef(false)
-
-  const userPrefersReducedMotion = useMediaQuery(
-    '(prefers-reduced-motion: reduce)'
-  )
-
-  const [tableLiveMessage, setTableLiveMessage] = useState('')
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -154,19 +147,8 @@ export const CollectiveOffersScreen = ({
 
   const columns = getCollectiveOfferColumns(urlSearchFilters, true)
 
-  useEffect(() => {
-    if (!hasOffers) {
-      setTableLiveMessage('')
-      return
-    }
-
-    if (!tableLiveRegionInitializedRef.current) {
-      tableLiveRegionInitializedRef.current = true
-      return
-    }
-
-    setTableLiveMessage(`Page ${page} sur ${pageCount}`)
-  }, [hasOffers, page, pageCount])
+  const { contentWrapperRef, tableLiveMessage, scrollToContentWrapper } =
+    usePaginationScroll(page, pageCount)
 
   return (
     <div>
@@ -205,10 +187,10 @@ export const CollectiveOffersScreen = ({
           </div>
         )}
       </output>
-      <div ref={tableContainerRef} tabIndex={-1}>
-        <output aria-live="polite" className="sr-only">
-          {tableLiveMessage}
-        </output>
+      <ScrollContainer
+        containerRef={contentWrapperRef}
+        liveMessage={tableLiveMessage}
+      >
         <Table
           columns={columns}
           data={currentPageItems}
@@ -245,7 +227,7 @@ export const CollectiveOffersScreen = ({
             return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
           }}
         />
-      </div>
+      </ScrollContainer>
       {hasOffers && (
         <div className={styles['offers-pagination']}>
           <Pagination
@@ -253,27 +235,7 @@ export const CollectiveOffersScreen = ({
             pageCount={pageCount}
             onPageClick={(page) => {
               applyUrlFiltersAndRedirect({ ...urlSearchFilters, page })
-
-              const contentWrapper = document.querySelector('#content-wrapper')
-              if (
-                contentWrapper instanceof HTMLElement &&
-                tableContainerRef.current
-              ) {
-                const wrapperRect = contentWrapper.getBoundingClientRect()
-                const tableRect =
-                  tableContainerRef.current.getBoundingClientRect()
-                const offset =
-                  tableRect.top - wrapperRect.top + contentWrapper.scrollTop
-
-                // Focus first
-                tableContainerRef.current?.focus()
-
-                // Then scroll
-                contentWrapper.scrollTo({
-                  top: offset,
-                  behavior: userPrefersReducedMotion ? 'instant' : 'smooth',
-                })
-              }
+              scrollToContentWrapper()
             }}
           />
         </div>
