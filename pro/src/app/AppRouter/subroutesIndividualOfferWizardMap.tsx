@@ -169,31 +169,6 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
     path: '/offre/individuelle/:offerId/tarifs',
     title: 'Tarifs - Consulter une offre individuelle',
   },
-  // Stocks pages
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
-      ),
-    path: '/offre/individuelle/:offerId/creation/stocks',
-    title: 'Stocks et prix - Créer une offre individuelle',
-  },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOffer/IndividualOfferTimetable/IndividualOfferTimetable'
-      ),
-    path: '/offre/individuelle/:offerId/edition/stocks',
-    title: 'Stocks et prix - Modifier une offre individuelle',
-  },
-  {
-    lazy: () =>
-      import(
-        '@/pages/IndividualOfferSummary/IndividualOfferSummaryStocks/IndividualOfferSummaryStocks'
-      ),
-    path: '/offre/individuelle/:offerId/stocks',
-    title: 'Stocks et prix - Consulter une offre individuelle',
-  },
   // Timetable
   {
     lazy: () =>

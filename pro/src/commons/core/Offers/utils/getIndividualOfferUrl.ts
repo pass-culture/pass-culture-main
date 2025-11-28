@@ -38,11 +38,6 @@ const routes = {
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/media`,
     [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/media`,
   },
-  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS]: {
-    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/stocks`,
-    [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/stocks`,
-    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/stocks`,
-  },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/horaires`,
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/horaires`,

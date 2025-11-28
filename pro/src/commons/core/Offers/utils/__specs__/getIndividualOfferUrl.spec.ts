@@ -30,14 +30,6 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-      },
-      expectedUrl: '/offre/individuelle/42/creation/stocks',
-    },
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.CREATION,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
       },
       expectedUrl: '/offre/individuelle/42/creation/recapitulatif',
@@ -71,27 +63,11 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-      },
-      expectedUrl: '/offre/individuelle/42/edition/stocks',
-    },
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.EDITION,
         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
       },
       expectedUrl: '/offre/individuelle/42/edition/tarifs',
     },
     // when readonly mode
-    {
-      props: {
-        offerId: offerId,
-        mode: OFFER_WIZARD_MODE.READ_ONLY,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-      },
-      expectedUrl: '/offre/individuelle/42/stocks',
-    },
     {
       props: {
         offerId: offerId,
@@ -150,15 +126,6 @@ describe('getIndividualOfferUrl', () => {
           isOnboarding: true,
         },
         expectedUrl: '/onboarding/offre/individuelle/42/creation/details',
-      },
-      {
-        props: {
-          offerId: offerId,
-          mode: OFFER_WIZARD_MODE.CREATION,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
-          isOnboarding: true,
-        },
-        expectedUrl: '/onboarding/offre/individuelle/42/creation/stocks',
       },
       {
         props: {
