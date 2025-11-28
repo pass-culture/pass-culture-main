@@ -4,6 +4,8 @@ import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { usePagination } from '@/commons/hooks/usePagination'
+import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
+import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
@@ -63,31 +65,38 @@ export const IndividualBookingsTable = ({
       onToggle: toggle,
     })
 
-  return (
-    <div className={styles['table-wrapper']}>
-      <Table
-        columns={columns}
-        data={currentPageItems}
-        isLoading={isLoading}
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucune réservation trouvée pour votre recherche',
-          subtitle:
-            'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou',
-          resetMessage: 'Afficher toutes les réservations',
-          onFilterReset: resetFilters,
-        }}
-        noData={{
-          hasNoData: hasNoBooking,
-          message: {
-            icon: strokeNoBookingIcon,
-            title: 'Vous n’avez aucune réservation pour le moment',
-            subtitle: '',
-          },
-        }}
-        getFullRowContent={getFullRowContentIndividual}
-      />
+  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
+    usePaginationScroll(page, pageCount, { selector: '#content-wrapper' })
 
+  return (
+    <>
+      <AccessibleScrollContainer
+        containerRef={contentWrapperRef}
+        liveMessage={liveMessage}
+      >
+        <Table
+          columns={columns}
+          data={currentPageItems}
+          isLoading={isLoading}
+          variant={TableVariant.COLLAPSE}
+          noResult={{
+            message: 'Aucune réservation trouvée pour votre recherche',
+            subtitle:
+              'Vous pouvez modifier vos filtres et lancer une nouvelle recherche ou',
+            resetMessage: 'Afficher toutes les réservations',
+            onFilterReset: resetFilters,
+          }}
+          noData={{
+            hasNoData: hasNoBooking,
+            message: {
+              icon: strokeNoBookingIcon,
+              title: 'Vous n’avez aucune réservation pour le moment',
+              subtitle: '',
+            },
+          }}
+          getFullRowContent={getFullRowContentIndividual}
+        />
+      </AccessibleScrollContainer>
       <div className={styles['table-pagination']}>
         <Pagination
           currentPage={page}
@@ -95,6 +104,7 @@ export const IndividualBookingsTable = ({
           onPageClick={(newPage) => {
             const currentPage = page
             setPage(newPage)
+            scrollToContentWrapper()
 
             if (currentPage + 1 === newPage) {
               logEvent(Events.CLICKED_PAGINATION_NEXT_PAGE, {
@@ -108,6 +118,6 @@ export const IndividualBookingsTable = ({
           }}
         />
       </div>
-    </div>
+    </>
   )
 }
