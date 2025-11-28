@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
   CollectiveOfferDisplayedStatus,
@@ -18,6 +18,7 @@ import {
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { usePagination } from '@/commons/hooks/usePagination'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -78,6 +79,14 @@ export const CollectiveOffersScreen = ({
   const [selectedFilters, setSelectedFilters] = useState(initialSearchFilters)
 
   const searchButtonRef = useRef<HTMLButtonElement>(null)
+  const tableContainerRef = useRef<HTMLDivElement>(null)
+  const tableLiveRegionInitializedRef = useRef(false)
+
+  const userPrefersReducedMotion = useMediaQuery(
+    '(prefers-reduced-motion: reduce)'
+  )
+
+  const [tableLiveMessage, setTableLiveMessage] = useState('')
 
   const currentPageOffersSubset = offers.slice(
     (currentPageNumber - 1) * NUMBER_OF_OFFERS_PER_PAGE,
@@ -145,6 +154,20 @@ export const CollectiveOffersScreen = ({
 
   const columns = getCollectiveOfferColumns(urlSearchFilters, true)
 
+  useEffect(() => {
+    if (!hasOffers) {
+      setTableLiveMessage('')
+      return
+    }
+
+    if (!tableLiveRegionInitializedRef.current) {
+      tableLiveRegionInitializedRef.current = true
+      return
+    }
+
+    setTableLiveMessage(`Page ${page} sur ${pageCount}`)
+  }, [hasOffers, page, pageCount])
+
   return (
     <div>
       <CollectiveOffersSearchFilters
@@ -182,50 +205,76 @@ export const CollectiveOffersScreen = ({
           </div>
         )}
       </output>
-      <Table
-        columns={columns}
-        data={currentPageItems}
-        allData={sortedOffers}
-        isLoading={isLoading}
-        selectable={true}
-        selectedIds={selectedOfferIds}
-        onSelectionChange={(rows) => {
-          setSelectedOffers(rows)
-          setSelectedOfferIds(new Set(rows.map((r) => r.id)))
-        }}
-        isRowSelectable={(row: CollectiveOfferResponseModel) =>
-          isCollectiveOfferSelectable(row)
-        }
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucune offre trouvée pour votre recherche',
-          resetMessage: 'Afficher toutes les offres',
-          onFilterReset: resetFilters,
-        }}
-        noData={{
-          hasNoData: userHasNoOffers,
-          message: {
-            icon: strokeNoBooking,
-            title: 'Vous n’avez pas encore créé d’offre',
-            subtitle: '',
-          },
-        }}
-        getFullRowContent={(offer: CollectiveOfferResponseModel) => {
-          const hasExpirationRow =
-            isCollectiveOfferBookable(offer) &&
-            isCollectiveOfferPublishedOrPreBooked(offer) &&
-            !!offer.stock?.bookingLimitDatetime
-          return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
-        }}
-      />
+      <div ref={tableContainerRef} tabIndex={-1}>
+        <output aria-live="polite" className="sr-only">
+          {tableLiveMessage}
+        </output>
+        <Table
+          columns={columns}
+          data={currentPageItems}
+          allData={sortedOffers}
+          isLoading={isLoading}
+          selectable={true}
+          selectedIds={selectedOfferIds}
+          onSelectionChange={(rows) => {
+            setSelectedOffers(rows)
+            setSelectedOfferIds(new Set(rows.map((r) => r.id)))
+          }}
+          isRowSelectable={(row: CollectiveOfferResponseModel) =>
+            isCollectiveOfferSelectable(row)
+          }
+          variant={TableVariant.COLLAPSE}
+          noResult={{
+            message: 'Aucune offre trouvée pour votre recherche',
+            resetMessage: 'Afficher toutes les offres',
+            onFilterReset: resetFilters,
+          }}
+          noData={{
+            hasNoData: userHasNoOffers,
+            message: {
+              icon: strokeNoBooking,
+              title: 'Vous n’avez pas encore créé d’offre',
+              subtitle: '',
+            },
+          }}
+          getFullRowContent={(offer: CollectiveOfferResponseModel) => {
+            const hasExpirationRow =
+              isCollectiveOfferBookable(offer) &&
+              isCollectiveOfferPublishedOrPreBooked(offer) &&
+              !!offer.stock?.bookingLimitDatetime
+            return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
+          }}
+        />
+      </div>
       {hasOffers && (
         <div className={styles['offers-pagination']}>
           <Pagination
             currentPage={page}
             pageCount={pageCount}
-            onPageClick={(page) =>
+            onPageClick={(page) => {
               applyUrlFiltersAndRedirect({ ...urlSearchFilters, page })
-            }
+
+              const contentWrapper = document.querySelector('#content-wrapper')
+              if (
+                contentWrapper instanceof HTMLElement &&
+                tableContainerRef.current
+              ) {
+                const wrapperRect = contentWrapper.getBoundingClientRect()
+                const tableRect =
+                  tableContainerRef.current.getBoundingClientRect()
+                const offset =
+                  tableRect.top - wrapperRect.top + contentWrapper.scrollTop
+
+                // Focus first
+                tableContainerRef.current?.focus()
+
+                // Then scroll
+                contentWrapper.scrollTo({
+                  top: offset,
+                  behavior: userPrefersReducedMotion ? 'instant' : 'smooth',
+                })
+              }
+            }}
           />
         </div>
       )}
