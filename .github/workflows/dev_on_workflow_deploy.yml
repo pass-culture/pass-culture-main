@@ -121,7 +121,6 @@ jobs:
     if: ${{ inputs.deploy_api && (inputs.environment != 'opsv2' && inputs.environment != 'ops' && inputs.environment != 'integration') }}
     needs: deploy-api
     runs-on: ubuntu-22.04
-    environment: ${{ inputs.environment }}
     permissions:
       id-token: write
       contents: read
