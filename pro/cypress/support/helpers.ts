@@ -202,7 +202,7 @@ export function homePageLoaded() {
 export function interceptSearch5Adresses() {
   cy.intercept(
     'GET',
-    'https://api-adresse.data.gouv.fr/search/?limit=5&q=*',
+    'https://data.geopf.fr/geocodage/search/?limit=5&q=*',
     (req) =>
       req.reply({
         statusCode: 200,

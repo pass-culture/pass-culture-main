@@ -25,7 +25,7 @@ def test_nominal_case(requests_mock):
     postcode = "75018"
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=18+Rue+Duhesme&postcode=75018&city=Paris&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=18+Rue+Duhesme&postcode=75018&city=Paris&autocomplete=0&limit=1",
         json=fixtures.ONE_FEATURE_RESPONSE,
     )
     address_info = api_adresse.get_address(address, postcode=postcode, city=city)
@@ -47,7 +47,7 @@ def test_nominal_case(requests_mock):
 @pytest.mark.parametrize("address", ['"18 Rue Duhesme"', "« 18 Rue Duhesme »", "“18 Rue Duhesme”", "'18 Rue Duhesme'"])
 def test_with_quotes(requests_mock, address):
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=18+Rue+Duhesme&postcode=75018&city=Paris&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=18+Rue+Duhesme&postcode=75018&city=Paris&autocomplete=0&limit=1",
         json=fixtures.ONE_FEATURE_RESPONSE,
     )
     api_adresse.get_address(address, postcode="75018", city="Paris")
@@ -59,7 +59,7 @@ def test_municipality_centroid_with_city_less_than_3_characters(requests_mock):
     postcode = "80190"
     city = "Y"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=80190+Y&postcode=80190&type=municipality&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=80190+Y&postcode=80190&type=municipality&autocomplete=0&limit=1",
         json=fixtures.ONE_MUNICIPALITY_CENTROID_RESPONSE_CITY_NAME_LESS_THAN_3_CHARS,
     )
     address_info = api_adresse.get_municipality_centroid(city=city, postcode=postcode)
@@ -83,11 +83,11 @@ def test_fallback_to_municipality(requests_mock):
     postcode = "75018"
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=123456789&postcode=75018&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=123456789&postcode=75018&autocomplete=0&limit=1",
         json=fixtures.NO_FEATURE_RESPONSE,
     )
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=Paris&postcode=75018&type=municipality&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=Paris&postcode=75018&type=municipality&autocomplete=0&limit=1",
         json=fixtures.MUNICIPALITY_CENTROID_RESPONSE,
     )
     address_info = api_adresse.get_address(address, postcode=postcode, city=city)
@@ -111,7 +111,7 @@ def test_no_match(requests_mock):
     postcode = "75018"  # not a valid code
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://data.geopf.fr/geocodage/search",
         json=fixtures.NO_FEATURE_RESPONSE,
     )
     with pytest.raises(api_adresse.NoResultException):
@@ -124,7 +124,7 @@ def test_should_raise_if_strict_is_set_to_true_and_score_is_below_RELIABLE_SCORE
     postcode = "75018"
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://data.geopf.fr/geocodage/search",
         json=fixtures.ONE_UNRELIABLE_FEATURE_RESPONSE,
     )
     with pytest.raises(api_adresse.NoResultException):
@@ -137,11 +137,11 @@ def test_should_not_fallback_to_municipality_if_strict_is_set_to_true(requests_m
     postcode = "75018"
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=123456789&postcode=75018&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=123456789&postcode=75018&autocomplete=0&limit=1",
         json=fixtures.NO_FEATURE_RESPONSE,
     )
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=Paris&postcode=75018&type=municipality&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=Paris&postcode=75018&type=municipality&autocomplete=0&limit=1",
         json=fixtures.MUNICIPALITY_CENTROID_RESPONSE,
     )
     with pytest.raises(api_adresse.NoResultException):
@@ -163,7 +163,7 @@ def test_error_handling(status_code, expected_exception, requests_mock):
     postcode = "75101"
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://data.geopf.fr/geocodage/search",
         status_code=status_code,
     )
 
@@ -177,7 +177,7 @@ def test_error_handling_on_non_json_response(requests_mock):
     postcode = "75101"
     city = "Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://data.geopf.fr/geocodage/search",
         status_code=200,
         text="non-JSON content",
     )
@@ -189,7 +189,7 @@ def test_error_handling_on_non_json_response(requests_mock):
 def test_search_address(requests_mock):
     address = "2 place du carrousel paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://data.geopf.fr/geocodage/search",
         json=fixtures.SEARCH_ADDRESS_RESPONSE,
     )
     addresses_info = api_adresse.search_address(address)
@@ -224,7 +224,7 @@ def test_search_address(requests_mock):
 def test_search_address_without_postcode(requests_mock):
     address = "Stephen Atwater Saint Barthelemy"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://data.geopf.fr/geocodage/search",
         json=fixtures.SEARCH_ADDRESS_RESPONSE_WITHOUT_POSTCODE,
     )
     addresses_info = api_adresse.search_address(address)
@@ -247,7 +247,7 @@ def test_search_address_without_postcode(requests_mock):
 @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
 def test_search_csv(requests_mock):
     text = api_adresse.format_payload(fixtures.SEARCH_CSV_HEADERS, fixtures.SEARCH_CSV_RESULTS)
-    requests_mock.post("https://api-adresse.data.gouv.fr/search/csv", text=text)
+    requests_mock.post("https://data.geopf.fr/geocodage/search/csv", text=text)
     payload = api_adresse.format_payload(fixtures.SEARCH_CSV_HEADERS[:3], fixtures.SEARCH_CSV_RESULTS)
     results = api_adresse.search_csv(
         payload,
@@ -295,7 +295,7 @@ def test_cache_api(requests_mock):
         "query": "2 rue le valois 7500",
         "limit": 1,
     }
-    requests_mock.get("https://api-adresse.data.gouv.fr/search", json=payload)
+    requests_mock.get("https://data.geopf.fr/geocodage/search", json=payload)
     api_adresse.get_address(address="3 Rue de Valois 75001 Paris")
     with patch("pcapi.connectors.api_adresse.ApiAdresseBackend._search") as _search_function:
         response = api_adresse.get_address(address="3 Rue de Valois 75001 Paris")
@@ -504,7 +504,7 @@ def test_we_dont_cache_falsy_empty_response_when_falling_back_on_centroid(
 def test_should_find_reliable_address(requests_mock):
     address_to_query = "18 Rue Duhesme 75018 Paris"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=18+Rue+Duhesme+75018+Paris&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=18+Rue+Duhesme+75018+Paris&autocomplete=0&limit=1",
         json=fixtures.ONE_FEATURE_RESPONSE,
     )
     found_address = api_adresse.find_ban_address(address_to_query, enforce_reliability=True)
@@ -526,7 +526,7 @@ def test_should_find_reliable_address(requests_mock):
 def test_should_find_reliable_city(requests_mock):
     address = "44000 NANTES"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=44000+NANTES&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=44000+NANTES&autocomplete=0&limit=1",
         json=fixtures.ONE_MUNICIPALITY_FEATURE_RESPONSE,
     )
     found_address = api_adresse.find_ban_city(city=address, enforce_reliability=True)
@@ -549,7 +549,7 @@ def test_should_find_reliable_city_without_postal_code(requests_mock):
     address = "NANTES"
     insee_code = "44109"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search?q=NANTES&citycode=44109&autocomplete=0&limit=1",
+        "https://data.geopf.fr/geocodage/search?q=NANTES&citycode=44109&autocomplete=0&limit=1",
         json=fixtures.ONE_MUNICIPALITY_FEATURE_RESPONSE,
     )
     found_address = api_adresse.find_ban_city(city=address, insee_code=insee_code, enforce_reliability=True)
@@ -571,7 +571,7 @@ def test_should_find_reliable_city_without_postal_code(requests_mock):
 def test_should_raise_if_no_reliable_address_is_found(requests_mock):
     address = "123456789 44000 NANTES"
     requests_mock.get(
-        "https://api-adresse.data.gouv.fr/search",
+        "https://data.geopf.fr/geocodage/search",
         json=fixtures.ONE_UNRELIABLE_FEATURE_RESPONSE,
     )
     with pytest.raises(api_adresse.NoResultException):
