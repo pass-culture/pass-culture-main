@@ -16,6 +16,7 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
+  getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -39,10 +40,18 @@ const renderStockSection = (
       />
       <Route
         path={getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}
-        element={<div>Offer creation: page stocks</div>}
+        element={<div>Offer creation: page tarifs</div>}
+      />
+
+      <Route
+        path={getIndividualOfferPath({
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE,
+          mode: OFFER_WIZARD_MODE.CREATION,
+        })}
+        element={<div>Offer creation: page horaires</div>}
       />
     </Routes>,
     { initialRouterEntries: [url] }
@@ -51,17 +60,18 @@ const renderStockSection = (
 describe('Summary stock section', () => {
   describe('for general case', () => {
     it('should render sold out warning', async () => {
-      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-        hasStocks: true,
-        stockCount: 1,
-        stocks: [
-          getOfferStockFactory({
-            quantity: 0,
-            price: 20,
-            bookingLimitDatetime: null,
-          }),
-        ],
-      })
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+        getStocksResponseFactory({
+          stockCount: 1,
+          stocks: [
+            getOfferStockFactory({
+              quantity: 0,
+              price: 20,
+              bookingLimitDatetime: null,
+            }),
+          ],
+        })
+      )
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -91,11 +101,18 @@ describe('Summary stock section', () => {
     })
 
     it('should render expired warning', async () => {
-      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-        hasStocks: true,
-        stockCount: 1,
-        stocks: [getOfferStockFactory()],
-      })
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+        getStocksResponseFactory({
+          stockCount: 1,
+          stocks: [
+            getOfferStockFactory({
+              quantity: 10,
+              price: 20,
+              bookingLimitDatetime: '2001-06-12',
+            }),
+          ],
+        })
+      )
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -124,11 +141,9 @@ describe('Summary stock section', () => {
     })
 
     it('should render no stock warning', async () => {
-      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-        hasStocks: true,
-        stockCount: 1,
-        stocks: [],
-      })
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+        getStocksResponseFactory({ stockCount: 0, stocks: [] })
+      )
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -162,17 +177,18 @@ describe('Summary stock section', () => {
 
   describe('for stock thing', () => {
     it('should render creation summary', async () => {
-      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-        hasStocks: true,
-        stockCount: 1,
-        stocks: [
-          getOfferStockFactory({
-            quantity: 10,
-            price: 20,
-            bookingLimitDatetime: null,
-          }),
-        ],
-      })
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+        getStocksResponseFactory({
+          stockCount: 1,
+          stocks: [
+            getOfferStockFactory({
+              quantity: 10,
+              price: 20,
+              bookingLimitDatetime: null,
+            }),
+          ],
+        })
+      )
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -203,22 +219,23 @@ describe('Summary stock section', () => {
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
-        screen.getByText(/Offer creation: page stocks/)
+        screen.getByText(/Offer creation: page tarifs/)
       ).toBeInTheDocument()
     })
 
     it("should render booking limit date when it's given", async () => {
-      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-        hasStocks: true,
-        stockCount: 1,
-        stocks: [
-          getOfferStockFactory({
-            quantity: 10,
-            price: 20,
-            bookingLimitDatetime: '2001-06-12',
-          }),
-        ],
-      })
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+        getStocksResponseFactory({
+          stockCount: 1,
+          stocks: [
+            getOfferStockFactory({
+              quantity: 10,
+              price: 20,
+              bookingLimitDatetime: '2001-06-12',
+            }),
+          ],
+        })
+      )
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -235,11 +252,12 @@ describe('Summary stock section', () => {
     })
 
     it('should render quantity as "Illimité" when quantity is null or undefined', async () => {
-      vi.spyOn(api, 'getStocks').mockResolvedValueOnce({
-        hasStocks: true,
-        stockCount: 1,
-        stocks: [getOfferStockFactory({ quantity: null })],
-      })
+      vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
+        getStocksResponseFactory({
+          stockCount: 1,
+          stocks: [getOfferStockFactory({ quantity: null })],
+        })
+      )
 
       const props = {
         offer: getIndividualOfferFactory({
@@ -295,7 +313,7 @@ describe('Summary stock section', () => {
 
       await userEvent.click(screen.getByRole('link', { name: /Modifier/ }))
       expect(
-        screen.getByText(/Offer creation: page stocks/)
+        screen.getByText(/Offer creation: page horaires/)
       ).toBeInTheDocument()
     })
   })

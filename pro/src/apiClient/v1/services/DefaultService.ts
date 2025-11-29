@@ -24,7 +24,6 @@ import type { CreateOffererQueryModel } from '../models/CreateOffererQueryModel'
 import type { CreateOfferHighlightRequestBodyModel } from '../models/CreateOfferHighlightRequestBodyModel';
 import type { CreateThumbnailBodyModel } from '../models/CreateThumbnailBodyModel';
 import type { CreateThumbnailResponseModel } from '../models/CreateThumbnailResponseModel';
-import type { DeleteFilteredStockListBody } from '../models/DeleteFilteredStockListBody';
 import type { DeleteOfferRequestBody } from '../models/DeleteOfferRequestBody';
 import type { DeleteStockListBody } from '../models/DeleteStockListBody';
 import type { EacFormat } from '../models/EacFormat';
@@ -105,15 +104,11 @@ import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardin
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
 import type { SharedLoginUserResponseModel } from '../models/SharedLoginUserResponseModel';
 import type { StatisticsModel } from '../models/StatisticsModel';
-import type { StockIdResponseModel } from '../models/StockIdResponseModel';
 import type { StocksOrderedBy } from '../models/StocksOrderedBy';
-import type { StocksResponseModel } from '../models/StocksResponseModel';
 import type { StockStatsResponseModel } from '../models/StockStatsResponseModel';
 import type { StructureDataBodyModel } from '../models/StructureDataBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
-import type { ThingStockCreateBodyModel } from '../models/ThingStockCreateBodyModel';
 import type { ThingStocksBulkUpsertBodyModel } from '../models/ThingStocksBulkUpsertBodyModel';
-import type { ThingStockUpdateBodyModel } from '../models/ThingStockUpdateBodyModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -2217,13 +2212,13 @@ export class DefaultService {
    * - If a stock exists in the DB but not in `stocks`, it is soft-deleted. - Otherwise, stocks are updated or created as needed.
    * @param offerId
    * @param requestBody
-   * @returns void
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public upsertOfferStocks(
     offerId: number,
     requestBody: ThingStocksBulkUpsertBodyModel,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/offers/{offer_id}/stocks/',
@@ -2239,41 +2234,16 @@ export class DefaultService {
     });
   }
   /**
-   * delete_all_filtered_stocks <POST>
-   * @param offerId
-   * @param requestBody
-   * @returns void
-   * @throws ApiError
-   */
-  public deleteAllFilteredStocks(
-    offerId: number,
-    requestBody: DeleteFilteredStockListBody,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offers/{offer_id}/stocks/all-delete',
-      path: {
-        'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * delete_stocks <POST>
    * @param offerId
    * @param requestBody
-   * @returns void
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public deleteStocks(
     offerId: number,
     requestBody: DeleteStockListBody,
-  ): CancelablePromise<void> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/{offer_id}/stocks/delete',
@@ -2343,34 +2313,14 @@ export class DefaultService {
     });
   }
   /**
-   * create_thing_stock <POST>
-   * @param requestBody
-   * @returns StockIdResponseModel Created
-   * @throws ApiError
-   */
-  public createThingStock(
-    requestBody: ThingStockCreateBodyModel,
-  ): CancelablePromise<StockIdResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/stocks',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * bulk_update_event_stocks <PATCH>
    * @param requestBody
-   * @returns StocksResponseModel OK
+   * @returns GetStocksResponseModel OK
    * @throws ApiError
    */
   public bulkUpdateEventStocks(
     requestBody: EventStocksBulkUpdateBodyModel,
-  ): CancelablePromise<StocksResponseModel> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'PATCH',
       url: '/stocks/bulk',
@@ -2385,61 +2335,15 @@ export class DefaultService {
   /**
    * bulk_create_event_stocks <POST>
    * @param requestBody
-   * @returns StocksResponseModel Created
+   * @returns GetStocksResponseModel Created
    * @throws ApiError
    */
   public bulkCreateEventStocks(
     requestBody: EventStocksBulkCreateBodyModel,
-  ): CancelablePromise<StocksResponseModel> {
+  ): CancelablePromise<GetStocksResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/stocks/bulk',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * delete_stock <DELETE>
-   * @param stockId
-   * @returns StockIdResponseModel OK
-   * @throws ApiError
-   */
-  public deleteStock(
-    stockId: number,
-  ): CancelablePromise<StockIdResponseModel> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/stocks/{stock_id}',
-      path: {
-        'stock_id': stockId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * update_thing_stock <PATCH>
-   * @param stockId
-   * @param requestBody
-   * @returns StockIdResponseModel OK
-   * @throws ApiError
-   */
-  public updateThingStock(
-    stockId: number,
-    requestBody: ThingStockUpdateBodyModel,
-  ): CancelablePromise<StockIdResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/stocks/{stock_id}',
-      path: {
-        'stock_id': stockId,
-      },
       body: requestBody,
       mediaType: 'application/json',
       errors: {

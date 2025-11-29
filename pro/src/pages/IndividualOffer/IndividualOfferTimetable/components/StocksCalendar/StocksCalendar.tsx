@@ -49,6 +49,14 @@ export type StocksCalendarProps = {
   timetableTypeRadioGroupShown: boolean
 }
 
+export type stockQueryKeysType = [
+  string,
+  number,
+  number,
+  StocksTableFilters,
+  StocksTableSort,
+]
+
 export function StocksCalendar({
   offer,
   mode,
@@ -67,16 +75,16 @@ export function StocksCalendar({
 
   const departmentCode = getDepartmentCode(offer)
 
-  const queryKeys: [
-    string,
-    number,
-    number,
-    StocksTableFilters,
-    StocksTableSort,
-  ] = [GET_STOCKS_QUERY_KEY, offer.id, page, appliedFilters, appliedSort]
+  const stockQueryKeys: stockQueryKeysType = [
+    GET_STOCKS_QUERY_KEY,
+    offer.id,
+    page,
+    appliedFilters,
+    appliedSort,
+  ]
 
   const { data, isLoading } = useSWR(
-    queryKeys,
+    stockQueryKeys,
     ([, offerId, pageNum, filters, sortType]) =>
       api.getStocks(
         offerId,
@@ -101,7 +109,11 @@ export function StocksCalendar({
   )
 
   async function deleteStocks(ids: number[]) {
-    await api.deleteStocks(offer.id, { ids_to_delete: ids })
+    await mutate(
+      stockQueryKeys,
+      api.deleteStocks(offer.id, { ids_to_delete: ids }),
+      { revalidate: false }
+    )
 
     if (
       page > 1 &&
@@ -117,25 +129,36 @@ export function StocksCalendar({
         ? 'Une date a été supprimée'
         : `${ids.length} dates ont été supprimées`
     )
-    await mutate(queryKeys)
-    await mutate([GET_OFFER_QUERY_KEY, offer.id])
+    if (mode === OFFER_WIZARD_MODE.EDITION) {
+      // update offer status
+      await mutate([GET_OFFER_QUERY_KEY, offer.id])
+    }
   }
 
   async function updateStock(stock: EventStockUpdateBodyModel) {
     try {
-      const updatedStocks = await api.bulkUpdateEventStocks({
-        offerId: offer.id,
-        stocks: [stock],
-      })
+      const updatedStocks = await mutate(
+        stockQueryKeys,
+        api.bulkUpdateEventStocks({
+          offerId: offer.id,
+          stocks: [stock],
+        }),
+        {
+          revalidate: false,
+        }
+      )
 
-      if (updatedStocks.stocks_count === 0) {
+      if (updatedStocks?.touchedStockCount === 0) {
         notify.error('Aucune date n’a pu être modifiée')
         return
       }
 
       notify.success('Les modifications ont été enregistrées')
 
-      await mutate(queryKeys)
+      if (mode === OFFER_WIZARD_MODE.EDITION) {
+        // update offer status
+        await mutate([GET_OFFER_QUERY_KEY, offer.id])
+      }
     } catch {
       notify.error('Une erreur est survenue lors de la modification des dates')
     }
@@ -152,17 +175,16 @@ export function StocksCalendar({
       venueId: offer.venue.id,
     })
 
-    await onSubmit(values, departmentCode, offer.id, notify)
+    await onSubmit(values, departmentCode, offer.id, notify, stockQueryKeys)
 
-    await mutate(queryKeys, data, {
-      revalidate: true,
-    })
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
 
     setIsDialogOpen(false)
   }
 
   const stocks = data?.stocks || []
+  const stockCount = data?.stockCount ?? 0
+  const hasStocks = Boolean(stockCount)
 
   return (
     <>
@@ -174,7 +196,7 @@ export function StocksCalendar({
           ) : (
             <h2 className={styles['title']}>{'Horaires'}</h2>
           )}
-          {offer.hasStocks && !isOfferSynchronized(offer) && (
+          {hasStocks && !isOfferSynchronized(offer) && (
             <DialogBuilderButton
               triggerLabel="Ajouter une ou plusieurs dates"
               triggerVariant={ButtonVariant.SECONDARY}
@@ -188,15 +210,13 @@ export function StocksCalendar({
           )}
         </div>
       )}
-      {isLoading && offer.hasStocks && (
-        <Spinner className={styles['spinner']} />
-      )}
+      {isLoading && <Spinner className={styles['spinner']} />}
       {!isOfferDisabled(offer) && (
         <div className={styles['cancel-banner']}>
           <StocksCalendarCancelBanner />
         </div>
       )}
-      {!offer.hasStocks && (
+      {!hasStocks && (
         <div className={styles['no-stocks-content']}>
           {isOfferSynchronized(offer) ? (
             <p>Aucune date à afficher</p>
@@ -224,7 +244,7 @@ export function StocksCalendar({
         </div>
       )}
       <div className={styles['container']}>
-        {data?.hasStocks && !isLoading && (
+        {!isLoading && hasStocks && (
           <div className={styles['content']}>
             <div className={styles['filters']}>
               <StocksCalendarFilters
@@ -246,10 +266,9 @@ export function StocksCalendar({
                 mode={mode}
               />
             </div>
-            {data.stockCount > 0 && (
+            {stockCount > 0 && (
               <div className={styles['count']}>
-                {data.stockCount}{' '}
-                {pluralizeFr(data.stockCount, 'date', 'dates')}
+                {stockCount} {pluralizeFr(stockCount, 'date', 'dates')}
               </div>
             )}
             <StocksCalendarTable
@@ -266,9 +285,9 @@ export function StocksCalendar({
               <Pagination
                 currentPage={page}
                 pageCount={
-                  data.stockCount % STOCKS_PER_PAGE === 0
-                    ? data.stockCount / STOCKS_PER_PAGE
-                    : Math.trunc(data.stockCount / STOCKS_PER_PAGE) + 1
+                  stockCount % STOCKS_PER_PAGE === 0
+                    ? stockCount / STOCKS_PER_PAGE
+                    : Math.trunc(stockCount / STOCKS_PER_PAGE) + 1
                 }
                 onPageClick={setPage}
               />
@@ -278,7 +297,7 @@ export function StocksCalendar({
 
         <StocksCalendarActionsBar
           checkedStocks={checkedStocks}
-          hasStocks={Boolean(data?.hasStocks)}
+          hasStocks={hasStocks}
           deleteStocks={deleteStocks}
           updateCheckedStocks={setCheckedStocks}
           mode={mode}

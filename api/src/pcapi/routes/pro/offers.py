@@ -125,43 +125,38 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
             status_code=404,
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    has_stocks = offers_repository.offer_has_stocks(offer_id=offer_id)
-    if has_stocks:
-        filtered_stocks = offers_repository.get_filtered_stocks(
-            offer=offer,
-            date=query.date,
-            time=query.time,
-            price_category_id=query.price_category_id,
-            order_by=query.order_by,
-            order_by_desc=query.order_by_desc,
-            venue=offer.venue,
-        )
-        stocks_count = filtered_stocks.count()
-        filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(
-            stocks_query=filtered_stocks,
-            page=query.page,
-            stocks_limit_per_page=query.stocks_limit_per_page,
-        )
-        stocks = [
-            offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
-        ]
-    else:
-        stocks = []
-        stocks_count = 0
-    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, has_stocks=has_stocks)
+
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        date=query.date,
+        time=query.time,
+        price_category_id=query.price_category_id,
+        order_by=query.order_by,
+        order_by_desc=query.order_by_desc,
+        venue=offer.venue,
+    )
+    stocks_count = filtered_stocks.count()
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(
+        stocks_query=filtered_stocks,
+        page=query.page,
+        stocks_limit_per_page=query.stocks_limit_per_page,
+    )
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, touched_stock_count=0)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
-    api=blueprint.pro_private_schema,
+    on_success_status=200, api=blueprint.pro_private_schema, response_model=offers_serialize.GetStocksResponseModel
 )
 @atomic()
 def upsert_offer_stocks(
     offer_id: int,
     body: stock_serialize.ThingStocksBulkUpsertBodyModel,
-) -> None:
+) -> offers_serialize.GetStocksResponseModel:
     """
     Upsert all price categories stocks of a non-event offer.
 
@@ -185,16 +180,28 @@ def upsert_offer_stocks(
         stock_inputs.append(typing.cast(offers_schemas.ThingStockUpsertInput, data))
 
     offers_api.upsert_offer_thing_stocks(offer, stock_inputs)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=0
+    )
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/delete", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=204,
+    on_success_status=200,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> None:
+def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> offers_serialize.GetStocksResponseModel:
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
@@ -208,33 +215,16 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
     offers_api.batch_delete_stocks(stocks_to_delete, current_user.real_user.id, current_user.is_impersonated)
-
-
-@private_api.route("/offers/<int:offer_id>/stocks/all-delete", methods=["POST"])
-@login_required
-@spectree_serialize(
-    on_success_status=204,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def delete_all_filtered_stocks(offer_id: int, body: offers_serialize.DeleteFilteredStockListBody) -> None:
-    try:
-        offer = offers_repository.get_offer_by_id(offer_id, load_options=["offerer_address"])
-    except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": ["Aucun objet ne correspond à cet identifiant dans notre base de données"],
-            },
-            status_code=404,
-        )
-
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    offers_repository.hard_delete_filtered_stocks(
+    filtered_stocks = offers_repository.get_filtered_stocks(
         offer=offer,
         venue=offer.venue,
-        date=body.date,
-        time=body.time,
-        price_category_id=body.price_category_id,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=len(stocks_to_delete)
     )
 
 

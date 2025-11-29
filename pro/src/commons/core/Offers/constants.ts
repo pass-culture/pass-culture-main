@@ -35,7 +35,6 @@ export enum INDIVIDUAL_OFFER_WIZARD_STEP_IDS {
   LOCALISATION = 'localisation',
   MEDIA = 'media',
   TARIFS = 'tarifs',
-  STOCKS = 'stocks',
   TIMETABLE = 'horaires',
   PRACTICAL_INFOS = 'informations_pratiques',
   SUMMARY = 'recapitulatif',
@@ -53,10 +52,6 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
 // TODO (igabriele, 2025-08-14): Replace these pass-through variables with the actual OfferStatus enum values where it's used.
 /** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
-/** @deprecated Use `OfferStatus` enum from the API client instead. */
-export const OFFER_STATUS_PENDING = OfferStatus.PENDING
-/** @deprecated Use `OfferStatus` enum from the API client instead. */
-export const OFFER_STATUS_REJECTED = OfferStatus.REJECTED
 /** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 

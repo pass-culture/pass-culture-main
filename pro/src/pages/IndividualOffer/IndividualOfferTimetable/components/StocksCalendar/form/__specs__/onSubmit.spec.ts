@@ -1,6 +1,9 @@
 import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
-import { StocksEventFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getStocksResponseFactory,
+  StocksEventFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 
 import { onSubmit } from '../onSubmit'
 import {
@@ -348,10 +351,13 @@ describe('onSubmit', () => {
   cases.forEach(
     ({ description, formValues, expectedStocks, expectedNotification }) => {
       it(`should ${description}`, async () => {
-        vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce({
-          stocks_count: expectedStocks.length,
-        })
-        await onSubmit(formValues, '75', 66, notify)
+        vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce(
+          getStocksResponseFactory({
+            stockCount: expectedStocks.length,
+            touchedStockCount: expectedStocks.length,
+          })
+        )
+        await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
 
         expect(api.bulkCreateEventStocks).toBeCalledWith({
           offerId: 66,
@@ -442,7 +448,7 @@ describe('onSubmit', () => {
   errorCases.forEach(({ errorMessage, formValues }) =>
     it(`should raise error if ${errorMessage}`, async () => {
       try {
-        await onSubmit(formValues, '75', 66, notify)
+        await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
       } catch (error) {
         expect(isError(error)).toBeTruthy()
         if (isError(error)) {
@@ -468,7 +474,13 @@ describe('onSubmit', () => {
       stocks: ['Erreur'],
     })
 
-    const result = await onSubmit(formValues, '75', 66, notify)
+    const result = await onSubmit(formValues, '75', 66, notify, [
+      'queryKey',
+      1,
+      1,
+      {},
+      {},
+    ])
 
     expect(mockErrorNotification).toHaveBeenCalledWith(
       `Une erreur est survenue lors de l’enregistrement de vos stocks.`

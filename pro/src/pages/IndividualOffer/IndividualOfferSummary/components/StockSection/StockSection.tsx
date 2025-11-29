@@ -61,7 +61,9 @@ export const StockSection = ({
 
   const editLink = getIndividualOfferUrl({
     offerId: offer.id,
-    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.STOCKS,
+    step: offer.isEvent
+      ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TIMETABLE
+      : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS,
     mode: OFFER_WIZARD_MODE.CREATION,
     isOnboarding,
   })

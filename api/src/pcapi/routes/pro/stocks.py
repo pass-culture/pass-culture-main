@@ -8,14 +8,13 @@ from flask_login import login_required
 import pcapi.core.offers.api as offers_api
 import pcapi.core.offers.models as offers_models
 import pcapi.core.offers.validation as offers_validation
-from pcapi.core.offerers.models import Venue
 from pcapi.core.offers import exceptions as offers_exceptions
+from pcapi.core.offers import repository as offers_repository
 from pcapi.models import api_errors
 from pcapi.models import db
-from pcapi.models.utils import first_or_404
-from pcapi.models.utils import get_or_404
 from pcapi.models.utils import get_or_404_from_query
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.repository import transaction
@@ -85,52 +84,17 @@ def _filter_out_stock_duplicates(
     return stocks_list
 
 
-@private_api.route("/stocks", methods=["POST"])
-@login_required
-@spectree_serialize(
-    on_success_status=201,
-    response_model=stock_serialize.StockIdResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def create_thing_stock(body: stock_serialize.ThingStockCreateBodyModel) -> stock_serialize.StockIdResponseModel:
-    offer: offers_models.Offer = get_or_404(offers_models.Offer, body.offer_id)
-    check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-    input_data = body.dict()
-    input_data.pop("offer_id")
-    stock = offers_api.create_stock(offer, **input_data)
-    return stock_serialize.StockIdResponseModel.from_orm(stock)
-
-
-@private_api.route("/stocks/<int:stock_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    on_success_status=200,
-    response_model=stock_serialize.StockIdResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def update_thing_stock(
-    stock_id: int,
-    body: stock_serialize.ThingStockUpdateBodyModel,
-) -> stock_serialize.StockIdResponseModel:
-    stock: offers_models.Stock = get_or_404(offers_models.Stock, stock_id)
-    check_user_has_access_to_offerer(current_user, stock.offer.venue.managingOffererId)
-    offers_api.edit_stock(stock, **body.dict(exclude_unset=True))
-    return stock_serialize.StockIdResponseModel.from_orm(stock)
-
-
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=201,
-    response_model=stock_serialize.StocksResponseModel,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def bulk_create_event_stocks(
     body: stock_serialize.EventStocksBulkCreateBodyModel,
-) -> stock_serialize.StocksResponseModel:
+) -> offers_serialize.GetStocksResponseModel:
     offer: offers_models.Offer = get_or_404_from_query(
         db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
         body.offer_id,
@@ -163,21 +127,31 @@ def bulk_create_event_stocks(
         )
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
 
-    return stock_serialize.StocksResponseModel(stocks_count=created_stocks_count)
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=created_stocks_count
+    )
 
 
 @private_api.route("/stocks/bulk", methods=["PATCH"])
 @login_required
 @spectree_serialize(
     on_success_status=200,
-    response_model=stock_serialize.StocksResponseModel,
+    response_model=offers_serialize.GetStocksResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
 def bulk_update_event_stocks(
     body: stock_serialize.EventStocksBulkUpdateBodyModel,
-) -> stock_serialize.StocksResponseModel:
+) -> offers_serialize.GetStocksResponseModel:
     offer: offers_models.Offer = get_or_404_from_query(
         db.session.query(offers_models.Offer).options(sa_orm.joinedload(offers_models.Offer.priceCategories)),
         body.offer_id,
@@ -231,20 +205,14 @@ def bulk_update_event_stocks(
         assert edited_stock  # to make mypy happy
         offers_api.handle_event_stock_beginning_datetime_update(edited_stock)
 
-    return stock_serialize.StocksResponseModel(stocks_count=edited_stocks_count)
-
-
-@private_api.route("/stocks/<int:stock_id>", methods=["DELETE"])
-@atomic()
-@login_required
-@spectree_serialize(response_model=stock_serialize.StockIdResponseModel, api=blueprint.pro_private_schema)
-def delete_stock(stock_id: int) -> stock_serialize.StockIdResponseModel:
-    stock = first_or_404(
-        offers_models.Stock.queryNotSoftDeleted().filter_by(id=stock_id).join(offers_models.Offer).join(Venue)
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
     )
-
-    offerer_id = stock.offer.venue.managingOffererId
-    check_user_has_access_to_offerer(current_user, offerer_id)
-    offers_api.delete_stock(stock, current_user.real_user.id, current_user.is_impersonated)
-
-    return stock_serialize.StockIdResponseModel.from_orm(stock)
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return offers_serialize.GetStocksResponseModel(
+        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=edited_stocks_count
+    )
