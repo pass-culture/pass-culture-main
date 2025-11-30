@@ -38,48 +38,37 @@ jobs:
           docker compose -f ./docker-compose-backend.yml up -d postgres timescaledb
           sleep 10
 
-      - name: Wait for PostgreSQL to be ready
+      - name: Prepare databases (migrations
         run: |
           until docker compose -f ./docker-compose-backend.yml exec -T postgres pg_isready -U pass_culture; do
             echo "Waiting for PostgreSQL..."
             sleep 2
           done
-
-      - name: Wait for TimescaleDB to be ready
-        run: |
           until docker compose -f ./docker-compose-backend.yml exec -T timescaledb pg_isready -U pass_culture; do
             echo "Waiting for TimescaleDB..."
             sleep 2
           done
+          ./scripts/prepare/migrate.sh
 
-      - name: Run common migrations (old DB)
+      - name: Seed base entities
         working-directory: ./api
-        run: |
-          poetry run alembic upgrade pre@head
-          poetry run alembic upgrade post@head
+        run: poetry run python ../scripts/seed/01-seed_base_entities.py --num-users 100 --num-offerers 100
 
-      - name: Run common migrations (new Timescale DB)
+      - name: Seed venues
         working-directory: ./api
-        env:
-          DATABASE_URL_OVERRIDE: "postgresql://pass_culture:passq@localhost:5435/pass_culture"
-        run: |
-          poetry run alembic upgrade pre@head
-          poetry run alembic upgrade post@head
+        run: poetry run python ../scripts/seed/02-seed_venues.py --num-venues 200
 
-      - name: Run new Timescale DB specific migrations
+      - name: Seed offers
         working-directory: ./api
-        run: poetry run alembic -c alembic_timescaledb.ini upgrade head
+        run: poetry run python ../scripts/seed/03-seed_offers.py --num-offers 1000
 
-      - name: Seed base entities (old DB)
+      - name: Seed stocks
         working-directory: ./api
-        run: poetry run python ../scripts/seed/01-seed_base_entities.py --port 5434 --num-users 100 --num-offerers 100
+        run: poetry run python ../scripts/seed/04-seed_stocks.py --num-stocks 1000
 
-      - name: Seed base entities (new Timescale DB)
+      - name: Seed bookings
         working-directory: ./api
-        run: poetry run python ../scripts/seed/01-seed_base_entities.py --port 5435 --num-users 100 --num-offerers 100
-
-      - name: Show database status
-        run: docker compose -f ./docker-compose-backend.yml ps
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 1000 --shard="1/1"
 
       - name: Cleanup
         if: always()
