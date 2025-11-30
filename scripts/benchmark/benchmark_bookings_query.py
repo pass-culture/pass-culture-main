@@ -8,7 +8,7 @@ Usage:
     python ./scripts/benchmark/benchmark_bookings_query.py --service postgres    --output ./results/baseline.json
     python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_hypertable.json
     python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_compression.json
-    python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_continuous_aggregate.json
+    python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_continuous_aggregates.json
 
 Metrics collected:
     - Query execution time (ms)

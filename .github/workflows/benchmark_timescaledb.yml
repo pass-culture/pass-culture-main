@@ -75,9 +75,44 @@ jobs:
         working-directory: ./api
         run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service postgres --runs 10 --output ../results/baseline.json
 
-      - name: Benchmark (Baseline)
+      - name: Benchmark (TimescaleDB)
         working-directory: ./api
         run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service timescaledb --runs 10 --output ../results/timescaledb_with_hypertable.json
+
+      - name: Generate report
+        working-directory: ./api
+        run: |
+          poetry run python ../scripts/benchmark/generate_report.py \
+            --baseline ../results/baseline.json \
+            --compare ../results/timescaledb_with_hypertable.json \
+            --output ../results/report.md
+
+      - name: Read report
+        id: report
+        run: |
+          {
+            echo 'content<<EOF'
+            cat ./results/report.md
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "<!-- timescaledb-benchmark-report -->"
+
+      - name: Create or update PR comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            <!-- timescaledb-benchmark-report -->
+            ${{ steps.report.outputs.content }}
+          edit-mode: replace
 
       - name: Cleanup
         if: always()
