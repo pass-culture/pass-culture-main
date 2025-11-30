@@ -19,12 +19,28 @@ All seeding scripts now insert identical data into both databases (postgres on p
 
 ### Base entities
 
-- user
-- deposit
-- offerer
-- address
-- offerer_address
+- `user`
+- `deposit`
+- `offerer`
+- `address`
+- `offerer_address`
 
 ```sh
 python ./scripts/seed/01-seed_base_entities.py --num-users 100 --num-offerers 100
+```
+
+### Venues
+
+- `offer`
+
+```sh
+python ./scripts/seed/02-seed_venues.py --num-venues 200
+```
+
+### Offers
+
+- `offer`
+
+```sh
+python ./scripts/seed/03-seed_offers.py --num-offers 1000
 ```

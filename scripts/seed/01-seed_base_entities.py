@@ -242,7 +242,9 @@ class BaseEntityGenerator(BaseGenerator):
 
     def run(self, num_users: int, num_offerers: int):
         logger.info("=" * 80)
-        logger.info("Step 1: Generating base entities")
+        logger.info(
+            "Step 1: Seeding users, deposits, offerers, addresses, offerer_addresses"
+        )
         logger.info("=" * 80)
 
         self.connect()
@@ -258,7 +260,7 @@ class BaseEntityGenerator(BaseGenerator):
         self.save_state()
 
         logger.info("-" * 80)
-        logger.info("Step 1 Complete!")
+        logger.info("Done.")
         logger.info("-" * 80)
         logger.info(f"Users: {len(self.state['user_ids']):,}")
         logger.info(f"Deposits: {len(self.state['deposit_ids']):,}")

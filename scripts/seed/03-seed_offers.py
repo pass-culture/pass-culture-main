@@ -1,9 +1,12 @@
 import argparse
+import json
 import logging
 import random
 import sys
+from datetime import datetime, timedelta
 from pathlib import Path
 
+import psycopg2
 from base_generator import BaseGenerator
 from psycopg2.extras import execute_values
 
@@ -19,15 +22,13 @@ POSTGRES_PORT = 5434
 TIMESCALEDB_PORT = 5435
 
 
-class VenueGenerator(BaseGenerator):
-    def generate_venues(self, count: int):
-        logger.info(f"Generating {count:,} venues...")
+class OfferGenerator(BaseGenerator):
+    def generate_offers(self, count: int):
+        logger.info(f"Generating {count:,} offers...")
 
-        offerer_ids = self.state["offerer_ids"]
-        offerer_address_ids = self.state["offerer_address_ids"]
-        num_offerers = len(offerer_ids)
+        venue_ids = self.state["venue_ids"]
+        num_venues = len(venue_ids)
 
-        dms_token_base = random.randint(100000000, 999999999)
         all_ids: list[int] = []
         batch_size = 10000
 
@@ -36,25 +37,14 @@ class VenueGenerator(BaseGenerator):
             values = []
 
             for i in range(batch_start, batch_end):
-                offerer_id = offerer_ids[i % num_offerers]
-                offerer_address_id = offerer_address_ids[i % num_offerers]
-                siret = f"{20000000000000 + i:014d}"
+                venue_id = venue_ids[i % num_venues]
                 values.append(
                     (
-                        f"Venue {i}",
-                        offerer_id,
-                        f"{10000 + (i % 90000):05d}",
-                        f"{i} Test Street",
-                        "Paris",
+                        f"Offer {i}",
+                        venue_id,
                         self.generate_random_date(self.start_date, self.end_date),
-                        0,
-                        f"Venue {i}",
-                        True,
-                        "OTHER",
-                        f"DMS{dms_token_base + i}",
-                        offerer_address_id,
-                        True,
-                        siret,
+                        False,
+                        "SUPPORT_PHYSIQUE_FILM",
                     )
                 )
 
@@ -63,10 +53,8 @@ class VenueGenerator(BaseGenerator):
                     execute_values(
                         cursor,
                         """
-                        INSERT INTO venue (
-                            name, "managingOffererId", "postalCode", address, city, "dateCreated",
-                            "thumbCount", "publicName", "isPermanent", "venueTypeCode", "dmsToken",
-                            "offererAddressId", "isOpenToPublic", siret
+                        INSERT INTO offer (
+                            name, "venueId", "dateCreated", "isNational", "subcategoryId"
                         )
                         VALUES %s
                         RETURNING id
@@ -77,36 +65,36 @@ class VenueGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"Created {len(all_ids):,} venues in both databases.")
+        logger.info(f"Created {len(all_ids):,} offers in both databases.")
         return all_ids
 
-    def run(self, num_venues: int):
+    def run(self, num_offers: int):
         logger.info("=" * 80)
-        logger.info("Step 2: Seeding venues")
+        logger.info("Step 3: Seeding offers")
         logger.info("=" * 80)
 
         self.load_state()
         self.connect()
 
-        self.state["venue_ids"] = self.generate_venues(num_venues)
+        self.state["offer_ids"] = self.generate_offers(num_offers)
         self.save_state()
 
         logger.info("-" * 80)
         logger.info("Done.")
         logger.info("-" * 80)
-        logger.info(f"Venues: {len(self.state['venue_ids']):,}")
+        logger.info(f"Offers: {len(self.state['offer_ids']):,}")
 
         self.close_connections()
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num-venues", type=int, default=200000)
+    parser.add_argument("--num-offers", type=int, default=2000000)
     args = parser.parse_args()
 
-    generator = VenueGenerator()
+    generator = OfferGenerator()
     try:
-        generator.run(num_venues=args.num_venues)
+        generator.run(num_offers=args.num_offers)
     except Exception as e:
         logger.error(f"Fatal error: {e}", exc_info=True)
         sys.exit(1)
