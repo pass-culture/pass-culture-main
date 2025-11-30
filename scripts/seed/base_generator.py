@@ -1,6 +1,7 @@
 import json
 import logging
 import random
+import sys
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -33,7 +34,7 @@ class BaseGenerator:
         self.state = {}
 
     def connect(self):
-        logger.info("Connecting to both databases...")
+        logger.info("Connecting to databases...")
         for name, port in [
             ("postgres", POSTGRES_PORT),
             ("timescaledb", TIMESCALEDB_PORT),
@@ -41,18 +42,35 @@ class BaseGenerator:
             conn_str = f"host={self.host} port={port} dbname={self.database} user={self.user} password={self.password}"
             self.connections[name] = psycopg2.connect(conn_str)
             self.connections[name].autocommit = True
-            logger.info(f"Connected to {name} (port {port}).")
+            logger.info(f"Connected to `{name}` on port `{port}`.")
 
     def close_connections(self):
         for name, conn in self.connections.items():
             conn.close()
-            logger.info(f"Closed connection to {name}.")
+            logger.info(f"Disconnected from `{name}`.")
+
+    def load_state(self):
+        logger.info(f"Loading state from {STATE_FILE}...")
+        if not STATE_FILE.exists():
+            logger.error("State file not found! Run step 1 first.")
+            sys.exit(1)
+
+        with open(STATE_FILE, "r") as f:
+            self.state = json.load(f)
+
+        logger.info("State loaded:")
+        logger.info(f"- Offerers: {len(self.state.get('offerer_ids', [])):,}")
+        logger.info(
+            f"- Offerer Addresses: {len(self.state.get('offerer_address_ids', [])):,}"
+        )
+        logger.info(f"- Venues: {len(self.state.get('venue_ids', [])):,}")
+        logger.info(f"- Users: {len(self.state.get('user_ids', [])):,}")
 
     def save_state(self):
         logger.info(f"Saving state to {STATE_FILE}...")
         with open(STATE_FILE, "w") as f:
             json.dump(self.state, f, indent=2)
-        logger.info("✓ State saved")
+        logger.info("State saved.")
 
     def generate_random_date(self, start: datetime, end: datetime) -> datetime:
         time_between = end - start
@@ -60,4 +78,5 @@ class BaseGenerator:
         random_days = random.randint(0, days_between)
         random_date = start + timedelta(days=random_days)
         random_seconds = random.randint(0, 86400)
+
         return random_date + timedelta(seconds=random_seconds)

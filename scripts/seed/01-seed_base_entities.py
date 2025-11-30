@@ -4,9 +4,8 @@ import sys
 from pathlib import Path
 
 import bcrypt
-from psycopg2.extras import execute_values
-
 from base_generator import BaseGenerator
+from psycopg2.extras import execute_values
 
 logging.basicConfig(
     level=logging.INFO,
@@ -242,9 +241,9 @@ class BaseEntityGenerator(BaseGenerator):
         return all_ids
 
     def run(self, num_users: int, num_offerers: int):
-        logger.info("=" * 70)
-        logger.info("Step 1: Generating Base Entities (both databases)")
-        logger.info("=" * 70)
+        logger.info("=" * 80)
+        logger.info("Step 1: Generating base entities")
+        logger.info("=" * 80)
 
         self.connect()
 
@@ -258,9 +257,9 @@ class BaseEntityGenerator(BaseGenerator):
 
         self.save_state()
 
-        logger.info("=" * 70)
+        logger.info("-" * 80)
         logger.info("Step 1 Complete!")
-        logger.info("=" * 70)
+        logger.info("-" * 80)
         logger.info(f"Users: {len(self.state['user_ids']):,}")
         logger.info(f"Deposits: {len(self.state['deposit_ids']):,}")
         logger.info(f"Offerers: {len(self.state['offerer_ids']):,}")
@@ -271,20 +270,12 @@ class BaseEntityGenerator(BaseGenerator):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Step 1: Generate base entities (seeds both postgres and timescaledb)"
-    )
-    parser.add_argument("--host", default="localhost")
-    parser.add_argument("--database", default="pass_culture")
-    parser.add_argument("--user", default="pass_culture")
-    parser.add_argument("--password", default="passq")
+    parser = argparse.ArgumentParser()
     parser.add_argument("--num-users", type=int, required=True)
     parser.add_argument("--num-offerers", type=int, required=True)
-
     args = parser.parse_args()
 
     generator = BaseEntityGenerator()
-
     try:
         generator.run(num_users=args.num_users, num_offerers=args.num_offerers)
     except Exception as e:
