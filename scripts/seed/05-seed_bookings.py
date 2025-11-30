@@ -77,7 +77,7 @@ class BookingGenerator(BaseGenerator):
         shard_start, shard_end = calculate_shard_range(count, shard_index, total_shards)
         shard_count = shard_end - shard_start
         logger.info(
-            f"Shard {shard_index}/{total_shards}: Generating bookings {shard_start:,} to {shard_end:,} "
+            f"Shard {shard_index}/{total_shards}: Generating bookings {shard_start + 1:,} to {shard_end:,} "
             f"({shard_count:,} bookings)..."
         )
 
@@ -133,14 +133,10 @@ class BookingGenerator(BaseGenerator):
             if status == "USED":
                 date_used = date_created + timedelta(days=random.randint(0, 30))
             elif status == "CANCELLED":
-                cancellation_date = date_created + timedelta(
-                    days=random.randint(0, 7)
-                )
+                cancellation_date = date_created + timedelta(days=random.randint(0, 7))
             elif status == "REIMBURSED":
                 date_used = date_created + timedelta(days=random.randint(0, 30))
-                reimbursement_date = date_used + timedelta(
-                    days=random.randint(7, 60)
-                )
+                reimbursement_date = date_used + timedelta(days=random.randint(7, 60))
 
             values.append(
                 (

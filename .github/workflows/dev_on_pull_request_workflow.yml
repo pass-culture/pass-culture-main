@@ -1,11 +1,7 @@
 name: "1 [on_pull_request] Initiate workflow"
 
 on:
-  pull_request:
-    branches-ignore:
-      - docs
-      - "igabriele/bsr-poke-timescaledb"
-      - "igabriele/bsr-poke-timescaledb-bis"
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}

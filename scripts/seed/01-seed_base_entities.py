@@ -1,6 +1,7 @@
 import argparse
 import logging
 import sys
+from datetime import datetime
 
 import bcrypt
 from base_generator import BaseGenerator
@@ -65,6 +66,7 @@ class BaseEntityGenerator(BaseGenerator):
         logger.info(f"Generating {len(user_ids):,} deposits...")
         all_ids: list[int] = []
         batch_size = 10000
+        expiration_date = datetime(2099, 12, 31)
 
         if not self.connections:
             raise ValueError("Database connections are not established")
@@ -78,8 +80,9 @@ class BaseEntityGenerator(BaseGenerator):
                 values.append(
                     (
                         user_id,
-                        5000.00,
+                        99999999.00,
                         self.generate_random_date(self.start_date, self.end_date),
+                        expiration_date,
                         "age-18",
                         1,
                     )
@@ -91,7 +94,7 @@ class BaseEntityGenerator(BaseGenerator):
                         cursor,
                         """
                         INSERT INTO deposit (
-                            "userId", amount, "dateCreated", source, version
+                            "userId", amount, "dateCreated", "expirationDate", source, version
                         )
                         VALUES %s
                         RETURNING id

@@ -18,28 +18,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.13"
 
-      - name: Install Poetry
+      - name: Install Python dependencies
+        working-directory: ./api
         run: |
           curl -sSL https://install.python-poetry.org | python3 -
           echo "$HOME/.local/bin" >> $GITHUB_PATH
-
-      - name: Install dependencies
-        working-directory: ./api
-        run: |
           poetry install --no-interaction --no-ansi
 
       - name: Start Docker services
         run: |
           docker compose -f ./docker-compose-backend.yml up -d postgres timescaledb
-          sleep 10
-
-      - name: Prepare databases (migrations
-        run: |
           until docker compose -f ./docker-compose-backend.yml exec -T postgres pg_isready -U pass_culture; do
             echo "Waiting for PostgreSQL..."
             sleep 2
@@ -48,7 +41,15 @@ jobs:
             echo "Waiting for TimescaleDB..."
             sleep 2
           done
-          ./scripts/prepare/migrate.sh
+
+      - name: Migrate databases
+        working-directory: ./api
+        run: |
+          poetry run alembic upgrade pre@head
+          poetry run alembic upgrade post@head
+          DATABASE_URL_OVERRIDE="postgresql://pass_culture:passq@localhost:5435/pass_culture" poetry run alembic upgrade pre@head
+          DATABASE_URL_OVERRIDE="postgresql://pass_culture:passq@localhost:5435/pass_culture" poetry run alembic upgrade post@head
+          poetry run alembic -c alembic_timescaledb.ini upgrade head
 
       - name: Seed base entities
         working-directory: ./api
