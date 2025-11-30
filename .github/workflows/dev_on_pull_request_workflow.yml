@@ -4,8 +4,8 @@ on:
   pull_request:
     branches-ignore:
       - docs
-      - igabriele/bsr-poke-timescaledb
-      - igabriele/bsr-poke-timescaledb-bis
+      - "igabriele/bsr-poke-timescaledb"
+      - "igabriele/bsr-poke-timescaledb-bis"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
@@ -160,7 +160,6 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-
 
   test-api-documentation:
     name: "Tests API documentation"
