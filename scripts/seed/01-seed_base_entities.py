@@ -1,14 +1,12 @@
 import argparse
-import json
 import logging
-import random
 import sys
-from datetime import datetime, timedelta
 from pathlib import Path
 
 import bcrypt
-import psycopg2
 from psycopg2.extras import execute_values
+
+from base_generator import BaseGenerator
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,198 +16,189 @@ logger = logging.getLogger(__name__)
 
 STATE_FILE = Path(__file__).parent / "seed_state.json"
 
+POSTGRES_PORT = 5434
+TIMESCALEDB_PORT = 5435
 
-class BaseEntityGenerator:
+
+class BaseEntityGenerator(BaseGenerator):
     DEFAULT_PASSWORD_HASH = bcrypt.hashpw("".encode("utf-8"), bcrypt.gensalt())
-
-    def __init__(self, host: str, port: int, database: str, user: str, password: str):
-        self.conn_str = (
-            f"host={host} port={port} dbname={database} user={user} password={password}"
-        )
-        self.conn = None
-        self.start_date = datetime(2020, 1, 1)
-        self.end_date = datetime(2025, 1, 1)
-        self.state = {}
-
-    def connect(self):
-        logger.info("Connecting to database...")
-        self.conn = psycopg2.connect(self.conn_str)
-        self.conn.autocommit = True
-        logger.info("Connected to database.")
-
-    def generate_random_date(self, start: datetime, end: datetime) -> datetime:
-        time_between = end - start
-        days_between = time_between.days
-        random_days = random.randint(0, days_between)
-        random_date = start + timedelta(days=random_days)
-        random_seconds = random.randint(0, 86400)
-        return random_date + timedelta(seconds=random_seconds)
 
     def generate_users(self, count: int):
         logger.info(f"Generating {count:,} users...")
-        all_ids = []
+        all_ids: list[int] = []
         batch_size = 10000
 
-        if not self.conn:
-            raise ValueError("Database connection is not established")
-        with self.conn.cursor() as cursor:
-            for batch_start in range(0, count, batch_size):
-                batch_end = min(batch_start + batch_size, count)
-                values = []
+        if not self.connections:
+            raise ValueError("Database connections are not established")
 
-                for i in range(batch_start, batch_end):
-                    values.append(
-                        (
-                            f"user{i}@example.com",
-                            f"User{i} First Name",
-                            f"User{i} Last Name",
-                            self.generate_random_date(self.start_date, self.end_date),
-                            True,
-                            True,
-                            self.DEFAULT_PASSWORD_HASH,
-                        )
-                    )
+        for batch_start in range(0, count, batch_size):
+            batch_end = min(batch_start + batch_size, count)
+            values = []
 
-                execute_values(
-                    cursor,
-                    """
-                    INSERT INTO "user" (
-                        email, "firstName", "lastName", "dateCreated", "isEmailValidated", "hasSeenProTutorials", password
+            for i in range(batch_start, batch_end):
+                values.append(
+                    (
+                        f"user{i}@example.com",
+                        f"User{i} First Name",
+                        f"User{i} Last Name",
+                        self.generate_random_date(self.start_date, self.end_date),
+                        True,
+                        True,
+                        self.DEFAULT_PASSWORD_HASH,
                     )
-                    VALUES %s
-                    ON CONFLICT (email) DO NOTHING
-                    RETURNING id
-                    """,
-                    values,
-                    page_size=len(values),
                 )
-                all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} users created.")
+            for db_name, conn in self.connections.items():
+                with conn.cursor() as cursor:
+                    execute_values(
+                        cursor,
+                        """
+                        INSERT INTO "user" (
+                            email, "firstName", "lastName", "dateCreated", "isEmailValidated", "hasSeenProTutorials", password
+                        )
+                        VALUES %s
+                        RETURNING id
+                        """,
+                        values,
+                        page_size=len(values),
+                    )
+                    if db_name == "postgres":
+                        all_ids.extend([row[0] for row in cursor.fetchall()])
+
+        logger.info(f"{len(all_ids):,} users created in both databases.")
         return all_ids
 
     def generate_deposits(self, user_ids: list[int]):
         logger.info(f"Generating {len(user_ids):,} deposits...")
-        all_ids = []
+        all_ids: list[int] = []
         batch_size = 10000
 
-        if not self.conn:
-            raise ValueError("Database connection is not established")
-        with self.conn.cursor() as cursor:
-            for batch_start in range(0, len(user_ids), batch_size):
-                batch_end = min(batch_start + batch_size, len(user_ids))
-                values = []
+        if not self.connections:
+            raise ValueError("Database connections are not established")
 
-                for i in range(batch_start, batch_end):
-                    user_id = user_ids[i]
-                    values.append(
-                        (
-                            user_id,
-                            5000.00,
-                            self.generate_random_date(self.start_date, self.end_date),
-                            "age-18",
-                            1,
-                        )
-                    )
+        for batch_start in range(0, len(user_ids), batch_size):
+            batch_end = min(batch_start + batch_size, len(user_ids))
+            values = []
 
-                execute_values(
-                    cursor,
-                    """
-                    INSERT INTO deposit (
-                        "userId", amount, "dateCreated", source, version
+            for i in range(batch_start, batch_end):
+                user_id = user_ids[i]
+                values.append(
+                    (
+                        user_id,
+                        5000.00,
+                        self.generate_random_date(self.start_date, self.end_date),
+                        "age-18",
+                        1,
                     )
-                    VALUES %s
-                    RETURNING id
-                    """,
-                    values,
-                    page_size=len(values),
                 )
-                all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} deposits created.")
+            for db_name, conn in self.connections.items():
+                with conn.cursor() as cursor:
+                    execute_values(
+                        cursor,
+                        """
+                        INSERT INTO deposit (
+                            "userId", amount, "dateCreated", source, version
+                        )
+                        VALUES %s
+                        RETURNING id
+                        """,
+                        values,
+                        page_size=len(values),
+                    )
+                    if db_name == "postgres":
+                        all_ids.extend([row[0] for row in cursor.fetchall()])
+
+        logger.info(f"{len(all_ids):,} deposits created in both databases.")
         return all_ids
 
     def generate_offerers(self, count: int):
         logger.info(f"Generating {count:,} offerers...")
-        all_ids = []
+        all_ids: list[int] = []
         batch_size = 10000
 
-        if not self.conn:
-            raise ValueError("Database connection is not established")
-        with self.conn.cursor() as cursor:
-            for batch_start in range(0, count, batch_size):
-                batch_end = min(batch_start + batch_size, count)
-                values = []
+        if not self.connections:
+            raise ValueError("Database connections are not established")
 
-                for i in range(batch_start, batch_end):
-                    siren = f"{100000000 + i:09d}"
-                    values.append(
-                        (
-                            siren,
-                            f"Offerer {i}",
-                            self.generate_random_date(self.start_date, self.end_date),
-                            True,
-                            "VALIDATED",
-                        )
-                    )
+        for batch_start in range(0, count, batch_size):
+            batch_end = min(batch_start + batch_size, count)
+            values = []
 
-                execute_values(
-                    cursor,
-                    """
-                    INSERT INTO offerer (
-                        siren, name, "dateCreated", "isActive", "validationStatus"
+            for i in range(batch_start, batch_end):
+                siren = f"{100000000 + i:09d}"
+                values.append(
+                    (
+                        siren,
+                        f"Offerer {i}",
+                        self.generate_random_date(self.start_date, self.end_date),
+                        True,
+                        "VALIDATED",
                     )
-                    VALUES %s
-                    ON CONFLICT (siren) DO NOTHING
-                    RETURNING id
-                    """,
-                    values,
-                    page_size=len(values),
                 )
-                all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} offerers created.")
+            for db_name, conn in self.connections.items():
+                with conn.cursor() as cursor:
+                    execute_values(
+                        cursor,
+                        """
+                        INSERT INTO offerer (
+                            siren, name, "dateCreated", "isActive", "validationStatus"
+                        )
+                        VALUES %s
+                        ON CONFLICT (siren) DO NOTHING
+                        RETURNING id
+                        """,
+                        values,
+                        page_size=len(values),
+                    )
+                    if db_name == "postgres":
+                        all_ids.extend([row[0] for row in cursor.fetchall()])
+
+        logger.info(f"{len(all_ids):,} offerers created in both databases.")
         return all_ids
 
     def generate_addresses(self, count: int):
         logger.info(f"Generating {count:,} addresses...")
-        all_ids = []
+        all_ids: list[int] = []
         batch_size = 10000
 
-        if not self.conn:
-            raise ValueError("Database connection is not established")
-        with self.conn.cursor() as cursor:
-            for batch_start in range(0, count, batch_size):
-                batch_end = min(batch_start + batch_size, count)
-                values = []
+        if not self.connections:
+            raise ValueError("Database connections are not established")
 
-                for i in range(batch_start, batch_end):
-                    values.append(
-                        (
-                            f"{i} Test Street",
-                            f"{(i % 90000 + 10000):05d}",
-                            "Paris",
-                            48.8566 + (i % 100) * 0.001,
-                            2.3522 + (i % 100) * 0.001,
-                            "75",
-                        )
-                    )
+        for batch_start in range(0, count, batch_size):
+            batch_end = min(batch_start + batch_size, count)
+            values = []
 
-                execute_values(
-                    cursor,
-                    """
-                    INSERT INTO address (
-                        street, "postalCode", city, latitude, longitude, "departmentCode"
+            for i in range(batch_start, batch_end):
+                values.append(
+                    (
+                        f"{i} Test Street",
+                        f"{(i % 90000 + 10000):05d}",
+                        "Paris",
+                        48.8566 + (i % 100) * 0.001,
+                        2.3522 + (i % 100) * 0.001,
+                        "75",
                     )
-                    VALUES %s
-                    RETURNING id
-                    """,
-                    values,
-                    page_size=len(values),
                 )
-                all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} addresses created.")
+            for db_name, conn in self.connections.items():
+                with conn.cursor() as cursor:
+                    execute_values(
+                        cursor,
+                        """
+                        INSERT INTO address (
+                            street, "postalCode", city, latitude, longitude, "departmentCode"
+                        )
+                        VALUES %s
+                        RETURNING id
+                        """,
+                        values,
+                        page_size=len(values),
+                    )
+                    if db_name == "postgres":
+                        all_ids.extend([row[0] for row in cursor.fetchall()])
+
+        logger.info(f"{len(all_ids):,} addresses created in both databases.")
         return all_ids
 
     def generate_offerer_addresses(
@@ -217,47 +206,44 @@ class BaseEntityGenerator:
     ):
         count = min(len(offerer_ids), len(address_ids))
         logger.info(f"Generating {count:,} offerer_addresses...")
-        all_ids = []
+        all_ids: list[int] = []
         batch_size = 10000
 
-        if not self.conn:
-            raise ValueError("Database connection is not established")
-        with self.conn.cursor() as cursor:
-            for batch_start in range(0, count, batch_size):
-                batch_end = min(batch_start + batch_size, count)
-                values = []
+        if not self.connections:
+            raise ValueError("Database connections are not established")
 
-                for i in range(batch_start, batch_end):
-                    address_id = address_ids[i]
-                    offerer_id = offerer_ids[i]
-                    values.append((address_id, offerer_id))
+        for batch_start in range(0, count, batch_size):
+            batch_end = min(batch_start + batch_size, count)
+            values = []
 
-                execute_values(
-                    cursor,
-                    """
-                    INSERT INTO offerer_address (
-                        "addressId", "offererId"
+            for i in range(batch_start, batch_end):
+                address_id = address_ids[i]
+                offerer_id = offerer_ids[i]
+                values.append((address_id, offerer_id))
+
+            for db_name, conn in self.connections.items():
+                with conn.cursor() as cursor:
+                    execute_values(
+                        cursor,
+                        """
+                        INSERT INTO offerer_address (
+                            "addressId", "offererId"
+                        )
+                        VALUES %s
+                        RETURNING id
+                        """,
+                        values,
+                        page_size=len(values),
                     )
-                    VALUES %s
-                    RETURNING id
-                    """,
-                    values,
-                    page_size=len(values),
-                )
-                all_ids.extend([row[0] for row in cursor.fetchall()])
+                    if db_name == "postgres":
+                        all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} offerer_addresses created.")
+        logger.info(f"{len(all_ids):,} offerer_addresses created in both databases.")
         return all_ids
-
-    def save_state(self):
-        logger.info(f"Saving state to {STATE_FILE}...")
-        with open(STATE_FILE, "w") as f:
-            json.dump(self.state, f, indent=2)
-        logger.info("✓ State saved")
 
     def run(self, num_users: int, num_offerers: int):
         logger.info("=" * 70)
-        logger.info("Step 1: Generating Base Entities")
+        logger.info("Step 1: Generating Base Entities (both databases)")
         logger.info("=" * 70)
 
         self.connect()
@@ -273,7 +259,7 @@ class BaseEntityGenerator:
         self.save_state()
 
         logger.info("=" * 70)
-        logger.info("✓ Step 1 Complete!")
+        logger.info("Step 1 Complete!")
         logger.info("=" * 70)
         logger.info(f"Users: {len(self.state['user_ids']):,}")
         logger.info(f"Deposits: {len(self.state['deposit_ids']):,}")
@@ -281,35 +267,28 @@ class BaseEntityGenerator:
         logger.info(f"Addresses: {len(self.state['address_ids']):,}")
         logger.info(f"Offerer Addresses: {len(self.state['offerer_address_ids']):,}")
 
-        if not self.conn:
-            raise ValueError("Database connection is not established")
-        self.conn.close()
+        self.close_connections()
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Step 1: Generate base entities")
+    parser = argparse.ArgumentParser(
+        description="Step 1: Generate base entities (seeds both postgres and timescaledb)"
+    )
     parser.add_argument("--host", default="localhost")
-    parser.add_argument("--port", type=int)
     parser.add_argument("--database", default="pass_culture")
     parser.add_argument("--user", default="pass_culture")
     parser.add_argument("--password", default="passq")
-    parser.add_argument("--num-users", type=int)
-    parser.add_argument("--num-offerers", type=int)
+    parser.add_argument("--num-users", type=int, required=True)
+    parser.add_argument("--num-offerers", type=int, required=True)
 
     args = parser.parse_args()
 
-    generator = BaseEntityGenerator(
-        host=args.host,
-        port=args.port,
-        database=args.database,
-        user=args.user,
-        password=args.password,
-    )
+    generator = BaseEntityGenerator()
 
     try:
         generator.run(num_users=args.num_users, num_offerers=args.num_offerers)
     except Exception as e:
-        logger.error(f"✗ Fatal error: {e}", exc_info=True)
+        logger.error(f"Fatal error: {e}", exc_info=True)
         sys.exit(1)
 
 

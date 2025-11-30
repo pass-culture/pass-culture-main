@@ -1,0 +1,63 @@
+import json
+import logging
+import random
+from datetime import datetime, timedelta
+from pathlib import Path
+
+import psycopg2
+
+STATE_FILE = Path(__file__).parent / "seed_state.json"
+
+POSTGRES_PORT = 5434
+TIMESCALEDB_PORT = 5435
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - [%(levelname)s] %(message)s",
+)
+logger = logging.getLogger(__name__)
+
+
+class BaseGenerator:
+    def __init__(
+        self,
+    ):
+        self.host = "0.0.0.0"
+        self.database = "pass_culture"
+        self.user = "pass_culture"
+        self.password = "passq"
+        self.connections: dict[str, psycopg2.extensions.connection] = {}
+        self.start_date = datetime(2020, 1, 1)
+        self.end_date = datetime(2025, 1, 1)
+        self.state = {}
+
+    def connect(self):
+        logger.info("Connecting to both databases...")
+        for name, port in [
+            ("postgres", POSTGRES_PORT),
+            ("timescaledb", TIMESCALEDB_PORT),
+        ]:
+            conn_str = f"host={self.host} port={port} dbname={self.database} user={self.user} password={self.password}"
+            self.connections[name] = psycopg2.connect(conn_str)
+            self.connections[name].autocommit = True
+            logger.info(f"Connected to {name} (port {port}).")
+
+    def close_connections(self):
+        for name, conn in self.connections.items():
+            conn.close()
+            logger.info(f"Closed connection to {name}.")
+
+    def save_state(self):
+        logger.info(f"Saving state to {STATE_FILE}...")
+        with open(STATE_FILE, "w") as f:
+            json.dump(self.state, f, indent=2)
+        logger.info("✓ State saved")
+
+    def generate_random_date(self, start: datetime, end: datetime) -> datetime:
+        time_between = end - start
+        days_between = time_between.days
+        random_days = random.randint(0, days_between)
+        random_date = start + timedelta(days=random_days)
+        random_seconds = random.randint(0, 86400)
+        return random_date + timedelta(seconds=random_seconds)
