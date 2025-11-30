@@ -45,6 +45,15 @@ def calculate_shard_range(
 
 
 class BookingGenerator(BaseGenerator):
+    def load_stock_data(self) -> list[dict]:
+        """Load stock id and price from the database."""
+        conn = self.connections.get("postgres")
+        if not conn:
+            return []
+        with conn.cursor() as cursor:
+            cursor.execute('SELECT id, price FROM stock ORDER BY id')
+            return [{"id": row[0], "price": float(row[1])} for row in cursor.fetchall()]
+
     def generate_random_date_recent_bias(
         self, start: datetime, end: datetime
     ) -> datetime:
@@ -81,18 +90,18 @@ class BookingGenerator(BaseGenerator):
             f"({shard_count:,} bookings)..."
         )
 
-        user_ids = self.state["user_ids"]
-        deposit_ids = self.state["deposit_ids"]
-        stock_data = self.state["stock_data"]
-        venue_ids = self.state["venue_ids"]
-        offerer_ids = self.state["offerer_ids"]
+        user_ids = self.get_ids("user")
+        deposit_ids = self.get_ids("deposit")
+        venue_ids = self.get_ids("venue")
+        offerer_ids = self.get_ids("offerer")
 
+        stock_data = self.load_stock_data()
         if not stock_data:
-            logger.error("No stock data found in state! Run step 4 first.")
+            logger.error("No stock data found in database! Run step 4 first.")
             sys.exit(1)
 
-        all_ids: list[int] = self.state.get("booking_ids", [])
-        initial_count = len(all_ids)
+        current_booking_count = self.state.get("booking_count", 0)
+        new_booking_count = 0
         booking_counter = shard_start
 
         status_distribution = [
@@ -174,14 +183,12 @@ class BookingGenerator(BaseGenerator):
                     page_size=len(values),
                 )
                 if db_name == "postgres":
-                    batch_ids = [row[0] for row in cursor.fetchall()]
-                    all_ids.extend(batch_ids)
+                    new_booking_count = cursor.rowcount
 
-        new_bookings = len(all_ids) - initial_count
         logger.info(
-            f"Shard {shard_index}/{total_shards} complete: {new_bookings:,} bookings created"
+            f"Shard {shard_index}/{total_shards} complete: {new_booking_count:,} bookings created"
         )
-        return all_ids
+        return current_booking_count + new_booking_count
 
     def run(
         self,
@@ -196,7 +203,7 @@ class BookingGenerator(BaseGenerator):
         self.load_state()
         self.connect()
 
-        self.state["booking_ids"] = self.generate_bookings(
+        self.state["booking_count"] = self.generate_bookings(
             num_bookings, shard_index, total_shards
         )
         self.save_state()
@@ -204,7 +211,7 @@ class BookingGenerator(BaseGenerator):
         logger.info("-" * 80)
         logger.info("Done.")
         logger.info("-" * 80)
-        logger.info(f"Total Bookings: {len(self.state['booking_ids']):,}")
+        logger.info(f"Total Bookings: {self.state['booking_count']:,}")
 
         self.close_connections()
 

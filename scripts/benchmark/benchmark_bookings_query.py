@@ -6,9 +6,9 @@ Compares PostgreSQL (baseline) vs TimescaleDB implementations.
 
 Usage:
     python ./scripts/benchmark/benchmark_bookings_query.py --service postgres    --output ./results/baseline.json
-    python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_hypertable.json
+    python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb.json
     python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_compression.json
-    python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_continuous_aggregates.json
+    python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --output ./results/timescaledb_with_cagg.json
 
 Metrics collected:
     - Query execution time (ms)

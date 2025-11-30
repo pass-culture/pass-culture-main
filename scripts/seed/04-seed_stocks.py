@@ -18,7 +18,7 @@ class StockGenerator(BaseGenerator):
     def generate_stocks(self, count: int):
         logger.info(f"Generating {count:,} stocks...")
 
-        offer_ids = self.state["offer_ids"]
+        offer_ids = self.get_ids("offer")
         all_stock_data: list[dict] = []
         batch_size = 10000
 
@@ -80,13 +80,14 @@ class StockGenerator(BaseGenerator):
         self.load_state()
         self.connect()
 
-        self.state["stock_data"] = self.generate_stocks(num_stocks)
+        stock_data = self.generate_stocks(num_stocks)
+        self.state["stock_count"] = len(stock_data)
         self.save_state()
 
         logger.info("-" * 80)
         logger.info("Done.")
         logger.info("-" * 80)
-        logger.info(f"Stocks: {len(self.state['stock_data']):,}")
+        logger.info(f"Stocks: {self.state['stock_count']:,}")
 
         self.close_connections()
 

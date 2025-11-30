@@ -16,7 +16,7 @@ class OfferGenerator(BaseGenerator):
     def generate_offers(self, count: int):
         logger.info(f"Generating {count:,} offers...")
 
-        venue_ids = self.state["venue_ids"]
+        venue_ids = self.get_ids("venue")
         num_venues = len(venue_ids)
 
         all_ids: list[int] = []
@@ -66,13 +66,14 @@ class OfferGenerator(BaseGenerator):
         self.load_state()
         self.connect()
 
-        self.state["offer_ids"] = self.generate_offers(num_offers)
+        offer_ids = self.generate_offers(num_offers)
+        self.state["offer_count"] = len(offer_ids)
         self.save_state()
 
         logger.info("-" * 80)
         logger.info("Done.")
         logger.info("-" * 80)
-        logger.info(f"Offers: {len(self.state['offer_ids']):,}")
+        logger.info(f"Offers: {self.state['offer_count']:,}")
 
         self.close_connections()
 

@@ -17,8 +17,8 @@ class VenueGenerator(BaseGenerator):
     def generate_venues(self, count: int):
         logger.info(f"Generating {count:,} venues...")
 
-        offerer_ids = self.state["offerer_ids"]
-        offerer_address_ids = self.state["offerer_address_ids"]
+        offerer_ids = self.get_ids("offerer")
+        offerer_address_ids = self.get_ids("offerer_address")
         num_offerers = len(offerer_ids)
 
         dms_token_base = random.randint(100000000, 999999999)
@@ -82,13 +82,14 @@ class VenueGenerator(BaseGenerator):
         self.load_state()
         self.connect()
 
-        self.state["venue_ids"] = self.generate_venues(num_venues)
+        venue_ids = self.generate_venues(num_venues)
+        self.state["venue_count"] = len(venue_ids)
         self.save_state()
 
         logger.info("-" * 80)
         logger.info("Done.")
         logger.info("-" * 80)
-        logger.info(f"Venues: {len(self.state['venue_ids']):,}")
+        logger.info(f"Venues: {self.state['venue_count']:,}")
 
         self.close_connections()
 

@@ -285,28 +285,31 @@ class BaseEntityGenerator(BaseGenerator):
 
         self.connect()
 
-        self.state["user_ids"] = self.generate_users(num_users)
-        self.state["deposit_ids"] = self.generate_deposits(self.state["user_ids"])
-        self.state["offerer_ids"] = self.generate_offerers(num_offerers)
-        self.state["address_ids"] = self.generate_addresses(num_offerers)
-        self.state["offerer_address_ids"] = self.generate_offerer_addresses(
-            self.state["offerer_ids"], self.state["address_ids"]
-        )
-        self.state["user_offerer_ids"] = self.generate_user_offerers(
-            self.state["user_ids"], self.state["offerer_ids"]
-        )
+        user_ids = self.generate_users(num_users)
+        deposit_ids = self.generate_deposits(user_ids)
+        offerer_ids = self.generate_offerers(num_offerers)
+        address_ids = self.generate_addresses(num_offerers)
+        offerer_address_ids = self.generate_offerer_addresses(offerer_ids, address_ids)
+        user_offerer_ids = self.generate_user_offerers(user_ids, offerer_ids)
+
+        self.state["user_count"] = len(user_ids)
+        self.state["deposit_count"] = len(deposit_ids)
+        self.state["offerer_count"] = len(offerer_ids)
+        self.state["address_count"] = len(address_ids)
+        self.state["offerer_address_count"] = len(offerer_address_ids)
+        self.state["user_offerer_count"] = len(user_offerer_ids)
 
         self.save_state()
 
         logger.info("-" * 80)
         logger.info("Done.")
         logger.info("-" * 80)
-        logger.info(f"Users: {len(self.state['user_ids']):,}")
-        logger.info(f"Deposits: {len(self.state['deposit_ids']):,}")
-        logger.info(f"Offerers: {len(self.state['offerer_ids']):,}")
-        logger.info(f"Addresses: {len(self.state['address_ids']):,}")
-        logger.info(f"Offerer Addresses: {len(self.state['offerer_address_ids']):,}")
-        logger.info(f"User Offerers: {len(self.state['user_offerer_ids']):,}")
+        logger.info(f"Users: {self.state['user_count']:,}")
+        logger.info(f"Deposits: {self.state['deposit_count']:,}")
+        logger.info(f"Offerers: {self.state['offerer_count']:,}")
+        logger.info(f"Addresses: {self.state['address_count']:,}")
+        logger.info(f"Offerer Addresses: {self.state['offerer_address_count']:,}")
+        logger.info(f"User Offerers: {self.state['user_offerer_count']:,}")
 
         self.close_connections()
 

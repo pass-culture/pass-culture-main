@@ -59,18 +59,21 @@ class BaseGenerator:
             self.state = json.load(f)
 
         logger.info("State loaded:")
-        logger.info(f"- Addresses: {len(self.state.get('address_ids', [])):,}")
-        logger.info(f"- Bookings: {len(self.state.get('booking_ids', [])):,}")
-        logger.info(f"- Deposits: {len(self.state.get('deposit_ids', [])):,}")
-        logger.info(f"- Offerers: {len(self.state.get('offerer_ids', [])):,}")
-        logger.info(
-            f"- Offerer Addresses: {len(self.state.get('offerer_address_ids', [])):,}"
-        )
-        logger.info(f"- Offers: {len(self.state.get('offer_ids', [])):,}")
-        logger.info(f"- Stocks: {len(self.state.get('stock_data', [])):,}")
-        logger.info(f"- User Offerers: {len(self.state.get('user_offerer_ids', [])):,}")
-        logger.info(f"- Users: {len(self.state.get('user_ids', [])):,}")
-        logger.info(f"- Venues: {len(self.state.get('venue_ids', [])):,}")
+        logger.info(f"- Addresses: {self.state.get('address_count', 0):,}")
+        logger.info(f"- Bookings: {self.state.get('booking_count', 0):,}")
+        logger.info(f"- Deposits: {self.state.get('deposit_count', 0):,}")
+        logger.info(f"- Offerers: {self.state.get('offerer_count', 0):,}")
+        logger.info(f"- Offerer Addresses: {self.state.get('offerer_address_count', 0):,}")
+        logger.info(f"- Offers: {self.state.get('offer_count', 0):,}")
+        logger.info(f"- Stocks: {self.state.get('stock_count', 0):,}")
+        logger.info(f"- User Offerers: {self.state.get('user_offerer_count', 0):,}")
+        logger.info(f"- Users: {self.state.get('user_count', 0):,}")
+        logger.info(f"- Venues: {self.state.get('venue_count', 0):,}")
+
+    def get_ids(self, entity_name: str) -> list[int]:
+        """Reconstruct ID list from count. IDs are always 1..count on fresh DB."""
+        count = self.state.get(f"{entity_name}_count", 0)
+        return list(range(1, count + 1))
 
     def save_state(self):
         logger.info(f"Saving state to {STATE_FILE}...")

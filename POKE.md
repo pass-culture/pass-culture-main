@@ -97,7 +97,7 @@ python ./scripts/benchmark/benchmark_bookings_query.py --service postgres --run 
 ### TimescaleDB with `booking` hypertable
 
 ```sh
-python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --run 10 --output ./results/timescaledb_with_hypertable.json
+python ./scripts/benchmark/benchmark_bookings_query.py --service timescaledb --run 10 --output ./results/timescaledb.json
 ```
 
 ### TimescaleDB with `booking` hypertable, compression
@@ -115,7 +115,7 @@ Compare benchmark results and generate a Markdown report:
 ```sh
 python ./scripts/benchmark/generate_report.py \
     --baseline ./results/baseline.json \
-    --compare ./results/timescaledb_with_hypertable.json \
+    --compare ./results/timescaledb.json \
     --output ./results/report.md
 ```
 

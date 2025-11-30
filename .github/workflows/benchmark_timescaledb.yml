@@ -8,8 +8,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  analyze:
-    name: Analyze
+  benchmark:
+    name: Benchmark
     runs-on: ubuntu-latest
     env:
       DATABASE_URL: postgresql://pass_culture:passq@0.0.0.0:5434/pass_culture
@@ -53,38 +53,65 @@ jobs:
 
       - name: Seed base entities
         working-directory: ./api
-        run: poetry run python ../scripts/seed/01-seed_base_entities.py --num-users 100 --num-offerers 100
+        run: poetry run python ../scripts/seed/01-seed_base_entities.py --num-users 1000000 --num-offerers 100000
 
       - name: Seed venues
         working-directory: ./api
-        run: poetry run python ../scripts/seed/02-seed_venues.py --num-venues 200
+        run: poetry run python ../scripts/seed/02-seed_venues.py --num-venues 200000
 
       - name: Seed offers
         working-directory: ./api
-        run: poetry run python ../scripts/seed/03-seed_offers.py --num-offers 1000
+        run: poetry run python ../scripts/seed/03-seed_offers.py --num-offers 2000000
 
       - name: Seed stocks
         working-directory: ./api
-        run: poetry run python ../scripts/seed/04-seed_stocks.py --num-stocks 1000
+        run: poetry run python ../scripts/seed/04-seed_stocks.py --num-stocks 2000000
 
-      - name: Seed bookings
+      - name: Seed bookings (1/10)
         working-directory: ./api
-        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 1000 --shard="1/1"
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="1/10"
+      - name: Seed bookings (2/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="2/10"
+      - name: Seed bookings (3/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="3/10"
+      - name: Seed bookings (4/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="4/10"
+      - name: Seed bookings (5/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="5/10"
+      - name: Seed bookings (6/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="6/10"
+      - name: Seed bookings (7/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="7/10"
+      - name: Seed bookings (8/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="8/10"
+      - name: Seed bookings (9/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="9/10"
+      - name: Seed bookings (10/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="10/10"
 
       - name: Benchmark (Baseline)
         working-directory: ./api
-        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service postgres --runs 10 --output ../results/baseline.json
+        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service postgres --runs 100 --output ../results/baseline.json
 
       - name: Benchmark (TimescaleDB)
         working-directory: ./api
-        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service timescaledb --runs 10 --output ../results/timescaledb_with_hypertable.json
+        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service timescaledb --runs 100 --output ../results/timescaledb.json
 
       - name: Generate report
         working-directory: ./api
         run: |
           poetry run python ../scripts/benchmark/generate_report.py \
             --baseline ../results/baseline.json \
-            --compare ../results/timescaledb_with_hypertable.json \
+            --compare ../results/timescaledb.json \
             --output ../results/report.md
 
       - name: Read report
@@ -105,7 +132,7 @@ jobs:
           body-includes: "<!-- timescaledb-benchmark-report -->"
 
       - name: Create or update PR comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
@@ -113,6 +140,7 @@ jobs:
             <!-- timescaledb-benchmark-report -->
             ${{ steps.report.outputs.content }}
           edit-mode: replace
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Cleanup
         if: always()
