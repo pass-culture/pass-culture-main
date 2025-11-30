@@ -79,7 +79,7 @@ class OfferGenerator(BaseGenerator):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num-offers", type=int, default=2000000)
+    parser.add_argument("--num-offers", type=int, required=True)
     args = parser.parse_args()
 
     generator = OfferGenerator()

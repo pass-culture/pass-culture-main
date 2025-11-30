@@ -74,7 +74,7 @@ class StockGenerator(BaseGenerator):
 
     def run(self, num_stocks: int):
         logger.info("=" * 80)
-        logger.info("Step 4: Generating stocks")
+        logger.info("Step 4: Seeding stocks")
         logger.info("=" * 80)
 
         self.load_state()
@@ -93,7 +93,7 @@ class StockGenerator(BaseGenerator):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num-stocks", type=int, default=5000000)
+    parser.add_argument("--num-stocks", type=int, required=True)
     args = parser.parse_args()
 
     generator = StockGenerator()

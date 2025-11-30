@@ -95,7 +95,7 @@ class VenueGenerator(BaseGenerator):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num-venues", type=int, default=200000)
+    parser.add_argument("--num-venues", type=int, required=True)
     args = parser.parse_args()
 
     generator = VenueGenerator()

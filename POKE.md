@@ -52,3 +52,15 @@ python ./scripts/seed/03-seed_offers.py --num-offers 1000
 ```sh
 python ./scripts/seed/04-seed_stocks.py --num-stocks 1000
 ```
+
+### Bookings
+
+- `booking`
+
+```sh
+python ./scripts/seed/05-seed_bookings.py --num-bookings 1000
+
+# or, with sharding:
+python ./scripts/seed/05-seed_bookings.py --num-bookings 1000 --shard="1/2"
+python ./scripts/seed/05-seed_bookings.py --num-bookings 1000 --shard="2/2"
+```
