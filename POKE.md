@@ -44,3 +44,11 @@ python ./scripts/seed/02-seed_venues.py --num-venues 200
 ```sh
 python ./scripts/seed/03-seed_offers.py --num-offers 1000
 ```
+
+### Stocks
+
+- `stock`
+
+```sh
+python ./scripts/seed/04-seed_stocks.py --num-stocks 1000
+```

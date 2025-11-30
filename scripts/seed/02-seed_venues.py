@@ -2,7 +2,6 @@ import argparse
 import logging
 import random
 import sys
-from pathlib import Path
 
 from base_generator import BaseGenerator
 from psycopg2.extras import execute_values
@@ -12,11 +11,6 @@ logging.basicConfig(
     format="%(asctime)s - [%(levelname)s] %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-STATE_FILE = Path(__file__).parent / "seed_state.json"
-
-POSTGRES_PORT = 5434
-TIMESCALEDB_PORT = 5435
 
 
 class VenueGenerator(BaseGenerator):
@@ -77,7 +71,7 @@ class VenueGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"Created {len(all_ids):,} venues in both databases.")
+        logger.info(f"{len(all_ids):,} venues created.")
         return all_ids
 
     def run(self, num_venues: int):

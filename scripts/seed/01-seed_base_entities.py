@@ -1,7 +1,6 @@
 import argparse
 import logging
 import sys
-from pathlib import Path
 
 import bcrypt
 from base_generator import BaseGenerator
@@ -12,11 +11,6 @@ logging.basicConfig(
     format="%(asctime)s - [%(levelname)s] %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-STATE_FILE = Path(__file__).parent / "seed_state.json"
-
-POSTGRES_PORT = 5434
-TIMESCALEDB_PORT = 5435
 
 
 class BaseEntityGenerator(BaseGenerator):
@@ -64,7 +58,7 @@ class BaseEntityGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} users created in both databases.")
+        logger.info(f"{len(all_ids):,} users created.")
         return all_ids
 
     def generate_deposits(self, user_ids: list[int]):
@@ -108,7 +102,7 @@ class BaseEntityGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} deposits created in both databases.")
+        logger.info(f"{len(all_ids):,} deposits created.")
         return all_ids
 
     def generate_offerers(self, count: int):
@@ -153,7 +147,7 @@ class BaseEntityGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} offerers created in both databases.")
+        logger.info(f"{len(all_ids):,} offerers created.")
         return all_ids
 
     def generate_addresses(self, count: int):
@@ -197,7 +191,7 @@ class BaseEntityGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} addresses created in both databases.")
+        logger.info(f"{len(all_ids):,} addresses created.")
         return all_ids
 
     def generate_offerer_addresses(
@@ -237,7 +231,7 @@ class BaseEntityGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"{len(all_ids):,} offerer_addresses created in both databases.")
+        logger.info(f"{len(all_ids):,} offerer_addresses created.")
         return all_ids
 
     def run(self, num_users: int, num_offerers: int):

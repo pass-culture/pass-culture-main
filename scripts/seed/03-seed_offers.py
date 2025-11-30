@@ -1,12 +1,7 @@
 import argparse
-import json
 import logging
-import random
 import sys
-from datetime import datetime, timedelta
-from pathlib import Path
 
-import psycopg2
 from base_generator import BaseGenerator
 from psycopg2.extras import execute_values
 
@@ -15,11 +10,6 @@ logging.basicConfig(
     format="%(asctime)s - [%(levelname)s] %(message)s",
 )
 logger = logging.getLogger(__name__)
-
-STATE_FILE = Path(__file__).parent / "seed_state.json"
-
-POSTGRES_PORT = 5434
-TIMESCALEDB_PORT = 5435
 
 
 class OfferGenerator(BaseGenerator):
@@ -65,7 +55,7 @@ class OfferGenerator(BaseGenerator):
                     if db_name == "postgres":
                         all_ids.extend([row[0] for row in cursor.fetchall()])
 
-        logger.info(f"Created {len(all_ids):,} offers in both databases.")
+        logger.info(f"{len(all_ids):,} offers created.")
         return all_ids
 
     def run(self, num_offers: int):

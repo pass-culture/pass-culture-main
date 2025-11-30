@@ -60,12 +60,14 @@ class BaseGenerator:
 
         logger.info("State loaded:")
         logger.info(f"- Addresses: {len(self.state.get('address_ids', [])):,}")
+        logger.info(f"- Bookings: {len(self.state.get('booking_ids', [])):,}")
         logger.info(f"- Deposits: {len(self.state.get('deposit_ids', [])):,}")
         logger.info(f"- Offerers: {len(self.state.get('offerer_ids', [])):,}")
         logger.info(
             f"- Offerer Addresses: {len(self.state.get('offerer_address_ids', [])):,}"
         )
         logger.info(f"- Offers: {len(self.state.get('offer_ids', [])):,}")
+        logger.info(f"- Stocks: {len(self.state.get('stock_ids', [])):,}")
         logger.info(f"- Venues: {len(self.state.get('venue_ids', [])):,}")
         logger.info(f"- Users: {len(self.state.get('user_ids', [])):,}")
 
