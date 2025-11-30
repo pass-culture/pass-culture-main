@@ -237,10 +237,49 @@ class BaseEntityGenerator(BaseGenerator):
         logger.info(f"{len(all_ids):,} offerer_addresses created.")
         return all_ids
 
+    def generate_user_offerers(self, user_ids: list[int], offerer_ids: list[int]):
+        """Link users to offerers for benchmark queries."""
+        count = min(len(user_ids), len(offerer_ids))
+        logger.info(f"Generating {count:,} user_offerers...")
+        all_ids: list[int] = []
+        batch_size = 10000
+
+        if not self.connections:
+            raise ValueError("Database connections are not established")
+
+        for batch_start in range(0, count, batch_size):
+            batch_end = min(batch_start + batch_size, count)
+            values = []
+
+            for i in range(batch_start, batch_end):
+                user_id = user_ids[i]
+                offerer_id = offerer_ids[i]
+                values.append((user_id, offerer_id, "VALIDATED"))
+
+            for db_name, conn in self.connections.items():
+                with conn.cursor() as cursor:
+                    execute_values(
+                        cursor,
+                        """
+                        INSERT INTO user_offerer (
+                            "userId", "offererId", "validationStatus"
+                        )
+                        VALUES %s
+                        RETURNING id
+                        """,
+                        values,
+                        page_size=len(values),
+                    )
+                    if db_name == "postgres":
+                        all_ids.extend([row[0] for row in cursor.fetchall()])
+
+        logger.info(f"{len(all_ids):,} user_offerers created.")
+        return all_ids
+
     def run(self, num_users: int, num_offerers: int):
         logger.info("=" * 80)
         logger.info(
-            "Step 1: Seeding users, deposits, offerers, addresses, offerer_addresses"
+            "Step 1: Seeding users, deposits, offerers, addresses, offerer_addresses, user_offerers"
         )
         logger.info("=" * 80)
 
@@ -253,6 +292,9 @@ class BaseEntityGenerator(BaseGenerator):
         self.state["offerer_address_ids"] = self.generate_offerer_addresses(
             self.state["offerer_ids"], self.state["address_ids"]
         )
+        self.state["user_offerer_ids"] = self.generate_user_offerers(
+            self.state["user_ids"], self.state["offerer_ids"]
+        )
 
         self.save_state()
 
@@ -264,6 +306,7 @@ class BaseEntityGenerator(BaseGenerator):
         logger.info(f"Offerers: {len(self.state['offerer_ids']):,}")
         logger.info(f"Addresses: {len(self.state['address_ids']):,}")
         logger.info(f"Offerer Addresses: {len(self.state['offerer_address_ids']):,}")
+        logger.info(f"User Offerers: {len(self.state['user_offerer_ids']):,}")
 
         self.close_connections()
 

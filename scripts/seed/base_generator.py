@@ -68,8 +68,9 @@ class BaseGenerator:
         )
         logger.info(f"- Offers: {len(self.state.get('offer_ids', [])):,}")
         logger.info(f"- Stocks: {len(self.state.get('stock_data', [])):,}")
-        logger.info(f"- Venues: {len(self.state.get('venue_ids', [])):,}")
+        logger.info(f"- User Offerers: {len(self.state.get('user_offerer_ids', [])):,}")
         logger.info(f"- Users: {len(self.state.get('user_ids', [])):,}")
+        logger.info(f"- Venues: {len(self.state.get('venue_ids', [])):,}")
 
     def save_state(self):
         logger.info(f"Saving state to {STATE_FILE}...")

@@ -1,4 +1,4 @@
-name: "1 [analyze_timescaledb] Analyzing TimescaleDB"
+name: "0 Benchmark TimescaleDB"
 
 on:
   pull_request:
@@ -70,6 +70,14 @@ jobs:
       - name: Seed bookings
         working-directory: ./api
         run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 1000 --shard="1/1"
+
+      - name: Benchmark (Baseline)
+        working-directory: ./api
+        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service postgres --runs 10 --output ../results/baseline.json
+
+      - name: Benchmark (Baseline)
+        working-directory: ./api
+        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service timescaledb --runs 10 --output ../results/timescaledb_with_hypertable.json
 
       - name: Cleanup
         if: always()
