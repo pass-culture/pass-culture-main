@@ -261,6 +261,7 @@ class UbbleWorkflowV2Test:
         assert fraud_check.status == subscription_models.FraudCheckStatus.KO
         assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.AGE_TOO_YOUNG]
 
+    @pytest.mark.time_machine("2025-02-02")
     def test_ubble_identification_approved_but_user_too_old(self, requests_mock):
         user = users_factories.UserFactory(age=40)
         fraud_check = BeneficiaryFraudCheckFactory(
