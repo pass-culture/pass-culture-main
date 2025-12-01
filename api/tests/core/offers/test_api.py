@@ -5132,8 +5132,6 @@ class UpdateProductCountsTest:
         product_2.likesCount = 0
 
         api.update_product_counts(batch_size=1)
-        db.session.refresh(product_1)
-        db.session.refresh(product_2)
 
         assert product_1.likesCount == 2
         assert product_2.likesCount == 2

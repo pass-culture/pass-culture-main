@@ -2656,9 +2656,10 @@ def update_product_counts(batch_size: int) -> None:
         return
 
     while start <= product_max_id:
-        _update_product_count(_chronicles_count_query(start, start + batch_size), "chroniclesCount")
-        _update_product_count(_headlines_count_query(start, start + batch_size), "headlinesCount")
-        _update_product_count(_likes_count_query(start, start + batch_size), "likesCount")
+        with atomic():
+            _update_product_count(_chronicles_count_query(start, start + batch_size), "chroniclesCount")
+            _update_product_count(_headlines_count_query(start, start + batch_size), "headlinesCount")
+            _update_product_count(_likes_count_query(start, start + batch_size), "likesCount")
 
         logger.info("Updated products from id %d to %d", start, min(start + batch_size, product_max_id))
         start += batch_size
