@@ -126,7 +126,9 @@ class _FIELDS:
     POSTAL_CODE = Field(description="Postal Code", example="75001")
     STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")
     ADDRESS_ID = Field(description="Address id in the pass Culture DB", example=1)
-    ADDRESS_LABEL = Field(description="Address label", example="Zénith Paris")
+    # the example is copied inside the description since the
+    # default/example location might not be an address (and not appear)
+    ADDRESS_LABEL = Field(description="Name/label of the event venue (eg. Zénith de Paris)", example="Zénith de Paris")
 
     # Offer fields
     OFFER_ID = Field(description="Offer id", example=12345)
@@ -168,7 +170,8 @@ class _FIELDS:
         default=None,
     )
     DEPRECATED_OFFER_PUBLICATION_DATE = Field(
-        description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
+        description="**[deprecated - use `publicationDatetime` instead]** "
+        + descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
         example=_example_datetime_with_tz,
     )
     OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT = Field(
