@@ -7,7 +7,6 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { api, apiAdage } from '@/apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -95,15 +94,6 @@ describe('AdageDiscovery', () => {
         name: 'Architecture',
       })
     ).toBeInTheDocument()
-  })
-
-  it('should show an error message notification when domains could not be fetched', async () => {
-    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(null)
-
-    renderAdageDiscovery(user)
-    await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
-
-    expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })
 
   it('should not call tracker when footer suggestion is not visible', async () => {

@@ -64,6 +64,7 @@ export const VenuePlaylist = ({
         onWholePlaylistSeen({
           playlistId: VENUE_PLAYLIST,
           playlistType: AdagePlaylistType.VENUE,
+          numberOfTiles: playlist.venues.length,
         })
       }
       loading={isLoading}

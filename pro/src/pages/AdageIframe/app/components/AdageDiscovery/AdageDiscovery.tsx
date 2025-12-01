@@ -53,11 +53,16 @@ export const AdageDiscovery = () => {
     label: name,
   }))
 
-  function onWholePlaylistSeen({ playlistId, playlistType }: PlaylistTracker) {
+  function onWholePlaylistSeen({
+    playlistId,
+    playlistType,
+    numberOfTiles,
+  }: PlaylistTracker) {
     apiAdage.logHasSeenWholePlaylist({
       iframeFrom: location.pathname,
       playlistId,
       playlistType,
+      numberOfTiles,
     })
   }
 

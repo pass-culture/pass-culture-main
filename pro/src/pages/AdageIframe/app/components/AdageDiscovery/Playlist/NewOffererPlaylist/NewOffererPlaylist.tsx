@@ -48,6 +48,7 @@ export const NewOffererPlaylist = ({
         onWholePlaylistSeen({
           playlistId: NEW_VENUE_PLAYLIST,
           playlistType: AdagePlaylistType.VENUE,
+          numberOfTiles: playlist.venues.length,
         })
       }
       loading={isLoading}

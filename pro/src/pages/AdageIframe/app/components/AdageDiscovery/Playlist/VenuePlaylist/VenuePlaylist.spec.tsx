@@ -1,0 +1,132 @@
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
+
+import type { LocalOfferersPlaylistOffer } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
+import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
+import * as useNotification from '@/commons/hooks/useNotification'
+import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+
+import { VenuePlaylist } from './VenuePlaylist'
+
+vi.mock('@/apiClient/api', () => ({
+  apiAdage: {
+    logConsultPlaylistElement: vi.fn(),
+    getLocalOfferersPlaylist: vi.fn(),
+  },
+}))
+
+const mockTrackPlaylistElementClicked = vi.fn()
+const mockOnWholePlaylistSeen = vi.fn()
+
+const mockLocalOfferersPlaylistOffer: LocalOfferersPlaylistOffer = {
+  city: 'Paris',
+  distance: 5,
+  id: 1,
+  imgUrl: 'mock',
+  name: 'venuePlaylist offer 1',
+  publicName: 'Venue playlist offer 1',
+}
+
+const renderVenuePlaylist = () => {
+  renderWithProviders(
+    <VenuePlaylist
+      onWholePlaylistSeen={mockOnWholePlaylistSeen}
+      trackPlaylistElementClicked={mockTrackPlaylistElementClicked}
+    />
+  )
+}
+
+describe('VenuePlaylist', () => {
+  const notifyError = vi.fn()
+
+  beforeEach(async () => {
+    vi.spyOn(apiAdage, 'logConsultPlaylistElement')
+    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValue({
+      venues: [mockLocalOfferersPlaylistOffer],
+    })
+
+    const notifsImport = (await vi.importActual(
+      '@/commons/hooks/useNotification'
+    )) as ReturnType<typeof useNotification.useNotification>
+    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      ...notifsImport,
+      error: notifyError,
+    }))
+
+    window.IntersectionObserver = vi.fn().mockImplementation(() => ({
+      observe: vi.fn(),
+      unobserve: vi.fn(),
+      disconnect: vi.fn(),
+    }))
+  })
+
+  it('should render venue playlist', async () => {
+    renderVenuePlaylist()
+
+    expect(
+      await screen.findByText(
+        'À environ 30 minutes de transport de mon établissement'
+      )
+    ).toBeInTheDocument()
+  })
+
+  it('should call tracker for venue playlist element', async () => {
+    renderVenuePlaylist()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    const venuePlaylistElement = await screen.findByText(
+      'Venue playlist offer 1'
+    )
+
+    await userEvent.click(venuePlaylistElement)
+
+    expect(mockTrackPlaylistElementClicked).toHaveBeenNthCalledWith(1, {
+      index: 0,
+      venueId: 1,
+      playlistId: 3,
+      playlistType: 'venue',
+    })
+  })
+
+  it.each([
+    {
+      distance: 3,
+      title: 'À moins de 30 minutes à pieds de mon établissement',
+    },
+    {
+      distance: 15,
+      title: 'À environ 30 minutes de transport de mon établissement',
+    },
+    {
+      distance: 30,
+      title: 'À environ 1h de transport de mon établissement',
+    },
+  ])('should display the playlist title based on the maximum venue distance', async ({
+    distance,
+    title,
+  }) => {
+    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValueOnce({
+      venues: [{ ...mockLocalOfferersPlaylistOffer, distance }],
+    })
+    renderVenuePlaylist()
+
+    expect(await screen.findByText(title)).toBeInTheDocument()
+  })
+
+  it('should call tracker when whole venue playlist is seen', async () => {
+    renderVenuePlaylist()
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible')
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(mockOnWholePlaylistSeen).toHaveBeenNthCalledWith(1, {
+      playlistId: 3,
+      playlistType: 'venue',
+      numberOfTiles: 1,
+    })
+  })
+})
