@@ -11,6 +11,7 @@ from sqlalchemy.orm import joinedload
 
 from pcapi import settings
 from pcapi.core import object_storage
+from pcapi.core.object_storage.backends import base as base_object_storage
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
@@ -94,7 +95,7 @@ def download_gdpr_extract(extract_id: int) -> utils.BackofficeResponse:
             object_id=f"{extract.id}.zip",
             bucket=settings.GCP_GDPR_EXTRACT_BUCKET,
         )
-    except object_storage.backends.base.FileNotFound:
+    except base_object_storage.FileNotFound:
         flash("L'extraction demandée existe mais aucune archive ne lui est associée", "warning")
         return redirect(
             url_for("backoffice_web.gdpr_extract.list_gdpr_user_data_extract"),

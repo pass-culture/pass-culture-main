@@ -3,7 +3,6 @@ from pcapi.core.object_storage.backends.base import BaseBackend
 from pcapi.core.object_storage.backends.gcp import GCPAlternateBackend
 from pcapi.core.object_storage.backends.gcp import GCPBackend
 from pcapi.core.object_storage.backends.local import LocalBackend
-from pcapi.utils.module_loading import import_string
 
 
 GCP = "GCP"
