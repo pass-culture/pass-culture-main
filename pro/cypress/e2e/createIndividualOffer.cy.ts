@@ -23,10 +23,21 @@ describe('Create individual offers new flow', () => {
     )
   })
   beforeEach(() => {
+    // order matters here
+    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
+      'getCategories'
+    )
+    cy.intercept({ method: 'GET', url: '/offers/music-types' }).as(
+      'getMusicTypes'
+    )
+    cy.intercept({ method: 'GET', url: '/offers/*/stocks-stats' }).as(
+      'getStocksStats'
+    )
+    cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
+    cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
+
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
-    cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
-    cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
     cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as(
       'patchNonEventStocks'
     )
@@ -35,9 +46,7 @@ describe('Create individual offers new flow', () => {
     cy.intercept({ method: 'GET', url: '/offerers/names' }).as(
       'getOfferersNames'
     )
-    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
-      'getCategories'
-    )
+    cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
     )
@@ -53,8 +62,8 @@ describe('Create individual offers new flow', () => {
   it('I should be able to create an individual show offer', () => {
     //  DESCRIPTION STEP
     cy.stepLog({ message: 'I fill in the description' })
-
     cy.findByLabelText(/Titre de l’offre/).type('Le Diner de Devs')
+    cy.wait(['@getCategories', '@getOffer'])
     cy.findByLabelText('Description').type(
       'Une PO invite des développeurs à dîner...'
     )
@@ -70,7 +79,7 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate the description step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@getMusicTypes', '@getOffer', '@postDraftOffer'])
 
     //  LOCATION STEP
     cy.findByRole('heading', { name: 'Où profiter de l’offre ?' })
@@ -84,7 +93,7 @@ describe('Create individual offers new flow', () => {
     cy.findByTestId('list').contains(MOCKED_BACK_ADDRESS_LABEL).click()
     cy.stepLog({ message: 'I validate the location step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@patchOffer'])
+    cy.wait(['@patchOffer'])
 
     //  MEDIA STEP
     cy.findByLabelText('Importez une image').selectFile(
@@ -115,7 +124,6 @@ describe('Create individual offers new flow', () => {
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.stepLog({ message: 'I validate the media step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait('@getOffer')
 
     //  PRICE CATEGORIES STEP
     cy.findByLabelText('Intitulé du tarif').should('have.value', 'Tarif unique')
@@ -202,6 +210,7 @@ describe('Create individual offers new flow', () => {
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
     cy.findByText('Publier l’offre').click()
+    cy.wait(['@getStocksStats', '@getOffer'])
 
     //  CONFIRMATION STEP
     cy.findByText('Plus tard').click()
@@ -213,7 +222,7 @@ describe('Create individual offers new flow', () => {
     //  OFFERS LIST
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
-    cy.wait(['@getOffer', '@getCategories'], {
+    cy.wait(['@getOffers', '@getCategories'], {
       requestTimeout: 60 * 1000 * 3,
       responseTimeout: 60 * 1000 * 3,
     })
@@ -233,6 +242,7 @@ describe('Create individual offers new flow', () => {
     //  DESCRIPTION STEP
     cy.findByLabelText(/Titre de l’offre/).type(offerTitle)
     cy.findByLabelText('Description').type(offerDesc)
+    cy.wait(['@getCategories', '@getOffer'])
 
     // Random 13-digit number because we can't use the same EAN twice
     const ean = String(
@@ -250,7 +260,7 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate the description step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getOffer', '@postDraftOffer'])
+    cy.wait(['@getMusicTypes', '@getOffer', '@postDraftOffer'])
 
     //  LOCATION STEP
     cy.findByRole('heading', { name: 'Où profiter de l’offre ?' }).should(
@@ -296,7 +306,6 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate media step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait('@getOffer')
 
     cy.url().should('contain', '/creation/media')
     cy.findByText('Enregistrer et continuer').click()
@@ -326,7 +335,6 @@ describe('Create individual offers new flow', () => {
     //  SUMMARY STEP
     cy.stepLog({ message: 'I publish my offer' })
     cy.findByText('Publier l’offre').click()
-
     cy.wait(['@publishOffer', '@getOffer'], {
       requestTimeout: 60000 * 2,
       responseTimeout: 60000 * 2,
@@ -335,7 +343,7 @@ describe('Create individual offers new flow', () => {
     cy.stepLog({ message: 'I go to the offers list' })
     cy.findByText('Voir la liste des offres').click()
     cy.url().should('contain', '/offres')
-    cy.wait(['@getOffer', '@getCategories'], {
+    cy.wait(['@getOffers', '@getCategories'], {
       requestTimeout: 60 * 1000 * 3,
       responseTimeout: 60 * 1000 * 3,
     })
