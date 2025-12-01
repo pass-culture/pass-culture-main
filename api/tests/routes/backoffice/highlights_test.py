@@ -292,6 +292,75 @@ class CreateHighlightTest(PostEndpointHelper):
             == "La date de mise en avant ne peut pas être après la fin de l'évènement"
         )
 
+    @pytest.mark.parametrize(
+        "file_path,max_image_size_value,min_width_image_value,error_msg",
+        [
+            (
+                pathlib.Path(tests.__path__[0]) / "files" / "pdf" / "example.html",
+                None,
+                None,
+                "Le fichier fourni n'est pas une image",
+            ),
+            (
+                pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg",
+                1_000,
+                None,
+                "Image trop grande, max : 0 Mo",
+            ),
+            (
+                pathlib.Path(tests.__path__[0]) / "files" / "mouette_small.jpg",
+                None,
+                1_000_000,
+                "Image trop petite, utilisez une image plus grande (supérieure à 270px par 1000000px)",
+            ),
+        ],
+    )
+    def test_create_highlight_image_should_fail(
+        self,
+        file_path,
+        max_image_size_value,
+        min_width_image_value,
+        error_msg,
+        mocker,
+        authenticated_client,
+    ):
+        today = datetime.date.today()
+        name = "New highlight"
+        description = "Highlight description"
+        highlight_date_from = today + datetime.timedelta(days=11)
+        highlight_date_to = today + datetime.timedelta(days=11)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today + datetime.timedelta(days=10)
+        communication_date = today + datetime.timedelta(days=11)
+        separator = " - "
+
+        if max_image_size_value:
+            mocker.patch("pcapi.routes.backoffice.forms.fields.MAX_IMAGE_SIZE", max_image_size_value)
+        if min_width_image_value:
+            mocker.patch("pcapi.routes.backoffice.forms.fields.MIN_IMAGE_HEIGHT", min_width_image_value)
+
+        image_path = file_path
+        with open(image_path, "rb") as image_file:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={
+                    "name": name,
+                    "description": description,
+                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
+                    "image": image_file,
+                },
+                expected_num_queries=self.expected_num_queries - 1,
+            )
+            assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == f"Les données envoyées comportent des erreurs. Image de la valorisation thématique (max. 3 Mo) : {error_msg} ;"
+        )
+
 
 class GetUpdateHighlightFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.highlights.get_update_highlight_form"
