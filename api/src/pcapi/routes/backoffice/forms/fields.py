@@ -1,6 +1,5 @@
 import datetime
 import json
-import os
 import typing
 from functools import partial
 
@@ -13,10 +12,18 @@ from sqlalchemy.dialects.postgresql.ranges import Range
 from wtforms import ValidationError
 from wtforms import validators
 
+from pcapi.core.offers import exceptions
+from pcapi.core.offers import validation as offers_validation
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.utils import phone_number
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
+
+
+# 3 MB in bytes
+MAX_IMAGE_SIZE = 3_000_000
+MIN_IMAGE_WIDTH = 270
+MIN_IMAGE_HEIGHT = 90
 
 
 class PhoneNumberValidator:
@@ -520,13 +527,23 @@ class PCFileField(wtforms.FileField):
 class PCImageField(PCFileField):
     def pre_validate(self, form: wtforms.Form) -> None:
         if self.data:
-            if self.data.mimetype not in ("image/jpeg", "image/png", "image/webp"):
+            try:
+                offers_validation.check_image(
+                    self.data.read(),
+                    accepted_types=("png", "jpg", "jpeg", "webp"),
+                    min_width=MIN_IMAGE_WIDTH,
+                    min_height=MIN_IMAGE_HEIGHT,
+                    max_size=MAX_IMAGE_SIZE,
+                )
+                self.data.seek(0)
+            except exceptions.UnidentifiedImage:
+                raise ValidationError("Le fichier fourni n'est pas une image")
+            except exceptions.UnacceptedFileType:
                 raise ValidationError("Format invalide, seules les images au format PNG, JPEG ou WebP sont acceptées")
-            # 3 MB in bytes
-            MAX_IMAGE_SIZE = 3_000_000
-            self.data.seek(0, os.SEEK_END)
-            file_size = self.data.tell()
-            self.data.seek(0)
-            if file_size > MAX_IMAGE_SIZE:
+            except exceptions.FileSizeExceeded:
                 raise ValidationError(f"Image trop grande, max : {int(MAX_IMAGE_SIZE / 1_000_000)} Mo")
+            except exceptions.ImageTooSmall:
+                raise ValidationError(
+                    f"Image trop petite, utilisez une image plus grande (supérieure à {MIN_IMAGE_WIDTH}px par {MIN_IMAGE_HEIGHT}px)"
+                )
         super().pre_validate(form)
