@@ -278,6 +278,11 @@
                         "title": "Description",
                         "type": "string"
                     },
+                    "descriptionCredit": {
+                        "nullable": true,
+                        "title": "Descriptioncredit",
+                        "type": "string"
+                    },
                     "id": {
                         "title": "Id",
                         "type": "string"
