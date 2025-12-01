@@ -3,12 +3,13 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
+import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { ClassroomPlaylist } from '../ClassroomPlaylist'
+import { ClassroomPlaylist } from './ClassroomPlaylist'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {
@@ -20,7 +21,7 @@ vi.mock('@/apiClient/api', () => ({
 const mockTrackPlaylistElementClicked = vi.fn()
 const mockOnWholePlaylistSeen = vi.fn()
 
-const renderNewOfferPlaylist = () => {
+const renderClassroomPlaylist = () => {
   const user = {
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
@@ -64,7 +65,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
   })
 
   it('should render new offer playlist', async () => {
-    renderNewOfferPlaylist()
+    renderClassroomPlaylist()
 
     expect(
       await screen.findByText(
@@ -74,7 +75,7 @@ describe('AdageDiscover classRoomPlaylist', () => {
   })
 
   it('should call tracker for classroom playlist element', async () => {
-    renderNewOfferPlaylist()
+    renderClassroomPlaylist()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -89,6 +90,21 @@ describe('AdageDiscover classRoomPlaylist', () => {
       offerId: 479,
       playlistId: 2,
       playlistType: 'offer',
+    })
+  })
+
+  it('should call tracker when whole classroom playlist is seen', async () => {
+    renderClassroomPlaylist()
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible')
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(mockOnWholePlaylistSeen).toHaveBeenNthCalledWith(1, {
+      playlistId: 2,
+      playlistType: 'offer',
+      numberOfTiles: 1,
     })
   })
 })

@@ -12,7 +12,11 @@ import type { OfferPlaylistTracker, PlaylistTracker } from '../../types'
 import styles from './NewOfferPlaylist.module.scss'
 
 type NewOfferPlaylistProps = {
-  onWholePlaylistSeen: ({ playlistId, playlistType }: PlaylistTracker) => void
+  onWholePlaylistSeen: ({
+    playlistId,
+    playlistType,
+    numberOfTiles,
+  }: PlaylistTracker) => void
   trackPlaylistElementClicked: ({
     playlistId,
     playlistType,
@@ -49,6 +53,7 @@ export const NewOfferPlaylist = ({
         onWholePlaylistSeen({
           playlistId: NEW_OFFER_PLAYLIST,
           playlistType: AdagePlaylistType.OFFER,
+          numberOfTiles: playlist.collectiveOffers.length,
         })
       }
       elements={playlist.collectiveOffers.map((offer, index) => (

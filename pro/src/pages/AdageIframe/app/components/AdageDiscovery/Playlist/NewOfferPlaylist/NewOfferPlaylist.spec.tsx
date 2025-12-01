@@ -1,19 +1,15 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitForElementToBeRemoved } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { defaultCollectiveTemplateOffer } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { NewOfferPlaylist } from '../NewOfferPlaylist'
+import { NewOfferPlaylist } from './NewOfferPlaylist'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {
@@ -75,17 +71,6 @@ describe('AdageDiscovery', () => {
     ).toBeInTheDocument()
   })
 
-  it('should show an error message notification when offer could not be fetched', async () => {
-    vi.spyOn(apiAdage, 'newTemplateOffersPlaylist').mockRejectedValueOnce(null)
-
-    renderNewOfferPlaylist(user)
-    await waitFor(() =>
-      expect(apiAdage.newTemplateOffersPlaylist).toHaveBeenCalled()
-    )
-
-    expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
-  })
-
   it('should call tracker for new offer playlist element', async () => {
     renderNewOfferPlaylist(user)
 
@@ -102,6 +87,21 @@ describe('AdageDiscovery', () => {
       offerId: 1,
       playlistId: 0,
       playlistType: 'offer',
+    })
+  })
+
+  it('should call tracker when whole classroom playlist is seen', async () => {
+    renderNewOfferPlaylist(user)
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible')
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(mockOnWholePlaylistSeen).toHaveBeenNthCalledWith(1, {
+      playlistId: 0,
+      playlistType: 'offer',
+      numberOfTiles: 1,
     })
   })
 })

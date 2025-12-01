@@ -48,6 +48,7 @@ export const ClassroomPlaylist = ({
         onWholePlaylistSeen({
           playlistId: CLASSROOM_PLAYLIST,
           playlistType: AdagePlaylistType.OFFER,
+          numberOfTiles: classRoomPlaylist.collectiveOffers.length,
         })
       }
       loading={isLoading}

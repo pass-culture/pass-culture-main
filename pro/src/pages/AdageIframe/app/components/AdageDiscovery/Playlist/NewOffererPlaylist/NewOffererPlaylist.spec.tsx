@@ -3,22 +3,23 @@ import { userEvent } from '@testing-library/user-event'
 
 import type { LocalOfferersPlaylistOffer } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
+import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { VenuePlaylist } from '../VenuePlaylist'
+import { NewOffererPlaylist } from './NewOffererPlaylist'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     logConsultPlaylistElement: vi.fn(),
-    getLocalOfferersPlaylist: vi.fn(),
+    getNewOfferersPlaylist: vi.fn(),
   },
 }))
 
 const mockTrackPlaylistElementClicked = vi.fn()
 const mockOnWholePlaylistSeen = vi.fn()
 
-const mockLocalOfferersPlaylistOffer: LocalOfferersPlaylistOffer = {
+const mockNewOffererPlaylist: LocalOfferersPlaylistOffer = {
   city: 'Paris',
   distance: 5,
   id: 1,
@@ -27,22 +28,22 @@ const mockLocalOfferersPlaylistOffer: LocalOfferersPlaylistOffer = {
   publicName: 'Venue playlist offer 1',
 }
 
-const renderNewOfferPlaylist = () => {
+const renderNewOffererPlaylist = () => {
   renderWithProviders(
-    <VenuePlaylist
+    <NewOffererPlaylist
       onWholePlaylistSeen={mockOnWholePlaylistSeen}
       trackPlaylistElementClicked={mockTrackPlaylistElementClicked}
     />
   )
 }
 
-describe('VenuePlaylist', () => {
+describe('NewOffererPlaylist', () => {
   const notifyError = vi.fn()
 
   beforeEach(async () => {
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
-    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValue({
-      venues: [mockLocalOfferersPlaylistOffer],
+    vi.spyOn(apiAdage, 'getNewOfferersPlaylist').mockResolvedValue({
+      venues: [mockNewOffererPlaylist],
     })
 
     const notifsImport = (await vi.importActual(
@@ -60,18 +61,18 @@ describe('VenuePlaylist', () => {
     }))
   })
 
-  it('should render venue playlist', async () => {
-    renderNewOfferPlaylist()
+  it('should render new offerer playlist', async () => {
+    renderNewOffererPlaylist()
 
     expect(
       await screen.findByText(
-        'À environ 30 minutes de transport de mon établissement'
+        'Ces partenaires culturels ont été récemment référencés'
       )
     ).toBeInTheDocument()
   })
 
   it('should call tracker for venue playlist element', async () => {
-    renderNewOfferPlaylist()
+    renderNewOffererPlaylist()
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
@@ -84,33 +85,23 @@ describe('VenuePlaylist', () => {
     expect(mockTrackPlaylistElementClicked).toHaveBeenNthCalledWith(1, {
       index: 0,
       venueId: 1,
-      playlistId: 3,
+      playlistId: 4,
       playlistType: 'venue',
     })
   })
 
-  it.each([
-    {
-      distance: 3,
-      title: 'À moins de 30 minutes à pieds de mon établissement',
-    },
-    {
-      distance: 15,
-      title: 'À environ 30 minutes de transport de mon établissement',
-    },
-    {
-      distance: 30,
-      title: 'À environ 1h de transport de mon établissement',
-    },
-  ])('should display the playlist title based on the maximum venue distance', async ({
-    distance,
-    title,
-  }) => {
-    vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValueOnce({
-      venues: [{ ...mockLocalOfferersPlaylistOffer, distance }],
-    })
-    renderNewOfferPlaylist()
+  it('should call tracker when whole venue playlist is seen', async () => {
+    renderNewOffererPlaylist()
+    vi.spyOn(useIsElementVisible, 'useIsElementVisible')
+      .mockReturnValueOnce([true, true])
+      .mockReturnValueOnce([true, true])
 
-    expect(await screen.findByText(title)).toBeInTheDocument()
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+    expect(mockOnWholePlaylistSeen).toHaveBeenNthCalledWith(1, {
+      playlistId: 4,
+      playlistType: 'venue',
+      numberOfTiles: 1,
+    })
   })
 })
