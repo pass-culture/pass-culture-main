@@ -1239,10 +1239,8 @@ class IncomingEventStocksTest:
 
 @pytest.mark.usefixtures("db_session")
 class GetExpiredOffersTest:
-    interval = [
-        datetime.datetime(2021, 1, 1, 0, 0),
-        datetime.datetime(2021, 1, 2, 0, 0),
-    ]
+    start_time = (datetime.datetime(2021, 1, 1, 0, 0),)
+    end_time = (datetime.datetime(2021, 1, 2, 0, 0),)
     dt_before = datetime.datetime(2020, 12, 31)
     dt_within = datetime.datetime(2021, 1, 1)
     dt_after = datetime.datetime(2021, 1, 3)
@@ -1260,9 +1258,9 @@ class GetExpiredOffersTest:
         factories.StockFactory(bookingLimitDatetime=self.dt_before)
         factories.StockFactory(bookingLimitDatetime=self.dt_after)
 
-        offers = repository.get_expired_offers(self.interval)
+        offer_ids = repository.get_expired_offer_ids(self.start_time, self.end_time)
 
-        assert offers.all() == [offer1, offer2, offer3]
+        assert offer_ids == [offer.id for offer in (offer1, offer2, offer3)]
 
     def test_exclude_if_latest_stock_outside_interval(self):
         offer1 = factories.OfferFactory()
@@ -1271,9 +1269,9 @@ class GetExpiredOffersTest:
         factories.StockFactory(offer=offer2, bookingLimitDatetime=self.dt_within)
         factories.StockFactory(offer=offer2, bookingLimitDatetime=self.dt_after)
 
-        offers = repository.get_expired_offers(self.interval)
+        offer_ids = repository.get_expired_offer_ids(self.start_time, self.end_time)
 
-        assert offers.all() == [offer1]
+        assert offer_ids == [offer1.id]
 
 
 @pytest.mark.usefixtures("db_session")

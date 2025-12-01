@@ -1607,17 +1607,15 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
     offers.
     """
     start_of_day = datetime.datetime.combine(datetime.date.today(), datetime.time.min)
-    interval = [start_of_day - datetime.timedelta(days=2), start_of_day]
+    start_time = start_of_day - datetime.timedelta(days=2)
+    end_time = start_of_day
     if process_all_expired:
-        interval[0] = datetime.datetime(2000, 1, 1)  # arbitrary old date
+        start_time = datetime.datetime(2000, 1, 1)  # arbitrary old date
 
     page = 0
     limit = settings.ALGOLIA_DELETING_OFFERS_CHUNK_SIZE
     while True:
-        offers = offers_repository.get_expired_offers(interval)
-        offers = offers.offset(page * limit).limit(limit)
-        offer_ids = [offer_id for (offer_id,) in offers.with_entities(models.Offer.id)]
-
+        offer_ids = offers_repository.get_expired_offer_ids(start_time, end_time, offset=page * limit, limit=limit)
         if not offer_ids:
             break
 
