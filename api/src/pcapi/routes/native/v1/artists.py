@@ -23,6 +23,7 @@ def get_artist(artist_id: str) -> serializers.ArtistResponse:
     return serializers.ArtistResponse(
         id=artist.id,
         name=artist.name,
-        description=artist.description,
+        description=artist.biography or artist.description,
+        description_credit="© Contenu généré par IA \u2728" if artist.biography else None,
         image=artist.thumbUrl,
     )
