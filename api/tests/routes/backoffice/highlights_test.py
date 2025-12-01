@@ -1,5 +1,6 @@
 import datetime
 import pathlib
+from unittest.mock import patch
 
 import pytest
 from flask import url_for
@@ -290,6 +291,73 @@ class CreateHighlightTest(PostEndpointHelper):
         assert (
             html_parser.extract_alert(response.data)
             == "La date de mise en avant ne peut pas être après la fin de l'évènement"
+        )
+
+    def test_create_highlight_image_not_image_should_fail(self, authenticated_client):
+        today = datetime.date.today()
+        name = "New highlight"
+        description = "Highlight description"
+        highlight_date_from = today + datetime.timedelta(days=11)
+        highlight_date_to = today + datetime.timedelta(days=11)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today + datetime.timedelta(days=10)
+        communication_date = today + datetime.timedelta(days=11)
+        separator = " - "
+
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "pdf" / "example.html"
+        with open(image_path, "rb") as image_file:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={
+                    "name": name,
+                    "description": description,
+                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
+                    "image": image_file,
+                },
+                expected_num_queries=self.expected_num_queries - 1,
+            )
+            assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Image de la valorisation thématique (max. 3 Mo) : Le fichier fourni n'est pas une image ;"
+        )
+
+    @patch("pcapi.routes.backoffice.forms.fields.MAX_IMAGE_SIZE", new=1_000)
+    def test_create_highlight_image_too_big_should_fail(self, authenticated_client):
+        today = datetime.date.today()
+        name = "New highlight"
+        description = "Highlight description"
+        highlight_date_from = today + datetime.timedelta(days=11)
+        highlight_date_to = today + datetime.timedelta(days=11)
+        availability_date_from = today - datetime.timedelta(days=10)
+        availability_date_to = today + datetime.timedelta(days=10)
+        communication_date = today + datetime.timedelta(days=11)
+        separator = " - "
+
+        image_path = pathlib.Path(tests.__path__[0]) / "files" / "mouette_portrait.jpg"
+        with open(image_path, "rb") as image_file:
+            response = self.post_to_endpoint(
+                authenticated_client,
+                form={
+                    "name": name,
+                    "description": description,
+                    "availability_datespan": f"{availability_date_from.strftime('%d/%m/%Y')}{separator}{availability_date_to.strftime('%d/%m/%Y')}",
+                    "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
+                    "communication_date": communication_date,
+                    "image": image_file,
+                },
+                expected_num_queries=self.expected_num_queries - 1,
+            )
+            assert response.status_code == 303
+
+        response = authenticated_client.get(response.location)
+        assert (
+            html_parser.extract_alert(response.data)
+            == "Les données envoyées comportent des erreurs. Image de la valorisation thématique (max. 3 Mo) : Image trop grande, max : 0 Mo ;"
         )
 
 
