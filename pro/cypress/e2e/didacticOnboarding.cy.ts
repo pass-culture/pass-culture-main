@@ -7,7 +7,20 @@ describe('Didactic Onboarding feature', () => {
   let login: string
 
   beforeEach(() => {
+    // order matter here
+    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
+      'getCategories'
+    )
+    cy.intercept({ method: 'GET', url: '/offers/music-types' }).as(
+      'getMusicTypes'
+    )
+    cy.intercept({ method: 'GET', url: '/offers/*/stocks-stats' }).as(
+      'getStocksStats'
+    )
+    cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
+
+    cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
     cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/draft/*' }).as(
       'patchDraftOffer'
@@ -15,7 +28,6 @@ describe('Didactic Onboarding feature', () => {
     cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as('patchStocks')
-    cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
   })
 
   it('I should not be able to onboard me by submitting an Adage referencing file if I don’t have an Adage ID', () => {
@@ -134,6 +146,11 @@ describe('Didactic Onboarding feature', () => {
         fromOnBoardingGoToFirstOfferCreation()
 
         cy.findByRole('link', { name: 'Manuellement' }).click()
+        // TODO (rchaffal 28/11/2025) These calls to getOffer are not clear...
+        // maybe it's matching an other call ? it was the case for categories and music-types
+        // or some request are not shown ?
+        // Other calls to getOffer don't match when request has been made
+        cy.wait(['@getOffers', '@getOffer'])
 
         cy.stepLog({
           message: `Starts offer creation (before saving a draft)`,
@@ -145,14 +162,17 @@ describe('Didactic Onboarding feature', () => {
         )
         cy.findByRole('combobox', { name: /Catégorie/ }).select('Beaux-arts')
         cy.findByLabelText(/Non accessible/).check()
+        cy.wait(['@getMusicTypes', '@getCategories'])
+
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@postDraftOffer'])
+        cy.wait(['@postDraftOffer'])
 
         cy.stepLog({
           message: `Go back and resume the previous draft offer`,
         })
 
         cy.visit('/onboarding/individuel')
+        cy.wait(['@getOffers', '@getCategories'])
 
         cy.findByRole('heading', {
           level: 2,
@@ -166,7 +186,7 @@ describe('Didactic Onboarding feature', () => {
           'Mon offre en brouillon'
         )
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@patchDraftOffer'])
+        cy.wait(['@getOffer', '@getMusicTypes', '@patchDraftOffer'])
 
         //  LOCALISATION STEP
         cy.url().should('contain', '/creation/localisation')
