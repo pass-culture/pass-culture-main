@@ -41,7 +41,8 @@ class EducationalInstitutionFactory(BaseFactory[models.EducationalInstitution]):
     class Meta:
         model = models.EducationalInstitution
 
-    institutionId = factory.Sequence(lambda x: f"{x + 1}470009E")
+    # institutionId (UAI) is a unique string with 7 digits and 1 letter
+    institutionId = factory.Sequence(lambda x: f"{x}F".zfill(8))
     name = factory.Sequence("DE LA TOUR{}".format)
     city = "PARIS"
     postalCode = "75000"
