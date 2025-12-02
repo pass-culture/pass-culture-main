@@ -248,7 +248,6 @@ describe('SelectAutocomplete', () => {
           ...props,
           value: '02',
           resetOnOpen: false,
-          onReset: undefined,
           ref: (ref) => {
             if (ref) {
               ref.defaultValue = '02'
