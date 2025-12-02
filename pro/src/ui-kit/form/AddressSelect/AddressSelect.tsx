@@ -130,7 +130,6 @@ export const AddressSelect = forwardRef(
         name={name}
         label={label}
         options={options}
-        hideArrow={true}
         resetOnOpen={false}
         description={description}
         value={inputValue}
