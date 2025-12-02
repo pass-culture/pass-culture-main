@@ -15,8 +15,10 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
@@ -137,6 +139,11 @@ export const IndividualOffersContainer = ({
     isHeadlineOfferAllowedForOfferer
   )
 
+  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
+    usePaginationScroll(currentPageNumber, pageCount, {
+      selector: '#content-wrapper',
+    })
+
   return (
     <div>
       <IndividualOffersSearchFilters
@@ -172,32 +179,37 @@ export const IndividualOffersContainer = ({
           </div>
         )}
       </output>
-      <Table
-        columns={columns}
-        data={currentPageOffersSubset}
-        allData={offers}
-        isLoading={isLoading}
-        variant={TableVariant.COLLAPSE}
-        selectable={true}
-        selectedIds={selectedOfferIds}
-        onSelectionChange={(offers) =>
-          setSelectedOfferIds(new Set(offers.map((r) => r.id)))
-        }
-        isRowSelectable={(offer) => !isOfferDisabled(offer)}
-        noResult={{
-          message: 'Aucune offre trouvée pour votre recherche',
-          resetMessage: 'Afficher toutes les offres',
-          onFilterReset: () => resetFilters(true),
-        }}
-        noData={{
-          hasNoData: userHasNoOffers,
-          message: {
-            icon: strokeNoBooking,
-            title: 'Vous n’avez pas encore créé d’offre',
-            subtitle: '',
-          },
-        }}
-      />
+      <AccessibleScrollContainer
+        containerRef={contentWrapperRef}
+        liveMessage={liveMessage}
+      >
+        <Table
+          columns={columns}
+          data={currentPageOffersSubset}
+          allData={offers}
+          isLoading={isLoading}
+          variant={TableVariant.COLLAPSE}
+          selectable={true}
+          selectedIds={selectedOfferIds}
+          onSelectionChange={(offers) =>
+            setSelectedOfferIds(new Set(offers.map((r) => r.id)))
+          }
+          isRowSelectable={(offer) => !isOfferDisabled(offer)}
+          noResult={{
+            message: 'Aucune offre trouvée pour votre recherche',
+            resetMessage: 'Afficher toutes les offres',
+            onFilterReset: () => resetFilters(true),
+          }}
+          noData={{
+            hasNoData: userHasNoOffers,
+            message: {
+              icon: strokeNoBooking,
+              title: 'Vous n’avez pas encore créé d’offre',
+              subtitle: '',
+            },
+          }}
+        />
+      </AccessibleScrollContainer>
 
       <div className={styles['offers-table-pagination']}>
         <Pagination
@@ -205,6 +217,7 @@ export const IndividualOffersContainer = ({
           pageCount={pageCount}
           onPageClick={(page) => {
             applySelectedFiltersAndRedirect({ ...selectedFilters, page })
+            scrollToContentWrapper()
           }}
         />
       </div>

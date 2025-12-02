@@ -157,7 +157,7 @@ export const CollectiveOffersScreen = ({
   const columns = getCollectiveOfferColumns(urlSearchFilters, true)
 
   const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    usePaginationScroll(page, pageCount)
+    usePaginationScroll(page, pageCount, { selector: '#content-wrapper' })
 
   return (
     <div>
