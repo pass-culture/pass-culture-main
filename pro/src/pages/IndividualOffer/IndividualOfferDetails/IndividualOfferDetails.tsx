@@ -8,7 +8,7 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { IndividualOfferLayout } from '@/components/IndividualOfferLayout/IndividualOfferLayout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
-import { IndividualOfferDetailsScreenNext } from './components/IndividualOfferDetailsScreenNext'
+import { IndividualOfferDetailsScreen } from './components/IndividualOfferDetailsScreen'
 
 const IndividualOfferDetails = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
@@ -31,7 +31,7 @@ const IndividualOfferDetails = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout offer={offer}>
-      <IndividualOfferDetailsScreenNext venues={venuesQuery.data.venues} />
+      <IndividualOfferDetailsScreen venues={venuesQuery.data.venues} />
     </IndividualOfferLayout>
   )
 }
