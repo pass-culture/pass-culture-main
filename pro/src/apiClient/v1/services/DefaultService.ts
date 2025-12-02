@@ -86,13 +86,11 @@ import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollec
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
-import type { PatchDraftOfferBodyModel } from '../models/PatchDraftOfferBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
-import type { PostDraftOfferBodyModel } from '../models/PostDraftOfferBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
@@ -1819,53 +1817,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/delete_headline',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * @deprecated
-   * [DEPRECATED] Please migrate to new (generic/standard) offer creation route
-   * @param requestBody
-   * @returns GetIndividualOfferResponseModel Created
-   * @throws ApiError
-   */
-  public postDraftOffer(
-    requestBody: PostDraftOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offers/draft',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * @deprecated
-   * patch_draft_offer <PATCH>
-   * @param offerId
-   * @param requestBody
-   * @returns GetIndividualOfferWithAddressResponseModel OK
-   * @throws ApiError
-   */
-  public patchDraftOffer(
-    offerId: number,
-    requestBody: PatchDraftOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/offers/draft/{offer_id}',
-      path: {
-        'offer_id': offerId,
-      },
       body: requestBody,
       mediaType: 'application/json',
       errors: {
