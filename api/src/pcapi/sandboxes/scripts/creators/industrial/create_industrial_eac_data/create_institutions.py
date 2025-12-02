@@ -199,7 +199,18 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
     deposits = []
 
     # case 1: no deposit for current year
+    # deposit with amount 0 for next year, first period
     institution = next(institutions_iter)
+    deposits.extend(
+        [
+            educational_factories.EducationalDepositFactory.create(
+                educationalInstitution=institution,
+                educationalYear=next_year,
+                period=utils.get_educational_year_first_period(next_year),
+                amount=0,
+            ),
+        ]
+    )
 
     # case 2: deposit for current year, 2 periods
     institution = next(institutions_iter)
@@ -267,6 +278,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
     )
 
     # case 6: deposit for current year, first period only, passed
+    # deposit with amount 0 for second period
     institution = next(institutions_iter)
     deposits.extend(
         [
@@ -275,12 +287,29 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
                 educationalYear=current_year,
                 period=make_timerange(start=current_year.beginningDate, end=passed_period_end),
                 amount=3000,
-            )
+            ),
+            educational_factories.EducationalDepositFactory.create(
+                educationalInstitution=institution,
+                educationalYear=current_year,
+                period=make_timerange(start=datetime.datetime(2025, 11, 1), end=current_year.expirationDate),
+                amount=0,
+            ),
         ]
     )
 
-    # case 7: no deposit for next year
+    # case 7: deposit with amount 0 for current year, first period
+    # no deposit for next year
     institution = next(institutions_iter)
+    deposits.extend(
+        [
+            educational_factories.EducationalDepositFactory.create(
+                educationalInstitution=institution,
+                educationalYear=current_year,
+                period=utils.get_educational_year_first_period(current_year),
+                amount=0,
+            ),
+        ]
+    )
 
     # case 8: deposit for next year, 2 periods
     institution = next(institutions_iter)
