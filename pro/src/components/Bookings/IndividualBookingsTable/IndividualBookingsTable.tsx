@@ -3,8 +3,8 @@ import { useState } from 'react'
 import type { BookingRecapResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { usePagination } from '@/commons/hooks/usePagination'
-import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
@@ -66,7 +66,10 @@ export const IndividualBookingsTable = ({
     })
 
   const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    usePaginationScroll(page, pageCount, { selector: '#content-wrapper' })
+    useAccessibleScroll({
+      initialLiveMessage: `Page ${page} sur ${pageCount}`,
+      selector: '#content-wrapper',
+    })
 
   return (
     <>
