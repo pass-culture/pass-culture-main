@@ -48,8 +48,6 @@ export type SelectAutocompleteProps = {
   onBlur?(e: CustomEvent<'blur'>): void
   /** Value of the input */
   value?: string
-  /** Called when the search input changes */
-  onSearch?(pattern: string): void
   /** Custom function to filter options based on search pattern */
   searchInOptions?(options: string[], pattern: string): string[]
   /** Called when the dropdown opens */
@@ -70,7 +68,6 @@ export const SelectAutocomplete = forwardRef(
       onChange = () => noop,
       onBlur = () => noop,
       value: inputValue,
-      onSearch = () => noop,
       searchInOptions = (options, pattern) =>
         options.filter((opt) =>
           opt.label.toLowerCase().includes(pattern.trim().toLowerCase())
@@ -117,20 +114,6 @@ export const SelectAutocomplete = forwardRef(
         document.removeEventListener('mousedown', handleClickOutside)
       }
     }, [containerRef])
-
-    // Handle "onSearch" prop for parent which may want to get the searchField information
-    useEffect(() => {
-      setHoveredOptionIndex(null)
-
-      // Necessary to not trigger "onSearch" at first render
-      if (!hasComponentFirstRendered.current) {
-        hasComponentFirstRendered.current = true
-        return
-      }
-
-      onSearch(searchField.trim())
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchField])
 
     // Compute options filter by search, using the default `searchInOptions` function (or a custom one, if provided via the props)
     const filteredOptions = searchInOptions(options, searchField)

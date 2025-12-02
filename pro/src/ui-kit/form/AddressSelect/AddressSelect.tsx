@@ -1,6 +1,7 @@
 import {
   forwardRef,
   type Ref,
+  useCallback,
   useImperativeHandle,
   useRef,
   useState,
@@ -70,23 +71,22 @@ export const AddressSelect = forwardRef(
     }: AddressSelectProps,
     ref: Ref<HTMLInputElement>
   ) => {
-    const [searchField, setSearchField] = useState('') // Represents the value of the searched address
     const [options, setOptions] = useState<SelectOption[]>([]) // Represents the address suggestions (that can change asynchronously)
 
     const addressesMap = useRef<Map<string, AdresseData>>(new Map())
     const inputRef = useRef<HTMLInputElement>(null) // Ref to pass to <SelectAutoComplete />
 
     // Handles the "Adresse API" call when searchField change (debounced), and updates the address suggestions
-    const onSearchFieldChange = async () => {
-      // "Adresse API" search's minimum is 3 characters
-      if (searchField.trim().length < 3) {
+    const fetchOptions = useCallback(
+      async (searchText: string) => {
+        if (searchText.trim().length < 3) {
         setOptions([])
         return
       }
 
       // API Call
       try {
-        const addressSuggestions = await getDataFromAddress(searchField, {
+          const addressSuggestions = await getDataFromAddress(searchText, {
           limit: suggestionLimit,
           onlyTypes,
         })
@@ -105,12 +105,13 @@ export const AddressSelect = forwardRef(
         addressesMap.current = new Map()
         setOptions([])
       }
-    }
-
-    const debouncedOnSearch = useDebouncedCallback(
-      onSearchFieldChange,
-      DEBOUNCE_TIME_BEFORE_REQUEST
+      },
+      [suggestionLimit, onlyTypes]
     )
+
+    const debouncedOnSearch = useDebouncedCallback((searchText: string) => {
+      void fetchOptions(searchText)
+    }, DEBOUNCE_TIME_BEFORE_REQUEST)
 
     // Better search function that allows to find addresses labels with accents or separate words
     const searchInOptions = (options: SelectOption[], pattern: string) =>
@@ -132,11 +133,8 @@ export const AddressSelect = forwardRef(
         options={options}
         description={description}
         value={inputValue}
-        onSearch={(searchText) => {
-          setSearchField(searchText)
-          void debouncedOnSearch()
-        }}
         onChange={(event) => {
+          void debouncedOnSearch(event.target.value)
           onChange?.(event)
           const addressData = addressesMap.current.get(event.target.value)
           if (addressData) {
