@@ -11,6 +11,7 @@ from pcapi.core.users.models import GenderEnum
 from pcapi.utils import requests
 
 from tests.core.subscription.test_factories import UbbleIdentificationResponseFactory
+from tests.core.subscription.ubble.end_to_end import fixtures
 from tests.test_utils import json_default
 
 
@@ -18,33 +19,12 @@ class StartIdentificationTest:
     def test_start_identification(self, requests_mock):
         requests_mock.post(
             f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
-            json={
-                "id": "idv_01j9kndq7ry69dkd8j7hxrqfa8",
-                "user_journey_id": "usj_01h13smebsb2y1tyyrzx1sgma7",
-                "applicant_id": "aplt_01j9kndq6gcbj26jwh9b3njmhn",
-                "webhook_url": "https://webhook.example.com",
-                "redirect_url": "https://redirect.example.com",
-                "declared_data": {"name": "Cassandre Beaugrand"},
-                "created_on": "2024-10-07T14:16:38.908026Z",
-                "modified_on": "2024-10-07T14:16:39.106564Z",
-                "status": "pending",
-                "response_codes": [],
-                "documents": [],
-                "_links": {
-                    "self": {
-                        "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01j9kndq7ry69dkd8j7hxrqfa8"
-                    },
-                    "applicant": {
-                        "href": "https://api.ubble.example.com/v2/applicants/aplt_01j9kndq6gcbj26jwh9b3njmhn"
-                    },
-                    "verification_url": {"href": "https://id.ubble.example.com/fa12e737-2a93-4608-9743-08fabd0b6f13"},
-                },
-            },
+            json=fixtures.ID_VERIFICATION_CREATION_RESPONSE,
         )
 
         response = ubble.create_and_start_identity_verification(
-            first_name="Cassandre",
-            last_name="Beaugrand",
+            first_name="Catherine",
+            last_name="Destivelle",
             webhook_url="https://webhook.example.com",
             redirect_url="https://redirect.example.com",
         )
@@ -52,7 +32,7 @@ class StartIdentificationTest:
         assert isinstance(response, ubble_schemas.UbbleContent)
         assert requests_mock.call_count == 1
         assert requests_mock.last_request.json() == {
-            "declared_data": {"name": "Cassandre Beaugrand"},
+            "declared_data": {"name": "Catherine Destivelle"},
             "webhook_url": "https://webhook.example.com",
             "redirect_url": "https://redirect.example.com",
         }
@@ -204,3 +184,27 @@ class HelperFunctionsTest:
     )
     def test_parse_ubble_gender(self, ubble_gender, expected):
         assert ubble._parse_ubble_gender(ubble_gender) == expected
+
+
+class RateLimitTest:
+    @pytest.mark.settings(UBBLE_RATE_LIMIT=1)
+    def test_start_identification_rate_limit(self, requests_mock):
+        requests_mock.post(
+            f"{settings.UBBLE_API_URL}/v2/create-and-start-idv",
+            json=fixtures.ID_VERIFICATION_CREATION_RESPONSE,
+        )
+
+        ubble.create_and_start_identity_verification(
+            first_name="Catherine",
+            last_name="Destivelle",
+            webhook_url="https://webhook.example.com",
+            redirect_url="https://redirect.example.com",
+        )
+
+        with pytest.raises(ubble.UbbleRateLimitedError):
+            ubble.create_and_start_identity_verification(
+                first_name="Catherine",
+                last_name="Destivelle",
+                webhook_url="https://webhook.example.com",
+                redirect_url="https://redirect.example.com",
+            )

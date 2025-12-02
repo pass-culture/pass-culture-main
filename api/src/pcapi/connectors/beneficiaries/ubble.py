@@ -94,7 +94,11 @@ def ubble_rate_limit[**P, T](func: typing.Callable[P, T]) -> typing.Callable[P, 
             return func(*args, **kwds)
 
         try:
-            with rate_limit("connectors:ubble", settings.UBBLE_RATE_LIMIT, settings.UBBLE_TIME_WINDOW_SIZE):
+            with rate_limit(
+                key="connectors:ubble",
+                time_window_size=settings.UBBLE_TIME_WINDOW_SIZE,
+                max_per_time_window=settings.UBBLE_RATE_LIMIT,
+            ):
                 return func(*args, **kwds)
         except RedisRateLimitedError as e:
             raise UbbleRateLimitedError("Ubble rate limit was reached") from e
