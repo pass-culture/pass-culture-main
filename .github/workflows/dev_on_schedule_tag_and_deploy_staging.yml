@@ -71,7 +71,7 @@ jobs:
 
   create-staging-release:
     needs: get-version-and-trigger-release
-    uses: ./.github/workflows/dev_on_call_release_build.yml
+    uses: ./.github/workflows/dev_on_workflow_release_build.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
