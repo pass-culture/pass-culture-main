@@ -272,3 +272,45 @@ def test_too_many_invoices_searched_returns_an_error(client):
 
     assert response.status_code == 400
     assert response.json == {"invoicesReferences": ["ensure this value has at most 24 items"]}
+
+
+def test_booking_with_empty_use_date_should_be_ok(client):
+    """A booking can be reimbursed and then cancelled by a finance event
+
+    In this case, the booking won't have a use date anymore. Check that
+    CSV can still be build.
+    """
+
+    # TODO(jbaudet-12/2025): there must be a shorter and easier way
+    # to setup all of this + not sure that this is perfectly realistic.
+    # feel free to clean and update all of this.
+    offerer = offerers_factories.OffererFactory()
+    venue = offerers_factories.VenueFactory(managingOfferer=offerer, pricing_point="self")
+
+    bank_account = finance_factories.BankAccountFactory(offerer=venue.managingOfferer)
+    invoice = finance_factories.InvoiceFactory(bankAccount=bank_account)
+    cashflow = finance_factories.CashflowFactory(bankAccount=bank_account, invoices=[invoice])
+    pricing = finance_factories.PricingFactory(
+        booking__stock__offer__venue=venue, status=finance_models.PricingStatus.INVOICED, cashflows=[cashflow]
+    )
+
+    booking = pricing.booking
+    booking.dateUsed = None
+    db.session.add(booking)
+    db.session.commit()
+
+    pro = users_factories.ProFactory()
+    offerers_factories.UserOffererFactory(user=pro, offerer=venue.managingOfferer)
+
+    client = client.with_session_auth(pro.email)
+    response = client.get(f"/v2/reimbursements/csv?invoicesReferences={invoice.reference}")
+    assert response.status_code == 200
+
+    assert response.headers["Content-type"] == "text/csv; charset=utf-8;"
+    assert response.headers["Content-Disposition"] == "attachment; filename=remboursements_pass_culture.csv"
+    reader = csv.DictReader(StringIO(response.data.decode("utf-8-sig")), delimiter=";")
+    assert reader.fieldnames == ReimbursementDetails.get_csv_headers()
+    rows = list(reader)
+    assert len(rows) == 1
+    row = rows[0]
+    assert row["Date de validation de la réservation"] == ""

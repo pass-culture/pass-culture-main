@@ -154,9 +154,16 @@ class ReimbursementDetails:
         # Offer, redactor and booking info
         self.offer_name = payment_info.offer_name
         self.booking_token = getattr(payment_info, "booking_token", None)
-        self.booking_used_date = utc_datetime_to_department_timezone(
-            payment_info.booking_used_date, payment_info.venue_departement_code
-        )
+
+        # Although it is quite rare, a booking's use date can be null.
+        # This can happen when a booking is reimbursed an then cancelled
+        # by a finance event.
+        booking_used_date = None
+        if payment_info.booking_used_date:
+            booking_used_date = utc_datetime_to_department_timezone(
+                payment_info.booking_used_date, payment_info.venue_departement_code
+            )
+        self.booking_used_date = booking_used_date
         self.booking_price_category_label = getattr(payment_info, "booking_price_category_label", None)
         self.booking_total_amount = format_number_as_french(
             payment_info.booking_amount * getattr(payment_info, "booking_quantity", 1)
