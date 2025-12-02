@@ -36,7 +36,7 @@ class PcPostalAddressAutocomplete extends PcAddOn {
   static POSTAL_ADDRESS_AUTOCOMPLETE_SELECTOR = 'input[data-toggle="postal-address-autocomplete"]'
   static POSTAL_ADDRESS_AUTOCOMPLETE_RESET_SELECTOR = 'button.postal-address-autocomplete-reset'
   static POSTAL_ADDRESS_AUTOCOMPLETE_MANUAL_MODE_SELECTOR = 'button.postal-address-autocomplete-manual'
-  static API_ADDRESS_DATA_GOUV_URL = 'https://api-adresse.data.gouv.fr'
+  static API_ADDRESS_DATA_GOUV_URL = 'https://data.geopf.fr/geocodage'
   static API_ADDRESS_DATA_GOUV_MIN_LIMIT = 3
   static API_ADDRESS_DATA_GOUV_MAX_LIMIT = 200
   static SEARCH_DEBOUNCE_DELAY_MS = 350
