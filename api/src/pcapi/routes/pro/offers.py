@@ -874,7 +874,7 @@ def upsert_offer_price_categories(
     """
     Upsert all price categories of an offer.
 
-    - If a price category exists in the DB but not in `price_categories`, it is soft-deleted.
+    - If a price category exists in the DB but not in `price_categories`, it is deleted.
     - Otherwise, price categories are updated or created as needed.
     """
     try:
@@ -893,7 +893,21 @@ def upsert_offer_price_categories(
         data = price_category.dict(by_alias=False, exclude={"offer_id"})
         price_category_inputs.append(typing.cast(offers_schemas.PriceCategoryInput, data))
 
-    offer = offers_api.upsert_offer_price_categories(offer, price_category_inputs)
+    offers_api.upsert_offer_price_categories(offer, price_category_inputs)
+
+    load_options: offers_repository.OFFER_LOAD_OPTIONS = [
+        "mediations",
+        "product",
+        "price_category",
+        "venue",
+        "bookings_count",
+        "offerer_address",
+        "future_offer",
+        "pending_bookings",
+        "headline_offer",
+        "meta_data",
+    ]
+    offer = offers_repository.get_offer_by_id(offer.id, load_options=load_options)
 
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
