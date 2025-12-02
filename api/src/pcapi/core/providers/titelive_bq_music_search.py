@@ -59,7 +59,7 @@ class BigQueryTiteliveMusicProductSync(BigQuerySyncTemplate[BigQueryTiteliveMusi
             artist=bq_product.artiste,
             author=bq_product.compositeur,
             comment=bq_product.commentaire,
-            contenu_explicite=bq_product.contenu_explicite,
+            contenu_explicite=str(bq_product.contenu_explicite),
             date_parution=str(bq_product.dateparution) if bq_product.dateparution else None,
             dispo=bq_product.dispo,
             distributeur=bq_product.distributeur,

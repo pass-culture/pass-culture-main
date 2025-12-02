@@ -1,9 +1,13 @@
 import logging
 import textwrap
+from typing import Protocol
+from typing import cast
 
 import pydantic.v1 as pydantic
 
 import pcapi.core.fraud.models as fraud_models
+from pcapi.connectors.big_query.queries.product import BigQueryTiteliveBookProductModel
+from pcapi.connectors.big_query.queries.product import BigQueryTiteliveProductBaseModel
 from pcapi.connectors.serialization.titelive_serializers import GenreTitelive
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookArticle
 from pcapi.connectors.serialization.titelive_serializers import TiteLiveBookWork
@@ -156,15 +160,20 @@ def extract_eans_from_titelive_response(json_response: list[dict]) -> set[str]:
 EMPTY_GTL = GenreTitelive(code="".zfill(8), libelle="Empty GTL")
 
 
-def get_gtl_id(article: TiteliveArticle) -> str:
+class HasCode(Protocol):
+    code: str
+
+
+def get_gtl_id(article: TiteliveArticle | BigQueryTiteliveProductBaseModel) -> str:
     if not article.gtl or not article.gtl.first:
         return EMPTY_GTL.code
-    most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: gtl.code)
-    gtl_id = most_precise_genre
-    return gtl_id.code
+    most_precise_genre = max(article.gtl.first.values(), key=lambda gtl: cast(HasCode, gtl).code)
+    return cast(HasCode, most_precise_genre).code
 
 
-def get_ineligibility_reasons(article: TiteLiveBookArticle, title: str) -> list[str] | None:
+def get_ineligibility_reasons(
+    article: TiteLiveBookArticle | BigQueryTiteliveBookProductModel, title: str
+) -> list[str] | None:
     # Ouvrage avec pierres ou encens, jeux de société ou escape game en coffrets,
     # marchandisage : jouets, goodies, peluches, posters, papeterie, etc...
     reasons = []
