@@ -26,6 +26,7 @@ class DmsInstructorAnnotationEnum(enum.Enum):
     IDM = "IDM"  # ID manquante
     IDN = "IDN"  # Erreur n° ID
     IDP = "IDP"  # ID périmée
+    IDH = "IDH"  # ID de l'hébergeur
     CD = "CD"  # Couverture documentaire
 
 
