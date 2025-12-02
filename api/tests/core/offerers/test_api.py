@@ -3390,8 +3390,8 @@ class AccessibilityProviderTest:
     def test_do_not_set_accessibility_infos_from_provider_id_when_data_is_none(self, mock_get_accessibility_infos):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
@@ -3414,8 +3414,8 @@ class AccessibilityProviderTest:
     ):
         venue = offerers_factories.VenueFactory(
             name="Une librairie de test",
-            postalCode="75001",
-            city="Paris",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__city="Paris",
         )
         offerers_factories.AccessibilityProviderFactory(
             venue=venue,
