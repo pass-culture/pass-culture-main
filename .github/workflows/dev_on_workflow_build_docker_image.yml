@@ -1,4 +1,4 @@
-name: '3 [on_workflow/Deprecated] Build docker image'
+name: '3 [on_workflow] Build docker image'
 
 on:
   workflow_call:
