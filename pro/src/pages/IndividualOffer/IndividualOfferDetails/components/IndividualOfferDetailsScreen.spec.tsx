@@ -42,9 +42,9 @@ import {
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
-  IndividualOfferDetailsScreenNext,
-  type IndividualOfferDetailsScreenNextProps,
-} from './IndividualOfferDetailsScreenNext'
+  IndividualOfferDetailsScreen,
+  type IndividualOfferDetailsScreenProps,
+} from './IndividualOfferDetailsScreen'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -159,7 +159,7 @@ const renderDetailsScreen = ({
   }),
 }: {
   contextValue: IndividualOfferContextValues
-  props?: Partial<IndividualOfferDetailsScreenNextProps>
+  props?: Partial<IndividualOfferDetailsScreenProps>
   mode?: OFFER_WIZARD_MODE
   options?: RenderWithProvidersOptions
   path?: string
@@ -180,7 +180,7 @@ const renderDetailsScreen = ({
 
   const element = (
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferDetailsScreenNext {...controlledProps} />
+      <IndividualOfferDetailsScreen {...controlledProps} />
     </IndividualOfferContext.Provider>
   )
 
@@ -250,7 +250,7 @@ const userFillsEverything = async () => {
   )
 }
 
-describe('IndividualOfferDetailsScreenNext', () => {
+describe('<IndividualOfferDetailsScreen />', () => {
   let contextValue: IndividualOfferContextValues
 
   beforeEach(() => {
