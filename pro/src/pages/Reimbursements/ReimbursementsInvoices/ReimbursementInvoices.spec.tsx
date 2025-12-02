@@ -29,7 +29,10 @@ vi.mock('@/commons/utils/date', async () => ({
   getToday: vi.fn(() => new Date('2020-12-15T12:00:00Z')),
 }))
 
-const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
+const renderReimbursementsInvoices = (
+  options?: RenderWithProvidersOptions,
+  allowedOnAdage?: boolean
+) => {
   const user = sharedCurrentUserFactory()
 
   renderWithProviders(<ReimbursementsInvoices />, {
@@ -37,7 +40,9 @@ const renderReimbursementsInvoices = (options?: RenderWithProvidersOptions) => {
     ...options,
     storeOverrides: {
       user: { currentUser: user },
-      offerer: currentOffererFactory(),
+      offerer: currentOffererFactory({
+        currentOfferer: { allowedOnAdage },
+      }),
     },
   })
 }
@@ -212,7 +217,7 @@ describe('reimbursementsWithFilters', () => {
       bankAccounts: BASE_BANK_ACCOUNTS,
       managedVenues: [],
     })
-    renderReimbursementsInvoices()
+    renderReimbursementsInvoices(undefined, true)
 
     await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
     expect(
@@ -223,6 +228,26 @@ describe('reimbursementsWithFilters', () => {
 
     expect(screen.getByLabelText('Compte bancaire')).toBeInTheDocument()
     expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
+  })
+
+  it('should render a difficulty banner ', async () => {
+    vi.spyOn(
+      api,
+      'getOffererBankAccountsAndAttachedVenues'
+    ).mockResolvedValueOnce({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
+
+    renderReimbursementsInvoices()
+
+    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+    expect(
+      screen.getByText(
+        /Nous rencontrons exceptionnellement en cette fin d'année des délais de paiement allongés./
+      )
+    ).toBeInTheDocument()
   })
 
   it('should not disable filter if has invoices', async () => {
