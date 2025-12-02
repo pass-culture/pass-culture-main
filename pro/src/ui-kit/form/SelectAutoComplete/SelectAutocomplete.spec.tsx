@@ -59,11 +59,11 @@ describe('SelectAutocomplete', () => {
     await userEvent.type(screen.getByRole('combobox'), ' ')
 
     await userEvent.click(
-      screen.getByRole('img', { name: 'Masquer les options' })
+      screen.getByRole('button', { name: 'Masquer les options' })
     )
     expect(screen.queryByTestId('list')).not.toBeInTheDocument()
     await userEvent.click(
-      screen.getByRole('img', { name: 'Afficher les options' })
+      screen.getByRole('button', { name: 'Afficher les options' })
     )
 
     expect(screen.getByTestId('list').children).toHaveLength(15)
@@ -86,7 +86,7 @@ describe('SelectAutocomplete', () => {
       render(<SelectAutocomplete {...props} />)
       await userEvent.click(screen.getByRole('combobox'))
       await userEvent.click(
-        screen.getByRole('img', { name: 'Masquer les options' })
+        screen.getByRole('button', { name: 'Masquer les options' })
       )
       expect(screen.queryByTestId('list')).not.toBeInTheDocument()
     })
@@ -110,7 +110,7 @@ describe('SelectAutocomplete', () => {
       await userEvent.click(screen.getByRole('combobox'))
       const list = screen.getByTestId('list')
       await userEvent.click(await within(list).findByText('Aveyron'))
-      expect(screen.queryByTestId('select')).toHaveValue('12')
+      expect(screen.queryByRole('combobox')).toHaveValue('Aveyron')
     })
   })
 

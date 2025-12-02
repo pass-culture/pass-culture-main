@@ -42,8 +42,6 @@ type CommonProps = {
   className?: string
   /** Error message to display */
   error?: string
-  /** Hides the dropdown arrow */
-  hideArrow?: boolean
   /** Called when the selected value changes */
   onChange?(e: CustomEvent<'change'>): void
   /** Called when the input loses focus */
@@ -85,7 +83,6 @@ export const SelectAutocomplete = forwardRef(
       className,
       disabled = false,
       name,
-      hideArrow,
       required = true,
       label,
       options,
@@ -294,64 +291,69 @@ export const SelectAutocomplete = forwardRef(
           ref={containerRef}
         >
           {/* Search field */}
-          <input
-            {...(hoveredOptionIndex !== null && {
-              'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
-            })}
-            onClick={openDropdown}
+          <div
             className={classNames(
-              styles['multi-select-autocomplete-placeholder-input'],
-              {
-                [styles['has-error']]: Boolean(error),
-              }
+              styles['multi-select-autocomplete-input-container']
             )}
-            onKeyDown={handleKeyDown}
-            type="search"
-            disabled={disabled}
-            aria-autocomplete="list"
-            aria-controls={`list-${name}`}
-            id={name}
-            aria-expanded={isDropdownOpen}
-            aria-haspopup="listbox"
-            aria-required={required}
-            role="combobox"
-            value={searchField}
-            ref={inputRef}
-            name={name}
-            onChange={(e) => {
-              setHoveredOptionIndex(null)
-              setSearchField(e.target.value)
+          >
+            <input
+              {...(hoveredOptionIndex !== null && {
+                'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
+              })}
+              onClick={openDropdown}
+              className={classNames(
+                styles['multi-select-autocomplete-placeholder-input'],
+                {
+                  [styles['has-error']]: Boolean(error),
+                }
+              )}
+              onKeyDown={handleKeyDown}
+              type="search"
+              disabled={disabled}
+              aria-autocomplete="list"
+              aria-controls={`list-${name}`}
+              id={name}
+              aria-expanded={isDropdownOpen}
+              aria-haspopup="listbox"
+              aria-required={required}
+              role="combobox"
+              value={searchField}
+              ref={inputRef}
+              name={name}
+              onChange={(e) => {
+                setHoveredOptionIndex(null)
+                setSearchField(e.target.value)
 
-              onChange({
-                type: 'change',
-                target: { name, value: e.target.value },
-              })
-              openDropdown()
-            }}
-            onBlur={(e) => {
-              setSearchField(e.target.value)
+                onChange({
+                  type: 'change',
+                  target: { name, value: e.target.value },
+                })
+                openDropdown()
+              }}
+              onBlur={(e) => {
+                setSearchField(e.target.value)
 
-              // Check if value is part of the hashtable before notify the parent
-              // This is necessary because user can type anything in the "searchField" and then "blur" the field
-              // If the specified value isn't in the valid options hastable, we send an empty string instead and let the parent deal with it
-              const value = optionsIdByLabel.current?.get(e.target.value) ?? ''
+                // Check if value is part of the hashtable before notify the parent
+                // This is necessary because user can type anything in the "searchField" and then "blur" the field
+                // If the specified value isn't in the valid options hastable, we send an empty string instead and let the parent deal with it
+                const value =
+                  optionsIdByLabel.current?.get(e.target.value) ?? ''
 
-              onBlur({
-                type: 'blur',
-                target: { name, value },
-              })
-            }}
-          />
+                onBlur({
+                  type: 'blur',
+                  target: { name, value },
+                })
+              }}
+            />
+            <Toggle
+              fieldName={name}
+              disabled={disabled}
+              isOpen={isDropdownOpen}
+              toggleField={toggleDropdown}
+            />
+          </div>
 
-          {/* Dropdown options list */}
           <div className={styles['field-overlay']}>
-            {!hideArrow && (
-              <Toggle
-                disabled={disabled}
-                isOpen={isDropdownOpen}
-                toggleField={toggleDropdown}
-              />
-            )}
             {isDropdownOpen && (
               <OptionsList
                 className={className}
