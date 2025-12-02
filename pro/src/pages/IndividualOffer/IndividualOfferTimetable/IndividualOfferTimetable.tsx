@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router'
 import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
@@ -16,6 +17,7 @@ import { IndividualOfferTimetableScreen } from './components/IndividualOfferTime
 export const IndividualOfferTimetable = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
+  const navigate = useNavigate()
 
   const isOhoFFEnabled = useActiveFeature('WIP_ENABLE_OHO')
 
@@ -48,6 +50,10 @@ export const IndividualOfferTimetable = (): JSX.Element | null => {
     venueQuery.isLoading
   ) {
     return <Spinner />
+  }
+
+  if (!offer.isEvent) {
+    navigate('/404')
   }
 
   return (
