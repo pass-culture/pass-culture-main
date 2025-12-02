@@ -50,13 +50,13 @@ import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 
-export type IndividualOfferDetailsScreenNextProps = {
+export type IndividualOfferDetailsScreenProps = {
   venues: VenueListItemResponseModel[]
 }
 
-export const IndividualOfferDetailsScreenNext = ({
+export const IndividualOfferDetailsScreen = ({
   venues,
-}: IndividualOfferDetailsScreenNextProps): JSX.Element => {
+}: IndividualOfferDetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
