@@ -53,7 +53,7 @@
     "date-fns-tz": "3.2.0",
     "dompurify": "3.3.0",
     "downshift": "9.0.10",
-    "libphonenumber-js": "1.12.29",
+    "libphonenumber-js": "1.12.30",
     "react": "18.3.1",
     "react-avatar-editor": "13.0.2",
     "react-chartjs-2": "5.3.1",
