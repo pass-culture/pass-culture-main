@@ -1,4 +1,4 @@
-name: "0 [on_call/CD] Create release"
+name: "3 [on_workflow] Create release"
 
 run-name: "Create release ${{ inputs.releaseNumber }}.0.0"
 
