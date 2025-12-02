@@ -104,7 +104,9 @@ export const WithOnsearchTrigger: StoryObj<typeof SelectAutocomplete> = {
           name="departement"
           options={options}
           required={false}
-          onSearch={(text) => setSearchText(text)}
+          onChange={(event) => {
+            setSearchText(event.target.value)
+          }}
         />
       </>
     )

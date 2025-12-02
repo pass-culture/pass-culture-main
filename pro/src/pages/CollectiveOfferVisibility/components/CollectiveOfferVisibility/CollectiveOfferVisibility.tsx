@@ -410,7 +410,6 @@ export const CollectiveOfferVisibilityScreen = ({
                   required={false}
                   description="Ex: Camille Dupont"
                   resetOnOpen={true}
-                  onSearch={onSearchTeacher}
                   disabled={
                     !canEditInstitution ||
                     !watch('institution') ||
@@ -421,6 +420,7 @@ export const CollectiveOfferVisibilityScreen = ({
                       shouldDirty: true,
                       shouldValidate: true,
                     })
+                    void onSearchTeacher(event.target.value)
                   }}
                   value={watch('institution') ? watch('teacher') : undefined}
                   error={errors.teacher?.message}
