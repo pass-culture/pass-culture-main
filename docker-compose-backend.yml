@@ -27,6 +27,22 @@ services:
     networks:
       - db_nw
 
+  timescaledb:
+    image: timescale/timescaledb-ha:pg15-all
+    container_name: pc-timescaledb
+    volumes:
+      - timescaledb_data:/var/lib/postgresql/data
+      - ./scripts/init:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_DB=pass_culture
+      - POSTGRES_USER=pass_culture
+      - POSTGRES_PASSWORD=passq
+    command: postgres -c logging_collector=on -c log_destination=stderr -c log_min_duration_statement=0 -c log_statement=all -c log_duration=on -c shared_preload_libraries=timescaledb
+    ports:
+      - 5435:5432
+    networks:
+      - db_nw
+
   flask:
     build:
       context: ./api
@@ -131,4 +147,5 @@ networks:
 volumes:
   postgres_data:
   postgres_data_test:
+  timescaledb_data:
   redis_data:
