@@ -97,6 +97,23 @@ jobs:
           git checkout -b "$MAINTENANCE_BRANCH"
           git push origin "$MAINTENANCE_BRANCH"
 
+  delete-old-maintenance-branch:
+    name: "Delete n-2 maintenance branch"
+    needs:
+      - build-and-tag-version
+      - create-pro-production-release
+      - create-pro-staging-release
+      - create-pro-integration-release
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v6
+      - name: "Delete n-2 maintenance branch"
+        continue-on-error: true
+        run: |
+          old_branch_number=$(({{ inputs.releaseNumber }}-2))
+          git checkout master
+          git branch --delete --force maint/v"$old_branch_number"
+
   slack-notification:
     runs-on: ubuntu-22.04
     needs:
