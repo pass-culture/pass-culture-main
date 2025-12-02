@@ -16,10 +16,10 @@ import {
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
-import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { setSearchView } from '@/commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from '@/commons/store/adageFilter/selectors'
 import { LOGS_DATA } from '@/commons/utils/config'
@@ -140,7 +140,9 @@ export const Offers = ({
 
   const { currentRefinement, nbPages } = usePagination()
   const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    usePaginationScroll(currentRefinement + 1, nbPages)
+    useAccessibleScroll({
+      initialLiveMessage: `Page ${currentRefinement + 1} sur ${nbPages}`,
+    })
 
   if (isLoading && offers.length === 0) {
     return (

@@ -14,8 +14,8 @@ import { hasSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import type { Audience } from '@/commons/core/shared/types'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
@@ -140,7 +140,8 @@ export const IndividualOffersContainer = ({
   )
 
   const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    usePaginationScroll(currentPageNumber, pageCount, {
+    useAccessibleScroll({
+      initialLiveMessage: `Page ${currentPageNumber} sur ${pageCount}`,
       selector: '#content-wrapper',
     })
 

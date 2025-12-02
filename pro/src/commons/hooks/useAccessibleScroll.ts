@@ -3,13 +3,11 @@ import { useEffect, useRef, useState } from 'react'
 import { useMediaQuery } from './useMediaQuery'
 
 /**
- * Custom hook to help with pagination scroll and live region accessibility messages.
+ * Custom hook to help with smooth scrolling and live region accessibility messages.
  * Works with the `AccessibleScrollContainer` component.
  *
- * @param {number} page - The current active page number.
- * @param {number} pageCount - The total number of available pages.
- * @param {string} [initialLiveMessage] - (Optional) The initial ARIA live region message, defaults to "Page {page} sur {pageCount}".
- * @param {string} [options.selector] - (Optional) The selector of the scrollable container, defaults to '#content-wrapper'.
+ * @param {string} [initialLiveMessage] - The initial ARIA live region message.
+ * @param {string} [options.selector] - (Optional) The selector of the scrollable container.
  *
  * @returns {{
  *   contentWrapperRef: React.RefObject<HTMLDivElement>,
@@ -24,17 +22,12 @@ import { useMediaQuery } from './useMediaQuery'
  */
 
 type Options = {
-  initialLiveMessage?: string
+  initialLiveMessage: string
   selector?: string
 }
 
-export const usePaginationScroll = (
-  page: number,
-  pageCount: number,
-  {
-    initialLiveMessage = `Page ${page} sur ${pageCount}`,
-    selector,
-  }: Options = {}
+export const useAccessibleScroll = (
+  { initialLiveMessage, selector }: Options = { initialLiveMessage: '' }
 ) => {
   const contentWrapperRef = useRef<HTMLDivElement>(null)
   const liveMessageInitialized = useRef(false)
@@ -46,7 +39,7 @@ export const usePaginationScroll = (
   const [liveMessage, setLiveMessage] = useState('')
 
   useEffect(() => {
-    // Skip the very first render to avoid announcing the initial page state
+    // Skip the very first render to avoid announcing the initial state
     // (Screen readers already announce the initial DOM)
     if (!liveMessageInitialized.current) {
       liveMessageInitialized.current = true

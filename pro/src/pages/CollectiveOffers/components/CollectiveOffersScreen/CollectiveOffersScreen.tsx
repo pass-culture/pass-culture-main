@@ -17,10 +17,10 @@ import {
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
+import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
-import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -157,7 +157,10 @@ export const CollectiveOffersScreen = ({
   const columns = getCollectiveOfferColumns(urlSearchFilters, true)
 
   const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    usePaginationScroll(page, pageCount, { selector: '#content-wrapper' })
+    useAccessibleScroll({
+      initialLiveMessage: `Page ${page} sur ${pageCount}`,
+      selector: '#content-wrapper',
+    })
 
   return (
     <div>
