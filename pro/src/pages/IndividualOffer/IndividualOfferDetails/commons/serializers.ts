@@ -1,7 +1,5 @@
-import type {
-  PatchDraftOfferBodyModel,
-  PostDraftOfferBodyModel,
-} from '@/apiClient/v1'
+import type { PatchOfferBodyModel, PostOfferBodyModel } from '@/apiClient/v1'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
 import type { DetailsFormValues } from './types'
@@ -45,9 +43,13 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
 }
 
 export function serializeDetailsPostData(
-  formValues: DetailsFormValues,
-  isNewOfferCreationFlowFeatureActive: boolean
-): PostDraftOfferBodyModel {
+  formValues: DetailsFormValues
+): PostOfferBodyModel {
+  assertOrFrontendError(
+    formValues.accessibility,
+    '`formValues.accessibility` is undefined'
+  )
+
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
@@ -57,22 +59,21 @@ export function serializeDetailsPostData(
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
     url: formValues.url,
-
-    ...(isNewOfferCreationFlowFeatureActive
-      ? {
-          audioDisabilityCompliant: formValues.accessibility?.audio,
-          mentalDisabilityCompliant: formValues.accessibility?.mental,
-          motorDisabilityCompliant: formValues.accessibility?.motor,
-          visualDisabilityCompliant: formValues.accessibility?.visual,
-        }
-      : {}),
+    audioDisabilityCompliant: formValues.accessibility.audio,
+    mentalDisabilityCompliant: formValues.accessibility.mental,
+    motorDisabilityCompliant: formValues.accessibility.motor,
+    visualDisabilityCompliant: formValues.accessibility.visual,
   })
 }
 
 export function serializeDetailsPatchData(
-  formValues: DetailsFormValues,
-  isNewOfferCreationFlowFeatureActive: boolean
-): PatchDraftOfferBodyModel {
+  formValues: DetailsFormValues
+): PatchOfferBodyModel {
+  assertOrFrontendError(
+    formValues.accessibility,
+    '`formValues.accessibility` is undefined'
+  )
+
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
@@ -80,14 +81,9 @@ export function serializeDetailsPatchData(
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     url: formValues.url,
-
-    ...(isNewOfferCreationFlowFeatureActive
-      ? {
-          audioDisabilityCompliant: formValues.accessibility?.audio,
-          mentalDisabilityCompliant: formValues.accessibility?.mental,
-          motorDisabilityCompliant: formValues.accessibility?.motor,
-          visualDisabilityCompliant: formValues.accessibility?.visual,
-        }
-      : {}),
+    audioDisabilityCompliant: formValues.accessibility.audio,
+    mentalDisabilityCompliant: formValues.accessibility.mental,
+    motorDisabilityCompliant: formValues.accessibility.motor,
+    visualDisabilityCompliant: formValues.accessibility.visual,
   })
 }
