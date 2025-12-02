@@ -19,27 +19,18 @@
     padding: var(--size-spacing-s);
   }
 
-  .options-item,
-  .too-many-options {
+  .options-item {
     display: flex;
     padding: rem.torem(11.2px) rem.torem(16px);
-  }
-
-  .label {
-    padding: rem.torem(11.2px) rem.torem(16px) rem.torem(11.2px) 0;
-  }
-
-  /* override cursor: default defined by browser */
-  .label,
-  input[type="checkbox"] {
     cursor: pointer;
-  }
-
-  .input {
-    margin-left: var(--size-spacing-l);
   }
 
   .option-hovered {
     background: var(--color-background-subtle);
+
+    .options-item {
+      border: rem.torem(2px) solid var(--color-border-focused);
+      padding: rem.torem(9.2px) rem.torem(14px);
+    }
   }
 }
