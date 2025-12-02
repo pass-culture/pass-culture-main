@@ -2733,7 +2733,7 @@ class CreateFromOnboardingDataTest:
             "limit": 1,
         }
         requests_mock.get(
-            "https://api-adresse.data.gouv.fr/search?q=3 RUE DE VALOIS&postcode=75001&autocomplete=0&limit=1",
+            "https://data.geopf.fr/geocodage/search?q=3 RUE DE VALOIS&postcode=75001&autocomplete=0&limit=1",
             json=api_adresse_response,
         )
         user = users_factories.UserFactory(email="pro@example.com")
@@ -2832,7 +2832,7 @@ class CreateFromOnboardingDataTest:
             "limit": 1,
         }
         requests_mock.get(
-            "https://api-adresse.data.gouv.fr/search?q=3 RUE DE VALOIS&postcode=75001&autocomplete=0&limit=1",
+            "https://data.geopf.fr/geocodage/search?q=3 RUE DE VALOIS&postcode=75001&autocomplete=0&limit=1",
             json=api_adresse_response,
         )
         user = users_factories.UserFactory(email="pro@example.com")
