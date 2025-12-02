@@ -240,7 +240,7 @@ def create_eac_offers_by_period(
             educationalYear=year,
             educationalDeposit=deposit,
             confirmationDate=confirmation_date,
-            collectiveStock__price=1000,
+            collectiveStock__price=1000 if deposit.amount > 0 else 0,
             collectiveStock__startDatetime=year.expirationDate - timedelta(days=15),
             collectiveStock__collectiveOffer__venue=venue,
             collectiveStock__collectiveOffer__institution=institution,
