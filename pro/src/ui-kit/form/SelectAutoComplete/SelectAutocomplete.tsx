@@ -105,7 +105,6 @@ export const SelectAutocomplete = forwardRef(
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     const [searchField, setSearchField] = useState('') // Represents the <input type="search"> value while typing (e.g. "Alpes de Ha…")
-    const [field, setField] = useState(inputValue ?? '') // Represents the actual selected <option>’s "value" attribute among the options (e.g. "04")
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
       null
@@ -117,7 +116,6 @@ export const SelectAutocomplete = forwardRef(
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null) // Ref for "searchField"
     const listRef = useRef<HTMLUListElement>(null) // Ref for <ul> dropdown
-    const selectRef = useRef<HTMLSelectElement>(null) // Ref for hidden <select> (a11y)
 
     // Hydrates the hashtables (computed at 1st render only)
     useEffect(() => {
@@ -133,7 +131,6 @@ export const SelectAutocomplete = forwardRef(
     // Handles "resetOnOpen" behavior
     useEffect(() => {
       if (resetOnOpen && isDropdownOpen) {
-        setField('')
         setSearchField('')
         onReset()
       }
@@ -238,7 +235,6 @@ export const SelectAutocomplete = forwardRef(
 
     // When an option is chosen
     const selectOption = (value: string) => {
-      setField(value)
       setSearchField(optionsLabelById.current?.get(value) ?? '')
 
       // Notify changes up to the parent component
@@ -275,7 +271,6 @@ export const SelectAutocomplete = forwardRef(
       setSearchField(
         optionsLabelById.current?.get(externalValue) ?? externalValue
       )
-      setField(externalValue) // Provokes a re-render and also updates the hidden <select> element connected to the "field" (a11y)
     }, [inputRef, inputValue, ref])
 
     // Connect the external reference to the internal one "inputRef", so we can read it's value in the "useEffect" above
@@ -315,14 +310,12 @@ export const SelectAutocomplete = forwardRef(
             disabled={disabled}
             aria-autocomplete="list"
             aria-controls={`list-${name}`}
-            aria-describedby={`help-${name}`}
             id={name}
             aria-expanded={isDropdownOpen}
             aria-haspopup="listbox"
             aria-required={required}
             role="combobox"
             value={searchField}
-            autoComplete="off"
             ref={inputRef}
             name={name}
             onChange={(e) => {
@@ -350,41 +343,6 @@ export const SelectAutocomplete = forwardRef(
             }}
           />
 
-          {/* START : Accessibility for voice synthesis */}
-          <div
-            aria-live="polite"
-            aria-relevant="text"
-            className={styles['visually-hidden']}
-            id={`help-${name}`}
-          >
-            {field !== '' &&
-              `Option sélectionnée : ${options.find((op) => op.value === inputValue)?.label ?? ''}. `}
-            {isDropdownOpen
-              ? `${filteredOptions.length} options ${
-                  searchField === ''
-                    ? 'disponibles. '
-                    : 'correspondant au texte saisi. '
-                }`
-              : 'Saisissez du texte pour afficher et filtrer les options.'}
-          </div>
-          <select
-            hidden
-            ref={selectRef}
-            value={field || ''}
-            onChange={() => noop} // Silent React warning that is irrelevant here
-            data-testid="select"
-            // No matter this is hidden,
-            // this is to fix : "A form field element should have an id or name attribute"
-            name={name}
-          >
-            {options.map(({ label, value }) => (
-              <option key={`option-${value}`} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {/* END : Accessibility for voice synthesis */}
-
           {/* Dropdown options list */}
           <div className={styles['field-overlay']}>
             {!hideArrow && (
@@ -398,7 +356,6 @@ export const SelectAutocomplete = forwardRef(
               <OptionsList
                 className={className}
                 fieldName={name}
-                selectedValue={field}
                 filteredOptions={filteredOptions}
                 setHoveredOptionIndex={setHoveredOptionIndex}
                 listRef={listRef}
