@@ -18,7 +18,6 @@ import {
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -116,12 +115,6 @@ export const IndividualOfferDetailsScreen = ({
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     try {
-      // Draft offer PATCH requests are useless for product-based offers
-      // and synchronized / provider offers since neither of the inputs displayed in
-      // DetailsScreen can be edited at all
-      const shouldNotPatchData =
-        isOfferSynchronized(initialOffer) ||
-        (!isNewOfferDraft && hasSelectedProduct)
       const initialOfferId = initialOffer?.id
 
       let offerId = initialOfferId
@@ -138,7 +131,7 @@ export const IndividualOfferDetailsScreen = ({
             },
           }
         )
-      } else if (!shouldNotPatchData && initialOfferId) {
+      } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
           api.patchOffer(initialOfferId, serializeDetailsPatchData(formValues)),
