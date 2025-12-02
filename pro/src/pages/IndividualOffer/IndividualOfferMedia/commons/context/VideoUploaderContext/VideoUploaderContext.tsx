@@ -76,7 +76,7 @@ export function VideoUploaderContextProvider({
   }
 
   const handleVideoOnSubmit = useCallback(async () => {
-    return await api.patchDraftOffer(offerId, {
+    return await api.patchOffer(offerId, {
       videoUrl: videoUrl ?? '',
     })
   }, [videoUrl, offerId])

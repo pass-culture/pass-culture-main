@@ -129,7 +129,7 @@ export const IndividualOfferDetailsScreen = ({
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.postDraftOffer(serializeDetailsPostData(formValues, true)),
+          api.postOffer(serializeDetailsPostData(formValues)),
           {
             revalidate: false,
             populateCache: (newOffer) => {
@@ -141,10 +141,7 @@ export const IndividualOfferDetailsScreen = ({
       } else if (!shouldNotPatchData && initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.patchDraftOffer(
-            initialOfferId,
-            serializeDetailsPatchData(formValues, true)
-          ),
+          api.patchOffer(initialOfferId, serializeDetailsPatchData(formValues)),
           { revalidate: false }
         )
       }

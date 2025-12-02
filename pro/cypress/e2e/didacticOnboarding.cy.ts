@@ -21,12 +21,9 @@ describe('Didactic Onboarding feature', () => {
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
 
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
-    cy.intercept({ method: 'PATCH', url: '/offers/draft/*' }).as(
-      'patchDraftOffer'
-    )
-    cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
+    cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
+    cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as('patchStocks')
   })
 
@@ -165,7 +162,7 @@ describe('Didactic Onboarding feature', () => {
         cy.wait(['@getMusicTypes', '@getCategories'])
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@postDraftOffer'])
+        cy.wait(['@postOffer'])
 
         cy.stepLog({
           message: `Go back and resume the previous draft offer`,
@@ -186,7 +183,7 @@ describe('Didactic Onboarding feature', () => {
           'Mon offre en brouillon'
         )
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@getMusicTypes', '@patchDraftOffer'])
+        cy.wait(['@getOffer', '@getMusicTypes', '@patchOffer'])
 
         //  LOCALISATION STEP
         cy.url().should('contain', '/creation/localisation')

@@ -151,9 +151,7 @@ describe('VideoUploaderContext', () => {
   })
 
   it('should update offer on click on submit', async () => {
-    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
-      getIndividualOfferFactory()
-    )
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
 
     const offer = getIndividualOfferFactory({
       videoData: {},
@@ -167,7 +165,7 @@ describe('VideoUploaderContext', () => {
     )
     await userEvent.click(screen.getByText(LABELS.controls.submit))
 
-    expect(api.patchDraftOffer).toBeCalledWith(offer.id, {
+    expect(api.patchOffer).toBeCalledWith(offer.id, {
       videoUrl: 'http://youtube.url',
     })
   })

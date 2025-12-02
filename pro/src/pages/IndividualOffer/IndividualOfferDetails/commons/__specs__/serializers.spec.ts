@@ -107,84 +107,43 @@ describe('serializeDetailsPostData', () => {
     productId: '',
   }
 
-  describe('without Feature Flag', () => {
-    const isNewOfferCreationFlowFeatureActive = false
+  it('should include accessibility fields', () => {
+    const formValues: DetailsFormValues = {
+      ...formValuesBase,
+      accessibility: {
+        audio: true,
+        mental: false,
+        motor: true,
+        visual: false,
+        none: false,
+      },
+    }
 
-    it('should trim spaces in all string fields', () => {
-      const formValues = { ...formValuesBase }
+    const result = serializeDetailsPostData(formValues)
 
-      const result = serializeDetailsPostData(
-        formValues,
-        isNewOfferCreationFlowFeatureActive
-      )
-
-      expect(result).toStrictEqual({
-        name: 'Festival de la Musique',
-        subcategoryId: 'anything',
-        venueId: 0,
-        description: 'Ancien festival annuel musical',
-        durationMinutes: null,
-        extraData: {
-          author: 'Boris Vian',
-          gtl_id: 'a gtl id',
-          performer: 'Marcel et son orchestre',
-          showType: 'a showtype',
-          showSubType: 'a showSubtype',
-          speaker: 'Robert Smith',
-          stageDirector: 'Bob Sinclar',
-          visa: '123456789',
-          ean: 'any ean',
-        },
-        url: undefined,
-        productId: undefined,
-      })
-    })
-  })
-
-  describe('with Feature Flag', () => {
-    const isNewOfferCreationFlowFeatureActive = true
-
-    it('should include accessibility fields', () => {
-      const formValues: DetailsFormValues = {
-        ...formValuesBase,
-        accessibility: {
-          audio: true,
-          mental: false,
-          motor: true,
-          visual: false,
-          none: false,
-        },
-      }
-
-      const result = serializeDetailsPostData(
-        formValues,
-        isNewOfferCreationFlowFeatureActive
-      )
-
-      expect(result).toStrictEqual({
-        name: 'Festival de la Musique',
-        subcategoryId: 'anything',
-        venueId: 0,
-        description: 'Ancien festival annuel musical',
-        durationMinutes: null,
-        extraData: {
-          author: 'Boris Vian',
-          gtl_id: 'a gtl id',
-          performer: 'Marcel et son orchestre',
-          showType: 'a showtype',
-          showSubType: 'a showSubtype',
-          speaker: 'Robert Smith',
-          stageDirector: 'Bob Sinclar',
-          visa: '123456789',
-          ean: 'any ean',
-        },
-        url: undefined,
-        productId: undefined,
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: false,
-      })
+    expect(result).toStrictEqual({
+      name: 'Festival de la Musique',
+      subcategoryId: 'anything',
+      venueId: 0,
+      description: 'Ancien festival annuel musical',
+      durationMinutes: null,
+      extraData: {
+        author: 'Boris Vian',
+        gtl_id: 'a gtl id',
+        performer: 'Marcel et son orchestre',
+        showType: 'a showtype',
+        showSubType: 'a showSubtype',
+        speaker: 'Robert Smith',
+        stageDirector: 'Bob Sinclar',
+        visa: '123456789',
+        ean: 'any ean',
+      },
+      url: undefined,
+      productId: undefined,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: false,
     })
   })
 })
@@ -210,80 +169,41 @@ describe('serializeDetailsPatchData', () => {
     productId: '',
   }
 
-  describe('without Feature Flag', () => {
-    const isNewOfferCreationFlowFeatureActive = false
+  it('should include accessibility fields', () => {
+    const formValues: DetailsFormValues = {
+      ...formValuesBase,
+      accessibility: {
+        audio: true,
+        mental: false,
+        motor: true,
+        visual: false,
+        none: false,
+      },
+    }
 
-    it('should trim spaces in all string fields', () => {
-      const formValues = { ...formValuesBase }
+    const result = serializeDetailsPatchData(formValues)
 
-      const result = serializeDetailsPatchData(
-        formValues,
-        isNewOfferCreationFlowFeatureActive
-      )
-
-      expect(result).toStrictEqual({
-        name: 'Festival de la Musique',
-        subcategoryId: 'anything',
-        description: 'Ancien festival annuel musical',
-        durationMinutes: null,
-        extraData: {
-          author: 'Boris Vian',
-          gtl_id: 'a gtl id',
-          performer: 'Marcel et son orchestre',
-          showType: 'a showtype',
-          showSubType: 'a showSubtype',
-          speaker: 'Robert Smith',
-          stageDirector: 'Bob Sinclar',
-          visa: '123456789',
-          ean: 'any ean',
-        },
-        url: undefined,
-      })
-    })
-  })
-
-  describe('with Feature Flag', () => {
-    const isNewOfferCreationFlowFeatureActive = true
-
-    it('should include accessibility fields', () => {
-      const formValues: DetailsFormValues = {
-        ...formValuesBase,
-        accessibility: {
-          audio: true,
-          mental: false,
-          motor: true,
-          visual: false,
-          none: false,
-        },
-      }
-
-      const result = serializeDetailsPatchData(
-        formValues,
-        isNewOfferCreationFlowFeatureActive
-      )
-
-      expect(result).toStrictEqual({
-        name: 'Festival de la Musique',
-        subcategoryId: 'anything',
-        description: 'Ancien festival annuel musical',
-        durationMinutes: null,
-        extraData: {
-          author: 'Boris Vian',
-          gtl_id: 'a gtl id',
-          performer: 'Marcel et son orchestre',
-          showType: 'a showtype',
-          showSubType: 'a showSubtype',
-          speaker: 'Robert Smith',
-          stageDirector: 'Bob Sinclar',
-          visa: '123456789',
-          ean: 'any ean',
-        },
-        url: undefined,
-        audioDisabilityCompliant: true,
-        mentalDisabilityCompliant: false,
-        motorDisabilityCompliant: true,
-        visualDisabilityCompliant: false,
-      })
+    expect(result).toStrictEqual({
+      name: 'Festival de la Musique',
+      subcategoryId: 'anything',
+      description: 'Ancien festival annuel musical',
+      durationMinutes: null,
+      extraData: {
+        author: 'Boris Vian',
+        gtl_id: 'a gtl id',
+        performer: 'Marcel et son orchestre',
+        showType: 'a showtype',
+        showSubType: 'a showSubtype',
+        speaker: 'Robert Smith',
+        stageDirector: 'Bob Sinclar',
+        visa: '123456789',
+        ean: 'any ean',
+      },
+      url: undefined,
+      audioDisabilityCompliant: true,
+      mentalDisabilityCompliant: false,
+      motorDisabilityCompliant: true,
+      visualDisabilityCompliant: false,
     })
   })
 })

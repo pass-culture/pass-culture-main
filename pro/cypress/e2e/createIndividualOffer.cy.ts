@@ -37,7 +37,7 @@ describe('Create individual offers new flow', () => {
     cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
 
     cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers/draft' }).as('postDraftOffer')
+    cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
     cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as(
       'patchNonEventStocks'
     )
@@ -79,7 +79,7 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate the description step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getMusicTypes', '@getOffer', '@postDraftOffer'])
+    cy.wait(['@getMusicTypes', '@getOffer', '@postOffer'])
 
     //  LOCATION STEP
     cy.findByRole('heading', { name: 'Où profiter de l’offre ?' })
@@ -260,7 +260,7 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate the description step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait(['@getMusicTypes', '@getOffer', '@postDraftOffer'])
+    cy.wait(['@getMusicTypes', '@getOffer', '@postOffer'])
 
     //  LOCATION STEP
     cy.findByRole('heading', { name: 'Où profiter de l’offre ?' }).should(
