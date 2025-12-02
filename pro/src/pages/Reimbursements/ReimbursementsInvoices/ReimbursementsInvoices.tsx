@@ -11,10 +11,15 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
 import { sortByLabel } from '@/commons/utils/strings'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import fullLinkIcon from '@/icons/full-link.svg'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { DEFAULT_INVOICES_FILTERS } from '../_constants'
@@ -27,6 +32,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const isCaledonian = useIsCaledonian()
+  const offerer = useAppSelector(selectCurrentOfferer)
 
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
@@ -121,7 +127,41 @@ export const ReimbursementsInvoices = (): JSX.Element => {
 
   return (
     <>
-      <BannerReimbursementsInfo />
+      {offerer?.allowedOnAdage ? (
+        <BannerReimbursementsInfo />
+      ) : (
+        <Banner
+          title="Informations exceptionnelles"
+          variant={BannerVariants.WARNING}
+          size="large"
+          actions={[
+            {
+              type: 'link',
+              href: 'https://passculture.zendesk.com/hc/fr/articles/4412007300369',
+              label: 'Connaître les modalités de remboursement',
+              isExternal: true,
+              icon: fullLinkIcon,
+            },
+          ]}
+          description={
+            <>
+              <p>
+                Nous rencontrons exceptionnellement en cette fin d'année des
+                délais de paiement allongés. Nous vous présentons toutes nos
+                excuses pour la gêne occasionnée par cette situation, qui sera
+                régularisée avant le 15 décembre.
+              </p>
+              <p>
+                Pour rappel, en temps normal, le pass Culture émet un virement
+                toutes les deux à trois semaines environ, à l’ensemble des
+                partenaires culturels. Toutefois, ces délais courants peuvent
+                être dépassés. Vous serez informés par mail dès que le paiement
+                sera effectif.
+              </p>
+            </>
+          }
+        />
+      )}
       <InvoicesFilters
         areFiltersDefault={isEqual(filters, INITIAL_FILTERS)}
         filters={filters}
