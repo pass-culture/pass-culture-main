@@ -45,6 +45,7 @@ class CreateHighlightForm(FlaskForm):
     description = fields.PCTextareaField(
         "Description",
         rows=10,
+        allow_line_breaks=False,  # line breaks are not rendered in the PRO app
         validators=(
             wtforms.validators.InputRequired("La description est obligatoire"),
             wtforms.validators.Length(max=300, message="ne doit pas dépasser %(max)d caractères"),

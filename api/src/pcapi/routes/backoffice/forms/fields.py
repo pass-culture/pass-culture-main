@@ -195,9 +195,10 @@ class PCOptSiretField(PCSiretField):
 class PCTextareaField(wtforms.StringField):
     widget = partial(widget, template="components/forms/textarea_field.html")
 
-    def __init__(self, label: str, rows: int = 3, **kwargs: typing.Any):
+    def __init__(self, label: str, rows: int = 3, allow_line_breaks: bool = True, **kwargs: typing.Any):
         super().__init__(label, **kwargs)
         self.rows = rows
+        self.allow_line_breaks = allow_line_breaks
 
 
 class PCOptCommentField(PCTextareaField):
