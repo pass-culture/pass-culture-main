@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import {
   useInfiniteHits,
   useInstantSearch,
+  usePagination,
   useStats,
 } from 'react-instantsearch'
 import { useLocation } from 'react-router'
@@ -18,10 +19,12 @@ import { GET_COLLECTIVE_OFFER_TEMPLATES_QUERY_KEY } from '@/commons/config/swrQu
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import { usePaginationScroll } from '@/commons/hooks/usePaginationScroll'
 import { setSearchView } from '@/commons/store/adageFilter/reducer'
 import { adageSearchViewSelector } from '@/commons/store/adageFilter/selectors'
 import { LOGS_DATA } from '@/commons/utils/config'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import {
   HighlightBanner,
   HighlightBannerVariant,
@@ -135,6 +138,10 @@ export const Offers = ({
     }
   }, [isMobileScreen, dispatch])
 
+  const { currentRefinement, nbPages } = usePagination()
+  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
+    usePaginationScroll(currentRefinement + 1, nbPages)
+
   if (isLoading && offers.length === 0) {
     return (
       <div className={styles['offers-loader']}>
@@ -219,89 +226,99 @@ export const Offers = ({
           </div>
         )}
       </div>
-      <ul
-        className={styles[`offers-${isInSuggestions ? 'list' : adageViewType}`]}
+      <AccessibleScrollContainer
+        containerRef={contentWrapperRef}
+        liveMessage={liveMessage}
       >
-        {offers.map((offer, index) => (
-          <li
-            key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}
-            data-testid="offer-listitem"
-          >
-            {adageViewType === 'list' || isInSuggestions ? (
-              <AdageOfferListCard
-                offer={offer}
-                queryId={results.queryID ?? ''}
-                isInSuggestions={indexId?.startsWith('no_results_offers')}
-                viewType={adageViewType}
-                onCardClicked={() => triggerOfferClickLog(offer)}
-              />
-            ) : (
-              <OfferCardComponent
-                onCardClicked={() => triggerOfferClickLog(offer)}
-                key={offer.id}
-                offer={offer}
-                viewType={adageViewType}
-              />
-            )}
-            {adageViewType === 'list' && index === 0 && showDiffuseHelp ? (
-              <HighlightBanner
-                title={'Le saviez-vous ?'}
-                description={
-                  "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d’un intervenant ou le matériel consommable d’un atelier artistique. Cette prise en charge doit bien sûr faire l’objet d’un accord entre vous et le partenaire qui porte le projet. Il n’est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
-                }
-                localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
-                img={
-                  <ShadowTipsHelpIcon
-                    className={styles['highlight-banner-icon']}
-                  />
-                }
-                variant={HighlightBannerVariant.ADAGE}
-              />
-            ) : (
-              adageViewType === 'list' &&
-              index === 0 &&
-              currentDate < highlightTargetDate && (
+        <ul
+          className={
+            styles[`offers-${isInSuggestions ? 'list' : adageViewType}`]
+          }
+        >
+          {offers.map((offer, index) => (
+            <li
+              key={`${offer.isTemplate ? 'T' : ''}${offer.id}`}
+              data-testid="offer-listitem"
+            >
+              {adageViewType === 'list' || isInSuggestions ? (
+                <AdageOfferListCard
+                  offer={offer}
+                  queryId={results.queryID ?? ''}
+                  isInSuggestions={indexId?.startsWith('no_results_offers')}
+                  viewType={adageViewType}
+                  onCardClicked={() => triggerOfferClickLog(offer)}
+                />
+              ) : (
+                <OfferCardComponent
+                  onCardClicked={() => triggerOfferClickLog(offer)}
+                  key={offer.id}
+                  offer={offer}
+                  viewType={adageViewType}
+                />
+              )}
+              {adageViewType === 'list' && index === 0 && showDiffuseHelp ? (
                 <HighlightBanner
-                  title={"Permettre aux jeunes de s'exprimer par la danse"}
+                  title={'Le saviez-vous ?'}
                   description={
-                    "Du 23 juin au 10 août 2025, le pass Culture propose aux jeunes de 15 à 21 ans de participer au concours d'été de danse en filmant une chorégraphie dans la thématique des “soulèvements”. Des sélections de spectacles, livres, médias et vidéos d’artistes chorégraphes et danseurs seront diffusées sur l'application pour nourrir la créativité des jeunes."
+                    "Pour certaines offres, le pass Culture peut prendre en charge certains coûts accessoires nécessaires à la réalisation d'activités d'éducation artistique et culturelle menées en classe ou hors les murs. Cela peut inclure par exemple les frais de transport d’un intervenant ou le matériel consommable d’un atelier artistique. Cette prise en charge doit bien sûr faire l’objet d’un accord entre vous et le partenaire qui porte le projet. Il n’est en revanche pas possible d'acheter des livres ou des équipements pérennes avec les crédits pass Culture ou de financer le transport des élèves."
                   }
-                  localStorageKey={'TFD_2025_ADAGE_SEEN'}
+                  localStorageKey={'DIFFUSE_HELP_ADAGE_SEEN'}
                   img={
-                    <img
-                      src={TFD2025}
-                      className={styles['banner']}
-                      alt="Soulèvements"
+                    <ShadowTipsHelpIcon
+                      className={styles['highlight-banner-icon']}
                     />
-                  }
-                  cta={
-                    <ButtonLink
-                      variant={ButtonVariant.PRIMARY}
-                      to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
-                      isExternal
-                      opensInNewTab
-                      icon={fullLinkIcon}
-                      className={styles['highlight-banner-button']}
-                      onClick={() => logOpenHighlightBanner('TFD-2025')}
-                    >
-                      en savoir plus
-                    </ButtonLink>
                   }
                   variant={HighlightBannerVariant.ADAGE}
                 />
-              )
-            )}
-            {adageViewType === 'list' &&
-              index === 1 &&
-              showSurveySatisfaction && (
-                <SurveySatisfaction queryId={results.queryID} />
+              ) : (
+                adageViewType === 'list' &&
+                index === 0 &&
+                currentDate < highlightTargetDate && (
+                  <HighlightBanner
+                    title={"Permettre aux jeunes de s'exprimer par la danse"}
+                    description={
+                      "Du 23 juin au 10 août 2025, le pass Culture propose aux jeunes de 15 à 21 ans de participer au concours d'été de danse en filmant une chorégraphie dans la thématique des “soulèvements”. Des sélections de spectacles, livres, médias et vidéos d’artistes chorégraphes et danseurs seront diffusées sur l'application pour nourrir la créativité des jeunes."
+                    }
+                    localStorageKey={'TFD_2025_ADAGE_SEEN'}
+                    img={
+                      <img
+                        src={TFD2025}
+                        className={styles['banner']}
+                        alt="Soulèvements"
+                      />
+                    }
+                    cta={
+                      <ButtonLink
+                        variant={ButtonVariant.PRIMARY}
+                        to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
+                        isExternal
+                        opensInNewTab
+                        icon={fullLinkIcon}
+                        className={styles['highlight-banner-button']}
+                        onClick={() => logOpenHighlightBanner('TFD-2025')}
+                      >
+                        en savoir plus
+                      </ButtonLink>
+                    }
+                    variant={HighlightBannerVariant.ADAGE}
+                  />
+                )
               )}
-          </li>
-        ))}
-      </ul>
+              {adageViewType === 'list' &&
+                index === 1 &&
+                showSurveySatisfaction && (
+                  <SurveySatisfaction queryId={results.queryID} />
+                )}
+            </li>
+          ))}
+        </ul>
+      </AccessibleScrollContainer>
       {!isInSuggestions && hits.length > 0 && (
         <div className={styles['pagination']}>
-          <CustomPagination queryId={results.queryID} />
+          <CustomPagination
+            queryId={results.queryID}
+            onPageChange={scrollToContentWrapper}
+          />
         </div>
       )}
       {isBackToTopVisibile && (
