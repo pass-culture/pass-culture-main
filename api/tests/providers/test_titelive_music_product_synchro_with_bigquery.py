@@ -168,7 +168,7 @@ class BigQueryTiteliveMusicProductSyncTest:
     def test_sync_skips_unallowed_format(self, mock_execute, mock_gcp_data, mock_gcp_backend):
         providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         fixture = copy.deepcopy(fixtures.MUSIC_SEARCH_FIXTURE)
-        fixture["result"][1]["article"]["1"]["codesupport"] = 35
+        fixture["result"][1]["article"]["1"]["codesupport"] = "35"
         bq_products = self._prepare_iterator_from_fixture(fixture)
         mock_execute.return_value = iter(bq_products)
 
