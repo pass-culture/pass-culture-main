@@ -54,7 +54,7 @@ describe('IndividualOfferTimetable', () => {
     vi.spyOn(api, 'getStocks').mockResolvedValue(
       getStocksResponseFactory({
         stocks: [],
-        stockCount: 0,
+        totalStockCount: 0,
       })
     )
   })

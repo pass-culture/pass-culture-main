@@ -78,8 +78,8 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json == {
-            "stockCount": 2,
-            "touchedStockCount": 0,
+            "totalStockCount": 2,
+            "editedStockCount": 0,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -127,8 +127,8 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json == {
-            "stockCount": 1,
-            "touchedStockCount": 0,
+            "totalStockCount": 1,
+            "editedStockCount": 0,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -190,7 +190,7 @@ class Returns200Test:
             response = client.get(f"/offers/{offer_id}/stocks")
             assert response.status_code == 200
 
-        assert response.json["stockCount"] == 5
+        assert response.json["totalStockCount"] == 5
         assert len(response.json["stocks"]) == 5
 
     def test_should_return_filtered_stock_count(self, client):
@@ -213,8 +213,8 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.json == {
-            "stockCount": 5,
-            "touchedStockCount": 0,
+            "totalStockCount": 5,
+            "editedStockCount": 0,
             "stocks": [
                 {
                     "activationCodesExpirationDatetime": None,
@@ -253,7 +253,7 @@ class Returns200Test:
             )
             assert response.status_code == 200
 
-        assert response.json["stockCount"] == 3
+        assert response.json["totalStockCount"] == 3
         assert len(response.json["stocks"]) == 2
 
     def test_should_return_filtered_stock_count_and_filtered_stock_list_with_stocks_inferior_to_limit_per_page(
@@ -279,8 +279,8 @@ class Returns200Test:
             )
             assert response.status_code == 200
 
-        assert response.json["stockCount"] == 3
+        assert response.json["totalStockCount"] == 3
         assert len(response.json["stocks"]) == 3
 
-        assert response.json["stockCount"] == 3
+        assert response.json["totalStockCount"] == 3
         assert len(response.json["stocks"]) == 3

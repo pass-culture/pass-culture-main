@@ -494,9 +494,9 @@ export const defaultVenueProvider: VenueProviderResponse = {
   price: 0,
 }
 
-export function getStocksResponseFactory(
-  customGetStocksResponse: Partial<GetStocksResponseModel> = {}
-): GetStocksResponseModel {
+export function getStocksResponseFactory<
+  T extends Partial<GetStocksResponseModel>,
+>(override: T): Omit<GetStocksResponseModel, keyof T> & T {
   return {
     stocks: [
       {
@@ -507,8 +507,8 @@ export function getStocksResponseFactory(
         price: 666,
       },
     ],
-    stockCount: 1,
-    touchedStockCount: 1,
-    ...customGetStocksResponse,
+    totalStockCount: 1,
+    editedStockCount: 1,
+    ...override,
   }
 }

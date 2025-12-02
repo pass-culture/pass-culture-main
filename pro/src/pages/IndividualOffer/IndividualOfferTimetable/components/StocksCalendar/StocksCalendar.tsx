@@ -117,8 +117,8 @@ export function StocksCalendar({
 
     if (
       page > 1 &&
-      data?.stockCount &&
-      data.stockCount - ids.length <= (page - 1) * STOCKS_PER_PAGE
+      data?.totalStockCount &&
+      data.totalStockCount - ids.length <= (page - 1) * STOCKS_PER_PAGE
     ) {
       //  Descrease the page number if deleting the ids would leave the user on an empty stocks page
       setPage((p) => p - 1)
@@ -148,7 +148,7 @@ export function StocksCalendar({
         }
       )
 
-      if (updatedStocks?.touchedStockCount === 0) {
+      if (updatedStocks?.editedStockCount === 0) {
         notify.error('Aucune date n’a pu être modifiée')
         return
       }
@@ -183,7 +183,7 @@ export function StocksCalendar({
   }
 
   const stocks = data?.stocks || []
-  const stockCount = data?.stockCount ?? 0
+  const stockCount = data?.totalStockCount ?? 0
   const hasStocks = Boolean(stockCount)
 
   return (

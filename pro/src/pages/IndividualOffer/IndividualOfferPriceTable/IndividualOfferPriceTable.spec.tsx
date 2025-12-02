@@ -83,7 +83,6 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
   it('should render layout, screen and action bar when stocks loaded', async () => {
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
-        stockCount: 1,
         stocks: [getOfferStockFactory({ id: 2 })],
       })
     )
@@ -108,7 +107,6 @@ describe('<IndividualOfferSummaryPriceTable />', () => {
   it('should not call stocks for an event offer', async () => {
     vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
-        stockCount: 1,
         stocks: [getOfferStockFactory({ id: 2 })],
       })
     )

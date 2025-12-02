@@ -67,7 +67,7 @@ export const onSubmit = async (
         }
       )
 
-      const stockCount = data?.touchedStockCount ?? 0
+      const stockCount = data?.editedStockCount ?? 0
       notify.success(
         stockCount > 1
           ? `${new Intl.NumberFormat('fr-FR').format(

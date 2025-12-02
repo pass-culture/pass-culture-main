@@ -30,6 +30,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.models.utils import first_or_404
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
+from pcapi.routes.pro.stocks import get_stocks_with_count
 from pcapi.routes.serialization import offers_serialize
 from pcapi.routes.serialization import stock_serialize
 from pcapi.routes.serialization.thumbnails_serialize import CreateThumbnailBodyModel
@@ -144,7 +145,7 @@ def get_stocks(offer_id: int, query: offers_serialize.StocksQueryModel) -> offer
     stocks = [
         offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
     ]
-    return offers_serialize.GetStocksResponseModel(stocks=stocks, stock_count=stocks_count, touched_stock_count=0)
+    return offers_serialize.GetStocksResponseModel(stocks=stocks, total_stock_count=stocks_count, edited_stock_count=0)
 
 
 @private_api.route("/offers/<int:offer_id>/stocks/", methods=["PATCH"])
@@ -180,16 +181,12 @@ def upsert_offer_stocks(
         stock_inputs.append(typing.cast(offers_schemas.ThingStockUpsertInput, data))
 
     offers_api.upsert_offer_thing_stocks(offer, stock_inputs)
-    filtered_stocks = offers_repository.get_filtered_stocks(
-        offer=offer,
-        venue=offer.venue,
-    )
-    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
-    stocks = [
-        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
-    ]
+
+    stocks, total_stock_count = get_stocks_with_count(offer)
+
+    # NOT IMPLEMENTED (edited_stock_count here is not used by app pro)
     return offers_serialize.GetStocksResponseModel(
-        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=0
+        total_stock_count=total_stock_count, stocks=stocks, edited_stock_count=0
     )
 
 
@@ -215,16 +212,11 @@ def delete_stocks(offer_id: int, body: offers_serialize.DeleteStockListBody) -> 
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
     stocks_to_delete = [stock for stock in offer.stocks if stock.id in body.ids_to_delete]
     offers_api.batch_delete_stocks(stocks_to_delete, current_user.real_user.id, current_user.is_impersonated)
-    filtered_stocks = offers_repository.get_filtered_stocks(
-        offer=offer,
-        venue=offer.venue,
-    )
-    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
-    stocks = [
-        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
-    ]
+
+    stocks, total_stock_count = get_stocks_with_count(offer)
+
     return offers_serialize.GetStocksResponseModel(
-        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=len(stocks_to_delete)
+        total_stock_count=total_stock_count, stocks=stocks, edited_stock_count=len(stocks_to_delete)
     )
 
 

@@ -4,8 +4,8 @@
 /* eslint-disable */
 import type { GetOfferStockResponseModel } from './GetOfferStockResponseModel';
 export type GetStocksResponseModel = {
-  stockCount: number;
+  editedStockCount: number;
   stocks: Array<GetOfferStockResponseModel>;
-  touchedStockCount: number;
+  totalStockCount: number;
 };
 
