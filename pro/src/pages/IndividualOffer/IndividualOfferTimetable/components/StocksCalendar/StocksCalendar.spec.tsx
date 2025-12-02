@@ -35,14 +35,14 @@ function renderStocksCalendar(
   vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
     getStocksResponseFactory({
       stocks: stocks,
-      stockCount: stocks.length,
+      totalStockCount: stocks.length,
     })
   )
 
   vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValue(
     getStocksResponseFactory({
       stocks: stocks,
-      stockCount: 20,
+      totalStockCount: stocks.length,
     })
   )
 
@@ -147,7 +147,7 @@ describe('StocksCalendar', () => {
     const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
-        stockCount: 0,
+        totalStockCount: 0,
       })
     )
 
@@ -174,7 +174,7 @@ describe('StocksCalendar', () => {
     const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
-        stockCount: 0,
+        totalStockCount: 0,
       })
     )
 
@@ -375,8 +375,8 @@ describe('StocksCalendar', () => {
     vi.spyOn(api, 'bulkUpdateEventStocks').mockResolvedValueOnce(
       getStocksResponseFactory({
         stocks: [],
-        stockCount: 0,
-        touchedStockCount: 0,
+        totalStockCount: 0,
+        editedStockCount: 0,
       })
     )
 

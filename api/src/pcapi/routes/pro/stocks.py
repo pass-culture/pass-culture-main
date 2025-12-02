@@ -84,6 +84,18 @@ def _filter_out_stock_duplicates(
     return stocks_list
 
 
+def get_stocks_with_count(offer: offers_models.Offer) -> tuple[list[offers_serialize.GetOfferStockResponseModel], int]:
+    filtered_stocks = offers_repository.get_filtered_stocks(
+        offer=offer,
+        venue=offer.venue,
+    )
+    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
+    stocks = [
+        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
+    ]
+    return stocks, filtered_stocks.count()
+
+
 @private_api.route("/stocks/bulk", methods=["POST"])
 @login_required
 @spectree_serialize(
@@ -127,17 +139,11 @@ def bulk_create_event_stocks(
         )
     except offers_exceptions.OfferException as error:
         raise api_errors.ApiErrors(error.errors)
-    filtered_stocks = offers_repository.get_filtered_stocks(
-        offer=offer,
-        venue=offer.venue,
-    )
-    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
-    stocks = [
-        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
-    ]
+
+    stocks, total_stock_count = get_stocks_with_count(offer)
 
     return offers_serialize.GetStocksResponseModel(
-        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=created_stocks_count
+        total_stock_count=total_stock_count, stocks=stocks, edited_stock_count=created_stocks_count
     )
 
 
@@ -205,14 +211,8 @@ def bulk_update_event_stocks(
         assert edited_stock  # to make mypy happy
         offers_api.handle_event_stock_beginning_datetime_update(edited_stock)
 
-    filtered_stocks = offers_repository.get_filtered_stocks(
-        offer=offer,
-        venue=offer.venue,
-    )
-    filtered_and_paginated_stocks = offers_repository.get_paginated_stocks(stocks_query=filtered_stocks)
-    stocks = [
-        offers_serialize.GetOfferStockResponseModel.from_orm(stock) for stock in filtered_and_paginated_stocks.all()
-    ]
+    stocks, total_stock_count = get_stocks_with_count(offer)
+
     return offers_serialize.GetStocksResponseModel(
-        stock_count=filtered_stocks.count(), stocks=stocks, touched_stock_count=edited_stocks_count
+        total_stock_count=total_stock_count, stocks=stocks, edited_stock_count=edited_stocks_count
     )

@@ -51,7 +51,7 @@ class Returns201Test:
 
         assert response.status_code == 201
 
-        assert response.json["stockCount"] == len(stock_data["stocks"])
+        assert response.json["totalStockCount"] == len(stock_data["stocks"])
 
         created_stocks = db.session.query(offers_models.Stock).order_by(offers_models.Stock.price).all()
         assert len(created_stocks) == 3
@@ -152,8 +152,8 @@ class Returns201Test:
         }
         response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
         assert response.status_code == 201
-        assert response.json["stockCount"] == 1
-        assert response.json["touchedStockCount"] == 0
+        assert response.json["totalStockCount"] == 1
+        assert response.json["editedStockCount"] == 0
         assert existing_stock.quantity == 10
 
     def should_not_create_duplicated_stock(self, client):
@@ -221,8 +221,8 @@ class Returns201Test:
         response = client.with_session_auth("user@example.com").post("/stocks/bulk", json=stock_data)
 
         assert response.status_code == 201
-        assert response.json["stockCount"] == 4
-        assert response.json["touchedStockCount"] == 2
+        assert response.json["totalStockCount"] == 4
+        assert response.json["editedStockCount"] == 2
 
 
 @pytest.mark.usefixtures("db_session")

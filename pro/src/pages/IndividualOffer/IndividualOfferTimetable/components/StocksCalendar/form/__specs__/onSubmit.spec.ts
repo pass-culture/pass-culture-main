@@ -353,8 +353,8 @@ describe('onSubmit', () => {
       it(`should ${description}`, async () => {
         vi.spyOn(api, 'bulkCreateEventStocks').mockResolvedValueOnce(
           getStocksResponseFactory({
-            stockCount: expectedStocks.length,
-            touchedStockCount: expectedStocks.length,
+            totalStockCount: expectedStocks.length,
+            editedStockCount: expectedStocks.length,
           })
         )
         await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])

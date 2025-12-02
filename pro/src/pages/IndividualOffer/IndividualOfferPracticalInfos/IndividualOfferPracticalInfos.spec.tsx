@@ -43,7 +43,7 @@ describe('IndividialOfferPracticalInfos', () => {
       categories: [],
       subcategories: [],
     })
-    vi.spyOn(api, 'getStocks').mockResolvedValue(getStocksResponseFactory())
+    vi.spyOn(api, 'getStocks').mockResolvedValue(getStocksResponseFactory({}))
 
     renderIndividualOfferMedia()
 

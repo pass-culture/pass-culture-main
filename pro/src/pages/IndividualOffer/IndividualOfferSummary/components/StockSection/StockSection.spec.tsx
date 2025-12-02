@@ -62,7 +62,6 @@ describe('Summary stock section', () => {
     it('should render sold out warning', async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
-          stockCount: 1,
           stocks: [
             getOfferStockFactory({
               quantity: 0,
@@ -103,7 +102,6 @@ describe('Summary stock section', () => {
     it('should render expired warning', async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
-          stockCount: 1,
           stocks: [
             getOfferStockFactory({
               quantity: 10,
@@ -142,7 +140,7 @@ describe('Summary stock section', () => {
 
     it('should render no stock warning', async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
-        getStocksResponseFactory({ stockCount: 0, stocks: [] })
+        getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
       )
 
       const props = {
@@ -179,7 +177,6 @@ describe('Summary stock section', () => {
     it('should render creation summary', async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
-          stockCount: 1,
           stocks: [
             getOfferStockFactory({
               quantity: 10,
@@ -226,7 +223,6 @@ describe('Summary stock section', () => {
     it("should render booking limit date when it's given", async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
-          stockCount: 1,
           stocks: [
             getOfferStockFactory({
               quantity: 10,
@@ -254,7 +250,6 @@ describe('Summary stock section', () => {
     it('should render quantity as "Illimité" when quantity is null or undefined', async () => {
       vi.spyOn(api, 'getStocks').mockResolvedValueOnce(
         getStocksResponseFactory({
-          stockCount: 1,
           stocks: [getOfferStockFactory({ quantity: null })],
         })
       )
