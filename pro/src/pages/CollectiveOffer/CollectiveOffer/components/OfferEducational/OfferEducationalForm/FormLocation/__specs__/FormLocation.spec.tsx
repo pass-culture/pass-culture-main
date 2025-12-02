@@ -146,9 +146,9 @@ describe('FormLocation', () => {
 
     await userEvent.click(screen.getByText('Autre adresse'))
 
-    const adressInput = screen.getByLabelText('Adresse postale *')
+    const addressInput = screen.getByLabelText('Adresse postale *')
 
-    await userEvent.type(adressInput, '10 rue ')
+    await userEvent.type(addressInput, '10 rue ')
 
     const addressSuggestion = await screen.findByText(
       '10 Rue des lilas 69002 Lyon',
@@ -159,11 +159,7 @@ describe('FormLocation', () => {
 
     await userEvent.click(addressSuggestion)
 
-    expect(
-      await screen.findByText('10 Rue des lilas 69002 Lyon', {
-        selector: 'option',
-      })
-    ).toBeInTheDocument()
+    expect(addressInput).toHaveValue('10 Rue des lilas 69002 Lyon')
 
     const formValues = getValues()
 

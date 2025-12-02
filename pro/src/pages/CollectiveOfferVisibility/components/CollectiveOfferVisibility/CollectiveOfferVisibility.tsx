@@ -384,7 +384,6 @@ export const CollectiveOfferVisibilityScreen = ({
                     options={institutionsOptions}
                     label="Nom de l’établissement scolaire ou code UAI"
                     description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
-                    hideArrow
                     onReset={() => {
                       setValue('institution', '')
                       setValue('teacher', '')
@@ -413,7 +412,6 @@ export const CollectiveOfferVisibilityScreen = ({
                   label="Prénom et nom de l’enseignant (au moins 3 caractères)"
                   required={false}
                   description="Ex: Camille Dupont"
-                  hideArrow
                   onReset={() => {
                     setValue('teacher', '')
                   }}
