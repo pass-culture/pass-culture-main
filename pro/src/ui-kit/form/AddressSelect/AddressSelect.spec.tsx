@@ -122,6 +122,7 @@ describe('<AddressSelect />', () => {
     const user = userEvent.setup()
     await user.click(input)
     await user.type(input, 'Tou')
+    await user.tab()
 
     await waitFor(() => {
       expect(getDataFromAddressMock).toHaveBeenCalledExactlyOnceWith('Tou', {
