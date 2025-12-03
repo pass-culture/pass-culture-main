@@ -279,7 +279,13 @@ def anonymize_beneficiary_users() -> None:
         db.session.query(models.User)
         .join(models.GdprUserAnonymization)
         .filter(
-            models.User.validatedBirthDate < date_utils.get_naive_utc_now() - relativedelta(years=21),
+            sa.or_(
+                models.User.validatedBirthDate < date_utils.get_naive_utc_now() - relativedelta(years=21),
+                sa.and_(
+                    models.User.validatedBirthDate.is_(None),
+                    models.User.dateOfBirth < date_utils.get_naive_utc_now() - relativedelta(years=21),
+                ),
+            ),
             sa.or_(
                 models.User.suspension_reason.is_(None),
                 ~models.User.suspension_reason.in_(constants.FRAUD_SUSPENSION_REASONS),
