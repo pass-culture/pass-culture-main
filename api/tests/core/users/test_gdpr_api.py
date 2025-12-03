@@ -1028,6 +1028,20 @@ class AnonymizeBeneficiaryUsersTest(StorageFolderManager):
         assert len(sendinblue_testing.sendinblue_requests) == 1
         assert user_to_anonymize.firstName != "user_to_anonymize"
 
+    def test_anonymize_user_without_validated_birth_date(self) -> None:
+        user_to_anonymize = users_factories.BeneficiaryFactory(
+            firstName="user_to_anonymize",
+        )
+        user_to_anonymize.validatedBirthDate = None
+        user_to_anonymize.dateOfBirth = date_utils.get_naive_utc_now() - relativedelta(years=21, days=3)
+        users_factories.GdprUserAnonymizationFactory(user=user_to_anonymize)
+
+        gdpr_api.anonymize_beneficiary_users()
+
+        db.session.refresh(user_to_anonymize)
+        assert user_to_anonymize.firstName != "user_to_anonymize"
+        assert db.session.query(users_models.GdprUserAnonymization).count() == 0
+
 
 class AnonymizeUserDepositsTest:
     def test_anonymize_user_deposits(self) -> None:
