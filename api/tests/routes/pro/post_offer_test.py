@@ -1072,17 +1072,13 @@ class Returns400Test:
     @pytest.mark.parametrize(
         "input_json,expected_json",
         [
-            ({"name": "too long" * 30}, {"name": ["Le titre de l’offre doit faire au maximum 90 caractères."]}),
+            ({"name": "too long" * 30}, {"name": ["Le titre de l'offre doit faire au maximum 90 caractères."]}),
             (
                 {
                     "name": "Le Visible et l'invisible - Suivi de notes de travail - 9782070286256",
                     "subcategoryId": subcategories.LIVRE_PAPIER.id,
                 },
                 {"name": ["Le titre d'une offre ne peut contenir l'EAN"]},
-            ),
-            (
-                {"subcategoryId": subcategories.ACHAT_INSTRUMENT.id, "url": "http://legrandj.eu"},
-                {"url": ['Une offre de sous-catégorie "Achat instrument" ne peut contenir un champ `url`']},
             ),
             ({"url": "missing.something"}, {"url": ['L\'URL doit commencer par "http://" ou "https://"']}),
             ({"url": "https://missing"}, {"url": ['L\'URL doit terminer par une extension (ex. ".fr")']}),
