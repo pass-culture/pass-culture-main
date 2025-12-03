@@ -25,6 +25,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
+from pcapi.core.users.gdpr_api import anonymize_user
 from pcapi.core.users.password_utils import check_password_validity
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -276,6 +277,18 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def signout() -> None:
+    discard_session()
+    logout_user()
+
+
+@private_api.route("/users/anonymize", methods=["GET"])
+@login_required
+@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
+@atomic()
+def anonymize() -> None:
+    user_id = flask.session["user_id"]
+    user = db.session.query(users_models.User).filter(users_models.User.id == user_id).one_or_none()
+    anonymize_user(user)
     discard_session()
     logout_user()
 

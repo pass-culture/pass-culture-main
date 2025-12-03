@@ -2374,6 +2374,21 @@ export class DefaultService {
     });
   }
   /**
+   * anonymize <GET>
+   * @returns void
+   * @throws ApiError
+   */
+  public anonymize(): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/users/anonymize',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
    * post_check_token <POST>
    * @param requestBody
    * @returns void
