@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import styles from './AccessibleScrollContainer.module.scss'
 
 type AccessibleScrollContainerProps = {
@@ -13,10 +15,12 @@ export const AccessibleScrollContainer = ({
   children,
   className,
 }: AccessibleScrollContainerProps): JSX.Element => {
+  const memoizedLiveMessage = useMemo(() => liveMessage, [liveMessage])
+
   return (
     <div ref={containerRef} tabIndex={-1} className={className}>
       <output aria-live="polite" className={styles['visually-hidden']}>
-        {liveMessage}
+        {memoizedLiveMessage}
       </output>
       {children}
     </div>

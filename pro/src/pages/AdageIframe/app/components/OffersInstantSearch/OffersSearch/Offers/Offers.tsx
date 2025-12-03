@@ -139,10 +139,7 @@ export const Offers = ({
   }, [isMobileScreen, dispatch])
 
   const { currentRefinement, nbPages } = usePagination()
-  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    useAccessibleScroll({
-      initialLiveMessage: `Page ${currentRefinement + 1} sur ${nbPages}`,
-    })
+  const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll()
 
   if (isLoading && offers.length === 0) {
     return (
@@ -230,7 +227,7 @@ export const Offers = ({
       </div>
       <AccessibleScrollContainer
         containerRef={contentWrapperRef}
-        liveMessage={liveMessage}
+        liveMessage={`Page ${currentRefinement + 1} sur ${nbPages}`}
       >
         <ul
           className={

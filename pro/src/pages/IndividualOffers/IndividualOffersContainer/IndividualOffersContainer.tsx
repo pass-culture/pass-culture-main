@@ -139,11 +139,9 @@ export const IndividualOffersContainer = ({
     isHeadlineOfferAllowedForOfferer
   )
 
-  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    useAccessibleScroll({
-      initialLiveMessage: `Page ${currentPageNumber} sur ${pageCount}`,
-      selector: '#content-wrapper',
-    })
+  const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
+    selector: '#content-wrapper',
+  })
 
   return (
     <div>
@@ -182,7 +180,7 @@ export const IndividualOffersContainer = ({
       </output>
       <AccessibleScrollContainer
         containerRef={contentWrapperRef}
-        liveMessage={liveMessage}
+        liveMessage={`Page ${currentPageNumber} sur ${pageCount}`}
       >
         <Table
           columns={columns}

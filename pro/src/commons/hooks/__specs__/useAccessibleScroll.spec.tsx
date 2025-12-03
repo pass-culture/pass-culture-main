@@ -13,9 +13,9 @@ const createMockRect = (top: number) => new DOMRect(0, top, 0, 0)
 describe('useAccessibleScroll', () => {
   it('should scroll to the content wrapper on the window', () => {
     const windowScrollSpy = vi
-      .spyOn(window, 'scrollTo')
+      .spyOn(globalThis.window, 'scrollTo')
       .mockImplementation(() => {})
-    Object.defineProperty(window, 'scrollY', {
+    Object.defineProperty(globalThis.window, 'scrollY', {
       configurable: true,
       value: 60,
       writable: true,
@@ -45,7 +45,7 @@ describe('useAccessibleScroll', () => {
 
   it('should scroll inside the provided selector when available', () => {
     const windowScrollSpy = vi
-      .spyOn(window, 'scrollTo')
+      .spyOn(globalThis.window, 'scrollTo')
       .mockImplementation(() => {})
     const querySelectorSpy = vi
       .spyOn(document, 'querySelector')
@@ -73,7 +73,6 @@ describe('useAccessibleScroll', () => {
     // Render the hook with a selector option
     const { result } = renderHook(() =>
       useAccessibleScroll({
-        initialLiveMessage: 'test',
         selector: '#page-wrapper',
       })
     )
