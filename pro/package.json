@@ -89,7 +89,7 @@
     "@types/react-redux": "7.1.34",
     "@vitejs/plugin-react": "5.1.1",
     "@vitest/coverage-istanbul": "3.2.4",
-    "@vitest/runner": "4.0.14",
+    "@vitest/runner": "4.0.15",
     "allure-js-commons": "3.4.2",
     "allure-vitest": "3.4.3",
     "axe-core": "4.11.0",
