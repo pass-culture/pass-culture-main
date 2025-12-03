@@ -29,7 +29,7 @@ vi.mock('@/commons/hooks/useNotification', () => ({
 }))
 
 const filters: CollectiveSearchFiltersParams = {
-  nameOrIsbn: 'test offer',
+  name: 'test offer',
   offererId: '1',
   venueId: '2',
   status: [CollectiveOfferDisplayedStatus.PUBLISHED],

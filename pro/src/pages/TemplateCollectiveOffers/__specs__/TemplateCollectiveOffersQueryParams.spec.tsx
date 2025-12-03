@@ -170,7 +170,7 @@ describe('route TemplateCollectiveOffers', () => {
       await userEvent.click(screen.getByText('Rechercher'))
 
       expect(mockNavigate).toHaveBeenCalledWith(
-        `/offres/vitrines?nom-ou-isbn=AnyWord`,
+        `/offres/vitrines?nom=AnyWord`,
         {
           replace: true,
         }

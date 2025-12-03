@@ -84,7 +84,7 @@ export const DEFAULT_SEARCH_FILTERS: IndividualSearchFiltersParams = {
 
 export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
   {
-    nameOrIsbn: ALL_OFFERS,
+    name: ALL_OFFERS,
     offererId: 'all',
     venueId: ALL_VENUES,
     format: ALL_FORMATS,

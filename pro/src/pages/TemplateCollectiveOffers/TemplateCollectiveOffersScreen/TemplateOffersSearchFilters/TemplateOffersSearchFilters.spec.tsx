@@ -16,7 +16,7 @@ describe('TemplateOffersSearchFilters', () => {
         resetFilters={() => vi.fn()}
         offererId={undefined}
         selectedFilters={{
-          nameOrIsbn: '',
+          name: '',
           offererId: '',
           venueId: '',
           format: 'all',

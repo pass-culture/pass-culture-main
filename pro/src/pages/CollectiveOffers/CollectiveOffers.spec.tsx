@@ -528,12 +528,12 @@ describe('CollectiveOffers', () => {
       )
     })
 
-    it('when clicking on "Réinitialiser les filtres"  - except nameOrIsbn', async () => {
+    it('when clicking on "Réinitialiser les filtres"  - except name', async () => {
       vi.spyOn(api, 'getCollectiveOffers').mockResolvedValueOnce([])
 
-      const nameOrIsbn = 'Any word'
+      const name = 'Any word'
       renderOffers({
-        nameOrIsbn,
+        name,
         format: EacFormat.ATELIER_DE_PRATIQUE,
       })
 
@@ -543,7 +543,7 @@ describe('CollectiveOffers', () => {
       })
       expect(api.getCollectiveOffers).toHaveBeenNthCalledWith(
         2,
-        nameOrIsbn,
+        name,
         offererId,
         null,
         null,
@@ -646,7 +646,7 @@ describe('CollectiveOffers', () => {
         await userEvent.click(screen.getByText('Rechercher'))
 
         expect(routerUseNavigateReturnMock).toHaveBeenCalledWith(
-          '/offres/collectives?nom-ou-isbn=AnyWord',
+          '/offres/collectives?nom=AnyWord',
           {
             replace: true,
           }

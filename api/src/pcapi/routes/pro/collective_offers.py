@@ -34,7 +34,7 @@ def _get_filters_from_query(
         user_id=current_user.id,
         offerer_id=query.offerer_id,
         venue_id=query.venue_id,
-        name_keywords=query.nameOrIsbn,
+        name_keywords=query.name,
         statuses=query.status,
         period_beginning_date=query.period_beginning_date,
         period_ending_date=query.period_ending_date,

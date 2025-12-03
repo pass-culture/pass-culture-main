@@ -69,7 +69,7 @@ export const OfferTypeScreen = () => {
           : (queryVenueId ?? undefined),
       }
       const {
-        nameOrIsbn,
+        name,
         offererId,
         venueId,
         status,
@@ -82,7 +82,7 @@ export const OfferTypeScreen = () => {
 
       const templateOffersOnSelectedVenue =
         await api.getCollectiveOfferTemplates(
-          nameOrIsbn,
+          name,
           offererId,
           status,
           venueId,

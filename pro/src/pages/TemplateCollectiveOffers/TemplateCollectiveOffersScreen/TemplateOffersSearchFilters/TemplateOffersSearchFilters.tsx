@@ -106,7 +106,7 @@ export const TemplateOffersSearchFilters = ({
   }
 
   const storeNameOrIsbnSearchValue = (event: FormEvent<HTMLInputElement>) => {
-    updateSearchFilters({ nameOrIsbn: event.currentTarget.value })
+    updateSearchFilters({ name: event.currentTarget.value })
   }
 
   const storeSelectedFormat = (event: FormEvent<HTMLSelectElement>) => {
@@ -183,7 +183,7 @@ export const TemplateOffersSearchFilters = ({
         label: 'Nom de l’offre',
         disabled: disableAllFilters,
         onChange: storeNameOrIsbnSearchValue,
-        value: selectedFilters.nameOrIsbn,
+        value: selectedFilters.name,
       }}
       onResetFilters={resetCollectiveFilters}
     >

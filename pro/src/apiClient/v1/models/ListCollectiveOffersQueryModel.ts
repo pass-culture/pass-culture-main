@@ -8,7 +8,7 @@ import type { EacFormat } from './EacFormat';
 export type ListCollectiveOffersQueryModel = {
   format?: EacFormat | null;
   locationType?: CollectiveLocationType | null;
-  nameOrIsbn?: string | null;
+  name?: string | null;
   offererAddressId?: number | null;
   offererId?: number | null;
   periodBeginningDate?: string | null;

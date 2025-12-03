@@ -94,14 +94,14 @@ export const CollectiveOffersScreen = ({
     searchFilters: initialSearchFilters,
     defaultFilters: DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
     ignore: [
-      'nameOrIsbn',
+      'name',
       'collectiveOfferType',
       ...((withSwitchVenueFeature
         ? ['venueId']
         : []) satisfies (keyof CollectiveSearchFiltersParams)[]),
     ],
   })
-  const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.nameOrIsbn
+  const hasFiltersOrNameSearch = hasFilters || !!initialSearchFilters.name
 
   const userHasNoOffers = !isLoading && !hasOffers && !hasFiltersOrNameSearch
 
@@ -144,11 +144,11 @@ export const CollectiveOffersScreen = ({
     applyUrlFiltersAndRedirect({ ...filters, page: DEFAULT_PAGE })
   }
 
-  const resetFilters = (resetNameOrIsbn = true) => {
-    onResetFilters(resetNameOrIsbn)
+  const resetFilters = (resetName = true) => {
+    onResetFilters(resetName)
     const newFilters = {
       ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-      ...(!resetNameOrIsbn && { nameOrIsbn: initialSearchFilters.nameOrIsbn }),
+      ...(!resetName && { name: initialSearchFilters.name }),
     }
     setSelectedFilters(newFilters)
     applyUrlFiltersAndRedirect(newFilters)

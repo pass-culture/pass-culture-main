@@ -12,7 +12,7 @@ export const downloadBookableOffersFile = async (
   type: 'CSV' | 'XLS'
 ): Promise<void> => {
   const {
-    nameOrIsbn,
+    name,
     offererId,
     venueId,
     status,
@@ -24,7 +24,7 @@ export const downloadBookableOffersFile = async (
   } = serializeApiCollectiveFilters(filters)
 
   const apiParams = [
-    nameOrIsbn,
+    name,
     offererId,
     status,
     venueId,

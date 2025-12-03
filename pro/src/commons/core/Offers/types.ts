@@ -27,7 +27,7 @@ export type IndividualSearchFiltersParams = SearchListParams & {
 }
 
 export type CollectiveSearchFiltersParams = SearchListParams & {
-  nameOrIsbn: string
+  name: string
   // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that never happens since there is always a `currentOfferer` in the store.
   offererId: string | 'all'
   // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that will disappear once `WIP_SWITCH_VENUE` is enabled in production.
