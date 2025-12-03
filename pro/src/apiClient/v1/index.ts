@@ -178,6 +178,7 @@ export type { ListVenueProviderResponse } from './models/ListVenueProviderRespon
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenues } from './models/ManagedVenues';
 export type { MentalDisabilityModel } from './models/MentalDisabilityModel';
+export type { MinimalPostOfferBodyModel } from './models/MinimalPostOfferBodyModel';
 export type { MotorDisabilityModel } from './models/MotorDisabilityModel';
 export type { MusicTypeResponse } from './models/MusicTypeResponse';
 export type { NationalProgramModel } from './models/NationalProgramModel';
