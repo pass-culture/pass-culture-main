@@ -220,6 +220,13 @@ describe('TemplateCollectiveOffers', () => {
   })
 
   describe('page navigation', () => {
+    // Necessary because JSDOM doesn't implement the `scrollTo` method
+    // (which is used by the `useAccessibleScroll` hook in that component's scope)
+    beforeAll(() => {
+      Element.prototype.scrollTo = () => {}
+      window.scrollTo = () => {}
+    })
+
     it('should display next page when clicking on right arrow', async () => {
       const offers = Array.from({ length: 11 }, () =>
         collectiveOfferTemplateFactory()

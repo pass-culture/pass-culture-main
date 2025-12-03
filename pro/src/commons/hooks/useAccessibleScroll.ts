@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
+import { assertOrFrontendError } from '../errors/assertOrFrontendError'
 import { useMediaQuery } from './useMediaQuery'
 
 /**
@@ -52,18 +53,23 @@ export const useAccessibleScroll = (
   const scrollToContentWrapper = () => {
     if (contentWrapperRef.current) {
       const wrapperRect = contentWrapperRef.current.getBoundingClientRect()
-      let target: Element | Window = window
+      let target: Window | Element | null = window
       let offset: number = wrapperRect.top + window.scrollY
 
       // If a selector is provided, scroll to the container with the given selector
       if (selector) {
         const pageWrapper = document.querySelector(selector)
-        if (pageWrapper !== null) {
-          const pageRect = pageWrapper.getBoundingClientRect()
-          offset = wrapperRect.top - pageRect.top + pageWrapper.scrollTop
 
-          target = pageWrapper
-        }
+        assertOrFrontendError(
+          pageWrapper !== null,
+          `[useAccessibleScroll] Cannot scroll to ${selector} because it is not present in the DOM`,
+          { isSilent: true }
+        )
+
+        const pageRect = pageWrapper.getBoundingClientRect()
+        offset = wrapperRect.top - pageRect.top + pageWrapper.scrollTop
+
+        target = pageWrapper
       }
 
       // Focus before scrolling in order to not break the smooth animation (if applicable)
