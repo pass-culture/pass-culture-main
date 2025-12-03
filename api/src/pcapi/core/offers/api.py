@@ -351,9 +351,11 @@ def create_offer(
     fields.pop("videoUrl", None)
 
     if is_from_private_api:
+        if not body.withdrawal_details:
+            fields.update({"withdrawalDetails": venue.withdrawalDetails})
+
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
         fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
-        fields.update({"withdrawalDetails": venue.withdrawalDetails})
 
         keys_to_remove = {"venueId", "callId"}
         if product:
@@ -375,7 +377,7 @@ def create_offer(
         validation=models.OfferValidationStatus.DRAFT,
         publicationDatetime=None,
     )
-    repository.add_to_session(offer, should_skip_validation=is_from_private_api)
+    repository.add_to_session(offer)
 
     db.session.flush()
 
@@ -568,7 +570,7 @@ def update_offer(
 
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
-    repository.add_to_session(offer, should_skip_validation=is_from_private_api)
+    repository.add_to_session(offer)
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
