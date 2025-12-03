@@ -4,8 +4,10 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.educational.factories as educational_factories
 import pcapi.core.finance.factories as finance_factories
 import pcapi.core.finance.models as finance_models
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
+import pcapi.core.users.factories as users_factories
 import pcapi.scripts.resurect_venue.main as resurect_venue
 from pcapi.models import db
 
@@ -264,6 +266,7 @@ def test_read_input_file():
 
 @pytest.mark.features(VENUE_REGULARIZATION=True)
 def test_resurect_venue():
+    author = users_factories.UserFactory()
     origin_venue = offerers_factories.VenueFactory(siret=None, comment="bwaaaa", pricing_point="self")
     destination_venue = offerers_factories.VenueFactory(
         siret=None, comment="bwaaaa2", managingOfferer=origin_venue.managingOfferer, pricing_point=origin_venue
@@ -371,6 +374,7 @@ def test_resurect_venue():
             collective_offers=[collective_offer1.id, collective_offer3.id],
             collective_offer_templates=[collective_offer_template1.id, collective_offer_template3.id],
         ),
+        author=author,
     )
 
     assert not destination_venue.isSoftDeleted
@@ -403,3 +407,22 @@ def test_resurect_venue():
     assert individual_pricing2.event.venueId == origin_venue_id
     assert collective_pricing1.event.venueId == origin_venue_id
     assert collective_pricing2.event.venueId == origin_venue_id
+
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == origin_venue_id)[0]
+        .actionType
+        == history_models.ActionType.VENUE_REGULARIZATION
+    )
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == origin_venue_id)[0]
+        .extraData["destination_venue_id"]
+        == destination_venue_id
+    )
+    assert (
+        db.session.query(history_models.ActionHistory)
+        .filter(history_models.ActionHistory.venueId == origin_venue_id)[0]
+        .comment
+        == f"Rollback from Venue Regularization: {origin_venue_id} soft delete has been reverted."
+    )
