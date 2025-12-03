@@ -262,6 +262,11 @@ class UnavailableHighlightException(HighlightException):
         super().__init__("highlight", "Highlight is unavailable")
 
 
+class HighlightRequestAlreadyExistsException(HighlightException):
+    def __init__(self) -> None:
+        super().__init__("highlight_request", "HighlightRequest already exists for this offer and highlight")
+
+
 class UnallowedUpdate(OfferException):
     def __init__(self, field: str | None = None, *args: typing.Any, **kwargs: typing.Any):
         self.field = field

@@ -2820,6 +2820,8 @@ def upsert_highlight_requests(
                 technical_message_id="offer.highlightRequests.created",
             )
         )
-
-    db.session.flush()
+    try:
+        db.session.flush()
+    except sa_exc.IntegrityError:
+        raise exceptions.HighlightRequestAlreadyExistsException()
     return highlight_requests
