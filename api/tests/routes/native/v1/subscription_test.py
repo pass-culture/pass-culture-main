@@ -685,7 +685,8 @@ class IdentificationSessionTest:
         assert check
         assert response.json["identificationUrl"] == expected_url
 
-    def test_conflict_error_tries_to_resync(self, client):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_conflict_error_tries_to_resync(self, store_id_pictures_task_mock, client):
         user = users_factories.ProfileCompletedUserFactory(age=18)
         ubble_identification_id = "idv_qwerty1234"
         fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(

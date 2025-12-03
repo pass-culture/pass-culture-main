@@ -201,7 +201,8 @@ class UbbleWorkflowV2Test:
 
         assert fraud_check.status == subscription_models.FraudCheckStatus.PENDING
 
-    def test_ubble_identification_approved(self, requests_mock):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_ubble_identification_approved(self, store_id_pictures_task_mock, requests_mock):
         user = users_factories.UserFactory(age=17)
         fraud_check = BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
@@ -220,8 +221,10 @@ class UbbleWorkflowV2Test:
 
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.resultContent.get("birth_place") is not None
+        store_id_pictures_task_mock.assert_called_once()
 
-    def test_ubble_identification_approved_with_test_email(self, requests_mock):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_ubble_identification_approved_with_test_email(self, store_id_pictures_task_mock, requests_mock):
         user = users_factories.UserFactory(email="hello+ubble_test@example.com", age=17)
         fraud_check = BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
@@ -348,7 +351,8 @@ class UbbleWorkflowV2Test:
 
         assert fraud_check.status == subscription_models.FraudCheckStatus.CANCELED
 
-    def test_concurrent_requests_leave_fraud_check_ok(self, requests_mock):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_concurrent_requests_leave_fraud_check_ok(self, store_id_pictures_task_mock, requests_mock):
         user = users_factories.UserFactory(
             age=18,
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -378,7 +382,8 @@ class UbbleWorkflowV2Test:
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert user.has_beneficiary_role is True
 
-    def test_ubble_workflow_updates_birth_date(self, requests_mock):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_ubble_workflow_updates_birth_date(self, store_id_pictures_task_mock, requests_mock):
         sixteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=16, months=1)
         user = users_factories.UserFactory(dateOfBirth=sixteen_years_ago)
         fraud_check = BeneficiaryFraudCheckFactory(
@@ -400,8 +405,9 @@ class UbbleWorkflowV2Test:
         assert user.dateOfBirth == sixteen_years_ago
         assert user.validatedBirthDate == seventeen_years_ago
 
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
     @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
-    def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, requests_mock):
+    def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, store_id_pictures_task_mock, requests_mock):
         last_year = date_utils.get_naive_utc_now() - relativedelta(years=1)
         with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(
@@ -429,7 +435,8 @@ class UbbleWorkflowV2Test:
         assert user.validatedBirthDate == eighteen_years_and_a_month_ago.date()
         assert user.has_beneficiary_role
 
-    def test_ubble_workflow_with_eligibility_change_17_18(self, requests_mock):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_ubble_workflow_with_eligibility_change_17_18(self, store_id_pictures_task_mock, requests_mock):
         seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17, months=1)
         user = users_factories.UserFactory(dateOfBirth=seventeen_years_ago)
         fraud_check = BeneficiaryFraudCheckFactory(
@@ -487,7 +494,10 @@ class UbbleWorkflowV2Test:
         assert ko_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.AGE_TOO_OLD]
 
-    def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(self, requests_mock):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(
+        self, store_id_pictures_task_mock, requests_mock
+    ):
         nineteen_years_ago = datetime.date.today() - relativedelta(years=19, months=1)
         user = users_factories.UserFactory(dateOfBirth=nineteen_years_ago)
         year_when_user_was_eighteen = date_utils.get_naive_utc_now() - relativedelta(years=1)
@@ -593,7 +603,8 @@ IDENTIFICATION_STATE_PARAMETERS = [
 @pytest.mark.usefixtures("db_session")
 class UbbleWorkflowV1Test:
     @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
-    def test_update_ubble_workflow(self, ubble_mocker, state, status, fraud_check_status):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_update_ubble_workflow(self, store_id_pictures_task_mock, ubble_mocker, state, status, fraud_check_status):
         user = users_factories.UserFactory()
         fraud_check = BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
@@ -614,7 +625,10 @@ class UbbleWorkflowV1Test:
         assert fraud_check.status == fraud_check_status
 
     @pytest.mark.parametrize("state, status, fraud_check_status", IDENTIFICATION_STATE_PARAMETERS)
-    def test_update_ubble_workflow_with_v2_feature_flag(self, ubble_mocker, state, status, fraud_check_status):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_update_ubble_workflow_with_v2_feature_flag(
+        self, store_id_pictures_task_mock, ubble_mocker, state, status, fraud_check_status
+    ):
         user = users_factories.UserFactory()
         fraud_check = BeneficiaryFraudCheckFactory(
             type=subscription_models.FraudCheckType.UBBLE,
@@ -634,10 +648,8 @@ class UbbleWorkflowV1Test:
         assert ubble_content["status"] == status.value
         assert fraud_check.status == fraud_check_status
 
-    def test_concurrent_requests_leave_fraud_check_ok(
-        self,
-        ubble_mocker,
-    ):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_concurrent_requests_leave_fraud_check_ok(self, store_id_pictures_task_mock, ubble_mocker):
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18),
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
@@ -670,7 +682,8 @@ class UbbleWorkflowV1Test:
         assert user.has_beneficiary_role is True
 
     @time_machine.travel("2020-05-05")
-    def test_ubble_workflow_with_eligibility_change_17_18(self, ubble_mocker):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_ubble_workflow_with_eligibility_change_17_18(self, store_id_pictures_task_mock, ubble_mocker):
         signup_birth_date = datetime.datetime(year=2002, month=5, day=6)
         user = users_factories.UserFactory(dateOfBirth=signup_birth_date)
         fraud_check = BeneficiaryFraudCheckFactory(
@@ -861,7 +874,10 @@ class UbbleWorkflowV1Test:
         assert user.dateOfBirth == datetime.datetime(year=2002, month=5, day=6)
 
     @time_machine.travel("2019-05-05")
-    def test_ubble_workflow_started_at_19_with_previous_attempt_at_18(self, ubble_mocker, db_session):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_ubble_workflow_started_at_19_with_previous_attempt_at_18(
+        self, store_id_pictures_task_mock, ubble_mocker, db_session
+    ):
         # Given
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(year=2000, month=5, day=1))
         # User started a ubble workflow at 18 years old and was rejected
@@ -1093,21 +1109,18 @@ class ArchiveUbbleUserIdPicturesTest:
             in str(error.value)
         )
 
-    def test_archive_ubble_user_id_pictures_no_file_saved(self, ubble_mocker, requests_mock):
+    @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_archive_ubble_user_id_pictures_no_file_saved(self, store_id_pictures_task_mock, requests_mock):
         # Given
         fraud_check = BeneficiaryFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.OK, type=subscription_models.FraudCheckType.UBBLE
-        )
-
-        ubble_response = UbbleIdentificationResponseFactory(
-            identification_state=IdentificationState.VALID,
-            data__attributes__identification_id=str(fraud_check.thirdPartyId),
-            included=[
-                UbbleIdentificationIncludedDocumentsFactory(
-                    attributes__signed_image_front_url=self.front_picture_url,
-                    attributes__signed_image_back_url=self.back_picture_url,
-                ),
-            ],
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.PENDING,
+                signed_image_front_url=self.front_picture_url,
+                signed_image_back_url=self.back_picture_url,
+            ),
+            idPicturesStored=False,
         )
 
         requests_mock.register_uri("GET", self.front_picture_url, status_code=403)
@@ -1115,35 +1128,26 @@ class ArchiveUbbleUserIdPicturesTest:
 
         # When
         with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
-            with ubble_mocker(
-                fraud_check.thirdPartyId,
-                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
-                mocker=requests_mock,
-            ):
-                ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+            ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
 
         # Then
         assert exc_info.value.is_retryable is False
-        db.session.refresh(fraud_check)
         assert fraud_check.idPicturesStored is False
 
     @patch("botocore.session.Session.create_client")
-    def test_archive_ubble_user_id_pictures_only_front_saved(self, mocked_storage_client, ubble_mocker, requests_mock):
+    def test_archive_ubble_user_id_pictures_only_front_saved(self, mocked_storage_client, requests_mock):
         # Given
         fraud_check = BeneficiaryFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.OK, type=subscription_models.FraudCheckType.UBBLE
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.PENDING,
+                signed_image_front_url=self.front_picture_url,
+                signed_image_back_url=self.back_picture_url,
+            ),
+            idPicturesStored=False,
         )
 
-        ubble_response = UbbleIdentificationResponseFactory(
-            identification_state=IdentificationState.VALID,
-            data__attributes__identification_id=str(fraud_check.thirdPartyId),
-            included=[
-                UbbleIdentificationIncludedDocumentsFactory(
-                    attributes__signed_image_front_url=self.front_picture_url,
-                    attributes__signed_image_back_url=self.back_picture_url,
-                ),
-            ],
-        )
         with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img:
             identity_file_picture_front = BytesIO(img.read())
 
@@ -1158,12 +1162,7 @@ class ArchiveUbbleUserIdPicturesTest:
 
         # When
         with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
-            with ubble_mocker(
-                fraud_check.thirdPartyId,
-                json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
-                mocker=requests_mock,
-            ):
-                ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+            ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
 
         # Then
         assert exc_info.value.is_retryable is True
@@ -1171,21 +1170,16 @@ class ArchiveUbbleUserIdPicturesTest:
         assert mocked_storage_client.return_value.upload_file.call_count == 1
 
     @patch("botocore.session.Session.create_client")
-    def test_archive_ubble_user_id_pictures_both_files_saved(self, mocked_storage_client, ubble_mocker, requests_mock):
+    def test_archive_ubble_user_id_pictures_both_files_saved(self, mocked_storage_client, requests_mock):
         # Given
         fraud_check = BeneficiaryFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.OK, type=subscription_models.FraudCheckType.UBBLE
-        )
-
-        ubble_response = UbbleIdentificationResponseFactory(
-            identification_state=IdentificationState.VALID,
-            data__attributes__identification_id=str(fraud_check.thirdPartyId),
-            included=[
-                UbbleIdentificationIncludedDocumentsFactory(
-                    attributes__signed_image_front_url=self.front_picture_url,
-                    attributes__signed_image_back_url=self.back_picture_url,
-                ),
-            ],
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.PENDING,
+                signed_image_front_url=self.front_picture_url,
+                signed_image_back_url=self.back_picture_url,
+            ),
         )
 
         with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img_front:
@@ -1208,40 +1202,23 @@ class ArchiveUbbleUserIdPicturesTest:
             body=identity_file_picture_back,
         )
 
-        expected_id_pictures_stored = True
-
         # When
-        with ubble_mocker(
-            fraud_check.thirdPartyId,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
-            mocker=requests_mock,
-        ):
-            ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+        ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
 
         # Then
-        db.session.refresh(fraud_check)
-        assert fraud_check.idPicturesStored is expected_id_pictures_stored
+        assert fraud_check.idPicturesStored
         assert mocked_storage_client.return_value.upload_file.call_count == 2
 
     @patch("botocore.session.Session.create_client")
-    def test_archive_ubble_user_id_pictures_all_expected_files_saved(
-        self, mocked_storage_client, ubble_mocker, requests_mock
-    ):
+    def test_archive_ubble_user_id_pictures_all_expected_files_saved(self, mocked_storage_client, requests_mock):
         # Given
         fraud_check = BeneficiaryFraudCheckFactory(
-            status=subscription_models.FraudCheckStatus.OK, type=subscription_models.FraudCheckType.UBBLE
-        )
-
-        ubble_response = UbbleIdentificationResponseFactory(
-            identification_state=IdentificationState.VALID,
-            data__attributes__identification_id=str(fraud_check.thirdPartyId),
-            included=[
-                UbbleIdentificationIncludedDocumentsFactory(
-                    attributes__signed_image_front_url=self.front_picture_url,
-                    attributes__signed_image_back_url=None,
-                    attributes__document_type="Passport",
-                ),
-            ],
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.PENDING,
+                signed_image_front_url=self.front_picture_url,
+            ),
         )
 
         with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img_front:
@@ -1258,15 +1235,9 @@ class ArchiveUbbleUserIdPicturesTest:
         expected_id_pictures_stored = True
 
         # When
-        with ubble_mocker(
-            fraud_check.thirdPartyId,
-            json.dumps(ubble_response.dict(by_alias=True), sort_keys=True, default=json_default),
-            mocker=requests_mock,
-        ):
-            ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+        ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
 
         # Then
-        db.session.refresh(fraud_check)
         assert fraud_check.idPicturesStored is expected_id_pictures_stored
         assert mocked_storage_client.return_value.upload_file.call_count == 1
 

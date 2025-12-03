@@ -90,6 +90,8 @@ def update_ubble_workflow_with_status(
 
 
 def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    from pcapi.core.subscription.ubble import tasks as celery_tasks
+
     content = _get_content(fraud_check.thirdPartyId)
     _fill_missing_content_test_fields(content, fraud_check)
 
@@ -115,8 +117,8 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
     )
     try:
         ubble_fraud_api.on_ubble_result(fraud_check)
-    except Exception:
-        logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id})
+    except Exception as exc:
+        logger.exception("Error on Ubble fraud check result: %s", extra={"user_id": user.id, "exc": exc})
         return
 
     subscription_api.update_user_birth_date_if_not_beneficiary(user, content.get_birth_date())
@@ -125,8 +127,12 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
         handle_validation_errors(user, fraud_check)
         return
 
-    payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
-    on_commit(partial(ubble_tasks.store_id_pictures_task.delay, payload))
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
+        celery_payload = ubble_schemas.StoreIdPicturePayload(identification_id=fraud_check.thirdPartyId)
+        on_commit(partial(celery_tasks.store_id_pictures_task.delay, celery_payload.model_dump()))
+    else:
+        payload = ubble_tasks.StoreIdPictureRequest(identification_id=fraud_check.thirdPartyId)
+        on_commit(partial(ubble_tasks.store_id_pictures_task.delay, payload))
 
     try:
         is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
@@ -346,7 +352,6 @@ def handle_validation_errors(
 
 
 def archive_ubble_user_id_pictures(identification_id: str) -> None:
-    # get urls from Ubble
     fraud_check = ubble_fraud_api.get_ubble_fraud_check(identification_id)
     if not fraud_check:
         raise BeneficiaryFraudCheckMissingException(
@@ -358,12 +363,12 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
             f"Fraud check status {fraud_check.status} is incompatible with pictures archives for identification_id {identification_id}"
         )
 
-    try:
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
+        ubble_content = fraud_check.source_data()
+        if not isinstance(ubble_content, ubble_schemas.UbbleContent):
+            raise ValueError(f"UbbleContent was expected while {type(ubble_content)} was given")
+    else:
         ubble_content = _get_content(fraud_check.thirdPartyId)
-    except requests_utils.ExternalAPIException:
-        fraud_check.idPicturesStored = False
-        pcapi_repository.save(fraud_check)
-        raise
 
     exception_during_process = None
     if ubble_content.signed_image_front_url:
@@ -378,12 +383,10 @@ def archive_ubble_user_id_pictures(identification_id: str) -> None:
             exception_during_process = exception
 
     if exception_during_process:
-        fraud_check.idPicturesStored = False
-        pcapi_repository.save(fraud_check)
         raise exception_during_process
 
-    fraud_check.idPicturesStored = True
-    pcapi_repository.save(fraud_check)
+    with atomic():
+        fraud_check.idPicturesStored = True
 
 
 def _get_content(identification_id: str) -> ubble_schemas.UbbleContent:

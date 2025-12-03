@@ -130,3 +130,7 @@ class UbbleContent(subscription_schemas.IdentityCheckContent):
 
 class UpdateWorkflowPayload(BaseModelV2):
     beneficiary_fraud_check_id: int
+
+
+class StoreIdPicturePayload(BaseModelV2):
+    identification_id: str
