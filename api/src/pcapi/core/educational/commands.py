@@ -2,6 +2,7 @@ import datetime
 import logging
 import os
 from decimal import Decimal
+from pathlib import Path
 
 import click
 
@@ -102,8 +103,11 @@ def import_deposit_csv(
     args = f"{year=}, {ministry=}, {period_option=}, {filename=}, {conflict=}, {educational_program_name=}, {final=}, {not_dry=}"
     logger.info("Starting import deposit csv with args %s", args)
 
-    namespace_dir = os.path.dirname(os.path.abspath(__file__))
-    file_path = f"{namespace_dir}/{filename}"
+    # A flask command that we run via a github action copy the input file to pcapi/scripts/flask
+    import pcapi
+
+    path = Path(pcapi.__file__).parent / "scripts" / "flask"
+    file_path = f"{path}/{filename}"
 
     total_amount = institution_api.import_deposit_institution_csv(
         path=file_path,
