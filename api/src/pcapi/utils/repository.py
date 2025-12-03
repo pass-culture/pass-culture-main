@@ -36,7 +36,7 @@ def transaction() -> typing.Iterator[None]:
 
 # DEPRECATED in favor of @atomic() and db.session.add because committing or
 # rollbacking should be done by a transaction context manager, not manually
-def add_to_session(*models: Model) -> None:
+def add_to_session(*models: Model, should_skip_validation: bool = False) -> None:
     """Validate models and add them to session."""
     if not models:
         return
@@ -44,7 +44,10 @@ def add_to_session(*models: Model) -> None:
     api_errors = ApiErrors()
     for model in models:
         with db.session.no_autoflush:
-            model_api_errors = entity_validator.validate(model)
+            if not should_skip_validation:
+                model_api_errors = entity_validator.validate(model)
+            else:
+                model_api_errors = ApiErrors()
         if model_api_errors.errors.keys():
             api_errors.errors.update(model_api_errors.errors)
         else:

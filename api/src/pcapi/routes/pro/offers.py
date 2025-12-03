@@ -420,32 +420,15 @@ def post_offer(
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
     )
-    offerer_address: offerers_models.OffererAddress | None = None
-    offerer_address = (
-        offerers_api.get_offer_location_from_address(
-            venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict())
-        )
-        if body.address
-        # TODO (prouzet, 2025-11-14) CLEAN_OA Do no longer use venue.offererAddress after step 4.5
-        else (
-            venue.offererAddress
-            if venue.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
-            else offerers_api.get_or_create_offer_location(
-                venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
-            )
-        )
-    )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
 
     fields = body.dict(by_alias=True)
     fields.pop("venueId")
-    fields.pop("address")
     fields["extraData"] = offers_api.deserialize_extra_data(fields["extraData"], fields["subcategoryId"])
 
     offer = offers_api.create_offer(
         offers_schemas.CreateOffer(**fields),
         venue=venue,
-        offerer_address=offerer_address,
         is_from_private_api=True,
     )
 

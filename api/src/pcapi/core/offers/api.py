@@ -312,6 +312,9 @@ def create_offer(
     """
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
 
+    validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+
     if is_from_private_api:
         # TODO(jbaudet): should be ok to remove from this if-block since
         # only internal api calls will pass product as a parameter.
@@ -326,22 +329,19 @@ def create_offer(
             visual_disability_compliant=body.visual_disability_compliant,
         )
 
-    validation.check_offer_withdrawal(
-        withdrawal_type=body.withdrawal_type,
-        withdrawal_delay=body.withdrawal_delay,
-        subcategory_id=body.subcategory_id,
-        booking_contact=body.booking_contact,
-        provider=provider,
-        venue_provider=venue_provider,
-    )
-    validation.check_offer_subcategory_is_valid(body.subcategory_id)
-    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body.ean)
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
-    validation.check_is_duo_compliance(body.is_duo, subcategory)
-    # The location (= address/url step) is at the second step of the offer creation workflow,
-    # so the portal doesn't send this info during offer creation (but during the next offer update).
     if not is_from_private_api:
+        validation.check_offer_withdrawal(
+            withdrawal_type=body.withdrawal_type,
+            withdrawal_delay=body.withdrawal_delay,
+            subcategory_id=body.subcategory_id,
+            booking_contact=body.booking_contact,
+            provider=provider,
+            venue_provider=venue_provider,
+        )
         validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
+
+    validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body.ean)
+    validation.check_is_duo_compliance(body.is_duo, subcategory)
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
     validation.check_offer_name_does_not_contain_ean(body.name)
@@ -351,11 +351,9 @@ def create_offer(
     fields.pop("videoUrl", None)
 
     if is_from_private_api:
-        if not body.withdrawal_details:
-            fields.update({"withdrawalDetails": venue.withdrawalDetails})
-
         subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
         fields.update({"isDuo": bool(subcategory and subcategory.is_event and subcategory.can_be_duo)})
+        fields.update({"withdrawalDetails": venue.withdrawalDetails})
 
         keys_to_remove = {"venueId", "callId"}
         if product:
@@ -377,7 +375,7 @@ def create_offer(
         validation=models.OfferValidationStatus.DRAFT,
         publicationDatetime=None,
     )
-    repository.add_to_session(offer)
+    repository.add_to_session(offer, should_skip_validation=is_from_private_api)
 
     db.session.flush()
 
