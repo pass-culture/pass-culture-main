@@ -5,6 +5,8 @@ import uuid
 from psycopg2.extras import DateRange
 
 from pcapi.core import object_storage
+from pcapi.core.highlights import repository as highlights_repository
+from pcapi.core.mails import transactional as transactional_mails
 
 from . import models
 
@@ -60,3 +62,9 @@ def update_highlight(
             folder="highlights", object_id=image_id, blob=image_as_bytes, content_type=image_mimetype
         )
     return highlight
+
+
+def send_email_for_highlight_with_communication_date_set_to_today() -> None:
+    requests_for_today_highlights = highlights_repository.get_today_highlight_requests()
+    for highlight_request in requests_for_today_highlights:
+        transactional_mails.send_highlight_communication_email_to_pro(highlight_request.offer)
