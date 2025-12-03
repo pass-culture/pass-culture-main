@@ -73,15 +73,15 @@ describe('serializeExtraData', () => {
     }
 
     expect(serializeExtraData(formValues)).toStrictEqual({
-      author: '',
-      ean: '',
-      gtl_id: '',
-      performer: '',
-      showSubType: '',
-      showType: '',
-      speaker: '',
-      stageDirector: '',
-      visa: '',
+      author: null,
+      ean: null,
+      gtl_id: null,
+      performer: null,
+      showSubType: null,
+      showType: null,
+      speaker: null,
+      stageDirector: null,
+      visa: null,
     })
   })
 })
@@ -138,7 +138,6 @@ describe('serializeDetailsPostData', () => {
         visa: '123456789',
         ean: 'any ean',
       },
-      url: undefined,
       productId: undefined,
       audioDisabilityCompliant: true,
       mentalDisabilityCompliant: false,
@@ -199,7 +198,6 @@ describe('serializeDetailsPatchData', () => {
         visa: '123456789',
         ean: 'any ean',
       },
-      url: undefined,
       audioDisabilityCompliant: true,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
