@@ -15,6 +15,20 @@ env:
   docker_registry: "europe-west1-docker.pkg.dev/passculture-infra-prod/pass-culture-artifact-registry"
 
 jobs:
+  labeler:
+    name: "Add labels to PR"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - id: label-pr
+        uses: actions/labeler@v6
+        with:
+          sync-labels: true
+
+      - run: |
+          echo "These labels are added to the PR: ${{ steps.label-pr.outputs.all-labels }}"
+
   pcapi-init-job:
     name: "Init job"
     runs-on: ubuntu-latest
