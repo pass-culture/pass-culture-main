@@ -45,7 +45,6 @@ from . import messages
 
 logger = logging.getLogger(__name__)
 PAGE_SIZE = 20_000
-CELERY_PAGE_SIZE = 3_000
 
 PENDING_STATUSES = [
     ubble_schemas.UbbleIdentificationStatus.PROCESSING,
@@ -453,15 +452,26 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
     from pcapi.core.subscription.ubble import tasks as ubble_tasks
 
     if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
-        stale_ubble_fraud_check_ids = _get_stale_fraud_checks_ids(CELERY_PAGE_SIZE)
-        for fraud_check_id in stale_ubble_fraud_check_ids:
+        started_fraud_checks = 0
+        pending_fraud_checks = 0
+
+        page_size = ubble_tasks.UBBLE_TASK_RATE_LIMIT * 5
+        stale_ubble_fraud_check_ids = _get_stale_fraud_checks_id_and_status(page_size)
+        for fraud_check_id, fraud_check_status in stale_ubble_fraud_check_ids:
             ubble_tasks.update_ubble_workflow_task.delay(
                 payload=ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check_id).model_dump()
             )
 
+            if fraud_check_status == subscription_models.FraudCheckStatus.STARTED:
+                started_fraud_checks += 1
+            if fraud_check_status == subscription_models.FraudCheckStatus.PENDING:
+                pending_fraud_checks += 1
+
         logger.warning(
-            "Found %d stale ubble application older than 12 hours and tried to update them.",
+            "Found %d stale ubble application with %d currently started and %d currently pending",
             len(stale_ubble_fraud_check_ids),
+            started_fraud_checks,
+            pending_fraud_checks,
         )
         return
 
@@ -494,10 +504,12 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
         logger.info("No pending ubble application found older than 12 hours. This is good.")
 
 
-def _get_stale_fraud_checks_ids(page_size: int) -> typing.Sequence[int]:
+def _get_stale_fraud_checks_id_and_status(
+    page_size: int,
+) -> typing.Sequence[sa.Row[tuple[int, subscription_models.FraudCheckStatus | None]]]:
     """
     Returns the `page_size` first stale and pending fraud checks.
-    This function only returns the first page, and is meant to be called every hour by recovery workers.
+    This function only returns the first page, and is meant to be called every five minutes by recovery workers.
     """
     from pcapi.celery_tasks.tasks import MAX_RETRY_DURATION
     from pcapi.core.subscription.ubble import tasks as ubble_tasks
@@ -511,7 +523,7 @@ def _get_stale_fraud_checks_ids(page_size: int) -> typing.Sequence[int]:
     # We give ourselves some extra time and we retrieve the applications that are still pending after 12 hours.
     twelve_hours_ago = datetime.date.today() - datetime.timedelta(hours=12)
     stale_fraud_check_ids_stmt = (
-        sa.select(subscription_models.BeneficiaryFraudCheck.id)
+        sa.select(subscription_models.BeneficiaryFraudCheck.id, subscription_models.BeneficiaryFraudCheck.status)
         .filter(
             subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
             subscription_models.BeneficiaryFraudCheck.status.in_(
@@ -523,7 +535,7 @@ def _get_stale_fraud_checks_ids(page_size: int) -> typing.Sequence[int]:
         .limit(page_size)
     )
 
-    return db.session.scalars(stale_fraud_check_ids_stmt).all()
+    return db.session.execute(stale_fraud_check_ids_stmt).all()
 
 
 def _get_pending_fraud_checks_pages() -> typing.Generator[list[subscription_models.BeneficiaryFraudCheck], None, None]:
