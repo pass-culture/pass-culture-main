@@ -42,6 +42,20 @@ class CheckUrlIsSafeTest:
 
     @pytest.mark.settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
     @pytest.mark.features(ENABLE_VIRUSTOTAL=1)
+    def test_pending_url(self):
+        url = "https://www.example.com"
+        url_id = "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20"
+        with requests_mock.Mocker() as mock:
+            mock.get(
+                f"https://www.virustotal.com/api/v3/urls/{url_id}",
+                json=virustotal_test_data.RESPONSE_URL_PENDING,
+            )
+            mock.post(f"https://www.virustotal.com/api/v3/urls/{url_id}/analyse")
+            with pytest.raises(virustotal.PendingAnalysisException):
+                virustotal.check_url_is_safe(url)
+
+    @pytest.mark.settings(VIRUSTOTAL_BACKEND="pcapi.connectors.virustotal.VirusTotalBackend")
+    @pytest.mark.features(ENABLE_VIRUSTOTAL=1)
     def test_url_not_found(self):
         url = "https://www.not-found.com"
         url_id = "aHR0cHM6Ly93d3cubm90LWZvdW5kLmNvbQ"
