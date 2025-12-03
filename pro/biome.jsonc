@@ -169,6 +169,7 @@
         "noEmptyBlockStatements": "warn",
         "noExtraNonNullAssertion": "error",
         "noFallthroughSwitchClause": "error",
+        "noFocusedTests": "error",
         "noFunctionAssign": "error",
         "noGlobalAssign": "error",
         "noImplicitAnyLet": "warn", // default: "error"
