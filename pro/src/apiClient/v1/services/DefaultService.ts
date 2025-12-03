@@ -76,6 +76,7 @@ import type { ListOffersResponseModel } from '../models/ListOffersResponseModel'
 import type { ListProviderResponse } from '../models/ListProviderResponse';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
+import type { MinimalPostOfferBodyModel } from '../models/MinimalPostOfferBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
 import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
@@ -1717,7 +1718,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postOffer(
-    requestBody: PostOfferBodyModel,
+    requestBody: MinimalPostOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',

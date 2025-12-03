@@ -179,6 +179,7 @@ export type { LocationResponseModel } from './models/LocationResponseModel';
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenue } from './models/ManagedVenue';
 export type { MentalDisabilityModel } from './models/MentalDisabilityModel';
+export type { MinimalPostOfferBodyModel } from './models/MinimalPostOfferBodyModel';
 export type { MotorDisabilityModel } from './models/MotorDisabilityModel';
 export type { MusicTypeResponse } from './models/MusicTypeResponse';
 export type { NationalProgramModel } from './models/NationalProgramModel';
