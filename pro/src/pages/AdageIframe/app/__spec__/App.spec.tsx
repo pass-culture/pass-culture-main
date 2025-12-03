@@ -52,6 +52,7 @@ vi.mock('react-instantsearch', async () => {
     }),
     useInstantSearch: () => ({ scopedResults: [] }),
     Index: vi.fn(({ children }) => children),
+    usePagination: () => ({ currentRefinement: 0, nbPages: 1 }),
   }
 })
 

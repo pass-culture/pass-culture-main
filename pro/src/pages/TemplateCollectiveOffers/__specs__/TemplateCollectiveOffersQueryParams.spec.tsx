@@ -134,6 +134,13 @@ describe('route TemplateCollectiveOffers', () => {
   })
 
   describe('url query params', () => {
+    // Necessary because JSDOM doesn't implement the `scrollTo` method
+    // (which is used by the `useAccessibleScroll` hook in that component's scope)
+    beforeAll(() => {
+      Element.prototype.scrollTo = () => {}
+      window.scrollTo = () => {}
+    })
+
     it('should have page value when page value is not first page', async () => {
       const offersRecap = Array.from({ length: 11 }, () =>
         collectiveOfferTemplateFactory()

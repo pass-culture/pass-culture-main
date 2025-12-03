@@ -27,10 +27,11 @@ describe('<AccessibleScrollContainer />', () => {
   it('should have the live message', () => {
     renderComponent()
 
-    expect(
-      screen.getByRole('status', { name: 'This is a vocal annoucement' })
-    ).toBeInTheDocument()
+    expect(screen.getByText('This is a vocal annoucement')).toBeInTheDocument()
+    expect(screen.getByText('This is a vocal annoucement')).toHaveClass(
+      'visually-hidden'
+    )
 
-    expect(screen.getByText('This is a visual content')).toBeInTheDocument()
+    expect(screen.getByText('This is a visual content')).toBeVisible()
   })
 })

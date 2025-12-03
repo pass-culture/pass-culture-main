@@ -77,6 +77,11 @@ vi.mock('react-instantsearch', async () => {
     useInfiniteHits: () => ({
       ...defaultUseInfiniteHitsReturn,
     }),
+    usePagination: () => ({
+      currentRefinement: 0,
+      nbPages: 3,
+      refine: () => {},
+    }),
   }
 })
 
