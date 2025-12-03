@@ -557,17 +557,18 @@ def update_offer(
                 continue
         changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
         setattr(offer, key, value)
-    with db.session.no_autoflush:
-        validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
 
+    with db.session.no_autoflush:
         # the creation process is splitted into several steps. URL and
         # address might be set only in the end. Therefore, this
         # validation is meaningless until the offer has been finalized.
         if offer.status != models.OfferStatus.DRAFT:
+            validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
             validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
+
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
-    repository.add_to_session(offer)
+    repository.add_to_session(offer, should_skip_validation=is_from_private_api)
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
