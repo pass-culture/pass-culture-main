@@ -177,42 +177,35 @@ export const SelectAutocomplete = forwardRef(
       switch (event.key) {
         case 'ArrowUp':
           if (hoveredOptionIndex !== null) {
-            if (hoveredOptionIndex <= 0) {
-              setHoveredOptionIndex(null)
-            } else {
-              //  Activate and scroll to the previous element in the list
-              const newIndex = hoveredOptionIndex - 1
-              setHoveredOptionIndex(newIndex)
-              const nextHoveredElement =
-                listRef.current?.getElementsByTagName('li')[newIndex]
-              nextHoveredElement?.scrollIntoView({ block: 'nearest' })
-            }
-          }
-          if (!isDropdownOpen) {
-            setIsDropdownOpen(true)
+            event.preventDefault()
+
+            //  Activate and scroll to the previous element in the list
+            const newIndex =
+              (hoveredOptionIndex - 1 + filteredOptions.length) %
+              filteredOptions.length
+
+            setHoveredOptionIndex(newIndex)
+            const nextHoveredElement =
+              listRef.current?.getElementsByTagName('li')[newIndex]
+            nextHoveredElement?.scrollIntoView({ block: 'nearest' })
           }
           break
         case 'ArrowDown':
+          openDropdown()
           if (hoveredOptionIndex === null) {
             if (filteredOptions.length > 0) {
               setHoveredOptionIndex(0)
             }
           } else {
             //  Activate and scroll to the next element in the list
-            const newIndex = Math.min(
-              filteredOptions.length - 1,
-              hoveredOptionIndex + 1
-            )
+            const newIndex = (hoveredOptionIndex + 1) % filteredOptions.length
+
             setHoveredOptionIndex(newIndex)
             const nextHoveredElement =
               listRef.current?.getElementsByTagName('li')[newIndex]
             nextHoveredElement?.scrollIntoView({ block: 'nearest' })
           }
-          if (!isDropdownOpen) {
-            setIsDropdownOpen(true)
-          }
           break
-        case ' ':
         case 'Enter':
           if (
             isDropdownOpen &&
@@ -226,8 +219,13 @@ export const SelectAutocomplete = forwardRef(
           }
           break
         case 'Escape':
-          setHoveredOptionIndex(null)
-          setIsDropdownOpen(false)
+          event.preventDefault()
+          if (isDropdownOpen) {
+            setHoveredOptionIndex(null)
+            setIsDropdownOpen(false)
+          } else {
+            setSearchField('')
+          }
           break
         case 'Tab':
           setHoveredOptionIndex(null)
@@ -262,8 +260,8 @@ export const SelectAutocomplete = forwardRef(
         setIsDropdownOpen(true)
       } else {
         setIsDropdownOpen(false)
-        setSearchField('')
       }
+      inputRef.current?.focus()
     }
 
     // When the inputRef's value changes externally
@@ -293,13 +291,11 @@ export const SelectAutocomplete = forwardRef(
         showError={!!error}
         description={description}
       >
-        {/** biome-ignore lint/a11y/noStaticElementInteractions: Seems to be the only solution for this pattern */}
         <div
           className={classNames(
             styles['multi-select-autocomplete-container'],
             className
           )}
-          onKeyDown={handleKeyDown}
           ref={containerRef}
         >
           {/* Search field */}
@@ -308,13 +304,13 @@ export const SelectAutocomplete = forwardRef(
               'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
             })}
             onClick={openDropdown}
-            onFocus={openDropdown}
             className={classNames(
               styles['multi-select-autocomplete-placeholder-input'],
               {
                 [styles['has-error']]: Boolean(error),
               }
             )}
+            onKeyDown={handleKeyDown}
             type="search"
             disabled={disabled}
             aria-autocomplete="list"
@@ -330,12 +326,14 @@ export const SelectAutocomplete = forwardRef(
             ref={inputRef}
             name={name}
             onChange={(e) => {
+              setHoveredOptionIndex(null)
               setSearchField(e.target.value)
 
               onChange({
                 type: 'change',
                 target: { name, value: e.target.value },
               })
+              openDropdown()
             }}
             onBlur={(e) => {
               setSearchField(e.target.value)
