@@ -8,6 +8,7 @@ import pcapi.core.offers.factories as offers_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.utils import UAI_FOR_FAKE_TOKEN
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.offerers import api as offerers_api
@@ -376,6 +377,87 @@ def create_pro_user_with_collective_offers() -> dict:
             "name": offerArchived.name,
             "venueName": offerArchived.venue.name,
             "venueFullAddress": offerArchived.venue.offererAddress.address.fullAddress,
+        },
+    }
+
+
+def create_pro_user_with_collective_offer_templates() -> dict:
+    pro_user = users_factories.ProFactory.create()
+    offerer = offerers_factories.OffererFactory.create()
+    offerers_factories.UserOffererFactory.create(user=pro_user, offerer=offerer)
+    venue1 = offerers_factories.CollectiveVenueFactory.create(
+        name="Mon Lieu 1",
+        managingOfferer=offerer,
+        offererAddress__address__street="1 boulevard Poissonnière",
+        offererAddress__address__postalCode="75002",
+        offererAddress__address__city="Paris",
+    )
+    venue2 = offerers_factories.CollectiveVenueFactory.create(
+        name="Mon Lieu 2",
+        managingOfferer=offerer,
+        offererAddress__address__street="2 rue du Faubourg",
+        offererAddress__address__postalCode="75010",
+        offererAddress__address__city="Paris",
+    )
+
+    offerPublished = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.PUBLISHED,
+        venue=venue1,
+        name="Offre vitrine publiée",
+        formats=[EacFormat.ATELIER_DE_PRATIQUE],
+    )
+    offerDraft = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.DRAFT,
+        venue=venue1,
+        name="Offre vitrine brouillon",
+        formats=[EacFormat.REPRESENTATION],
+    )
+    offerArchived = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.ARCHIVED,
+        venue=venue2,
+        name="Offre vitrine archivée en établissement scolaire",
+        formats=[EacFormat.PROJECTION_AUDIOVISUELLE],
+        locationType=educational_models.CollectiveLocationType.SCHOOL,
+    )
+    offerUnderReview = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.UNDER_REVIEW,
+        venue=venue2,
+        name="Offre vitrine en instruction",
+        formats=[EacFormat.REPRESENTATION],
+    )
+    offerRejected = educational_factories.create_collective_offer_template_by_status(
+        CollectiveOfferDisplayedStatus.REJECTED,
+        venue=venue2,
+        name="Offre vitrine non conforme",
+        formats=[EacFormat.REPRESENTATION],
+    )
+
+    return {
+        "user": get_pro_user_helper(pro_user),
+        "offerPublished": {
+            "name": offerPublished.name,
+            "venueName": offerPublished.venue.name,
+            "venueFullAddress": offerPublished.venue.offererAddress.address.fullAddress,
+        },
+        "offerDraft": {
+            "name": offerDraft.name,
+            "venueName": offerDraft.venue.name,
+            "venueFullAddress": offerDraft.venue.offererAddress.address.fullAddress,
+        },
+        "offerArchived": {
+            "name": offerArchived.name,
+            "venueName": offerArchived.venue.name,
+            "venueFullAddress": offerArchived.venue.offererAddress.address.fullAddress,
+        },
+        "offerUnderReview": {
+            "name": offerUnderReview.name,
+            "venueName": offerUnderReview.venue.name,
+            "venueFullAddress": offerUnderReview.venue.offererAddress.address.fullAddress,
+        },
+        "offerRejected": {
+            "name": offerRejected.name,
+            "venueName": offerRejected.venue.name,
+            "venueFullAddress": offerRejected.venue.offererAddress.address.fullAddress,
         },
     }
 
