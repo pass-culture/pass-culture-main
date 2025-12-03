@@ -3,6 +3,7 @@ import enum
 import logging
 import os
 import typing
+from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 
@@ -65,19 +66,33 @@ class ImportDepositPeriodOption(enum.Enum):
     EDUCATIONAL_YEAR_SECOND_PERIOD = "EDUCATIONAL_YEAR_SECOND_PERIOD"
 
 
+type CreditUpdateOption = typing.Literal["add", "replace"]
+type MinistryConflictOption = typing.Literal["keep", "replace"]
+
+
+@dataclass
+class ImportDepositOutput:
+    # total deposit amount in DB before import
+    total_previous_deposit: Decimal = Decimal(0)
+    # total amount in the import data
+    total_imported_amount: Decimal = Decimal(0)
+    # total deposit amount in DB after import
+    total_new_deposit: Decimal = Decimal(0)
+
+
 def import_deposit_institution_csv(
     *,
     path: str,
     year: int,
-    ministry: str,
+    ministry: models.Ministry,
     period_option: ImportDepositPeriodOption,
-    conflict: str,
-    final: bool,
+    credit_update: CreditUpdateOption,
+    ministry_conflict: MinistryConflictOption,
     program_name: str | None,
-) -> Decimal:
+    final: bool,
+) -> ImportDepositOutput:
     """
     Import deposits from csv file and update institutions according to adage data
-    Return the total imported amount
     """
 
     if not os.path.exists(path):
@@ -91,12 +106,13 @@ def import_deposit_institution_csv(
     data = get_import_deposit_data(path)
 
     logger.info("Finished reading data from csv, starting deposit import")
-    total_amount = import_deposit_institution_data(
+    output = import_deposit_institution_data(
         data=data,
         educational_year=educational_year,
-        ministry=models.Ministry[ministry],
+        ministry=ministry,
         period_option=period_option,
-        conflict=conflict,
+        credit_update=credit_update,
+        ministry_conflict=ministry_conflict,
         final=final,
     )
 
@@ -107,7 +123,7 @@ def import_deposit_institution_csv(
             educational_program=educational_program, uais=data.keys(), start=educational_year.beginningDate
         )
 
-    return total_amount
+    return output
 
 
 def get_import_deposit_data(path: str) -> dict[str, Decimal]:
@@ -150,9 +166,10 @@ def import_deposit_institution_data(
     educational_year: models.EducationalYear,
     ministry: models.Ministry,
     period_option: ImportDepositPeriodOption,
+    credit_update: CreditUpdateOption,
+    ministry_conflict: MinistryConflictOption,
     final: bool,
-    conflict: str,
-) -> Decimal:
+) -> ImportDepositOutput:
     period_start, period_end = _get_import_deposit_period_bounds(period_option, educational_year)
     period = db_utils.make_timerange(period_start, period_end)
 
@@ -167,7 +184,7 @@ def import_deposit_institution_data(
     if not_found_uais:
         raise ValueError(f"UAIs not found in adage: {not_found_uais}")
 
-    total_amount = Decimal(0)
+    output = ImportDepositOutput()
     for uai, amount in data.items():
         created = False
         adage_institution = adage_institutions[uai]
@@ -209,6 +226,8 @@ def import_deposit_institution_data(
             )
 
         if deposit:
+            output.total_previous_deposit += deposit.amount
+
             # we cannot have two deposits with periods that overlap for the same education year and institution
             assert deposit.period is not None
             if deposit.period.lower != period_start or deposit.period.upper != period_end:
@@ -217,15 +236,23 @@ def import_deposit_institution_data(
                 )
 
             # update the deposit
-            if deposit.ministry != ministry and conflict == "replace":
-                logger.warning(
-                    "Ministry changed from '%s' to '%s' for deposit %s",
-                    deposit.ministry.name,
-                    ministry.name,
-                    deposit.id,
-                )
-                deposit.ministry = ministry
-            deposit.amount = amount
+            if deposit.ministry != ministry:
+                if ministry_conflict == "replace":
+                    logger.warning(
+                        "Ministry changed from '%s' to '%s' for deposit %s",
+                        deposit.ministry.name,
+                        ministry.name,
+                        deposit.id,
+                    )
+                    deposit.ministry = ministry
+                else:
+                    logger.warning("Kept previous ministry '%s' for deposit %s", deposit.ministry.name, deposit.id)
+
+            if credit_update == "add":
+                deposit.amount += amount
+            else:
+                deposit.amount = amount
+
             deposit.isFinal = final
         else:
             deposit = models.EducationalDeposit(
@@ -238,10 +265,11 @@ def import_deposit_institution_data(
             )
             db.session.add(deposit)
 
-        total_amount += amount
+        output.total_imported_amount += amount
+        output.total_new_deposit += deposit.amount
 
     db.session.flush()
-    return total_amount
+    return output
 
 
 def _get_import_deposit_period_bounds(
