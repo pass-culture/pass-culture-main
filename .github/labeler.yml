@@ -1,0 +1,24 @@
+api:
+- changed-files:
+  - any-glob-to-any-file: api/**
+
+ci:
+- changed-files:
+  - any-glob-to-any-file: .github/**
+
+dependencies:
+- changed-files:
+  - any-glob-to-any-file:
+    - api/poetry.lock
+    - pro/yarn.lock
+
+migration:
+- changed-files:
+    - any-glob-to-any-file: api/src/pcapi/alembic/versions/**
+
+pro:
+- changed-files:
+    - any-glob-to-any-file: pro/**
+
+ticket:
+ - head-branch: PC
