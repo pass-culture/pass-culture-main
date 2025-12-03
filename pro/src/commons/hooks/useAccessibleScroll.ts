@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import { assertOrFrontendError } from '../errors/assertOrFrontendError'
 import { useMediaQuery } from './useMediaQuery'
@@ -12,49 +12,28 @@ import { useMediaQuery } from './useMediaQuery'
  *
  * @returns {{
  *   contentWrapperRef: React.RefObject<HTMLDivElement>,
- *   liveMessage: string,
- *   setLiveMessage: React.Dispatch<React.SetStateAction<string>>,
  *   scrollToContentWrapper: () => void
  * }}
  * - `contentWrapperRef`: Ref to the scrollable container used for focus and positioning. Must be provided to the `AccessibleScrollContainer` component.
- * - `liveMessage`: Current message for assistive technologies to announce.
- * - `setLiveMessage`: Setter to programmatically update the live region message.
  * - `scrollToContentWrapper`: Function to smoothly scroll and focus the container on page change.
  */
 
 type Options = {
-  initialLiveMessage: string
   selector?: string
 }
 
-export const useAccessibleScroll = (
-  { initialLiveMessage, selector }: Options = { initialLiveMessage: '' }
-) => {
+export const useAccessibleScroll = ({ selector }: Options = {}) => {
   const contentWrapperRef = useRef<HTMLDivElement>(null)
-  const liveMessageInitialized = useRef(false)
 
   const userPrefersReducedMotion = useMediaQuery(
     '(prefers-reduced-motion: reduce)'
   )
 
-  const [liveMessage, setLiveMessage] = useState('')
-
-  useEffect(() => {
-    // Skip the very first render to avoid announcing the initial state
-    // (Screen readers already announce the initial DOM)
-    if (!liveMessageInitialized.current) {
-      liveMessageInitialized.current = true
-      return
-    }
-
-    setLiveMessage(initialLiveMessage)
-  }, [initialLiveMessage])
-
   const scrollToContentWrapper = () => {
     if (contentWrapperRef.current) {
       const wrapperRect = contentWrapperRef.current.getBoundingClientRect()
-      let target: Window | Element | null = window
-      let offset: number = wrapperRect.top + window.scrollY
+      let target: Window | Element | null = globalThis.window
+      let offset: number = wrapperRect.top + globalThis.window.scrollY
 
       // If a selector is provided, scroll to the container with the given selector
       if (selector) {
@@ -83,8 +62,6 @@ export const useAccessibleScroll = (
 
   return {
     contentWrapperRef,
-    liveMessage,
-    setLiveMessage,
     scrollToContentWrapper,
   }
 }

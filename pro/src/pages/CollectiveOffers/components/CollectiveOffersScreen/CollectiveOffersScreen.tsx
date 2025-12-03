@@ -156,11 +156,9 @@ export const CollectiveOffersScreen = ({
 
   const columns = getCollectiveOfferColumns(urlSearchFilters, true)
 
-  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    useAccessibleScroll({
-      initialLiveMessage: `Page ${page} sur ${pageCount}`,
-      selector: '#content-wrapper',
-    })
+  const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
+    selector: '#content-wrapper',
+  })
 
   return (
     <div>
@@ -201,7 +199,7 @@ export const CollectiveOffersScreen = ({
       </output>
       <AccessibleScrollContainer
         containerRef={contentWrapperRef}
-        liveMessage={liveMessage}
+        liveMessage={`Page ${page} sur ${pageCount}`}
       >
         <Table
           columns={columns}

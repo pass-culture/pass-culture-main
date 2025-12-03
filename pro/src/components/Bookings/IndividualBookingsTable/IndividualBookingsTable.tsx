@@ -65,17 +65,15 @@ export const IndividualBookingsTable = ({
       onToggle: toggle,
     })
 
-  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
-    useAccessibleScroll({
-      initialLiveMessage: `Page ${page} sur ${pageCount}`,
-      selector: '#content-wrapper',
-    })
+  const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
+    selector: '#content-wrapper',
+  })
 
   return (
     <>
       <AccessibleScrollContainer
         containerRef={contentWrapperRef}
-        liveMessage={liveMessage}
+        liveMessage={`Page ${page} sur ${pageCount}`}
       >
         <Table
           columns={columns}
