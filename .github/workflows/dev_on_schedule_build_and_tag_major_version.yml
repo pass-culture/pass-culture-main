@@ -1,0 +1,121 @@
+name: "2 [on_schedule] Build and tag major version"
+
+on:
+  schedule:
+    # Winter time (CET, UTC+1): from the beginning of November to the end of March
+    # Monday through Thursday at 09:57 in France = 08:57 UTC
+    - cron: '57 8 * 1-3,11-12 1-4'
+    # Summer time (CEST, UTC+2): from the beginning of April to the end of October
+    # Monday through Thursday at 09:57 in France = 07:57 UTC
+    - cron: '57 7 * 4-10 1-4'
+  workflow_dispatch:
+
+
+permissions: write-all
+
+jobs:
+  beginning-slack-notification:
+    name: "Send workflow beginning notification"
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#D4AD3B"
+      message:
+        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et la construction> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` sont lancées"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  prepare-variables:
+    runs-on: ubuntu-latest
+    outputs:
+      releaseNumber: ${{ steps.version.outputs.releaseNumber }}
+      commitHash: ${{ steps.rc_commit.outputs.commitHash }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Fetch tags
+        run: git fetch --tags
+
+      - name: Get releaseNumber major version
+        id: version
+        run: |
+          # Get all with format vX.X.X, sort them and get the last one
+          latest_tag=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)
+
+          # Extract major version
+          major=$(echo "$latest_tag" | sed -E 's/^v([0-9]+)\..*/\1/')
+
+          releaseNumber=$((major + 1))
+          echo "releaseNumber=$releaseNumber" >> $GITHUB_OUTPUT
+
+      - name: Get commit hash from RC tag
+        id: rc_commit
+        run: |
+          rc_tag=$(git tag -l "rc" | tail -n 1)
+          if [ -z "$rc_tag" ]; then
+            echo "Pas de tag RC trouvé"
+            exit 1
+          fi
+          commit_hash=$(git rev-list -n 1 "$rc_tag")
+          echo "commitHash=$commit_hash" >> $GITHUB_OUTPUT
+
+  build-and-tag:
+    name: "Build and tag"
+    needs: prepare-variables
+    uses: ./.github/workflows/dev_on_workflow_build_and_tag.yml
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+    with:
+      base_ref: ${{ needs.prepare-variables.outputs.commitHash }}
+      tag_number: ${{ needs.prepare-variables.outputs.releaseNumber }}.0.0
+
+  edit-maintenance-branches:
+    name: "Edit maintenance branches"
+    needs: [build-and-tag,prepare-variables]
+    runs-on: ubuntu-22.04
+    env:
+      NEW_MAINTENANCE_BRANCH: maint/v${{ needs.prepare-variables.outputs.releaseNumber }}
+      OLD_MAINTENANCE_BRANCH: maint/v$(({{ needs.prepare-variables.outputs.releaseNumber }}-2))
+    steps:
+      - name: "Checkout new tag"
+        uses: actions/checkout@v6
+      - name: "Create vN maintenance branch"
+        run: |
+          git checkout -b "$NEW_MAINTENANCE_BRANCH"
+          git push origin "$NEW_MAINTENANCE_BRANCH"
+      - name: "Delete vN-2 maintenance branch"
+        run: |
+          git checkout master
+          git branch --delete --force "$OLD_MAINTENANCE_BRANCH"
+
+
+  end-slack-success-notification:
+    name: "Send workflow success notification"
+    needs: [build-and-tag, edit-maintenance-branches]
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#D4AD3B"
+      message:
+        ':github-success: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a réussi'
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  end-slack-failure-notification:
+    name: "Send workflow failure notification"
+    needs: [build-and-tag, edit-maintenance-branches]
+    if: always() && (failure() || cancelled())
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
+      color: "#D4AD3B"
+      message:
+        ':github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a échoué'
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
