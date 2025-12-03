@@ -1,12 +1,12 @@
 import style from './AccessibleDate.module.scss'
 
 type AccessibleDateProps = {
-  date: string
+  date: Date | string
   visualOptions?: Intl.DateTimeFormatOptions
 }
 
 export function AccessibleDate({ date, visualOptions }: AccessibleDateProps) {
-  const d = new Date(date)
+  const d = date instanceof Date ? date : new Date(date)
   const spoken = new Intl.DateTimeFormat('fr-FR', {
     day: 'numeric',
     month: 'long',
