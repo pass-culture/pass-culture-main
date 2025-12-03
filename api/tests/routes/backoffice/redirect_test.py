@@ -63,9 +63,26 @@ class SafeRedirectTest:
             response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
             assert response.status_code == 200
 
-        assert f"L'adresse {url} n'a pas encore été analysée" in html_parser.content_as_text(response.data)
+        content = html_parser.content_as_text(response.data)
+        assert f"L'adresse {url} n'a pas encore été analysée" in content
+        assert "une analyse vient d'être demandée" in content
         mock_check_url_is_safe.assert_called_once_with(url)
         mock_request_url_scan.assert_called_once_with(url)
+
+    @patch("pcapi.connectors.virustotal.request_url_scan")
+    @patch("pcapi.connectors.virustotal.check_url_is_safe", side_effect=virustotal.PendingAnalysisException)
+    def test_redirect_pending_url(self, mock_check_url_is_safe, mock_request_url_scan, authenticated_client):
+        url = "https://pending.example.com"
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for("backoffice_web.safe_redirect", url=url))
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert f"L'adresse {url} n'a pas encore été analysée" in content
+        assert "une analyse a été demandée" in content
+        mock_check_url_is_safe.assert_called_once_with(url)
+        mock_request_url_scan.assert_not_called()
 
     @patch("pcapi.connectors.virustotal.request_url_scan")
     @patch("pcapi.connectors.virustotal.check_url_is_safe", side_effect=virustotal.VirusTotalApiException)
@@ -86,6 +103,7 @@ class SafeRedirectTest:
         "exception,reason",
         [
             (virustotal.NotFoundException, "NOT_FOUND"),
+            (virustotal.PendingAnalysisException, "PENDING"),
             (virustotal.MaliciousUrlException, "MALICIOUS"),
             (virustotal.VirusTotalApiException, "ERROR"),
         ],

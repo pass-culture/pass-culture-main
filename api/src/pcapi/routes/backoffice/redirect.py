@@ -22,6 +22,7 @@ class RedirectStopReason(enum.Enum):
     ERROR = "ERROR"
     MALICIOUS = "MALICIOUS"
     NOT_FOUND = "NOT_FOUND"
+    PENDING = "PENDING"
 
 
 class SafeRedirectForm(forms_utils.PCForm):
@@ -57,6 +58,12 @@ def safe_redirect() -> utils.BackofficeResponse:
             return redirect(url, code=303)
 
         return render_template("home/redirect.html", url=url, reason=RedirectStopReason.NOT_FOUND.name)
+
+    except virustotal.PendingAnalysisException:
+        if ignore == RedirectStopReason.PENDING.name:
+            logger.info("Forced redirection", extra={"url": url, "ignore": ignore})
+            return redirect(url, code=303)
+        return render_template("home/redirect.html", url=url, reason=RedirectStopReason.PENDING.name)
 
     except virustotal.MaliciousUrlException:
         if ignore == RedirectStopReason.MALICIOUS.name:

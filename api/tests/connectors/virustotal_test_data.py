@@ -108,6 +108,29 @@ RESPONSE_MALICIOUS_URL = {
     }
 }
 
+RESPONSE_URL_PENDING = {
+    "data": {
+        "attributes": {
+            "categories": {},
+            "first_submission_date": 1764692665,
+            "last_analysis_results": {},
+            "last_modification_date": 1764692668,
+            "last_submission_date": 1764692665,
+            "reputation": 0,
+            "times_submitted": 1,
+            "tld": "com",
+            "total_votes": {"harmless": "0", "malicious": "0"},
+            "url": "https://www.example.com",
+        },
+        "id": "cd541e6cb931f4a120cf6da1095a1fe945d9c0b7090525a0ed5c4ef7630af1f6",
+        "links": {
+            "self": "https://www.virustotal.com/api/v3/urls/cd541e6cb931f4a120cf6da1095a1fe945d9c0b7090525a0ed5c4ef7630af1f6"
+        },
+        "type": "url",
+    }
+}
+
+
 RESPONSE_URL_NOT_FOUND = {
     "error": {"code": "NotFoundError", "message": 'URL "aHR0cHM6Ly93d3cubm90LWZvdW5kLmNvbQ" not found'}
 }

@@ -5,7 +5,7 @@
     <div class="row">
       <div class="col-2"></div>
       <div class="col-8">
-        {% if reason == "NOT_FOUND" %}
+        {% if reason in ("NOT_FOUND", "PENDING") %}
           <div class="alert alert-info my-5 p-5"
                role="alert">
             <h3>
@@ -13,7 +13,13 @@
             </h3>
             <p>L'adresse {{ url }} n'a pas encore été analysée, la confiance dans ce lien est donc incertaine.</p>
             <p>
-              Cependant, une analyse vient d'être demandée à VirusTotal.
+              Cependant, une analyse
+              {% if reason == "NOT_FOUND" %}
+                vient d'être
+              {% else %}
+                a été
+              {% endif %}
+              demandée à VirusTotal.
               Le temps de recherche de virus et programmes malveillants peut être très variable selon la taille du site, ses liens et la charge du service.
               Mais peut-être est-ce déjà terminé le temps de lire ce message...
             </p>

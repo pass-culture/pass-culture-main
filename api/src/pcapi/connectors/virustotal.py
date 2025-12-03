@@ -34,6 +34,10 @@ class NotFoundException(VirusTotalException):
     pass
 
 
+class PendingAnalysisException(VirusTotalException):
+    pass
+
+
 class MaliciousUrlException(VirusTotalException):
     pass
 
@@ -123,15 +127,25 @@ class VirusTotalBackend(BaseBackend):
         """
         data = self._get(f"/urls/{url_id(url)}")
         attributes = data["data"]["attributes"]
+        last_analysis_stats = attributes.get("last_analysis_stats")
+        last_analysis_date = attributes.get("last_analysis_date")
+        last_submission_date = attributes.get("last_submission_date")
 
         log_extra_data = {
             "url": url,
-            "last_analysis_stats": attributes["last_analysis_stats"],
-            "last_analysis_date": attributes["last_analysis_date"],
+            "last_analysis_stats": last_analysis_stats,
+            "last_analysis_date": last_analysis_date,
+            "last_submission_date": last_submission_date,
         }
 
         try:
-            if attributes["last_analysis_stats"]["malicious"] > 0:
+            if last_submission_date and not last_analysis_date:
+                logger.info(
+                    "URL is still waiting for analysis", extra=log_extra_data, technical_message_id="virustotal.pending"
+                )
+                raise PendingAnalysisException()
+
+            if last_analysis_stats.get("malicious", 0) > 0:
                 logger.warning(
                     "Malicious URL detected", extra=log_extra_data, technical_message_id="virustotal.malicious"
                 )
@@ -145,15 +159,15 @@ class VirusTotalBackend(BaseBackend):
 
     @classmethod
     def _needs_rescan(cls, attributes: dict) -> bool:
-        last_analysis_stats = attributes["last_analysis_stats"]
-        last_submission_date = attributes["last_submission_date"]
+        last_analysis_stats = attributes.get("last_analysis_stats", {})
+        last_submission_date = attributes.get("last_submission_date", 0)
         now = int(time.time())
 
         if last_submission_date < now - RESCAN_DELAY_DEFAULT:
             return True
 
         if last_submission_date < now - RESCAN_DELAY_SUSPICIOUS and (
-            last_analysis_stats["suspicious"] > 0 or last_analysis_stats["malicious"] == 0
+            last_analysis_stats.get("suspicious", 0) > 0 or last_analysis_stats.get("malicious", 0) > 0
         ):
             return True
 
