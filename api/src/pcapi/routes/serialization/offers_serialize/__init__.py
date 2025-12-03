@@ -681,40 +681,44 @@ class OfferVideo(ConfiguredBaseModel):
     duration: int | None
 
 
-class PostOfferBodyModel(BaseModel):
-    address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
-    audio_disability_compliant: bool
-    booking_contact: EmailStr | None
-    booking_email: EmailStr | None
+class MinimalPostOfferBodyModel(BaseModel):
+    name: str
+    venue_id: int
     description: str | None
+    subcategory_id: str
     duration_minutes: int | None
-    external_ticket_office_url: HttpUrl | None
     extra_data: dict[str, typing.Any] | None
-    is_duo: bool | None
-    is_national: bool | None
+
+    audio_disability_compliant: bool
     mental_disability_compliant: bool
     motor_disability_compliant: bool
-    name: str
-    product_id: int | None
-    subcategory_id: str
-    url: HttpUrl | None
-    venue_id: int
     visual_disability_compliant: bool
-    withdrawal_delay: int | None
-    withdrawal_details: str | None
-    withdrawal_type: offers_models.WithdrawalTypeEnum | None
 
     @validator("name", pre=True)
     def validate_name(cls, name: str, values: dict) -> str:
         offers_validation.check_offer_name_length_is_valid(name)
         return name
 
+    class Config:
+        alias_generator = to_camel
+        extra = "forbid"
+
+
+class PostOfferBodyModel(MinimalPostOfferBodyModel):
+    url: HttpUrl | None
+    address: offerers_schemas.AddressBodyModel | None
+    booking_contact: EmailStr | None
+    booking_email: EmailStr | None
+    external_ticket_office_url: HttpUrl | None
+    is_duo: bool | None
+    is_national: bool | None
+    product_id: int | None
+    withdrawal_delay: int | None
+    withdrawal_details: str | None
+    withdrawal_type: offers_models.WithdrawalTypeEnum | None
+
     @validator("withdrawal_type")
     def validate_withdrawal_type(cls, value: offers_models.WithdrawalTypeEnum) -> offers_models.WithdrawalTypeEnum:
         if value == offers_models.WithdrawalTypeEnum.IN_APP:
             raise ValueError("Withdrawal type cannot be in_app for manually created offers")
         return value
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
