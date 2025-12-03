@@ -7,6 +7,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.testing import assert_num_queries
@@ -242,6 +243,7 @@ class CreateOfferBase:
     success_num_queries = 1  # fetch user session
     success_num_queries += 1  # fetch user
     success_num_queries += 1  # fetch venue
+    success_num_queries += 2  # get_or_create_offer_location: select + insert
     success_num_queries += 1  # user offerer check
     success_num_queries += 1  # fetch product
     success_num_queries += 1  # create offer
@@ -634,8 +636,6 @@ class CreateActivityWithdrawableTest(CreateOfferBase):
         with assert_changes(Offer, 1):
             num_queries = self.success_num_queries
             num_queries += 1  # insert address
-            num_queries += 1  # insert offerer address
-            num_queries += 1  # fetch offerer address
             with assert_num_queries(num_queries):
                 response = auth_client.post(self.endpoint, json=payload)
                 assert response.status_code == 201
@@ -814,8 +814,8 @@ class Returns200Test:
         assert offer.mentalDisabilityCompliant is True
         assert offer.validation == OfferValidationStatus.DRAFT
         assert offer.isActive is False
-        assert offer.offererAddress.id == venue.offererAddressId
-        assert offer.offererAddress == venue.offererAddress
+        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+        assert offer.offererAddress.address == venue.offererAddress.address
 
     @pytest.mark.parametrize("oa_label", [None, "some place"])
     def test_create_event_offer_with_existing_offerer_address(self, oa_label, client):
