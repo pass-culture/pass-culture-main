@@ -200,7 +200,7 @@ class CollectiveOfferTemplateTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 
@@ -213,7 +213,7 @@ class CollectiveOfferTemplateTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == venue.offererAddress.id
         assert response_location["address"]["isLinkedToVenue"] is True
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
@@ -377,7 +377,7 @@ class GetCollectiveOfferTemplatesTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 
@@ -391,7 +391,7 @@ class GetCollectiveOfferTemplatesTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == venue.offererAddress.id
         assert response_location["address"]["isLinkedToVenue"] is True
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 

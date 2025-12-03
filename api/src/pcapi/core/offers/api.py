@@ -132,6 +132,11 @@ def build_new_offer_from_product(
     provider_id: int | None,
     offerer_address_id: int | None = None,
 ) -> models.Offer:
+    if offerer_address_id is None:
+        offerer_address_id = offerers_api.get_or_create_offer_location(
+            venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
+        ).id
+
     return models.Offer(
         bookingEmail=venue.bookingEmail,
         ean=product.ean,
@@ -142,7 +147,7 @@ def build_new_offer_from_product(
         venueId=venue.id,
         subcategoryId=product.subcategoryId,
         withdrawalDetails=venue.withdrawalDetails,
-        offererAddressId=venue.offererAddressId if offerer_address_id is None else offerer_address_id,
+        offererAddressId=offerer_address_id,
     )
 
 
@@ -392,11 +397,6 @@ def get_offerer_address_from_address_body(
         return None
 
     if address_body.isVenueAddress:
-        # TODO (prouzet, 2025-11-20) CLEAN_OA The following condition should not happen after step 4.5
-        # but must be kept to avoid duplication before venues have their exclusive location.
-        if venue.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION:
-            return venue.offererAddress
-
         # Use the same address as the venue, but offer must not be linked to a VENUE_LOCATION
         return offerers_api.get_or_create_offer_location(
             venue.managingOffererId, venue.offererAddress.addressId, label=venue.common_name
@@ -2177,7 +2177,11 @@ def move_event_offer(
     }
     with transaction():
         if move_offer_address:
-            offer.offererAddressId = destination_venue.offererAddressId
+            offer.offererAddress = offerers_api.get_or_create_offer_location(
+                offerer_id=destination_venue.managingOffererId,
+                address_id=destination_venue.offererAddress.addressId,
+                label=destination_venue.common_name,
+            )
         else:
             # Use a different OA if the offer uses the venue OA
             if offer.offererAddress and offer.offererAddress == offer.venue.offererAddress:

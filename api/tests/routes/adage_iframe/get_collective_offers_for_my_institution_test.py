@@ -119,7 +119,7 @@ class CollectiveOfferTest:
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
             institution=institution,
         )
@@ -134,6 +134,6 @@ class CollectiveOfferTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
+        assert response_location["address"]["id_oa"] == venue.offererAddress.id
         assert response_location["address"]["isLinkedToVenue"] is True
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId

@@ -13,6 +13,7 @@ from pcapi.core.educational.serialization.collective_booking import serialize_co
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 
@@ -240,7 +241,8 @@ class Returns200Test:
         assert response.status_code == 200
         offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
 
-        assert offer.offererAddressId == oa.id
+        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+        assert offer.offererAddress.addressId == oa.addressId
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -347,7 +349,8 @@ class Returns200Test:
         offer = db.session.query(models.CollectiveOffer).filter(models.CollectiveOffer.id == offer.id).one()
 
         assert offer.venueId == other_venue.id
-        assert offer.offererAddressId == other_venue.offererAddressId
+        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 

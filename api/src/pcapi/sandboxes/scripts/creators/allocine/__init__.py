@@ -33,11 +33,9 @@ def save_allocine_sandbox() -> None:
         comment="Salle de cinéma",
         name=offerer.name + " - Salle 1",
         siret=sirene.siret,
-        offererAddress=offerers_factories.OffererAddressFactory(
-            street="145, rue Chaplin",
-            postalCode="75017",
-            city="Paris 17",
-        ),
+        offererAddress__address__street="145, rue Chaplin",
+        offererAddress__address__postalCode="75017",
+        offererAddress__address__city="Paris 17",
     )
 
     provider = get_provider_by_local_class("AllocineStocks")
