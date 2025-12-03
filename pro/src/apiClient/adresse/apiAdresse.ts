@@ -47,13 +47,13 @@ export const getDataFromAddressParts = async (
   postalCode: string,
   limit = 5
 ): Promise<Array<AdresseData>> => {
-  const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${street} ${city} ${postalCode}`
+  const url = `${API_ADRESSE_BASE_URL}/geocodage/search/?limit=${limit}&q=${street} ${city} ${postalCode}`
   const response = await handleApiError(await fetch(url), 'GET', url)
 
   if (response.features.length > 0) {
     return formatAdressApiResponse(response)
   } else {
-    const url = `${API_ADRESSE_BASE_URL}/search/?q=${city}&postcode=${postalCode}&type=municipality&autocomplete=0&limit=1`
+    const url = `${API_ADRESSE_BASE_URL}/geocodage/search/?q=${city}&postcode=${postalCode}&type=municipality&autocomplete=0&limit=1`
     const response = await handleApiError(await fetch(url), 'GET', url)
     return formatAdressApiResponse(response)
   }
@@ -66,7 +66,7 @@ export const getDataFromAddress = async (
     onlyTypes = DEFAULTS_OPTIONS.onlyTypes,
   }: AddressDataOptions = DEFAULTS_OPTIONS
 ): Promise<Array<AdresseData>> => {
-  const url = `${API_ADRESSE_BASE_URL}/search/?limit=${limit}&q=${address}`
+  const url = `${API_ADRESSE_BASE_URL}/geocodage/search/?limit=${limit}&q=${address}`
   const response = await handleApiError(await fetch(url), 'GET', url)
 
   if (!onlyTypes) {
