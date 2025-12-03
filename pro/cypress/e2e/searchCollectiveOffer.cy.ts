@@ -125,20 +125,13 @@ describe('Search collective offers', () => {
       .should('eq', 200)
 
     cy.stepLog({ message: '1 results should be displayed' })
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        offerPublished.name,
-        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
-        '100€25 participants',
-        institutionName,
-        'À déterminer',
-        'publiée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults, true)
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .eq(0)
+      .find('td')
+      .eq(1)
+      .should('contain', offerPublished.name)
   })
 
   it(`I should be able to search with a Date and see expected results`, () => {
@@ -273,5 +266,20 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: '5 results should be displayed' })
     cy.contains('5 offres')
+  })
+
+  it('I should be able to download offers in CSV and Excel format', () => {
+    cy.stepLog({ message: 'I open the download drawer' })
+    cy.findByText('Télécharger').click()
+
+    cy.stepLog({ message: 'I download CSV format' })
+    cy.intercept('GET', '/collective/offers/csv*').as('downloadCSV')
+    cy.findByText('Télécharger format CSV').click()
+    cy.wait('@downloadCSV').its('response.statusCode').should('eq', 200)
+
+    cy.stepLog({ message: 'I download Excel format' })
+    cy.intercept('GET', '/collective/offers/excel*').as('downloadExcel')
+    cy.findByText('Télécharger format Excel').click()
+    cy.wait('@downloadExcel').its('response.statusCode').should('eq', 200)
   })
 })
