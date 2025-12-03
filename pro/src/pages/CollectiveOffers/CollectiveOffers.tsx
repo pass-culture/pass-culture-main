@@ -70,7 +70,7 @@ export const CollectiveOffers = (): JSX.Element => {
       const params = serializeApiCollectiveFilters(apiFilters)
 
       return api.getCollectiveOffers(
-        params.nameOrIsbn,
+        params.name,
         params.offererId,
         params.status,
         params.venueId,

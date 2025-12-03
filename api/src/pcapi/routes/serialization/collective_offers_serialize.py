@@ -56,7 +56,7 @@ EmptyStringToNone = EmptyAsNullString | None
 
 
 class ListCollectiveOffersQueryModel(ConfiguredBaseModel):
-    nameOrIsbn: str | None
+    name: str | None
     offerer_id: int | None
     status: list[educational_models.CollectiveOfferDisplayedStatus] | None
     venue_id: int | None

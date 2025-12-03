@@ -67,7 +67,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     () => {
       const params = serializeApiCollectiveFilters(apiFilters)
       return api.getCollectiveOfferTemplates(
-        params.nameOrIsbn,
+        params.name,
         params.offererId,
         params.status,
         params.venueId,

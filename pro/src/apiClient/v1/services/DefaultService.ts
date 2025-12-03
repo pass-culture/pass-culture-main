@@ -436,7 +436,7 @@ export class DefaultService {
   }
   /**
    * get_collective_offers <GET>
-   * @param nameOrIsbn
+   * @param name
    * @param offererId
    * @param status
    * @param venueId
@@ -449,7 +449,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffers(
-    nameOrIsbn?: string | null,
+    name?: string | null,
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
@@ -463,7 +463,7 @@ export class DefaultService {
       method: 'GET',
       url: '/collective/bookable-offers',
       query: {
-        'nameOrIsbn': nameOrIsbn,
+        'name': name,
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
@@ -516,7 +516,7 @@ export class DefaultService {
   }
   /**
    * get_collective_offer_templates <GET>
-   * @param nameOrIsbn
+   * @param name
    * @param offererId
    * @param status
    * @param venueId
@@ -529,7 +529,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOfferTemplates(
-    nameOrIsbn?: string | null,
+    name?: string | null,
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
@@ -543,7 +543,7 @@ export class DefaultService {
       method: 'GET',
       url: '/collective/offers-template',
       query: {
-        'nameOrIsbn': nameOrIsbn,
+        'name': name,
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
@@ -776,7 +776,7 @@ export class DefaultService {
   }
   /**
    * get_collective_offers_csv <GET>
-   * @param nameOrIsbn
+   * @param name
    * @param offererId
    * @param status
    * @param venueId
@@ -789,7 +789,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffersCsv(
-    nameOrIsbn?: string | null,
+    name?: string | null,
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
@@ -803,7 +803,7 @@ export class DefaultService {
       method: 'GET',
       url: '/collective/offers/csv',
       query: {
-        'nameOrIsbn': nameOrIsbn,
+        'name': name,
         'offererId': offererId,
         'status': status,
         'venueId': venueId,
@@ -821,7 +821,7 @@ export class DefaultService {
   }
   /**
    * get_collective_offers_excel <GET>
-   * @param nameOrIsbn
+   * @param name
    * @param offererId
    * @param status
    * @param venueId
@@ -834,7 +834,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffersExcel(
-    nameOrIsbn?: string | null,
+    name?: string | null,
     offererId?: number | null,
     status?: Array<CollectiveOfferDisplayedStatus> | null,
     venueId?: number | null,
@@ -848,7 +848,7 @@ export class DefaultService {
       method: 'GET',
       url: '/collective/offers/excel',
       query: {
-        'nameOrIsbn': nameOrIsbn,
+        'name': name,
         'offererId': offererId,
         'status': status,
         'venueId': venueId,

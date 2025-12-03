@@ -85,12 +85,16 @@ export function useStoredFilterConfig<
 
   const onResetFilters = (resetNameOrIsbn = true) => {
     const filterConfig = getStoredFilterConfig(type)
+    const nameKey = type === 'individual' ? 'nameOrIsbn' : 'name'
     const newFilterConfig: StoredFilterConfig = {
       ...filterConfig,
       storedFilters: {
         ...(!resetNameOrIsbn
           ? {
-              nameOrIsbn: filterConfig.storedFilters.nameOrIsbn,
+              [nameKey]:
+                filterConfig.storedFilters[
+                  nameKey as keyof typeof filterConfig.storedFilters
+                ],
             }
           : {}),
       },

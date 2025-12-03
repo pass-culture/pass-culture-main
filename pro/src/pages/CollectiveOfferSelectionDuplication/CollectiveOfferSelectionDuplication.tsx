@@ -56,7 +56,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   const queryVenueId = queryParams.get('lieu')
 
   const {
-    nameOrIsbn,
+    name,
     offererId,
     venueId,
     status,
@@ -67,7 +67,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     offererAddressId,
   } = serializeApiCollectiveFilters({
     ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-    nameOrIsbn: searchedOfferName,
+    name: searchedOfferName,
     offererId: currentOffererId.toString(),
     venueId: withSwitchVenueFeature
       ? selectedVenue.id.toString()
@@ -80,10 +80,10 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
   })
 
   const { data: offers, isLoading } = useSWR(
-    [GET_COLLECTIVE_OFFERS_QUERY_KEY, nameOrIsbn],
+    [GET_COLLECTIVE_OFFERS_QUERY_KEY, name],
     () =>
       api.getCollectiveOfferTemplates(
-        nameOrIsbn,
+        name,
         offererId,
         status,
         venueId,

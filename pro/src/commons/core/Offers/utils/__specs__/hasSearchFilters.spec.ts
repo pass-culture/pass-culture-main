@@ -11,7 +11,7 @@ describe('hasSearchFilters', () => {
   const defaultCollectiveFilters: CollectiveSearchFiltersParams = {
     collectiveOfferType: CollectiveOfferTypeEnum.ALL,
     format: 'all',
-    nameOrIsbn: '',
+    name: '',
     offererId: '333',
     page: 1,
     periodBeginningDate: '',

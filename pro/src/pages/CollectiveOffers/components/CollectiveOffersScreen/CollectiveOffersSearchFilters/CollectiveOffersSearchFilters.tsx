@@ -197,8 +197,8 @@ export const CollectiveOffersSearchFilters = ({
         label: 'Nom de l’offre',
         disabled: disableAllFilters,
         onChange: (event) =>
-          updateSearchFilters({ nameOrIsbn: event.currentTarget.value }),
-        value: selectedFilters.nameOrIsbn,
+          updateSearchFilters({ name: event.currentTarget.value }),
+        value: selectedFilters.name,
       }}
       onResetFilters={onResetFilters}
       searchButtonRef={searchButtonRef}

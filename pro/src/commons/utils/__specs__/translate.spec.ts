@@ -14,7 +14,7 @@ describe('translate', () => {
     expect(
       translateQueryParamsToApiParams(
         {
-          'nom-ou-isbn': 'input de recherche',
+          nom: 'input de recherche',
           structure: '883',
           lieu: '891',
           format: 'Concert',
@@ -26,7 +26,7 @@ describe('translate', () => {
       )
     ).toEqual(
       expect.objectContaining({
-        nameOrIsbn: 'input de recherche',
+        name: 'input de recherche',
         offererId: '883',
         venueId: '891',
         format: 'Concert',
@@ -39,7 +39,7 @@ describe('translate', () => {
     expect(
       translateApiParamsToQueryParams(
         {
-          nameOrIsbn: 'input de recherche',
+          name: 'input de recherche',
           offererId: '883',
           venueId: '891',
           format: EacFormat.CONCERT,
@@ -54,7 +54,7 @@ describe('translate', () => {
       )
     ).toEqual(
       expect.objectContaining({
-        'nom-ou-isbn': 'input de recherche',
+        nom: 'input de recherche',
         structure: '883',
         lieu: '891',
         format: 'Concert',
@@ -117,11 +117,11 @@ describe('translate', () => {
     expect(
       translateQueryParamsToApiParams(
         {
-          'nom-ou-isbn': 'en-attente',
+          nom: 'en-attente',
         },
         Audience.COLLECTIVE
       )
-    ).toEqual(expect.objectContaining({ nameOrIsbn: 'en-attente' }))
+    ).toEqual(expect.objectContaining({ name: 'en-attente' }))
   })
 
   it('should not translate user inputs for individual offers', () => {
