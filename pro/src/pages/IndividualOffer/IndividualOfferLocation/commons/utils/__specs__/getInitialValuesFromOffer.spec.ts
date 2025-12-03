@@ -1,6 +1,6 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseWithOAModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   makeVenueListItem,
@@ -97,7 +97,7 @@ describe('getInitialValuesFromOffer', () => {
           ...paramsWithOfflineSubcategory,
           offerVenue: makeVenueListItem({
             id: 2,
-            address: getAddressResponseIsLinkedToVenueModelFactory({
+            address: getAddressResponseWithOAModelFactory({
               id_oa,
             }),
           }),
@@ -122,7 +122,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should include selected venue address when available', () => {
         const offerVenue = makeVenueListItem({
           id: 2,
-          address: getAddressResponseIsLinkedToVenueModelFactory(),
+          address: getAddressResponseWithOAModelFactory(),
         })
 
         const params = {
@@ -152,7 +152,7 @@ describe('getInitialValuesFromOffer', () => {
       it('should handle missing address props in selected venue', () => {
         const offerVenue = makeVenueListItem({
           id: 2,
-          address: getAddressResponseIsLinkedToVenueModelFactory({
+          address: getAddressResponseWithOAModelFactory({
             banId: undefined,
             inseeCode: undefined,
             label: undefined,
@@ -181,7 +181,7 @@ describe('getInitialValuesFromOffer', () => {
     it('should accept any url format when offline', () => {
       const offerVenue = makeVenueListItem({
         id: 2,
-        address: getAddressResponseIsLinkedToVenueModelFactory(),
+        address: getAddressResponseWithOAModelFactory(),
       })
       const params = { ...paramsWithOfflineSubcategory, offerVenue }
 

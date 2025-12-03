@@ -227,7 +227,6 @@ class Returns200Test:
                 "banId": venue.offererAddress.address.banId,
                 "label": venue.common_name,
                 "id_oa": venue.offererAddress.id,
-                "isLinkedToVenue": True,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
             },
             "hasOffers": True,

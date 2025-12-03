@@ -1,11 +1,11 @@
 import { computeAddressDisplayName } from 'repository/venuesService'
 
-import type { AddressResponseIsLinkedToVenueModel } from '@/apiClient/v1'
+import type { AddressResponseWithOAModel } from '@/apiClient/v1'
 
 import style from './VenueDetails.module.scss'
 
 interface VenueDetailsProps {
-  address?: AddressResponseIsLinkedToVenueModel | null
+  address?: AddressResponseWithOAModel | null
   withdrawalDetails?: string
 }
 

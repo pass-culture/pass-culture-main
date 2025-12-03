@@ -25,7 +25,7 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import highlight_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseIsLinkedToVenueModel
+from pcapi.routes.serialization.address_serialize import AddressResponseWithOAModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
 from pcapi.serialization.utils import NOW_LITERAL
@@ -190,7 +190,7 @@ class ListOffersStockResponseModel(BaseModel):
         return remainingQuantity
 
 
-def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressResponseIsLinkedToVenueModel | None:
+def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressResponseWithOAModel | None:
     if offer.status == OfferStatus.DRAFT and not offer.offererAddressId:
         # The offer is still in the funnel creation and without any offererAddress defined
         # We don't want to blindly return venue.offererAddress
@@ -204,10 +204,8 @@ def offer_address_getter_dict_helper(offer: offers_models.Offer) -> AddressRespo
         offerer_address = offer.offererAddress
     else:
         offerer_address = offer.venue.offererAddress
-    label = offer.venue.common_name if offerer_address._isLinkedToVenue else offerer_address.label
-    return AddressResponseIsLinkedToVenueModel(
-        **retrieve_address_info_from_oa(offerer_address), label=label, isLinkedToVenue=offerer_address._isLinkedToVenue
-    )
+    label = offer.venue.common_name if offerer_address.label is None else offerer_address.label
+    return AddressResponseWithOAModel(**retrieve_address_info_from_oa(offerer_address), label=label)
 
 
 class ListOffersOfferResponseModelsGetterDict(GetterDict):
@@ -254,7 +252,7 @@ class ListOffersOfferResponseModel(BaseModel):
     venue: base_serializers.ListOffersVenueResponseModel
     status: OfferStatus
     isShowcase: bool | None
-    address: AddressResponseIsLinkedToVenueModel | None
+    address: AddressResponseWithOAModel | None
     isDigital: bool
     publicationDatetime: datetime.datetime | None
     bookingAllowedDatetime: datetime.datetime | None
@@ -521,7 +519,7 @@ class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
 
 
 class GetIndividualOfferWithAddressResponseModel(GetIndividualOfferResponseModel):
-    address: AddressResponseIsLinkedToVenueModel | None
+    address: AddressResponseWithOAModel | None
     hasPendingBookings: bool
     isHeadlineOffer: bool
 

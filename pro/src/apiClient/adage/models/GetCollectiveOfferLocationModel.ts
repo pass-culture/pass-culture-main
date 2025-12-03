@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
+import type { AddressResponseWithOAModel } from './AddressResponseWithOAModel';
 import type { CollectiveLocationType } from './CollectiveLocationType';
 export type GetCollectiveOfferLocationModel = {
-  address?: AddressResponseIsLinkedToVenueModel | null;
+  address?: AddressResponseWithOAModel | null;
   locationComment?: string | null;
   locationType: CollectiveLocationType;
 };

@@ -107,7 +107,6 @@ describe('FormLocation', () => {
     id: 1,
     id_oa: 889,
     inseeCode: null,
-    isLinkedToVenue: true,
     isManualEdition: false,
     label: 'Venue 1',
     latitude: 48.87004,

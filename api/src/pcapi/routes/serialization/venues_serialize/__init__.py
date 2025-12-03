@@ -228,10 +228,9 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
             offerer_address = venue.offererAddress
             if not offerer_address:
                 return None
-            return address_serialize.AddressResponseIsLinkedToVenueModel(
+            return address_serialize.AddressResponseWithOAModel(
                 **address_serialize.retrieve_address_info_from_oa(offerer_address),
                 label=venue.common_name,
-                isLinkedToVenue=True,
             )
 
         if key == "collectiveDmsApplications":
@@ -312,7 +311,7 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     adageInscriptionDate: datetime | None
     bankAccount: BankAccountResponseModel | None
     hasOffers: bool
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    address: address_serialize.AddressResponseWithOAModel | None
     hasActiveIndividualOffer: bool
     isCaledonian: bool
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None

@@ -2,7 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
+import type { AddressResponseWithOAModel } from './AddressResponseWithOAModel';
 import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DisplayedActivity } from './DisplayedActivity';
@@ -20,7 +20,7 @@ import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespan
 export type GetVenueResponseModel = {
   activity?: DisplayedActivity | null;
   adageInscriptionDate?: string | null;
-  address?: AddressResponseIsLinkedToVenueModel | null;
+  address?: AddressResponseWithOAModel | null;
   audioDisabilityCompliant?: boolean | null;
   bankAccount?: BankAccountResponseModel | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;

@@ -1,15 +1,14 @@
-import type { AddressResponseIsLinkedToVenueModel } from '@/apiClient/v1'
+import type { AddressResponseWithOAModel } from '@/apiClient/v1'
 
-export const getAddressResponseIsLinkedToVenueModelFactory = (
-  addressResponse: Partial<AddressResponseIsLinkedToVenueModel> = {}
-): AddressResponseIsLinkedToVenueModel => {
+export const getAddressResponseWithOAModelFactory = (
+  addressResponse: Partial<AddressResponseWithOAModel> = {}
+): AddressResponseWithOAModel => {
   return {
     banId: 'ban',
     city: 'city',
     id: 1,
     id_oa: 1,
     inseeCode: 'inseeCode',
-    isLinkedToVenue: true,
     isManualEdition: false,
     label: 'label',
     latitude: 48.866667,

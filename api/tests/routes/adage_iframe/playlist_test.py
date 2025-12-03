@@ -169,7 +169,6 @@ class GetClassroomPlaylistTest(SharedPlaylistsErrorTests, AuthError):
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
         assert response_location["address"]["id_oa"] == offer_address_id
-        assert response_location["address"]["isLinkedToVenue"] is True
         assert response_location["address"]["banId"] == ban_id
 
 
@@ -259,7 +258,6 @@ class GetNewTemplateOffersPlaylistQueryTest(SharedPlaylistsErrorTests, AuthError
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
         assert response_location["address"]["id_oa"] == venue.offererAddress.id
-        assert response_location["address"]["isLinkedToVenue"] is True
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_no_rows(self, client):

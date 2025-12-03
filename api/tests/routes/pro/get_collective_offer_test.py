@@ -158,7 +158,6 @@ class Returns200Test:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"]["id_oa"] == venue.offererAddress.id
-        assert response_location["address"]["isLinkedToVenue"] is True
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId
         assert response_json["interventionArea"] == []
 
@@ -208,7 +207,6 @@ class Returns200Test:
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
         assert response_location["address"]["id_oa"] == oa.id
-        assert response_location["address"]["isLinkedToVenue"] is False
         assert response_location["address"]["banId"] == oa.address.banId
         assert response_json["interventionArea"] == []
 

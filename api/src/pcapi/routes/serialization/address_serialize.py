@@ -28,10 +28,9 @@ class AddressResponseModel(BaseModel):
         return round(value, 5)
 
 
-class AddressResponseIsLinkedToVenueModel(AddressResponseModel):
+class AddressResponseWithOAModel(AddressResponseModel):
     label: str | None = None
     id_oa: int
-    isLinkedToVenue: bool | None
     isManualEdition: bool
 
 
