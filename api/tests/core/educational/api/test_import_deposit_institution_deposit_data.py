@@ -1,3 +1,4 @@
+import logging
 from datetime import timedelta
 from decimal import Decimal
 from tempfile import NamedTemporaryFile
@@ -13,6 +14,9 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 def _get_deposit(year, institution) -> educational_models.EducationalDeposit:
     return (
         db.session.query(educational_models.EducationalDeposit)
@@ -25,7 +29,6 @@ def _get_deposit(year, institution) -> educational_models.EducationalDeposit:
     )
 
 
-@pytest.mark.usefixtures("db_session")
 class ImportDepositInstitutionDataTest:
     def test_create_institution(self) -> None:
         ansco = educational_factories.EducationalYearFactory()
@@ -36,8 +39,9 @@ class ImportDepositInstitutionDataTest:
             educational_year=ansco,
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+            credit_update="replace",
+            ministry_conflict="keep",
             final=False,
-            conflict="crash",
         )
 
         institution = (
@@ -71,8 +75,9 @@ class ImportDepositInstitutionDataTest:
             educational_year=ansco,
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+            credit_update="replace",
+            ministry_conflict="keep",
             final=False,
-            conflict="crash",
         )
 
         institution = (
@@ -106,31 +111,39 @@ class ImportDepositInstitutionDataTest:
                 educational_year=ansco,
                 ministry=educational_models.Ministry.EDUCATION_NATIONALE,
                 period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+                credit_update="replace",
+                ministry_conflict="keep",
                 final=False,
-                conflict="crash",
             )
 
         assert db.session.query(educational_models.EducationalInstitution).count() == 0
         assert db.session.query(educational_models.EducationalDeposit).count() == 0
         assert str(exception.value) == "UAIs not found in adage: ['pouet']"
 
-    def test_deposit_alread_in_ministry_replace(self) -> None:
+    def test_deposit_alread_in_ministry_replace(self, caplog) -> None:
         ansco = educational_factories.EducationalYearFactory()
         old_institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
-        educational_factories.EducationalDepositFactory(
+        deposit = educational_factories.EducationalDepositFactory(
             educationalInstitution=old_institution,
             educationalYear=ansco,
             ministry=educational_models.Ministry.AGRICULTURE,
         )
         data = {"0470010E": 1250}
 
-        import_deposit_institution_data(
-            data=data,
-            educational_year=ansco,
-            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
-            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
-            final=False,
-            conflict="replace",
+        with caplog.at_level(logging.WARNING):
+            import_deposit_institution_data(
+                data=data,
+                educational_year=ansco,
+                ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+                period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+                credit_update="replace",
+                ministry_conflict="replace",
+                final=False,
+            )
+
+        [record] = caplog.records
+        assert (
+            record.message == f"Ministry changed from 'AGRICULTURE' to 'EDUCATION_NATIONALE' for deposit {deposit.id}"
         )
 
         institution = (
@@ -153,24 +166,29 @@ class ImportDepositInstitutionDataTest:
         assert deposit.period.lower == ansco.beginningDate
         assert deposit.period.upper == ansco.expirationDate
 
-    def test_deposit_alread_in_ministry_keep(self) -> None:
+    def test_deposit_alread_in_ministry_keep(self, caplog) -> None:
         ansco = educational_factories.EducationalYearFactory()
         old_institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
-        educational_factories.EducationalDepositFactory(
+        deposit = educational_factories.EducationalDepositFactory(
             educationalInstitution=old_institution,
             educationalYear=ansco,
             ministry=educational_models.Ministry.AGRICULTURE,
         )
         data = {"0470010E": 1250}
 
-        import_deposit_institution_data(
-            data=data,
-            educational_year=ansco,
-            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
-            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
-            final=False,
-            conflict="keep",
-        )
+        with caplog.at_level(logging.WARNING):
+            import_deposit_institution_data(
+                data=data,
+                educational_year=ansco,
+                ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+                period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+                credit_update="replace",
+                ministry_conflict="keep",
+                final=False,
+            )
+
+        [record] = caplog.records
+        assert record.message == f"Kept previous ministry 'AGRICULTURE' for deposit {deposit.id}"
 
         institution = (
             db.session.query(educational_models.EducationalInstitution).filter_by(institutionId="0470010E").one()
@@ -210,11 +228,12 @@ class ImportDepositInstitutionDataTest:
                 import_deposit_institution_csv(
                     path=f.name,
                     year=ansco.beginningDate.year,
-                    ministry=educational_models.Ministry.EDUCATION_NATIONALE.name,
+                    ministry=educational_models.Ministry.EDUCATION_NATIONALE,
                     period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
-                    final=False,
-                    conflict="replace",
+                    credit_update="replace",
+                    ministry_conflict="replace",
                     program_name=None,
+                    final=False,
                 )
 
         institution = db.session.query(educational_models.EducationalInstitution).filter_by(institutionId=uai).one()
@@ -257,7 +276,6 @@ class ImportDepositInstitutionDataTest:
         assert deposit_new_uai.period.upper == ansco.expirationDate
 
 
-@pytest.mark.usefixtures("db_session")
 class ImportDepositPeriodTest:
     @pytest.mark.parametrize("with_existing_deposit", (True, False))
     def test_deposit_educational_year(self, with_existing_deposit):
@@ -272,8 +290,9 @@ class ImportDepositPeriodTest:
             educational_year=year,
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+            credit_update="replace",
+            ministry_conflict="keep",
             final=True,
-            conflict="keep",
         )
 
         deposit = _get_deposit(year, institution)
@@ -295,8 +314,9 @@ class ImportDepositPeriodTest:
                 educational_year=year,
                 ministry=educational_models.Ministry.EDUCATION_NATIONALE,
                 period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+                credit_update="replace",
+                ministry_conflict="keep",
                 final=True,
-                conflict="keep",
             )
 
         assert (
@@ -324,8 +344,9 @@ class ImportDepositPeriodTest:
             educational_year=year,
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FIRST_PERIOD,
+            credit_update="replace",
+            ministry_conflict="keep",
             final=True,
-            conflict="keep",
         )
 
         deposit = _get_deposit(year, institution)
@@ -347,8 +368,9 @@ class ImportDepositPeriodTest:
                 educational_year=year,
                 ministry=educational_models.Ministry.EDUCATION_NATIONALE,
                 period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FIRST_PERIOD,
+                credit_update="replace",
+                ministry_conflict="keep",
                 final=True,
-                conflict="keep",
             )
 
         assert (
@@ -376,8 +398,9 @@ class ImportDepositPeriodTest:
             educational_year=year,
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_SECOND_PERIOD,
+            credit_update="replace",
+            ministry_conflict="keep",
             final=True,
-            conflict="keep",
         )
 
         deposit = _get_deposit(year, institution)
@@ -399,8 +422,9 @@ class ImportDepositPeriodTest:
                 educational_year=year,
                 ministry=educational_models.Ministry.EDUCATION_NATIONALE,
                 period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_SECOND_PERIOD,
+                credit_update="replace",
+                ministry_conflict="keep",
                 final=True,
-                conflict="keep",
             )
 
         assert (
@@ -431,8 +455,9 @@ class ImportDepositPeriodTest:
             educational_year=year,
             ministry=educational_models.Ministry.EDUCATION_NATIONALE,
             period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_SECOND_PERIOD,
+            credit_update="replace",
+            ministry_conflict="keep",
             final=True,
-            conflict="keep",
         )
 
         deposits = (
@@ -454,3 +479,111 @@ class ImportDepositPeriodTest:
         )
         assert deposit_second_period.period.upper == year.expirationDate
         assert deposit_second_period.amount == Decimal(1250)
+
+
+class ImportDepositCreditUpdateTest:
+    def test_import_replace(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+
+        data = {"0470010E": 1250}
+
+        output = import_deposit_institution_data(
+            data=data,
+            educational_year=year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+            credit_update="replace",
+            ministry_conflict="keep",
+            final=True,
+        )
+
+        assert output.total_previous_deposit == 0
+        assert output.total_imported_amount == 1250
+        assert output.total_new_deposit == 1250
+
+        deposit = _get_deposit(year, institution)
+        assert deposit.period.lower == year.beginningDate
+        assert deposit.period.upper == year.expirationDate
+        assert deposit.amount == Decimal(1250)
+
+    def test_import_replace_with_existing_deposit(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=institution, educationalYear=year, amount=Decimal(2000)
+        )
+
+        data = {"0470010E": 1250}
+
+        output = import_deposit_institution_data(
+            data=data,
+            educational_year=year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+            credit_update="replace",
+            ministry_conflict="keep",
+            final=True,
+        )
+
+        assert output.total_previous_deposit == 2000
+        assert output.total_imported_amount == 1250
+        assert output.total_new_deposit == 1250
+
+        deposit = _get_deposit(year, institution)
+        assert deposit.period.lower == year.beginningDate
+        assert deposit.period.upper == year.expirationDate
+        assert deposit.amount == Decimal(1250)
+
+    def test_import_add(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+
+        data = {"0470010E": 1250}
+
+        output = import_deposit_institution_data(
+            data=data,
+            educational_year=year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+            credit_update="add",
+            ministry_conflict="keep",
+            final=True,
+        )
+
+        assert output.total_previous_deposit == 0
+        assert output.total_imported_amount == 1250
+        assert output.total_new_deposit == 1250
+
+        deposit = _get_deposit(year, institution)
+        assert deposit.period.lower == year.beginningDate
+        assert deposit.period.upper == year.expirationDate
+        assert deposit.amount == Decimal(1250)
+
+    def test_import_add_with_existing_deposit(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+        educational_factories.EducationalDepositFactory(
+            educationalInstitution=institution, educationalYear=year, amount=Decimal(2000)
+        )
+
+        data = {"0470010E": 1250}
+
+        output = import_deposit_institution_data(
+            data=data,
+            educational_year=year,
+            ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+            period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+            credit_update="add",
+            ministry_conflict="keep",
+            final=True,
+        )
+
+        assert output.total_previous_deposit == 2000
+        assert output.total_imported_amount == 1250
+        assert output.total_new_deposit == 3250
+
+        deposit = _get_deposit(year, institution)
+        assert deposit.period.lower == year.beginningDate
+        assert deposit.period.upper == year.expirationDate
+        assert deposit.amount == Decimal(3250)

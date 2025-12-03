@@ -1,3 +1,4 @@
+import dataclasses
 import datetime
 import logging
 import os
@@ -72,12 +73,18 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool, uai: str | N
         - EDUCATIONAL_YEAR_SECOND_PERIOD: period = educational year second period (january start -> august end)
     """,
 )
+@click.option(
+    "--credit-update",
+    type=click.Choice(("add", "replace")),
+    default="replace",
+    help="If an existing deposit is found, 'replace' will overwrite the previous credit and 'add' will add the imported amount.",
+)
 @click.option("--filename", type=str, required=True, help="Name of the CSV to import.")
 @click.option(
-    "--conflict",
+    "--ministry-conflict",
     type=click.Choice(("keep", "replace")),
     default="keep",
-    help="Overide previous ministry if needed.",
+    help="If an existing deposit is found with a different ministry, 'replace' will overwrite the previous ministry and 'keep' will keep the previous one.",
 )
 @click.option(
     "--educational-program-name",
@@ -91,8 +98,9 @@ def import_deposit_csv(
     year: int,
     ministry: str,
     period_option: str,
+    credit_update: institution_api.CreditUpdateOption,
     filename: str,
-    conflict: str,
+    ministry_conflict: institution_api.MinistryConflictOption,
     educational_program_name: str,
     final: bool,
     not_dry: bool = False,
@@ -100,7 +108,7 @@ def import_deposit_csv(
     """
     Import CSV deposits and update institution according to adage data
     """
-    args = f"{year=}, {ministry=}, {period_option=}, {filename=}, {conflict=}, {educational_program_name=}, {final=}, {not_dry=}"
+    args = f"{year=}, {ministry=}, {period_option=}, {credit_update=}, {filename=}, {ministry_conflict=}, {educational_program_name=}, {final=}, {not_dry=}"
     logger.info("Starting import deposit csv with args %s", args)
 
     # A flask command that we run via a github action copy the input file to pcapi/scripts/flask
@@ -109,20 +117,22 @@ def import_deposit_csv(
     path = Path(pcapi.__file__).parent / "scripts" / "flask"
     file_path = f"{path}/{filename}"
 
-    total_amount = institution_api.import_deposit_institution_csv(
+    output = institution_api.import_deposit_institution_csv(
         path=file_path,
         year=year,
-        ministry=ministry,
+        ministry=educational_models.Ministry[ministry],
         period_option=institution_api.ImportDepositPeriodOption[period_option],
-        conflict=conflict,
-        final=final,
+        credit_update=credit_update,
+        ministry_conflict=ministry_conflict,
         program_name=educational_program_name,
+        final=final,
     )
 
     output_dir = os.environ.get("OUTPUT_DIRECTORY")
     if output_dir:
         with open(f"{output_dir}/total_amount.txt", "w", encoding="utf8") as f:
-            f.write(f"Total imported amount: {total_amount}")
+            lines = (f"{field} = {value}\n" for field, value in dataclasses.asdict(output).items())
+            f.writelines(lines)
 
     if not_dry:
         logger.info("Finished import deposit csv, committing")
