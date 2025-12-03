@@ -679,7 +679,7 @@ class OfferVideo(ConfiguredBaseModel):
     duration: int | None
 
 
-class MinimalPostOfferBodyModel(BaseModel):
+class MinimalPostOfferBodyModel(ConfiguredBaseModel):
     name: str
     venue_id: int
     description: str | None
