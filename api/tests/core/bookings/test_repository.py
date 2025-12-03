@@ -573,14 +573,10 @@ class FindByProUserTest:
         event_datetime = datetime(2020, 4, 21, 20, 00)
 
         # Cayenne
-        offerer_address_in_cayenne = offerers_factories.OffererAddressFactory(
-            address__timezone=get_department_timezone("973"),
-            address__postalCode="97300",
-            offerer=user_offerer.offerer,
-        )
         offer_in_cayenne = offers_factories.OfferFactory(
             venue__managingOfferer=user_offerer.offerer,
-            venue__offererAddress=offerer_address_in_cayenne,
+            venue__offererAddress__address__timezone=get_department_timezone("973"),
+            venue__offererAddress__address__postalCode="97300",
         )
         cayenne_event_datetime = datetime(2020, 4, 22, 2, 0)
         stock_in_cayenne = offers_factories.EventStockFactory(
@@ -589,14 +585,10 @@ class FindByProUserTest:
         cayenne_booking = bookings_factories.BookingFactory(stock=stock_in_cayenne)
 
         # Mayotte
-        offerer_address_in_mayotte = offerers_factories.OffererAddressFactory(
-            address__timezone=get_department_timezone("976"),
-            address__postalCode="97600",
-            offerer=user_offerer.offerer,
-        )
         offer_in_mayotte = offers_factories.OfferFactory(
             venue__managingOfferer=user_offerer.offerer,
-            venue__offererAddress=offerer_address_in_mayotte,
+            venue__offererAddress__address__timezone=get_department_timezone("976"),
+            venue__offererAddress__address__postalCode="97600",
         )
         mayotte_event_datetime = datetime(2020, 4, 20, 22, 0)
         stock_in_mayotte = offers_factories.EventStockFactory(
