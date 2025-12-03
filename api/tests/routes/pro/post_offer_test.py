@@ -653,7 +653,7 @@ class Returns200Test:
         assert offer.url == None
         assert offer.hasUrl is False
         assert offer.isDigital
-        assert offer.isNational
+        assert offer.isNational is False
         assert offer.motorDisabilityCompliant is False
         assert offer.visualDisabilityCompliant is False
         assert offer.audioDisabilityCompliant is True
