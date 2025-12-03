@@ -1,5 +1,6 @@
 import type { PatchOfferBodyModel, PostOfferBodyModel } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
 import type { DetailsFormValues } from './types'
@@ -29,7 +30,7 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
 }
 
 export const serializeExtraData = (formValues: DetailsFormValues) => {
-  return trimStringsInObject({
+  return normalizeRequestBodyProps({
     author: formValues.author,
     gtl_id: formValues.gtl_id,
     performer: formValues.performer,
@@ -58,7 +59,6 @@ export function serializeDetailsPostData(
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
-    url: formValues.url,
     audioDisabilityCompliant: formValues.accessibility.audio,
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
@@ -80,7 +80,6 @@ export function serializeDetailsPatchData(
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
-    url: formValues.url,
     audioDisabilityCompliant: formValues.accessibility.audio,
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,

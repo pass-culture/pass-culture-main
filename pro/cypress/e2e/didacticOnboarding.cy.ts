@@ -8,23 +8,28 @@ describe('Didactic Onboarding feature', () => {
 
   beforeEach(() => {
     // order matter here
-    cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
+    cy.intercept({ method: 'GET', url: /\/offers\/categories$/ }).as(
       'getCategories'
     )
-    cy.intercept({ method: 'GET', url: '/offers/music-types' }).as(
+    cy.intercept({ method: 'GET', url: /\/offers\/music-types$/ }).as(
       'getMusicTypes'
     )
-    cy.intercept({ method: 'GET', url: '/offers/*/stocks-stats' }).as(
+    cy.intercept({ method: 'GET', url: /\/offers\/\d+\/stocks-stats$/ }).as(
       'getStocksStats'
     )
-    cy.intercept({ method: 'GET', url: '/offers?*' }).as('getOffers')
-    cy.intercept({ method: 'GET', url: '/offers/*/stocks/*' }).as('getStocks')
-
-    cy.intercept({ method: 'GET', url: '/offers/*' }).as('getOffer')
-    cy.intercept({ method: 'POST', url: '/offers' }).as('postOffer')
-    cy.intercept({ method: 'PATCH', url: '/offers/*' }).as('patchOffer')
-    cy.intercept({ method: 'PATCH', url: '/offers/publish' }).as('publishOffer')
-    cy.intercept({ method: 'PATCH', url: '/offers/*/stocks' }).as('patchStocks')
+    cy.intercept({ method: 'GET', url: /\/offers\?.*/ }).as('getOffers')
+    cy.intercept({ method: 'GET', url: /\/offers\/\d+\/stocks\/\?.*$/ }).as(
+      'getStocks'
+    )
+    cy.intercept({ method: 'POST', url: /\/offers$/ }).as('postOffer')
+    cy.intercept({ method: 'PATCH', url: /\/offers\/\d+$/ }).as('patchOffer')
+    cy.intercept({ method: 'PATCH', url: /\/offers\/publish$/ }).as(
+      'publishOffer'
+    )
+    cy.intercept({ method: 'PATCH', url: /\/offers\/\d+\/stocks\/$/ }).as(
+      'patchStocks'
+    )
+    cy.intercept({ method: 'GET', url: /\/offers\/\d+$/ }).as('getOffer')
   })
 
   it('I should not be able to onboard me by submitting an Adage referencing file if I don’t have an Adage ID', () => {
@@ -143,11 +148,7 @@ describe('Didactic Onboarding feature', () => {
         fromOnBoardingGoToFirstOfferCreation()
 
         cy.findByRole('link', { name: 'Manuellement' }).click()
-        // TODO (rchaffal 28/11/2025) These calls to getOffer are not clear...
-        // maybe it's matching an other call ? it was the case for categories and music-types
-        // or some request are not shown ?
-        // Other calls to getOffer don't match when request has been made
-        cy.wait(['@getOffers', '@getOffer'])
+        cy.wait(['@getCategories'])
 
         cy.stepLog({
           message: `Starts offer creation (before saving a draft)`,
@@ -159,7 +160,7 @@ describe('Didactic Onboarding feature', () => {
         )
         cy.findByRole('combobox', { name: /Catégorie/ }).select('Beaux-arts')
         cy.findByLabelText(/Non accessible/).check()
-        cy.wait(['@getMusicTypes', '@getCategories'])
+        cy.wait(['@getMusicTypes'])
 
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
         cy.wait(['@postOffer'])
@@ -176,6 +177,7 @@ describe('Didactic Onboarding feature', () => {
           name: 'Reprendre une offre déjà commencée',
         })
         cy.findByRole('link', { name: /Mon offre en brouillon/ }).click()
+        cy.wait(['@getOffer'])
 
         cy.findByRole('heading', { level: 1, name: 'Créer une offre' })
         cy.findByRole('textbox', { name: /Titre de l’offre/ }).should(
@@ -183,17 +185,17 @@ describe('Didactic Onboarding feature', () => {
           'Mon offre en brouillon'
         )
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@getMusicTypes', '@patchOffer'])
+        cy.wait(['@getMusicTypes', '@patchOffer'])
 
         //  LOCALISATION STEP
         cy.url().should('contain', '/creation/localisation')
+
         cy.findByRole('button', { name: 'Enregistrer et continuer' }).click()
-        cy.wait(['@getOffer', '@patchOffer'])
+        cy.wait(['@patchOffer'])
 
         //  MEDIA STEP
         cy.url().should('contain', '/creation/media')
         cy.findByText('Enregistrer et continuer').click()
-        cy.wait('@getOffer')
 
         //  PRICE CATEGORY STEP
         cy.url().should('contain', '/creation/tarifs')
@@ -208,6 +210,7 @@ describe('Didactic Onboarding feature', () => {
         //  USEFUL INFO STEP
         cy.url().should('contain', '/creation/informations_pratiques')
         cy.findByText('Enregistrer et continuer').click()
+        cy.wait(['@patchOffer'])
 
         //  SUMMARY STEP
         cy.findByRole('heading', { level: 2, name: 'Description' })
@@ -220,7 +223,7 @@ describe('Didactic Onboarding feature', () => {
         })
 
         cy.findByRole('button', { name: 'Publier l’offre' }).click()
-        cy.wait(['@publishOffer', '@getOffer'], {
+        cy.wait(['@publishOffer'], {
           requestTimeout: 60000 * 2,
           responseTimeout: 60000 * 2,
         })
