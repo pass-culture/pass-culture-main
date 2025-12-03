@@ -38,8 +38,8 @@ class EducationalValidationTest:
             educationalDeposit=educational_deposit,
         )
         ConfirmedCollectiveBookingFactory.create_batch(
-            20,
-            collectiveStock__price=Decimal(20.00),
+            2,
+            collectiveStock__price=Decimal(200.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
@@ -57,7 +57,16 @@ class EducationalValidationTest:
             educationalDeposit=educational_deposit,
         )
 
+        # available amount is
+        # 1400
+        # - 2 x 200 (2 confirmed bookings)
+        # - 400 (confirmed booking)
+        # - 400 (used booking)
+        # = 200
         check_institution_fund(booking_amount=Decimal(200.00), deposit=educational_deposit)
+
+        with pytest.raises(exceptions.InsufficientFund):
+            check_institution_fund(booking_amount=Decimal(201.00), deposit=educational_deposit)
 
     def test_institution_fund_is_temporary_insufficient(self):
         educational_institution = EducationalInstitutionFactory()
@@ -101,19 +110,19 @@ class EducationalValidationTest:
         )
 
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal(100.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         ConfirmedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal(100.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
         )
         UsedCollectiveBookingFactory(
-            collectiveStock__price=Decimal(400.00),
+            collectiveStock__price=Decimal(100.00),
             educationalInstitution=educational_institution,
             educationalYear=educational_year,
             educationalDeposit=educational_deposit,
