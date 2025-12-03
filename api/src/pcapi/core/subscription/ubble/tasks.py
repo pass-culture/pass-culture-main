@@ -9,6 +9,7 @@ from pcapi.connectors.beneficiaries import ubble as ubble_connector
 from pcapi.core.finance import models as finance_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import api as ubble_api
+from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -74,3 +75,17 @@ def update_ubble_workflow_if_needed(
 
     payload = ubble_schemas.UpdateWorkflowPayload(beneficiary_fraud_check_id=fraud_check.id)
     update_ubble_workflow_task.delay(payload.model_dump())
+
+
+@celery_async_task(
+    name="tasks.ubble.default.store_id_picture",
+    model=ubble_schemas.UpdateWorkflowPayload,
+    autoretry_for=(ubble_connector.UbbleRateLimitedError, ubble_connector.UbbleServerError),
+    max_per_time_window=settings.UBBLE_RATE_LIMIT,
+    time_window_size=settings.UBBLE_TIME_WINDOW_SIZE,
+)
+def store_id_pictures_task(payload: ubble_schemas.StoreIdPicturePayload) -> None:
+    try:
+        ubble_api.archive_ubble_user_id_pictures(payload.identification_id)
+    except ubble_exceptions.UbbleDownloadedFileEmpty as exc:
+        logger.warning("File to archive is empty", extra={"exc": exc})

@@ -213,7 +213,8 @@ class UserRecreditTest:
             can_be_recredited_for_17 = api._can_be_recredited(user)
             assert not can_be_recredited_for_17
 
-    def test_cannot_be_recredited_for_deposit_using_support_actions(self, ubble_mocker):
+    @mock.patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
+    def test_cannot_be_recredited_for_deposit_using_support_actions(self, store_id_pictures_task_mock, ubble_mocker):
         yesterday = date_utils.get_naive_utc_now() - relativedelta(days=1)
         with time_machine.travel(yesterday):
             # for some reason, the Ubble fraud check is created after the action history below, so we create the user yesterday

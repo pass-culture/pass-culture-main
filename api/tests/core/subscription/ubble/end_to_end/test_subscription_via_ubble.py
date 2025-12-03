@@ -220,13 +220,6 @@ class UbbleV2EndToEndTest:
         assert response.status_code == 204, response.json
 
 
-def _refresh_user(user_id: int) -> users_models.User:
-    """
-    Celery task transactions expunge the current user, so we must refetch them after each task
-    """
-    return db.session.scalar(sa.select(users_models.User).where(users_models.User.id == user_id))
-
-
 class UbbleDummyWebhookTest:
     def test_dummy_webhook_with_data(self, ubble_client):
         response = ubble_client.post("/webhooks/ubble/dummy", json=fixtures.ID_VERIFICATION_APPROVED_WEBHOOK_BODY)
@@ -254,6 +247,7 @@ class UbbleEndToEndTest:
             schoolType=users_models.SchoolTypeEnum.PUBLIC_HIGH_SCHOOL,
             phoneNumber="+33612345678",
         )
+        user_id = user.id
         subscription_factories.ProfileCompletionFraudCheckFactory(
             user=user,
             resultContent=subscription_factories.ProfileCompletionContentFactory(
@@ -305,6 +299,7 @@ class UbbleEndToEndTest:
             .filter_by(userId=user.id, type=subscription_models.FraudCheckType.UBBLE)
             .one()
         )
+        fraud_check_id = fraud_check.id
         assert fraud_check.status == subscription_models.FraudCheckStatus.STARTED
         assert fraud_check.source_data().status == ubble_schemas.UbbleIdentificationStatus.INITIATED
 
@@ -382,8 +377,9 @@ class UbbleEndToEndTest:
                 },
                 json=webhook_request_payload,
             )
+            assert response.status_code == 200
 
-        assert response.status_code == 200
+        fraud_check = _refresh_fraud_check(fraud_check_id)
         assert fraud_check.status == subscription_models.FraudCheckStatus.OK
         assert fraud_check.source_data().status == ubble_schemas.UbbleIdentificationStatus.PROCESSED
         assert fraud_check.source_data().processed_datetime == datetime.datetime(
@@ -393,8 +389,27 @@ class UbbleEndToEndTest:
             2018, 1, 1, 8, 41, 2, 504682, tzinfo=datetime.timezone.utc
         )
 
+        user = _refresh_user(user_id)
         assert user.is_beneficiary
         assert user.has_active_deposit
         assert user.deposit.amount == 300
         assert user.firstName == "RAOUL"
         assert user.lastName == "DE TOULON"
+
+
+def _refresh_user(user_id: int) -> users_models.User:
+    """
+    Celery task transactions expunge the current user, so we must refetch them after each task
+    """
+    return db.session.scalar(sa.select(users_models.User).where(users_models.User.id == user_id))
+
+
+def _refresh_fraud_check(fraud_check_id: int) -> subscription_models.BeneficiaryFraudCheck:
+    """
+    Celery task transactions expunge the current fraud check, so we must refetch them after each task
+    """
+    return db.session.scalar(
+        sa.select(subscription_models.BeneficiaryFraudCheck).where(
+            subscription_models.BeneficiaryFraudCheck.id == fraud_check_id
+        )
+    )

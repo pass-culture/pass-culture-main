@@ -238,7 +238,6 @@ def _configure_v2_session() -> requests.Session:
     return session
 
 
-@ubble_rate_limit
 def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | None, typing.Any]:
     try:
         response = requests.get(http_url, stream=True)
