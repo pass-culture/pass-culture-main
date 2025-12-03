@@ -338,7 +338,10 @@ def create_offer(
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body.ean)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     validation.check_is_duo_compliance(body.is_duo, subcategory)
-    validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
+    # The location (= address/url step) is at the second step of the offer creation workflow,
+    # so the portal doesn't send this info during offer creation (but during the next offer update).
+    if not is_from_private_api:
+        validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
     validation.check_offer_name_does_not_contain_ean(body.name)
