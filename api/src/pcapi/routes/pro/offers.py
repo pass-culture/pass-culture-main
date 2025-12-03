@@ -411,7 +411,7 @@ def update_offer(
 )
 @atomic()
 def post_offer(
-    body: offers_serialize.deprecated.PostOfferBodyModel,
+    body: offers_serialize.MinimalPostOfferBodyModel,
 ) -> offers_serialize.GetIndividualOfferResponseModel:
     venue: offerers_models.Venue = first_or_404(
         db.session.query(offerers_models.Venue)
