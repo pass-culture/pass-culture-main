@@ -15,10 +15,12 @@ import pcapi.core.bookings.models as bookings_models
 import pcapi.core.educational.api.offer as educational_api
 import pcapi.core.educational.models as educational_models
 import pcapi.core.finance.models as finance_models
+import pcapi.core.history.models as history_models
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.api as offer_api
 import pcapi.core.offers.models as offer_models
 import pcapi.core.offers.repository as offers_repository
+import pcapi.core.users.models as users_models
 from pcapi import settings
 from pcapi.core import search
 from pcapi.models import db
@@ -134,8 +136,22 @@ def _move_price_categories(
     ).update({"venueId": destination_venue.id}, synchronize_session=False)
 
 
+def _create_rollback_action_history(origin_venue_id: int, destination_venue_id: int, author: users_models.User) -> None:
+    db.session.add(
+        history_models.ActionHistory(
+            venueId=origin_venue_id,
+            actionType=history_models.ActionType.VENUE_REGULARIZATION,
+            extraData={"destination_venue_id": destination_venue_id},
+            comment=f"Rollback from Venue Regularization: {origin_venue_id} soft delete has been reverted.",
+            authorUser=author,
+        )
+    )
+
+
 @atomic()
-def resurrect_venue(dry_run: bool, origin_id: int, destination_id: int, objects_to_move: ObjectsToMove) -> None:
+def resurrect_venue(
+    dry_run: bool, origin_id: int, destination_id: int, objects_to_move: ObjectsToMove, author: users_models.User
+) -> None:
     if dry_run:
         mark_transaction_as_invalid()
 
@@ -274,8 +290,7 @@ def resurrect_venue(dry_run: bool, origin_id: int, destination_id: int, objects_
         {"venueId": destination_venue.id},
         synchronize_session=False,
     )
-
-    move_batch_offer._create_action_history(origin_id, destination_id, False)
+    _create_rollback_action_history(origin_id, destination_id, author)
     db.session.flush()
 
     db.session.execute(sa.text(f"SET SESSION statement_timeout={settings.DATABASE_STATEMENT_TIMEOUT}"))
@@ -289,10 +304,12 @@ def resurrect_venue(dry_run: bool, origin_id: int, destination_id: int, objects_
 @click.option("--not-dry", is_flag=True)
 @click.option("--origin", type=int, required=True)
 @click.option("--destination", type=int, required=True)
-def resurrect_venue_command(not_dry: bool, origin: int, destination: int) -> None:
+@click.option("--author-id", type=int, required=True)
+def resurrect_venue_command(not_dry: bool, origin: int, destination: int, author_id: int) -> None:
     rows = read_migration_log()
     objects_to_move = get_objects_to_move(rows, destination)
-    resurrect_venue(not not_dry, origin, destination, objects_to_move)
+    author = db.session.query(users_models.User).filter(users_models.User.id == author_id).one_or_none()
+    resurrect_venue(not not_dry, origin, destination, objects_to_move, author)
     if not_dry:
         logger.info("Finished")
     else:
@@ -306,6 +323,7 @@ if __name__ == "__main__":
     parser.add_argument("--dry-run", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--origin", type=int, help="Origin venue", required=True)
     parser.add_argument("--destination", type=int, help="Destination venue", required=True)
+    parser.add_argument("--author-id", type=int, help="Author", required=True)
     args = parser.parse_args()
 
     from pcapi.app import app
@@ -315,7 +333,8 @@ if __name__ == "__main__":
     try:
         rows = read_migration_log()
         objects_to_move = get_objects_to_move(rows, args.destination)
-        resurrect_venue(args.dry_run, args.origin, args.destination, objects_to_move)
+        author = db.session.query(users_models.User).filter(users_models.User.id == args.author_id).one_or_none()
+        resurrect_venue(args.dry_run, args.origin, args.destination, objects_to_move, author)
     except:
         db.session.rollback()
         raise
