@@ -348,7 +348,6 @@ class Returns200Test:
                     "id": offerer_address1.address.id,
                     "id_oa": offerer_address1.id,
                     "inseeCode": offerer_address1.address.inseeCode,
-                    "isLinkedToVenue": False,
                     "isManualEdition": offerer_address1.address.isManualEdition,
                     "label": offerer_address1.label,
                     "latitude": float(offerer_address1.address.latitude),
@@ -369,13 +368,13 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        offerer_address1 = offerers_factories.OffererAddressFactory(
-            label="Accor Arena",
-            offerer=offerer,
-            address__street="8 Boulevard de Bercy",
-            address__banId="75112_0877_00008",
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__label="Accor Arena",
+            offererAddress__offerer=offerer,
+            offererAddress__address__street="8 Boulevard de Bercy",
+            offererAddress__address__banId="75112_0877_00008",
         )
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address1)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue, offererAddress=None, validation=offers_models.OfferValidationStatus.DRAFT
         )
@@ -487,7 +486,6 @@ class Returns200Test:
                     "id": venue.offererAddress.address.id,
                     "id_oa": venue.offererAddress.id,
                     "inseeCode": venue.offererAddress.address.inseeCode,
-                    "isLinkedToVenue": True,
                     "isManualEdition": venue.offererAddress.address.isManualEdition,
                     "label": venue.common_name,
                     "latitude": float(venue.offererAddress.address.latitude),
@@ -616,7 +614,6 @@ class Returns200Test:
                     "postalCode": offerer_address1.address.postalCode,
                     "city": offerer_address1.address.city,
                     "departmentCode": offerer_address1.address.departmentCode,
-                    "isLinkedToVenue": False,
                     "isManualEdition": offerer_address1.address.isManualEdition,
                     "latitude": float(offerer_address1.address.latitude),
                     "longitude": float(offerer_address1.address.longitude),
@@ -663,7 +660,6 @@ class Returns200Test:
                     "postalCode": offerer_address1.address.postalCode,
                     "city": offerer_address1.address.city,
                     "departmentCode": offerer_address1.address.departmentCode,
-                    "isLinkedToVenue": False,
                     "isManualEdition": offerer_address1.address.isManualEdition,
                     "latitude": float(offerer_address1.address.latitude),
                     "longitude": float(offerer_address1.address.longitude),
@@ -739,7 +735,6 @@ class Returns200Test:
                     "postalCode": offerer_address1.address.postalCode,
                     "city": offerer_address1.address.city,
                     "departmentCode": offerer_address1.address.departmentCode,
-                    "isLinkedToVenue": False,
                     "isManualEdition": offerer_address1.address.isManualEdition,
                     "latitude": float(offerer_address1.address.latitude),
                     "longitude": float(offerer_address1.address.longitude),
@@ -756,17 +751,16 @@ class Returns200Test:
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offerer_address1 = offerers_factories.OffererAddressOfVenueFactory(
-            offerer=offerer,
-            address__street="4 Boulevard de Bercy",
-            address__banId="75112_0877_00001",
-            address__postalCode="75001",
-            address__longitude=1.34765,
-            address__latitude=4.34765,
-        )
         venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer, offererAddress=offerer_address1, name="Best Place to be"
+            name="Best Place to be",
+            managingOfferer=offerer,
+            offererAddress__address__street="4 Boulevard de Bercy",
+            offererAddress__address__banId="75112_0877_00001",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__longitude=1.34765,
+            offererAddress__address__latitude=4.34765,
         )
+        offerer_address1 = venue.offererAddress
 
         event_offer1 = offers_factories.EventOfferFactory(
             name="The Weeknd",
@@ -817,7 +811,6 @@ class Returns200Test:
                     "postalCode": offerer_address1.address.postalCode,
                     "city": offerer_address1.address.city,
                     "departmentCode": offerer_address1.address.departmentCode,
-                    "isLinkedToVenue": True,
                     "isManualEdition": offerer_address1.address.isManualEdition,
                     "latitude": float(offerer_address1.address.latitude),
                     "longitude": float(offerer_address1.address.longitude),

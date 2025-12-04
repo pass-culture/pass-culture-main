@@ -96,7 +96,7 @@ class Returns200Test:
 
         [offer_json] = response.json
         assert offer_json["location"] == get_serialized_address(
-            offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
+            offerer_address=offer.offererAddress, label=venue.common_name
         )
 
     def test_one_collective_offer_location_other_address(self, client):
@@ -111,7 +111,7 @@ class Returns200Test:
 
         [offer_json] = response.json
         assert offer_json["location"] == get_serialized_address(
-            offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
+            offerer_address=offer.offererAddress, label=offer.offererAddress.label
         )
 
     def test_collective_offer_is_public_api(self, client):

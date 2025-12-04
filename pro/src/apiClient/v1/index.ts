@@ -12,7 +12,7 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { AddressBodyModel } from './models/AddressBodyModel';
-export type { AddressResponseIsLinkedToVenueModel } from './models/AddressResponseIsLinkedToVenueModel';
+export type { AddressResponseWithOAModel } from './models/AddressResponseWithOAModel';
 export type { AggregatedRevenueModel } from './models/AggregatedRevenueModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';

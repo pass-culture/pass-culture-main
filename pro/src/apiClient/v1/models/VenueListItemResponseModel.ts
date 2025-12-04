@@ -2,12 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressResponseIsLinkedToVenueModel } from './AddressResponseIsLinkedToVenueModel';
+import type { AddressResponseWithOAModel } from './AddressResponseWithOAModel';
 import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { SimplifiedBankAccountStatus } from './SimplifiedBankAccountStatus';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type VenueListItemResponseModel = {
-  address?: AddressResponseIsLinkedToVenueModel | null;
+  address?: AddressResponseWithOAModel | null;
   audioDisabilityCompliant?: boolean | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;
   bookingEmail?: string | null;

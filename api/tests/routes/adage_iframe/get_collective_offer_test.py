@@ -111,7 +111,6 @@ class CollectiveOfferTest:
                     "id": address.id,
                     "id_oa": oa.id,
                     "inseeCode": address.inseeCode,
-                    "isLinkedToVenue": True,
                     "isManualEdition": address.isManualEdition,
                     "label": venue.common_name,
                     "latitude": float(address.latitude),
@@ -150,7 +149,7 @@ class CollectiveOfferTest:
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 
@@ -163,8 +162,7 @@ class CollectiveOfferTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["id_oa"] == venue.offererAddress.id
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_should_return_404_when_no_collective_offer(self, eac_client, redactor):

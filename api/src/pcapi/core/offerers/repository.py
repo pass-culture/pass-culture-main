@@ -1218,7 +1218,7 @@ def get_offerer_addresses(
             )
         )
         .join(geography_models.Address, models.OffererAddress.addressId == geography_models.Address.id)
-        .outerjoin(models.Venue, models.Venue.offererAddressId == models.OffererAddress.id)
+        .outerjoin(models.Venue, models.Venue.id == models.OffererAddress.venueId)  # Do not filter on type
     )
 
     if with_offers_option is not None:

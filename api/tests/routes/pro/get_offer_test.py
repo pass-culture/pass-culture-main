@@ -58,11 +58,7 @@ class Returns200Test:
 
     def test_access_by_pro_user(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
-        offer = offers_factories.ThingOfferFactory(
-            venue__offererAddress=offerer_address,
-            venue__managingOfferer=user_offerer.offerer,
-        )
+        offer = offers_factories.ThingOfferFactory(venue__managingOfferer=user_offerer.offerer)
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
         offer_id = offer.id
@@ -196,7 +192,6 @@ class Returns200Test:
                 "longitude": float(venue.offererAddress.address.longitude),
                 "postalCode": venue.offererAddress.address.postalCode,
                 "street": venue.offererAddress.address.street,
-                "isLinkedToVenue": venue.offererAddress.isLinkedToVenue,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
             },
             "venue": {
@@ -317,13 +312,11 @@ class Returns200Test:
     def test_return_offer_offerer_address(self, offer_oa_label, client):
         """If offer has an offererAddress, it should be used"""
         user_offerer = offerers_factories.UserOffererFactory()
-        venue_offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer_offerer_address = offerers_factories.OffererAddressFactory(
-            offerer=user_offerer.offerer, label=offer_oa_label
+            offerer=user_offerer.offerer,
         )
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=user_offerer.offerer,
-            venue__offererAddress=venue_offerer_address,
             offererAddress=offer_offerer_address,
         )
         assert offer.venue.offererAddress != offer.offererAddress
@@ -346,18 +339,16 @@ class Returns200Test:
             "longitude": float(offer_offerer_address.address.longitude),
             "postalCode": offer_offerer_address.address.postalCode,
             "street": offer_offerer_address.address.street,
-            "isLinkedToVenue": offer_offerer_address.isLinkedToVenue,
             "isManualEdition": offer_offerer_address.address.isManualEdition,
         }
 
     def test_return_venue_offerer_address(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
             venue__managingOfferer=user_offerer.offerer,
-            venue__offererAddress=offerer_address,
             offererAddress=None,
         )
+        offerer_address = offer.venue.offererAddress
         assert offer.offererAddress is None
 
         auth_client = client.with_session_auth(email=user_offerer.user.email)
@@ -378,7 +369,6 @@ class Returns200Test:
             "longitude": float(offerer_address.address.longitude),
             "postalCode": offerer_address.address.postalCode,
             "street": offerer_address.address.street,
-            "isLinkedToVenue": offerer_address.isLinkedToVenue,
             "isManualEdition": offerer_address.address.isManualEdition,
         }
 

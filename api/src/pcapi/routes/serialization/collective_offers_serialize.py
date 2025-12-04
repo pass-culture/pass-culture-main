@@ -120,7 +120,7 @@ class CollectiveOfferDatesModel(BaseModel):
 class GetCollectiveOfferLocationModel(BaseModel):
     locationType: educational_models.CollectiveLocationType
     locationComment: str | None
-    address: address_serialize.AddressResponseIsLinkedToVenueModel | None
+    address: address_serialize.AddressResponseWithOAModel | None
 
 
 def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
@@ -327,10 +327,9 @@ def get_collective_offer_location_model(
     address = None
     oa = offer.offererAddress
     if oa is not None:
-        address = address_serialize.AddressResponseIsLinkedToVenueModel(
+        address = address_serialize.AddressResponseWithOAModel(
             **address_serialize.retrieve_address_info_from_oa(oa),
-            label=offer.venue.common_name if oa._isLinkedToVenue else oa.label,
-            isLinkedToVenue=oa._isLinkedToVenue,
+            label=offer.venue.common_name if oa.label is None else oa.label,
         )
 
     return GetCollectiveOfferLocationModel(

@@ -317,7 +317,8 @@ class Returns200Test:
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
         )
 
-        assert offer.offererAddressId == oa.id
+        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+        assert offer.offererAddress.addressId == oa.addressId
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 
@@ -433,7 +434,8 @@ class Returns200Test:
             db.session.query(models.CollectiveOfferTemplate).filter(models.CollectiveOfferTemplate.id == offer_id).one()
         )
         assert offer.venueId == other_venue.id
-        assert offer.offererAddressId == other_venue.offererAddressId
+        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+        assert offer.offererAddress.addressId == other_venue.offererAddress.addressId
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 

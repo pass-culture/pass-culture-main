@@ -91,7 +91,6 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
                 "id": address.id,
                 "id_oa": oa.id,
                 "inseeCode": address.inseeCode,
-                "isLinkedToVenue": False,
                 "isManualEdition": address.isManualEdition,
                 "label": oa.label,
                 "latitude": float(address.latitude),
@@ -200,7 +199,7 @@ class CollectiveOfferTemplateTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 
@@ -213,8 +212,7 @@ class CollectiveOfferTemplateTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["id_oa"] == venue.offererAddress.id
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_should_return_404_when_no_collective_offer_template(self, eac_client, redactor):
@@ -377,7 +375,7 @@ class GetCollectiveOfferTemplatesTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 
@@ -391,8 +389,7 @@ class GetCollectiveOfferTemplatesTest:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
+        assert response_location["address"]["id_oa"] == venue.offererAddress.id
         assert response_location["address"]["banId"] == venue.offererAddress.address.banId
 
     def test_location_school(self, eac_client, redactor):
@@ -436,7 +433,6 @@ class GetCollectiveOfferTemplatesTest:
         assert response_location["locationComment"] is None
         assert response_location["address"] is not None
         assert response_location["address"]["id_oa"] == oa.id
-        assert response_location["address"]["isLinkedToVenue"] is False
         assert response_location["address"]["banId"] == oa.address.banId
 
     def test_location_to_be_defined(self, eac_client, redactor):

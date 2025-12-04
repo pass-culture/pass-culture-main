@@ -25,7 +25,7 @@ import {
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getAddressResponseWithOAModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   defaultGetOffererResponseModel,
   getIndividualOfferFactory,
@@ -654,7 +654,7 @@ describe('IndividualOfferSummaryScreen', () => {
         offer: {
           ...offerBase,
           address: {
-            ...getAddressResponseIsLinkedToVenueModelFactory({
+            ...getAddressResponseWithOAModelFactory({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',

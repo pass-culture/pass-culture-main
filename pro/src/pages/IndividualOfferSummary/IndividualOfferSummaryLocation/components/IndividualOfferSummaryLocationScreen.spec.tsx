@@ -65,7 +65,6 @@ describe('<IndividualOfferSummaryLocationScreen />', () => {
         latitude: 48.8,
         longitude: 2.3,
         isManualEdition: false,
-        isLinkedToVenue: true,
         banId: '75101_xxxx',
         inseeCode: '75101',
       },

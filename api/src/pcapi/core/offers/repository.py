@@ -137,12 +137,8 @@ def get_capped_offers_for_filters(
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer).load_only(
                     offerers_models.Offerer.id, offerers_models.Offerer.name
                 ),
-                sa_orm.joinedload(offerers_models.Venue.offererAddress).options(
-                    sa_orm.joinedload(offerers_models.OffererAddress.address),
-                    sa_orm.with_expression(
-                        offerers_models.OffererAddress._isLinkedToVenue,
-                        offerers_models.OffererAddress.isLinkedToVenue.expression,
-                    ),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(
+                    offerers_models.OffererAddress.address
                 ),
             )
         )
@@ -174,13 +170,7 @@ def get_capped_offers_for_filters(
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))
-        .options(
-            sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-            sa_orm.joinedload(models.Offer.offererAddress).with_expression(
-                offerers_models.OffererAddress._isLinkedToVenue,
-                offerers_models.OffererAddress.isLinkedToVenue.expression,
-            ),
-        )
+        .options(sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address))
         .limit(offers_limit)
         .all()
     )
@@ -509,7 +499,13 @@ def get_offers_by_filters(
                 geography_models.Address,
                 offerers_models.OffererAddress.addressId == geography_models.Address.id,
             )
-            .join(venue_oa_alias, venue_oa_alias.id == offerers_models.Venue.offererAddressId)
+            .join(
+                venue_oa_alias,
+                sa.and_(
+                    venue_oa_alias.venueId == offerers_models.Venue.id,
+                    venue_oa_alias.type == offerers_models.LocationType.VENUE_LOCATION,
+                ),
+            )
             .join(venue_address_alias, venue_address_alias.id == venue_oa_alias.addressId)
             .filter(models.Stock.isSoftDeleted.is_(False))
             .filter(models.Stock.offerId == models.Offer.id)
@@ -1035,19 +1031,9 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
         if "offerer_address" in load_options:
             query = query.options(
                 sa_orm.joinedload(models.Offer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-                sa_orm.joinedload(models.Offer.offererAddress).with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue,
-                    offerers_models.OffererAddress.isLinkedToVenue.expression,
-                ),
                 sa_orm.defaultload(models.Offer.venue)
                 .joinedload(offerers_models.Venue.offererAddress)
                 .joinedload(offerers_models.OffererAddress.address),
-                sa_orm.defaultload(models.Offer.venue)
-                .joinedload(offerers_models.Venue.offererAddress)
-                .with_expression(
-                    offerers_models.OffererAddress._isLinkedToVenue,
-                    offerers_models.OffererAddress.isLinkedToVenue.expression,
-                ),
             )
         if "pending_bookings" in load_options:
             query = query.options(
@@ -1148,8 +1134,8 @@ def get_filtered_stocks(
         db.session.query(models.Stock)
         .join(models.Offer)
         .join(offerers_models.Venue)
-        .join(offerers_models.Venue.offererAddress)
-        .join(offerers_models.OffererAddress.address)
+        .outerjoin(offerers_models.Venue.offererAddress)
+        .outerjoin(offerers_models.OffererAddress.address)
         .filter(
             models.Stock.offerId == offer.id,
             models.Stock.isSoftDeleted == False,
