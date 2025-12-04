@@ -32,130 +32,141 @@ class DisabledFeatureError(Exception):
 
 
 class FeatureToggle(enum.Enum):
-    ALGOLIA_BOOKINGS_NUMBER_COMPUTATION = (
-        "Active le calcul du nombre des réservations lors de l'indexation des offres sur Algolia"
-    )
+    ALGOLIA_BOOKINGS_NUMBER_COMPUTATION = "Active le calcul du nombre des réservations lors de l'indexation des offres sur Algolia"
     API_SIRENE_AVAILABLE = "Active les fonctionnalitées liées à l'API Sirene"
     APP_ENABLE_AUTOCOMPLETE = "Active l'autocomplete sur la barre de recherche relative au rework de la homepage"
-    BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = "Active la validation d'un bénéficiaire via les contrôles de sécurité"
+    BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS = (
+        "Active la validation d'un bénéficiaire via les contrôles de sécurité"
+    )
     DISABLE_BOOST_EXTERNAL_BOOKINGS = "Désactiver les réservations externes Boost"
     DISABLE_CDS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CDS"
     DISABLE_CGR_EXTERNAL_BOOKINGS = "Désactiver les réservations externes CGR"
     DISABLE_EMS_EXTERNAL_BOOKINGS = "Désactiver les réservations externes EMS"
-    DISCORD_ENABLE_NEW_ACCESS = "Activer/Désactiver l'accès au serveur Discord à des nouveaux utilisateurs"
+    DISCORD_ENABLE_NEW_ACCESS = (
+        "Activer/Désactiver l'accès au serveur Discord à des nouveaux utilisateurs"
+    )
     DISABLE_SIRET_CHECK = "Désactiver la validation de SIRET"
     DISPLAY_DMS_REDIRECTION = "Affiche une redirection vers DMS si ID Check est KO"
-    EMS_CANCEL_PENDING_EXTERNAL_BOOKING = "Annuler les réservations externes EMS qui ont échouées"
+    EMS_CANCEL_PENDING_EXTERNAL_BOOKING = (
+        "Annuler les réservations externes EMS qui ont échouées"
+    )
     ENABLE_ALL_CRON = "Si faux, aucune cron ne sera lancé"
-    ENABLE_RECURRENT_CRON = "Si faux, aucune cron de synchronization, indexation et pricing ne sera lancé"
+    ENABLE_RECURRENT_CRON = (
+        "Si faux, aucune cron de synchronization, indexation et pricing ne sera lancé"
+    )
     ENABLE_ARTIST_INDEXATION = "Activer l'indexation des artistes depuis les offres et des offres depuis les artistes"
-    ENABLE_AUTO_CLOSE_CLOSED_OFFERERS = "Fermer automatiquement les entités juridiques cessées à l'INSEE"
+    ENABLE_AUTO_CLOSE_CLOSED_OFFERERS = (
+        "Fermer automatiquement les entités juridiques cessées à l'INSEE"
+    )
     ENABLE_AUTO_VALIDATION_FOR_EXTERNAL_BOOKING = (
         "Valide automatiquement après 48h les offres issues de l'api billeterie cinéma"
     )
-    ENABLE_BANK_ACCOUNT_SYNC = (
-        "Active la synchronisation des comptes bancaires avec l'outil finance externe (Cegid XRP Flex)"
-    )
+    ENABLE_BANK_ACCOUNT_SYNC = "Active la synchronisation des comptes bancaires avec l'outil finance externe (Cegid XRP Flex)"
     ENABLE_BEAMER = "Active Beamer, le système de notifs du portail pro"
-    ENABLE_CDS_IMPLEMENTATION = "Permet la réservation de place de cinéma avec l'API CDS"
+    ENABLE_CDS_IMPLEMENTATION = (
+        "Permet la réservation de place de cinéma avec l'API CDS"
+    )
     ENABLE_CODIR_OFFERERS_REPORT = "Active le rapport sur les entités juridiques actives pour le CODIR (tourne la nuit)"
-    ENABLE_CRON_TO_UPDATE_OFFERER_STATS = "Active la mise à jour des statistiques des entités juridiques avec un cron"
+    ENABLE_CRON_TO_UPDATE_OFFERER_STATS = (
+        "Active la mise à jour des statistiques des entités juridiques avec un cron"
+    )
     ENABLE_CHRONICLES_SYNC = "Activer la synchronisation des chroniques"
     ENABLE_CULTURAL_SURVEY = "Activer l'affichage du questionnaire des pratiques initiales pour les bénéficiaires"
     ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_AGE_18 = (
         "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 18 ans"
     )
-    ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE = (
-        "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 15-17 ans"
-    )
+    ENABLE_DMS_LINK_ON_MAINTENANCE_PAGE_FOR_UNDERAGE = "Permet l'affichage du lien vers DMS sur la page de maintenance pour les 15-17 ans"
     ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION = "Active le refus automatique des dossiers Démarche Numérique (ex-DMS) de crédit en fonction de l'annotation d'un instructeur"
-    ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS = (
-        "Active la synchronisation des demandes de modifications avec Démarche Numérique (ex-DMS)"
+    ENABLE_DS_SYNC_FOR_USER_ACCOUNT_UPDATE_REQUESTS = "Active la synchronisation des demandes de modifications avec Démarche Numérique (ex-DMS)"
+    ENABLE_EDUCONNECT_AUTHENTICATION = (
+        "Active l'authentification via educonnect sur l'app native"
     )
-    ENABLE_EDUCONNECT_AUTHENTICATION = "Active l'authentification via educonnect sur l'app native"
-    ENABLE_FRONT_IMAGE_RESIZING = "Active le redimensionnement sur demande des images par l'app et le web"
+    ENABLE_FRONT_IMAGE_RESIZING = (
+        "Active le redimensionnement sur demande des images par l'app et le web"
+    )
     ENABLE_IOS_OFFERS_LINK_WITH_REDIRECTION = "Active l'utilisation du lien avec redirection pour les offres (nécessaires pour contourner des restrictions d'iOS)"
-    ENABLE_INVOICE_SYNC = (
-        "Active la synchronisation des justificatifs de remboursement avec l'outil finance externe (Cegid XRP Flex)"
-    )
+    ENABLE_INVOICE_SYNC = "Active la synchronisation des justificatifs de remboursement avec l'outil finance externe (Cegid XRP Flex)"
     ENABLE_MARSEILLE = "Activer Marseille en grand dans le front"
     ENABLE_NATIVE_APP_RECAPTCHA = "Active le reCaptacha sur l'API native"
-    ENABLE_NATIVE_CULTURAL_SURVEY = (
-        "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
+    ENABLE_NATIVE_CULTURAL_SURVEY = "Active le Questionnaire des pratiques initiales natif (non TypeForm) sur l'app native et décli web"
+    ENABLE_OFFERS_AUTO_CLEANUP = (
+        "Active la suppression automatique des offres obsolètes"
     )
-    ENABLE_OFFERS_AUTO_CLEANUP = "Active la suppression automatique des offres obsolètes"
     ENABLE_PHONE_VALIDATION = "Active la validation du numéro de téléphone"
     ENABLE_PRO_ACCOUNT_CREATION = "Permettre l'inscription des comptes professionels"
-    ENABLE_SPECIAL_EVENTS_SYNC = "Activer la synchronisation des réponses aux opérations spéciales"
+    ENABLE_SPECIAL_EVENTS_SYNC = (
+        "Activer la synchronisation des réponses aux opérations spéciales"
+    )
     ENABLE_UBBLE = "Active la vérification d'identité par Ubble"
-    ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = "Active la limitation en fonction de l'âge lors de pic d'inscription"
+    ENABLE_UBBLE_SUBSCRIPTION_LIMITATION = (
+        "Active la limitation en fonction de l'âge lors de pic d'inscription"
+    )
     ENABLE_VIRUSTOTAL = "Active la vérification des liens externes par VirusTotal"
-    GENERATE_CASHFLOWS_BY_CRON = (
-        "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
+    GENERATE_CASHFLOWS_BY_CRON = "Active la génération automatique (via cron) des flux monétaires et fichiers de remboursement"
+    ID_CHECK_ADDRESS_AUTOCOMPLETION = (
+        "Autocomplétion de l'adresse lors du parcours IDCheck"
     )
-    ID_CHECK_ADDRESS_AUTOCOMPLETION = "Autocomplétion de l'adresse lors du parcours IDCheck"
     PRICE_FINANCE_EVENTS = "Active la valorisation des évènements de finance"
-    SEND_ALL_EMAILS_TO_EHP = (
-        "Envoyer tous les emails en testing et staging. À activer temporairement lors de phase de test"
-    )
+    SEND_ALL_EMAILS_TO_EHP = "Envoyer tous les emails en testing et staging. À activer temporairement lors de phase de test"
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
-    SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
-    SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = (
-        "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
+    SYNCHRONIZE_TITELIVE_PRODUCTS = (
+        "Permettre limport journalier du référentiel des livres"
     )
-    SYNCHRONIZE_TITELIVE_MUSIC_PRODUCTS_FROM_BIGQUERY_TABLES = (
-        "Permet la synchronisation des produits musique de Titelive via les tables BigQuery fournies par l'équipe Data"
-    )
-    SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = (
-        "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
-    )
+    SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
+    SYNCHRONIZE_TITELIVE_MUSIC_PRODUCTS_FROM_BIGQUERY_TABLES = "Permet la synchronisation des produits musique de Titelive via les tables BigQuery fournies par l'équipe Data"
+    SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
     UPDATE_BOOKING_USED = "Permettre la validation automatique des contremarques 48h après la fin de lévènement"
-    ENABLE_VENUE_STRICT_SEARCH = (
-        "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
-    )
+    ENABLE_VENUE_STRICT_SEARCH = "Active le fait d'indiquer si un lieu a un moins une offre éligible lors de l'indexation (Algolia)"
     ENABLE_ZENDESK_SELL_CREATION = "Activer la création de nouvelles entrées dans Zendesk Sell (structures et lieux)"
-    ENABLE_BOOST_API_INTEGRATION = "Active la réservation de places de cinéma via l'API Boost"
-    ENABLE_EMS_INTEGRATION = "Active la synchronisation de stocks et la réservation via EMS"
-    ENABLE_CGR_INTEGRATION = "Active la synchonisation de stocks et la réservation via CGR"
-    LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
-    ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
-    ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
-    USE_UNIVERSAL_LINKS = (
-        "Utiliser les Universal Links au lieu des Firebase dynamic links (déprécié à partir du 25/08/2025)"
+    ENABLE_BOOST_API_INTEGRATION = (
+        "Active la réservation de places de cinéma via l'API Boost"
     )
+    ENABLE_EMS_INTEGRATION = (
+        "Active la synchronisation de stocks et la réservation via EMS"
+    )
+    ENABLE_CGR_INTEGRATION = (
+        "Active la synchonisation de stocks et la réservation via CGR"
+    )
+    LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = (
+        "Stocker dans Google Drive les cinémas EMS activables"
+    )
+    ENABLE_PRO_FEEDBACK = (
+        "Activer l'envoi des commentaires du portail pro vers Harvestr"
+    )
+    ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
+    USE_UNIVERSAL_LINKS = "Utiliser les Universal Links au lieu des Firebase dynamic links (déprécié à partir du 25/08/2025)"
+    TEMP_SNOWFLAKES = "Affichage de flocons de neige sur le portail pro ❄️"
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
-    WIP_ASYNCHRONOUS_CELERY_MAILS = (
-        "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
-    )
+    WIP_ASYNCHRONOUS_CELERY_MAILS = "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour du statut actif des offres"
-    WIP_ASYNCHRONOUS_CELERY_UBBLE = "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
+    WIP_ASYNCHRONOUS_CELERY_UBBLE = (
+        "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
+    )
     WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
         "Désactiver la notification push Batch pour l'annulation d'une réservation"
     )
-    WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED = (
-        "Désactiver la notification push Batch pour les réservations sur le point d'expirer"
-    )
+    WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED = "Désactiver la notification push Batch pour les réservations sur le point d'expirer"
     WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED = (
         "Désactiver la notification push Batch pour les favoris non-réservés"
     )
-    WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
-        "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
-    )
+    WIP_DISABLE_TODAY_STOCK_NOTIFICATION = "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
     WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK = (
         "Activer la fonctionnalité de partage du lien de l'offre vitrine sur Adage"
     )
     WIP_ENABLE_NEW_FINANCE_WORKFLOW = "Active le nouveau workflow finance"
-    WIP_FREE_ELIGIBILITY = (
-        "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
-    )
+    WIP_FREE_ELIGIBILITY = "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
     WIP_HIGHLIGHT = "Activer la fonctionnalité Valorisations thématiques"
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
-    WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
+    WIP_SWITCH_VENUE = (
+        "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
+    )
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
-    WIP_VENUE_ACTIVITY = "Active la nouvelle liste d'activité principale pour les structures"
+    WIP_VENUE_ACTIVITY = (
+        "Active la nouvelle liste d'activité principale pour les structures"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -163,7 +174,10 @@ class FeatureToggle(enum.Enum):
                 setattr(
                     flask.request,
                     "_cached_features",
-                    {f.name: f.isActive for f in db.session.query(Feature.name, Feature.isActive)},
+                    {
+                        f.name: f.isActive
+                        for f in db.session.query(Feature.name, Feature.isActive)
+                    },
                 )
             return flask.request._cached_features[self.name]  # type: ignore[attr-defined]
         return db.session.query(Feature).filter_by(name=self.name).one().isActive
@@ -212,6 +226,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
+    FeatureToggle.TEMP_SNOWFLAKES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
@@ -255,7 +270,9 @@ def remove_feature_from_database(feature: Feature) -> None:
     """This function is to be used in the "upgrade" function of a
     migration when removing a feature flag.
     """
-    statement = text("DELETE FROM feature WHERE name = :name").bindparams(name=feature.name)
+    statement = text("DELETE FROM feature WHERE name = :name").bindparams(
+        name=feature.name
+    )
     op.execute(statement)
 
 
@@ -264,7 +281,9 @@ def install_feature_flags() -> None:
 
     This is done before each deployment and in tests.
     """
-    installed_flag_names = {f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()}
+    installed_flag_names = {
+        f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()
+    }
     defined_flag_name = {f.name for f in list(FeatureToggle)}
 
     to_install_flags = defined_flag_name - installed_flag_names
@@ -286,19 +305,25 @@ def clean_feature_flags() -> None:
 
     This is done after each deployment and in tests.
     """
-    installed_flag_names = {f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()}
+    installed_flag_names = {
+        f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()
+    }
     defined_flag_name = {f.name for f in list(FeatureToggle)}
 
     to_remove_flags = installed_flag_names - defined_flag_name
 
     for flag in to_remove_flags:
-        db.session.execute(text("DELETE FROM feature WHERE name = :name").bindparams(name=flag))
+        db.session.execute(
+            text("DELETE FROM feature WHERE name = :name").bindparams(name=flag)
+        )
     db.session.commit()
 
 
 def check_feature_flags_completeness() -> None:
     """Check if all feature flags are present in the database and in the code"""
-    installed_flag_names = {f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()}
+    installed_flag_names = {
+        f[0] for f in db.session.query(Feature).with_entities(Feature.name).all()
+    }
     defined_flag_name = {f.name for f in FeatureToggle}
     extra_flags = installed_flag_names - defined_flag_name
     if extra_flags:
