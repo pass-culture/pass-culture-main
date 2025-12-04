@@ -1,0 +1,23 @@
+# Used for automated release notes
+# https://docs.github.com/en/repositories/releasing-projects-on-github/automatically-generated-release-notes
+
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+  categories:
+    - title: Planned work
+      labels:
+        - ticket
+    - title: Changes with database migrations
+      labels:
+        - migration
+    - title: Dependencies updates
+      labels:
+        - dependencies
+    - title: CI modifications
+      labels:
+        - ci
+    - title: Other Changes
+      labels:
+        - "*"
