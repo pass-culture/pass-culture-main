@@ -5,6 +5,9 @@ from pcapi.core.mails.transactional.sendinblue_template_ids import Transactional
 
 
 def send_eac_offerer_activation_email(venue: offerers_models.Venue, emails: list[str]) -> None:
+    if not emails:
+        return
+
     data = get_data_offerer_activation_email(venue)
     main_recipients, bcc_recipients = [emails[0]], emails[1:]
     mails.send(recipients=main_recipients, bcc_recipients=bcc_recipients, data=data)
