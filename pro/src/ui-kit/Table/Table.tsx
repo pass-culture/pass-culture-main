@@ -290,6 +290,7 @@ export function Table<
             return (
               <React.Fragment key={row.id}>
                 <tr
+                  data-testid="table-row"
                   className={classNames({
                     [styles['table-row']]: !tableFullRowContent,
                     [styles.selected]: isSelected,

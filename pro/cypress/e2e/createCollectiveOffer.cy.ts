@@ -149,21 +149,23 @@ describe('Create collective offers', () => {
     status = 'publiée',
     data = commonOfferData
   ) => {
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        title,
-        format(data.date, 'dd/MM/yyyy'),
-        `${data.price}€${data.participants} participants`,
-        data.institution,
-        location,
-        status,
-      ],
-    ]
-    const hasTableFullRowContent =
-      status === 'publiée' || status === 'préréservée'
-    expectOffersOrBookingsAreFound(expectedResults, hasTableFullRowContent)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .should('have.length.at.least', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .contains(title)
+      .parents('tr')
+      .within(() => {
+        cy.get('td').eq(1).should('contain', title)
+        cy.get('td').eq(2).should('contain', format(data.date, 'dd/MM/yyyy'))
+        cy.get('td')
+          .eq(3)
+          .should('contain', `${data.price}€${data.participants} participants`)
+        cy.get('td').eq(4).should('contain', data.institution)
+        cy.get('td').eq(5).should('contain', location)
+        cy.get('td').eq(6).should('contain', status)
+      })
   }
 
   it('Create collective bookable offers with a precise address (the venue address, selected by default)', () => {

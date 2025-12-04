@@ -123,7 +123,7 @@ describe('Adage confirmation', () => {
         ],
       ]
 
-      expectOffersOrBookingsAreFound(expectedResults, true)
+      expectOffersOrBookingsAreFound(expectedResults)
 
       // full row content check
       cy.findByText(

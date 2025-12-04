@@ -11,8 +11,6 @@ import {
  *
  * @export
  * @param {Array<Array<string>>} expectedResults
- * @param {boolean} hasTableFullRowContent optional param to indicate if the table has a full row content
- * (for example the expiration banner in collective offers) that takes one row space
  * @example
  * const expectedResults = [
       ['Réservation', "Nom de l'offre", 'Établissement', 'Places et prix', 'Statut'],
@@ -21,8 +19,7 @@ import {
    expectOffersOrBookingsAreFound(expectedResults)
  */
 export function expectOffersOrBookingsAreFound(
-  expectedResults: Array<Array<string>>,
-  hasTableFullRowContent: boolean = false
+  expectedResults: Array<Array<string>>
 ) {
   const expectedLength = expectedResults.length - 1
   const regexExpectedCount = new RegExp(
@@ -36,14 +33,14 @@ export function expectOffersOrBookingsAreFound(
   cy.contains(regexExpectedCount)
 
   cy.get('tbody')
-    .findAllByRole('row')
-    .should('have.length', expectedLength + (hasTableFullRowContent ? 1 : 0))
+    .find('tr[data-testid="table-row"]')
+    .should('have.length', expectedLength)
 
   for (let rowLine = 0; rowLine < expectedLength; rowLine++) {
     const lineArray = expectedResults[rowLine + 1]
 
     cy.get('tbody')
-      .findAllByRole('row')
+      .find('tr[data-testid="table-row"]')
       .eq(rowLine)
       .within(() => {
         cy.get('td').then(($elt) => {
