@@ -1,0 +1,33 @@
+name: "3 [on_workflow] Create Github prerelease"
+
+on:
+  workflow_call:
+    inputs:
+      tag_name:
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: "Tag name (ex: v378.0.2)"
+        required: true
+        type: string
+
+
+permissions: write-all
+
+jobs:
+  create-github-prerelease:
+    runs-on: ubuntu-22.04
+    env:
+      RELEASE_TAG: ${{inputs.tag_name}}
+    steps:
+      - uses: actions/checkout@v6
+      # we create a draft release for now, to test the workflow
+      - name: Create Github release
+        run: |
+          gh release create --title "$RELEASE_TAG" \
+          --fail-on-no-commits \
+          --verify-tag  \
+          --generate-notes  \
+          --prerelease
