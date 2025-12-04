@@ -2724,6 +2724,109 @@ class CreateFromOnboardingDataTest:
         user = users_factories.UserFactory(email="pro@example.com")
         user.add_non_attached_pro_role()
 
+        educational_domains = educational_factories.EducationalDomainFactory.create_batch(3)
+
+        onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
+        onboarding_data.culturalDomains = [domain.name for domain in educational_domains]
+        created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
+
+        address = db.session.query(geography_models.Address).one()
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+
+        # Offerer has been created
+        created_offerer = created_user_offerer.offerer
+        assert created_offerer.name == "MINISTERE DE LA CULTURE"
+        assert created_offerer.siren == "853318459"
+        assert created_offerer.validationStatus == ValidationStatus.NEW
+        # User is attached to offerer
+        assert created_user_offerer.userId == user.id
+        assert created_user_offerer.validationStatus == ValidationStatus.VALIDATED
+        # but does not have PRO role yet, because the Offerer is not validated
+        assert created_user_offerer.user.has_non_attached_pro_role
+        # 1 Venue with siret have been created
+        assert len(created_user_offerer.offerer.managedVenues) == 1
+        created_venue = created_user_offerer.offerer.managedVenues[0]
+
+        self.assert_common_venue_attrs(created_venue)
+        assert created_venue.isOpenToPublic is True
+        assert created_venue.comment is None
+        assert created_venue.siret == "85331845900031"
+        assert created_venue.current_pricing_point_id == created_venue.id
+        assert address.street == "3 RUE DE VALOIS"
+        assert address.city == "Paris"
+        assert address.postalCode == "75001"
+        assert address.inseeCode.startswith(address.departmentCode)
+        assert address.departmentCode == "75"
+        assert address.timezone == "Europe/Paris"
+        assert created_venue.offererAddressId == offerer_address.id
+        assert offerer_address.addressId == address.id
+
+        # Action logs
+        assert db.session.query(history_models.ActionHistory).count() == 2
+        offerer_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.OFFERER_NEW)
+            .one()
+        )
+        assert offerer_action.offerer == created_offerer
+        assert offerer_action.authorUser == user
+        assert offerer_action.user == user
+        self.assert_common_action_history_extra_data(offerer_action)
+        venue_action = (
+            db.session.query(history_models.ActionHistory)
+            .filter(history_models.ActionHistory.actionType == history_models.ActionType.VENUE_CREATED)
+            .one()
+        )
+        assert venue_action.venue == created_venue
+        assert venue_action.authorUser == user
+
+        self.assert_only_welcome_email_to_pro_was_sent()
+        # Venue Registration
+        self.assert_venue_registration_attrs(created_venue)
+
+        assert set(created_venue.collectiveDomains) == set(educational_domains)
+
+    @pytest.mark.settings(ADRESSE_BACKEND="pcapi.connectors.api_adresse.ApiAdresseBackend")
+    def test_new_siren_new_siret_legacy(self, requests_mock):
+        api_adresse_response = {
+            "type": "FeatureCollection",
+            "version": "draft",
+            "features": [
+                {
+                    "type": "Feature",
+                    "geometry": {"type": "Point", "coordinates": [2.337933, 48.863666]},
+                    "properties": {
+                        "label": "3 Rue de Valois 75001 Paris",
+                        "score": 0.9652045454545454,
+                        "housenumber": "3",
+                        "id": "75101_9575_00003",
+                        "name": "3 Rue de Valois",
+                        "postcode": "75001",
+                        "citycode": "75101",
+                        "x": 651428.82,
+                        "y": 6862829.62,
+                        "city": "Paris",
+                        "district": "Paris 1er Arrondissement",
+                        "context": "75, Paris, Île-de-France",
+                        "type": "housenumber",
+                        "importance": 0.61725,
+                        "street": "Rue de Valois",
+                    },
+                }
+            ],
+            "attribution": "BAN",
+            "licence": "ETALAB-2.0",
+            "query": "3 Rue de valois, 75001 Paris",
+            "filters": {"postcode": "75001"},
+            "limit": 1,
+        }
+        requests_mock.get(
+            "https://data.geopf.fr/geocodage/search?q=3 RUE DE VALOIS&postcode=75001&autocomplete=0&limit=1",
+            json=api_adresse_response,
+        )
+        user = users_factories.UserFactory(email="pro@example.com")
+        user.add_non_attached_pro_role()
+
         onboarding_data = self.get_onboarding_data(create_venue_without_siret=False)
         created_user_offerer = offerers_api.create_from_onboarding_data(user, onboarding_data)
 

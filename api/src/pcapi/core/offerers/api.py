@@ -466,7 +466,7 @@ def create_venue(
     if venue.is_soft_deleted():
         raise pc_object.DeletedRecordException()
     for key, value in data.items():
-        if key == "contact":
+        if key in ("contact", "culturalDomains"):
             continue
         setattr(venue, key, value)
 
@@ -497,6 +497,22 @@ def create_venue(
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
 
     db.session.flush()
+
+    # Deal with cultural domains
+    if venue_data.culturalDomains is not None:
+        educational_domains = set(educational_repository.get_educational_domain_from_names(venue_data.culturalDomains))
+        if len(educational_domains) != len(venue_data.culturalDomains):
+            missing_domains = set(venue_data.culturalDomains) - {domain.name for domain in educational_domains}
+            if missing_domains:
+                raise ValueError(f"Unknown cultural domains: {', '.join(missing_domains)}")
+
+        # Link venue to educational domains
+        current_educational_domains = set(venue.collectiveDomains)
+        # Remove domains that are not in the sent data
+        for domain in current_educational_domains - educational_domains:
+            venue.collectiveDomains.remove(domain)
+        for domain in educational_domains - current_educational_domains:
+            venue.collectiveDomains.append(domain)
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
@@ -2214,6 +2230,7 @@ def create_from_onboarding_data(
             activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
             address=address,
             bookingEmail=user.email,
+            culturalDomains=onboarding_data.culturalDomains,
             contact=None,
             description=None,
             isOpenToPublic=onboarding_data.isOpenToPublic,

@@ -155,6 +155,7 @@ def _create_pro_user(row: dict) -> User:
         address=address,
         bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
         comment=None,
+        culturalDomains=[],
         managingOffererId=offerer.id,
         name=offerers_schemas.VenueName(f"Structure {row['Prénom']} {row['Nom']}"),
         publicName=None,
