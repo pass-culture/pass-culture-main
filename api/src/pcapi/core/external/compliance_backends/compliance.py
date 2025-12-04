@@ -3,8 +3,7 @@ import logging
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
 from pcapi.core.external.compliance_backends.base import BaseBackend
-from pcapi.tasks.serialization.compliance_tasks import CompliancePredictionOutput
-from pcapi.tasks.serialization.compliance_tasks import GetComplianceScoreRequest
+from pcapi.tasks.serialization import compliance_tasks
 from pcapi.utils import requests
 
 
@@ -12,22 +11,43 @@ logger = logging.getLogger(__name__)
 
 
 class ComplianceBackend(BaseBackend):
-    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> CompliancePredictionOutput | None:
-        client_id = settings.COMPLIANCE_API_CLIENT_ID
+    def get_score_from_compliance_api(
+        self, payload: compliance_tasks.GetComplianceScoreRequest
+    ) -> compliance_tasks.CompliancePredictionOutput | None:
+        data = self._post(
+            route="/latest/model/compliance/scoring",
+            payload=payload.to_dict(),
+        )
+        if data:
+            return compliance_tasks.CompliancePredictionOutput.parse_obj(data)
 
-        id_token = self.get_id_token_for_compliance(client_id)
+        return None
+
+    def search_offers(
+        self, payload: compliance_tasks.SearchOffersRequest
+    ) -> compliance_tasks.SearchOffersResponse | None:
+        data = self._post(
+            route="/latest/search_edito/search",
+            payload=payload.dict(),
+        )
+        if data:
+            return compliance_tasks.SearchOffersResponse.parse_obj(data)
+
+        return None
+
+    def _post(self, route: str, payload: dict) -> dict | None:
+        id_token = self._get_id_token_for_compliance(settings.COMPLIANCE_API_CLIENT_ID)
         if not id_token:  # only possible in development
             return None
 
-        data = payload.to_dict()
         try:
             api_response = requests.post(
-                "https://compliance.passculture.team/latest/model/compliance/scoring",
+                f"{settings.COMPLIANCE_DOMAIN}{route}",
                 headers={
                     "Authorization": f"Bearer {id_token}",
                     "accept": "application/json",
                 },
-                json=data,
+                json=payload,
                 log_info=False,
             )
 
@@ -36,40 +56,43 @@ class ComplianceBackend(BaseBackend):
             raise requests.ExternalAPIException(is_retryable=True) from exc
 
         if not api_response.ok:
-            if api_response.status_code in {401, 403}:
-                logger.exception(
-                    "Connection to Compliance API was refused",
-                    extra={"status_code": api_response.status_code},
-                )
-                # FIXME (prouzet, 2024-11-29) We experience random HTTP 403 errors (1 to 5 every day), so make them
-                #  retryable until the issue is fixed on data team side. Sentry issue: 1613833
-                raise requests.ExternalAPIException(is_retryable=(api_response.status_code == 403))
-            if api_response.status_code == 422:
-                error_data = {"status_code": api_response.status_code}
-                try:
-                    error_data += api_response.json()
-                except requests.exceptions.JSONDecodeError:  # docs says response should be a json, but let's be careful
-                    pass
+            self._handle_errors(api_response)
 
-                logger.exception(
-                    "Data sent to Compliance API is faulty",
-                    extra=error_data,
-                )
-                raise requests.ExternalAPIException(is_retryable=False)
+        return api_response.json()
 
+    def _handle_errors(self, api_response: requests.Response) -> None:
+        if api_response.status_code in {401, 403}:
+            logger.exception(
+                "Connection to Compliance API was refused",
+                extra={"status_code": api_response.status_code},
+            )
+            # FIXME (prouzet, 2024-11-29) We experience random HTTP 403 errors (1 to 5 every day), so make them
+            #  retryable until the issue is fixed on data team side. Sentry issue: 1613833
+            raise requests.ExternalAPIException(is_retryable=(api_response.status_code == 403))
+        if api_response.status_code == 422:
             error_data = {"status_code": api_response.status_code}
             try:
                 error_data += api_response.json()
-            except requests.exceptions.JSONDecodeError:
+            except requests.exceptions.JSONDecodeError:  # docs says response should be a json, but let's be careful
                 pass
+
             logger.exception(
-                "Response from Compliance API is not ok",
+                "Data sent to Compliance API is faulty",
                 extra=error_data,
             )
-            raise requests.ExternalAPIException(is_retryable=True)
+            raise requests.ExternalAPIException(is_retryable=False)
 
-        data = api_response.json()
-        return CompliancePredictionOutput.parse_obj(data)
+        error_data = {"status_code": api_response.status_code}
+        try:
+            error_data += api_response.json()
+        except requests.exceptions.JSONDecodeError:
+            pass
+        logger.exception(
+            "Response from Compliance API is not ok",
+            extra=error_data,
+        )
+        raise requests.ExternalAPIException(is_retryable=True)
 
-    def get_id_token_for_compliance(self, client_id: str) -> str | None:
+    def _get_id_token_for_compliance(self, client_id: str) -> str | None:
+        # overriden in dev
         return auth_api.get_id_token_from_google(client_id)
