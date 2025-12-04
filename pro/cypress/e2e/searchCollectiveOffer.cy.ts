@@ -178,7 +178,6 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: 'I search with status "Publiée sur ADAGE"' })
     cy.findByRole('button', { name: 'Statut' }).click()
     cy.findByText('Publiée sur ADAGE').click()
-    // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres réservables' }).click()
 
     cy.stepLog({ message: 'I validate my filters' })
@@ -223,7 +222,6 @@ describe('Search collective offers', () => {
     cy.findByRole('button', { name: 'Statut' }).click()
     cy.findByTestId('panel-scrollable').scrollTo('bottom')
     cy.findByText('Brouillon').click()
-    // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres réservables' }).click()
 
     cy.stepLog({ message: 'I validate my collective filters' })
@@ -251,13 +249,10 @@ describe('Search collective offers', () => {
 
     cy.stepLog({ message: 'All filters are empty' })
     cy.findByRole('button', { name: 'Statut' }).click()
-
     cy.findByText('En instruction').should('not.be.checked')
-
     cy.findByRole('combobox', { name: /Localisation/ })
       .invoke('val')
       .should('eq', 'all')
-
     cy.findByRole('combobox', { name: /Format/ })
       .invoke('val')
       .should('eq', 'all')
@@ -270,7 +265,7 @@ describe('Search collective offers', () => {
     cy.wait('@collectiveOffersBookable')
 
     cy.stepLog({ message: '5 results should be displayed' })
-    cy.contains('5 offres')
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 5)
   })
 
   it('I should be able to download offers in CSV and Excel format', () => {
