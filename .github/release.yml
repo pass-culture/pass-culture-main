@@ -6,7 +6,7 @@ changelog:
     labels:
       - ignore-for-release
   categories:
-    - title: Planned work
+    - title: Planned and delivered
       labels:
         - ticket
     - title: Changes with database migrations
