@@ -79,6 +79,7 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     activity: offerers_models.Activity | None
     address: offerers_schemas.AddressBodyModel
     bookingEmail: offerers_schemas.VenueBookingEmail
+    culturalDomains: list[str] | None
     comment: offerers_schemas.VenueComment | None
     isOpenToPublic: bool | None
     managingOffererId: int

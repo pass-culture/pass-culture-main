@@ -9,6 +9,7 @@ export type SaveNewOnboardingDataQueryModel = {
   activity?: OnboardingActivity | null;
   address: AddressBodyModel;
   createVenueWithoutSiret?: boolean;
+  culturalDomains?: Array<string> | null;
   isOpenToPublic: boolean;
   phoneNumber?: string | null;
   publicName?: string | null;
