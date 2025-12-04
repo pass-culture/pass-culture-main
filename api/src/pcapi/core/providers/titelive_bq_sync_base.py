@@ -15,8 +15,6 @@ from pcapi import settings
 from pcapi.connectors.big_query.queries.base import BaseQuery
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveBookProductModel
 from pcapi.connectors.big_query.queries.product import BigQueryTiteliveMusicProductModel
-
-# from pcapi.connectors.big_query.queries.product import BigQueryTiteliveProductBase
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.object_storage.backends.gcp import GCPBackend
 from pcapi.core.object_storage.backends.gcp import GCPData
@@ -187,6 +185,7 @@ class BigQuerySyncTemplate[
             with transaction():
                 db.session.add(self.log_sync_status(LocalProviderEventType.SyncEnd))
         except Exception as e:
+            db.session.rollback()
             with transaction():
                 db.session.add(self.log_sync_status(LocalProviderEventType.SyncError, e.__class__.__name__))
             raise
@@ -194,17 +193,36 @@ class BigQuerySyncTemplate[
     def run_synchronization(self, batch_size: int) -> None:
         logger.info("Starting product synchronization", extra={"titelive_base": self.titelive_base.value})
         total_products_upserted = 0
-        total_ineligible_eans = []
+        total_ineligible_count = 0
 
         products_iterator = self.get_query().execute()
 
-        for bq_product_batch in itertools.batched(products_iterator, batch_size):
+        for batch_number, bq_product_batch in enumerate(itertools.batched(products_iterator, batch_size), start=1):
             logger.info("Processing batch...", extra={"batch_size": len(bq_product_batch)})
 
             valid_bq_products_in_batch, batch_ineligible_eans = self.filter_batch(bq_product_batch)
-            total_ineligible_eans.extend(batch_ineligible_eans)
+
+            if batch_ineligible_eans:
+                try:
+                    offers_api.reject_inappropriate_products(batch_ineligible_eans, author=None)
+                    total_ineligible_count += len(batch_ineligible_eans)
+                except Exception as e:
+                    db.session.rollback()
+                    logger.error(
+                        "Failed to reject inappropriate products in batch",
+                        extra={"error": e, "count": len(batch_ineligible_eans)},
+                    )
 
             if not valid_bq_products_in_batch:
+                logger.info(
+                    "Batch processed (only rejections).",
+                    extra={
+                        "batch_number": batch_number,
+                        "total_processed_so_far": total_products_upserted + total_ineligible_count,
+                        "total_upserted_so_far": total_products_upserted,
+                        "total_rejected_so_far": total_ineligible_count,
+                    },
+                )
                 continue
 
             try:
@@ -247,15 +265,22 @@ class BigQuerySyncTemplate[
                     if self._process_one_product(bq_product):
                         total_products_upserted += 1
 
-        if total_ineligible_eans:
-            offers_api.reject_inappropriate_products(total_ineligible_eans, author=None)
+            logger.info(
+                "Synchronization progress update",
+                extra={
+                    "batch_number": batch_number,
+                    "total_processed_so_far": total_products_upserted + total_ineligible_count,
+                    "total_upserted_so_far": total_products_upserted,
+                    "total_rejected_so_far": total_ineligible_count,
+                },
+            )
 
         logger.info(
             "Synchronization complete.",
             extra={
                 "upserted": total_products_upserted,
-                "rejected": len(total_ineligible_eans),
-                "total_processed": total_products_upserted + len(total_ineligible_eans),
+                "rejected": total_ineligible_count,
+                "total_processed": total_products_upserted + total_ineligible_count,
             },
         )
 
