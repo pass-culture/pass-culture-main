@@ -5,6 +5,7 @@
             class="form-control pc-override-custom-textarea-enter value-element-form {% if field.flags.required %}pc-required{% endif %} pc-textarea-counter"
             rows="{{ field.rows }}"
             id="{{ textarea_field_id }}"
+            {% if field.allow_line_breaks %}data-allow-line-breaks="true" {% endif +%}
             {% if field.flags.required %}required {% endif +%}
             {% if field.flags.readonly %}readonly {% endif +%}
             {% if field.flags.minlength %}minlength="{{ field.flags.minlength }}"{% endif %}
@@ -18,7 +19,7 @@
         <span class="pc-textarea-counter-container">{{ field.data | empty_string_if_null | length }}</span>
         {% if field.flags.maxlength %}/ {{ field.flags.maxlength }}{% endif %}
       </small>
-      <small class="ms-auto">Maj+Entrée pour ajouter une nouvelle ligne</small>
+      {% if field.allow_line_breaks %}<small class="ms-auto">Maj+Entrée pour ajouter une nouvelle ligne</small>{% endif %}
     </div>
   {% endif %}
 </div>
