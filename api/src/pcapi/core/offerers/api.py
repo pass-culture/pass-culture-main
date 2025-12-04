@@ -108,6 +108,21 @@ APE_TAG_MAPPING = {"8411Z": "Collectivité"}
 DMS_TOKEN_REGEX = r"^(?:PRO-)?([a-fA-F0-9]{12})$"
 
 
+def link_cultural_domains_to_venue(cultural_domains: list[str] | None, venue: offerers_models.Venue | None) -> None:
+    if cultural_domains is None:
+        return
+
+    educational_domains = educational_repository.get_educational_domains_from_names(cultural_domains)
+    missing_domains = set(cultural_domains) - {domain.name for domain in educational_domains}
+    if missing_domains:
+        raise exceptions.OffererException(
+            {"culturalDomains": f"Unknown cultural domains: {', '.join(missing_domains)}"}
+        )
+
+    if venue:
+        venue.collectiveDomains = educational_domains
+
+
 def update_venue(
     venue: models.Venue,
     modifications: dict,
@@ -466,7 +481,7 @@ def create_venue(
     if venue.is_soft_deleted():
         raise pc_object.DeletedRecordException()
     for key, value in data.items():
-        if key == "contact":
+        if key in ("contact", "culturalDomains"):
             continue
         setattr(venue, key, value)
 
@@ -497,6 +512,9 @@ def create_venue(
     history_api.add_action(history_models.ActionType.VENUE_CREATED, author=author, venue=venue)
 
     db.session.flush()
+
+    # Deal with cultural domains
+    link_cultural_domains_to_venue(venue_data.culturalDomains, venue)
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
@@ -2176,6 +2194,8 @@ def create_from_onboarding_data(
     else:
         name = siret_info.name
 
+    link_cultural_domains_to_venue(onboarding_data.culturalDomains, None)
+
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
         street=onboarding_data.address.street,
@@ -2214,6 +2234,7 @@ def create_from_onboarding_data(
             activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
             address=address,
             bookingEmail=user.email,
+            culturalDomains=onboarding_data.culturalDomains,
             contact=None,
             description=None,
             isOpenToPublic=onboarding_data.isOpenToPublic,

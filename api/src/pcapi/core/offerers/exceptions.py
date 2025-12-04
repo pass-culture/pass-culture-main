@@ -1,4 +1,9 @@
 from pcapi.core.core_exception import ClientError
+from pcapi.core.core_exception import CoreException
+
+
+class OffererException(CoreException):
+    pass
 
 
 class ApiKeyPrefixGenerationError(Exception):

@@ -1219,6 +1219,10 @@ def get_educational_domains_from_ids(ids: typing.Iterable[int]) -> list[models.E
     )
 
 
+def get_educational_domains_from_names(names: list[str]) -> list[models.EducationalDomain]:
+    return db.session.query(models.EducationalDomain).filter(models.EducationalDomain.name.in_(names)).all()
+
+
 def get_all_educational_domains_ordered_by_name() -> list[models.EducationalDomain]:
     return (
         db.session.query(models.EducationalDomain)
