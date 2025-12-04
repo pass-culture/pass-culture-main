@@ -4,8 +4,10 @@ import { SWRConfig } from 'swr'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { Notification } from '@/components/Notification/Notification'
+import { SnowFlakes } from '@/components/SnowFlakes/SnowFlakes'
 
 import { useBeamer } from './analytics/beamer'
 import { useFirebase } from './analytics/firebase'
@@ -36,6 +38,8 @@ export const App = (): JSX.Element | null => {
   useLogNavigation()
   useLogExtraProData()
 
+  const showSnowFlakes = useActiveFeature('TEMP_SNOWFLAKES')
+
   return (
     <>
       <SWRConfig
@@ -54,6 +58,7 @@ export const App = (): JSX.Element | null => {
           revalidateOnFocus: false,
         }}
       >
+        {showSnowFlakes && <SnowFlakes />}
         <Outlet />
       </SWRConfig>
       <Notification />
