@@ -39,4 +39,28 @@ describe('createPatchStockDataPayload', () => {
       educationalPriceDetail: 'price detail',
     })
   })
+
+  it('should send both startDatetime and endDatetime when only eventTime is modified', () => {
+    const startDate = addDays(new Date(), 2).toISOString().split('T')[0]
+    const endDate = addDays(new Date(), 3).toISOString().split('T')[0]
+    const bookingDate = addDays(new Date(), 1).toISOString().split('T')[0]
+
+    const initialValues = {
+      startDatetime: startDate,
+      endDatetime: endDate,
+      eventTime: '10:00',
+      numberOfPlaces: 11,
+      totalPrice: 10,
+      bookingLimitDatetime: bookingDate,
+      priceDetail: 'price detail',
+    }
+
+    const payload = createPatchStockDataPayload(initialValues, '56', {
+      ...initialValues,
+      eventTime: '11:00',
+    })
+
+    expect(payload.startDatetime).toContain(startDate)
+    expect(payload.endDatetime).toContain(endDate)
+  })
 })
