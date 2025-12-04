@@ -3,23 +3,34 @@ import logging
 from pcapi import settings
 from pcapi.core.auth import api as auth_api
 from pcapi.core.external.compliance_backends.base import BaseBackend
-from pcapi.tasks.serialization.compliance_tasks import CompliancePredictionOutput
-from pcapi.tasks.serialization.compliance_tasks import GetComplianceScoreRequest
+from pcapi.tasks.serialization import compliance_tasks
 from pcapi.utils import requests
 
 
 logger = logging.getLogger(__name__)
-COMPLIANCE_DOMAIN = "https://compliance.passculture.team"
+COMPLIANCE_DOMAIN = "https://compliance.passculture.team/latest"
 
 
 class ComplianceBackend(BaseBackend):
-    def get_score_from_compliance_api(self, payload: GetComplianceScoreRequest) -> CompliancePredictionOutput | None:
+    def get_score_from_compliance_api(
+        self, payload: compliance_tasks.GetComplianceScoreRequest
+    ) -> compliance_tasks.CompliancePredictionOutput | None:
         data = self._post(
-            route="/latest/model/compliance/scoring",
+            route="/model/compliance/scoring",
             payload=payload.to_dict(),
         )
         if data:
-            return CompliancePredictionOutput.parse_obj(data)
+            return compliance_tasks.CompliancePredictionOutput.parse_obj(data)
+
+        return None
+
+    def search_offer(self, payload: compliance_tasks.SearchOfferRequest) -> compliance_tasks.SearchOfferResponse | None:
+        data = self._post(
+            route="/search_edito/search",
+            payload=payload.dict(),
+        )
+        if data:
+            return compliance_tasks.SearchOfferResponse.parse_obj(data)
 
         return None
 

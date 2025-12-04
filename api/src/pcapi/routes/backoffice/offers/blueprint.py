@@ -794,6 +794,7 @@ def _render_offer_list(
     rows: list | None = None,
     advanced_form: forms.GetOfferAdvancedSearchForm | None = None,
     algolia_form: forms.GetOfferAlgoliaSearchForm | None = None,
+    llm_form: forms.GetOfferLlmSearchForm | None = None,
     code: int = 200,
     page: str = "offer",
 ) -> utils.BackofficeResponse:
@@ -828,6 +829,8 @@ def _render_offer_list(
             advanced_dst=url_for(".list_offers"),
             algolia_form=algolia_form or forms.GetOfferAlgoliaSearchForm(),
             algolia_dst=url_for(".list_algolia_offers"),
+            llm_form=llm_form or forms.GetOfferLlmSearchForm(),
+            llm_dst=url_for(".list_llm_offers"),
             date_created_sort_url=date_created_sort_url,
             connect_as=connect_as,
             page=page,
@@ -892,6 +895,35 @@ def list_algolia_offers() -> utils.BackofficeResponse:
         rows=offers,
         algolia_form=form,
         page="algolia",
+    )
+
+
+@list_offers_blueprint.route("/llm", methods=["GET"])
+def list_llm_offers() -> utils.BackofficeResponse:
+    form = forms.GetOfferLlmSearchForm(formdata=utils.get_query_params())
+    if not form.validate():
+        mark_transaction_as_invalid()
+        return _render_offer_list(
+            llm_form=form,
+            code=400,
+            page="llm",
+        )
+
+    # TODO use compliance api
+
+    offers: list[offers_models.Offer] = []
+    # if offer_ids:
+    #     offers = _get_offers_by_ids(
+    #         offer_ids=offer_ids,
+    #         sort=form.sort.data,
+    #         order=form.order.data,
+    #     )
+    #     offers = utils.limit_rows(offers, form.limit.data)
+
+    return _render_offer_list(
+        rows=offers,
+        llm_form=form,
+        page="llm",
     )
 
 
