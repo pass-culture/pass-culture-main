@@ -10,15 +10,10 @@ import {
   GET_OFFERS_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
-import {
-  DEFAULT_PAGE,
-  INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
-  OFFER_WIZARD_MODE,
-} from '@/commons/core/Offers/constants'
+import { DEFAULT_PAGE } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
-import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import type { Audience } from '@/commons/core/shared/types'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
@@ -27,13 +22,8 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
-import { HighlightBanner } from '@/components/HighlightBanner/HighlightBanner'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
-import fullNextIcon from '@/icons/full-next.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
-import videoBannerPng from './assets/video-banner-illustration.png'
-import styles from './IndividualOffers.module.scss'
 import { IndividualOffersContainer } from './IndividualOffersContainer/IndividualOffersContainer'
 import { computeIndividualApiFilters } from './utils/computeIndividualApiFilters'
 
@@ -118,35 +108,10 @@ export const IndividualOffers = (): JSX.Element => {
   })
 
   const offers = offersQuery.error ? [] : offersQuery.data || []
-  // This is for tracking purposes, check useLogNavigation for more details.
-  const bannerVideoQueryParam = '?from_banner=banner_video'
 
   return (
     <HeadlineOfferContextProvider>
       <BasicLayout mainHeading="Offres individuelles">
-        <HighlightBanner
-          title="✨ Nouveau : Ajoutez une vidéo pour donner vie à votre offre !"
-          description="2 jeunes sur 3 aimeraient voir des vidéos sur les offres culturelles du pass Culture."
-          localStorageKey="GTM_VIDEO_BANNER_2025"
-          img={
-            <img className={styles['banner-img']} alt="" src={videoBannerPng} />
-          }
-          cta={
-            <ButtonLink
-              className={styles['banner-cta']}
-              icon={fullNextIcon}
-              to={
-                getIndividualOfferUrl({
-                  step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                  mode: OFFER_WIZARD_MODE.CREATION,
-                  isOnboarding: false,
-                }) + bannerVideoQueryParam
-              }
-            >
-              Créer une offre
-            </ButtonLink>
-          }
-        />
         <IndividualOffersContainer
           categories={categoriesOptions}
           currentPageNumber={currentPageNumber}

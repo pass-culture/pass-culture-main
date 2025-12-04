@@ -976,23 +976,4 @@ describe('IndividualOffers', () => {
       )
     })
   })
-
-  it('should display a GTM video banner', async () => {
-    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
-    const bannerTitle = screen.getByText(
-      /Nouveau : Ajoutez une vidéo pour donner vie à votre offre !/
-    )
-    expect(bannerTitle).toBeInTheDocument()
-  })
-
-  it('should have a create offer button that skips the offer type selection', async () => {
-    await renderIndividualOffers(DEFAULT_SEARCH_FILTERS)
-
-    expect(
-      screen.getByRole('link', { name: 'Créer une offre' })
-    ).toHaveAttribute(
-      'href',
-      '/offre/individuelle/creation/description?from_banner=banner_video'
-    )
-  })
 })
