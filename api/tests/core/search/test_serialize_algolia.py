@@ -123,7 +123,7 @@ def test_serialize_offer():
             "name": "Les Librairies Associées",
         },
         "venue": {
-            "activity": offer.venue.activity,
+            "activity": offerers_models.Activity.CINEMA.name,
             "address": offer.offererAddress.address.street,
             "banner_url": offer.venue.bannerUrl,
             "city": offer.offererAddress.address.city,
@@ -543,6 +543,7 @@ def test_serialize_product_headlines_count():
 
 def test_serialize_venue():
     venue = offerers_factories.VenueFactory(
+        activity=offerers_models.Activity.ART_GALLERY,
         venueTypeCode=offerers_models.VenueTypeCode.VISUAL_ARTS,
         audioDisabilityCompliant=True,
         contact__email="venue@example.com",
@@ -559,7 +560,7 @@ def test_serialize_venue():
     serialized = algolia.AlgoliaBackend().serialize_venue(venue)
     assert serialized == {
         "objectID": venue.id,
-        "activity": venue.activity,
+        "activity": offerers_models.Activity.ART_GALLERY.name,
         "city": venue.offererAddress.address.city,
         "name": venue.name,
         "offerer_name": venue.managingOfferer.name,
