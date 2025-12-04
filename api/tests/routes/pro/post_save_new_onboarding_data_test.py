@@ -46,7 +46,7 @@ class Returns200Test:
         client = client.with_session_auth(user.email)
         response = client.post("/offerers/new", json=REQUEST_BODY)
 
-        assert response.status_code == 201
+        assert response.status_code == 201, response.json
         created_offerer = db.session.query(offerers_models.Offerer).one()
         assert created_offerer.name == "MINISTERE DE LA CULTURE"
         assert not created_offerer.isValidated
@@ -84,6 +84,18 @@ class Returns200Test:
         assert address.isManualEdition is False
 
         assert created_venue.offererAddress.offererId == created_venue.managingOffererId
+
+    @patch("pcapi.connectors.api_adresse.TestingBackend.get_single_address_result")
+    def test_with_empty_cultural_domains(self, mocked_get_address, client):
+        user = users_factories.UserFactory(email="pro@example.com")
+        request_body = copy.deepcopy(REQUEST_BODY)
+        request_body["culturalDomains"] = []
+
+        client = client.with_session_auth(user.email)
+        response = client.post("/offerers/new", json=request_body)
+
+        assert response.status_code == 400
+        assert "culturalDomains" in response.json
 
     @pytest.mark.parametrize(
         "venueTypeCode, activity, expected_venueTypeCode, expected_activity",

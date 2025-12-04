@@ -5,7 +5,6 @@ from typing import Iterable
 
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
-from pydantic.v1 import root_validator
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
 
@@ -286,6 +285,7 @@ class CreateOffererQueryModel(BaseModel):
 class SaveNewOnboardingDataQueryModel(BaseModel):
     activity: offerers_models.OnboardingActivity | None
     address: address_serialize.LocationBodyModel
+    culturalDomains: list[str] | None = pydantic_v1.Field(min_items=1)
     createVenueWithoutSiret: bool = False
     isOpenToPublic: bool
     publicName: str | None
@@ -302,7 +302,7 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
         extra = "forbid"
         anystr_strip_whitespace = True
 
-    @root_validator
+    @pydantic_v1.root_validator
     def check_activity_and_venue_type_code(cls: "SaveNewOnboardingDataQueryModel", values: dict) -> dict:
         activity = values.get("activity")
         venue_type_code = values.get("venueTypeCode")
