@@ -14,9 +14,20 @@ class PcInputForm extends PcAddOn {
 
   #clicked = (event) =>{
     event.preventDefault()
-    const $target = event.target.parentElement.querySelector('INPUT')
+    const $container = event.target.parentElement
+    let $target = $container.querySelector('INPUT')
     if(!!$target) {
       $target.value=""
+      return
+    }
+    $target = $container.querySelector('TEXTAREA')
+    if(!!$target) {
+      $target.value=""
+      const $counter = $container.querySelector('.pc-textarea-counter-container')
+      if (!! $counter)
+        $counter.textContent = '0'
+
+      return
     }
   }
 }

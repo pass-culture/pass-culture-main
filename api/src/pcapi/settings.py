@@ -626,6 +626,7 @@ ENABLE_PERMISSIVE_NAME_VALIDATION = bool(int(os.environ.get("ENABLE_PERMISSIVE_N
 # API COMPLIANCE
 COMPLIANCE_API_CLIENT_ID = secrets_utils.get("COMPLIANCE_API_CLIENT_ID")
 COMPLIANCE_API_SERVICE_ACCOUNT = os.environ.get("COMPLIANCE_API_SERVICE_ACCOUNT", "")
+COMPLIANCE_DOMAIN = os.environ.get("COMPLIANCE_DOMAIN", "https://compliance.passculture.team")
 COMPLIANCE_BACKEND = os.environ.get(
     "COMPLIANCE_BACKEND", "pcapi.core.external.compliance_backends.compliance.ComplianceBackend"
 )

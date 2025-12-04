@@ -144,6 +144,7 @@ class FeatureToggle(enum.Enum):
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
     WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
+    WIP_LLM_OFFER_SEARCH = "Activer la recherche par LLM dans le BO"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -210,6 +211,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
+    FeatureToggle.WIP_LLM_OFFER_SEARCH,
     # Please keep alphabetic order
 )
 

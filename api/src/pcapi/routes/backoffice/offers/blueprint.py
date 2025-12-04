@@ -30,6 +30,7 @@ from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
 from pcapi.core.categories import subcategories
 from pcapi.core.criteria import models as criteria_models
+from pcapi.core.external.compliance_backends import compliance_backend
 from pcapi.core.finance import api as finance_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -52,10 +53,12 @@ from pcapi.routes.backoffice.filters import format_amount
 from pcapi.routes.backoffice.filters import pluralize
 from pcapi.routes.backoffice.forms import empty as empty_forms
 from pcapi.routes.backoffice.pro.utils import get_connect_as
+from pcapi.tasks.serialization.compliance_tasks import SearchOffersRequest
 from pcapi.utils import date as date_utils
 from pcapi.utils import regions as regions_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils import urls
+from pcapi.utils.requests import ExternalAPIException
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
 
@@ -81,6 +84,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
         "field": "category",
         "column": offers_models.Offer.subcategoryId,
         "facet": "offer.subcategoryId",
+        "llm_filter": "offer_category_id",
         "special": lambda categories: [
             subcategory.id for subcategory in subcategories.ALL_SUBCATEGORIES if subcategory.category.id in categories
         ],
@@ -90,6 +94,8 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "CREATION_DATE": {
         "field": "date",
+        "llm_filter": "offer_creation_date",
+        "llm_special": lambda d: d.isoformat() if d else None,
         "column": offers_models.Offer.dateCreated,
     },
     "DATE": {
@@ -98,6 +104,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "DEPARTMENT": {
         "field": "department",
+        "llm_filter": "venue_departement_code",
         "column": geography_models.Address.departmentCode,
         "facet": "venue.departmentCode",  # FIXME (prouzet, 2025-08-14): user offer address when it is sent to Algolia
         "inner_join": "address",
@@ -119,6 +126,8 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     },
     "EVENT_DATE": {
         "field": "date",
+        "llm_filter": "stock_beginning_date",
+        "llm_special": lambda d: d.isoformat() if d else None,
         "column": offers_models.Stock.beginningDatetime,
         "subquery_join": "stock",
     },
@@ -236,6 +245,7 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "SUBCATEGORY": {
         "field": "subcategory",
         "facet": "offer.subcategoryId",
+        "llm_filter": "offer_subcategory_id",
         "column": offers_models.Offer.subcategoryId,
     },
     "SYNCHRONIZED": {
@@ -280,6 +290,8 @@ SEARCH_FIELD_TO_PYTHON: dict[str, dict[str, typing.Any]] = {
     "PRICE": {
         "field": "price",
         "column": offers_models.Stock.price,
+        "llm_filter": "last_stock_price",
+        "llm_special": lambda p: float(p),
         "facet": "offer.prices",
         "subquery_join": "stock",
         "custom_filter_all_operators": sa.and_(
@@ -794,8 +806,11 @@ def _render_offer_list(
     rows: list | None = None,
     advanced_form: forms.GetOfferAdvancedSearchForm | None = None,
     algolia_form: forms.GetOfferAlgoliaSearchForm | None = None,
+    llm_form: forms.GetOfferLlmSearchForm | None = None,
     code: int = 200,
     page: str = "offer",
+    is_form_empty: bool = False,
+    **kwargs: dict,
 ) -> utils.BackofficeResponse:
     date_created_sort_url = None
     if advanced_form is not None and advanced_form.sort.data:
@@ -828,9 +843,13 @@ def _render_offer_list(
             advanced_dst=url_for(".list_offers"),
             algolia_form=algolia_form or forms.GetOfferAlgoliaSearchForm(),
             algolia_dst=url_for(".list_algolia_offers"),
+            llm_form=llm_form or forms.GetOfferLlmSearchForm(),
+            llm_dst=url_for(".list_llm_offers"),
             date_created_sort_url=date_created_sort_url,
             connect_as=connect_as,
             page=page,
+            is_form_empty=is_form_empty,
+            **kwargs,
         ),
         code,
     )
@@ -845,13 +864,14 @@ def list_offers() -> utils.BackofficeResponse:
             advanced_form=form,
             code=400,
             page="offer",
+            is_form_empty=True,
         )
 
     if form.is_empty():
         form_data = MultiDict(utils.get_query_params())
         form_data.update({"search-0-search_field": "ID", "search-0-operator": "IN"})
         form = forms.GetOfferAdvancedSearchForm(formdata=form_data)
-        return _render_offer_list(advanced_form=form, page="offer")
+        return _render_offer_list(advanced_form=form, page="offer", is_form_empty=True)
 
     offers = _get_offers_by_ids(
         offer_ids=_get_offer_ids_query(form),
@@ -864,6 +884,7 @@ def list_offers() -> utils.BackofficeResponse:
         rows=offers,
         advanced_form=form,
         page="offer",
+        is_form_empty=False,
     )
 
 
@@ -876,6 +897,7 @@ def list_algolia_offers() -> utils.BackofficeResponse:
             algolia_form=form,
             code=400,
             page="algolia",
+            is_form_empty=True,
         )
 
     offer_ids = _get_offer_ids_algolia(form)
@@ -892,6 +914,58 @@ def list_algolia_offers() -> utils.BackofficeResponse:
         rows=offers,
         algolia_form=form,
         page="algolia",
+        is_form_empty=form.is_empty(),
+    )
+
+
+@list_offers_blueprint.route("/llm", methods=["GET"])
+def list_llm_offers() -> utils.BackofficeResponse:
+    form = forms.GetOfferLlmSearchForm(formdata=utils.get_query_params())
+    is_form_empty = True
+    if not form.validate():
+        mark_transaction_as_invalid()
+        return _render_offer_list(
+            llm_form=form,
+            code=400,
+            page="llm",
+            is_form_empty=is_form_empty,
+        )
+
+    filters, warnings = utils.generate_llm_search_dict(
+        search_parameters=form.search.data,
+        fields_definition=SEARCH_FIELD_TO_PYTHON,
+    )
+    for warning in warnings:
+        flash(escape(warning), "warning")
+
+    try:
+        responses = compliance_backend.search_offers(
+            payload=SearchOffersRequest(query=form.llm_search.data, filters=filters)
+        )
+        is_form_empty = False
+    except ExternalAPIException as e:
+        flash(
+            f"Le chatbot a rencontré un problème{', veuillez reéssayer plus tard' if e.is_retryable else ''}", "warning"
+        )
+        responses = None
+
+    offers_pertinence = {o.offer_id: o.pertinence for o in responses.results} if responses else {}
+
+    offers = []
+    if offers_pertinence:
+        offers = _get_offers_by_ids(
+            offer_ids=list(offers_pertinence),
+            sort=form.sort.data,
+            order=form.order.data,
+        )
+        offers = utils.limit_rows(offers, form.limit.data)
+
+    return _render_offer_list(
+        rows=offers,
+        llm_form=form,
+        page="llm",
+        offers_pertinence=offers_pertinence,
+        is_form_empty=(form.is_empty() or is_form_empty),
     )
 
 

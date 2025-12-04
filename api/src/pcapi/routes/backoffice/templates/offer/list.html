@@ -9,9 +9,49 @@
 {% set activate_sortable_columns = not date_created_sort_url %}
 {% block title %}Offres individuelles{% endblock %}
 {% block search_block %}
-  {{ display_selector("form-selector-individual-offer", (("Recherche exhaustive des offres", "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en\n database.","advanced-search", page=="offer") , ("Recherche des offres réservables sur l’app jeune", "Remonte toutes les offres réservables sur l’app Jeune, en affichant une seule offre par\n produit. Si plusieurs acteurs proposent la même, une seule sera affichée.", "algolia-search", page=="algolia")), "px-1 mb-4") }}
-  {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
-  {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
+  {% if is_feature_active("WIP_LLM_OFFER_SEARCH") %}
+    {{ display_selector("form-selector-individual-offer", (
+        (
+        "Recherche exhaustive des offres",
+        "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en base de données.",
+        "advanced-search", page=="offer") ,
+    (
+    "Recherche des offres réservables sur l’app",
+    "Remonte toutes les offres réservables sur l’app, en affichant une seule offre par produit. Si plusieurs acteurs proposent la même, une seule sera affichée.",
+    "algolia-search", page=="algolia"
+    ),
+    (
+    'Recherche sémantique <i class="bi bi-stars"></i>',
+    "Recherchez des offres via une phrase, thématique ou question.",
+    "llm-search-container",
+    page=="llm"
+    ),
+    ), "px-1 mb-4") }}
+    {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
+    {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
+    <div id="llm-search-container">
+      <span class="fw-bold">Décrivez ce que vous cherchez :</span>
+      <ol class="mb-4 ps-4">
+        <li>Écrivez votre requête.</li>
+        <li>Vous pouvez l’affiner grâce aux filtres (prix, date, département, catégorie…).</li>
+      </ol>
+      {{ build_advanced_filters_form(llm_form, llm_dst, "llm-search") }}
+    </div>
+  {% else %}
+    {{ display_selector("form-selector-individual-offer", (
+        (
+        "Recherche exhaustive des offres",
+        "Accédez à l’ensemble des offres, qu’elles soient réservables ou non, disponibles en base de données.",
+        "advanced-search", page=="offer") ,
+    (
+    "Recherche des offres réservables sur l’app",
+    "Remonte toutes les offres réservables sur l’app, en affichant une seule offre par produit. Si plusieurs acteurs proposent la même, une seule sera affichée.",
+    "algolia-search", page=="algolia"
+    ),
+    ), "px-1 mb-4") }}
+    {{ build_advanced_filters_form(advanced_form, advanced_dst, "advanced-search") }}
+    {{ build_advanced_filters_form(algolia_form, algolia_dst, "algolia-search") }}
+  {% endif %}
 {% endblock %}
 {% set table_id = "offers-table" %}
 {% block table_header %}
@@ -81,6 +121,13 @@
   <th scope="col"
       data-pc-column-name="Toutes les offres du partenaire culturel">Offres du partenaire culturel</th>
   <th scope="col">Partenaire technique</th>
+  <th scope="col"
+      {%+ if page!="llm" %}
+      data-pc-display-column="false"
+      class="d-none"
+      {% endif +%}
+      data-bs-toggle="tooltip"
+      data-bs-title="Pertinence générée par IA.">Pertinence</th>
 {% endblock %}
 {% block table_body %}
   {% include "offer/list_rows.html" %}
@@ -175,4 +222,23 @@
   {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_activate_offers_form") , "batch-activate-offer-modal", method="post", form="form-ids-" + table_name) }}
   {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_deactivate_offers_form") , "batch-deactivate-offer-modal", method="post", form="form-ids-" + table_name) }}
   {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_edit_offer_form") , "batch-edit-offer-modal", method="post", form="form-ids-" + table_name) }}
+{% endblock %}
+{% block empty %}
+  {% if not is_form_empty %}
+    <div class="mt-5 d-flex justify-content-center">
+      <div class="text-center">
+        <svg class="mb-4"
+             width="136"
+             height="136"
+             viewBox="0 0 136 136"
+             fill="none"
+             xmlns="http://www.w3.org/2000/svg">
+          <path d="M60.7188 9.06641C93.5491 7.52961 121.399 32.8884 122.936 65.7188C123.408 75.8163 121.337 85.4771 117.25 94.0166C116.605 95.3639 114.991 95.9337 113.644 95.2891C112.296 94.6443 111.726 93.029 112.371 91.6816C116.078 83.9362 117.963 75.1633 117.532 65.9717C116.135 36.1255 90.8179 13.0726 60.9717 14.4697C31.1255 15.8669 8.07177 41.1841 9.46875 71.0303C10.866 100.877 36.1839 123.93 66.0303 122.533C75.3468 122.097 84.0059 119.319 91.4766 114.793C92.754 114.019 94.4174 114.428 95.1914 115.705C95.9654 116.983 95.5576 118.646 94.2803 119.42C86.0593 124.401 76.5261 127.457 66.2832 127.937C33.4528 129.473 5.60332 104.114 4.06641 71.2832C2.52972 38.4529 27.8884 10.6033 60.7188 9.06641ZM63.5 89.751C65.456 89.751 67.042 91.337 67.042 93.293C67.042 95.2489 65.456 96.8349 63.5 96.835C61.544 96.835 59.958 95.2489 59.958 93.293C59.958 91.337 61.544 89.751 63.5 89.751ZM63.5 40.168C65.0648 40.168 66.333 41.3748 66.333 42.8633V77.1396C66.3329 78.628 65.0647 79.8349 63.5 79.835C61.9353 79.835 60.6671 78.628 60.667 77.1396V42.8633C60.667 41.3748 61.9352 40.168 63.5 40.168Z" fill="#25026c" />
+          <path d="M123.484 120.688C125.066 118.535 126 115.876 126 113C126 105.82 120.18 100 113 100C105.82 100 100 105.82 100 113C100 120.18 105.82 126 113 126C115.877 126 118.536 125.065 120.69 123.483L120.688 123.484C120.747 123.564 120.812 123.641 120.885 123.713L128.586 131.414C129.367 132.195 130.633 132.195 131.414 131.414C132.195 130.633 132.195 129.367 131.414 128.586L123.713 120.885C123.641 120.812 123.564 120.747 123.484 120.688ZM124 113C124 119.075 119.075 124 113 124C106.925 124 102 119.075 102 113C102 106.925 106.925 102 113 102C119.075 102 124 106.925 124 113Z" fill="#320096" />
+        </svg>
+        <div class="h2 text-primary">Aucune offre trouvée</div>
+        <div class="h4">Vérifiez les filtres, ou reformulez la requête</div>
+      </div>
+    </div>
+  {% endif %}
 {% endblock %}

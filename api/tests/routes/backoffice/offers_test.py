@@ -39,6 +39,7 @@ from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice.filters import format_date
+from pcapi.tasks.serialization import compliance_tasks
 from pcapi.utils import date as date_utils
 from pcapi.utils.regions import get_department_code_from_city_code
 
@@ -1705,7 +1706,7 @@ class EditOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_edit.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2135,6 +2136,146 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
         assert rows[0]["ID"] == str(offer_to_display.id)
 
 
+class ListLlmOffersTest(GetEndpointHelper):
+    endpoint = "backoffice_web.offer.list_llm_offers"
+    needed_permission = perm_models.Permissions.READ_OFFERS
+
+    # - fetch session + user (1 query)
+    expected_num_queries_with_no_result = 1
+    # - fetch offers with joinedload including extra data (1 query)
+    # - fetch addresses (2 x selectinload: 2 queries)
+    expected_num_queries_with_results = expected_num_queries_with_no_result + 3
+
+    def test_list_offers_by_query_with_filters(self, authenticated_client):
+        offer_to_display = offers_factories.OfferFactory(name="display")
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {
+            "llm_search": "plouf",
+            "search-0-search_field": "CATEGORY",
+            "search-0-operator": "IN",
+            "search-0-category": "CARTE_JEUNES",
+            "search-1-search_field": "CREATION_DATE",
+            "search-1-operator": "EQUALS",
+            "search-1-date": "2026-01-08",
+            "search-2-search_field": "EVENT_DATE",
+            "search-2-operator": "EQUALS",
+            "search-2-date": "2026-01-16",
+            "search-3-search_field": "DEPARTMENT",
+            "search-3-operator": "IN",
+            "search-3-department": "03",
+            "search-4-search_field": "PRICE",
+            "search-4-operator": "EQUALS",
+            "search-4-price": "125.12",
+            "search-5-search_field": "SUBCATEGORY",
+            "search-5-operator": "IN",
+            "search-5-subcategory": "ABO_JEU_VIDEO",
+            "limit": 100,
+        }
+
+        search_query = compliance_tasks.SearchOffersRequest(
+            query=query_args["llm_search"],
+            filters=[
+                {
+                    "column": "offer_category_id",
+                    "operator": "in",
+                    "value": [query_args["search-0-category"]],
+                },
+                {
+                    "column": "offer_creation_date",
+                    "operator": "=",
+                    "value": query_args["search-1-date"],
+                },
+                {
+                    "column": "stock_beginning_date",
+                    "operator": "=",
+                    "value": query_args["search-2-date"],
+                },
+                {
+                    "column": "venue_departement_code",
+                    "operator": "in",
+                    "value": [query_args["search-3-department"]],
+                },
+                {
+                    "column": "last_stock_price",
+                    "operator": "=",
+                    "value": float(query_args["search-4-price"]),
+                },
+                {
+                    "column": "offer_subcategory_id",
+                    "operator": "in",
+                    "value": [query_args["search-5-subcategory"]],
+                },
+            ],
+        )
+        api_response = compliance_tasks.SearchOffersResponse(
+            results=[
+                compliance_tasks.SearchOfferResponse(
+                    offer_id=offer_to_display.id,
+                    pertinence="Some witty comment from llm",
+                ),
+            ],
+        )
+
+        with patch(
+            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=api_response
+        ) as llm_mock:
+            with assert_num_queries(self.expected_num_queries_with_results):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            llm_mock.assert_called_once_with(payload=search_query)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 1
+        assert rows[0]["ID"] == str(offer_to_display.id)
+        assert rows[0]["Pertinence"] == api_response.results[0].pertinence
+
+    def test_list_offers_by_query_with_empty_answer(self, authenticated_client):
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {"llm_search": "plouf", "limit": 100}
+
+        search_query = compliance_tasks.SearchOffersRequest(
+            query=query_args["llm_search"],
+            filters=[],
+        )
+        api_response = compliance_tasks.SearchOffersResponse(
+            results=[],
+        )
+
+        with patch(
+            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=api_response
+        ) as llm_mock:
+            with assert_num_queries(self.expected_num_queries_with_no_result):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            llm_mock.assert_called_once_with(payload=search_query)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
+
+    def test_list_offers_by_query_with_no_answer(self, authenticated_client):
+        offers_factories.OfferFactory(name="hide")
+
+        query_args = {"llm_search": "plouf", "limit": 100}
+
+        search_query = compliance_tasks.SearchOffersRequest(
+            query=query_args["llm_search"],
+            filters=[],
+        )
+
+        with patch(
+            "pcapi.core.external.compliance_backends.test.TestBackend.search_offers", return_value=None
+        ) as llm_mock:
+            with assert_num_queries(self.expected_num_queries_with_no_result):
+                response = authenticated_client.get(url_for(self.endpoint, **query_args))
+                assert response.status_code == 200
+            llm_mock.assert_called_once_with(payload=search_query)
+
+        rows = html_parser.extract_table_rows(response.data)
+        assert len(rows) == 0
+
+
 class ValidateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.validate_offer"
     endpoint_kwargs = {"offer_id": 1}
@@ -2171,7 +2312,7 @@ class ValidateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_validate.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -2287,7 +2428,7 @@ class RejectOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_reject.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -3583,7 +3724,7 @@ class ActivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_activate.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -3675,7 +3816,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert response.status_code == 200
         # ensure that the row is rendered
         cells = html_parser.extract_plain_row(response.data, id=f"offer-row-{offer_to_deactivate.id}")
-        assert len(cells) == 25
+        assert len(cells) == 26
         i = count()
         assert cells[next(i)] == ""  # Checkbox
         assert cells[next(i)] == (  # Actions
@@ -3704,6 +3845,7 @@ class DeactivateOfferTest(PostEndpointHelper):
         assert cells[next(i)] == offer_to_deactivate.venue.name  # Partenaire culturel
         assert cells[next(i)] == "Voir toutes les offres"  # Offres du partenaire culturel
         assert cells[next(i)] == ""  # Partenaire technique
+        assert cells[next(i)] == "-"  # Llm pertinence
 
         db.session.refresh(offer_to_deactivate)
         assert offer_to_deactivate.isActive is False

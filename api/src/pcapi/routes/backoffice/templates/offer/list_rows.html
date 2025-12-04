@@ -186,5 +186,12 @@
     <td>
       {% if offer.lastProviderId %}{{ offer.lastProvider.name | format_badge("primary") }}{% endif %}
     </td>
+    <td {%+ if not(page and page =="llm") %} data-pc-display-column="false" class="d-none"{% endif+%}>
+      {% if offer.id in offers_pertinence %}
+        {{offers_pertinence[offer.id]}}
+      {% else %}
+        -
+      {% endif %}
+    </td>
   </tr>
 {% endfor %}

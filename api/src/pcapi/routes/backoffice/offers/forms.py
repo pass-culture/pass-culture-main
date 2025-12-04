@@ -71,6 +71,15 @@ class IndividualOffersAlgoliaSearchAttributes(enum.Enum):
     SHOW_TYPE = "Type de spectacle"
 
 
+class IndividualOffersLlmSearchAttributes(enum.Enum):
+    CATEGORY = "Catégorie"
+    CREATION_DATE = "Date de création"
+    EVENT_DATE = "Date de l'évènement"
+    DEPARTMENT = "Département du partenaire culturel"
+    PRICE = "Prix"
+    SUBCATEGORY = "Sous-catégorie"
+
+
 operator_no_require_value = ["NOT_EXIST"]
 
 form_field_configuration = {
@@ -123,6 +132,15 @@ algolia_form_field_configuration = {
     "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
     "VENUE": {"field": "venue", "operator": ["IN", "NOT_IN"]},
     "SHOW_TYPE": {"field": "show_type", "operator": ["IN", "NOT_IN"]},
+}
+
+llm_form_field_configuration = {
+    "CATEGORY": {"field": "category", "operator": ["IN", "NOT_IN"]},
+    "SUBCATEGORY": {"field": "subcategory", "operator": ["IN", "NOT_IN"]},
+    "DEPARTMENT": {"field": "department", "operator": ["IN", "NOT_IN"]},
+    "PRICE": {"field": "price", "operator": ["EQUALS", "GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
+    "CREATION_DATE": {"field": "date", "operator": ["EQUALS", "GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
+    "EVENT_DATE": {"field": "date", "operator": ["EQUALS", "GREATER_THAN_OR_EQUAL_TO", "LESS_THAN"]},
 }
 
 
@@ -508,6 +526,77 @@ class OfferAlgoliaSearchSubForm(forms_utils.PCForm):
         return string
 
 
+class OfferLlmSearchSubForm(forms_utils.PCForm):
+    class Meta:
+        csrf = False
+        locales = ["fr_FR", "fr"]
+
+    json_data = json.dumps(
+        {
+            "display_configuration": llm_form_field_configuration,
+            "all_available_fields": [
+                "category",
+                "date",
+                "department",
+                "price",
+                "subcategory",
+            ],
+            "sub_rule_type_field_name": "search_field",
+            "operator_field_name": "operator",
+        }
+    )
+
+    def __init__(self, *args: list, **kwargs: dict):
+        super().__init__(*args, **kwargs)
+
+    search_field = fields.PCSelectWithPlaceholderValueField(
+        "Champ de recherche",
+        choices=forms_utils.choices_from_enum(IndividualOffersLlmSearchAttributes),
+        validators=[
+            wtforms.validators.Optional(""),
+        ],
+    )
+    operator = fields.PCSelectField(
+        "Opérateur",
+        choices=forms_utils.choices_from_enum(utils.AdvancedSearchOperators),
+        default=utils.AdvancedSearchOperators.EQUALS,  # avoids empty option
+        validators=[
+            wtforms.validators.Optional(""),
+        ],
+    )
+    category = fields.PCSelectMultipleField(
+        "Catégories",
+        choices=forms_utils.choices_from_enum(pro_categories.CategoryIdLabelEnum),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    subcategory = fields.PCSelectMultipleField(
+        "Sous-catégories",
+        choices=forms_utils.choices_from_enum(subcategories.SubcategoryProLabelEnum),
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    date = fields.PCDateField(
+        validators=[
+            wtforms.validators.Optional(""),
+        ]
+    )
+    department = fields.PCSelectMultipleField(
+        "Départements",
+        choices=constants.area_choices,
+        search_inline=True,
+        field_list_compatibility=True,
+    )
+    price = fields.PCDecimalField(
+        "Prix",
+        use_locale=True,
+        validators=[
+            wtforms.validators.Optional(""),
+            wtforms.validators.NumberRange(min=0, message="Doit contenir un nombre positif"),
+        ],
+    )
+
+
 class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
     class Meta:
         csrf = False
@@ -561,7 +650,7 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
             if search_field := sub_search.get("search_field"):
                 if type(self).is_sub_search_empty(sub_search):
                     try:
-                        errors.append(f"Le filtre « {IndividualOffersSearchAttributes[search_field].value} » est vide.")
+                        errors.append(f"Le filtre « {self.search_attributes[search_field].value} » est vide.")
                     except KeyError:
                         errors.append(f"Le filtre {search_field} est invalide.")
                 else:
@@ -583,6 +672,7 @@ class BaseOfferAdvancedSearchForm(GetOffersBaseFields):
 
 class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
     form_field_configuration = form_field_configuration
+    search_attributes = IndividualOffersSearchAttributes
 
     def is_empty(self) -> bool:
         return GetOfferAdvancedSearchForm.is_search_empty(self.search.data) and super().is_empty()
@@ -590,6 +680,8 @@ class GetOfferAdvancedSearchForm(BaseOfferAdvancedSearchForm):
 
 class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
     form_field_configuration = algolia_form_field_configuration
+    search_attributes = IndividualOffersAlgoliaSearchAttributes
+
     algolia_search = fields.PCOptStringField("Recherche", full_width=True)
     search = fields.PCFieldListField(
         fields.PCFormField(OfferAlgoliaSearchSubForm),
@@ -600,6 +692,31 @@ class GetOfferAlgoliaSearchForm(BaseOfferAdvancedSearchForm):
     def is_empty(self) -> bool:
         empty = not self.algolia_search.data
         empty = empty and GetOfferAlgoliaSearchForm.is_search_empty(self.search.data)
+        return empty and super().is_empty()
+
+
+class GetOfferLlmSearchForm(BaseOfferAdvancedSearchForm):
+    form_field_configuration = llm_form_field_configuration
+    search_attributes = IndividualOffersLlmSearchAttributes
+
+    llm_search = fields.PCTextareaField(
+        "Recherche",
+        rows=2,
+        can_be_cleared=True,
+        validators=[
+            wtforms.validators.Optional(""),
+            wtforms.validators.Length(min=3, max=512, message="doit contenir entre %(min)d et %(max)d caractères"),
+        ],
+    )
+    search = fields.PCFieldListField(
+        fields.PCFormField(OfferLlmSearchSubForm),
+        label="recherches",
+        min_entries=1,
+    )
+
+    def is_empty(self) -> bool:
+        empty = not self.llm_search.data
+        empty = empty and GetOfferLlmSearchForm.is_search_empty(self.search.data)
         return empty and super().is_empty()
 
 
