@@ -49,3 +49,12 @@ class ComplianceValidationStatusPredictionOutput(BaseModel):
 
 class CompliancePredictionOutput(ComplianceScorePredictionOutput, ComplianceValidationStatusPredictionOutput):
     pass
+
+
+class SearchOfferRequest(BaseModel):
+    query: str
+    filters: list[dict]
+
+
+class SearchOfferResponse(BaseModel):
+    offers: list[dict]
