@@ -2,15 +2,15 @@ import cx from 'classnames'
 import fullClearIcon from 'icons/full-clear.svg'
 import fullCloseIcon from 'icons/full-close.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SnackBar.module.scss'
 
-const calculateDuration = (text: string): number => {
-  return text.length <= 120 ? 5000 : 10000
-}
+const SHORT_TEXT_DURATION = 5000
+const LONG_TEXT_DURATION = 10000
+const SHORT_TEXT_THRESHOLD = 120
 
 export enum SnackBarVariant {
   SUCCESS = 'success',
@@ -46,6 +46,33 @@ export type SnackBarProps = {
 
 const ANIMATION_DURATION = 300 // Durée de l'animation en ms
 
+type VariantConfig = {
+  icon: string
+  ariaLabel: string
+  role: 'alert' | 'status'
+  ariaLive: 'assertive' | 'polite'
+}
+
+/**
+ * Variant config is an object that contains the icon, aria label, role and aria live for each variant.
+ * For adding a new variant, you need to add a new entry to the VARIANT_CONFIG object.
+ * Maybe, we will need to add a new prop to the SnackBarProps to addd a new variant (Info, Warning, etc.)
+ */
+const VARIANT_CONFIG: Record<SnackBarVariant, VariantConfig> = {
+  [SnackBarVariant.SUCCESS]: {
+    icon: fullValidateIcon,
+    ariaLabel: 'Message de succès',
+    role: 'status',
+    ariaLive: 'polite',
+  },
+  [SnackBarVariant.ERROR]: {
+    icon: fullClearIcon,
+    ariaLabel: "Message d'erreur",
+    role: 'alert',
+    ariaLive: 'assertive',
+  },
+}
+
 export const SnackBar = ({
   variant = SnackBarVariant.SUCCESS,
   text,
@@ -59,7 +86,10 @@ export const SnackBar = ({
   const hasClosedRef = useRef(false)
   const onCloseRef = useRef(onClose)
 
-  const duration = calculateDuration(text)
+  const duration =
+    text.length <= SHORT_TEXT_THRESHOLD
+      ? SHORT_TEXT_DURATION
+      : LONG_TEXT_DURATION
 
   // Garde toujours la dernière version de onClose
   useEffect(() => {
@@ -89,15 +119,7 @@ export const SnackBar = ({
     }, ANIMATION_DURATION)
   }, []) // Pas de dépendances = référence stable
 
-  const getIcon = (): string => {
-    switch (variant) {
-      case SnackBarVariant.ERROR:
-        return fullClearIcon
-
-      default:
-        return fullValidateIcon
-    }
-  }
+  const variantConfig = useMemo(() => VARIANT_CONFIG[variant], [variant])
 
   // Animation de la barre de progression
   useEffect(() => {
@@ -135,25 +157,27 @@ export const SnackBar = ({
         styles[variant],
         isClosing ? styles['hide'] : isVisible && styles['show']
       )}
-      role="alert"
-      aria-live="polite"
+      role={variantConfig.role}
+      aria-live={variantConfig.ariaLive}
+      aria-atomic="true"
       data-testid={testId}
     >
       <div className={cx(styles['wrapper'])}>
         <div className={cx(styles['content'])}>
           <div className={cx(styles['content-icon'])}>
             <SvgIcon
-              src={getIcon()}
-              alt={
-                variant === SnackBarVariant.ERROR
-                  ? "Icône d'erreur"
-                  : 'Icône de succès'
-              }
+              src={variantConfig.icon}
+              alt=""
               width={'24'}
               className={styles['content-icon-svg']}
             />
           </div>
-          <p className={cx(styles['content-text'])}>{text}</p>
+          <p className={cx(styles['content-text'])}>
+            <span className={styles['visually-hidden']}>
+              {variantConfig.ariaLabel} :{' '}
+            </span>
+            {text}
+          </p>
         </div>
         <div className={cx(styles['close-button-container'])}>
           <button

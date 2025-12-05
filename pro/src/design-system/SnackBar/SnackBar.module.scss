@@ -1,4 +1,5 @@
 @use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_a11y.scss" as a11y;
 
 // Animations desktop (apparition/disparition vers le bas)
 @keyframes slide-in-bottom {
@@ -178,4 +179,8 @@
       border-radius: 0 0 var(--size-border-radius-s) var(--size-border-radius-s);
     }
   }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
 }
