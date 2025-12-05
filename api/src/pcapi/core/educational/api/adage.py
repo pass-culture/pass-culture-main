@@ -10,10 +10,9 @@ import sqlalchemy.orm as sa_orm
 from pydantic.v1 import parse_obj_as
 
 from pcapi.core.educational import adage_backends as adage_client
-from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import models
+from pcapi.core.educational import schemas
 from pcapi.core.educational.api.venue import get_relative_venues_by_siret
-from pcapi.core.educational.schemas import AdageCulturalPartner
-from pcapi.core.educational.schemas import AdageCulturalPartners
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
@@ -31,7 +30,9 @@ from pcapi.utils.transaction_manager import atomic
 logger = logging.getLogger(__name__)
 
 
-def get_cultural_partners(*, since_date: datetime | None = None, force_update: bool = False) -> AdageCulturalPartners:
+def get_cultural_partners(
+    *, since_date: datetime | None = None, force_update: bool = False
+) -> schemas.AdageCulturalPartners:
     CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
     CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
 
@@ -53,7 +54,7 @@ def get_cultural_partners(*, since_date: datetime | None = None, force_update: b
 
     cultural_partners_json = typing.cast(str, cultural_partners_json)
     cultural_partners = json.loads(cultural_partners_json)
-    return parse_obj_as(AdageCulturalPartners, {"partners": cultural_partners})
+    return parse_obj_as(schemas.AdageCulturalPartners, {"partners": cultural_partners})
 
 
 def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
@@ -94,7 +95,7 @@ def get_venue_by_id_for_adage_iframe(
     return venue, relative
 
 
-def synchronize_adage_ids_on_offerers(partners_from_adage: list[AdageCulturalPartner]) -> None:
+def synchronize_adage_ids_on_offerers(partners_from_adage: list[schemas.AdageCulturalPartner]) -> None:
     adage_sirens: set[str] = {p.siret[:9] for p in partners_from_adage if (p.actif == 1 and p.siret)}
     existing_sirens: dict[str, bool] = dict(
         db.session.query(  # type: ignore [arg-type]
@@ -153,7 +154,9 @@ class CulturalPartner:
     active: int | None
 
 
-def synchronize_adage_ids_on_venues(adage_cultural_partners: AdageCulturalPartners, debug: bool = False) -> None:
+def synchronize_adage_ids_on_venues(
+    adage_cultural_partners: schemas.AdageCulturalPartners, debug: bool = False
+) -> None:
     from pcapi.core.external.attributes.api import update_external_pro
 
     adage_cps = []
@@ -320,18 +323,18 @@ def get_redactor_favorites_count(redactor_id: int) -> int:
     """
     Note: Non-eligible for search templates are ignored.
     """
-    redactor: educational_models.EducationalRedactor = (
-        db.session.query(educational_models.EducationalRedactor)
+    redactor = (
+        db.session.query(models.EducationalRedactor)
         .filter_by(id=redactor_id)
         .options(
-            sa_orm.joinedload(educational_models.EducationalRedactor.favoriteCollectiveOfferTemplates)
+            sa_orm.joinedload(models.EducationalRedactor.favoriteCollectiveOfferTemplates)
             .load_only(
-                educational_models.CollectiveOfferTemplate.id,
-                educational_models.CollectiveOfferTemplate.venueId,
-                educational_models.CollectiveOfferTemplate.validation,
-                educational_models.CollectiveOfferTemplate.isActive,
+                models.CollectiveOfferTemplate.id,
+                models.CollectiveOfferTemplate.venueId,
+                models.CollectiveOfferTemplate.validation,
+                models.CollectiveOfferTemplate.isActive,
             )
-            .joinedload(educational_models.CollectiveOfferTemplate.venue)
+            .joinedload(models.CollectiveOfferTemplate.venue)
             .load_only(
                 offerers_models.Venue.managingOffererId,
                 offerers_models.Venue.isVirtual,

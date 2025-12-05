@@ -5,12 +5,12 @@ from dataclasses import dataclass
 
 import sqlalchemy as sa
 
-import pcapi.connectors.big_query.queries as big_query
-import pcapi.connectors.big_query.queries.adage_playlists as bq_playlists
-import pcapi.core.educational.api.institution as institution_api
-import pcapi.core.educational.models as educational_models
+from pcapi.connectors.big_query import queries as big_query
+from pcapi.connectors.big_query.queries import adage_playlists as bq_playlists
 from pcapi.connectors.big_query.queries.base import BaseQuery
+from pcapi.core.educational import models
 from pcapi.core.educational import repository
+from pcapi.core.educational.api import institution as institution_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils.transaction_manager import atomic
@@ -38,28 +38,28 @@ def format_collective_offer_id(collective_offer_id: str) -> int:
 
 
 QUERY_DESC = {
-    educational_models.PlaylistType.CLASSROOM: QueryCtx(
+    models.PlaylistType.CLASSROOM: QueryCtx(
         query=big_query.ClassroomPlaylistQuery,
         bq_attr_name="collective_offer_id",
         bq_attr_formatter=format_collective_offer_id,
         local_attr_name="collectiveOfferTemplateId",
-        foreign_class=educational_models.CollectiveOfferTemplate,
+        foreign_class=models.CollectiveOfferTemplate,
     ),
-    educational_models.PlaylistType.NEW_OFFER: QueryCtx(
+    models.PlaylistType.NEW_OFFER: QueryCtx(
         query=big_query.NewTemplateOffersPlaylistQuery,
         bq_attr_name="collective_offer_id",
         bq_attr_formatter=format_collective_offer_id,
         local_attr_name="collectiveOfferTemplateId",
-        foreign_class=educational_models.CollectiveOfferTemplate,
+        foreign_class=models.CollectiveOfferTemplate,
     ),
-    educational_models.PlaylistType.LOCAL_OFFERER: QueryCtx(
+    models.PlaylistType.LOCAL_OFFERER: QueryCtx(
         query=big_query.LocalOfferersQuery,
         bq_attr_name="venue_id",
         bq_attr_formatter=int,
         local_attr_name="venueId",
         foreign_class=offerers_models.Venue,
     ),
-    educational_models.PlaylistType.NEW_OFFERER: QueryCtx(
+    models.PlaylistType.NEW_OFFERER: QueryCtx(
         query=big_query.NewOffererQuery,
         bq_attr_name="venue_id",
         bq_attr_formatter=int,
@@ -75,8 +75,8 @@ BigQueryPlaylistModels = list[
 
 
 def synchronize_institution_playlist(
-    playlist_type: educational_models.PlaylistType,
-    institution: educational_models.EducationalInstitution,
+    playlist_type: models.PlaylistType,
+    institution: models.EducationalInstitution,
     rows: BigQueryPlaylistModels,
 ) -> None:
     ctx = QUERY_DESC[playlist_type]
@@ -84,9 +84,9 @@ def synchronize_institution_playlist(
 
     actual_rows = {
         getattr(row, ctx.local_attr_name): row
-        for row in db.session.query(educational_models.CollectivePlaylist).filter(
-            educational_models.CollectivePlaylist.type == playlist_type,
-            educational_models.CollectivePlaylist.institutionId == institution.id,
+        for row in db.session.query(models.CollectivePlaylist).filter(
+            models.CollectivePlaylist.type == playlist_type,
+            models.CollectivePlaylist.institutionId == institution.id,
         )
     }
 
@@ -116,8 +116,8 @@ def synchronize_institution_playlist(
     ]
 
     if playlist_ids_to_remove:
-        db.session.query(educational_models.CollectivePlaylist).filter(
-            educational_models.CollectivePlaylist.id.in_(playlist_ids_to_remove)
+        db.session.query(models.CollectivePlaylist).filter(
+            models.CollectivePlaylist.id.in_(playlist_ids_to_remove)
         ).delete()
     if playlist_items_to_add:
         # Ensure that objects added to playlist still exist before insertion
@@ -129,12 +129,12 @@ def synchronize_institution_playlist(
         playlist_items_to_really_add = [
             item for item in playlist_items_to_add if item[ctx.local_attr_name] in existing_foreign_ids
         ]
-        db.session.execute(sa.insert(educational_models.CollectivePlaylist), playlist_items_to_really_add)
+        db.session.execute(sa.insert(models.CollectivePlaylist), playlist_items_to_really_add)
     if playlist_items_to_update:
-        db.session.execute(sa.update(educational_models.CollectivePlaylist), playlist_items_to_update)
+        db.session.execute(sa.update(models.CollectivePlaylist), playlist_items_to_update)
 
 
-def synchronize_collective_playlist(playlist_type: educational_models.PlaylistType) -> None:
+def synchronize_collective_playlist(playlist_type: models.PlaylistType) -> None:
     ctx = QUERY_DESC[playlist_type]
     institution = None
     institution_rows: BigQueryPlaylistModels = []
@@ -143,7 +143,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
     for row in ctx.query().execute(page_size=BIGQUERY_PLAYLIST_BATCH_SIZE):
         current_institution_id = int(getattr(row, "institution_id"))
         if institution is None:
-            institution = db.session.get(educational_models.EducationalInstitution, current_institution_id)
+            institution = db.session.get(models.EducationalInstitution, current_institution_id)
 
         assert institution  # helps mypy
 
@@ -164,7 +164,7 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
 
                 has_error = True
 
-            institution = db.session.get(educational_models.EducationalInstitution, current_institution_id)
+            institution = db.session.get(models.EducationalInstitution, current_institution_id)
             institution_rows = []
 
         institution_rows.append(row)
@@ -183,17 +183,17 @@ def synchronize_collective_playlist(playlist_type: educational_models.PlaylistTy
 
 
 def get_playlist_items(
-    institution: educational_models.EducationalInstitution,
-    playlist_type: educational_models.PlaylistType,
+    institution: models.EducationalInstitution,
+    playlist_type: models.PlaylistType,
     min_items: int = 10,
-) -> typing.Collection[educational_models.CollectivePlaylist]:
+) -> typing.Collection[models.CollectivePlaylist]:
     playlist_items = (
         repository.get_collective_offer_templates_for_playlist_query(
             institution_id=institution.id,
             playlist_type=playlist_type,
             max_distance=institution_api.get_playlist_max_distance(institution),
         )
-        .distinct(educational_models.CollectivePlaylist.venueId)
+        .distinct(models.CollectivePlaylist.venueId)
         .limit(10)
         .all()
     )
@@ -206,7 +206,7 @@ def get_playlist_items(
                 playlist_type=playlist_type,
                 min_distance=institution_api.get_playlist_max_distance(institution),
             )
-            .distinct(educational_models.CollectivePlaylist.venueId)
+            .distinct(models.CollectivePlaylist.venueId)
             .limit(missing_count)
             .all()
         )

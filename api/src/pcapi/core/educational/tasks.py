@@ -1,5 +1,5 @@
 from pcapi.celery_tasks.tasks import celery_async_task
-from pcapi.core.educational import repository as educational_offers_repository
+from pcapi.core.educational import repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offers import tasks as offers_tasks
 
@@ -11,7 +11,7 @@ from pcapi.core.offers import tasks as offers_tasks
 def update_venue_collective_offers_active_status_task(
     payload: offers_tasks.UpdateVenueOffersActiveStatusPayload,
 ) -> None:
-    query = educational_offers_repository.get_synchronized_collective_offers_with_provider_for_venue(
+    query = repository.get_synchronized_collective_offers_with_provider_for_venue(
         payload.venue_id,
         payload.provider_id,
     )

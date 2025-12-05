@@ -7,17 +7,17 @@ from pathlib import Path
 
 import click
 
-import pcapi.core.educational.api.adage as adage_api
-import pcapi.core.educational.api.institution as institution_api
-import pcapi.core.educational.api.playlists as playlists_api
-import pcapi.core.educational.models as educational_models
-import pcapi.utils.cron as cron_decorators
 from pcapi.core import search
-from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import models
+from pcapi.core.educational import repository
+from pcapi.core.educational.api import adage as adage_api
 from pcapi.core.educational.api import booking as educational_api_booking
+from pcapi.core.educational.api import institution as institution_api
+from pcapi.core.educational.api import playlists as playlists_api
 from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
 from pcapi.models import db
+from pcapi.utils import cron as cron_decorators
 from pcapi.utils import date as date_utils
 from pcapi.utils.blueprint import Blueprint
 from pcapi.utils.repository import transaction
@@ -58,7 +58,7 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool, uai: str | N
 )
 @click.option(
     "--ministry",
-    type=click.Choice([m.name for m in educational_models.Ministry]),
+    type=click.Choice([m.name for m in models.Ministry]),
     required=True,
     help="Ministry for this deposit.",
 )
@@ -88,7 +88,7 @@ def generate_fake_adage_token(readonly: bool, cannot_prebook: bool, uai: str | N
 )
 @click.option(
     "--educational-program-name",
-    type=click.Choice([educational_models.PROGRAM_MARSEILLE_EN_GRAND]),
+    type=click.Choice([models.PROGRAM_MARSEILLE_EN_GRAND]),
     help="Link the institutions to a program, if given.",
 )
 @click.option("--final", is_flag=True, help="Flag deposits as final.")
@@ -120,7 +120,7 @@ def import_deposit_csv(
     output = institution_api.import_deposit_institution_csv(
         path=file_path,
         year=year,
-        ministry=educational_models.Ministry[ministry],
+        ministry=models.Ministry[ministry],
         period_option=institution_api.ImportDepositPeriodOption[period_option],
         credit_update=credit_update,
         ministry_conflict=ministry_conflict,
@@ -240,7 +240,7 @@ def import_eac_dms_application(ignore_previous: bool = False) -> None:
     help="Free text with details about the reimbursement.",
 )
 def notify_reimburse_collective_booking(booking_id: int, reason: str, value: Decimal, details: str) -> None:
-    collective_booking = educational_repository.find_collective_booking_by_id(booking_id)
+    collective_booking = repository.find_collective_booking_by_id(booking_id)
     if not collective_booking:
         print(f"Collective booking {booking_id} not found")
         return
@@ -274,22 +274,22 @@ def synchronise_rurality_level() -> None:
 @blueprint.cli.command("synchronise_collective_classroom_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_playlist() -> None:
-    playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.CLASSROOM)
+    playlists_api.synchronize_collective_playlist(models.PlaylistType.CLASSROOM)
 
 
 @blueprint.cli.command("synchronise_collective_new_offer_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_new_offer_playlist() -> None:
-    playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.NEW_OFFER)
+    playlists_api.synchronize_collective_playlist(models.PlaylistType.NEW_OFFER)
 
 
 @blueprint.cli.command("synchronise_collective_local_offerers_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_local_offerer_playlist() -> None:
-    playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.LOCAL_OFFERER)
+    playlists_api.synchronize_collective_playlist(models.PlaylistType.LOCAL_OFFERER)
 
 
 @blueprint.cli.command("synchronise_collective_new_offerers_playlist")
 @cron_decorators.log_cron
 def synchronise_collective_new_offerers_playlist() -> None:
-    playlists_api.synchronize_collective_playlist(educational_models.PlaylistType.NEW_OFFERER)
+    playlists_api.synchronize_collective_playlist(models.PlaylistType.NEW_OFFERER)
