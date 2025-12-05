@@ -1,7 +1,5 @@
-import { BOOKABLE_OFFERS_COLUMNS } from '../support/constants.ts'
 import {
   collectiveFormatEventDate,
-  expectOffersOrBookingsAreFound,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
@@ -56,9 +54,7 @@ describe('Adage confirmation', () => {
     cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I click on the offer' })
-
     cy.findByRole('link', { name: `N°${offer.id} ${offer.name}` }).click()
-
     cy.wait('@collectiveOfferDetails')
     cy.stepLog({ message: 'I check that the offer is published' })
     cy.contains('Récapitulatif')
@@ -100,32 +96,29 @@ describe('Adage confirmation', () => {
       cy.stepLog({ message: 'I search with status "PREBOOKED"' })
       cy.findByRole('button', { name: 'Statut' }).click()
       cy.findByText('Préréservée').click()
-
-      // We click outside the filter to close it
       cy.findByLabelText('Statut').click()
-
       cy.stepLog({ message: 'I validate my filters' })
       cy.findByText('Rechercher').click({ force: true })
       cy.wait('@collectiveOffersPREBOOKED')
         .its('response.statusCode')
         .should('eq', 200)
 
-      let expectedResults = [
-        BOOKABLE_OFFERS_COLUMNS,
-        [
-          '',
-          `N°${offer.id}${offer.name}`,
-          collectiveFormatEventDate(stock.startDatetime),
-          `100€25 participants`,
-          'DE LA TOUR',
-          'À déterminer',
-          'préréservée',
-        ],
-      ]
-
-      expectOffersOrBookingsAreFound(expectedResults, true)
-
-      // full row content check
+      cy.get('tbody')
+        .find('tr[data-testid="table-row"]')
+        .should('have.length', 1)
+      cy.get('tbody')
+        .find('tr[data-testid="table-row"]')
+        .eq(0)
+        .within(() => {
+          cy.get('td').eq(1).should('contain', `N°${offer.id}${offer.name}`)
+          cy.get('td')
+            .eq(2)
+            .should('contain', collectiveFormatEventDate(stock.startDatetime))
+          cy.get('td').eq(3).should('contain', `100€25 participants`)
+          cy.get('td').eq(4).should('contain', 'DE LA TOUR')
+          cy.get('td').eq(5).should('contain', 'À déterminer')
+          cy.get('td').eq(6).should('contain', 'préréservée')
+        })
       cy.findByText(
         'En attente de réservation par le chef d’établissement'
       ).should('be.visible')
@@ -152,7 +145,6 @@ describe('Adage confirmation', () => {
       })
 
       cy.stepLog({ message: 'The offer is now confirmed' })
-
       cy.stepLog({
         message: 'Check email received with a To, a Bcc and booking ID',
       })
@@ -169,7 +161,6 @@ describe('Adage confirmation', () => {
 
       cy.stepLog({ message: 'I reset all filters' })
       cy.findByText('Réinitialiser les filtres').click()
-
       cy.stepLog({ message: 'Status filter is empty' })
       cy.findByRole('button', { name: 'Statut' })
         .invoke('val')
@@ -178,35 +169,32 @@ describe('Adage confirmation', () => {
       cy.stepLog({ message: 'I search with status "BOOKED"' })
       cy.findByRole('button', { name: 'Statut' }).click()
       cy.findByText('Réservée').click()
-
-      // We click outside the filter to close it
       cy.findByLabelText('Statut').click()
-
       cy.stepLog({ message: 'I validate my filters' })
-
       cy.findByText('Rechercher').click({ force: true })
       cy.wait('@collectiveOffersBOOKED')
         .its('response.statusCode')
         .should('eq', 200)
 
-      expectedResults = [
-        BOOKABLE_OFFERS_COLUMNS,
-        [
-          '',
-          `N°${offer.id}${offer.name}`,
-          collectiveFormatEventDate(stock.startDatetime),
-          `100€25 participants`,
-          'DE LA TOUR',
-          'À déterminer',
-          'réservée',
-        ],
-      ]
-
-      expectOffersOrBookingsAreFound(expectedResults)
+      cy.get('tbody')
+        .find('tr[data-testid="table-row"]')
+        .should('have.length', 1)
+      cy.get('tbody')
+        .find('tr[data-testid="table-row"]')
+        .eq(0)
+        .within(() => {
+          cy.get('td').eq(1).should('contain', `N°${offer.id}${offer.name}`)
+          cy.get('td')
+            .eq(2)
+            .should('contain', collectiveFormatEventDate(stock.startDatetime))
+          cy.get('td').eq(3).should('contain', `100€25 participants`)
+          cy.get('td').eq(4).should('contain', 'DE LA TOUR')
+          cy.get('td').eq(5).should('contain', 'À déterminer')
+          cy.get('td').eq(6).should('contain', 'réservée')
+        })
 
       cy.stepLog({ message: 'I reset all filters' })
       cy.findByText('Réinitialiser les filtres').click()
-
       cy.stepLog({ message: 'Status filter is empty' })
       cy.findByRole('button', { name: 'Statut' })
         .invoke('val')
@@ -224,9 +212,7 @@ describe('Adage confirmation', () => {
       cy.findByRole('button', { name: 'Voir les actions' }).click()
       cy.findByText('Annuler la réservation').click()
       cy.findByTestId('confirm-dialog-button-confirm').click()
-
       cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
-
       cy.findAllByTestId('global-notification-success').should(
         'contain',
         'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
@@ -246,19 +232,22 @@ describe('Adage confirmation', () => {
       cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
       cy.stepLog({ message: 'Offer is now canceled' })
       cy.contains('annulée')
-      expectedResults = [
-        BOOKABLE_OFFERS_COLUMNS,
-        [
-          '',
-          `N°${offer.id}${offer.name}`,
-          collectiveFormatEventDate(stock.startDatetime),
-          `100€25 participants`,
-          'DE LA TOUR',
-          'À déterminer',
-          'annulée',
-        ],
-      ]
-      expectOffersOrBookingsAreFound(expectedResults)
+      cy.get('tbody')
+        .find('tr[data-testid="table-row"]')
+        .should('have.length', 1)
+      cy.get('tbody')
+        .find('tr[data-testid="table-row"]')
+        .eq(0)
+        .within(() => {
+          cy.get('td').eq(1).should('contain', `N°${offer.id}${offer.name}`)
+          cy.get('td')
+            .eq(2)
+            .should('contain', collectiveFormatEventDate(stock.startDatetime))
+          cy.get('td').eq(3).should('contain', `100€25 participants`)
+          cy.get('td').eq(4).should('contain', 'DE LA TOUR')
+          cy.get('td').eq(5).should('contain', 'À déterminer')
+          cy.get('td').eq(6).should('contain', 'annulée')
+        })
     })
   })
 })

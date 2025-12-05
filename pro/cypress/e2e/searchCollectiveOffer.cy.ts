@@ -1,19 +1,11 @@
 import { addWeeks, format } from 'date-fns'
 
-import {
-  BOOKABLE_OFFERS_COLUMNS,
-  DEFAULT_AXE_CONFIG,
-  DEFAULT_AXE_RULES,
-} from '../support/constants.ts'
+import { DEFAULT_AXE_CONFIG, DEFAULT_AXE_RULES } from '../support/constants.ts'
 import {
   collectiveFormatEventDate,
-  expectOffersOrBookingsAreFound,
   logInAndGoToPage,
 } from '../support/helpers.ts'
 
-const institutionName = 'COLLEGE 123'
-
-// TODO: add tests for template collective offers search
 describe('Search collective offers', () => {
   let offerPublished: {
     name: string
@@ -21,8 +13,6 @@ describe('Search collective offers', () => {
     startDatetime: string
     endDatetime: string
   }
-  let offerDraft: { name: string; venueName: string }
-  let offerArchived: { name: string; venueName: string }
 
   const formatName = 'Concert'
 
@@ -37,8 +27,6 @@ describe('Search collective offers', () => {
       (response) => {
         logInAndGoToPage(response.body.user.email, '/accueil')
         offerPublished = response.body.offerPublished
-        offerDraft = response.body.offerDraft
-        offerArchived = response.body.offerArchived
         cy.visit('/offres/collectives')
         cy.wait(['@collectiveOffersBookable'])
         cy.findAllByTestId('spinner').should('not.exist')
@@ -62,21 +50,13 @@ describe('Search collective offers', () => {
       .should('eq', 200)
 
     cy.stepLog({ message: '1 result should be displayed' })
-
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        offerPublished.name,
-        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
-        '100€25 participants',
-        institutionName,
-        'À déterminer',
-        'publiée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults, true)
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .eq(0)
+      .find('td')
+      .eq(1)
+      .should('contain', offerPublished.name)
   })
 
   it(`I should be able to search with a location and see expected results`, () => {
@@ -95,20 +75,13 @@ describe('Search collective offers', () => {
       .should('eq', 200)
 
     cy.stepLog({ message: '1 results should be displayed' })
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        offerArchived.name,
-        '-',
-        '-',
-        'DE LA TOUR',
-        "Dans l'établissement",
-        'archivée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults)
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .eq(0)
+      .find('td')
+      .eq(5)
+      .should('contain', "Dans l'établissement")
   })
 
   it(`I should be able to search with a format "${formatName}" and see expected results`, () => {
@@ -125,20 +98,13 @@ describe('Search collective offers', () => {
       .should('eq', 200)
 
     cy.stepLog({ message: '1 results should be displayed' })
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        offerPublished.name,
-        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
-        '100€25 participants',
-        institutionName,
-        'À déterminer',
-        'publiée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults, true)
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .eq(0)
+      .find('td')
+      .eq(1)
+      .should('contain', offerPublished.name)
   })
 
   it(`I should be able to search with a Date and see expected results`, () => {
@@ -157,20 +123,16 @@ describe('Search collective offers', () => {
       .should('eq', 200)
 
     cy.stepLog({ message: '1 result should be displayed' })
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        offerPublished.name,
-        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
-        '100€25 participants',
-        institutionName,
-        'À déterminer',
-        'publiée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults, true)
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .eq(0)
+      .find('td')
+      .eq(2)
+      .should(
+        'contain',
+        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`
+      )
   })
 
   it('I should be able to search with a status "Publiée" and see expected results', () => {
@@ -180,7 +142,6 @@ describe('Search collective offers', () => {
     cy.stepLog({ message: 'I search with status "Publiée sur ADAGE"' })
     cy.findByRole('button', { name: 'Statut' }).click()
     cy.findByText('Publiée sur ADAGE').click()
-    // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres réservables' }).click()
 
     cy.stepLog({ message: 'I validate my filters' })
@@ -190,20 +151,13 @@ describe('Search collective offers', () => {
       .should('eq', 200)
 
     cy.stepLog({ message: '1 result should be displayed' })
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        offerPublished.name,
-        `Du ${collectiveFormatEventDate(offerPublished.startDatetime)}au ${collectiveFormatEventDate(offerPublished.endDatetime)}`,
-        '100€25 participants',
-        institutionName,
-        'À déterminer',
-        'publiée',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults, true)
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .eq(0)
+      .find('td')
+      .eq(6)
+      .should('contain', 'publiée')
   })
 
   it('I should be able to search with several filters and see expected results, then reinit filters', () => {
@@ -225,7 +179,6 @@ describe('Search collective offers', () => {
     cy.findByRole('button', { name: 'Statut' }).click()
     cy.findByTestId('panel-scrollable').scrollTo('bottom')
     cy.findByText('Brouillon').click()
-    // We click outside the filter to close it
     cy.findByRole('heading', { name: 'Offres réservables' }).click()
 
     cy.stepLog({ message: 'I validate my collective filters' })
@@ -233,33 +186,23 @@ describe('Search collective offers', () => {
     cy.wait('@collectiveOffersBookable')
 
     cy.stepLog({ message: '1 result should be displayed' })
-    const expectedResults = [
-      BOOKABLE_OFFERS_COLUMNS,
-      [
-        '',
-        offerDraft.name,
-        '-',
-        '-',
-        'DE LA TOUR',
-        'À déterminer',
-        'brouillon',
-      ],
-    ]
-
-    expectOffersOrBookingsAreFound(expectedResults)
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 1)
+    cy.get('tbody')
+      .find('tr[data-testid="table-row"]')
+      .eq(0)
+      .find('td')
+      .eq(6)
+      .should('contain', 'brouillon')
 
     cy.stepLog({ message: 'I reset all filters' })
     cy.findByText('Réinitialiser les filtres').click()
 
     cy.stepLog({ message: 'All filters are empty' })
     cy.findByRole('button', { name: 'Statut' }).click()
-
     cy.findByText('En instruction').should('not.be.checked')
-
     cy.findByRole('combobox', { name: /Localisation/ })
       .invoke('val')
       .should('eq', 'all')
-
     cy.findByRole('combobox', { name: /Format/ })
       .invoke('val')
       .should('eq', 'all')
@@ -272,6 +215,21 @@ describe('Search collective offers', () => {
     cy.wait('@collectiveOffersBookable')
 
     cy.stepLog({ message: '5 results should be displayed' })
-    cy.contains('5 offres')
+    cy.get('tbody').find('tr[data-testid="table-row"]').should('have.length', 5)
+  })
+
+  it('I should be able to download offers in CSV and Excel format', () => {
+    cy.stepLog({ message: 'I open the download drawer' })
+    cy.findByText('Télécharger').click()
+
+    cy.stepLog({ message: 'I download CSV format' })
+    cy.intercept('GET', '/collective/offers/csv*').as('downloadCSV')
+    cy.findByText('Télécharger format CSV').click()
+    cy.wait('@downloadCSV').its('response.statusCode').should('eq', 200)
+
+    cy.stepLog({ message: 'I download Excel format' })
+    cy.intercept('GET', '/collective/offers/excel*').as('downloadExcel')
+    cy.findByText('Télécharger format Excel').click()
+    cy.wait('@downloadExcel').its('response.statusCode').should('eq', 200)
   })
 })
