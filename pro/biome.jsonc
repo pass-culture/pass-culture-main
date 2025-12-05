@@ -248,7 +248,9 @@
       "includes": [
         "!src/index.html",
         ".templatron/**/*.mjs",
+        "config/**/*.ts",
         "cypress/**/*.ts",
+        "e2e/**/*.ts",
         "src/**/__mocks__/*.ts",
         "src/**/__specs__/*.ts",
         "src/**/tests/*.ts",
