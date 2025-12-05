@@ -4,25 +4,18 @@
   <a href="https://apps.apple.com/fr/app/pass-culture/id1557887412">
     <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Download_on_the_App_Store_Badge_FRCA_RGB_blk.svg" style="height: 50px">
   </a>
-
   <a href="https://play.google.com/store/apps/details?id=app.passculture.webapp&hl=fr">
     <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Google_Play_Store_badge_FR.svg" style="height: 50px; padding-left: 12px">
   </a>
 </div>
 
 ---
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=pass-culture_pass-culture-main&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=pass-culture_pass-culture-main) [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=pass-culture_pass-culture-main&metric=coverage)](https://sonarcloud.io/summary/new_code?id=pass-culture_pass-culture-main)
-
-[![Testing Environement](https://img.shields.io/github/deployments/pass-culture/pass-culture-main/testing?label=Testing%20Environment)](https://github.com/pass-culture/pass-culture-main/deployments/activity_log?environment=testing)
-
-[![Tag](https://img.shields.io/github/v/tag/pass-culture/pass-culture-main)](https://github.com/pass-culture/pass-culture-main/tags)
-
 Le repo `main` contient les 4 projets suivants :
 
-- l'[api](./api) (Flask)
-- le portail [pro](./pro) (React), pour les acteurs culturels
-- [doc](./api/documentation) : documentation de l'API pour les partenaires du pass Culture
-- [maintenance-api](./maintenance-site) : page de maintenance (HTML)
+- Le backend : [api](./api) (Flask)
+- L'espace partenaire : [pro](./pro) (React)
+- La documentation de l'API publique pour les partenaires techniques du pass Culture : [doc](./api/documentation)
+- La page de maintenance (HTML):  [maintenance-site](./maintenance-site)
 
 ## Installation
 
