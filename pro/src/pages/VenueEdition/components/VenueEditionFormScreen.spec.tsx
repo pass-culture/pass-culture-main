@@ -1,4 +1,4 @@
-import { screen, waitFor } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import { expect } from 'vitest'
@@ -362,14 +362,11 @@ describe('VenueEditionFormScreen', () => {
 
       renderForm({ ...baseVenue, openingHours: null })
 
-      // This is necessary to trigger formik dirty state, and allow submitting the form
-      await userEvent.type(screen.getByLabelText('Description'), '…')
-
       await userEvent.click(screen.getByText(/Enregistrer/))
 
       expect(editVenueSpy).toHaveBeenCalledWith(
         expect.anything(),
-        expect.objectContaining({ openingHours: null })
+        expect.not.objectContaining({ openingHours: expect.anything() })
       )
     })
 
@@ -385,8 +382,23 @@ describe('VenueEditionFormScreen', () => {
         },
       })
 
-      // This is necessary to trigger formik dirty state, and allow submitting the form
-      await userEvent.type(screen.getByLabelText('Description'), '…')
+      const mondayGroup = await screen.findByRole('group', {
+        name: /Lundi/,
+      })
+
+      const [morningOpen, afternoonOpen] =
+        await within(mondayGroup).findAllByLabelText('Ouvre à')
+      const [morningClose, afternoonClose] =
+        await within(mondayGroup).findAllByLabelText('Ferme à')
+
+      await userEvent.clear(morningOpen)
+      await userEvent.type(morningOpen, '08:00')
+      await userEvent.clear(morningClose)
+      await userEvent.type(morningClose, '12:00')
+      await userEvent.clear(afternoonOpen)
+      await userEvent.type(afternoonOpen, '13:00')
+      await userEvent.clear(afternoonClose)
+      await userEvent.type(afternoonClose, '19:00')
 
       await userEvent.click(screen.getByText(/Enregistrer/))
 
@@ -395,8 +407,8 @@ describe('VenueEditionFormScreen', () => {
         expect.objectContaining({
           openingHours: expect.objectContaining({
             MONDAY: [
-              ['09:00', '12:00'],
-              ['13:00', '18:00'],
+              ['08:00', '12:00'],
+              ['13:00', '19:00'],
             ],
           }),
         })
@@ -626,6 +638,27 @@ describe('VenueEditionFormScreen', () => {
             )
           ).toBeInTheDocument()
         })
+      })
+
+      it('should display the activity select when the feature flag is enabled', async () => {
+        renderForm(
+          {
+            ...baseVenue,
+            isOpenToPublic: true,
+            activity: null,
+          },
+          { features: ['WIP_VENUE_ACTIVITY'] }
+        )
+
+        const activitySelect =
+          await screen.findByLabelText(/Activité principale/)
+
+        expect(activitySelect).toBeInTheDocument()
+        expect(activitySelect).toHaveValue('')
+        expect(
+          screen.getByText('Sélectionnez votre activité principale')
+        ).toBeInTheDocument()
+        expect(activitySelect).not.toBeDisabled()
       })
 
       it('should display an acceslibre accessibility subsection when externally defined', async () => {

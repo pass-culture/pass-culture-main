@@ -12,7 +12,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useNotification } from '@/commons/hooks/useNotification'
+import { getActivities } from '@/commons/mappings/mappings'
 import { setSelectedVenue } from '@/commons/store/user/reducer'
+import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -23,12 +25,13 @@ import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirs
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
+import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import { serializeEditVenueBodyModel } from '../commons/serializers'
 import { setInitialFormValues } from '../commons/setInitialFormValues'
 import type { VenueEditionFormValues } from '../commons/types'
-import { validationSchema } from '../commons/validationSchema'
+import { getValidationSchema } from '../commons/validationSchema'
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import styles from './VenueEditionForm.module.scss'
@@ -48,13 +51,18 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { mutate } = useSWRConfig()
 
   const dispatch = useAppDispatch()
+  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const initialValues = setInitialFormValues(venue)
 
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
-    // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation scheam
-    resolver: yupResolver(validationSchema as any),
+    resolver: yupResolver(
+      getValidationSchema({
+        isVenueActivityFeatureActive,
+        // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation scheam
+      }) as any
+    ),
     mode: 'onBlur',
   })
 
@@ -75,6 +83,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         venue.id,
         serializeEditVenueBodyModel(
           values,
+          initialValues,
           !venue.siret,
           venue.openingHours !== null
         )
@@ -225,6 +234,31 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 </>
               )}
             </FormLayout.SubSection>
+            {isVenueActivityFeatureActive &&
+              methods.watch('isOpenToPublic') === 'true' && (
+                <FormLayout.Section title="Activité principale">
+                  <FormLayout.Row>
+                    <Select
+                      {...methods.register('activity')}
+                      options={[
+                        ...(methods.watch('activity') === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
+                          ? [
+                              {
+                                value: '',
+                                label: 'Sélectionnez votre activité principale',
+                              },
+                            ]
+                          : []),
+                        ...buildSelectOptions(getActivities()),
+                      ]}
+                      label="Activité principale"
+                      disabled={venue.isVirtual}
+                      error={methods.formState.errors.activity?.message}
+                      required
+                    />
+                  </FormLayout.Row>
+                </FormLayout.Section>
+              )}
             <FormLayout.SubSection
               title="Contact"
               description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."

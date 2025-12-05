@@ -1,6 +1,9 @@
 import { act, renderHook } from '@testing-library/react'
+import React from 'react'
 import { useForm } from 'react-hook-form'
+import { Provider } from 'react-redux'
 import * as reactRouter from 'react-router'
+import { describe, expect, it, vi } from 'vitest'
 
 import type { ApiRequestOptions } from '@/apiClient/adage/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
@@ -8,6 +11,7 @@ import { ApiError } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
+import { configureTestStore } from '@/commons/store/testUtils'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import type {
@@ -71,6 +75,10 @@ const renderUseSaveVenueSettings = (params: {
     ...defaultFormContext,
   }
 
+  const store = configureTestStore()
+  const wrapper: React.FC<{ children?: React.ReactNode }> = ({ children }) =>
+    React.createElement(Provider, { store, children })
+
   return renderHook(
     ({ venue }) => {
       const form = useForm<VenueSettingsFormValues>({
@@ -80,7 +88,10 @@ const renderUseSaveVenueSettings = (params: {
       const save = useSaveVenueSettings({ form, venue })
       return { form, formContext, ...save }
     },
-    { initialProps: params }
+    {
+      initialProps: params,
+      wrapper,
+    }
   )
 }
 
