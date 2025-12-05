@@ -215,15 +215,21 @@ def import_deposit_institution_data(
 
         deposit = None
         if not created:
-            deposit = (
+            existing_deposits = (
                 db.session.query(models.EducationalDeposit)
                 .filter(
                     models.EducationalDeposit.educationalYearId == educational_year.adageId,
                     models.EducationalDeposit.educationalInstitutionId == db_institution.id,
                     models.EducationalDeposit.period.op("&&")(period),
                 )
-                .one_or_none()
+                .all()
             )
+
+            number_of_deposits = len(existing_deposits)
+            if number_of_deposits > 1:
+                raise ValueError(f"Found {number_of_deposits} deposits that overlap input period")
+            elif number_of_deposits == 1:
+                deposit = existing_deposits[0]
 
         if deposit:
             output.total_previous_deposit += deposit.amount
