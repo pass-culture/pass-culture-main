@@ -131,6 +131,10 @@ def format_collective_offer_displayed_status(
     return COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS.get(displayed_status) or displayed_status.value
 
 
+def get_educational_year_full_bounds(educational_year: models.EducationalYear) -> tuple[datetime, datetime]:
+    return educational_year.beginningDate, educational_year.expirationDate
+
+
 def get_educational_year_first_period_bounds(educational_year: models.EducationalYear) -> tuple[datetime, datetime]:
     period_start = educational_year.beginningDate
     # Set the time at 23:59:59 to be consistent with educational year expirationDate
@@ -144,6 +148,12 @@ def get_educational_year_second_period_bounds(educational_year: models.Education
     period_end = educational_year.expirationDate
 
     return period_start, period_end
+
+
+def get_educational_year_full_period(educational_year: models.EducationalYear) -> DateTimeRange:
+    """Get the period 01/09 -> 31/08 (period = educational year)"""
+    period_start, period_end = get_educational_year_full_bounds(educational_year)
+    return db_utils.make_timerange(period_start, period_end)
 
 
 def get_educational_year_first_period(educational_year: models.EducationalYear) -> DateTimeRange:

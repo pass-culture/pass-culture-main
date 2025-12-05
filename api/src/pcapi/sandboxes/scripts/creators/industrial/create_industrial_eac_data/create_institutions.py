@@ -251,7 +251,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=current_year,
-                period=make_timerange(start=current_year.beginningDate, end=current_year.expirationDate),
+                period=utils.get_educational_year_full_period(current_year),
                 amount=10_000,
             )
         ]
@@ -350,7 +350,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=next_year,
-                period=make_timerange(start=next_year.beginningDate, end=next_year.expirationDate),
+                period=utils.get_educational_year_full_period(next_year),
                 amount=10_000,
             )
         ]

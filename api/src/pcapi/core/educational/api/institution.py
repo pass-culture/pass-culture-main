@@ -277,7 +277,7 @@ def _get_import_deposit_period_bounds(
 ) -> tuple[datetime, datetime]:
     match period_option:
         case ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL:
-            return (educational_year.beginningDate, educational_year.expirationDate)
+            return utils.get_educational_year_full_bounds(educational_year)
 
         case ImportDepositPeriodOption.EDUCATIONAL_YEAR_FIRST_PERIOD:
             return utils.get_educational_year_first_period_bounds(educational_year)
