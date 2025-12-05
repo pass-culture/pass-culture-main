@@ -1,7 +1,7 @@
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import type { VenueEditionFormValues } from '../types'
-import { validationSchema } from '../validationSchema'
+import { getValidationSchema } from '../validationSchema'
 
 describe('VenueEditionForm validationSchema', () => {
   const defaultValues: VenueEditionFormValues = {
@@ -121,10 +121,22 @@ describe('VenueEditionForm validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        validationSchema,
+        getValidationSchema({ isVenueActivityFeatureActive: false }),
         formValues
       )
       expect(errors).toEqual(expectedErrors)
     })
+  })
+
+  it('should require activity when feature flag is enabled and venue is open to public', async () => {
+    const errors = await getYupValidationSchemaErrors(
+      getValidationSchema({ isVenueActivityFeatureActive: true }),
+      {
+        ...defaultValues,
+        activity: null,
+      }
+    )
+
+    expect(errors).toEqual(['Veuillez renseigner ce champ'])
   })
 })
