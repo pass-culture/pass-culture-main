@@ -6,6 +6,7 @@ import { emailSchema } from '@/commons/utils/isValidEmail'
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
+// biome-ignore lint/suspicious/noExplicitAny: Debt
 const accessibilityTestAndShape = (schema: any) => {
   return schema
     .test({
@@ -75,38 +76,55 @@ export const openingHoursSchemaShape = {
   SUNDAY: openingHoursDaySchema,
 }
 
-export const validationSchema = yup.object().shape({
-  accessibility: yup.object().when('isOpenToPublic', {
-    is: 'true',
-    then: (schema) => accessibilityTestAndShape(schema),
-    otherwise: (schema) => schema,
-  }),
-  email: yup.string().nullable().test(emailSchema),
-  phoneNumber: yup
-    .string()
-    .nullable()
-    .test({
-      name: 'is-phone-valid',
-      message:
-        'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
-      test: (phone?: string | null) => {
-        /* istanbul ignore next: DEBT, TO FIX */
-        return phone ? isPhoneValid(phone) : true
-      },
-    }),
-  isOpenToPublic: yup
-    .string()
-    .nullable()
-    .required('Veuillez renseigner ce champ'),
-  webSite: yup
-    .string()
-    .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
-    .nullable(),
-  openingHours: yup
-    .object()
-    .nullable()
-    .when('isOpenToPublic', {
+export const getValidationSchema = ({
+  isVenueActivityFeatureActive,
+}: {
+  isVenueActivityFeatureActive: boolean
+}) => {
+  return yup.object().shape({
+    accessibility: yup.object().when('isOpenToPublic', {
       is: 'true',
-      then: (schema) => schema.shape(openingHoursSchemaShape),
+      then: (schema) => accessibilityTestAndShape(schema),
+      otherwise: (schema) => schema,
     }),
-})
+    email: yup.string().nullable().test(emailSchema),
+    phoneNumber: yup
+      .string()
+      .nullable()
+      .test({
+        name: 'is-phone-valid',
+        message:
+          'Veuillez entrer un numéro de téléphone valide, exemple : 612345678',
+        test: (phone?: string | null) => {
+          /* istanbul ignore next: DEBT, TO FIX */
+          return phone ? isPhoneValid(phone) : true
+        },
+      }),
+    isOpenToPublic: yup
+      .string()
+      .nullable()
+      .required('Veuillez renseigner ce champ'),
+    webSite: yup
+      .string()
+      .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
+      .nullable(),
+    openingHours: yup
+      .object()
+      .nullable()
+      .when('isOpenToPublic', {
+        is: 'true',
+        then: (schema) => schema.shape(openingHoursSchemaShape),
+      }),
+    ...(isVenueActivityFeatureActive
+      ? {
+          activity: yup
+            .string()
+            .nullable()
+            .when('isOpenToPublic', {
+              is: 'true',
+              then: (schema) => schema.required('Veuillez renseigner ce champ'),
+            }),
+        }
+      : {}),
+  })
+}

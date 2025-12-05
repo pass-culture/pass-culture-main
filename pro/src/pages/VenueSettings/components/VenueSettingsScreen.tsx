@@ -8,6 +8,7 @@ import type {
   VenueProviderResponse,
   VenueTypeResponseModel,
 } from '@/apiClient/v1'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import fullBackIcon from '@/icons/full-back.svg'
 import { toFormValues } from '@/pages/VenueSettings/commons/utils/toFormValues'
@@ -19,7 +20,7 @@ import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../commons/types'
-import { VenueSettingsValidationSchema } from '../commons/validationSchema'
+import { getVenueSettingsValidationSchema } from '../commons/validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 
@@ -38,6 +39,8 @@ export const VenueSettingsScreen = ({
 }: VenueSettingsScreenProps): JSX.Element => {
   const navigate = useNavigate()
 
+  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
+
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
     isVenueVirtual: venue.isVirtual,
@@ -48,15 +51,18 @@ export const VenueSettingsScreen = ({
   const form = useForm<VenueSettingsFormValues>({
     context: formContext,
     defaultValues: toFormValues({ venue }),
-    // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation schema
-    resolver: yupResolver(VenueSettingsValidationSchema as any),
+    resolver: yupResolver(
+      // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation schema
+      getVenueSettingsValidationSchema({ isVenueActivityFeatureActive }) as any
+    ),
     mode: 'onBlur',
   })
 
   const { saveAndContinue } = useSaveVenueSettings({ form, venue })
 
-  const onSubmit = (formValues: VenueSettingsFormValues) =>
+  const onSubmit = (formValues: VenueSettingsFormValues) => {
     saveAndContinue(formValues, formContext)
+  }
 
   return (
     <>

@@ -1,5 +1,6 @@
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
+import type { OnboardingActivityType } from '@/commons/mappings/OnboardingActivity'
 
 export interface VenueEditionFormValues {
   accessibility: AccessibilityFormValues
@@ -9,5 +10,6 @@ export interface VenueEditionFormValues {
   phoneNumber?: string | null
   webSite?: string | null
   isOpenToPublic: string
-  openingHours: WeekdayOpeningHoursTimespans | null
+  openingHours?: WeekdayOpeningHoursTimespans | null
+  activity?: OnboardingActivityType | null
 }
