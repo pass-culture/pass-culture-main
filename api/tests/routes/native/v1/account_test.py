@@ -150,6 +150,7 @@ class AccountTest:
             "needsToFillCulturalSurvey": True,
             "roles": ["BENEFICIARY"],
             "recreditAmountToShow": None,
+            "recreditTypeToShow": None,
             "requiresIdCheck": True,
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True, "subscribedThemes": []},
@@ -243,6 +244,7 @@ class AccountTest:
 
         assert user.age == 17
         assert me_response.json["recreditAmountToShow"] == 5000
+        assert me_response.json["recreditTypeToShow"] == "Recredit17"
 
     @pytest.mark.features(ENABLE_UBBLE=False)
     def test_maintenance_message(self, client):
@@ -573,6 +575,14 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["isEligibleForBonification"] is False
         assert response.json["bonificationStatus"] == status.value
+
+    def test_get_user_profile_recredit_type(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        deposit_api.recredit_bonus_credit(user)
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["recreditAmountToShow"] == 3000
+        assert response.json["recreditTypeToShow"] == "BonusCredit"
 
 
 class AccountCreationTest:
