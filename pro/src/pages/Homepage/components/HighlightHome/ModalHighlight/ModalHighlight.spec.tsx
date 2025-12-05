@@ -20,8 +20,8 @@ describe('ModalHighlight', () => {
         availabilityDatespan: ['2025-01-01', '2025-01-15'],
         id: 1,
         mediationUrl: 'url.example',
-        highlightDatespan: ['2025-01-01', '2025-01-15'],
-        communicationDate: '2025-01-01',
+        highlightDatespan: ['2025-02-01', '2025-02-15'],
+        communicationDate: '2025-02-01',
       },
     ])
 
@@ -38,6 +38,11 @@ describe('ModalHighlight', () => {
         name: 'my name',
       })
     ).toBeInTheDocument()
+
+    expect(screen.getByText('01/02/2025')).toBeInTheDocument()
+    expect(screen.getByText('15/02/2025')).toBeInTheDocument()
+    // communicationDate minus 5 days
+    expect(screen.getByText('27/01/2025')).toBeInTheDocument()
 
     expect(
       //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147

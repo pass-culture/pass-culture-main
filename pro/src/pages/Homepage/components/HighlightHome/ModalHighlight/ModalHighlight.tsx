@@ -75,7 +75,7 @@ export const ModalHighlight = ({
                   description,
                   mediationUrl,
                   name,
-                  availabilityDatespan,
+                  communicationDate,
                   highlightDatespan,
                 }) => (
                   // biome-ignore lint/a11y/useSemanticElements: correct voiceover bug with list displayed with flex
@@ -84,7 +84,7 @@ export const ModalHighlight = ({
                     <HighlightCard
                       imageSrc={mediationUrl}
                       title={name}
-                      availabilityDatespan={availabilityDatespan}
+                      communicationDate={communicationDate}
                       highlightDatespan={highlightDatespan}
                     >
                       {description}
@@ -144,7 +144,7 @@ type HighlightCardProps = {
   imageSrc: string
   title: ReactNode
   children: ReactNode
-  availabilityDatespan: string[]
+  communicationDate: string
   highlightDatespan: string[]
 }
 
@@ -152,9 +152,12 @@ const HighlightCard = ({
   imageSrc,
   title,
   children,
-  availabilityDatespan,
+  communicationDate,
   highlightDatespan,
 }: HighlightCardProps) => {
+  const limitDate = new Date(communicationDate)
+  limitDate.setDate(limitDate.getDate() - 5)
+
   return (
     <div className={styles['card']}>
       <div className={styles['card-content']}>
@@ -165,8 +168,7 @@ const HighlightCard = ({
         <h3 className={styles['card-title']}>{title}</h3>
         <p className={styles['card-description']}>{children}</p>
         <p className={styles['card-limit-participation-date']}>
-          Date limite de participation :{' '}
-          <AccessibleDate date={availabilityDatespan[1]} />
+          Date limite de participation : <AccessibleDate date={limitDate} />
         </p>
       </div>
     </div>
