@@ -7,9 +7,8 @@ import {
 
 const renderFormLayoutDescription = ({
   description,
-  links,
 }: FormLayoutDescriptionProps) => {
-  render(<FormLayoutDescription description={description} links={links} />)
+  render(<FormLayoutDescription description={description} />)
 }
 
 describe('Description', () => {
