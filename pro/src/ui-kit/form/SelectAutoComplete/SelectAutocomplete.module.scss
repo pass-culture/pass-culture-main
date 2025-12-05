@@ -8,9 +8,16 @@
   width: 100%;
 }
 
+.multi-select-autocomplete-input-container {
+  cursor: pointer;
+}
+
 .multi-select-autocomplete-placeholder-input {
   @include forms.input-theme;
   @include forms.input-theme-nested;
+
+  padding-right: rem.torem(40px);
+  text-overflow: ellipsis;
 
   &.has-error {
     @include forms.input-theme-error;

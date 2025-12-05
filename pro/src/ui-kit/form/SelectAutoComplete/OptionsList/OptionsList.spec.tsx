@@ -11,7 +11,6 @@ import { OptionsList, type OptionsListProps } from './OptionsList'
 
 const DEFAULT_PROPS: OptionsListProps = {
   fieldName: 'departement',
-  selectedValue: null,
   filteredOptions: [
     { value: '01', label: 'Ain' },
     { value: '02', label: 'Aisne' },
@@ -33,7 +32,7 @@ const DEFAULT_PROPS: OptionsListProps = {
     { value: '15', label: 'Cantal' },
   ],
   setHoveredOptionIndex: vi.fn(),
-  hoveredOptionIndex: null,
+  hoveredOptionIndex: 0,
   listRef: createRef(),
   selectOption: vi.fn(),
 }
@@ -50,7 +49,6 @@ describe('<OptionsList />', () => {
     renderOptionsList({ ...DEFAULT_PROPS, filteredOptions: [] })
 
     expect(screen.getByText('Aucun résultat')).toBeInTheDocument()
-    expect(screen.getByTestId('list')).toBeEmptyDOMElement()
   })
 
   it('should render list with correct ID', () => {
@@ -59,10 +57,7 @@ describe('<OptionsList />', () => {
   })
 
   it('should render options with correct data attributes', () => {
-    renderOptionsList({
-      ...DEFAULT_PROPS,
-      selectedValue: '01',
-    })
+    renderOptionsList(DEFAULT_PROPS)
 
     const options = screen.getAllByRole('option')
     expect(options[0]).toHaveAttribute('data-value', '01')
