@@ -1,7 +1,11 @@
 import { isBefore } from 'date-fns'
 
 import { FORMAT_DD_MM_YYYY } from '@/commons/utils/date'
-import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import {
+  Banner,
+  type BannerLink,
+  BannerVariants,
+} from '@/design-system/Banner/Banner'
 import fullEditIcon from '@/icons/full-edit.svg'
 
 import { formatDateTime } from '../../CollectiveOfferSummary/components/utils/formatDatetime'
@@ -37,7 +41,7 @@ export const BookedBanner = ({
         departmentCode
       )}, la réservation ne sera plus annulable par l’établissement scolaire.\nDe votre côté, vous pouvez annuler la réservation et modifier le prix ou le nombre d’élève à la baisse jusqu’à 48 heures après la date de l’évènement.`
 
-  const actions = canEditDiscount
+  const actions: BannerLink[] = canEditDiscount
     ? [
         {
           label: 'Modifier à la baisse le prix ou le nombre d’élèves',

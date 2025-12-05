@@ -29,11 +29,11 @@ import { updateUser } from '@/commons/store/user/reducer'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { Banner } from '@/design-system/Banner/Banner'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -228,10 +228,12 @@ export const Validation = (): JSX.Element | undefined => {
           <div className={styles['data-line']}>{targetCustomerLabel}</div>
         </div>
       </section>
-      <Callout>
-        Vous pourrez modifier certaines de ces informations dans la page dédiée
-        de votre espace.
-      </Callout>
+      <Banner
+        title=""
+        description="Vous pourrez modifier certaines de ces informations dans la page dédiée
+        de votre espace."
+      />
+
       <ActionBar
         onClickPrevious={handlePreviousStep}
         previousTo={SIGNUP_JOURNEY_STEP_IDS.ACTIVITY}

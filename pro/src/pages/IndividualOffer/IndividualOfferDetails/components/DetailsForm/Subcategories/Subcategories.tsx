@@ -7,6 +7,7 @@ import type {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner } from '@/design-system/Banner/Banner'
 import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import {
@@ -14,7 +15,6 @@ import {
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './Subcategories.module.scss'
@@ -159,10 +159,12 @@ export function Subcategories({
             error={errors.subcategoryId?.message}
           />
           {!readOnlyFields.includes('categoryId') && (
-            <Callout className={styles['subcategory-callout']}>
-              En fonction de la sous-catégorie choisie, certaines étapes seront
-              adaptées automatiquement.
-            </Callout>
+            <div className={styles['subcategory-callout']}>
+              <Banner
+                title=""
+                description="En fonction de la sous-catégorie choisie, certaines étapes seront adaptées automatiquement."
+              />
+            </div>
           )}
         </>
       )}
