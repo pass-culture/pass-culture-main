@@ -691,6 +691,14 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
             "warning",
         )
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    except offerers_exceptions.CannotDeleteLastVenue:
+        mark_transaction_as_invalid()
+        flash(
+            "Impossible de supprimer l'unique partenaire culturel de l'entité juridique. "
+            "Si cela est pertinent, préférer la suppression de l'entité juridique.",
+            "warning",
+        )
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
 
     for email in emails:
         external_attributes_api.update_external_pro(email)

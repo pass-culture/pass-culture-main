@@ -137,6 +137,14 @@ class CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule(ClientError):
         )
 
 
+class CannotDeleteLastVenue(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "CannotDeleteLastVenue",
+            "Partenaire culturel non supprimable car c'est le seul SIRET de l'entité juridique",
+        )
+
+
 class EmailAlreadyInvitedException(ClientError):
     def __init__(self) -> None:
         super().__init__("EmailAlreadyInvitedException", "Une invitation a déjà été envoyée à ce collaborateur")
