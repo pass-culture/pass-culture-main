@@ -510,7 +510,7 @@ def create_venue(
     return venue
 
 
-def delete_venue(venue_id: int) -> None:
+def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
     venue_has_bookings = db.session.query(
         db.session.query(bookings_models.Booking).filter(bookings_models.Booking.venueId == venue_id).exists()
     ).scalar()
@@ -567,6 +567,21 @@ def delete_venue(venue_id: int) -> None:
     ).scalar()
     if venue_associated_with_reimbursement_rule:
         raise exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule()
+
+    if not allow_delete_last_venue:
+        aliased_venue = sa_orm.aliased(offerers_models.Venue)
+        offerer_has_other_venue = db.session.query(
+            db.session.query(offerers_models.Venue)
+            .join(aliased_venue, aliased_venue.managingOffererId == offerers_models.Venue.managingOffererId)
+            .filter(
+                aliased_venue.id == venue_id,
+                offerers_models.Venue.id != venue_id,
+                offerers_models.Venue.isSoftDeleted.is_not(True),
+            )
+            .exists()
+        ).scalar()
+        if not offerer_has_other_venue:
+            raise exceptions.CannotDeleteLastVenue()
 
     offer_ids_to_delete = _delete_objects_linked_to_venue(venue_id)
 
@@ -1011,7 +1026,7 @@ def create_offerer(
                 .with_entities(models.Venue.id)
             )
             for venue_to_delete in venues_to_delete:
-                delete_venue(venue_to_delete.id)
+                delete_venue(venue_to_delete.id, allow_delete_last_venue=True)
         elif not user_offerer.isValidated:
             user_offerer.validationStatus = ValidationStatus.NEW
             user_offerer.dateCreated = date_utils.get_naive_utc_now()

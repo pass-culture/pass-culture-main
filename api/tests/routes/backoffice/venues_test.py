@@ -645,6 +645,7 @@ class DeleteVenueTest(PostEndpointHelper):
         venue_to_delete = offerers_factories.VenueFactory()
         venue_to_delete_name = venue_to_delete.name
         venue_to_delete_id = venue_to_delete.id
+        offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer)  # remaining venue
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue_to_delete.id)
         assert response.status_code == 303
@@ -714,8 +715,22 @@ class DeleteVenueTest(PostEndpointHelper):
             == "Impossible de supprimer un point de valorisation ayant un tarif dérogatoire (passé, actif ou futur)"
         )
 
+    def test_cant_delete_last_venue(self, legit_user, authenticated_client):
+        venue_id = offerers_factories.VenueFactory(pricing_point="self").id
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue_id, follow_redirects=True)
+        assert response.status_code == 200  # after redirect
+        assert db.session.query(offerers_models.Venue).filter(offerers_models.Venue.id == venue_id).count() == 1
+
+        assert html_parser.extract_alert(response.data) == (
+            "Impossible de supprimer l'unique partenaire culturel de l'entité juridique. "
+            "Si cela est pertinent, préférer la suppression de l'entité juridique."
+        )
+
     def test_no_script_injection_in_venue_name(self, legit_user, authenticated_client):
-        venue_id = offerers_factories.VenueFactory(name="Lieu <script>alert('coucou')</script>").id
+        venue = offerers_factories.VenueFactory(name="Lieu <script>alert('coucou')</script>")
+        offerers_factories.VenueFactory(managingOfferer=venue.managingOfferer)  # remaining venue
+        venue_id = venue.id
 
         response = self.post_to_endpoint(authenticated_client, venue_id=venue_id)
         assert response.status_code == 303
