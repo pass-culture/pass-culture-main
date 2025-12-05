@@ -303,6 +303,10 @@ def format_datespan(datespan: psycopg2.extras.DateRange) -> str:
         end = (datespan.upper - datetime.timedelta(days=1)).strftime("%d/%m/%Y")
     else:
         end = "∞"
+
+    if start == end:
+        return start
+
     return f"{start} → {end}"
 
 
