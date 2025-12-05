@@ -27,6 +27,11 @@ export const routes: CustomRouteObject[] = [
     title: 'Espace acteurs culturels',
   },
   {
+    lazy: () => import('@/pages/Hub/Hub'),
+    path: '/hub',
+    title: 'Changer de structure',
+  },
+  {
     path: '/adage-iframe/*',
     meta: { public: true },
     title: 'ADAGE',

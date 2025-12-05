@@ -1,0 +1,14 @@
+.venue_buttons_box {
+  display: grid;
+  grid-column-gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-rows: repeat(1fr, 240px);
+  margin-top: 16px;
+}
+
+.venue_button {
+  border: solid 1px black;
+  border-radius: 8px;
+  height: 100%;
+  width: 100%;
+}
