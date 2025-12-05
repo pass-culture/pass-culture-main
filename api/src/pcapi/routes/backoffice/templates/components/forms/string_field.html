@@ -18,6 +18,7 @@
          {% if field.flags.max is not none %}max="{{ field.flags.max }}"{% endif %}
          {% if field.flags.min is not none %}min="{{ field.flags.min }}"{% endif %} />
   {% if not hidden_field %}
+    {% if field.can_be_cleared %}<i class="bi bi-x-lg pc-clear-input position-absolute top-0 end-0 pe-3 py-3"></i>{% endif %}
     <label class="label-element-form"
            data-original-name="{{ field.name }}"
            for="{{ string_field_id }}">{{ field.label.text }}</label>
