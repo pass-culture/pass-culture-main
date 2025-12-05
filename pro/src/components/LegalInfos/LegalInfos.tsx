@@ -40,7 +40,18 @@ export const LegalInfos = ({ className }: LegalInfoProps): JSX.Element => {
       </p>
       <p className={styles['legal-infos-paragraph']}>
         Pour la gestion de vos données personnelles par la SAS pass Culture,
-        vous pouvez consulter la charte des données personnelles ou contacter{' '}
+        vous pouvez consulter la{' '}
+        <ButtonLink
+          icon={fullLinkIcon}
+          className={styles['legal-infos-callout-link']}
+          variant={ButtonVariant.QUATERNARY}
+          isExternal
+          opensInNewTab
+          to="https://pass.culture.fr/donnees-personnelles/"
+        >
+          charte des données personnelles
+        </ButtonLink>{' '}
+        ou contacter{' '}
         <ButtonLink
           variant={ButtonVariant.QUATERNARY}
           icon={fullLinkIcon}
