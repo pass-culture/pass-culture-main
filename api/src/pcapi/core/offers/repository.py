@@ -448,6 +448,56 @@ def get_nearby_bookable_screenings_from_product(
     return [dict(**row) for row in result]
 
 
+def get_bookable_screenings_from_venue(
+    venue_id: int,
+    from_datetime: datetime.datetime,
+    to_datetime: datetime.datetime,
+) -> list[models.Offer]:
+    offers = (
+        db.session.scalars(
+            sa.select(models.Offer)
+            .join(models.Stock)
+            .options(sa_orm.load_only(models.Offer.id, models.Offer.name))
+            .options(
+                sa_orm.contains_eager(models.Offer.stocks).load_only(
+                    models.Stock.beginningDatetime,
+                    models.Stock.price,
+                    models.Stock.features,
+                )
+            )
+            .options(
+                sa_orm.joinedload(models.Offer.mediations).load_only(
+                    models.Mediation.isActive,
+                    models.Mediation.dateCreated,
+                    models.Mediation.thumbCount,
+                )
+            )
+            .options(
+                sa_orm.joinedload(models.Offer.product)
+                .load_only(
+                    models.Product.durationMinutes,
+                    models.Product.extraData,
+                    models.Product.last_30_days_booking,
+                    models.Product.name,
+                    models.Product.thumbCount,
+                )
+                .joinedload(models.Product.productMediations)
+                .load_only(models.ProductMediation.imageType, models.ProductMediation.uuid)
+            )
+            .where(
+                models.Offer.venueId == venue_id,
+                models.Offer.subcategoryId == subcategories.SEANCE_CINE.id,
+                models.Offer.is_eligible_for_search.is_(True),
+                models.Stock.beginningDatetime >= from_datetime,
+                models.Stock.beginningDatetime < to_datetime,
+            )
+        )
+        .unique()
+        .all()
+    )
+    return list(offers)
+
+
 def get_offers_by_filters(
     *,
     user_id: int,
