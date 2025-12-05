@@ -33,11 +33,9 @@ vi.mock('@/apiClient/api', () => ({
     getVenues: vi.fn(),
   },
 }))
-vi.mock('./components/IndividualOfferDetailsScreenNext', () => ({
-  IndividualOfferDetailsScreenNext: ({ venues }: { venues: unknown[] }) => (
-    <div data-testid="details-screen-next">
-      New Screen – venues:{venues.length}
-    </div>
+vi.mock('./components/IndividualOfferDetailsScreen', () => ({
+  IndividualOfferDetailsScreen: ({ venues }: { venues: unknown[] }) => (
+    <div data-testid="details-screen">venues:{venues.length}</div>
   ),
 }))
 
@@ -97,7 +95,7 @@ describe('<IndividualOfferDetails />', () => {
     )
   })
 
-  it('should render IndividualOfferDetailsScreenNext', () => {
+  it('should render IndividualOfferDetails', () => {
     const venuesData = {
       venues: [makeVenueListItem({ id: 2 })],
     }
@@ -114,9 +112,7 @@ describe('<IndividualOfferDetails />', () => {
 
     renderIndividualOfferDetails({ contextValues })
 
-    expect(screen.getByTestId('details-screen-next')).toHaveTextContent(
-      'venues:1'
-    )
+    expect(screen.getByTestId('details-screen')).toHaveTextContent('venues:1')
 
     expect(useSWRMock).toHaveBeenCalledWith(
       expect.any(Function),

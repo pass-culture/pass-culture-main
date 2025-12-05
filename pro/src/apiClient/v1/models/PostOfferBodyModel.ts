@@ -18,6 +18,7 @@ export type PostOfferBodyModel = {
   mentalDisabilityCompliant: boolean;
   motorDisabilityCompliant: boolean;
   name: string;
+  productId?: number | null;
   subcategoryId: string;
   url?: string | null;
   venueId: number;

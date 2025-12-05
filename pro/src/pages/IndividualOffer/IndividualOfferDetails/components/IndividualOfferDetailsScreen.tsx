@@ -18,7 +18,6 @@ import {
 import { getIndividualOfferImage } from '@/commons/core/Offers/utils/getIndividualOfferImage'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
-import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
@@ -50,13 +49,13 @@ import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 
-export type IndividualOfferDetailsScreenNextProps = {
+export type IndividualOfferDetailsScreenProps = {
   venues: VenueListItemResponseModel[]
 }
 
-export const IndividualOfferDetailsScreenNext = ({
+export const IndividualOfferDetailsScreen = ({
   venues,
-}: IndividualOfferDetailsScreenNextProps): JSX.Element => {
+}: IndividualOfferDetailsScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -116,12 +115,6 @@ export const IndividualOfferDetailsScreenNext = ({
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
     try {
-      // Draft offer PATCH requests are useless for product-based offers
-      // and synchronized / provider offers since neither of the inputs displayed in
-      // DetailsScreen can be edited at all
-      const shouldNotPatchData =
-        isOfferSynchronized(initialOffer) ||
-        (!isNewOfferDraft && hasSelectedProduct)
       const initialOfferId = initialOffer?.id
 
       let offerId = initialOfferId
@@ -129,7 +122,7 @@ export const IndividualOfferDetailsScreenNext = ({
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.postDraftOffer(serializeDetailsPostData(formValues, true)),
+          api.postOffer(serializeDetailsPostData(formValues)),
           {
             revalidate: false,
             populateCache: (newOffer) => {
@@ -138,13 +131,10 @@ export const IndividualOfferDetailsScreenNext = ({
             },
           }
         )
-      } else if (!shouldNotPatchData && initialOfferId) {
+      } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.patchDraftOffer(
-            initialOfferId,
-            serializeDetailsPatchData(formValues, true)
-          ),
+          api.patchOffer(initialOfferId, serializeDetailsPatchData(formValues)),
           { revalidate: false }
         )
       }
