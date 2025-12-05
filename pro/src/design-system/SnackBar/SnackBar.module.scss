@@ -1,56 +1,6 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_a11y.scss" as a11y;
 
-// Animations desktop (apparition/disparition vers le bas)
-@keyframes slide-in-bottom {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-out-bottom {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-}
-
-// Animations mobile (apparition/disparition vers le haut)
-@keyframes slide-in-top {
-  from {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slide-out-top {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-}
-
 .container {
   position: relative;
   max-width: 560px;
@@ -183,4 +133,64 @@
 
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+/**
+ * Desktop animations (appearance/disappearance down).
+ */
+@keyframes slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Desktop animations (disappearance down).
+ */
+@keyframes slide-out-bottom {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+/**
+ * Mobile animations (appearance/disappearance up).
+ */
+@keyframes slide-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Mobile animations (disappearance up).
+ */
+@keyframes slide-out-top {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
 }
