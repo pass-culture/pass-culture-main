@@ -329,6 +329,42 @@ class ImportDepositPeriodTest:
         assert deposit.period.upper == year.beginningDate.replace(month=12, day=31, hour=23, minute=59, second=59)
         assert deposit.amount == Decimal(3000)
 
+    def test_deposit_educational_year_overlap_two_periods_error(self):
+        year = educational_factories.EducationalYearFactory()
+        institution = educational_factories.EducationalInstitutionFactory(institutionId="0470010E")
+        deposit_first_period = educational_factories.EducationalDepositFirstPeriodFactory(
+            educationalInstitution=institution, educationalYear=year
+        )
+        deposit_second_period = educational_factories.EducationalDepositSecondPeriodFactory(
+            educationalInstitution=institution, educationalYear=year
+        )
+        data = {"0470010E": 1250}
+
+        with pytest.raises(ValueError) as exception:
+            import_deposit_institution_data(
+                data=data,
+                educational_year=year,
+                ministry=educational_models.Ministry.EDUCATION_NATIONALE,
+                period_option=ImportDepositPeriodOption.EDUCATIONAL_YEAR_FULL,
+                credit_update="replace",
+                ministry_conflict="keep",
+                final=True,
+            )
+
+        assert str(exception.value) == "Found 2 deposits that overlap input period"
+        # check that deposits have not changed
+        assert deposit_first_period.period.lower == year.beginningDate
+        assert deposit_first_period.period.upper == year.beginningDate.replace(
+            month=12, day=31, hour=23, minute=59, second=59
+        )
+        assert deposit_first_period.amount == Decimal(3000)
+
+        assert deposit_second_period.period.lower == year.beginningDate.replace(
+            year=year.beginningDate.year + 1, month=1, day=1
+        )
+        assert deposit_second_period.period.upper == year.expirationDate
+        assert deposit_second_period.amount == Decimal(3000)
+
     @pytest.mark.parametrize("with_existing_deposit", (True, False))
     def test_deposit_first_period(self, with_existing_deposit):
         year = educational_factories.EducationalYearFactory()
