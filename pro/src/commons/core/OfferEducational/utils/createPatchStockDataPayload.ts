@@ -53,6 +53,11 @@ const serializer = {
       values.eventTime,
       departmentCode
     ),
+    endDatetime: buildDatetimeForStockPayload(
+      values.endDatetime,
+      values.eventTime,
+      departmentCode
+    ),
   }),
   numberOfPlaces: (
     values: OfferEducationalStockFormValuesForSerializer,
