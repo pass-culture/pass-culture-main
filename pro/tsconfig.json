@@ -41,6 +41,8 @@
     "**/*.js",
     "**/*.jsx",
     "./cypress/**/*.ts",
-    "cypress.config.ts"
+    "cypress.config.ts",
+    "./config/**",
+    "./e2e/**"
   ]
 }
