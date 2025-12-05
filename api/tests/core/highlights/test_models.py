@@ -9,7 +9,7 @@ from pcapi.utils import db as db_utils
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
-class HighglightModelTest:
+class HighlightModelTest:
     def test_is_available(self):
         today = datetime.date.today()
         available_highlight = highlights_factories.HighlightFactory(
