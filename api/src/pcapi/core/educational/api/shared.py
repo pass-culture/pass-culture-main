@@ -1,15 +1,15 @@
 import datetime
 
-from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import utils as educational_utils
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import models
+from pcapi.core.educational import repository
+from pcapi.core.educational import utils
 from pcapi.utils import date as date_utils
 
 
 def update_collective_stock_booking(
-    stock: educational_models.CollectiveStock,
-    current_booking: educational_models.CollectiveBooking | None,
+    stock: models.CollectiveStock,
+    current_booking: models.CollectiveBooking | None,
     start_datetime_has_changed: bool,
 ) -> None:
     """When a collective stock is updated, we also update some fields of its related booking"""
@@ -26,7 +26,7 @@ def update_collective_stock_booking(
     # the booking to update should either be the expired booking that was set back to PENDING
     # or the non-cancelled booking (there should not be one of each at the same time)
     if expired_booking_to_update and current_booking:
-        raise educational_exceptions.MultipleCollectiveBookingFound()
+        raise exceptions.MultipleCollectiveBookingFound()
 
     booking_to_update = expired_booking_to_update or current_booking
     if booking_to_update:
@@ -38,18 +38,17 @@ def update_collective_stock_booking(
 
 
 def _update_collective_booking_educational_year_id(
-    booking: educational_models.CollectiveBooking,
-    new_start_datetime: datetime.datetime,
+    booking: models.CollectiveBooking, new_start_datetime: datetime.datetime
 ) -> None:
-    educational_year = educational_repository.find_educational_year_by_date(new_start_datetime)
+    educational_year = repository.find_educational_year_by_date(new_start_datetime)
     if educational_year is None:
-        raise educational_exceptions.EducationalYearNotFound()
+        raise exceptions.EducationalYearNotFound()
 
     booking.educationalYear = educational_year
 
 
 def _update_collective_booking_cancellation_limit_date(
-    booking: educational_models.CollectiveBooking, new_start_datetime: datetime.datetime
+    booking: models.CollectiveBooking, new_start_datetime: datetime.datetime
 ) -> None:
     # if the input date has a timezone (resp. does not have one), we need to compare it with an aware datetime (resp. a naive datetime)
     now = (
@@ -57,18 +56,16 @@ def _update_collective_booking_cancellation_limit_date(
         if new_start_datetime.tzinfo is None
         else datetime.datetime.now(datetime.timezone.utc)
     )
-    booking.cancellationLimitDate = educational_utils.compute_educational_booking_cancellation_limit_date(
-        new_start_datetime, now
-    )
+    booking.cancellationLimitDate = utils.compute_educational_booking_cancellation_limit_date(new_start_datetime, now)
 
 
-def _update_collective_booking_pending(expired_booking: educational_models.CollectiveBooking) -> None:
-    expired_booking.status = educational_models.CollectiveBookingStatus.PENDING
+def _update_collective_booking_pending(expired_booking: models.CollectiveBooking) -> None:
+    expired_booking.status = models.CollectiveBookingStatus.PENDING
     expired_booking.cancellationReason = None
     expired_booking.cancellationDate = None
 
 
 def _should_update_collective_booking_pending(
-    booking: educational_models.CollectiveBooking | None, booking_limit: datetime.datetime
+    booking: models.CollectiveBooking | None, booking_limit: datetime.datetime
 ) -> bool:
     return booking is not None and booking.is_expired and booking_limit > date_utils.get_naive_utc_now()

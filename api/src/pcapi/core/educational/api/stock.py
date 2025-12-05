@@ -4,8 +4,8 @@ from functools import partial
 
 import sqlalchemy.orm as sa_orm
 
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import models
+from pcapi.core.educational import repository
 from pcapi.core.educational import validation
 from pcapi.core.educational.api import shared as api_shared
 from pcapi.core.educational.api.offer import notify_educational_redactor_on_collective_offer_or_stock_edit
@@ -20,7 +20,7 @@ from pcapi.utils.transaction_manager import on_commit
 logger = logging.getLogger(__name__)
 
 
-def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> educational_models.CollectiveStock | None:
+def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> models.CollectiveStock | None:
     offer_id = stock_data.offerId
     start = stock_data.startDatetime
     end = stock_data.endDatetime
@@ -32,9 +32,9 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
     validation.check_start_and_end_dates_in_same_educational_year(start, end)
 
     collective_offer = (
-        db.session.query(educational_models.CollectiveOffer)
+        db.session.query(models.CollectiveOffer)
         .filter_by(id=offer_id)
-        .options(sa_orm.joinedload(educational_models.CollectiveOffer.collectiveStock))
+        .options(sa_orm.joinedload(models.CollectiveOffer.collectiveStock))
         .one()
     )
 
@@ -43,7 +43,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
     if booking_limit_datetime is None:
         booking_limit_datetime = start
 
-    collective_stock = educational_models.CollectiveStock(
+    collective_stock = models.CollectiveStock(
         collectiveOffer=collective_offer,
         startDatetime=start,
         endDatetime=end,
@@ -65,13 +65,13 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> edu
     return collective_stock
 
 
-def edit_collective_stock(stock: educational_models.CollectiveStock, stock_data: dict) -> None:
+def edit_collective_stock(stock: models.CollectiveStock, stock_data: dict) -> None:
     date_fields = ("startDatetime", "endDatetime", "bookingLimitDatetime")
     is_editing_dates = any(field in stock_data for field in date_fields)
 
     if is_editing_dates:
         validation.check_collective_offer_action_is_allowed(
-            stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DATES
+            stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DATES
         )
 
     start_datetime = stock_data.get("startDatetime")
@@ -124,16 +124,16 @@ def edit_collective_stock(stock: educational_models.CollectiveStock, stock_data:
     if price is not None:
         if price > stock.price:
             validation.check_collective_offer_action_is_allowed(
-                stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
+                stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DETAILS
             )
         else:
             validation.check_collective_offer_action_is_allowed(
-                stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+                stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
             )
 
     if "numberOfTickets" in stock_data or "educationalPriceDetail" in stock_data:
         validation.check_collective_offer_action_is_allowed(
-            stock.collectiveOffer, educational_models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
+            stock.collectiveOffer, models.CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT
         )
 
     if is_editing_dates and not should_bypass_check_booking_limit_datetime:
@@ -144,7 +144,7 @@ def edit_collective_stock(stock: educational_models.CollectiveStock, stock_data:
     if start_datetime is not None and start_datetime < updatable_fields["bookingLimitDatetime"]:
         updatable_fields["bookingLimitDatetime"] = updatable_fields["startDatetime"]
 
-    stock = educational_repository.get_and_lock_collective_stock(stock_id=stock.id)
+    stock = repository.get_and_lock_collective_stock(stock_id=stock.id)
     for attribute, new_value in updatable_fields.items():
         if new_value is not None and getattr(stock, attribute) != new_value:
             setattr(stock, attribute, new_value)
@@ -169,7 +169,7 @@ def edit_collective_stock(stock: educational_models.CollectiveStock, stock_data:
 
 
 def _extract_updatable_fields_from_stock_data(
-    stock: educational_models.CollectiveStock,
+    stock: models.CollectiveStock,
     stock_data: dict,
     *,
     start_datetime: datetime.datetime | None,

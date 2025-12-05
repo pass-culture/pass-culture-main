@@ -1,7 +1,7 @@
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
-from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils.clean_accents import clean_accents
@@ -60,7 +60,7 @@ def get_all_venues(page: int | None, per_page: int | None) -> list[offerers_mode
         .options(sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo))
         .options(
             sa_orm.joinedload(offerers_models.Venue.collectiveDomains).load_only(
-                educational_models.EducationalDomain.id, educational_models.EducationalDomain.name
+                models.EducationalDomain.id, models.EducationalDomain.name
             )
         )
         .all()
