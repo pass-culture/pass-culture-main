@@ -10,6 +10,40 @@ updates:
     open-pull-requests-limit: 15
     cooldown:
       default-days: 7
+    groups:
+      # React updates
+      react:
+        patterns:
+          - "react*"
+          - "@types/react*"
+      # Build tools
+      build-tools:
+        patterns:
+          - "@storybook*"
+          - "storybook*"
+          - "typescript*"
+          - "vite*"
+      # Other tools
+      tools:
+        patterns:
+          - "@sentry*"
+          - "sentry*"
+      # Testing frameworks
+      testing:
+        patterns:
+          - "allure*"
+          - "cypress*"
+          - "playwright*"
+          - "vitest*"
+      # Linting and formatting
+      linting:
+        patterns:
+          - "@biomejs*"
+          - "eslint*"
+          - "@eslint/*"
+          - "prettier*"
+          - "stylelint*"
+          - "typescript-eslint*"
 
   # Public API doc
   - package-ecosystem: 'npm'
@@ -22,6 +56,12 @@ updates:
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
+    groups:
+      # Docusaurus updates
+      docusaurus:
+        patterns:
+          - "docusaurus*"
+          - "@docusaurus*"
 
   # Backend Python
   - package-ecosystem: 'pip' # pip even if we use poetry
@@ -50,6 +90,23 @@ updates:
       - dependency-name: 'spectree'
     # Disable automatic rebasing for poetry pull requests
     rebase-strategy: 'disabled'
+    groups:
+      # Core Python frameworks
+      python-frameworks:
+        patterns:
+          - "flask*"
+          - "pydantic*"
+          - "sqlalchemy*"
+        update-types:
+          - "patch"
+      # Python development tools
+      python-dev-tools:
+        patterns:
+          - "commitizen*"
+          - "mypy*"
+          - "pytest*"
+          - "ruff*"
+          - "types*"
 
   # Special configuration for Python packages that have very frequent updates.
   # We don't want to get a pull request every day for insignificant changes.
