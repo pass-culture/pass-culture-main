@@ -82,8 +82,9 @@ def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serialize
         query.to_datetime,
     )
 
-    calendar = serializers.make_movie_calendar_from_screening_rows(results, query.from_datetime, query.to_datetime)
-    return serializers.MovieCalendarResponse(calendar=calendar)
+    return serializers.MovieCalendarResponse.from_raw_screenings(
+        [serializers.RawScreening(**row) for row in results], query.from_datetime, query.to_datetime
+    )
 
 
 @blueprint.native_route("/offer/report/reasons", methods=["GET"])

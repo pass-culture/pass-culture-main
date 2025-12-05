@@ -1,6 +1,7 @@
 import logging
 import textwrap
 import typing
+from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
 from datetime import time
@@ -509,6 +510,21 @@ class OffersStocksResponseV2(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
+@dataclass
+class RawScreening:
+    city: str
+    beginning_datetime: datetime
+    distance: float
+    features: list[str]
+    label: str
+    price: float
+    postal_code: str
+    stock_id: int
+    street: str
+    thumb_url: str
+    venue_id: int
+
+
 class MovieScreeningsRequest(HttpQueryParamsModel):
     allocine_id: str | None = None
     visa: str | None = None
@@ -536,6 +552,15 @@ class Screening(HttpBodyModel):
     price: float
     stock_id: int
 
+    @classmethod
+    def from_raw_screening(cls, screening: RawScreening) -> "Screening":
+        return cls(
+            stock_id=screening.stock_id,
+            price=screening.price,
+            features=screening.features,
+            beginning_datetime=screening.beginning_datetime,
+        )
+
 
 class VenueScreenings(HttpBodyModel):
     address: str
@@ -546,57 +571,58 @@ class VenueScreenings(HttpBodyModel):
     day_screenings: list[Screening]
     next_screening: Screening | None
 
+    @classmethod
+    def from_raw_screening(cls, screening: RawScreening) -> "VenueScreenings":
+        return cls(
+            address=f"{screening.street}, {screening.postal_code} {screening.city}",
+            distance=screening.distance,
+            label=screening.label,
+            thumb_url=screening.thumb_url,
+            venue_id=screening.venue_id,
+            day_screenings=[],
+            next_screening=None,
+        )
+
 
 class MovieCalendarResponse(HttpBodyModel):
     calendar: dict[date, list[VenueScreenings]]
 
+    @classmethod
+    def from_raw_screenings(
+        cls, raw_screenings: list[RawScreening], start_date: datetime, end_date: datetime
+    ) -> "MovieCalendarResponse":
+        calendar = {}
+        for day_delta in range((end_date - start_date).days + 1):
+            day = (start_date + timedelta(days=day_delta)).date()
+            venues: dict[int, VenueScreenings] = {}
+            for raw_screening in raw_screenings:
+                venue_id = raw_screening.venue_id
+                if venue_id not in venues:
+                    venues[venue_id] = VenueScreenings.from_raw_screening(raw_screening)
 
-def make_movie_calendar_from_screening_rows(
-    data: list[dict[str, typing.Any]], start_date: datetime, end_date: datetime
-) -> dict[date, list[VenueScreenings]]:
-    calendar = {}
-    for day_delta in range((end_date - start_date).days + 1):
-        day = (start_date + timedelta(days=day_delta)).date()
-        venues: dict[int, VenueScreenings] = {}
-        for row in data:
-            venue_id = row["venue_id"]
-            if venue_id not in venues:
-                venue_screenings = VenueScreenings(
-                    address=f"{row['street']}, {row['postal_code']} {row['city']}",
-                    distance=row["distance"],
-                    label=row["label"],
-                    thumb_url=row["thumb_url"],
-                    venue_id=venue_id,
-                    day_screenings=[],
-                    next_screening=None,
-                )
-                venues[venue_id] = venue_screenings
+                venue = venues[venue_id]
+                screening = Screening.from_raw_screening(raw_screening)
+                if screening.beginning_datetime.date() == day:
+                    venue.day_screenings.append(screening)
 
-            venue = venues[venue_id]
-            screening = Screening(
-                stock_id=row["stock_id"],
-                price=row["price"],
-                features=row["features"],
-                beginning_datetime=row["beginning_datetime"],
+                if not venue.next_screening:
+                    venue.next_screening = screening
+                    continue
+
+                current_delta_from_day = (venue.next_screening.beginning_datetime.date() - day).days
+                new_delta_from_day = (screening.beginning_datetime.date() - day).days
+                if abs(new_delta_from_day) < abs(current_delta_from_day):
+                    venue.next_screening = screening
+
+            sorted_screenings = sorted(
+                venues.values(), key=lambda venue: (len(venue.day_screenings) == 0, venue.distance)
             )
-            if screening.beginning_datetime.date() == day:
-                venue.day_screenings.append(screening)
+            for venue in venues.values():
+                venue.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
 
-            if not venue.next_screening:
-                venue.next_screening = screening
-                continue
+            calendar[day] = sorted_screenings
 
-            current_delta_from_day = (venue.next_screening.beginning_datetime.date() - day).days
-            new_delta_from_day = (screening.beginning_datetime.date() - day).days
-            if abs(new_delta_from_day) < abs(current_delta_from_day):
-                venue.next_screening = screening
-
-        for venue in venues.values():
-            venue.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
-        sorted_screenings = sorted(venues.values(), key=lambda venue: (len(venue.day_screenings) == 0, venue.distance))
-        calendar[day] = sorted_screenings
-
-    return calendar
+        return cls(calendar=calendar)
 
 
 class OffersStocksRequest(BaseModel):
