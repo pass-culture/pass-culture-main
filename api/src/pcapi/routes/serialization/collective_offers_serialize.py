@@ -330,7 +330,7 @@ def get_collective_offer_location_model(
     venue = offer.venue
     if oa is not None:
         is_venue_location = False
-        if venue.offererAddress.address.id == oa.address.id and (oa.label is None or oa.label == venue.publicName):
+        if venue.offererAddress.addressId == oa.addressId and (oa.label is None or oa.label == venue.publicName):
             is_venue_location = True
         location = address_serialize.LocationResponseModel(
             **address_serialize.retrieve_address_info_from_oa(oa),

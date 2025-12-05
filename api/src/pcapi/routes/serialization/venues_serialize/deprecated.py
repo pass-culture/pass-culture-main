@@ -91,7 +91,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
             "label": venue.common_name,
             "isManualEdition": offerer_address.address.isManualEdition,
             "departmentCode": offerer_address.address.departmentCode,
-            "venueLocation": True,
+            "isVenueLocation": True,
         }
         return address_serialize.LocationResponseModel(**data)
 

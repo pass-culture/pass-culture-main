@@ -31,21 +31,23 @@ class AddressResponseModel(BaseModel):
 
 
 class LocationOnlyOnVenueBodyModel(BaseModel):
-    venueLocation: bool
+    isVenueLocation: bool
 
-    @validator("venueLocation")
-    def validate_venue_location(cls, venue_location: bool) -> bool:
-        if venue_location is not True:
+    @validator("isVenueLocation")
+    def validate_is_venue_location(cls, is_venue_location: bool) -> bool:
+        if is_venue_location is not True:
             raise ValueError()
-        return venue_location
+        return is_venue_location
 
 
 class LocationBodyModel(offerers_schema.LocationModel):
-    @validator("venueLocation")
-    def validate_venue_location(cls, venue_location: bool) -> bool:
-        if venue_location is False:
-            return venue_location
-        raise ValueError("venueLocation must be false when providing a full address")
+    isVenueLocation: bool = False
+
+    @validator("isVenueLocation")
+    def validate_is_venue_location(cls, is_venue_location: bool) -> bool:
+        if is_venue_location is False:
+            return is_venue_location
+        raise ValueError("isVenueLocation must be false when providing a full address")
 
 
 class LocationResponseModel(BaseModel):

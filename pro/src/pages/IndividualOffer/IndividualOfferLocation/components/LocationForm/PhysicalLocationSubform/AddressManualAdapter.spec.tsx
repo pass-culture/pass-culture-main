@@ -174,24 +174,21 @@ describe('AddressManualAdapter', () => {
     ['postalCode', 'Veuillez renseigner un code postal valide'],
     ['city', 'Veuillez renseigner une ville'],
     ['coords', 'Veuillez renseigner les coordonnées GPS'],
-  ])(
-    'should pass main Locaion form validation errors down to AddressManual subform field (%s)',
-    async (field, expectedErrorMessage) => {
-      renderAddressManualAdapter({ offer: offerBase })
+  ])('should pass main Locaion form validation errors down to AddressManual subform field (%s)', async (field, expectedErrorMessage) => {
+    renderAddressManualAdapter({ offer: offerBase })
 
-      const input = screen.getByLabelText(
-        LABELS.fields[field as keyof typeof LABELS.fields]
-      )
-      await userEvent.type(input, ' ')
-      await userEvent.clear(input)
+    const input = screen.getByLabelText(
+      LABELS.fields[field as keyof typeof LABELS.fields]
+    )
+    await userEvent.type(input, ' ')
+    await userEvent.clear(input)
 
-      expect(screen.getByTestId(`location.${field}`)).toBeEmptyDOMElement()
+    expect(screen.getByTestId(`location.${field}`)).toBeEmptyDOMElement()
 
-      await userEvent.click(
-        screen.getByRole('button', { name: 'Submit Test Form' })
-      )
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Submit Test Form' })
+    )
 
-      expect(await screen.findByText(expectedErrorMessage)).toBeInTheDocument()
-    }
-  )
+    expect(await screen.findByText(expectedErrorMessage)).toBeInTheDocument()
+  })
 })

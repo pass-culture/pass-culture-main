@@ -3,6 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type LocationOnlyOnVenueBodyModel = {
-  venueLocation: boolean;
+  isVenueLocation: boolean;
 };
 

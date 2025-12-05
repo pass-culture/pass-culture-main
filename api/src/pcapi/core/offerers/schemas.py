@@ -127,7 +127,17 @@ class VenueWithdrawalDetails(pydantic_v1.ConstrainedStr):
     max_length = 500
 
 
-class LocationBodyModel(BaseModel):
+class LocationOnlyOnVenueModel(BaseModel):
+    isVenueLocation: bool = True
+
+    @validator("isVenueLocation")
+    def validate_is_venue_location(cls, is_venue_location: bool) -> bool:
+        if is_venue_location is not True:
+            raise ValueError()
+        return is_venue_location
+
+
+class LocationModel(BaseModel):
     isManualEdition: bool = False
     isVenueLocation: bool = False
     banId: str | None
@@ -138,6 +148,12 @@ class LocationBodyModel(BaseModel):
     longitude: float | str
     postalCode: VenuePostalCode
     street: VenueAddress
+
+    @validator("isVenueLocation")
+    def validate_is_venue_location(cls, is_venue_location: bool) -> bool:
+        if is_venue_location is not False:
+            raise ValueError()
+        return is_venue_location
 
     @validator("city")
     def title_city_when_manually_edited(cls, city: str, values: dict) -> str:

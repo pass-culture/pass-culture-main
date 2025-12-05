@@ -149,7 +149,6 @@ def _create_pro_user(row: dict) -> User:
         longitude=gps[1],
         banId=offerers_schemas.VenueBanId("75101_2259_00001"),  # 1 place de la Concorde
         label=None,
-        departmentCode=None,
     )
 
     # TODO(xordoquy): rename address to location ?

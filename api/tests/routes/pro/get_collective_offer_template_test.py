@@ -125,7 +125,7 @@ class Returns200Test:
             assert response_location["locationType"] == "ADDRESS"
             assert response_location["locationComment"] is None
             assert response_location["location"] is not None
-            assert response_location["location"]["venueLocation"] is True
+            assert response_location["location"]["isVenueLocation"] is True
             assert response_location["location"]["banId"] == ban_id
             assert response_json["interventionArea"] == []
 
@@ -203,7 +203,7 @@ class Returns200Test:
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
         assert response_location["location"] is not None
-        assert response_location["location"]["venueLocation"] is False
+        assert response_location["location"]["isVenueLocation"] is False
         assert response_location["location"]["banId"] == oa.address.banId
         assert response_json["interventionArea"] == []
 

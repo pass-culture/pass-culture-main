@@ -7,11 +7,11 @@ export type LocationModel = {
   city: string;
   inseeCode?: string | null;
   isManualEdition?: boolean;
+  isVenueLocation?: boolean;
   label?: string | null;
   latitude: (number | string);
   longitude: (number | string);
   postalCode: string;
   street: string;
-  venueLocation?: boolean;
 };
 

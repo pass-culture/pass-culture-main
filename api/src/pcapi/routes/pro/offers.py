@@ -374,21 +374,12 @@ def update_offer(
         if "ean" in body_extra_data:
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
-    if updates.get("location", {}).get("venueLocation") is True:
-        updates["location"] = {
-            "venueLocation": True,
-            "isManualEdition": offer.venue.offererAddress.address.isManualEdition,
-            "banId": offer.venue.offererAddress.address.banId,
-            "city": offer.venue.offererAddress.address.city,
-            "inseeCode": offer.venue.offererAddress.address.inseeCode,
-            "label": offer.venue.publicName,
-            "latitude": offer.venue.offererAddress.address.latitude,
-            "longitude": offer.venue.offererAddress.address.longitude,
-            "postalCode": offer.venue.offererAddress.address.postalCode,
-            "street": offer.venue.offererAddress.address.street,
-        }
 
-    offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+    offer = offers_api.update_offer(
+        offer,
+        offers_schemas.UpdateOffer(**updates),
+        is_from_private_api=True,
+    )
     db.session.flush()
     offer = offers_repository.get_offer_by_id(
         offer_id,
@@ -669,21 +660,12 @@ def patch_offer(
         if "ean" in body_extra_data:
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
-    if updates.get("location", {}).get("venueLocation") is True:
-        updates["location"] = {
-            "venueLocation": True,
-            "isManualEdition": offer.venue.offererAddress.address.isManualEdition,
-            "banId": offer.venue.offererAddress.address.banId,
-            "city": offer.venue.offererAddress.address.city,
-            "inseeCode": offer.venue.offererAddress.address.inseeCode,
-            "label": offer.venue.publicName,
-            "latitude": offer.venue.offererAddress.address.latitude,
-            "longitude": offer.venue.offererAddress.address.longitude,
-            "postalCode": offer.venue.offererAddress.address.postalCode,
-            "street": offer.venue.offererAddress.address.street,
-        }
 
-    offer = offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
+    offer = offers_api.update_offer(
+        offer,
+        offers_schemas.UpdateOffer(**updates),
+        is_from_private_api=True,
+    )
     db.session.flush()
     offer = offers_repository.get_offer_by_id(
         offer_id,

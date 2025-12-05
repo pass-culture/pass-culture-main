@@ -60,6 +60,25 @@ OFFERS_RECAP_LIMIT = 101
 AnyCollectiveOffer = models.CollectiveOffer | models.CollectiveOfferTemplate
 
 
+def get_or_create_offerer_address_from_collective_offer_location(
+    location_body: collective_offers_serialize.CollectiveOfferLocationModel | None,
+    venue: offerers_models.Venue,
+) -> offerers_models.OffererAddress | None:
+    if not location_body or not location_body.location:
+        return None
+
+    address_body: offerers_schemas.LocationOnlyOnVenueModel | offerers_schemas.LocationModel
+    if location_body.location.isVenueLocation:
+        address_body = offerers_schemas.LocationOnlyOnVenueModel()
+    else:
+        address_body = offerers_schemas.LocationModel(**location_body.location.dict())
+
+    return offers_api.get_or_create_offerer_address_from_address_body(
+        address_body=address_body,
+        venue=venue,
+    )
+
+
 def notify_educational_redactor_on_collective_offer_or_stock_edit(
     collective_offer_id: int,
     updated_fields: list[str],
@@ -137,25 +156,7 @@ def create_collective_offer_template(
     if offer_data.contact_url and offer_data.contact_form:
         raise offers_exceptions.UrlandFormBothSetError()
 
-    address_body: offerers_schemas.LocationModel | None = None
-    if offer_data.location.location:
-        if offer_data.location.location.venueLocation is True:
-            address_body = offerers_schemas.LocationModel(
-                venueLocation=True,
-                isManualEdition=venue.offererAddress.address.isManualEdition,
-                banId=venue.offererAddress.address.banId,
-                city=typing.cast(offerers_schemas.VenueCity, venue.offererAddress.address.city),
-                inseeCode=typing.cast(offerers_schemas.VenueInseeCode, venue.offererAddress.address.inseeCode),
-                label=venue.publicName,
-                latitude=str(venue.offererAddress.address.latitude),
-                longitude=str(venue.offererAddress.address.longitude),
-                postalCode=typing.cast(offerers_schemas.VenuePostalCode, venue.offererAddress.address.postalCode),
-                street=typing.cast(offerers_schemas.VenueAddress, venue.offererAddress.address.street),
-            )
-        else:
-            address_body = offerers_schemas.LocationModel(**offer_data.location.location.dict())
-
-    offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
+    offerer_address = get_or_create_offerer_address_from_collective_offer_location(offer_data.location, venue)
 
     collective_offer_template = models.CollectiveOfferTemplate(
         venueId=venue.id,
@@ -224,25 +225,7 @@ def create_collective_offer(
             # if we are not creating from an offer template, we do not allow an invalid program
             raise
 
-    address_body: offerers_schemas.LocationModel | None = None
-    if offer_data.location.location:
-        if offer_data.location.location.venueLocation is True:
-            address_body = offerers_schemas.LocationModel(
-                venueLocation=True,
-                isManualEdition=venue.offererAddress.address.isManualEdition,
-                banId=venue.offererAddress.address.banId,
-                city=typing.cast(offerers_schemas.VenueCity, venue.offererAddress.address.city),
-                inseeCode=typing.cast(offerers_schemas.VenueInseeCode, venue.offererAddress.address.inseeCode),
-                label=venue.publicName,
-                latitude=str(venue.offererAddress.address.latitude),
-                longitude=str(venue.offererAddress.address.longitude),
-                postalCode=typing.cast(offerers_schemas.VenuePostalCode, venue.offererAddress.address.postalCode),
-                street=typing.cast(offerers_schemas.VenueAddress, venue.offererAddress.address.street),
-            )
-        else:
-            address_body = offerers_schemas.LocationModel(**offer_data.location.location.dict())
-
-    offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=venue)
+    offerer_address = get_or_create_offerer_address_from_collective_offer_location(offer_data.location, venue)
 
     collective_offer = models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
@@ -1185,29 +1168,7 @@ def _update_collective_offer(
         # the schema checks that if location is present it cannot be null
         assert location_body is not None
 
-        address_body: offerers_schemas.LocationModel | None = None
-        if location_body.location:
-            if location_body.location.venueLocation is True:
-                address_body = offerers_schemas.LocationModel(
-                    venueLocation=True,
-                    isManualEdition=offer.venue.offererAddress.address.isManualEdition,
-                    banId=offer.venue.offererAddress.address.banId,
-                    city=typing.cast(offerers_schemas.VenueCity, offer.venue.offererAddress.address.city),
-                    inseeCode=typing.cast(
-                        offerers_schemas.VenueInseeCode, offer.venue.offererAddress.address.inseeCode
-                    ),
-                    label=offer.venue.publicName,
-                    latitude=str(offer.venue.offererAddress.address.latitude),
-                    longitude=str(offer.venue.offererAddress.address.longitude),
-                    postalCode=typing.cast(
-                        offerers_schemas.VenuePostalCode, offer.venue.offererAddress.address.postalCode
-                    ),
-                    street=typing.cast(offerers_schemas.VenueAddress, offer.venue.offererAddress.address.street),
-                )
-            else:
-                address_body = offerers_schemas.LocationModel(**location_body.location.dict())
-
-        offerer_address = offers_api.get_offerer_address_from_address_body(address_body=address_body, venue=offer.venue)
+        offerer_address = get_or_create_offerer_address_from_collective_offer_location(location_body, offer.venue)
 
         new_values["offererAddress"] = offerer_address
         new_values["locationType"] = location_body.locationType

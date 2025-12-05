@@ -5,7 +5,6 @@
 export type LocationBodyModel = {
   banId?: string | null;
   city: string;
-  departmentCode?: string | null;
   inseeCode?: string | null;
   isManualEdition?: boolean;
   isVenueLocation?: boolean;

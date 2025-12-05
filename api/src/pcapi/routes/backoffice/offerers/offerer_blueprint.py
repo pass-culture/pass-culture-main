@@ -1051,7 +1051,6 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         longitude=float(attachment_address.longitude),
         banId=attachment_address.banId,
         label=None,
-        departmentCode=attachment_address.departmentCode,
     )
 
     venue_creation_info = venues_serialize.PostVenueBodyModel(
