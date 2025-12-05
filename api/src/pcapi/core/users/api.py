@@ -1504,3 +1504,18 @@ def get_user_bonification_status(user: models.User) -> subscription_models.Fraud
         if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT:
             return fraud_check.status
     return None
+
+
+def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:
+    if not user.recreditAmountToShow:
+        return None
+
+    if not user.deposit:
+        return None
+
+    recredits = sorted(user.deposit.recredits, key=lambda r: r.dateCreated, reverse=True)
+    if not recredits:
+        return None
+
+    recredit = recredits[0]
+    return recredit.recreditType

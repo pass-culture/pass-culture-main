@@ -559,7 +559,9 @@ def recredit_bonus_credit(user: users_models.User) -> models.Recredit | None:
         recreditType=models.RecreditType.BONUS_CREDIT,
     )
     deposit.amount += recredit.amount
+    user.recreditAmountToShow = recredit.amount
 
+    db.session.add(user)
     db.session.add(recredit)
     db.session.flush()
 
