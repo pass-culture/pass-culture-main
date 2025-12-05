@@ -36,13 +36,14 @@ describe('OfferLocationCell', () => {
       ...props,
       offerLocation: {
         locationType: CollectiveLocationType.ADDRESS,
-        address: {
+        location: {
           label: 'Toto',
           street: '123 Main St',
           postalCode: '12345',
           city: 'Paris',
           id: 0,
-          id_oa: 0,
+          //id: 0,
+          isVenueLocation: false,
           isManualEdition: false,
           latitude: 0,
           longitude: 0,

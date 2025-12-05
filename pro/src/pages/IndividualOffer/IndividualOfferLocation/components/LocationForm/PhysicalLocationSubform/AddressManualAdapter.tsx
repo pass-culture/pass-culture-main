@@ -28,7 +28,7 @@ export const AddressManualAdapter = ({
   const isSyncingRef = useRef(false)
 
   const form = useFormContext<LocationFormValues>()
-  const address = form.watch('address')
+  const address = form.watch('location')
 
   const addressManualSubform = useForm<AddressFormValues>({
     defaultValues: {
@@ -49,7 +49,7 @@ export const AddressManualAdapter = ({
       }
 
       if (name in PhysicalLocationValidationSchema.fields) {
-        form.setValue(`address.${name}` as const, value[name] ?? '', {
+        form.setValue(`location.${name}` as const, value[name] ?? '', {
           shouldDirty: true,
           shouldTouch: true,
         })
@@ -79,7 +79,7 @@ export const AddressManualAdapter = ({
 
   // Pass down validation errors from main Location form to AddressManual subform
   useEffect(() => {
-    const addressErrors = form.formState.errors.address
+    const addressErrors = form.formState.errors.location
     if (!addressErrors) {
       return
     }
@@ -96,7 +96,7 @@ export const AddressManualAdapter = ({
         addressManualSubform.clearErrors(field as keyof AddressFormValues)
       }
     })
-  }, [form.formState.errors.address, addressManualSubform])
+  }, [form.formState.errors.location, addressManualSubform])
 
   return (
     <FormProvider {...addressManualSubform}>

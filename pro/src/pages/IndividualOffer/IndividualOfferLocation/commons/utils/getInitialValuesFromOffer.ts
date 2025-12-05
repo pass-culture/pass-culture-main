@@ -22,55 +22,54 @@ function getPhysicalAddressSubformInitialValuesFromOffer(
     return null
   }
 
-  if (offer.address) {
-    const { latitude, longitude } = offer.address
-    const addressAutocomplete = computeAddressDisplayName(offer.address, false)
+  if (offer.location) {
+    const { latitude, longitude } = offer.location
+    const addressAutocomplete = computeAddressDisplayName(offer.location, false)
     const coords = `${latitude}, ${longitude}`
 
     // If the venue's OA selected at step 1 is the same than the one we have saved in offer draft,
     //  then set this OA id in form field (so it will be checked by default)
     //  Else, we can assume it's an "other" address
-    const offerLocation =
-      offerVenue?.address && offerVenue.address.id_oa === offer.address.id_oa
-        ? offer.address.id_oa
-        : OFFER_LOCATION.OTHER_ADDRESS
+    const offerLocation = offer.location.isVenueLocation
+      ? String(offer.location.id)
+      : OFFER_LOCATION.OTHER_ADDRESS
 
     return {
       addressAutocomplete,
-      banId: offer.address.banId ?? null,
-      city: offer.address.city,
+      banId: offer.location.banId ?? null,
+      city: offer.location.city,
       coords,
-      inseeCode: offer.address.inseeCode ?? null,
-      isManualEdition: offer.address.isManualEdition,
-      isVenueAddress: String(offerLocation) !== OFFER_LOCATION.OTHER_ADDRESS,
-      label: offer.address.label ?? null,
-      latitude: String(offer.address.latitude),
-      longitude: String(offer.address.longitude),
-      offerLocation: String(offerLocation),
-      postalCode: offer.address.postalCode,
+      inseeCode: offer.location.inseeCode ?? null,
+      isManualEdition: offer.location.isManualEdition,
+      isVenueLocation: String(offerLocation) !== OFFER_LOCATION.OTHER_ADDRESS,
+      label: offer.location.label ?? null,
+      latitude: String(offer.location.latitude),
+      longitude: String(offer.location.longitude),
+      offerLocation,
+      postalCode: offer.location.postalCode,
       'search-addressAutocomplete': addressAutocomplete,
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive an offer address without street since it's mandatory.
       // @ts-expect-error
-      street: offer.address.street,
+      street: offer.location.street,
     }
-  } else if (offerVenue.address) {
+  } else if (offerVenue.location) {
     return {
       addressAutocomplete: null,
-      banId: offerVenue.address.banId ?? null,
-      city: offerVenue.address.city,
-      coords: `${offerVenue.address.latitude}, ${offerVenue.address.longitude}`,
-      inseeCode: offerVenue.address.inseeCode ?? null,
+      banId: offerVenue.location.banId ?? null,
+      city: offerVenue.location.city,
+      coords: `${offerVenue.location.latitude}, ${offerVenue.location.longitude}`,
+      inseeCode: offerVenue.location.inseeCode ?? null,
       isManualEdition: false,
-      isVenueAddress: true,
-      label: offerVenue.address.label ?? null,
-      latitude: String(offerVenue.address.latitude),
-      longitude: String(offerVenue.address.longitude),
-      offerLocation: String(offerVenue.address.id_oa),
-      postalCode: offerVenue.address.postalCode,
+      isVenueLocation: true,
+      label: offerVenue.location.label ?? null,
+      latitude: String(offerVenue.location.latitude),
+      longitude: String(offerVenue.location.longitude),
+      offerLocation: String(offerVenue.location.id),
+      postalCode: offerVenue.location.postalCode,
       'search-addressAutocomplete': null,
       // TODO (igabriele, 2025-08-25): This should not be nullable. Investigate why we can receive a venue address without street since it's mandatory.
 
-      street: offerVenue.address.street ?? null,
+      street: offerVenue.location.street ?? null,
     }
   }
 
@@ -93,7 +92,7 @@ export function getInitialValuesFromOffer(
   // Build initial values without enforcing required constraints at mount time.
   // Normalize URL but allow null (CREATION mode can start without URL for online offers).
   return {
-    address: physicalAddressInitialValues,
+    location: physicalAddressInitialValues,
     url: offer.url ?? null,
   }
 }

@@ -67,7 +67,7 @@ class GetFavoriteOfferTest:
                     },
                     "students": ["Lycée - Seconde"],
                     "location": {
-                        "address": None,
+                        "location": None,
                         "locationComment": None,
                         "locationType": "TO_BE_DEFINED",
                     },
@@ -120,10 +120,9 @@ class GetFavoriteOfferTest:
         response_location = result["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["banId"] == venue.offererAddress.address.banId
 
     def test_missing_institution_id(self, client):
         educational_redactor = educational_factories.EducationalRedactorFactory()

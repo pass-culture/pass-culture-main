@@ -133,7 +133,6 @@ class CollectiveOfferTest:
         response_location = result["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["banId"] == venue.offererAddress.address.banId

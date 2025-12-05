@@ -6,7 +6,7 @@ import {
   WithdrawalTypeEnum,
 } from '@/apiClient/v1'
 import { IndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   getIndividualOfferFactory,
   getOfferVenueFactory,
@@ -64,8 +64,8 @@ describe('IndividualOfferSummaryInformationsScreen', () => {
     const offer = getIndividualOfferFactory({
       name: 'Offre de test',
       subcategoryId: SubcategoryIdEnum.SEANCE_CINE,
-      address: {
-        ...getAddressResponseIsLinkedToVenueModelFactory({
+      location: {
+        ...getLocationResponseModel({
           label: 'mon adresse',
           city: 'ma ville',
           street: 'ma street',

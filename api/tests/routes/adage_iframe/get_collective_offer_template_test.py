@@ -84,20 +84,19 @@ def expected_serialized_offer(offer, redactor, offer_venue=None):
         "location": {
             "locationType": offer.locationType.value,
             "locationComment": offer.locationComment,
-            "address": {
+            "location": {
                 "banId": address.banId,
                 "city": address.city,
                 "departmentCode": address.departmentCode,
                 "id": address.id,
-                "id_oa": oa.id,
                 "inseeCode": address.inseeCode,
-                "isLinkedToVenue": False,
                 "isManualEdition": address.isManualEdition,
                 "label": oa.label,
                 "latitude": float(address.latitude),
                 "longitude": float(address.longitude),
                 "postalCode": address.postalCode,
                 "street": address.street,
+                "isVenueLocation": False,
             }
             if address
             else None,
@@ -212,10 +211,9 @@ class CollectiveOfferTemplateTest:
         response_location = response.json["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["banId"] == venue.offererAddress.address.banId
 
     def test_should_return_404_when_no_collective_offer_template(self, eac_client, redactor):
         response = eac_client.get("/adage-iframe/collective/offers-template/0")
@@ -390,10 +388,9 @@ class GetCollectiveOfferTemplatesTest:
         response_location = result["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == venue.offererAddressId
-        assert response_location["address"]["isLinkedToVenue"] is True
-        assert response_location["address"]["banId"] == venue.offererAddress.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is True
+        assert response_location["location"]["banId"] == venue.offererAddress.address.banId
 
     def test_location_school(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -412,7 +409,7 @@ class GetCollectiveOfferTemplatesTest:
         response_location = result["location"]
         assert response_location["locationType"] == "SCHOOL"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is None
+        assert response_location["location"] is None
 
     def test_location_address(self, eac_client, redactor):
         venue = offerers_factories.VenueFactory()
@@ -434,10 +431,9 @@ class GetCollectiveOfferTemplatesTest:
         response_location = result["location"]
         assert response_location["locationType"] == "ADDRESS"
         assert response_location["locationComment"] is None
-        assert response_location["address"] is not None
-        assert response_location["address"]["id_oa"] == oa.id
-        assert response_location["address"]["isLinkedToVenue"] is False
-        assert response_location["address"]["banId"] == oa.address.banId
+        assert response_location["location"] is not None
+        assert response_location["location"]["isVenueLocation"] is False
+        assert response_location["location"]["banId"] == oa.address.banId
 
     def test_location_to_be_defined(self, eac_client, redactor):
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -456,7 +452,7 @@ class GetCollectiveOfferTemplatesTest:
         response_location = result["location"]
         assert response_location["locationType"] == "TO_BE_DEFINED"
         assert response_location["locationComment"] == "In space"
-        assert response_location["address"] is None
+        assert response_location["location"] is None
 
     def test_unknown_ids(self, eac_client, redactor):
         offers = educational_factories.CollectiveOfferTemplateFactory.create_batch(3)

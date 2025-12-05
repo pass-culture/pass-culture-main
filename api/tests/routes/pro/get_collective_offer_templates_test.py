@@ -54,7 +54,7 @@ class Returns200Test:
                     "publicName": venue.publicName,
                 },
                 "location": {
-                    "address": None,
+                    "location": None,
                     "locationComment": None,
                     "locationType": "TO_BE_DEFINED",
                 },
@@ -75,7 +75,7 @@ class Returns200Test:
             assert response.status_code == 200
 
         [offer_json] = response.json
-        assert offer_json["location"] == {"address": None, "locationComment": None, "locationType": "SCHOOL"}
+        assert offer_json["location"] == {"location": None, "locationComment": None, "locationType": "SCHOOL"}
 
     def test_one_collective_offer_template_location_venue_address(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -89,7 +89,7 @@ class Returns200Test:
 
         [offer_json] = response.json
         assert offer_json["location"] == get_serialized_address(
-            offerer_address=offer.offererAddress, label=venue.common_name, is_linked_to_venue=True
+            offerer_address=offer.offererAddress, label=venue.common_name, is_venue_location=True
         )
 
     def test_one_collective_offer_template_location_other_address(self, client):
@@ -104,7 +104,7 @@ class Returns200Test:
 
         [offer_json] = response.json
         assert offer_json["location"] == get_serialized_address(
-            offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_linked_to_venue=False
+            offerer_address=offer.offererAddress, label=offer.offererAddress.label, is_venue_location=False
         )
 
     def test_one_collective_offer_template_location_to_be_defined(self, client):
@@ -119,7 +119,7 @@ class Returns200Test:
 
         [offer_json] = response.json
         assert offer_json["location"] == {
-            "address": None,
+            "location": None,
             "locationComment": "over here",
             "locationType": "TO_BE_DEFINED",
         }

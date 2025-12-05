@@ -30,6 +30,7 @@ from pcapi.core.object_storage import store_public_object
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -57,6 +58,25 @@ OFFERS_RECAP_LIMIT = 101
 
 
 AnyCollectiveOffer = models.CollectiveOffer | models.CollectiveOfferTemplate
+
+
+def get_or_create_offerer_address_from_collective_offer_location(
+    location_body: collective_offers_serialize.CollectiveOfferLocationModel | None,
+    venue: offerers_models.Venue,
+) -> offerers_models.OffererAddress | None:
+    if not location_body or not location_body.location:
+        return None
+
+    address_body: offerers_schemas.LocationOnlyOnVenueModel | offerers_schemas.LocationModel
+    if location_body.location.isVenueLocation:
+        address_body = offerers_schemas.LocationOnlyOnVenueModel()
+    else:
+        address_body = offerers_schemas.LocationModel(**location_body.location.dict())
+
+    return offers_api.get_or_create_offerer_address_from_address_body(
+        address_body=address_body,
+        venue=venue,
+    )
 
 
 def notify_educational_redactor_on_collective_offer_or_stock_edit(
@@ -136,9 +156,7 @@ def create_collective_offer_template(
     if offer_data.contact_url and offer_data.contact_form:
         raise offers_exceptions.UrlandFormBothSetError()
 
-    offerer_address = offers_api.get_offerer_address_from_address_body(
-        address_body=offer_data.location.address, venue=venue
-    )
+    offerer_address = get_or_create_offerer_address_from_collective_offer_location(offer_data.location, venue)
 
     collective_offer_template = models.CollectiveOfferTemplate(
         venueId=venue.id,
@@ -207,9 +225,7 @@ def create_collective_offer(
             # if we are not creating from an offer template, we do not allow an invalid program
             raise
 
-    offerer_address = offers_api.get_offerer_address_from_address_body(
-        address_body=offer_data.location.address, venue=venue
-    )
+    offerer_address = get_or_create_offerer_address_from_collective_offer_location(offer_data.location, venue)
 
     collective_offer = models.CollectiveOffer(
         isActive=False,  # a DRAFT offer cannot be active
@@ -1152,9 +1168,7 @@ def _update_collective_offer(
         # the schema checks that if location is present it cannot be null
         assert location_body is not None
 
-        offerer_address = offers_api.get_offerer_address_from_address_body(
-            address_body=location_body.address, venue=offer.venue
-        )
+        offerer_address = get_or_create_offerer_address_from_collective_offer_location(location_body, offer.venue)
 
         new_values["offererAddress"] = offerer_address
         new_values["locationType"] = location_body.locationType

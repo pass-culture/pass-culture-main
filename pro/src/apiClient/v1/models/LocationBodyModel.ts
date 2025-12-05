@@ -2,12 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type AddressBodyModel = {
+export type LocationBodyModel = {
   banId?: string | null;
   city: string;
   inseeCode?: string | null;
   isManualEdition?: boolean;
-  isVenueAddress?: boolean;
+  isVenueLocation?: boolean;
   label?: string | null;
   latitude: (number | string);
   longitude: (number | string);

@@ -80,7 +80,7 @@ describe('useSaveOfferLocation', () => {
     const requestBody: PatchOfferBodyModel = { shouldSendMail: true }
     vi.mocked(toPatchOfferBodyModel).mockReturnValueOnce(requestBody)
 
-    const formValues = makeLocationFormValues({ address: null })
+    const formValues = makeLocationFormValues({ location: null })
 
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
@@ -119,7 +119,7 @@ describe('useSaveOfferLocation', () => {
       pathname: '/onboarding/create-offer',
     } as unknown as ReturnType<typeof useLocation>)
 
-    const formValues = makeLocationFormValues({ address: null })
+    const formValues = makeLocationFormValues({ location: null })
 
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
@@ -154,7 +154,7 @@ describe('useSaveOfferLocation', () => {
       throw new Error('serialize')
     })
 
-    const formValues = makeLocationFormValues({ address: null })
+    const formValues = makeLocationFormValues({ location: null })
 
     const { saveAndContinue } = useSaveOfferLocation({
       offer: offerBase,
@@ -185,7 +185,7 @@ describe('useSaveOfferLocation', () => {
       setError: setErrorMock,
     })
     await saveAndContinue({
-      formValues: makeLocationFormValues({ address: null }),
+      formValues: makeLocationFormValues({ location: null }),
     })
 
     expect(setErrorMock).toHaveBeenCalledWith('addressAutocomplete', {
@@ -207,7 +207,7 @@ describe('useSaveOfferLocation', () => {
       setError: setErrorMock,
     })
     await saveAndContinue({
-      formValues: makeLocationFormValues({ address: null }),
+      formValues: makeLocationFormValues({ location: null }),
     })
 
     expect(setErrorMock).not.toHaveBeenCalled()

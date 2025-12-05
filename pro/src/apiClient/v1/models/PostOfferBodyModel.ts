@@ -2,10 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressBodyModel } from './AddressBodyModel';
+import type { LocationBodyModel } from './LocationBodyModel';
+import type { LocationOnlyOnVenueBodyModel } from './LocationOnlyOnVenueBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PostOfferBodyModel = {
-  address?: AddressBodyModel | null;
+  address?: (LocationBodyModel | LocationOnlyOnVenueBodyModel) | null;
   audioDisabilityCompliant: boolean;
   bookingContact?: string | null;
   bookingEmail?: string | null;

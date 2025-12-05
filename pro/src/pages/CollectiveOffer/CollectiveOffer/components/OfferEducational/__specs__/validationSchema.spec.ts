@@ -31,10 +31,10 @@ const defaultValues: OfferEducationalFormValues = {
   duration: '10:10',
   location: {
     locationType: CollectiveLocationType.ADDRESS,
-    address: {
-      id_oa: undefined,
+    location: {
+      id: undefined,
       isManualEdition: false,
-      isVenueAddress: false,
+      isVenueLocation: false,
       label: '',
     },
   },
@@ -147,10 +147,10 @@ describe('validationSchema OfferEducational', () => {
           ...defaultValues,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
-              id_oa: 'SPECIFIC_ADDRESS',
+            location: {
+              id: 'SPECIFIC_ADDRESS',
               isManualEdition: false,
-              isVenueAddress: false,
+              isVenueLocation: false,
               label: '',
             },
           },
@@ -167,10 +167,10 @@ describe('validationSchema OfferEducational', () => {
           ...defaultValues,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
-              id_oa: 'SPECIFIC_ADDRESS',
+            location: {
+              id: 'SPECIFIC_ADDRESS',
               isManualEdition: true,
-              isVenueAddress: false,
+              isVenueLocation: false,
               label: '',
             },
           },
@@ -189,10 +189,10 @@ describe('validationSchema OfferEducational', () => {
           ...defaultValues,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
-              id_oa: 'SPECIFIC_ADDRESS',
+            location: {
+              id: 'SPECIFIC_ADDRESS',
               isManualEdition: true,
-              isVenueAddress: false,
+              isVenueLocation: false,
               label: '',
             },
           },
@@ -242,7 +242,7 @@ describe('validationSchema OfferEducational', () => {
           ...defaultValues,
           location: {
             locationType: CollectiveLocationType.SCHOOL,
-            address: {
+            location: {
               isManualEdition: false,
             },
           },
@@ -258,8 +258,8 @@ describe('validationSchema OfferEducational', () => {
           ...defaultValues,
           location: {
             locationType: CollectiveLocationType.ADDRESS,
-            address: {
-              id_oa: 'SPECIFIC_ADDRESS',
+            location: {
+              id: 'SPECIFIC_ADDRESS',
               isManualEdition: true,
             },
           },

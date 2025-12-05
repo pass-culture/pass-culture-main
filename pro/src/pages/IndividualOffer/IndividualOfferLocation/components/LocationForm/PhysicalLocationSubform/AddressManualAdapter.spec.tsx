@@ -67,17 +67,21 @@ const renderAddressManualAdapter = ({
         <form onSubmit={onSubmit}>
           <AddressManualAdapter />
 
-          <div data-testid="address.street">{form.watch('address.street')}</div>
-          <div data-testid="address.postalCode">
-            {form.watch('address.postalCode')}
+          <div data-testid="location.street">
+            {form.watch('location.street')}
           </div>
-          <div data-testid="address.city">{form.watch('address.city')}</div>
-          <div data-testid="address.coords">{form.watch('address.coords')}</div>
-          <div data-testid="address.latitude">
-            {form.watch('address.latitude')}
+          <div data-testid="location.postalCode">
+            {form.watch('location.postalCode')}
           </div>
-          <div data-testid="address.longitude">
-            {form.watch('address.longitude')}
+          <div data-testid="location.city">{form.watch('location.city')}</div>
+          <div data-testid="location.coords">
+            {form.watch('location.coords')}
+          </div>
+          <div data-testid="location.latitude">
+            {form.watch('location.latitude')}
+          </div>
+          <div data-testid="location.longitude">
+            {form.watch('location.longitude')}
           </div>
 
           <button type="submit">Submit Test Form</button>
@@ -101,9 +105,9 @@ const LABELS = {
 describe('AddressManualAdapter', () => {
   const offerBase = getIndividualOfferFactory({
     id: 1,
-    address: {
-      id: 2,
-      id_oa: 3,
+    location: {
+      id: 3,
+      isVenueLocation: false,
       street: '12 rue du Test',
       postalCode: '34567',
       city: 'Test-sur-Seine',
@@ -136,7 +140,7 @@ describe('AddressManualAdapter', () => {
     await userEvent.clear(streetInput)
     await userEvent.type(streetInput, '34 Boulevard du Test')
 
-    expect(screen.getByTestId('address.street')).toHaveTextContent(
+    expect(screen.getByTestId('location.street')).toHaveTextContent(
       '34 Boulevard du Test'
     )
 
@@ -144,21 +148,23 @@ describe('AddressManualAdapter', () => {
     await userEvent.clear(postalCodeInput)
     await userEvent.type(postalCodeInput, '89012')
 
-    expect(screen.getByTestId('address.postalCode')).toHaveTextContent('89012')
+    expect(screen.getByTestId('location.postalCode')).toHaveTextContent('89012')
 
     const cityInput = screen.getByLabelText(LABELS.fields.city)
     await userEvent.clear(cityInput)
     await userEvent.type(cityInput, 'Test-sur-Mer')
 
-    expect(screen.getByTestId('address.city')).toHaveTextContent('Test-sur-Mer')
+    expect(screen.getByTestId('location.city')).toHaveTextContent(
+      'Test-sur-Mer'
+    )
 
     const coordsInput = screen.getByLabelText(LABELS.fields.coords)
     await userEvent.clear(coordsInput)
     // We [TAB] to trigger the onBlur event that parses and sets latitude and longitude in `AddressManual`.
     await userEvent.type(coordsInput, '7.89, 0.12[TAB]')
 
-    expect(screen.getByTestId('address.latitude')).toHaveTextContent('7.89')
-    expect(screen.getByTestId('address.longitude')).toHaveTextContent('0.12')
+    expect(screen.getByTestId('location.latitude')).toHaveTextContent('7.89')
+    expect(screen.getByTestId('location.longitude')).toHaveTextContent('0.12')
   })
 
   // This test requires some beforehand typing to trigger form state updates on clear
@@ -177,7 +183,7 @@ describe('AddressManualAdapter', () => {
     await userEvent.type(input, ' ')
     await userEvent.clear(input)
 
-    expect(screen.getByTestId(`address.${field}`)).toBeEmptyDOMElement()
+    expect(screen.getByTestId(`location.${field}`)).toBeEmptyDOMElement()
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Submit Test Form' })

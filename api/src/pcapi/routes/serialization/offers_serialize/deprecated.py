@@ -4,15 +4,15 @@ from pydantic.v1 import EmailStr
 from pydantic.v1 import HttpUrl
 from pydantic.v1 import validator
 
-from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import address_serialize
 from pcapi.serialization.utils import to_camel
 
 
 class PostOfferBodyModel(BaseModel):
-    address: offerers_schemas.AddressBodyModel | None
+    address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     audio_disability_compliant: bool
     booking_contact: EmailStr | None
     booking_email: EmailStr | None

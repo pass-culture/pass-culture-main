@@ -2,10 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AddressBodyModel } from './AddressBodyModel';
 import type { CollectiveLocationType } from './CollectiveLocationType';
+import type { LocationBodyModel } from './LocationBodyModel';
+import type { LocationOnlyOnVenueBodyModel } from './LocationOnlyOnVenueBodyModel';
 export type CollectiveOfferLocationModel = {
-  address?: AddressBodyModel | null;
+  location?: (LocationBodyModel | LocationOnlyOnVenueBodyModel) | null;
   locationComment?: string | null;
   locationType: CollectiveLocationType;
 };

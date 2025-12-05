@@ -25,7 +25,7 @@ import {
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
-import { getAddressResponseIsLinkedToVenueModelFactory } from '@/commons/utils/factories/commonOffersApiFactories'
+import { getLocationResponseModel } from '@/commons/utils/factories/commonOffersApiFactories'
 import {
   defaultGetOffererResponseModel,
   getIndividualOfferFactory,
@@ -653,8 +653,8 @@ describe('IndividualOfferSummaryScreen', () => {
       const contextValues = {
         offer: {
           ...offerBase,
-          address: {
-            ...getAddressResponseIsLinkedToVenueModelFactory({
+          location: {
+            ...getLocationResponseModel({
               label: 'mon adresse',
               city: 'ma ville',
               street: 'ma street',
@@ -695,7 +695,7 @@ describe('IndividualOfferSummaryScreen', () => {
 
       contextValuesWithDraftOffer.offer = getIndividualOfferFactory({
         isEvent: true,
-        address: null,
+        location: null,
       })
       const contextValues = {
         offer: {

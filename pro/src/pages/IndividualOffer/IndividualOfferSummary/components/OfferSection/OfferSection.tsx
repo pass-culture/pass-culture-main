@@ -226,12 +226,12 @@ export const OfferSection = ({
               descriptions={[
                 {
                   title: 'Intitulé',
-                  text: offerData.address?.label ?? '-',
+                  text: offerData.location?.label ?? '-',
                 },
                 {
                   title: 'Adresse',
-                  text: offerData.address
-                    ? computeAddressDisplayName(offerData.address, false)
+                  text: offerData.location
+                    ? computeAddressDisplayName(offerData.location, false)
                     : '-',
                 },
               ]}
