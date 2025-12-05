@@ -90,6 +90,7 @@ export const Banner = ({
                         icon={a.icon}
                         iconAlt={a.iconAlt}
                         isExternal={a.isExternal}
+                        onClick={() => a.onClick?.()}
                       >
                         {a.label}
                       </ButtonLink>
