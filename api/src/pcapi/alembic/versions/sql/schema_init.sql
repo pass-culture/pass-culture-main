@@ -8273,7 +8273,7 @@ INSERT INTO public.feature VALUES (144, 'WIP_ASYNCHRONOUS_CELERY_CREATE_UPDATE_E
 INSERT INTO public.feature VALUES (145, 'WIP_FREE_ELIGIBILITY', 'Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites', true);
 INSERT INTO public.feature VALUES (146, 'ENABLE_CODIR_OFFERERS_REPORT', 'Active le rapport sur les entités juridiques actives pour le CODIR (tourne la nuit)', false);
 INSERT INTO public.feature VALUES (147, 'DISABLE_SIRET_CHECK', 'Désactiver la validation de SIRET', true);
-INSERT INTO public.feature VALUES (148, 'SYNCHRONIZE_TITELIVE_PRODUCTS_FROM_BIGQUERY_TABLES', 'Permettre la synchronisation des produits Titelive via les tables BigQuery fournies par l''équipe data', false);
+INSERT INTO public.feature VALUES (148, 'SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES', 'Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l''équipe Data', false);
 INSERT INTO public.feature VALUES (149, 'ENABLE_DS_APPLICATION_REFUSED_FROM_ANNOTATION', 'Active le refus automatique des dossiers DS (DMS) de crédit en fonction de l''annotation d''un instructeur', false);
 INSERT INTO public.feature VALUES (150, 'DISCORD_ENABLE_NEW_ACCESS', 'Activer/Désactiver l''accès au serveur Discord à des nouveaux utilisateurs', true);
 INSERT INTO public.feature VALUES (151, 'ENABLE_INVOICE_SYNC', 'Active la synchronisation des justificatifs de remboursement avec l''outil finance externe (Cegid XRP Flex)', true);

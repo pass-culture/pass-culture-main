@@ -100,8 +100,11 @@ class FeatureToggle(enum.Enum):
     )
     SYNCHRONIZE_ALLOCINE = "Permettre la synchronisation journalière avec Allociné"
     SYNCHRONIZE_TITELIVE_PRODUCTS = "Permettre limport journalier du référentiel des livres"
-    SYNCHRONIZE_TITELIVE_PRODUCTS_FROM_BIGQUERY_TABLES = (
-        "Permettre la synchronisation des produits Titelive via les tables BigQuery fournies par l'équipe data"
+    SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES = (
+        "Permet la synchronisation des produits livre Titelive via les tables BigQuery fournies par l'équipe Data"
+    )
+    SYNCHRONIZE_TITELIVE_MUSIC_PRODUCTS_FROM_BIGQUERY_TABLES = (
+        "Permet la synchronisation des produits musique de Titelive via les tables BigQuery fournies par l'équipe Data"
     )
     SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS = (
         "Permettre l'import journalier du référentiel de la musique à travers l'API Titelive"
@@ -209,7 +212,8 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
-    FeatureToggle.SYNCHRONIZE_TITELIVE_PRODUCTS_FROM_BIGQUERY_TABLES,
+    FeatureToggle.SYNCHRONIZE_TITELIVE_BOOK_PRODUCTS_FROM_BIGQUERY_TABLES,
+    FeatureToggle.SYNCHRONIZE_TITELIVE_MUSIC_PRODUCTS_FROM_BIGQUERY_TABLES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
