@@ -1,5 +1,6 @@
 import type {
   EditVenueBodyModel,
+  OnboardingActivity,
   WeekdayOpeningHoursTimespans,
 } from '@/apiClient/v1'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
@@ -27,6 +28,7 @@ export const serializeEditVenueBodyModel = (
       formValues.isAccessibilityAppliedOnAllOffers,
     openingHours: serializeOpeningHours(formValues, alreadyHasOpeningHours),
     isOpenToPublic: formValues.isOpenToPublic === 'true',
+    activity: formValues.activity as OnboardingActivity 
   }
 
   if (hideSiret) {
