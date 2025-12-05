@@ -174,7 +174,7 @@ class CreateHighlightTest(PostEndpointHelper):
             == "La diffusion sur l'espace partenaire ne peut pas se terminer après la fin de l'évènement"
         )
 
-    def test_create_highlight_in_the_past_should_fail(self, authenticated_client):
+    def test_create_highlight_in_the_past(self, authenticated_client):
         today = datetime.date.today()
         name = "New highlight"
         description = "Highlight description"
@@ -197,18 +197,20 @@ class CreateHighlightTest(PostEndpointHelper):
                     "communication_date": communication_date,
                     "image": image_file,
                 },
-                expected_num_queries=self.expected_num_queries - 1,
+                expected_num_queries=self.expected_num_queries,
             )
             assert response.status_code == 303
 
         response = authenticated_client.get(response.location)
-        assert (
-            html_parser.extract_alert(response.data)
-            == "Les données envoyées comportent des erreurs. Dates de diffusion sur l'espace partenaire : "
-            "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé ; "
-            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ; "
-            "Date de mise en avant (envoi du mail aux acteurs culturels) : La date de mise en avant ne peut pas être dans le passé ;"
-        )
+        assert html_parser.extract_alert(response.data) == f"La valorisation thématique {name} a été créée."
+        highlight = db.session.query(highlights_models.Highlight).one()
+        assert highlight.name == name
+        assert highlight.description == description
+        assert highlight.availability_datespan.lower == availability_date_from
+        assert highlight.availability_datespan.upper == availability_date_to + datetime.timedelta(days=1)
+        assert highlight.highlight_datespan.lower == highlight_date_from
+        assert highlight.highlight_datespan.upper == highlight_date_to + datetime.timedelta(days=1)
+        assert highlight.communication_date == communication_date
 
     def test_create_highlight_missing_field_should_fail(self, authenticated_client):
         response = self.post_to_endpoint(
@@ -388,16 +390,16 @@ class UpdateHighlightTest(PostEndpointHelper):
             == "La diffusion sur l'espace partenaire ne peut pas se terminer après la fin de l'évènement"
         )
 
-    def test_update_highlight_in_the_past_should_fail(self, authenticated_client):
+    def test_update_highlight_in_the_past(self, authenticated_client):
         today = datetime.date.today()
         highlight = highlights_factories.HighlightFactory.create()
         highlight_id = highlight.id
-        highlight_date_from = today - datetime.timedelta(days=12)
-        highlight_date_to = today - datetime.timedelta(days=10)
-        availability_date_from = today - datetime.timedelta(days=10)
-        availability_date_to = today - datetime.timedelta(days=8)
+        highlight_date_from = today - datetime.timedelta(days=10)
+        highlight_date_to = today - datetime.timedelta(days=8)
+        availability_date_from = today - datetime.timedelta(days=12)
+        availability_date_to = today - datetime.timedelta(days=10)
         separator = " - "
-        new_communication_date = today - datetime.timedelta(days=12)
+        new_communication_date = today - datetime.timedelta(days=10)
 
         response = self.post_to_endpoint(
             authenticated_client,
@@ -409,18 +411,19 @@ class UpdateHighlightTest(PostEndpointHelper):
                 "highlight_datespan": f"{highlight_date_from.strftime('%d/%m/%Y')}{separator}{highlight_date_to.strftime('%d/%m/%Y')}",
                 "communication_date": new_communication_date,
             },
-            expected_num_queries=self.expected_num_queries - 1,
+            expected_num_queries=self.expected_num_queries,
         )
         assert response.status_code == 303
 
         response = authenticated_client.get(response.location)
         assert (
-            html_parser.extract_alert(response.data)
-            == "Les données envoyées comportent des erreurs. Dates de diffusion sur l'espace partenaire : "
-            "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé ; "
-            "Dates de l'évènement : La date de fin de l'évènement ne peut pas être dans le passé ; "
-            "Date de mise en avant (envoi du mail aux acteurs culturels) : La date de mise en avant ne peut pas être dans le passé ;"
+            html_parser.extract_alert(response.data) == f"La valorisation thématique {highlight.name} a été mise à jour"
         )
+        highlight = db.session.query(highlights_models.Highlight).one()
+        assert highlight.availability_datespan.lower == availability_date_from
+        assert highlight.availability_datespan.upper == availability_date_to + datetime.timedelta(days=1)
+        assert highlight.highlight_datespan.lower == highlight_date_from
+        assert highlight.highlight_datespan.upper == highlight_date_to + datetime.timedelta(days=1)
 
     def test_update_highlight_missing_field_should_fail(self, authenticated_client):
         highlight = highlights_factories.HighlightFactory.create()
