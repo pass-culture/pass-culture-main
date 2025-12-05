@@ -1504,3 +1504,8 @@ def get_user_bonification_status(user: models.User) -> subscription_models.Fraud
         if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT:
             return fraud_check.status
     return None
+
+
+def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:
+    recredit = deposit_api.get_latest_age_related_user_recredit(user) if user.recreditAmountToShow else None
+    return recredit.recreditType if recredit else None

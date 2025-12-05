@@ -513,7 +513,11 @@ def get_latest_age_related_user_recredit(user: users_models.User) -> models.Recr
         return None
 
     if user.deposit.type == models.DepositType.GRANT_17_18:
-        recredit_types = [models.RecreditType.RECREDIT_18, models.RecreditType.RECREDIT_17]
+        recredit_types = [
+            models.RecreditType.BONUS_CREDIT,
+            models.RecreditType.RECREDIT_18,
+            models.RecreditType.RECREDIT_17,
+        ]
     elif user.deposit.type == models.DepositType.GRANT_15_17:
         recredit_types = [
             models.RecreditType.RECREDIT_17,
@@ -559,6 +563,7 @@ def recredit_bonus_credit(user: users_models.User) -> models.Recredit | None:
         recreditType=models.RecreditType.BONUS_CREDIT,
     )
     deposit.amount += recredit.amount
+    user.recreditAmountToShow = recredit.amount
 
     db.session.add(recredit)
     db.session.flush()

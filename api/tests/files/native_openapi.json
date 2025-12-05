@@ -4429,6 +4429,20 @@
                 "title": "RecommendationApiParams",
                 "type": "object"
             },
+            "RecreditType": {
+                "description": "An enumeration.",
+                "enum": [
+                    "Recredit15",
+                    "Recredit16",
+                    "Recredit17",
+                    "Recredit18",
+                    "BonusCredit",
+                    "ManualModification",
+                    "PreviousDeposit",
+                    "FinanceIncidentRecredit"
+                ],
+                "title": "RecreditType"
+            },
             "RefreshResponse": {
                 "properties": {
                     "accessToken": {
@@ -5599,6 +5613,14 @@
                         "nullable": true,
                         "title": "Recreditamounttoshow",
                         "type": "integer"
+                    },
+                    "recreditTypeToShow": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/RecreditType"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "requiresIdCheck": {
                         "title": "Requiresidcheck",

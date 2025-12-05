@@ -214,6 +214,8 @@ class UserProfileGetterDict(GetterDict):
             return users_api.get_user_is_eligible_for_bonification(user)
         if key == "bonificationStatus":
             return users_api.get_user_bonification_status(user)
+        if key == "recreditTypeToShow":
+            return users_api.get_latest_user_recredit_type(user)
 
         return super().get(key, default)
 
@@ -246,6 +248,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     phone_number: str | None
     postal_code: str | None
     recredit_amount_to_show: int | None
+    recredit_type_to_show: finance_models.RecreditType | None
     requires_id_check: bool
     roles: list[users_models.UserRole]
     show_eligible_card: bool
