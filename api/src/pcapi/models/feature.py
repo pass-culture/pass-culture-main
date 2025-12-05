@@ -144,6 +144,7 @@ class FeatureToggle(enum.Enum):
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
     WIP_VENUE_ACTIVITY = "Active la nouvelle liste d'activité principale pour les structures"
+    WIP_VENUE_CULTURAL_DOMAINS = "Active la nouvelle liste de domaines culturels pour les structures"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -209,6 +210,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
     FeatureToggle.WIP_VENUE_ACTIVITY,
+    FeatureToggle.WIP_VENUE_CULTURAL_DOMAINS,
     # Please keep alphabetic order
 )
 
