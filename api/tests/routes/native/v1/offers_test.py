@@ -1728,6 +1728,175 @@ class MovieCalendarTest:
         assert today_screenings[0]["distance"] < 10_000
 
 
+class VenueMovieCalendarTest:
+    def test_get_venue_movie_calendar(self, client):
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        stock = offers_factories.EventStockFactory(
+            offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
+        )
+        today = date.today()
+        tomorrow = date.today() + timedelta(days=1)
+        venue_id = stock.offer.venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": today, "to": tomorrow})
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar == {
+            today.isoformat(): [
+                {
+                    "duration": None,
+                    "genres": [],
+                    "last30DaysBookings": 0,
+                    "movieName": stock.offer.name,
+                    "offerId": stock.offer.id,
+                    "thumbUrl": None,
+                    "dayScreenings": [
+                        {
+                            "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                            "features": [],
+                            "price": 10.1,
+                            "stockId": stock.id,
+                        }
+                    ],
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "features": [],
+                        "price": 10.1,
+                        "stockId": stock.id,
+                    },
+                }
+            ],
+            tomorrow.isoformat(): [
+                {
+                    "duration": None,
+                    "genres": [],
+                    "last30DaysBookings": 0,
+                    "movieName": stock.offer.name,
+                    "offerId": stock.offer.id,
+                    "thumbUrl": None,
+                    "dayScreenings": [],
+                    "nextScreening": {
+                        "beginningDatetime": date_utils.format_into_utc_date(stock.beginningDatetime),
+                        "features": [],
+                        "price": 10.1,
+                        "stockId": stock.id,
+                    },
+                }
+            ],
+        }
+
+    def test_day_screenings_are_sorted_by_last_30_days_bookings(self, client):
+        tomorrow = datetime.today() + timedelta(days=1)
+        beginning_datetime = tomorrow.replace(hour=1)
+        movie_day = tomorrow.date()
+        day_after = movie_day + timedelta(days=1)
+        least_booked_product = offers_factories.ProductFactory(
+            last_30_days_booking=1, subcategoryId=subcategories.SEANCE_CINE.id
+        )
+        most_booked_product = offers_factories.ProductFactory(
+            last_30_days_booking=2, subcategoryId=subcategories.SEANCE_CINE.id
+        )
+        venue = offerers_factories.VenueFactory()
+        least_booked_stock = offers_factories.EventStockFactory(
+            offer__product=least_booked_product, beginningDatetime=beginning_datetime, offer__venue=venue
+        )
+        most_booked_stock = offers_factories.EventStockFactory(
+            offer__product=most_booked_product, beginningDatetime=beginning_datetime, offer__venue=venue
+        )
+        venue_id = venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": movie_day, "to": day_after}
+            )
+            assert response.status_code == 200
+
+        movie_day_screenings = response.json["calendar"][movie_day.isoformat()]
+        assert movie_day_screenings[0]["dayScreenings"][0]["stockId"] == most_booked_stock.id
+        assert movie_day_screenings[1]["dayScreenings"][0]["stockId"] == least_booked_stock.id
+
+    def test_day_screenings_are_sorted_by_beginning_datetime(self, client):
+        tomorrow = datetime.today() + timedelta(days=1)
+        before_screenings = tomorrow.replace(hour=0)
+        first_beginning_datetime = tomorrow.replace(hour=1)
+        last_beginning_datetime = tomorrow.replace(hour=2)
+        after_screenings = tomorrow.replace(hour=3)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(product=product)
+        first_screened_stock = offers_factories.EventStockFactory(
+            offer=offer, beginningDatetime=first_beginning_datetime
+        )
+        last_screened_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=last_beginning_datetime)
+        venue_id = offer.venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar",
+                params={"from": before_screenings, "to": after_screenings},
+            )
+            assert response.status_code == 200
+
+        tomorrow_screenings = response.json["calendar"][tomorrow.date().isoformat()]
+        assert tomorrow_screenings[0]["dayScreenings"][0]["stockId"] == first_screened_stock.id
+        assert tomorrow_screenings[0]["dayScreenings"][1]["stockId"] == last_screened_stock.id
+
+    def test_next_screening_is_closest_requested_day(self, client):
+        tomorrow = datetime.today() + timedelta(days=1)
+        in_two_days = datetime.today() + timedelta(days=2)
+        in_three_days = datetime.today() + timedelta(days=3)
+        in_four_days = datetime.today() + timedelta(days=4)
+        before_screenings = tomorrow.replace(hour=0)
+        after_screenings = datetime.today() + timedelta(days=5)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        offer = offers_factories.OfferFactory(product=product)
+        tomorrow_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=tomorrow)
+        in_four_days_stock = offers_factories.EventStockFactory(offer=offer, beginningDatetime=in_four_days)
+
+        venue_id = offer.venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar",
+                params={"from": before_screenings, "to": after_screenings},
+            )
+            assert response.status_code == 200
+
+        calendar = response.json["calendar"]
+        assert calendar[in_two_days.date().isoformat()][0]["nextScreening"]["stockId"] == tomorrow_stock.id
+        assert calendar[in_three_days.date().isoformat()][0]["nextScreening"]["stockId"] == in_four_days_stock.id
+
+    def test_calendar_is_empty_if_no_screenings_found(self, client):
+        tomorrow = (datetime.today() + timedelta(days=1)).date()
+        in_two_days = (datetime.today() + timedelta(days=2)).date()
+        venue = offerers_factories.VenueFactory()
+
+        venue_id = venue.id
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{venue_id}/movie/calendar", params={"from": tomorrow, "to": in_two_days}
+            )
+            assert response.status_code == 200
+
+        assert response.json["calendar"] == {tomorrow.isoformat(): [], in_two_days.isoformat(): []}
+
+    def test_calendar_is_empty_if_venue_not_found(self, client):
+        tomorrow = (datetime.today() + timedelta(days=1)).date()
+        in_two_days = (datetime.today() + timedelta(days=2)).date()
+
+        fake_venue_id = 999999
+        expected_num_queries = 1  # offers
+        with assert_num_queries(expected_num_queries):
+            response = client.get(
+                f"/native/v1/venue/{fake_venue_id}/movie/calendar", params={"from": tomorrow, "to": in_two_days}
+            )
+            assert response.status_code == 200
+
+        assert response.json["calendar"] == {tomorrow.isoformat(): [], in_two_days.isoformat(): []}
+
+
 class OffersStocksV2Test:
     def test_return_empty_on_empty_request(self, client):
         # 1. select offer

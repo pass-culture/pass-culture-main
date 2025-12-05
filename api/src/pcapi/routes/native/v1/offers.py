@@ -82,8 +82,23 @@ def get_movie_screenings(query: serializers.MovieScreeningsRequest) -> serialize
         query.to_datetime,
     )
 
-    calendar = serializers.make_movie_calendar_from_screening_rows(results, query.from_datetime, query.to_datetime)
-    return serializers.MovieCalendarResponse(calendar=calendar)
+    return serializers.MovieCalendarResponse.from_raw_screenings(
+        [serializers.RawScreening(**row) for row in results], query.from_datetime, query.to_datetime
+    )
+
+
+@blueprint.native_route("/venue/<int:venue_id>/movie/calendar", methods=["GET"])
+@spectree_serialize(response_model=serializers.VenueMovieCalendarResponse, api=blueprint.api, on_error_statuses=[400])
+def get_movie_screenings_by_venue(
+    venue_id: int, query: serializers.VenueMovieScreeningsRequest
+) -> serializers.VenueMovieCalendarResponse:
+    offers = repository.get_bookable_screenings_from_venue(
+        venue_id,
+        query.from_datetime,
+        query.to_datetime,
+    )
+
+    return serializers.VenueMovieCalendarResponse.from_offers(offers, query.from_datetime, query.to_datetime)
 
 
 @blueprint.native_route("/offer/report/reasons", methods=["GET"])

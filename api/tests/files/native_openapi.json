@@ -2819,6 +2819,81 @@
                 "title": "MovieCalendarResponse",
                 "type": "object"
             },
+            "MovieScreenings": {
+                "additionalProperties": false,
+                "properties": {
+                    "dayScreenings": {
+                        "items": {
+                            "$ref": "#/components/schemas/Screening"
+                        },
+                        "title": "Dayscreenings",
+                        "type": "array"
+                    },
+                    "duration": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Duration"
+                    },
+                    "genres": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Genres",
+                        "type": "array"
+                    },
+                    "last30DaysBookings": {
+                        "title": "Last30Daysbookings",
+                        "type": "integer"
+                    },
+                    "movieName": {
+                        "title": "Moviename",
+                        "type": "string"
+                    },
+                    "nextScreening": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/Screening"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "offerId": {
+                        "title": "Offerid",
+                        "type": "integer"
+                    },
+                    "thumbUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Thumburl"
+                    }
+                },
+                "required": [
+                    "duration",
+                    "genres",
+                    "last30DaysBookings",
+                    "movieName",
+                    "offerId",
+                    "thumbUrl",
+                    "dayScreenings",
+                    "nextScreening"
+                ],
+                "title": "MovieScreenings",
+                "type": "object"
+            },
             "MovieScreeningsRequest": {
                 "additionalProperties": false,
                 "properties": {
@@ -5780,6 +5855,46 @@
                     "website"
                 ],
                 "title": "VenueContact",
+                "type": "object"
+            },
+            "VenueMovieCalendarResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "calendar": {
+                        "additionalProperties": {
+                            "items": {
+                                "$ref": "#/components/schemas/MovieScreenings"
+                            },
+                            "type": "array"
+                        },
+                        "propertyNames": {
+                            "format": "date"
+                        },
+                        "title": "Calendar",
+                        "type": "object"
+                    }
+                },
+                "required": [
+                    "calendar"
+                ],
+                "title": "VenueMovieCalendarResponse",
+                "type": "object"
+            },
+            "VenueMovieScreeningsRequest": {
+                "additionalProperties": false,
+                "properties": {
+                    "from": {
+                        "format": "date-time",
+                        "title": "From",
+                        "type": "string"
+                    },
+                    "to": {
+                        "format": "date-time",
+                        "title": "To",
+                        "type": "string"
+                    }
+                },
+                "title": "VenueMovieScreeningsRequest",
                 "type": "object"
             },
             "VenueResponse": {
@@ -9375,6 +9490,76 @@
                     }
                 },
                 "summary": "get_venue <GET>",
+                "tags": []
+            }
+        },
+        "/native/v1/venue/{venue_id}/movie/calendar": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_venue_{venue_id}_movie_calendar",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "venue_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "from",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "From",
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "description": "",
+                        "in": "query",
+                        "name": "to",
+                        "required": false,
+                        "schema": {
+                            "format": "date-time",
+                            "title": "To",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VenueMovieCalendarResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_movie_screenings_by_venue <GET>",
                 "tags": []
             }
         },
