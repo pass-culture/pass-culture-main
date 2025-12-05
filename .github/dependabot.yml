@@ -1,27 +1,37 @@
 version: 2
 
 updates:
+  # Frontend Pro
   - package-ecosystem: 'npm'
     directory: '/pro'
     schedule:
       interval: 'daily'
       time: '09:00'
     open-pull-requests-limit: 15
+    cooldown:
+      default-days: 7
+
+  # Public API doc
   - package-ecosystem: 'npm'
     directory: '/api/documentation'
     schedule:
       interval: 'daily'
       time: '09:00'
+    cooldown:
+      default-days: 7
     ignore:
       - dependency-name: '*'
         update-types: ['version-update:semver-major']
 
+  # Backend Python
   - package-ecosystem: 'pip' # pip even if we use poetry
     directory: '/api'
     schedule:
       interval: 'daily'
       time: '03:00'
     open-pull-requests-limit: 15
+    cooldown:
+      default-days: 7
     ignore:
       # Exclude packages that have very frequent updates. They have a
       # specific configuration, see block below.
@@ -54,13 +64,18 @@ updates:
       day: 'wednesday'
       time: '03:00'
     open-pull-requests-limit: 15
+    cooldown:
+      default-days: 7
     allow:
       - dependency-name: boto3
     rebase-strategy: 'disabled'
 
+  # GitHub Actions
   - package-ecosystem: 'github-actions'
     directory: '.github/workflows'
     schedule:
       interval: 'daily'
       time: '06:00'
     open-pull-requests-limit: 10
+    cooldown:
+      default-days: 7
