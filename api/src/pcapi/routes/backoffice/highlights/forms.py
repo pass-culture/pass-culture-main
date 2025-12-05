@@ -1,5 +1,3 @@
-import datetime
-
 import flask
 import wtforms
 from flask import flash
@@ -106,25 +104,6 @@ class CreateHighlightForm(FlaskForm):
             )
             return False
         return True
-
-    def validate_communication_date(self, communication_date: fields.PCDateField) -> fields.PCDateField:
-        if communication_date.data < datetime.date.today():
-            raise wtforms.validators.ValidationError("La date de mise en avant ne peut pas être dans le passé")
-        return communication_date
-
-    def validate_availability_datespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
-        if dates.data[1] and dates.data[1].date() < datetime.date.today():
-            raise wtforms.validators.ValidationError(
-                "La date de fin de diffusion sur l'espace partenaire ne peut pas être dans le passé",
-            )
-        return dates
-
-    def validate_highlight_datespan(self, dates: fields.PCDateRangeField) -> fields.PCDateRangeField:
-        if dates.data[1] and dates.data[1].date() < datetime.date.today():
-            raise wtforms.validators.ValidationError(
-                "La date de fin de l'évènement ne peut pas être dans le passé",
-            )
-        return dates
 
 
 class UpdateHighlightForm(CreateHighlightForm):
