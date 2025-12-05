@@ -2649,43 +2649,21 @@ def delete_unbookable_unbooked_old_offers(
     logger.info("delete_unbookable_unbooked_unmodified_old_offers end", extra=log_extra)
 
 
-def update_product_counts(batch_size: int) -> None:
-    start = 0
+def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
+    def get_query_product_ids(query: sa.sql.expression.Select) -> list[int]:
+        return [product_id for product_id, _ in db.session.execute(query)]
+
     product_max_id = db.session.execute(sa.select(sa.func.max(models.Product.id))).scalar()
     if not product_max_id:
-        return
+        return set()
 
-    while start <= product_max_id:
-        with atomic():
-            _update_product_count(_chronicles_count_query(start, start + batch_size), "chroniclesCount")
-            _update_product_count(_headlines_count_query(start, start + batch_size), "headlinesCount")
-            _update_product_count(_likes_count_query(start, start + batch_size), "likesCount")
-
-        logger.info("Updated products from id %d to %d", start, min(start + batch_size, product_max_id))
-        start += batch_size
-
-
-def _update_product_count(count_query: sa.sql.expression.Select, col_name: str) -> None:
-    subquery = count_query.subquery()
-    update_query = (
-        sa.update(models.Product)
-        .where(models.Product.id == subquery.c.product_id)
-        .values({col_name: subquery.c.total})
-        .execution_options(synchronize_session=False)
-    )
-    db.session.execute(update_query)
-    logger.info("Column %s updated", col_name)
-
-
-def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
     product_ids = set()
     start = 0
-    product_max_id = db.session.execute(sa.select(sa.func.max(models.Product.id))).scalar() or start
     while start < product_max_id:
         end = start + batch_size
-        batch_result = fetch_inconsistent_products_on_column(_chronicles_count_query(start, end), "chroniclesCount")
-        batch_result += fetch_inconsistent_products_on_column(_headlines_count_query(start, end), "headlinesCount")
-        batch_result += fetch_inconsistent_products_on_column(_likes_count_query(start, end), "likesCount")
+        batch_result = get_query_product_ids(_chronicles_count_query(start, end))
+        batch_result += get_query_product_ids(_headlines_count_query(start, end))
+        batch_result += get_query_product_ids(_likes_count_query(start, end))
 
         product_ids.update(batch_result)
         start += batch_size
@@ -2693,49 +2671,85 @@ def fetch_inconsistent_products(batch_size: int = 10_000) -> set[int]:
     return product_ids
 
 
-def fetch_inconsistent_products_on_column(count_query: sa.sql.expression.Select, col_name: str) -> list[int]:
-    subquery = count_query.subquery()
-    query = (
-        sa.select(models.Product.id)
-        .where(models.Product.id == subquery.c.product_id)
-        .where(getattr(models.Product, col_name) != subquery.c.total)
-    )
-    product_ids = db.session.execute(query).scalars().all()
-    return list(product_ids)
+def update_product_counts(batch_size: int) -> None:
+    _update_product_count("chroniclesCount", _chronicles_count_query, batch_size)
+    _update_product_count("headlinesCount", _headlines_count_query, batch_size)
+    _update_product_count("likesCount", _likes_count_query, batch_size)
+
+
+def _update_product_count(
+    column_name: str, query_fn: typing.Callable[[int, int], sa.sql.expression.Select], batch_size: int
+) -> None:
+    product_max_id = db.session.execute(sa.text("SELECT LAST_VALUE FROM product_id_seq")).scalar()
+    if not product_max_id:
+        return
+
+    start = 0
+    while start <= product_max_id:
+        end = start + batch_size
+        inconsistent_products_cte = query_fn(start, end).cte()
+        update_statement = (
+            sa.update(offers_models.Product)
+            .values(
+                {
+                    column_name: sa.select(inconsistent_products_cte.c.count)
+                    .where(inconsistent_products_cte.c.product_id == offers_models.Product.id)
+                    .scalar_subquery()
+                }
+            )
+            .where(offers_models.Product.id.in_(sa.select(inconsistent_products_cte.c.product_id)))
+            .execution_options(synchronize_session=False)
+        )
+        with atomic():
+            db.session.execute(update_statement)
+
+        start += batch_size
 
 
 def _chronicles_count_query(start: int, end: int) -> sa.sql.expression.Select:
+    product_id = models.Product.id.label("product_id")
+    count = sa.func.count(models.Product.id).label("count")
     return (
-        sa.select(
-            chronicles_models.ProductChronicle.productId.label("product_id"),
-            sa.func.count(chronicles_models.ProductChronicle.productId).label("total"),
-        )
+        sa.select(product_id, count)
+        .select_from(chronicles_models.ProductChronicle)
+        .join(models.Product, models.Product.id == chronicles_models.ProductChronicle.productId)
         .where(
-            chronicles_models.ProductChronicle.productId >= start, chronicles_models.ProductChronicle.productId < end
+            chronicles_models.ProductChronicle.productId >= start,
+            chronicles_models.ProductChronicle.productId < end,
         )
-        .group_by(chronicles_models.ProductChronicle.productId)
+        .group_by(models.Product.id, models.Product.chroniclesCount)
+        .having(models.Product.chroniclesCount != count)
     )
 
 
 def _headlines_count_query(start: int, end: int) -> sa.sql.expression.Select:
+    product_id = models.Product.id.label("product_id")
+    count = sa.func.count(models.Product.id).label("count")
     return (
-        sa.select(models.Offer.productId.label("product_id"), sa.func.count(models.Offer.productId).label("total"))
+        sa.select(product_id, count)
         .select_from(models.HeadlineOffer)
         .join(models.Offer, models.HeadlineOffer.offerId == models.Offer.id)
+        .join(models.Product, models.Offer.productId == models.Product.id)
         .where(models.Offer.productId >= start, models.Offer.productId < end)
-        .group_by(models.Offer.productId)
+        .group_by(models.Product.id)
+        .having(models.Product.headlinesCount != count)
     )
 
 
 def _likes_count_query(start: int, end: int) -> sa.sql.expression.Select:
+    product_id = models.Product.id.label("product_id")
+    count = sa.func.count(models.Product.id).label("count")
     return (
-        sa.select(
-            reactions_models.Reaction.productId.label("product_id"),
-            sa.func.count(reactions_models.Reaction.productId).label("total"),
+        sa.select(product_id, count)
+        .select_from(reactions_models.Reaction)
+        .join(models.Product, reactions_models.Reaction.productId == models.Product.id)
+        .where(
+            reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE,
+            reactions_models.Reaction.productId >= start,
+            reactions_models.Reaction.productId < end,
         )
-        .where(reactions_models.Reaction.reactionType == reactions_models.ReactionTypeEnum.LIKE)
-        .where(reactions_models.Reaction.productId >= start, reactions_models.Reaction.productId < end)
-        .group_by(reactions_models.Reaction.productId)
+        .group_by(models.Product.id)
+        .having(models.Product.likesCount != count)
     )
 
 
