@@ -5113,7 +5113,6 @@ class FetchInconsistentProductsTest:
 
 @pytest.mark.usefixtures("db_session")
 class UpdateProductCountsTest:
-    @pytest.mark.usefixtures("db_session")
     def test_update_product_count(self) -> None:
         product_1 = factories.ProductFactory()
         product_2 = factories.ProductFactory()
