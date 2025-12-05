@@ -1,5 +1,6 @@
 import copy
 import datetime
+import decimal
 
 import pytest
 import requests_mock
@@ -99,6 +100,7 @@ class GetQuotientFamilialTest:
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+        assert user.recreditAmountToShow == decimal.Decimal("30")
 
     def test_custodian_not_found(self):
         user = users_factories.BeneficiaryFactory()
