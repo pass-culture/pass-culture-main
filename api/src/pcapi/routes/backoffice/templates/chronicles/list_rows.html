@@ -41,6 +41,9 @@
       {% if chronicle.products %}
         {% for product in chronicle.products %}<div>{{ product }}</div>{% endfor %}
       {% endif %}
+      {% if chronicle.offers %}
+        {% for offer in chronicle.offers %}<div>{{ offer }}</div>{% endfor %}
+      {% endif %}
     </td>
     <td class="pc-mw-50-vw">{{ collapsable_text(chronicle.id, chronicle.short_content|trim, chronicle.content|trim) }}</td>
     <td>{{ chronicle.dateCreated | format_date }}</td>

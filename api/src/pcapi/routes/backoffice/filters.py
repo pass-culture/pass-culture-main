@@ -1946,6 +1946,10 @@ def format_chronicle_club_type(club_type: chronicles_models.ChronicleClubType) -
             return "Livres"
         case chronicles_models.ChronicleClubType.CINE_CLUB:
             return "Cinéma"
+        case chronicles_models.ChronicleClubType.ALBUM_CLUB:
+            return "Musique - albums"
+        case chronicles_models.ChronicleClubType.CONCERT_CLUB:
+            return "Musique - concerts"
         case _:
             return club_type.value
 
@@ -1958,6 +1962,8 @@ def format_chronicle_product_identifier_type(chronicle_type: chronicles_models.C
             return "EAN"
         case chronicles_models.ChronicleProductIdentifierType.VISA:
             return "Visa"
+        case chronicles_models.ChronicleProductIdentifierType.OFFER_ID:
+            return "ID de l'offre"
         case _:
             return chronicle_type.value
 

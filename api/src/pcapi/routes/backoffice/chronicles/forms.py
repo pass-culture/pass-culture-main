@@ -87,7 +87,9 @@ class AttachProductForm(forms_utils.PCForm):
     product_identifier_type = fields.PCSelectField(
         "Type d'identifiant",
         choices=forms_utils.choices_from_enum(
-            chronicles_models.ChronicleProductIdentifierType, formatter=filters.format_chronicle_product_identifier_type
+            enum_cls=chronicles_models.ChronicleProductIdentifierType,
+            formatter=filters.format_chronicle_product_identifier_type,
+            exclude_opts=[chronicles_models.ChronicleProductIdentifierType.OFFER_ID],
         ),
         default=chronicles_models.ChronicleProductIdentifierType.EAN.name,
     )
