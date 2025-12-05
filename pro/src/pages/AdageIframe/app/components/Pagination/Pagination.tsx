@@ -12,9 +12,13 @@ import { Pagination } from '@/design-system/Pagination/Pagination'
 
 interface CustomPaginationProps {
   queryId?: string
+  onPageChange?(): void
 }
 
-export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
+export const CustomPagination = ({
+  queryId,
+  onPageChange,
+}: CustomPaginationProps) => {
   const dispatch = useAppDispatch()
   const adagePageSavedFromSelector = useAppSelector(adagePageSavedSelector)
 
@@ -45,6 +49,7 @@ export const CustomPagination = ({ queryId }: CustomPaginationProps) => {
       pageCount={nbPages}
       onPageClick={(newPage) => {
         dispatch(setAdagePageSaved(newPage - 1))
+        onPageChange?.()
 
         // Clicked page is the immediate previous page
         if (newPage === currentRefinement) {

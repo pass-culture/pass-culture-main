@@ -113,6 +113,13 @@ describe('IndividualOffers', () => {
   let offersRecap: ListOffersOfferResponseModel[]
   offersRecap = [listOffersOfferFactory({ venue: proVenues[0] })]
 
+  // Necessary because JSDOM doesn't implement the `scrollTo` method
+  // (which is used by the `useAccessibleScroll` hook in that component's scope)
+  beforeAll(() => {
+    Element.prototype.scrollTo = () => {}
+    window.scrollTo = () => {}
+  })
+
   beforeEach(() => {
     vi.spyOn(api, 'getCategories').mockResolvedValue(categoriesAndSubcategories)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({

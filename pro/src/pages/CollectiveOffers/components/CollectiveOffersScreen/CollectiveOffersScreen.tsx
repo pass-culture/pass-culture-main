@@ -17,6 +17,7 @@ import {
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { hasCollectiveSearchFilters } from '@/commons/core/Offers/utils/hasSearchFilters'
+import { useAccessibleScroll } from '@/commons/hooks/useAccessibleScroll'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useColumnSorting } from '@/commons/hooks/useColumnSorting'
 import { usePagination } from '@/commons/hooks/usePagination'
@@ -24,6 +25,7 @@ import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay
 import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
+import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/ExpirationCell/ExpirationCell'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
@@ -154,6 +156,12 @@ export const CollectiveOffersScreen = ({
 
   const columns = getCollectiveOfferColumns(urlSearchFilters, true)
 
+  const { contentWrapperRef, liveMessage, scrollToContentWrapper } =
+    useAccessibleScroll({
+      initialLiveMessage: `Page ${page} sur ${pageCount}`,
+      selector: '#content-wrapper',
+    })
+
   return (
     <div>
       <CollectiveOffersSearchFilters
@@ -191,50 +199,56 @@ export const CollectiveOffersScreen = ({
           </div>
         )}
       </output>
-      <Table
-        columns={columns}
-        data={currentPageItems}
-        allData={sortedOffers}
-        isLoading={isLoading}
-        selectable={true}
-        selectedIds={selectedOfferIds}
-        onSelectionChange={(rows) => {
-          setSelectedOffers(rows)
-          setSelectedOfferIds(new Set(rows.map((r) => r.id)))
-        }}
-        isRowSelectable={(row: CollectiveOfferResponseModel) =>
-          isCollectiveOfferSelectable(row)
-        }
-        variant={TableVariant.COLLAPSE}
-        noResult={{
-          message: 'Aucune offre trouvée pour votre recherche',
-          resetMessage: 'Afficher toutes les offres',
-          onFilterReset: resetFilters,
-        }}
-        noData={{
-          hasNoData: userHasNoOffers,
-          message: {
-            icon: strokeNoBooking,
-            title: 'Vous n’avez pas encore créé d’offre',
-            subtitle: '',
-          },
-        }}
-        getFullRowContent={(offer: CollectiveOfferResponseModel) => {
-          const hasExpirationRow =
-            isCollectiveOfferBookable(offer) &&
-            isCollectiveOfferPublishedOrPreBooked(offer) &&
-            !!offer.stock?.bookingLimitDatetime
-          return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
-        }}
-      />
+      <AccessibleScrollContainer
+        containerRef={contentWrapperRef}
+        liveMessage={liveMessage}
+      >
+        <Table
+          columns={columns}
+          data={currentPageItems}
+          allData={sortedOffers}
+          isLoading={isLoading}
+          selectable={true}
+          selectedIds={selectedOfferIds}
+          onSelectionChange={(rows) => {
+            setSelectedOffers(rows)
+            setSelectedOfferIds(new Set(rows.map((r) => r.id)))
+          }}
+          isRowSelectable={(row: CollectiveOfferResponseModel) =>
+            isCollectiveOfferSelectable(row)
+          }
+          variant={TableVariant.COLLAPSE}
+          noResult={{
+            message: 'Aucune offre trouvée pour votre recherche',
+            resetMessage: 'Afficher toutes les offres',
+            onFilterReset: resetFilters,
+          }}
+          noData={{
+            hasNoData: userHasNoOffers,
+            message: {
+              icon: strokeNoBooking,
+              title: 'Vous n’avez pas encore créé d’offre',
+              subtitle: '',
+            },
+          }}
+          getFullRowContent={(offer: CollectiveOfferResponseModel) => {
+            const hasExpirationRow =
+              isCollectiveOfferBookable(offer) &&
+              isCollectiveOfferPublishedOrPreBooked(offer) &&
+              !!offer.stock?.bookingLimitDatetime
+            return hasExpirationRow ? <ExpirationCell offer={offer} /> : null
+          }}
+        />
+      </AccessibleScrollContainer>
       {hasOffers && (
         <div className={styles['offers-pagination']}>
           <Pagination
             currentPage={page}
             pageCount={pageCount}
-            onPageClick={(page) =>
+            onPageClick={(page) => {
               applyUrlFiltersAndRedirect({ ...urlSearchFilters, page })
-            }
+              scrollToContentWrapper()
+            }}
           />
         </div>
       )}

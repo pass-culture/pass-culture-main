@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import * as router from 'react-router'
+import { beforeAll } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import {
@@ -398,6 +399,13 @@ describe('CollectiveOffers', () => {
   })
 
   describe('page navigation', () => {
+    // Necessary because JSDOM doesn't implement the `scrollTo` method
+    // (which is used by the `useAccessibleScroll` hook in that component's scope)
+    beforeAll(() => {
+      Element.prototype.scrollTo = () => {}
+      window.scrollTo = () => {}
+    })
+
     it('should display next page when clicking on right arrow', async () => {
       const offers = Array.from({ length: 11 }, () =>
         collectiveOfferFactory({ stock })
