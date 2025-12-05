@@ -1,6 +1,5 @@
 import logging
 import textwrap
-import typing
 from dataclasses import dataclass
 from datetime import date
 from datetime import datetime
@@ -561,6 +560,15 @@ class Screening(HttpBodyModel):
             beginning_datetime=screening.beginning_datetime,
         )
 
+    @classmethod
+    def from_stock(cls, stock: models.Stock) -> "Screening":
+        return cls(
+            stock_id=stock.id,
+            price=stock.price,
+            features=stock.features,
+            beginning_datetime=stock.beginningDatetime,
+        )
+
 
 class VenueScreenings(HttpBodyModel):
     address: str
@@ -619,6 +627,91 @@ class MovieCalendarResponse(HttpBodyModel):
             )
             for venue in venues.values():
                 venue.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
+
+            calendar[day] = sorted_screenings
+
+        return cls(calendar=calendar)
+
+
+class VenueMovieScreeningsRequest(HttpBodyModel):
+    from_datetime: datetime = pydantic_v2.Field(alias="from", default_factory=date_utils.get_naive_utc_now)
+    to_datetime: datetime = pydantic_v2.Field(
+        alias="to", default_factory=lambda: datetime.combine(date.today(), time.max) + timedelta(days=15)
+    )
+
+    _datetime_serializer = pydantic_v2.field_serializer("from_datetime", "to_datetime")(format_into_utc_date)
+
+
+class MovieScreenings(HttpBodyModel):
+    duration: str | None
+    genres: list[str]
+    last_30_days_bookings: int
+    movie_name: str
+    offer_id: int
+    thumb_url: str | None
+    day_screenings: list[Screening]
+    next_screening: Screening | None
+
+    @classmethod
+    def from_offer(cls, offer: models.Offer) -> "MovieScreenings":
+        genres = []
+        if offer.extraData and offer.extraData.get("genres"):
+            for genre in offer.extraData["genres"] or []:  # `or []` helps mypy
+                label = get_movie_label(genre)
+                if label:
+                    genres.append(label)
+
+        last_30_days_bookings = 0
+        if offer.product and offer.product.last_30_days_booking:
+            last_30_days_bookings = offer.product.last_30_days_booking
+
+        return cls(
+            duration=offer.durationMinutes,
+            genres=genres,
+            last_30_days_bookings=last_30_days_bookings,
+            movie_name=offer.name,
+            offer_id=offer.id,
+            thumb_url=offer.thumbUrl,
+            day_screenings=[],
+            next_screening=None,
+        )
+
+
+class VenueMovieCalendarResponse(HttpBodyModel):
+    calendar: dict[date, list[MovieScreenings]]
+
+    @classmethod
+    def from_offers(
+        cls, offers: list[models.Offer], start_date: datetime, end_date: datetime
+    ) -> "VenueMovieCalendarResponse":
+        calendar = {}
+        for day_delta in range((end_date - start_date).days + 1):
+            day = (start_date + timedelta(days=day_delta)).date()
+            movies: dict[int, MovieScreenings] = {}
+            for offer in offers:
+                if offer.id not in movies:
+                    movies[offer.id] = MovieScreenings.from_offer(offer)
+
+                movie = movies[offer.id]
+                for stock in offer.stocks:
+                    screening = Screening.from_stock(stock)
+                    if screening.beginning_datetime.date() == day:
+                        movie.day_screenings.append(screening)
+
+                    if not movie.next_screening:
+                        movie.next_screening = screening
+                        continue
+
+                    current_delta_from_day = (movie.next_screening.beginning_datetime.date() - day).days
+                    new_delta_from_day = (screening.beginning_datetime.date() - day).days
+                    if abs(new_delta_from_day) < abs(current_delta_from_day):
+                        movie.next_screening = screening
+
+            sorted_screenings = sorted(
+                movies.values(), key=lambda movie: (len(movie.day_screenings) == 0, -movie.last_30_days_bookings)
+            )
+            for movie in movies.values():
+                movie.day_screenings.sort(key=lambda screening: screening.beginning_datetime)
 
             calendar[day] = sorted_screenings
 
