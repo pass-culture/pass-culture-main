@@ -6,8 +6,9 @@ updates:
     directory: '/pro'
     schedule:
       interval: 'daily'
-      time: '09:00'
-    open-pull-requests-limit: 15
+      time: '08:00'
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 10
     cooldown:
       default-days: 7
     groups:
@@ -49,13 +50,12 @@ updates:
   - package-ecosystem: 'npm'
     directory: '/api/documentation'
     schedule:
-      interval: 'daily'
-      time: '09:00'
+      interval: 'weekly'
+      day: "thursday"
+      time: '08:00'
+      timezone: "Europe/Paris"
     cooldown:
       default-days: 7
-    ignore:
-      - dependency-name: '*'
-        update-types: ['version-update:semver-major']
     groups:
       # Docusaurus updates
       docusaurus:
@@ -68,8 +68,9 @@ updates:
     directory: '/api'
     schedule:
       interval: 'daily'
-      time: '03:00'
-    open-pull-requests-limit: 15
+      time: '07:30'
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 10
     cooldown:
       default-days: 7
     ignore:
@@ -118,9 +119,10 @@ updates:
     target-branch: master
     schedule:
       interval: 'weekly'
-      day: 'wednesday'
-      time: '03:00'
-    open-pull-requests-limit: 15
+      day: 'thursday'
+      time: '07:00'
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
     cooldown:
       default-days: 7
     allow:
@@ -131,8 +133,10 @@ updates:
   - package-ecosystem: 'github-actions'
     directory: '.github/workflows'
     schedule:
-      interval: 'daily'
-      time: '06:00'
+      interval: 'weekly'
+      day: "thursday"
+      time: '07:00'
+      timezone: "Europe/Paris"
     open-pull-requests-limit: 10
     cooldown:
       default-days: 7
