@@ -8,6 +8,7 @@ import type {
   VenueProviderResponse,
   VenueTypeResponseModel,
 } from '@/apiClient/v1'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -54,6 +55,8 @@ export const VenueSettingsForm = ({
     clearErrors,
     formState: { isDirty, isSubmitting, errors },
   } = useFormContext<VenueSettingsFormValues>()
+
+  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const location = useLocation()
   const manuallySetAddress = watch('manuallySetAddress')
@@ -138,17 +141,19 @@ export const VenueSettingsForm = ({
           )}
         </FormLayout.Section>
 
-        <FormLayout.Section title="Activité principale">
-          <FormLayout.Row>
-            <Select
-              {...register('venueType')}
-              options={venueTypes}
-              label="Activité principale"
-              disabled={venue.isVirtual}
-              error={errors.venueType?.message}
-            />
-          </FormLayout.Row>
-        </FormLayout.Section>
+        {!isVenueActivityFeatureActive && (
+          <FormLayout.Section title="Activité principale">
+            <FormLayout.Row>
+              <Select
+                {...register('venueType')}
+                options={venueTypes}
+                label="Activité principale"
+                disabled={venue.isVirtual}
+                error={errors.venueType?.message}
+              />
+            </FormLayout.Row>
+          </FormLayout.Section>
+        )}
 
         {!venue.isVirtual && <WithdrawalDetails />}
 

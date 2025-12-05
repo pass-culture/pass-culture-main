@@ -21,6 +21,7 @@ export const setInitialFormValues = (
     webSite: venue.contact?.website || '',
     isOpenToPublic: venue.isOpenToPublic.toString() || '',
     openingHours: venue.openingHours ?? null,
+    activity: venue.activity ?? venue.venueType.value,
   }
 }
 
