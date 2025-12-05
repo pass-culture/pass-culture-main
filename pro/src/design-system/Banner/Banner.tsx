@@ -91,6 +91,7 @@ export const Banner = ({
                         iconAlt={a.iconAlt}
                         isExternal={a.isExternal}
                         onClick={() => a.onClick?.()}
+                        isSectionLink={a.href.startsWith('#')}
                       >
                         {a.label}
                       </ButtonLink>
