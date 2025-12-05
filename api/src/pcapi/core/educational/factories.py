@@ -258,11 +258,7 @@ class EducationalDepositFactory(BaseFactory[models.EducationalDeposit]):
     amount = 3000
     isFinal = True
     ministry = models.Ministry.EDUCATION_NATIONALE.name
-    period = factory.LazyAttribute(
-        lambda deposit: db_utils.make_timerange(
-            start=deposit.educationalYear.beginningDate, end=deposit.educationalYear.expirationDate
-        )
-    )
+    period = factory.LazyAttribute(lambda deposit: utils.get_educational_year_full_period(deposit.educationalYear))
 
 
 class EducationalDepositFirstPeriodFactory(EducationalDepositFactory):
@@ -319,7 +315,7 @@ def _get_booking_deposit(booking: models.CollectiveBooking) -> models.Educationa
 
     institution = booking.educationalInstitution
     year = booking.educationalYear
-    period = db_utils.make_timerange(year.beginningDate, year.expirationDate)
+    period = utils.get_educational_year_full_period(year)
 
     return EducationalDepositFactory.create(educationalInstitution=institution, educationalYear=year, period=period)
 
