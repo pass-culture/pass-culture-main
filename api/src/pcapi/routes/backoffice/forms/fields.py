@@ -76,6 +76,7 @@ class PostalCodeValidator:
 
 class PCOptStringField(wtforms.StringField):
     widget = partial(widget, template="components/forms/string_field.html")
+    can_be_cleared = True
     validators = [
         validators.Optional(""),
         validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
@@ -88,6 +89,7 @@ class PCOptStringField(wtforms.StringField):
 
 class PCOptPasswordField(wtforms.PasswordField):
     widget = partial(widget, template="components/forms/string_field.html")
+    can_be_cleared = True
     validators = [
         validators.Optional(""),
         validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
@@ -224,6 +226,7 @@ class PCCommentField(PCTextareaField):
 
 class PCEmailField(wtforms.EmailField):
     widget = partial(widget, template="components/forms/string_field.html")
+    can_be_cleared = True
     validators = [
         validators.Email("Email obligatoire"),
         validators.Length(min=3, max=128, message="doit contenir entre %(min)d et %(max)d caractères"),
