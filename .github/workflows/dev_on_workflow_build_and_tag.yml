@@ -25,8 +25,11 @@ on:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
-
       GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+      PASSCULTURE_GITHUB_ACTION_APP_ID:
+        required: true
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY:
         required: true
 
 permissions:
@@ -104,7 +107,7 @@ jobs:
           repositories: pass-culture-main
           permission-contents: write
 
-      - name: Tag Release with github app  # so that another workflow can be triggered on push
+      - name: Tag Release with github app # so that another workflow can be triggered on push
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         run: |
