@@ -3,10 +3,7 @@ import {
   GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 
-import {
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
-  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-} from '../constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '../constants'
 import type { CollectiveSearchFiltersParams } from '../types'
 
 export type GetCollectiveOffersSwrKeysProps = {
@@ -27,12 +24,8 @@ export function getCollectiveOffersSwrKeys({
     ? GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY
     : GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY
 
-  const defaultCollectiveFilters = isInTemplateOffersPage
-    ? DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS
-    : DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
-
   const apiFilters: CollectiveSearchFiltersParams = {
-    ...defaultCollectiveFilters,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...urlSearchFilters,
     ...{ offererId: selectedOffererId.toString() },
     ...{ venueId: selectedVenueId?.toString() ?? 'all' },

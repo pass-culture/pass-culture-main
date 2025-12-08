@@ -7,7 +7,7 @@ import {
   type SharedCurrentUserResponseModel,
   UserRole,
 } from '@/apiClient/v1'
-import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import * as useNotification from '@/commons/hooks/useNotification'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
@@ -63,8 +63,8 @@ const props = {
   isLoading: false,
   offererId: '1',
   offers,
-  urlSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-  initialSearchFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  urlSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
+  initialSearchFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   redirectWithUrlFilters: vi.fn(),
 }
 

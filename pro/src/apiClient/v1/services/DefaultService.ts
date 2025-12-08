@@ -15,7 +15,6 @@ import type { CheckTokenBodyModel } from '../models/CheckTokenBodyModel';
 import type { CollectiveLocationType } from '../models/CollectiveLocationType';
 import type { CollectiveOfferDisplayedStatus } from '../models/CollectiveOfferDisplayedStatus';
 import type { CollectiveOfferResponseIdModel } from '../models/CollectiveOfferResponseIdModel';
-import type { CollectiveOfferType } from '../models/CollectiveOfferType';
 import type { CollectiveStockCreationBodyModel } from '../models/CollectiveStockCreationBodyModel';
 import type { CollectiveStockEditionBodyModel } from '../models/CollectiveStockEditionBodyModel';
 import type { CollectiveStockResponseModel } from '../models/CollectiveStockResponseModel';
@@ -1672,7 +1671,6 @@ export class DefaultService {
    * @param creationMode
    * @param periodBeginningDate
    * @param periodEndingDate
-   * @param collectiveOfferType
    * @param offererAddressId
    * @returns ListOffersResponseModel OK
    * @throws ApiError
@@ -1686,7 +1684,6 @@ export class DefaultService {
     creationMode?: string | null,
     periodBeginningDate?: string | null,
     periodEndingDate?: string | null,
-    collectiveOfferType?: CollectiveOfferType | null,
     offererAddressId?: number | null,
   ): CancelablePromise<ListOffersResponseModel> {
     return this.httpRequest.request({
@@ -1701,7 +1698,6 @@ export class DefaultService {
         'creationMode': creationMode,
         'periodBeginningDate': periodBeginningDate,
         'periodEndingDate': periodEndingDate,
-        'collectiveOfferType': collectiveOfferType,
         'offererAddressId': offererAddressId,
       },
       errors: {

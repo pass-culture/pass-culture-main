@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_BOOKABLE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
 } from '@/commons/core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -46,10 +46,7 @@ export const CollectiveOffers = (): JSX.Element => {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(
-      computeCollectiveOffersUrl(
-        filters,
-        DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
-      ),
+      computeCollectiveOffersUrl(filters, DEFAULT_COLLECTIVE_SEARCH_FILTERS),
       {
         replace: true,
       }
@@ -57,7 +54,7 @@ export const CollectiveOffers = (): JSX.Element => {
   }
 
   const apiFilters: CollectiveSearchFiltersParams = {
-    ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...finalSearchFilters,
     ...{ offererId: selectedOffererId.toString() },
     ...(withSwitchVenueFeature ? { venueId: selectedVenue.id.toString() } : {}),

@@ -6,7 +6,7 @@ import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import {
-  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
 } from '@/commons/core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
@@ -47,7 +47,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
     navigate(
       computeCollectiveOffersUrl(
         filters,
-        DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+        DEFAULT_COLLECTIVE_SEARCH_FILTERS,
         true
       ),
       { replace: true }
@@ -55,7 +55,7 @@ export const TemplateCollectiveOffers = (): JSX.Element => {
   }
 
   const apiFilters: CollectiveSearchFiltersParams = {
-    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ...finalSearchFilters,
     ...{ offererId: selectedOffererId.toString() },
     ...(withSwitchVenueFeature ? { venueId: selectedVenue.id.toString() } : {}),

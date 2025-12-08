@@ -113,7 +113,6 @@ export const IndividualOffers = (): JSX.Element => {
       creationMode,
       periodBeginningDate,
       periodEndingDate,
-      undefined,
       offererAddressId
     )
   })

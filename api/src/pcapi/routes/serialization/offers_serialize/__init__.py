@@ -321,7 +321,6 @@ class ListOffersQueryModel(BaseModel):
     creation_mode: str | None
     period_beginning_date: datetime.date | None
     period_ending_date: datetime.date | None
-    collective_offer_type: CollectiveOfferType | None
     offerer_address_id: int | None
 
     class Config:

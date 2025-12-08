@@ -8,10 +8,7 @@ import {
   CollectiveOfferDisplayedStatus,
 } from '@/apiClient/v1'
 import { CollectiveLocationType } from '@/apiClient/v1/models/CollectiveLocationType'
-import {
-  CollectiveOfferTypeEnum,
-  type CollectiveSearchFiltersParams,
-} from '@/commons/core/Offers/types'
+import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { CollectiveOffersDownloadDrawer } from './CollectiveOffersDownloadDrawer'
@@ -35,7 +32,6 @@ const filters: CollectiveSearchFiltersParams = {
   status: [CollectiveOfferDisplayedStatus.PUBLISHED],
   periodBeginningDate: '2023-01-01',
   periodEndingDate: '2023-12-31',
-  collectiveOfferType: CollectiveOfferTypeEnum.OFFER,
   format: EacFormat.CONCERT,
 }
 

@@ -1,10 +1,9 @@
 import { OfferStatus, WithdrawalTypeEnum } from '@/apiClient/v1'
 import type { SelectOption } from '@/commons/custom_types/form'
 
-import {
-  CollectiveOfferTypeEnum,
-  type CollectiveSearchFiltersParams,
-  type IndividualSearchFiltersParams,
+import type {
+  CollectiveSearchFiltersParams,
+  IndividualSearchFiltersParams,
 } from './types'
 
 export enum INDIVIDUAL_OFFER_SUBTYPE {
@@ -88,23 +87,10 @@ export const DEFAULT_COLLECTIVE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
     offererId: 'all',
     venueId: ALL_VENUES,
     format: ALL_FORMATS,
-    collectiveOfferType: CollectiveOfferTypeEnum.ALL,
     periodBeginningDate: ALL_EVENT_PERIODS,
     periodEndingDate: ALL_EVENT_PERIODS,
     page: DEFAULT_PAGE,
     status: [],
-  }
-
-export const DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
-  {
-    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE,
-  }
-
-export const DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS: CollectiveSearchFiltersParams =
-  {
-    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-    collectiveOfferType: CollectiveOfferTypeEnum.OFFER,
   }
 
 export const ALL_OFFERER_ADDRESS_OPTION: SelectOption = {

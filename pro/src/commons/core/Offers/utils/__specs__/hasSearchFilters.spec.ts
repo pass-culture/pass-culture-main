@@ -1,15 +1,11 @@
 import { EacFormat } from '@/apiClient/adage'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 
-import {
-  CollectiveOfferTypeEnum,
-  type CollectiveSearchFiltersParams,
-} from '../../types'
+import type { CollectiveSearchFiltersParams } from '../../types'
 import { hasCollectiveSearchFilters } from '../hasSearchFilters'
 
 describe('hasSearchFilters', () => {
   const defaultCollectiveFilters: CollectiveSearchFiltersParams = {
-    collectiveOfferType: CollectiveOfferTypeEnum.ALL,
     format: 'all',
     name: '',
     offererId: '333',

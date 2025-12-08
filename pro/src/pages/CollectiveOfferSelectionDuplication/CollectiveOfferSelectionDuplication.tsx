@@ -8,7 +8,7 @@ import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_COLLECTIVE_OFFERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
-import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
@@ -66,7 +66,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
     locationType,
     offererAddressId,
   } = serializeApiCollectiveFilters({
-    ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     name: searchedOfferName,
     offererId: currentOffererId.toString(),
     venueId: withSwitchVenueFeature

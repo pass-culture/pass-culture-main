@@ -8,7 +8,7 @@ import type {
   GetOffererAddressResponseModel,
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
-import { DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -64,13 +64,13 @@ vi.mock('@/apiClient/api', () => {
 })
 
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   user = sharedCurrentUserFactory()
 ) => {
   const shouldComputeTemplateOfferUrl = true
   const route = computeCollectiveOffersUrl(
     filters,
-    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     shouldComputeTemplateOfferUrl
   )
   renderWithProviders(
