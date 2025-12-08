@@ -1,9 +1,10 @@
-from datetime import date
+import datetime
 
 from pydantic import BaseModel
 from pydantic import field_validator
 
 from pcapi import settings
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import requests
 
@@ -37,7 +38,7 @@ class QuotientFamilialPerson(BaseModel):
     nom_naissance: str
     nom_usage: str | None = None
     prenoms: str
-    date_naissance: date
+    date_naissance: datetime.date
     sexe: users_models.GenderEnum
 
     @field_validator("sexe", mode="before")
@@ -68,39 +69,37 @@ class QuotientFamilialResponse(BaseModel):
 
 
 def get_quotient_familial(
-    last_name: str,
-    first_names: list[str],
-    common_name: str | None,
-    birth_date: date,
-    gender: users_models.GenderEnum,
-    country_insee_code: str,
-    city_insee_code: str | None,
-    quotient_familial_date: date,
+    custodian: bonus_schemas.QuotientFamilialCustodian, at_date: datetime.date | None = None
 ) -> QuotientFamilialResponse:
     """
     Get the Quotient Familial from a tax household, using a custodian personal information.
 
     See https://particulier.api.gouv.fr/developpeurs/openapi#tag/Quotient-familial-CAF-and-MSA
     """
+    country_insee_code = custodian.birth_country_cog_code
+    city_insee_code = custodian.birth_city_cog_code
     if country_insee_code == FRANCE_INSEE_CODE and not city_insee_code:
         raise ValueError("City INSEE code is mandatory when the custodian is born in France")
 
     if country_insee_code != FRANCE_INSEE_CODE:
         city_insee_code = None
 
+    computation_year = at_date.year if at_date else None
+    computation_month = at_date.month if at_date else None
+
     query_params = {
         "recipient": settings.PASS_CULTURE_SIRET,
-        "nomNaissance": last_name.upper(),
-        "prenoms[]": [first_name.upper() for first_name in first_names],
-        "nomUsage": common_name,
-        "anneeDateNaissance": birth_date.year,
-        "moisDateNaissance": birth_date.month,
-        "jourDateNaissance": birth_date.day,
-        "sexeEtatCivil": gender.name,
+        "nomNaissance": custodian.last_name.upper(),
+        "prenoms[]": [first_name.upper() for first_name in custodian.first_names],
+        "nomUsage": custodian.common_name,
+        "anneeDateNaissance": custodian.birth_date.year,
+        "moisDateNaissance": custodian.birth_date.month,
+        "jourDateNaissance": custodian.birth_date.day,
+        "sexeEtatCivil": custodian.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
-        "annee": quotient_familial_date.year,
-        "mois": quotient_familial_date.month,
+        "annee": computation_year,
+        "mois": computation_month,
     }
     response = requests.get(
         QUOTIENT_FAMILIAL_ENDPOINT,
