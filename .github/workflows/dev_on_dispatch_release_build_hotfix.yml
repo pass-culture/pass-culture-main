@@ -2,8 +2,7 @@ name: "0 [on_dispatch/CD] Create hotfix release"
 
 run-name: "Create a hotfix release from ${{ github.ref }}"
 
-on:
-  workflow_dispatch
+on: workflow_dispatch
 
 permissions: write-all
 
@@ -49,6 +48,8 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
     with:
       base_ref: ${{ github.ref }}
       tag_number: ${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
@@ -112,13 +113,13 @@ jobs:
     steps:
       - uses: technote-space/workflow-conclusion-action@v3
       - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v3'
+        uses: "google-github-actions/auth@v3"
         with:
           workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
           service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Get Secret"
-        id: 'secrets'
-        uses: 'google-github-actions/get-secretmanager-secrets@v3'
+        id: "secrets"
+        uses: "google-github-actions/get-secretmanager-secrets@v3"
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token

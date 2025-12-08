@@ -4,12 +4,11 @@ on:
   schedule:
     # Winter time (CET, UTC+1): from the beginning of November to the end of March
     # Monday through Thursday at 09:57 in France = 08:57 UTC
-    - cron: '57 8 * 1-3,11-12 1-4'
+    - cron: "57 8 * 1-3,11-12 1-4"
     # Summer time (CEST, UTC+2): from the beginning of April to the end of October
     # Monday through Thursday at 09:57 in France = 07:57 UTC
-    - cron: '57 7 * 4-10 1-4'
+    - cron: "57 7 * 4-10 1-4"
   workflow_dispatch:
-
 
 permissions: write-all
 
@@ -20,8 +19,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#D4AD3B"
-      message:
-        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et la construction> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` sont lancées"
+      message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et la construction> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` sont lancées"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -68,13 +66,15 @@ jobs:
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
     with:
       base_ref: ${{ needs.prepare-variables.outputs.commitHash }}
       tag_number: ${{ needs.prepare-variables.outputs.releaseNumber }}.0.0
 
   edit-maintenance-branches:
     name: "Edit maintenance branches"
-    needs: [build-and-tag,prepare-variables]
+    needs: [build-and-tag, prepare-variables]
     runs-on: ubuntu-22.04
     env:
       NEW_MAINTENANCE_BRANCH: maint/v${{ needs.prepare-variables.outputs.releaseNumber }}
@@ -91,7 +91,6 @@ jobs:
           git checkout master
           git branch --delete --force "$OLD_MAINTENANCE_BRANCH"
 
-
   end-slack-success-notification:
     name: "Send workflow success notification"
     needs: [build-and-tag, edit-maintenance-branches]
@@ -100,8 +99,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#D4AD3B"
-      message:
-        ':github-success: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a réussi'
+      message: ":github-success: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a réussi"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -114,8 +112,8 @@ jobs:
     with:
       channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
       color: "#D4AD3B"
-      message:
-        ':github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a échoué'
+      message: ":github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a échoué"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
