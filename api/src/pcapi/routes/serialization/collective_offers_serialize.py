@@ -33,28 +33,6 @@ from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
 
 
-def strip_string(s: str | None) -> str | None:
-    if not s:
-        return s
-    return s.strip()
-
-
-def empty_to_null(s: str | None) -> str | None:
-    if not s:
-        return None
-    return s
-
-
-class EmptyAsNullString(str):
-    @classmethod
-    def __get_validators__(cls) -> typing.Generator[typing.Callable, None, None]:
-        yield strip_string
-        yield empty_to_null
-
-
-EmptyStringToNone = EmptyAsNullString | None
-
-
 class ListCollectiveOffersQueryModel(ConfiguredBaseModel):
     name: str | None
     offerer_id: int | None
