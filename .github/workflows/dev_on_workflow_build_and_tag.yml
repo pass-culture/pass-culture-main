@@ -126,11 +126,17 @@ jobs:
           git push origin "$TAG_NAME"
 
       - name: Push tag to base ref
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         if: ${{ inputs.base_ref_is_a_branch }}
         run: git push origin "${{ inputs.base_ref }}"
 
       - name: Create Github prerelease
-        uses: ./.github/workflows/dev_on_workflow_create_github_prerelease.yml
-        continue-on-error: true
-        with:
-          tag_name: v${{ inputs.tag_number }}
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        run: |
+          gh release create --title "$TAG_NAME" \
+          --fail-on-no-commits \
+          --verify-tag  \
+          --generate-notes  \
+          --prerelease
