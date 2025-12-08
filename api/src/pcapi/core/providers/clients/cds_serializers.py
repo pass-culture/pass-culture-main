@@ -74,7 +74,7 @@ class MediaCDS(CDSBaseModel):
     title: str
     duration: int  # CDS api returns duration in seconds
     posterpath: str | None = None
-    storyline: str
+    storyline: str | None = None
     visanumber: str | None = None
     allocineid: str | None = None
 
