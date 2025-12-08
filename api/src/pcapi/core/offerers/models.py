@@ -50,7 +50,6 @@ from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.date import METROPOLE_TIMEZONE
 from pcapi.utils.date import get_department_timezone
 from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import numranges_to_timespan_str
@@ -260,23 +259,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     )
 
     bookingEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True)
-
-    _deprecated_address: sa_orm.Mapped[str | None] = sa_orm.mapped_column("address", sa.String(200), nullable=True)
-
-    _deprecated_street: sa_orm.Mapped[str | None] = sa_orm.mapped_column("street", sa.Text(), nullable=True)
-
-    _deprecated_postalCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column("postalCode", sa.String(6), nullable=True)
-
-    _deprecated_city: sa_orm.Mapped[str | None] = sa_orm.mapped_column("city", sa.String(50), nullable=True)
-
-    # banId is a unique interoperability key for French addresses registered in the
-    # Base Adresse Nationale. See "cle_interop" here:
-    # https://doc.adresse.data.gouv.fr/mettre-a-jour-sa-base-adresse-locale/le-format-base-adresse-locale
-    _deprecated_banId: sa_orm.Mapped[str | None] = sa_orm.mapped_column("banId", sa.Text(), nullable=True)
-
-    _deprecated_timezone: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
-        "timezone", sa.String(50), nullable=True, default=METROPOLE_TIMEZONE, server_default=METROPOLE_TIMEZONE
-    )
 
     publicName: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(255), nullable=False)
 
