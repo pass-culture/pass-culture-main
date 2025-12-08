@@ -13,17 +13,6 @@ on:
 permissions: write-all
 
 jobs:
-  beginning-slack-notification:
-    name: "Send workflow beginning notification"
-    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
-    with:
-      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#D4AD3B"
-      message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et la construction> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` sont lancées"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-
   prepare-variables:
     runs-on: ubuntu-latest
     outputs:
@@ -59,6 +48,19 @@ jobs:
           commit_hash=$(git rev-list -n 1 "$rc_tag")
           echo "commitHash=$commit_hash" >> $GITHUB_OUTPUT
 
+  beginning-slack-notification:
+    needs: prepare-variables
+    name: "Send workflow beginning notification"
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#D4AD3B"
+      message:
+        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et la construction> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` sont lancées"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
   build-and-tag:
     name: "Build and tag"
     needs: prepare-variables
@@ -93,7 +95,7 @@ jobs:
 
   end-slack-success-notification:
     name: "Send workflow success notification"
-    needs: [build-and-tag, edit-maintenance-branches]
+    needs: [prepare-variables,build-and-tag, edit-maintenance-branches]
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
@@ -106,7 +108,7 @@ jobs:
 
   end-slack-failure-notification:
     name: "Send workflow failure notification"
-    needs: [build-and-tag, edit-maintenance-branches]
+    needs: [prepare-variables,build-and-tag, edit-maintenance-branches]
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
