@@ -80,6 +80,7 @@ export enum Events {
   CLICKED_SORT_STOCKS_TABLE = 'hasClickedSortStocksTable',
   OFFER_FORM_VIDEO_URL_ERROR = 'videoUrlError',
   CLICKED_COPY_TEMPLATE_OFFER_LINK = 'hasClickedCopyTemplateOfferLink',
+  CLICKED_VIEW_APP_OFFER = 'hasClickedViewAppOffer',
 }
 
 export enum VenueEvents {
