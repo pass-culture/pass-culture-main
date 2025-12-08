@@ -1,5 +1,8 @@
 import * as Sentry from '@sentry/browser'
-import { reactRouterV7BrowserTracingIntegration } from '@sentry/react'
+import {
+  reactRouterV7BrowserTracingIntegration,
+  replayIntegration,
+} from '@sentry/react'
 import { useEffect } from 'react'
 import {
   createRoutesFromChildren,
@@ -31,7 +34,13 @@ export const initializeSentry = () => {
         createRoutesFromChildren,
         matchRoutes,
       }),
+      replayIntegration({
+        maskAllText: true,
+        blockAllMedia: true,
+      }),
     ],
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
     tracesSampleRate: parseFloat(SENTRY_SAMPLE_RATE),
     beforeSend: (event, hint) => {
       // scrub the user autologin token from the url
