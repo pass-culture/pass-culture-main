@@ -14,15 +14,17 @@ type InvoiceDownloadActionsButtonProps = {
   checkedInvoices: string[]
 }
 
+export const MAX_ITEMS_DOWNLOAD = 75
+
 export const InvoiceDownloadActionsButton = ({
   checkedInvoices,
 }: InvoiceDownloadActionsButtonProps) => {
   const notify = useNotification()
   const { logEvent } = useAnalytics()
   async function downloadCSVFiles(references: string[]) {
-    if (references.length > 24) {
+    if (references.length > MAX_ITEMS_DOWNLOAD) {
       notify.error(
-        'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
+        `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
       )
       return
     }
@@ -42,9 +44,9 @@ export const InvoiceDownloadActionsButton = ({
   }
 
   async function downloadInvoices(references: string[]) {
-    if (references.length > 24) {
+    if (references.length > MAX_ITEMS_DOWNLOAD) {
       notify.error(
-        'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
+        `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
       )
       return
     }

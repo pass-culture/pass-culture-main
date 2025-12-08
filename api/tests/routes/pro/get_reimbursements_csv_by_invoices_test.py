@@ -1,5 +1,4 @@
 import csv
-import string
 from io import StringIO
 
 import pytest
@@ -266,12 +265,12 @@ def test_too_many_invoices_searched_returns_an_error(client):
     pro = users_factories.ProFactory()
 
     client = client.with_session_auth(pro.email)
-    references = "invoicesReferences=" + "&invoicesReferences=".join(list(string.ascii_letters))
+    references = "invoicesReferences=" + "&invoicesReferences=".join([str(x) for x in range(80)])
 
     response = client.get(f"/v2/reimbursements/csv?{references}")
 
     assert response.status_code == 400
-    assert response.json == {"invoicesReferences": ["ensure this value has at most 24 items"]}
+    assert response.json == {"invoicesReferences": ["ensure this value has at most 75 items"]}
 
 
 def test_booking_with_empty_use_date_should_be_ok(client):
