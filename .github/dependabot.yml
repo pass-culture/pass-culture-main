@@ -1,42 +1,69 @@
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml-file
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates/optimizing-pr-creation-version-updates
+
 version: 2
 
 updates:
-  # Frontend Pro
+  # Pro - Frontend
   - package-ecosystem: 'npm'
     directory: '/pro'
     schedule:
-      interval: 'daily'
-      time: '08:00'
+      # Sync with a new sherif week, starting on Thursday morning after tag
+      interval: 'weekly'
+      day: "thursday"
+      time: '10:00'
       timezone: "Europe/Paris"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 15
     cooldown:
       default-days: 7
+      semver-major-days: 14
+
     groups:
       # React updates
+      # Open PRs for each major or minor version
+      # Open an aggregate PR for all patch version updates
       react:
         patterns:
           - "react*"
           - "@types/react*"
+        update-types:
+          - "patch"
       # Build tools
+      # Open PRs for each major or minor version
+      # Open an aggregate PR for all patch version updates
       build-tools:
         patterns:
           - "@storybook*"
           - "storybook*"
           - "typescript*"
           - "vite*"
+        update-types:
+          - "patch"
       # Other tools
+      # Open PRs for each major version
+      # Open an aggregate PR for all minor and patch version updates
       tools:
         patterns:
           - "@sentry*"
           - "sentry*"
-      # Testing frameworks
-      testing:
+        update-types:
+          - "minor"
+          - "patch"
+      # Testing tools
+      # Open PRs for each major or minor version
+      # Open an aggregate PR for all patch version updates
+      testing-tols:
         patterns:
           - "allure*"
           - "cypress*"
           - "playwright*"
           - "vitest*"
+        update-types:
+          - "patch"
       # Linting and formatting
+      # Open PRs for each major or minor version
+      # Open an aggregate PR for all patch version updates
       linting:
         patterns:
           - "@biomejs*"
@@ -45,6 +72,8 @@ updates:
           - "prettier*"
           - "stylelint*"
           - "typescript-eslint*"
+        update-types:
+          - "patch"
 
   # Public API doc
   - package-ecosystem: 'npm'
@@ -54,8 +83,10 @@ updates:
       day: "thursday"
       time: '08:00'
       timezone: "Europe/Paris"
+    open-pull-requests-limit: 10
     cooldown:
       default-days: 7
+      semver-major-days: 14
     groups:
       # Docusaurus updates
       docusaurus:
@@ -63,36 +94,42 @@ updates:
           - "docusaurus*"
           - "@docusaurus*"
 
-  # Backend Python
+  # API - Backend
   - package-ecosystem: 'pip' # pip even if we use poetry
     directory: '/api'
     schedule:
-      interval: 'daily'
-      time: '07:30'
+      # Sync with a new sherif week, starting on Thursday morning
+      interval: 'weekly'
+      day: "thursday"
+      time: '07:00'
       timezone: "Europe/Paris"
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 15
     cooldown:
       default-days: 7
+      semver-major-days: 14
+
     ignore:
-      # Exclude packages that have very frequent updates. They have a
-      # specific configuration, see block below.
-      - dependency-name: boto3
-      # Except for critical ones where we only allow patches update
       - dependency-name: 'flask'
         update-types:
-          ['version-update:semver-major', 'version-update:semver-minor']
+          "major"
       - dependency-name: 'sqlalchemy'
         update-types:
-          ['version-update:semver-major', 'version-update:semver-minor']
+          "major"
       - dependency-name: 'pydantic'
         update-types:
-          ['version-update:semver-major', 'version-update:semver-minor']
-      # We are not ready to handle upper version of spectree, even for patches
-      - dependency-name: 'spectree'
-    # Disable automatic rebasing for poetry pull requests
+          "major"
+      # boto3 updates very frequently
+      - dependency-name: 'boto3'
+        update-types:
+          "patch"
+
+    # Disable automatic PR rebasing
     rebase-strategy: 'disabled'
+
     groups:
       # Core Python frameworks
+      # Open PRs for each major and minor versions
+      # Open an aggregate PR for all patch version updates
       python-frameworks:
         patterns:
           - "flask*"
@@ -101,6 +138,8 @@ updates:
         update-types:
           - "patch"
       # Python development tools
+      # Open PRs for each major and minor versions
+      # Open an aggregate PR for all patch version updates
       python-dev-tools:
         patterns:
           - "commitizen*"
@@ -108,26 +147,8 @@ updates:
           - "pytest*"
           - "ruff*"
           - "types*"
-
-  # Special configuration for Python packages that have very frequent updates.
-  # We don't want to get a pull request every day for insignificant changes.
-  - package-ecosystem: 'pip'
-    directory: '/api'
-    # Specify a branch here (but _not_ in the block above), to work
-    # around uniqueness requirement on the directory.
-    # https://github.com/dependabot/dependabot-core/issues/1778#issuecomment-1988140291
-    target-branch: master
-    schedule:
-      interval: 'weekly'
-      day: 'thursday'
-      time: '07:00'
-      timezone: "Europe/Paris"
-    open-pull-requests-limit: 5
-    cooldown:
-      default-days: 7
-    allow:
-      - dependency-name: boto3
-    rebase-strategy: 'disabled'
+        update-types:
+          - "patch"
 
   # GitHub Actions
   - package-ecosystem: 'github-actions'
@@ -140,3 +161,19 @@ updates:
     open-pull-requests-limit: 10
     cooldown:
       default-days: 7
+      semver-major-days: 14
+    ignore:
+      - dependency-name: 'flask'
+        update-types:
+          "major"
+    groups:
+      not-ours:
+        # Open PRs for each major and minor versions
+        # Open an aggregate PR for all patch version updates, except our own actions
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
+        exclude-patterns:
+          - "pass-culture/common-workflows*"
+
