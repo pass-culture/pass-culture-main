@@ -45,7 +45,6 @@ export const LoggedOutLayout = ({
           </header>
           <div className={styles['content-container']}>
             <main id="content">
-              <div id="orejimeElement" />
               <div className={cn(styles.content, styles[`content-logged-out`])}>
                 <MainHeading mainHeading={mainHeading} />
                 {children}

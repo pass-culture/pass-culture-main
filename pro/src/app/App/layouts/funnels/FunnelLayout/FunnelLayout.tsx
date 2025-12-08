@@ -38,7 +38,6 @@ export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
             <main id="content">
-              <div id="orejimeElement" />
               <div className={styles.content}>
                 <MainHeading mainHeading={mainHeading} />
                 {children}
