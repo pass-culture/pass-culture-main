@@ -80,7 +80,7 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       NEW_MAINTENANCE_BRANCH: maint/v${{ needs.prepare-variables.outputs.releaseNumber }}
-      OLD_MAINTENANCE_BRANCH: maint/v$(({{ needs.prepare-variables.outputs.releaseNumber }}-2))
+      OLD_MAINTENANCE_BRANCH: maint/v((${{ needs.prepare-variables.outputs.releaseNumber }}-2))
     steps:
       - name: "Checkout new tag"
         uses: actions/checkout@v6
@@ -114,7 +114,7 @@ jobs:
     with:
       channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
       color: "#D4AD3B"
-      message: ":github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a échoué"
+      message: ":github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a rencontré un problème"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
