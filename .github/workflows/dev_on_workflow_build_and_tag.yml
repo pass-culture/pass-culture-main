@@ -69,34 +69,6 @@ jobs:
       GIT_CONFIG_NAME: ${{ github.actor }}
       TAG_NAME: v${{ inputs.tag_number }}
     steps:
-      - name: Checkout ref
-        uses: actions/checkout@v6
-        with:
-          ref: ${{ inputs.base_ref }}
-
-      - name: Add version to api
-        working-directory: api
-        run: |
-          echo "${{ inputs.tag_number }}" > version.txt
-          git add version.txt
-
-      - name: Add version to pro
-        working-directory: pro
-        run: |
-          yarn version --new-version "${{ inputs.tag_number }}"
-          git add package.json
-
-      - name: Add version to image-resizing
-        working-directory: app-engine/image-resizing
-        run: |
-          echo "${{ inputs.tag_number }}" > version.txt
-          git add version.txt
-
-      - name: Configure git author
-        run: |
-          git config --global user.email "$GIT_CONFIG_EMAIL"
-          git config --global user.name "$GIT_CONFIG_NAME"
-
       - name: Authenticate through github app ghactionci
         uses: actions/create-github-app-token@7e473efe3cb98aa54f8d4bac15400b15fad77d94 # v2.2.0
         id: github-token
@@ -106,6 +78,44 @@ jobs:
           owner: ${{ github.repository_owner }}
           repositories: pass-culture-main
           permission-contents: write
+
+      - name: Checkout ref
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.base_ref }}
+
+      - name: Add version to api
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        working-directory: api
+        run: |
+          echo "${{ inputs.tag_number }}" > version.txt
+          git add version.txt
+
+      - name: Add version to pro
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        working-directory: pro
+        run: |
+          yarn version --new-version "${{ inputs.tag_number }}"
+          git add package.json
+
+      - name: Add version to image-resizing
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        working-directory: app-engine/image-resizing
+        run: |
+          echo "${{ inputs.tag_number }}" > version.txt
+          git add version.txt
+
+      - name: Configure git author
+        env:
+          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        run: |
+          git config --global user.email "$GIT_CONFIG_EMAIL"
+          git config --global user.name "$GIT_CONFIG_NAME"
 
       - name: Tag Release with github app # so that another workflow can be triggered on push
         env:
