@@ -17,7 +17,7 @@ jobs:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
-        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `$GITHUB_REF_NAME` est lancée"
+        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ GITHUB_REF_NAME }}` est lancée"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -46,7 +46,7 @@ jobs:
       CHANNEL: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
-      REF: $GITHUB_REF_NAME
+      REF: ${{ GITHUB_REF_NAME }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-integration-release:
@@ -60,7 +60,7 @@ jobs:
       ENV: integration
       CHANNEL: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       EXPIRES: "30d"
-      REF: $GITHUB_REF_NAME
+      REF: ${{ GITHUB_REF_NAME }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-production-release:
@@ -74,7 +74,7 @@ jobs:
       ENV: production
       CHANNEL: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       EXPIRES: "30d"
-      REF: $GITHUB_REF_NAME
+      REF: ${{ GITHUB_REF_NAME }}
       PUSH_RELEASE_TO_SENTRY: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
@@ -109,13 +109,13 @@ jobs:
       channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
-        ':github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `$GITHUB_REF_NAME` a réussi'
+        ':github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ GITHUB_REF_NAME }}` a réussi'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   end-slack-failure-notification:
-    name: "Send workflow end success"
+    name: "Send workflow end failure"
     needs: [create-pro-staging-release,create-pro-integration-release,create-pro-production-release,deploy-staging]
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
@@ -123,7 +123,7 @@ jobs:
       channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
-        ':github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `$GITHUB_REF_NAME` a échoué'
+        ':github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ GITHUB_REF_NAME }}` a échoué'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
