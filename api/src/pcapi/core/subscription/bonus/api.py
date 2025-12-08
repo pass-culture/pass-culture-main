@@ -21,7 +21,7 @@ QUOTIENT_FAMILIAL_THRESHOLD = 3000
 def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     """
     Gets the lowest Quotient Familial from the fraud check custodian, over the fraud check beneficiary seventeenth year,
-    and updates the fraud check. If the Quotient Familial is eligible, then gives the bonus recredit to the beneficiary.
+    and updates the fraud check. Then gives the bonus recredit to the beneficiary if eligible.
     """
     user = quotient_familial_fraud_check.user
     if not deposit_api.can_receive_bonus_credit(user):
@@ -82,16 +82,7 @@ def _get_user_quotient_familial_content(
     MONTHS_IN_A_YEAR = 12
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = sixteenth_birthday + relativedelta(months=month_offset)
-        quotient_familial_at_date = api_particulier.get_quotient_familial(
-            last_name=custodian.last_name,
-            first_names=custodian.first_names,
-            common_name=custodian.common_name,
-            birth_date=custodian.birth_date,
-            gender=custodian.gender,
-            country_insee_code=custodian.birth_country_cog_code,
-            city_insee_code=custodian.birth_city_cog_code,
-            quotient_familial_date=at_date,
-        )
+        quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
 
         if _is_user_part_of_tax_household(user, quotient_familial_at_date):
             quotient_familial_responses.append(quotient_familial_at_date)
