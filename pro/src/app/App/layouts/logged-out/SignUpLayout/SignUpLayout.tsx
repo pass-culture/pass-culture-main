@@ -90,7 +90,6 @@ export const SignUpLayout = ({ children, mainHeading }: SignUpLayoutProps) => {
               />
             </NavLink>
             <main id="content">
-              <div id="orejimeElement" />
               <div className={cn(styles.content, styles[`content-sign-up`])}>
                 <MainHeading mainHeading={mainHeading} />
                 {children}

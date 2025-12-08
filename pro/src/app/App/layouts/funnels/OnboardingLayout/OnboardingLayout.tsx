@@ -82,7 +82,6 @@ export const OnboardingLayout = ({
             )}
           >
             <main id="content">
-              <div id="orejimeElement" />
               <div
                 className={cn(
                   styles['content'],
