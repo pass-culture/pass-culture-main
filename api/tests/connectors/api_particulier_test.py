@@ -9,27 +9,28 @@ import pytest
 
 from pcapi import settings
 from pcapi.connectors import api_particulier
+from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.users import models as users_models
 
 from tests.core.subscription.bonus.bonus_fixtures import QUOTIENT_FAMILIAL_FIXTURE
 
 
 def test_get_quotient_familial_for_french_household(requests_mock):
-    requests_mock.get(
-        api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
-        json=QUOTIENT_FAMILIAL_FIXTURE,
-    )
-
-    quotient_familial_response = api_particulier.get_quotient_familial(
+    custodian = subscription_factories.QuotientFamilialCustodianFactory(
         last_name="lefebvre",
         common_name=None,
         first_names=["aleixs", "gréôme", "jean-philippe"],
         birth_date=date(1982, 12, 27),
         gender=users_models.GenderEnum.F,
-        country_insee_code="99100",
-        city_insee_code="08480",
-        quotient_familial_date=date(2023, 6, 1),
+        birth_country_cog_code="99100",
+        birth_city_cog_code="08480",
     )
+    requests_mock.get(
+        api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+        json=QUOTIENT_FAMILIAL_FIXTURE,
+    )
+
+    quotient_familial_response = api_particulier.get_quotient_familial(custodian, date(2023, 6, 1))
 
     post_request = requests_mock.last_request
     assert post_request.qs == {
@@ -77,42 +78,36 @@ def test_get_quotient_familial_for_french_household(requests_mock):
 
 
 def test_get_quotient_familial_for_french_born_custodian_without_city_code(requests_mock):
+    custodian = subscription_factories.QuotientFamilialCustodianFactory(
+        birth_country_cog_code="99100", birth_city_cog_code=""
+    )
     requests_mock.get(
         api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
         json=QUOTIENT_FAMILIAL_FIXTURE,
     )
 
     with pytest.raises(ValueError) as exception:
-        api_particulier.get_quotient_familial(
-            last_name="lefebvre",
-            common_name=None,
-            first_names=["aleixs", "gréôme", "jean-philippe"],
-            birth_date=date(1982, 12, 27),
-            gender=users_models.GenderEnum.F,
-            country_insee_code=api_particulier.FRANCE_INSEE_CODE,
-            city_insee_code=None,
-            quotient_familial_date=date(2023, 6, 1),
-        )
+        api_particulier.get_quotient_familial(custodian, date(2023, 6, 1))
 
         assert "City INSEE code is mandatory when the custodian is born in France" in str(exception)
 
 
 def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(requests_mock):
-    requests_mock.get(
-        api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
-        json=QUOTIENT_FAMILIAL_FIXTURE,
-    )
-
-    api_particulier.get_quotient_familial(
+    custodian = subscription_factories.QuotientFamilialCustodianFactory(
         last_name="lefebvre",
         common_name=None,
         first_names=["aleixs", "gréôme", "jean-philippe"],
         birth_date=date(1982, 12, 27),
         gender=users_models.GenderEnum.F,
-        country_insee_code="99243",
-        city_insee_code="ignore me",
-        quotient_familial_date=date(2023, 6, 1),
+        birth_country_cog_code="99243",
+        birth_city_cog_code="ignore me",
     )
+    requests_mock.get(
+        api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,
+        json=QUOTIENT_FAMILIAL_FIXTURE,
+    )
+
+    api_particulier.get_quotient_familial(custodian, date(2023, 6, 1))
 
     post_request = requests_mock.last_request
     assert post_request.qs == {
@@ -139,16 +134,8 @@ def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(reque
     ],
 )
 def test_quotient_familial_error(requests_mock, status_code, exception):
+    custodian = subscription_factories.QuotientFamilialCustodianFactory()
     requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=status_code)
 
     with pytest.raises(exception):
-        api_particulier.get_quotient_familial(
-            last_name="lefebvre",
-            common_name=None,
-            first_names=["aleixs", "gréôme", "jean-philippe"],
-            birth_date=date(1982, 12, 27),
-            gender=users_models.GenderEnum.F,
-            country_insee_code="99100",
-            city_insee_code="08480",
-            quotient_familial_date=date(2023, 6, 1),
-        )
+        api_particulier.get_quotient_familial(custodian, date(2023, 6, 1))

@@ -789,7 +789,6 @@ class BonusTest:
                 "birth_country_cog_code": "91100",
                 "birth_city_cog_code": "08480",
             },
-            "quotient_familial": None,
         }
 
         mocked_task.assert_called_once()

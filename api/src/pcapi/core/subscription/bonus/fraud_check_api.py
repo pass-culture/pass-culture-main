@@ -35,7 +35,7 @@ def create_bonus_credit_fraud_check(
         status=subscription_models.FraudCheckStatus.STARTED,
         reason=origin,
         thirdPartyId=f"qf-bonus-credit-{user.id}",
-        resultContent=fraud_check_content.model_dump(),
+        resultContent=fraud_check_content.model_dump(exclude_unset=True),
         eligibilityType=user.eligibility,
     )
     db.session.add(fraud_check)

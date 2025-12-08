@@ -155,9 +155,8 @@ class QuotientFamilialCustodianFactory(factory.Factory):
     common_name: str | None = None
     birth_date = factory.Faker("date_of_birth", minimum_age=20)
     gender = users_models.GenderEnum.F
-    birth_country_cog_code = "91100"
+    birth_country_cog_code = "99100"
     birth_city_cog_code = "08480"
-    quotient_familial: None = None
 
 
 class QuotientFamilialBonusCreditContentFactory(factory.Factory):
