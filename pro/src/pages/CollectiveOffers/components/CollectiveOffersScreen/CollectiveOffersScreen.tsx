@@ -9,7 +9,7 @@ import {
   isCollectiveOfferBookable,
 } from '@/commons/core/OfferEducational/types'
 import {
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_OFFERS_TO_DISPLAY,
   MAX_TOTAL_PAGES,
@@ -92,10 +92,9 @@ export const CollectiveOffersScreen = ({
   const hasOffers = currentPageOffersSubset.length > 0
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
-    defaultFilters: DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+    defaultFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ignore: [
       'name',
-      'collectiveOfferType',
       ...((withSwitchVenueFeature
         ? ['venueId']
         : []) satisfies (keyof CollectiveSearchFiltersParams)[]),
@@ -147,7 +146,7 @@ export const CollectiveOffersScreen = ({
   const resetFilters = (resetName = true) => {
     onResetFilters(resetName)
     const newFilters = {
-      ...DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       ...(!resetName && { name: initialSearchFilters.name }),
     }
     setSelectedFilters(newFilters)

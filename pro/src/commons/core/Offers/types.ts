@@ -33,17 +33,10 @@ export type CollectiveSearchFiltersParams = SearchListParams & {
   // TODO (igabriele, 2025-11-07): Should be a number. "all" is a case that will disappear once `WIP_SWITCH_VENUE` is enabled in production.
   venueId: string | 'all'
   status: CollectiveOfferDisplayedStatus[]
-  collectiveOfferType: CollectiveOfferTypeEnum
   periodBeginningDate: string
   periodEndingDate: string
   locationType?: string
   offererAddressId?: string
-}
-
-export enum CollectiveOfferTypeEnum {
-  ALL = 'all',
-  OFFER = 'offer',
-  TEMPLATE = 'template',
 }
 
 export interface CategorySubtypeItem {

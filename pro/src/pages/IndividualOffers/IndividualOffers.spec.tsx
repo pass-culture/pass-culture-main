@@ -202,7 +202,6 @@ describe('IndividualOffers', () => {
             null,
             null,
             null,
-            undefined,
             null
           )
         })
@@ -279,7 +278,6 @@ describe('IndividualOffers', () => {
             null,
             null,
             null,
-            undefined,
             null
           )
         })
@@ -315,7 +313,6 @@ describe('IndividualOffers', () => {
             null,
             null,
             null,
-            undefined,
             2
           )
         })
@@ -354,7 +351,6 @@ describe('IndividualOffers', () => {
             null,
             null,
             null,
-            undefined,
             null
           )
         })
@@ -389,7 +385,6 @@ describe('IndividualOffers', () => {
             'imported',
             null,
             null,
-            undefined,
             null
           )
         })
@@ -420,7 +415,6 @@ describe('IndividualOffers', () => {
             null,
             '2020-12-25',
             null,
-            undefined,
             null
           )
         })
@@ -448,7 +442,6 @@ describe('IndividualOffers', () => {
             null,
             null,
             '2020-12-27',
-            undefined,
             null
           )
         })
@@ -499,7 +492,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           null
         )
       })
@@ -526,7 +518,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           null
         )
       })
@@ -561,7 +552,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           2
         )
       })
@@ -611,7 +601,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           null
         )
       })
@@ -647,7 +636,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           null
         )
       })
@@ -679,7 +667,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           null
         )
       })
@@ -709,7 +696,6 @@ describe('IndividualOffers', () => {
           'manual',
           null,
           null,
-          undefined,
           null
         )
       })
@@ -745,7 +731,6 @@ describe('IndividualOffers', () => {
         'manual',
         null,
         null,
-        undefined,
         null
       )
     })
@@ -859,7 +844,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           2
         )
       })
@@ -881,7 +865,6 @@ describe('IndividualOffers', () => {
         null,
         null,
         null,
-        undefined,
         null
       )
     })
@@ -929,7 +912,6 @@ describe('IndividualOffers', () => {
           null,
           null,
           null,
-          undefined,
           2
         )
       })
@@ -949,7 +931,6 @@ describe('IndividualOffers', () => {
         null,
         null,
         null,
-        undefined,
         null
       )
     })
@@ -991,7 +972,6 @@ describe('IndividualOffers', () => {
         null,
         null,
         null,
-        undefined,
         offererAddress[1].id
       )
     })

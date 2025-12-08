@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import {
   COLLECTIVE_OFFER_SUBTYPE,
   COLLECTIVE_OFFER_SUBTYPE_DUPLICATE,
-  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
@@ -62,7 +62,7 @@ export const OfferTypeScreen = () => {
       COLLECTIVE_OFFER_SUBTYPE_DUPLICATE.DUPLICATE
     ) {
       const apiFilters = {
-        ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+        ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
         offererId: selectedOffererId.toString(),
         venueId: withSwitchVenueFeature
           ? selectedVenue.id.toString()

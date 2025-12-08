@@ -3,7 +3,7 @@ import { useState } from 'react'
 import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import type { CollectiveOffersSortingColumn } from '@/commons/core/OfferEducational/types'
 import {
-  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   DEFAULT_PAGE,
   MAX_OFFERS_TO_DISPLAY,
   MAX_TOTAL_PAGES,
@@ -72,10 +72,9 @@ export const TemplateCollectiveOffersScreen = ({
   const hasOffers = currentPageOffersSubset.length > 0
   const hasFilters = hasCollectiveSearchFilters({
     searchFilters: initialSearchFilters,
-    defaultFilters: DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    defaultFilters: DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     ignore: [
       'name',
-      'collectiveOfferType',
       ...((withSwitchVenueFeature
         ? ['venueId']
         : []) satisfies (keyof CollectiveSearchFiltersParams)[]),
@@ -131,7 +130,7 @@ export const TemplateCollectiveOffersScreen = ({
   const resetFilters = (resetName = true) => {
     onResetFilters(resetName)
     const newFilters = {
-      ...DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+      ...DEFAULT_COLLECTIVE_SEARCH_FILTERS,
       ...(!resetName && { name: initialSearchFilters.name }),
     }
     setSelectedFilters(newFilters)

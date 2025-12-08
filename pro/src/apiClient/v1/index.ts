@@ -51,7 +51,6 @@ export type { CollectiveOfferResponseModel } from './models/CollectiveOfferRespo
 export type { CollectiveOfferStockResponseModel } from './models/CollectiveOfferStockResponseModel';
 export { CollectiveOfferTemplateAllowedAction } from './models/CollectiveOfferTemplateAllowedAction';
 export type { CollectiveOfferTemplateResponseModel } from './models/CollectiveOfferTemplateResponseModel';
-export { CollectiveOfferType } from './models/CollectiveOfferType';
 export type { CollectiveRevenue } from './models/CollectiveRevenue';
 export type { CollectiveStockCreationBodyModel } from './models/CollectiveStockCreationBodyModel';
 export type { CollectiveStockEditionBodyModel } from './models/CollectiveStockEditionBodyModel';

@@ -9,7 +9,7 @@ import {
 import {
   ALL_FORMATS_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,
-  DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
@@ -82,7 +82,7 @@ export const CollectiveOffersSearchFilters = ({
   const {
     periodBeginningDate: defaultPeriodBeginningDate,
     periodEndingDate: defaultPeriodEndingDate,
-  } = DEFAULT_COLLECTIVE_BOOKABLE_SEARCH_FILTERS
+  } = DEFAULT_COLLECTIVE_SEARCH_FILTERS
 
   const onBeginningDateChange = (periodBeginningDate: string) => {
     const dateToFilter =

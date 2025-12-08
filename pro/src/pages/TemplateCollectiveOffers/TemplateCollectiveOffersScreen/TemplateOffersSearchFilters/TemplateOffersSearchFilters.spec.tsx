@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 
-import { CollectiveOfferTypeEnum } from '@/commons/core/Offers/types'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { TemplateOffersSearchFilters } from './TemplateOffersSearchFilters'
@@ -21,7 +20,6 @@ describe('TemplateOffersSearchFilters', () => {
           venueId: '',
           format: 'all',
           status: [],
-          collectiveOfferType: CollectiveOfferTypeEnum.TEMPLATE,
           periodBeginningDate: '',
           periodEndingDate: '',
           locationType: undefined,

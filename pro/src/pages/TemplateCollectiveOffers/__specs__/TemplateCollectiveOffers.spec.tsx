@@ -11,10 +11,7 @@ import {
   type CollectiveOfferTemplateResponseModel,
   type GetOffererAddressResponseModel,
 } from '@/apiClient/v1'
-import {
-  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
-  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
-} from '@/commons/core/Offers/constants'
+import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
@@ -41,12 +38,12 @@ const offererAddress: GetOffererAddressResponseModel[] = [
 ]
 
 const renderOffers = async (
-  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  filters: Partial<CollectiveSearchFiltersParams> = DEFAULT_COLLECTIVE_SEARCH_FILTERS,
   features: string[] = []
 ) => {
   const route = computeCollectiveOffersUrl(
     filters,
-    DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+    DEFAULT_COLLECTIVE_SEARCH_FILTERS,
     true
   )
 

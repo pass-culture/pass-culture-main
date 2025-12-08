@@ -9,7 +9,7 @@ import {
 import {
   ALL_FORMATS_OPTION,
   ALL_OFFERER_ADDRESS_OPTION,
-  DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS,
+  DEFAULT_COLLECTIVE_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
@@ -119,7 +119,7 @@ export const TemplateOffersSearchFilters = ({
     const dateToFilter =
       periodBeginningDate !== ''
         ? periodBeginningDate
-        : DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.periodBeginningDate
+        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodBeginningDate
     updateSearchFilters({ periodBeginningDate: dateToFilter })
   }
 
@@ -127,7 +127,7 @@ export const TemplateOffersSearchFilters = ({
     const dateToFilter =
       periodEndingDate !== ''
         ? periodEndingDate
-        : DEFAULT_COLLECTIVE_TEMPLATE_SEARCH_FILTERS.periodEndingDate
+        : DEFAULT_COLLECTIVE_SEARCH_FILTERS.periodEndingDate
     updateSearchFilters({ periodEndingDate: dateToFilter })
   }
 
