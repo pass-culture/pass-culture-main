@@ -7,6 +7,7 @@ import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
 import * as useNotification from '@/commons/hooks/useNotification'
 
+import { MAX_ITEMS_DOWNLOAD } from './InvoiceDownloadActionsButton'
 import { InvoiceTable } from './InvoiceTable'
 
 vi.mock('@/app/App/analytics/firebase', () => ({
@@ -138,17 +139,20 @@ describe('InvoiceTable', () => {
     ])
   })
 
-  it('shows error when downloading more than 24 invoices', async () => {
+  it(`shows error when downloading more than ${MAX_ITEMS_DOWNLOAD} invoices`, async () => {
     const user = userEvent.setup()
 
-    const manyInvoices = Array.from({ length: 25 }, (_, i) => ({
-      reference: `INV-${i + 1}`,
-      date: '2024-06-01',
-      amount: 100,
-      bankAccountLabel: 'Bank A',
-      cashflowLabels: [`CF-${i + 1}`],
-      url: '',
-    }))
+    const manyInvoices = Array.from(
+      { length: MAX_ITEMS_DOWNLOAD + 1 },
+      (_, i) => ({
+        reference: `INV-${i + 1}`,
+        date: '2024-06-01',
+        amount: 100,
+        bankAccountLabel: 'Bank A',
+        cashflowLabels: [`CF-${i + 1}`],
+        url: '',
+      })
+    )
 
     renderReimbursementsInvoicesTable(manyInvoices)
 
@@ -156,7 +160,7 @@ describe('InvoiceTable', () => {
     await user.click(screen.getByText('Télécharger les justificatifs'))
 
     expect(notifyError).toHaveBeenCalledWith(
-      'Vous ne pouvez pas télécharger plus de 24 documents en une fois.'
+      `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
     )
   })
 

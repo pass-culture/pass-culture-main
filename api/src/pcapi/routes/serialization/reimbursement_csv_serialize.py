@@ -293,7 +293,7 @@ class InvoiceList(ConstrainedList):
     __args__ = (str,)  # required by pydantic
     item_type = str
     unique_items = True
-    max_items = 24
+    max_items = 75
 
 
 class ReimbursementCsvByInvoicesModel(BaseModel):

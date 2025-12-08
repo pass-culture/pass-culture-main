@@ -20,6 +20,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
+import { MAX_ITEMS_DOWNLOAD } from './InvoiceTable/InvoiceDownloadActionsButton'
 import { ReimbursementsInvoices } from './ReimbursementsInvoices'
 
 const mockLogEvent = vi.fn()
@@ -353,10 +354,10 @@ describe('reimbursementsWithFilters', () => {
     )
   })
 
-  it('should block download several invoices at same time for more than 24 invoices', async () => {
+  it(`should block download several invoices at same time for more than ${MAX_ITEMS_DOWNLOAD} invoices`, async () => {
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
     vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(
-      new Array(25).fill(null).map((_, i) => ({
+      new Array(MAX_ITEMS_DOWNLOAD + 1).fill(null).map((_, i) => ({
         reference: `J${i + 1}`,
         date: '2022-11-02',
         amount: 100,
