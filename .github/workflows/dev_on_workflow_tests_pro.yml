@@ -25,6 +25,10 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: "pro/package.json"
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+        with:
+          version: "1.2.2"
+          checksum: "db58cbdebb132f3172cd872ef1a3de407cd59d9fe16ce058f87ab43a4b49f799"
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
