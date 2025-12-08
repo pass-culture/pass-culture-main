@@ -304,11 +304,6 @@ def serialize_capped_offers(paginated_offers: list[offers_models.Offer]) -> list
     return [_serialize_offer_paginated(offer) for offer in paginated_offers]
 
 
-class CollectiveOfferType(enum.Enum):
-    offer = "offer"
-    template = "template"
-
-
 class ListOffersQueryModel(BaseModel):
     # We should not use an alias nameOrIsbn, but ListOffersQueryModel is used
     # by the pro front for individual and collective search and most of the logic
