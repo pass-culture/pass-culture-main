@@ -17,61 +17,75 @@ jobs:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
-        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` est lancée"
+        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `$GITHUB_REF_NAME` est lancée"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  prepare-variables:
+    name: "Get version without v"
+    runs-on: ubuntu-22.04
+    outputs:
+      releaseNumber: ${{ steps.version.outputs.releaseNumber }}
+    steps:
+      - name: Write release version
+        id: version
+        run: |
+          releaseNumber=${GITHUB_REF_NAME#v}
+          echo "releaseNumber=$VERSION" >> $GITHUB_ENV
 
   create-pro-staging-release:
     name: "Pro staging"
+    needs: prepare-variables
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: staging
-      CHANNEL: "${{ github.ref_name }}"
+      CHANNEL: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       EXPIRES: "30d"
       PUSH_RELEASE_TO_SENTRY: true
-      REF: ${{ github.ref_name }}
+      REF: $GITHUB_REF_NAME
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-integration-release:
     name: "Pro integration"
+    needs: prepare-variables
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: integration
-      CHANNEL: "${{ github.ref_name }}"
+      CHANNEL: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       EXPIRES: "30d"
-      REF: ${{ github.ref_name }}
+      REF: $GITHUB_REF_NAME
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   create-pro-production-release:
     name: "Pro production"
+    needs: prepare-variables
     uses: ./.github/workflows/dev_on_workflow_deploy_pro_pr_version_generic.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
     with:
       ENV: production
-      CHANNEL: "${{ github.ref_name }}"
+      CHANNEL: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       EXPIRES: "30d"
-      REF: ${{ github.ref_name }}
+      REF: $GITHUB_REF_NAME
       PUSH_RELEASE_TO_SENTRY: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
 
   deploy-staging:
     name: "Deploy on staging environnement"
-    needs: [create-pro-staging-release,create-pro-integration-release,create-pro-production-release]
+    needs: [prepare-variables,create-pro-staging-release,create-pro-integration-release,create-pro-production-release]
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: staging
-      app_version: ${{ github.ref_name }}
+      app_version: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       cluster_scope: metier
       cluster_environment: ehp
       workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
@@ -95,7 +109,7 @@ jobs:
       channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
-        ':github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a réussi'
+        ':github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `$GITHUB_REF_NAME` a réussi'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -109,7 +123,7 @@ jobs:
       channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
-        ':github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a échoué'
+        ':github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `$GITHUB_REF_NAME` a échoué'
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
