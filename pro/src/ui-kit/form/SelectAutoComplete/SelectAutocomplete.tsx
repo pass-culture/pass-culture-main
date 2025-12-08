@@ -42,8 +42,6 @@ type CommonProps = {
   className?: string
   /** Error message to display */
   error?: string
-  /** Hides the dropdown arrow */
-  hideArrow?: boolean
   /** Called when the selected value changes */
   onChange?(e: CustomEvent<'change'>): void
   /** Called when the input loses focus */
@@ -85,7 +83,6 @@ export const SelectAutocomplete = forwardRef(
       className,
       disabled = false,
       name,
-      hideArrow,
       required = true,
       label,
       options,
@@ -105,7 +102,6 @@ export const SelectAutocomplete = forwardRef(
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
     const [searchField, setSearchField] = useState('') // Represents the <input type="search"> value while typing (e.g. "Alpes de Ha…")
-    const [field, setField] = useState(inputValue ?? '') // Represents the actual selected <option>’s "value" attribute among the options (e.g. "04")
     const [isDropdownOpen, setIsDropdownOpen] = useState(false)
     const [hoveredOptionIndex, setHoveredOptionIndex] = useState<number | null>(
       null
@@ -117,7 +113,6 @@ export const SelectAutocomplete = forwardRef(
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null) // Ref for "searchField"
     const listRef = useRef<HTMLUListElement>(null) // Ref for <ul> dropdown
-    const selectRef = useRef<HTMLSelectElement>(null) // Ref for hidden <select> (a11y)
 
     // Hydrates the hashtables (computed at 1st render only)
     useEffect(() => {
@@ -133,7 +128,6 @@ export const SelectAutocomplete = forwardRef(
     // Handles "resetOnOpen" behavior
     useEffect(() => {
       if (resetOnOpen && isDropdownOpen) {
-        setField('')
         setSearchField('')
         onReset()
       }
@@ -177,42 +171,35 @@ export const SelectAutocomplete = forwardRef(
       switch (event.key) {
         case 'ArrowUp':
           if (hoveredOptionIndex !== null) {
-            if (hoveredOptionIndex <= 0) {
-              setHoveredOptionIndex(null)
-            } else {
-              //  Activate and scroll to the previous element in the list
-              const newIndex = hoveredOptionIndex - 1
-              setHoveredOptionIndex(newIndex)
-              const nextHoveredElement =
-                listRef.current?.getElementsByTagName('li')[newIndex]
-              nextHoveredElement?.scrollIntoView({ block: 'nearest' })
-            }
-          }
-          if (!isDropdownOpen) {
-            setIsDropdownOpen(true)
+            event.preventDefault()
+
+            //  Activate and scroll to the previous element in the list
+            const newIndex =
+              (hoveredOptionIndex - 1 + filteredOptions.length) %
+              filteredOptions.length
+
+            setHoveredOptionIndex(newIndex)
+            const nextHoveredElement =
+              listRef.current?.getElementsByTagName('li')[newIndex]
+            nextHoveredElement?.scrollIntoView({ block: 'nearest' })
           }
           break
         case 'ArrowDown':
+          openDropdown()
           if (hoveredOptionIndex === null) {
             if (filteredOptions.length > 0) {
               setHoveredOptionIndex(0)
             }
           } else {
             //  Activate and scroll to the next element in the list
-            const newIndex = Math.min(
-              filteredOptions.length - 1,
-              hoveredOptionIndex + 1
-            )
+            const newIndex = (hoveredOptionIndex + 1) % filteredOptions.length
+
             setHoveredOptionIndex(newIndex)
             const nextHoveredElement =
               listRef.current?.getElementsByTagName('li')[newIndex]
             nextHoveredElement?.scrollIntoView({ block: 'nearest' })
           }
-          if (!isDropdownOpen) {
-            setIsDropdownOpen(true)
-          }
           break
-        case ' ':
         case 'Enter':
           if (
             isDropdownOpen &&
@@ -226,8 +213,13 @@ export const SelectAutocomplete = forwardRef(
           }
           break
         case 'Escape':
-          setHoveredOptionIndex(null)
-          setIsDropdownOpen(false)
+          event.preventDefault()
+          if (isDropdownOpen) {
+            setHoveredOptionIndex(null)
+            setIsDropdownOpen(false)
+          } else {
+            setSearchField('')
+          }
           break
         case 'Tab':
           setHoveredOptionIndex(null)
@@ -240,7 +232,6 @@ export const SelectAutocomplete = forwardRef(
 
     // When an option is chosen
     const selectOption = (value: string) => {
-      setField(value)
       setSearchField(optionsLabelById.current?.get(value) ?? '')
 
       // Notify changes up to the parent component
@@ -262,8 +253,8 @@ export const SelectAutocomplete = forwardRef(
         setIsDropdownOpen(true)
       } else {
         setIsDropdownOpen(false)
-        setSearchField('')
       }
+      inputRef.current?.focus()
     }
 
     // When the inputRef's value changes externally
@@ -277,7 +268,6 @@ export const SelectAutocomplete = forwardRef(
       setSearchField(
         optionsLabelById.current?.get(externalValue) ?? externalValue
       )
-      setField(externalValue) // Provokes a re-render and also updates the hidden <select> element connected to the "field" (a11y)
     }, [inputRef, inputValue, ref])
 
     // Connect the external reference to the internal one "inputRef", so we can read it's value in the "useEffect" above
@@ -293,114 +283,81 @@ export const SelectAutocomplete = forwardRef(
         showError={!!error}
         description={description}
       >
-        {/** biome-ignore lint/a11y/noStaticElementInteractions: Seems to be the only solution for this pattern */}
         <div
           className={classNames(
             styles['multi-select-autocomplete-container'],
             className
           )}
-          onKeyDown={handleKeyDown}
           ref={containerRef}
         >
           {/* Search field */}
-          <input
-            {...(hoveredOptionIndex !== null && {
-              'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
-            })}
-            onClick={openDropdown}
-            onFocus={openDropdown}
-            className={classNames(
-              styles['multi-select-autocomplete-placeholder-input'],
-              {
-                [styles['has-error']]: Boolean(error),
-              }
-            )}
-            type="search"
-            disabled={disabled}
-            aria-autocomplete="list"
-            aria-controls={`list-${name}`}
-            aria-describedby={`help-${name}`}
-            id={name}
-            aria-expanded={isDropdownOpen}
-            aria-haspopup="listbox"
-            aria-required={required}
-            role="combobox"
-            value={searchField}
-            autoComplete="off"
-            ref={inputRef}
-            name={name}
-            onChange={(e) => {
-              setSearchField(e.target.value)
-
-              onChange({
-                type: 'change',
-                target: { name, value: e.target.value },
-              })
-            }}
-            onBlur={(e) => {
-              setSearchField(e.target.value)
-
-              // Check if value is part of the hashtable before notify the parent
-              // This is necessary because user can type anything in the "searchField" and then "blur" the field
-              // If the specified value isn't in the valid options hastable, we send an empty string instead and let the parent deal with it
-              const value = optionsIdByLabel.current?.get(e.target.value) ?? ''
-
-              onBlur({
-                type: 'blur',
-                target: { name, value },
-              })
-            }}
-          />
-
-          {/* START : Accessibility for voice synthesis */}
           <div
-            aria-live="polite"
-            aria-relevant="text"
-            className={styles['visually-hidden']}
-            id={`help-${name}`}
-          >
-            {field !== '' &&
-              `Option sélectionnée : ${options.find((op) => op.value === inputValue)?.label ?? ''}. `}
-            {isDropdownOpen
-              ? `${filteredOptions.length} options ${
-                  searchField === ''
-                    ? 'disponibles. '
-                    : 'correspondant au texte saisi. '
-                }`
-              : 'Saisissez du texte pour afficher et filtrer les options.'}
-          </div>
-          <select
-            hidden
-            ref={selectRef}
-            value={field || ''}
-            onChange={() => noop} // Silent React warning that is irrelevant here
-            data-testid="select"
-            // No matter this is hidden,
-            // this is to fix : "A form field element should have an id or name attribute"
-            name={name}
-          >
-            {options.map(({ label, value }) => (
-              <option key={`option-${value}`} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-          {/* END : Accessibility for voice synthesis */}
-
-          {/* Dropdown options list */}
-          <div className={styles['field-overlay']}>
-            {!hideArrow && (
-              <Toggle
-                disabled={disabled}
-                isOpen={isDropdownOpen}
-                toggleField={toggleDropdown}
-              />
+            className={classNames(
+              styles['multi-select-autocomplete-input-container']
             )}
+          >
+            <input
+              {...(hoveredOptionIndex !== null && {
+                'aria-activedescendant': `option-display-${filteredOptions[hoveredOptionIndex]?.value}`,
+              })}
+              onClick={openDropdown}
+              className={classNames(
+                styles['multi-select-autocomplete-placeholder-input'],
+                {
+                  [styles['has-error']]: Boolean(error),
+                }
+              )}
+              onKeyDown={handleKeyDown}
+              type="search"
+              disabled={disabled}
+              aria-autocomplete="list"
+              aria-controls={`list-${name}`}
+              id={name}
+              aria-expanded={isDropdownOpen}
+              aria-haspopup="listbox"
+              aria-required={required}
+              role="combobox"
+              value={searchField}
+              ref={inputRef}
+              name={name}
+              onChange={(e) => {
+                setHoveredOptionIndex(null)
+                setSearchField(e.target.value)
+
+                onChange({
+                  type: 'change',
+                  target: { name, value: e.target.value },
+                })
+                openDropdown()
+              }}
+              onBlur={(e) => {
+                setSearchField(e.target.value)
+
+                // Check if value is part of the hashtable before notify the parent
+                // This is necessary because user can type anything in the "searchField" and then "blur" the field
+                // If the specified value isn't in the valid options hastable, we send an empty string instead and let the parent deal with it
+                const value =
+                  optionsIdByLabel.current?.get(e.target.value) ?? ''
+
+                onBlur({
+                  type: 'blur',
+                  target: { name, value },
+                })
+              }}
+            />
+            <Toggle
+              fieldName={name}
+              disabled={disabled}
+              isOpen={isDropdownOpen}
+              toggleField={toggleDropdown}
+            />
+          </div>
+
+          <div className={styles['field-overlay']}>
             {isDropdownOpen && (
               <OptionsList
                 className={className}
                 fieldName={name}
-                selectedValue={field}
                 filteredOptions={filteredOptions}
                 setHoveredOptionIndex={setHoveredOptionIndex}
                 listRef={listRef}

@@ -187,12 +187,12 @@ describe('CollectiveOfferVisibility', () => {
   it('should display details on selected institution', async () => {
     renderVisibilityStep(props)
 
-    //  Open the autocomplete select panel
-    await userEvent.click(
-      await screen.findByLabelText(
-        /Nom de l’établissement scolaire ou code UAI/
-      )
+    const institutionInput = await screen.findByLabelText(
+      /Nom de l’établissement scolaire ou code UAI/
     )
+
+    //  Open the autocomplete select panel
+    await userEvent.click(institutionInput)
 
     const optionsList = await screen.findByTestId('list')
     expect(optionsList).toBeInTheDocument()
@@ -205,11 +205,9 @@ describe('CollectiveOfferVisibility', () => {
     //  The panel should be closed
     expect(optionsList).not.toBeInTheDocument()
 
-    expect(
-      await screen.findByText(
-        'Collège Institution 1 - Gif-sur-Yvette - ABCDEF11'
-      )
-    ).toBeInTheDocument()
+    expect(institutionInput).toHaveValue(
+      'Collège Institution 1 - Gif-sur-Yvette - ABCDEF11'
+    )
   })
 
   it('should submit the form with right data', async () => {
@@ -412,11 +410,12 @@ describe('CollectiveOfferVisibility', () => {
           teacher: 'teacher.teach@example.com',
         },
       })
-      expect(
-        await screen.findByText(
-          /Option sélectionnée : Institution 2 - Paris - ABCDEF12/
-        )
-      ).toBeInTheDocument()
+
+      const institutionInput = await screen.findByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+
+      expect(institutionInput).toHaveValue('Institution 2 - Paris - ABCDEF12')
     })
 
     it('should prefill form with requested information', async () => {
@@ -454,14 +453,19 @@ describe('CollectiveOfferVisibility', () => {
         initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
       })
 
-      expect(
-        await screen.findByText(/Option sélectionnée : KHTEUR REDA/)
-      ).toBeInTheDocument()
-      expect(
-        screen.getByText(
-          /Option sélectionnée : LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13/
-        )
-      ).toBeInTheDocument()
+      const institutionInput = await screen.findByLabelText(
+        /Nom de l’établissement scolaire ou code UAI/
+      )
+
+      expect(institutionInput).toHaveValue(
+        'LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13'
+      )
+
+      const teacherInput = await screen.findByLabelText(
+        /Prénom et nom de l’enseignant/
+      )
+
+      expect(teacherInput).toHaveValue('Khteur Reda')
     })
 
     it('should display default institution error message when institution input is not empty but institution is null', async () => {

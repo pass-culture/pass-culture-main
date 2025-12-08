@@ -404,11 +404,7 @@ describe('VenueSettingsScreen', () => {
 
     await userEvent.click(addressSuggestion)
 
-    expect(
-      await screen.findByText('10 Rue des lilas 69002 Lyon', {
-        selector: 'option',
-      })
-    ).toBeInTheDocument()
+    expect(addressInput).toHaveValue('10 Rue des lilas 69002 Lyon')
 
     await userEvent.click(screen.getByText('Enregistrer'))
 
