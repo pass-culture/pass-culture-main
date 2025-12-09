@@ -79,7 +79,7 @@ def update_ubble_workflow_if_needed(
 
 @celery_async_task(
     name="tasks.ubble.default.store_id_picture",
-    model=ubble_schemas.UpdateWorkflowPayload,
+    model=ubble_schemas.StoreIdPicturePayload,
     autoretry_for=(ubble_connector.UbbleRateLimitedError, ubble_connector.UbbleServerError),
     max_per_time_window=settings.UBBLE_RATE_LIMIT,
     time_window_size=settings.UBBLE_TIME_WINDOW_SIZE,
