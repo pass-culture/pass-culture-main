@@ -20,5 +20,6 @@ pro:
 - changed-files:
     - any-glob-to-any-file: pro/**
 
+# Add 'ticket' label to any PR where the head branch name has a `PC` or 'pc' section in the name
 ticket:
- - head-branch: PC
+ - head-branch: ['PC', 'pc']
