@@ -24,6 +24,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.utils import get_or_404
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.routes.serialization import offerers_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -208,10 +209,28 @@ def get_offerer_bank_accounts_and_attached_venues(
     offerer_id: int,
 ) -> offerers_serialize.GetOffererBankAccountsResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
-    offerer_bank_accounts = repository.get_offerer_bank_accounts(offerer_id)
-    if not offerer_bank_accounts:
+    offerer = repository.get_offerer_with_bank_accounts(offerer_id)
+    if not offerer:
         raise ResourceNotFoundError()
-    return offerers_serialize.GetOffererBankAccountsResponseModel.from_orm(offerer_bank_accounts)
+
+    return offerers_serialize.GetOffererBankAccountsResponseModel(
+        id=offerer.id,
+        bank_accounts=[
+            finance_serialize.BankAccountResponseModel.model_validate(bank_account)
+            for bank_account in offerer.bankAccounts
+        ],
+        managed_venues=[
+            finance_serialize.ManagedVenue(
+                id=venue.id,
+                name=venue.name,
+                common_name=venue.common_name,
+                siret=venue.siret,
+                has_pricing_point=bool(venue.pricing_point_links),
+                bank_account_id=venue.bankAccountLinks[0].bankAccountId if venue.bankAccountLinks else None,
+            )
+            for venue in offerer.managedVenues
+        ],
+    )
 
 
 @private_api.route("/offerers/<int:offerer_id>/bank-accounts/<int:bank_account_id>", methods=["PATCH"])

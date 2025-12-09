@@ -11,7 +11,7 @@ import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import {
   defaultBankAccount,
   defaultGetOffererResponseModel,
-  defaultManagedVenues,
+  defaultManagedVenue,
   getOffererNameFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
@@ -243,7 +243,7 @@ describe('BankInformations page', () => {
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
       bankAccounts: [{ ...defaultBankAccount }],
-      managedVenues: [{ ...defaultManagedVenues }],
+      managedVenues: [{ ...defaultManagedVenue }],
     })
 
     renderBankInformations({

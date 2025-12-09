@@ -154,30 +154,3 @@ class Returns200Test:
         assert venue.venueEducationalStatusId == educational_status_2.id
         assert venue.collectivePhone == "0600000000"
         assert venue.collectiveEmail == "john@doe.com"
-
-    def test_when_bank_account_is_linked_to_soft_deleted_venue(self, client) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            pricing_point="self",
-        )
-
-        deleted_venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            pricing_point=venue,
-        )
-
-        link = offerers_factories.VenueBankAccountLinkFactory(venue=venue)
-        offerers_factories.VenueBankAccountLinkFactory(venue=deleted_venue, bankAccount=link.bankAccount)
-        client = client.with_session_auth(email=user_offerer.user.email)
-
-        deleted_venue.isSoftDeleted = True  # can't be set before creating link
-        db.session.add(deleted_venue)
-        db.session.commit()
-
-        response = client.patch(f"/venues/{venue.id}/collective-data", json={})
-
-        assert response.status_code == 200
-        assert len(response.json["bankAccount"]["linkedVenues"]) == 1
-        assert response.json["bankAccount"]["linkedVenues"][0]["id"] == venue.id

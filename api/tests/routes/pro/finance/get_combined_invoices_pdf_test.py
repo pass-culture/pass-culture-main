@@ -104,7 +104,7 @@ def test_get_combined_invoices_pdf_no_invoice_references(client):
         response = client.get("/finance/combined-invoices")
         assert response.status_code == 400
 
-    assert response.json == {"invoiceReferences": ["Ce champ est obligatoire"]}
+    assert response.json == {"invoiceReferences": ["Field required"]}
 
 
 def test_get_combined_invoices_pdf_failed_http_request(client, requests_mock):

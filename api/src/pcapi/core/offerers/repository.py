@@ -814,7 +814,7 @@ def get_offerer_and_extradata(offerer_id: int) -> models.Offerer | None:
     )
 
 
-def get_offerer_bank_accounts(offerer_id: int) -> models.Offerer | None:
+def get_offerer_with_bank_accounts(offerer_id: int) -> models.Offerer | None:
     """
     Return an Offerer with its accounting data and related venues:
 
