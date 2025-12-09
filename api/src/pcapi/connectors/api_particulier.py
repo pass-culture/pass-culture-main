@@ -1,4 +1,4 @@
-from datetime import date
+import datetime
 
 from pydantic import BaseModel
 from pydantic import field_validator
@@ -38,7 +38,7 @@ class QuotientFamilialPerson(BaseModel):
     nom_naissance: str
     nom_usage: str | None = None
     prenoms: str
-    date_naissance: date
+    date_naissance: datetime.date
     sexe: users_models.GenderEnum
 
     @field_validator("sexe", mode="before")
@@ -69,7 +69,7 @@ class QuotientFamilialResponse(BaseModel):
 
 
 def get_quotient_familial(
-    custodian: bonus_schemas.QuotientFamilialCustodian, at_date: date
+    custodian: bonus_schemas.QuotientFamilialCustodian, at_date: datetime.date | None = None
 ) -> QuotientFamilialResponse:
     """
     Get the Quotient Familial from a tax household, using a custodian personal information.
@@ -84,6 +84,9 @@ def get_quotient_familial(
     if country_insee_code != FRANCE_INSEE_CODE:
         city_insee_code = None
 
+    computation_year = at_date.year if at_date else None
+    computation_month = at_date.year if at_date else None
+
     query_params = {
         "recipient": settings.PASS_CULTURE_SIRET,
         "nomNaissance": custodian.last_name.upper(),
@@ -95,8 +98,8 @@ def get_quotient_familial(
         "sexeEtatCivil": custodian.gender.name,
         "codeCogInseePaysNaissance": country_insee_code,
         "codeCogInseeCommuneNaissance": city_insee_code,
-        "annee": at_date.year,
-        "mois": at_date.month,
+        "annee": computation_year,
+        "mois": computation_month,
     }
     response = requests.get(
         QUOTIENT_FAMILIAL_ENDPOINT,
