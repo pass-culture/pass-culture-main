@@ -394,12 +394,14 @@ class PCSelectMultipleField(wtforms.SelectMultipleField):
         search_inline: bool = False,
         full_row: bool = False,
         field_list_compatibility: bool = False,
+        use_highlight_js_module: bool = False,
         **kwargs: typing.Any,
     ):
         super().__init__(label, **kwargs)
         self.search_inline = search_inline  # not higher than other form fields
         self.full_row = full_row  # new line in the form with a full-width dropdown
         self.field_list_compatibility = field_list_compatibility
+        self.use_highlight_js_module = use_highlight_js_module
 
 
 class PCTomSelectField(PCSelectMultipleField):
