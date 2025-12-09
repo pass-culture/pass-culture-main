@@ -210,7 +210,7 @@ class BigQuerySyncTemplate[
                     db.session.rollback()
                     logger.error(
                         "Failed to reject inappropriate products in batch",
-                        extra={"error": e, "count": len(batch_ineligible_eans)},
+                        extra={"error": e, "count": len(batch_ineligible_eans), "eans": batch_ineligible_eans},
                     )
 
             if not valid_bq_products_in_batch:
