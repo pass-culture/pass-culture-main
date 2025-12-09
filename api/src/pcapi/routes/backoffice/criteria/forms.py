@@ -24,7 +24,11 @@ class EditCriterionForm(FlaskForm):
 
     start_date = fields.PCDateField("Date de début", validators=(wtforms.validators.Optional(),))
     end_date = fields.PCDateField("Date de fin", validators=(wtforms.validators.Optional(),))
-    categories = fields.PCSelectMultipleField("Catégories", coerce=int)
+    categories = fields.PCSelectMultipleField(
+        "Catégories",
+        coerce=int,
+        use_highlight_js_module=True,
+    )
     highlight = fields.PCTomSelectField(
         "Valorisation thématique",
         multiple=False,

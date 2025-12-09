@@ -2,7 +2,7 @@
      data-clone-function-name="_tomSelectCloneFunction">
   {% set select_field_id = random_hash() %}
   <select multiple
-          class="form-select pc-select-field pc-tom-select-field value-element-form"
+          class="form-select pc-select-field pc-tom-select-field value-element-form {%+ if field.use_highlight_js_module %}pc-highlight-js-module{% endif %}"
           id="{{ select_field_id }}"
           name="{{ field.name }}"
           data-original-name="{{ field.name }}"
@@ -24,7 +24,7 @@
        data-clone-function-name="_tomSelectCloneFunction">
     {% set select_field_id = random_hash() %}
     <select multiple
-            class="form-select pc-select-field value-element-form pc-no-update"
+            class="form-select pc-select-field value-element-form pc-no-update {%+ if field.use_highlight_js_module %}pc-highlight-js-module{% endif %}"
             data-original-name="{{ field.name }}"
             size="2">
       {% for value, label, selected, _ in field.iter_choices() %}
