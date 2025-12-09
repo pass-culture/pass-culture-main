@@ -80,11 +80,10 @@ jobs:
           permission-contents: write
 
       - name: Checkout ref
-        env:
-          GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         uses: actions/checkout@v6
         with:
           ref: ${{ inputs.base_ref }}
+          token: ${{ steps.github-token.outputs.token }}
 
       - name: Add version to api
         env:
