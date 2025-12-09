@@ -58,6 +58,8 @@ export default defineConfig(({ mode }) => {
           '**/factories/*',
           '**/tests/*',
           '**/*.stories.tsx',
+          'config/*',
+          'e2e/*',
           'scripts/*',
           'src/apiClient/adage/*',
           'src/apiClient/adresse/*',

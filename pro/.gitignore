@@ -9,6 +9,8 @@
 /cypress/downloads
 /cypress/screenshots
 /cypress/videos
+/playwright-report/
+/test-results/
 .vitest_cache
 coverage
 bundleStats.html
