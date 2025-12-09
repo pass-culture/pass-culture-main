@@ -1445,7 +1445,7 @@ def reject_inappropriate_products(
         models.Offer.validation != models.OfferValidationStatus.REJECTED,
     )
 
-    offers = offers_query.options(sa_orm.joinedload(models.Offer.stocks).joinedload(models.Stock.bookings)).all()
+    offers = offers_query.options(sa_orm.selectinload(models.Offer.stocks).selectinload(models.Stock.bookings)).all()
 
     offer_updated_counts = offers_query.update(
         values={
