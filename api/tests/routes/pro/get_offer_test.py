@@ -192,7 +192,7 @@ class Returns200Test:
                 "postalCode": venue.offererAddress.address.postalCode,
                 "street": venue.offererAddress.address.street,
                 "isManualEdition": venue.offererAddress.address.isManualEdition,
-                "isVenueLocation": venue.offererAddress.isLinkedToVenue,
+                "isVenueLocation": True,
             },
             "venue": {
                 "street": venue.offererAddress.address.street,
@@ -338,7 +338,7 @@ class Returns200Test:
             "longitude": float(offer_offerer_address.address.longitude),
             "postalCode": offer_offerer_address.address.postalCode,
             "street": offer_offerer_address.address.street,
-            "isVenueLocation": offer_offerer_address.isLinkedToVenue,
+            "isVenueLocation": False,
             "isManualEdition": offer_offerer_address.address.isManualEdition,
         }
 
@@ -369,7 +369,7 @@ class Returns200Test:
             "postalCode": offerer_address.address.postalCode,
             "street": offerer_address.address.street,
             "isManualEdition": offerer_address.address.isManualEdition,
-            "isVenueLocation": offerer_address.isLinkedToVenue,
+            "isVenueLocation": True,
         }
 
     @time_machine.travel("2020-10-15 00:00:00")

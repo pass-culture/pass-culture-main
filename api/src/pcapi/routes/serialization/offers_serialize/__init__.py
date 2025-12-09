@@ -210,7 +210,7 @@ def offer_location_getter_dict_helper(offer: offers_models.Offer) -> LocationRes
     else:
         offerer_address = offer.venue.offererAddress
         is_venue_location = True
-    label = offer.venue.common_name if offerer_address._isLinkedToVenue else offerer_address.label
+    label = offer.venue.common_name if (is_venue_location or offerer_address.label is None) else offerer_address.label
     return LocationResponseModel(
         **retrieve_address_info_from_oa(offerer_address),
         label=label,
