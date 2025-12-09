@@ -27,7 +27,6 @@ import pcapi.core.subscription.fraud_check_api as fraud_api
 import pcapi.core.subscription.phone_validation.exceptions as phone_validation_exceptions
 import pcapi.core.subscription.repository as subscription_repository
 import pcapi.core.subscription.schemas as subscription_schemas
-import pcapi.core.users.constants as users_constants
 import pcapi.core.users.repository as users_repository
 import pcapi.core.users.utils as users_utils
 import pcapi.utils.date as date_utils
@@ -912,7 +911,7 @@ def create_user_refresh_token(user: models.User, device_info: "account_serializa
 def create_oauth_state_token() -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.OAUTH_STATE,
-        users_constants.OAUTH_STATE_TOKEN_LIFE_TIME,
+        constants.OAUTH_STATE_TOKEN_LIFE_TIME,
     )
     return token.encoded_token
 
@@ -920,7 +919,7 @@ def create_oauth_state_token() -> str:
 def create_account_creation_token(google_user: "google_oauth.GoogleUser") -> str:
     token = token_utils.UUIDToken.create(
         token_utils.TokenType.ACCOUNT_CREATION,
-        users_constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
+        constants.ACCOUNT_CREATION_TOKEN_LIFE_TIME,
         data=google_user.model_dump(),
     )
     return token.encoded_token
@@ -1288,13 +1287,13 @@ def create_suspicious_login_email_token(
     if login_info is None:
         return token_utils.Token.create(
             token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
-            users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
+            constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME,
             user_id,
             {"dateCreated": date_utils.get_naive_utc_now().strftime(date_utils.DATE_ISO_FORMAT)},
         )
 
     passed_ttl = date_utils.get_naive_utc_now() - login_info.dateCreated
-    remaining_ttl = users_constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME - passed_ttl
+    remaining_ttl = constants.SUSPICIOUS_LOGIN_EMAIL_TOKEN_LIFE_TIME - passed_ttl
 
     return token_utils.Token.create(
         token_utils.TokenType.SUSPENSION_SUSPICIOUS_LOGIN,
@@ -1487,23 +1486,60 @@ def _get_current_profile_refresh_campaign_date() -> datetime.datetime | None:
 
 
 def get_user_is_eligible_for_bonification(user: models.User) -> bool:
-    has_bonification_check = get_user_bonification_status(user) in (
-        subscription_models.FraudCheckStatus.OK,
-        subscription_models.FraudCheckStatus.PENDING,
-        subscription_models.FraudCheckStatus.STARTED,
-        subscription_models.FraudCheckStatus.SUSPICIOUS,
+    return deposit_api.can_receive_bonus_credit(user) and get_user_qf_bonification_status(user) not in (
+        subscription_models.QFBonificationStatus.TOO_MANY_RETRIES,
+        subscription_models.QFBonificationStatus.STARTED,
+        subscription_models.QFBonificationStatus.GRANTED,
+        subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
     )
+
+
+def get_user_qf_bonification_status(user: models.User) -> subscription_models.QFBonificationStatus:
+    qf_bonus_credit_fraud_checks = [
+        e for e in user.beneficiaryFraudChecks if e.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+    ]
+    bonus_fraud_check = qf_bonus_credit_fraud_checks[0] if qf_bonus_credit_fraud_checks else None
+    bonus_fraud_check_status = bonus_fraud_check.status if bonus_fraud_check is not None else None
+
+    if bonus_fraud_check_status in (
+        subscription_models.FraudCheckStatus.STARTED,
+        subscription_models.FraudCheckStatus.PENDING,
+    ):
+        return subscription_models.QFBonificationStatus.STARTED
+
+    if bonus_fraud_check_status == subscription_models.FraudCheckStatus.OK:
+        return subscription_models.QFBonificationStatus.GRANTED
+
     is_18_years_old = user.age == 18
     has_v3_credit = user.received_pass_17_18
+    has_never_completely_tried = bonus_fraud_check_status in (
+        None,
+        subscription_models.FraudCheckStatus.CANCELED,
+        subscription_models.FraudCheckStatus.ERROR,
+    )
 
-    return (not has_bonification_check) and is_18_years_old and has_v3_credit
+    if not is_18_years_old or not has_v3_credit:
+        return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
 
+    if is_18_years_old and has_v3_credit and has_never_completely_tried:
+        return subscription_models.QFBonificationStatus.ELIGIBLE
 
-def get_user_bonification_status(user: models.User) -> subscription_models.FraudCheckStatus | None:
-    for fraud_check in user.beneficiaryFraudChecks:
-        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT:
-            return fraud_check.status
-    return None
+    if bonus_fraud_check_status == subscription_models.FraudCheckStatus.KO:
+        reason_codes = (bonus_fraud_check.reasonCodes if bonus_fraud_check else None) or []
+
+        if len(qf_bonus_credit_fraud_checks) >= constants.MAX_QF_BONUS_RETRIES:
+            return subscription_models.QFBonificationStatus.TOO_MANY_RETRIES
+
+        if subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD in reason_codes:
+            return subscription_models.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD
+
+        if subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH in reason_codes:
+            return subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH
+
+        if subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND in reason_codes:
+            return subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND
+
+    return subscription_models.QFBonificationStatus.KO
 
 
 def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:

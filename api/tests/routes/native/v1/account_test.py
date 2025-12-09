@@ -134,7 +134,7 @@ class AccountTest:
                 "physical": None,
             },
             "birthDate": "2000-01-11",
-            "bonificationStatus": None,
+            "qfBonificationStatus": subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value,
             "depositType": "GRANT_18",
             "depositActivationDate": "2018-06-01T00:00:00Z",
             "firstDepositActivationDate": "2015-02-03T00:00:00Z",
@@ -146,7 +146,6 @@ class AccountTest:
             "hasProfileExpired": False,
             "isBeneficiary": True,
             "isEligibleForBeneficiaryUpgrade": False,
-            "isEligibleForBonification": False,
             "needsToFillCulturalSurvey": True,
             "roles": ["BENEFICIARY"],
             "recreditAmountToShow": None,
@@ -540,41 +539,95 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["hasProfileExpired"] is False
 
-    def test_get_user_profile_is_eligible_for_bonification(self, client):
+    def test_get_user_profile_bonification_status_is_eligible(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
         response = client.with_token(user.email).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["isEligibleForBonification"] is True
-        assert response.json["bonificationStatus"] is None
-
-    @pytest.mark.parametrize("age", [17, 19, 30])
-    def test_get_user_profile_non_eligible_for_bonification_because_of_age(self, client, age):
-        user = users_factories.BeneficiaryFactory(age=age)
-        response = client.with_token(user.email).get("/native/v1/me")
-        assert response.status_code == 200
-        assert response.json["isEligibleForBonification"] is False
-        assert response.json["bonificationStatus"] is None
+        assert response.json["qfBonificationStatus"] == "eligible"
 
     @pytest.mark.parametrize(
-        "status",
+        "fraud_check_status",
         [
-            subscription_models.FraudCheckStatus.OK,
-            subscription_models.FraudCheckStatus.PENDING,
-            subscription_models.FraudCheckStatus.STARTED,
-            subscription_models.FraudCheckStatus.SUSPICIOUS,
+            subscription_models.FraudCheckStatus.CANCELED,
+            subscription_models.FraudCheckStatus.ERROR,
         ],
     )
-    def test_get_user_profile_non_eligible_for_bonification_because_of_process_status(self, client, status):
+    def test_get_user_profile_bonification_status_is_eligible_after_error(self, client, fraud_check_status):
         user = users_factories.BeneficiaryFactory(age=18)
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
-            status=status,
+        subscription_factories.BonusFraudCheckFactory(status=fraud_check_status, user=user)
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == "eligible"
+
+    @pytest.mark.parametrize(
+        "reason_code,expected_qf_bonification_status",
+        [
+            (
+                subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD,
+                subscription_models.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD,
+            ),
+            (
+                subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH,
+                subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
+            ),
+            (
+                subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND,
+                subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
+            ),
+        ],
+    )
+    def test_get_user_profile_bonification_status_ko(self, client, reason_code, expected_qf_bonification_status):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.BonusFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[reason_code],
             user=user,
         )
         response = client.with_token(user.email).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["isEligibleForBonification"] is False
-        assert response.json["bonificationStatus"] == status.value
+        assert response.json["qfBonificationStatus"] == expected_qf_bonification_status.value
+
+    def test_get_user_profile_bonification_status_granted(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.OK)
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.GRANTED.value
+
+    def test_get_user_profile_bonification_status_too_many_retries(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.BonusFraudCheckFactory.create_batch(
+            size=3,
+            user=user,
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD],
+        )
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.TOO_MANY_RETRIES.value
+
+    def test_get_user_profile_bonification_status_is_not_eligible_for_under_17(self, client):
+        user = users_factories.BeneficiaryFactory(age=17)
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
+
+    def test_get_user_profile_bonification_status_is_not_eligible_for_non_beneficiary(self, client):
+        user = users_factories.HonorStatementValidatedUserFactory(age=18)
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
+
+    def test_get_user_profile_bonification_status__unkown_ko(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.BonusFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=None,
+            user=user,
+        )
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.KO.value
 
     def test_get_user_profile_recredit_type(self, client):
         user = users_factories.BeneficiaryFactory(age=18)

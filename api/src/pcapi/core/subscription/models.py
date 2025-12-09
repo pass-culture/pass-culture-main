@@ -122,6 +122,18 @@ class FraudCheckStatus(enum.Enum):
     SUSPICIOUS = "suspiscious"
 
 
+class QFBonificationStatus(enum.Enum):
+    ELIGIBLE = "eligible"
+    NOT_ELIGIBLE = "not_eligible"
+    STARTED = "started"
+    CUSTODIAN_NOT_FOUND = "custodian_not_found"
+    NOT_IN_TAX_HOUSEHOLD = "not_in_tax_household"
+    QUOTIENT_FAMILIAL_TOO_HIGH = "quotient_familial_too_high"
+    TOO_MANY_RETRIES = "too_many_retries"
+    GRANTED = "granted"
+    KO = "ko"
+
+
 VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
     FraudCheckType.DMS,
     FraudCheckType.UBBLE,
