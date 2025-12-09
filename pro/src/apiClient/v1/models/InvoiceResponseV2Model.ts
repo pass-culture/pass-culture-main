@@ -4,7 +4,7 @@
 /* eslint-disable */
 export type InvoiceResponseV2Model = {
   amount: number;
-  bankAccountLabel?: string | null;
+  bankAccountLabel: (string | null);
   cashflowLabels: Array<string>;
   date: string;
   reference: string;

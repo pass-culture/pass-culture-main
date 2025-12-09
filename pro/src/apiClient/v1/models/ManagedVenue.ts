@@ -2,11 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * A venue that is already linked to a bank account.
- */
-export type LinkedVenues = {
+export type ManagedVenue = {
+  bankAccountId: (number | null);
   commonName: string;
+  hasPricingPoint: boolean;
   id: number;
+  name: string;
+  siret: (string | null);
 };
 

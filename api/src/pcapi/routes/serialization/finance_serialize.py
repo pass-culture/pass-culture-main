@@ -1,160 +1,94 @@
 import datetime
 import logging
-from typing import Any
 
-import pydantic.v1 as pydantic_v1
+import pydantic as pydantic_v2
+from pydantic import RootModel
 
 import pcapi.core.finance.models as finance_models
-import pcapi.core.finance.utils as finance_utils
-from pcapi.routes.serialization import BaseModel
-from pcapi.utils import date as date_utils
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
 logger = logging.getLogger(__name__)
 
 
-class FinanceBankAccountResponseModel(BaseModel):
-    class Config:
-        orm_mode = True
-
-    id: int
-    label: str
-
-
-class FinanceBankAccountListResponseModel(BaseModel):
-    __root__: list[FinanceBankAccountResponseModel]
+# Query models
+class InvoiceListV2QueryModel(HttpQueryParamsModel):
+    period_beginning_date: datetime.date | None = None
+    period_ending_date: datetime.date | None = None
+    bank_account_id: int | None = None
+    offerer_id: int | None = None
 
 
-class InvoiceListV2QueryModel(BaseModel):
-    class Config:
-        orm_mode = True
-
-    periodBeginningDate: datetime.date | None
-    periodEndingDate: datetime.date | None
-    bankAccountId: int | None
-    offererId: int | None
+class HasInvoiceQueryModel(HttpQueryParamsModel):
+    offerer_id: int
 
 
-class InvoiceResponseV2Model(BaseModel):
-    class Config:
-        orm_mode = True
+class GetCombinedInvoicesQueryModel(HttpQueryParamsModel):
+    invoice_references: list[str]
 
-    reference: str
-    date: datetime.date
-    amount: float
-    url: str
-    bankAccountLabel: str | None
-    cashflowLabels: list[str]
-
+    @pydantic_v2.field_validator("invoice_references", mode="before")
     @classmethod
-    def from_orm(cls, invoice: finance_models.Invoice) -> "InvoiceResponseV2Model":
-        invoice.bankAccountLabel = invoice.bankAccount.label
-        invoice.cashflowLabels = [cashflow.batch.label for cashflow in invoice.cashflows]
-        res = super().from_orm(invoice)
-        res.amount = -finance_utils.cents_to_full_unit(res.amount)  # type: ignore[assignment, arg-type]
-        return res
-
-
-class CombinedInvoiceListModel(BaseModel):
-    invoiceReferences: list[str]
-
-    @pydantic_v1.validator("invoiceReferences", pre=True)
-    def ensure_list(cls, v: list[str] | str) -> list[str]:
+    def validate_list(cls, v: list[str] | str) -> list[str]:
         if isinstance(v, str):
             return [v]
         return v
 
 
-class InvoiceListV2ResponseModel(BaseModel):
-    __root__: list[InvoiceResponseV2Model]
+# Response Models
+class FinanceBankAccountResponseModel(HttpBodyModel):
+    id: int
+    label: str
 
 
-class LinnkedVenuesGetterDict(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        venue = self._obj
-        if key == "commonName":
-            return venue.common_name
-        return super().get(key, default)
+class FinanceBankAccountListResponseModel(RootModel):
+    root: list[FinanceBankAccountResponseModel]
 
 
-class LinkedVenues(BaseModel):
+class InvoiceResponseV2Model(HttpBodyModel):
+    reference: str
+    date: datetime.date
+    amount: float
+    url: str
+    bank_account_label: str | None
+    cashflow_labels: list[str]
+
+
+class InvoiceListV2ResponseModel(RootModel):
+    root: list[InvoiceResponseV2Model]
+
+
+class LinkedVenue(HttpBodyModel):
     """A venue that is already linked to a bank account."""
 
     id: int
-    commonName: str
-
-    class Config:
-        orm_mode = True
-        getter_dict = LinnkedVenuesGetterDict
+    common_name: str
 
 
-class ManagedVenuesGetterDict(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        venue = self._obj
-        if key == "commonName":
-            return venue.common_name
-        if key == "hasPricingPoint":
-            return bool(venue.pricing_point_links)
-        if key == "bankAccountId":
-            if len(venue.bankAccountLinks) > 1:
-                logger.error("There should be one or no current bank account.", extra={"venue_id": venue.id})
-            if venue.bankAccountLinks:
-                return venue.bankAccountLinks[0].bankAccountId
-            return None
-        return super().get(key, default)
-
-
-class ManagedVenues(BaseModel):
+class ManagedVenue(HttpBodyModel):
     id: int
     name: str
-    commonName: str
+    common_name: str
     siret: str | None
-    bankAccountId: int | None
-    hasPricingPoint: bool
-
-    class Config:
-        orm_mode = True
-        getter_dict = ManagedVenuesGetterDict
+    bank_account_id: int | None
+    has_pricing_point: bool
 
 
-class BankAccountResponseModel(BaseModel):
+class BankAccountResponseModel(HttpBodyModel):
     id: int
-    isActive: bool
+    is_active: bool
     label: str
-    obfuscatedIban: str
-    dsApplicationId: int | None
+    iban: str = pydantic_v2.Field(alias="obfuscatedIban")
+    ds_application_id: int | None
     status: finance_models.BankAccountApplicationStatus
-    dateCreated: datetime.datetime
-    linkedVenues: list[LinkedVenues]
+    date_created: datetime.datetime
+    linked_venues: list[LinkedVenue]
 
-    class Config:
-        orm_mode = True
-
+    @pydantic_v2.field_validator("iban", mode="after")
     @classmethod
-    def from_orm(cls, bank_account: finance_models.BankAccount) -> "BankAccountResponseModel":
-        now = date_utils.get_naive_utc_now()
-        bank_account.linkedVenues = pydantic_v1.parse_obj_as(
-            list[LinkedVenues],
-            [
-                link.venue
-                for link in bank_account.venueLinks
-                if link.timespan.lower <= now
-                and (not link.timespan.upper or now <= link.timespan.upper)
-                and link.venue is not None  # ignore soft-deleted venues when the link is still active
-            ],
-        )
-        bank_account.obfuscatedIban = cls._obfuscate_iban(bank_account.iban)
-
-        return super().from_orm(bank_account)
-
-    @classmethod
-    def _obfuscate_iban(cls, iban: str) -> str:
+    def obfuscate_iban(cls, iban: str) -> str:
         return f"XXXX XXXX XXXX {iban[-4:]}"
 
 
-class HasInvoiceQueryModel(BaseModel):
-    offererId: int
-
-
-class HasInvoiceResponseModel(BaseModel):
-    hasInvoice: bool
+class HasInvoiceResponseModel(HttpBodyModel):
+    has_invoice: bool

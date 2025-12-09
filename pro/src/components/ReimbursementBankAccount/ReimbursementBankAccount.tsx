@@ -4,7 +4,7 @@ import { useLocation } from 'react-router'
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
-  type ManagedVenues,
+  type ManagedVenue,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
@@ -21,7 +21,7 @@ import styles from './ReimbursementBankAccount.module.scss'
 
 interface ReimbursementBankAccountProps {
   bankAccount: BankAccountResponseModel
-  managedVenues: ManagedVenues[]
+  managedVenues: ManagedVenue[]
   onUpdateButtonClick?: (id: number) => void
   offererId?: number
   hasWarning?: boolean

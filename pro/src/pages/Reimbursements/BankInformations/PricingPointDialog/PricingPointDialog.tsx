@@ -3,7 +3,7 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import type { ManagedVenues } from '@/apiClient/v1'
+import type { ManagedVenue } from '@/apiClient/v1'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -19,8 +19,8 @@ type PricingPointFormValues = {
 }
 
 type PricingPointDialogProps = {
-  selectedVenue: ManagedVenues | null
-  venues: ManagedVenues[]
+  selectedVenue: ManagedVenue | null
+  venues: ManagedVenue[]
   closeDialog: () => void
   updateVenuePricingPoint: (venueId: number) => void
 }

@@ -3,7 +3,7 @@ import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import type { BankAccountResponseModel, ManagedVenues } from '@/apiClient/v1'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
@@ -24,7 +24,7 @@ import styles from './LinkVenuesDialog.module.scss'
 interface LinkVenuesDialogProps {
   offererId: number
   selectedBankAccount: BankAccountResponseModel
-  managedVenues: Array<ManagedVenues>
+  managedVenues: Array<ManagedVenue>
   closeDialog: (update?: boolean) => void
   updateBankAccountVenuePricingPoint: (venueId: number) => void
   editBankAccountDialogTriggerRef?: React.RefObject<HTMLButtonElement>

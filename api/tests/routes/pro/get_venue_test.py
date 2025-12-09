@@ -202,19 +202,6 @@ class Returns200Test:
             ],
             "hasAdageId": True,
             "adageInscriptionDate": format_into_utc_date(venue.adageInscriptionDate),
-            "bankAccount": {
-                "dateCreated": format_into_utc_date(bank_account_link.bankAccount.dateCreated),
-                "dsApplicationId": bank_account_link.bankAccount.dsApplicationId,
-                "id": bank_account_link.bankAccount.id,
-                "isActive": bank_account_link.bankAccount.isActive,
-                "label": bank_account_link.bankAccount.label,
-                "linkedVenues": [
-                    {"commonName": venue.common_name, "id": venue.id},
-                    {"commonName": other_venue.publicName, "id": other_venue.id},
-                ],
-                "obfuscatedIban": f"""XXXX XXXX XXXX {bank_account_link.bankAccount.iban[-4:]}""",
-                "status": bank_account_link.bankAccount.status.value,
-            },
             "location": {
                 "id": venue.offererAddress.addressId,
                 "street": venue.offererAddress.address.street,
