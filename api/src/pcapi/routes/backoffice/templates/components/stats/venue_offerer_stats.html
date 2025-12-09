@@ -2,12 +2,12 @@
 <div class="row">
   <div class="col-md-6">
     <div class="card h-100 shadow">
-      <div class="card-body row p-5">
+      <div class="card-body row p-4">
         <div>
-          <h4>Offres</h4>
+          <h5>Offres</h5>
           <div class="d-flex justify-content-between">
             <div>
-              <h1 class="text-black">
+              <h2 class="text-black">
                 {% set individual_offers = 0 %}
                 {% if stats.active_individual_offers is not none  and stats.inactive_individual_offers is not none %}
                   {% set individual_offers = stats.active_individual_offers + stats.inactive_individual_offers %}
@@ -15,7 +15,7 @@
                 {% else %}
                   N/A
                 {% endif %}
-              </h1>
+              </h2>
               <div>
                 {% if urls.list_offers %}
                   <a class="link-primary"
@@ -38,7 +38,7 @@
               non réservable{{ stats.inactive_individual_offers | pluralize }}
             </div>
             <div>
-              <h1 class="text-black">
+              <h2 class="text-black">
                 {% set collective_offers = 0 %}
                 {% if stats.active_collective_offers is not none and stats.inactive_collective_offers is not none %}
                   {% set collective_offers = stats.active_collective_offers +  stats.inactive_collective_offers %}
@@ -46,7 +46,7 @@
                 {% else %}
                   N/A
                 {% endif %}
-              </h1>
+              </h2>
               <div>
                 {% if urls.list_collective_offers %}
                   <a class="link-primary"
@@ -69,13 +69,13 @@
               non réservable{{ stats.inactive_collective_offers | pluralize }}
             </div>
             <div class="me-5">
-              <h1 class="text-black">
+              <h2 class="text-black">
                 {% if stats.total_collective_offer_templates is not none %}
                   {{ stats.total_collective_offer_templates }}
                 {% else %}
                   N/A
                 {% endif %}
-              </h1>
+              </h2>
               <div>
                 {% if urls.list_collective_offer_templates %}
                   <a class="link-primary"
@@ -92,17 +92,17 @@
   </div>
   <div class="col-md-3">
     <div class="card h-100 shadow">
-      <div class="card-body p-5">
-        <h4>Réservations</h4>
+      <div class="card-body p-4">
+        <h5>Réservations</h5>
         <div class="d-flex justify-content-between">
           <div>
-            <h1 class="text-black">
+            <h2 class="text-black">
               {% if stats.individual_bookings is not none %}
                 {{ stats.individual_bookings }}
               {% else %}
                 N/A
               {% endif %}
-            </h1>
+            </h2>
             {% if urls.list_bookings %}
               <a class="link-primary"
                  href="{{ urls.list_bookings }}">individuelle{{ stats.individual_bookings | pluralize }}</a>
@@ -111,13 +111,13 @@
             {% endif %}
           </div>
           <div class="me-5">
-            <h1 class="text-black">
+            <h2 class="text-black">
               {% if stats.collective_bookings is not none %}
                 {{ stats.collective_bookings }}
               {% else %}
                 N/A
               {% endif %}
-            </h1>
+            </h2>
             {% if urls.list_collective_bookins %}
               <a class="link-primary"
                  href="{{ urls.list_collective_bookins }}">collective{{ stats.collective_bookings | pluralize }}</a>
@@ -131,15 +131,15 @@
   </div>
   <div class="col-md-3">
     <div class="card h-100 shadow">
-      <div class="card-body p-5">
-        <h4>Chiffre d'affaires total réalisé</h4>
-        <h1 class="text-black">
+      <div class="card-body p-4">
+        <h5>Chiffre d'affaires</h5>
+        <h2 class="text-black">
           {% if  stats.total_revenue is not none %}
             {{ stats.total_revenue | format_amount(target=object) }}
           {% else %}
             N/A
           {% endif %}
-        </h1>
+        </h2>
         <div class="d-flex flex-row">
           <div class="p-auto">
             {% if stats.total_revenue is not none and stats.total_revenue > 0 %}

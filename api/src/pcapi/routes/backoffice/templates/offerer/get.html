@@ -20,7 +20,7 @@
   <div class="row row-cols-1 g-4 py-3 pc-strip-query-string">
     <div class="col">
       <div class="card shadow">
-        <div class="card-body p-5">
+        <div class="card-body p-4">
           <div class="d-flex flex-fill align-items-center">
             <h2 class="card-title text-primary">{{ build_connect_as_link(connect_as_offerer, offerer.name, "link-primary") }}</h2>
             <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2">
@@ -46,7 +46,7 @@
             </div>
           </div>
           <div class="mb-0">{{ build_offerer_badges(offerer, has_fraudulent_booking) }}</div>
-          <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-2 mt-0">
+          <div class="d-flex row-reverse justify-content-end flex-grow-1 gap-1 mt-0">
             {% if has_permission("VALIDATE_OFFERER") %}
               {% if not offerer.isValidated %}
                 <a data-bs-toggle="modal"
@@ -89,7 +89,7 @@
               </p>
               {% if zendesk_sell_synchronisation_form %}
                 <div>
-                  <button class="btn btn-outline-primary btn-sm px-4 py-3 fs-6"
+                  <button class="btn  btn-outline-primary-subtle-bg mt-2"
                           data-bs-toggle="modal"
                           data-bs-target=".pc-sync-zsell-modal"
                           type="button">
@@ -135,8 +135,8 @@
               {% endif %}
             </div>
             <div class="col-4">
-              <h3 class="text-primary">Informations générales :</h3>
-              <div class="fs-6 d-grid gap-2">
+              <h4 class="text-primary mb-2">Informations générales :</h4>
+              <div class="fs-6 d-grid gap-1">
                 <p class="mb-0">
                   <span class="fw-bold">Peut créer une offre EAC :</span> {{ offerer.allowedOnAdage | format_bool_badge }}
                 </p>
@@ -158,8 +158,8 @@
               </div>
             </div>
             <div class="col-4">
-              <h3 class="text-primary">Informations bancaires :</h3>
-              <div clas="fs-6 d-grid gap-2">
+              <h4 class="text-primary mb-2">Informations bancaires :</h4>
+              <div clas="fs-6 d-grid gap-1">
                 <p class="mb-0">
                   <span class="fw-bold">Présence CB dans les partenaires culturels :</span>
                   {{ bank_information_status.ok or 0 }} OK

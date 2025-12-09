@@ -559,7 +559,7 @@ class GetVenueStatsTest(GetEndpointHelper):
             in response_text[0]
         )
         assert "Réservations 876 individuelles 678 collectives" in response_text[1]
-        assert "Chiffre d'affaires total réalisé 70,48 € Plus de détails" in response_text[2]
+        assert "Chiffre d'affaires 70,48 € Plus de détails" in response_text[2]
 
     def test_get_venue_not_found(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint, venue_id=1))
@@ -582,7 +582,7 @@ class GetVenueStatsTest(GetEndpointHelper):
             in html_parser.extract_cards_text(response.data)[0]
         )
         assert "Réservations N/A individuelle N/A collective" in html_parser.extract_cards_text(response.data)[1]
-        assert "Chiffre d'affaires total réalisé N/A" in html_parser.extract_cards_text(response.data)[2]
+        assert "Chiffre d'affaires N/A" in html_parser.extract_cards_text(response.data)[2]
 
 
 class GetVenueRevenueDetailsTest(GetEndpointHelper):
