@@ -84,7 +84,6 @@ jobs:
     runs-on: ubuntu-22.04
     env:
       NEW_MAINTENANCE_BRANCH: maint/v${{ needs.prepare-variables.outputs.releaseNumber }}
-      OLD_MAINTENANCE_BRANCH: maint/v((${{ needs.prepare-variables.outputs.releaseNumber }}-2))
     steps:
       - name: "Checkout new tag"
         uses: actions/checkout@v6
@@ -93,9 +92,12 @@ jobs:
           git checkout -b "$NEW_MAINTENANCE_BRANCH"
           git push origin "$NEW_MAINTENANCE_BRANCH"
       - name: "Delete vN-2 maintenance branch"
+        continue-on-error: true
         run: |
           git checkout master
-          git branch --delete --force "$OLD_MAINTENANCE_BRANCH"
+          release_number=${{ needs.prepare-variables.outputs.releaseNumber }}
+          old_branch_number=$((release_number-2))
+          git branch --delete --force "maint/v$old_branch_number"
 
   end-slack-success-notification:
     name: "Send workflow success notification"
