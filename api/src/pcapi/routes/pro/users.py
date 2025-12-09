@@ -25,6 +25,7 @@ from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
 from pcapi.core.users.email import repository as email_repository
+from pcapi.core.users.gdpr_api import anonymize_pro_user
 from pcapi.core.users.password_utils import check_password_validity
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -278,6 +279,20 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 def signout() -> None:
     discard_session()
     logout_user()
+
+
+@private_api.route("/users/anonymize", methods=["POST"])
+@login_required
+@spectree_serialize(on_success_status=204, on_error_statuses=[400, 404], api=blueprint.pro_private_schema)
+@atomic()
+def anonymize() -> None:
+    if not FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION.is_active():
+        raise ResourceNotFoundError(errors={"global": "Cette fonctionnalité n'est pas disponible"})
+
+    user = current_user._get_current_object()
+    anonymized = anonymize_pro_user(user)
+    if not anonymized:
+        raise ApiErrors(errors={"global": ["Une erreur est survenue lors de l'anonymisation du compte"]})
 
 
 @private_api.route("/users/cookies", methods=["POST"])
