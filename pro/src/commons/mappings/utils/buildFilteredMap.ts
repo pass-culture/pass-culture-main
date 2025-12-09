@@ -45,7 +45,8 @@ type Entries = [string, string][]
 function sortEntriesByValue(locale: string): (val: Entries) => Entries {
   const compareFn = new Intl.Collator(locale).compare
   return (val: Entries): Entries => {
-    return val.toSorted((a, b) => compareFn(a[1], b[1]))
+    const valCopy: Entries = [...val]
+    return valCopy.sort((a, b) => compareFn(a[1], b[1]))
   }
 }
 
