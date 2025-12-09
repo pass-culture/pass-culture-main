@@ -18,6 +18,7 @@ jobs:
     outputs:
       releaseNumber: ${{ steps.version.outputs.releaseNumber }}
       commitHash: ${{ steps.rc_commit.outputs.commitHash }}
+      latestTag: ${{ steps.version.outputs.latestTag }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -29,10 +30,11 @@ jobs:
         id: version
         run: |
           # Get all with format vX.X.X, sort them and get the last one
-          latest_tag=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)
+          latestTag=$(git tag -l "v[0-9]*.[0-9]*.[0-9]*" | sort -V | tail -n 1)
+          echo "latestTag=$latestTag" >> $GITHUB_OUTPUT
 
           # Extract major version
-          major=$(echo "$latest_tag" | sed -E 's/^v([0-9]+)\..*/\1/')
+          major=$(echo "$latestTag" | sed -E 's/^v([0-9]+)\..*/\1/')
 
           releaseNumber=$((major + 1))
           echo "releaseNumber=$releaseNumber" >> $GITHUB_OUTPUT
@@ -73,6 +75,8 @@ jobs:
     with:
       base_ref: ${{ needs.prepare-variables.outputs.commitHash }}
       tag_number: ${{ needs.prepare-variables.outputs.releaseNumber }}.0.0
+      previous_tag: ${{ needs.prepare-variables.outputs.latestTag }}
+
 
   edit-maintenance-branches:
     name: "Edit maintenance branches"
