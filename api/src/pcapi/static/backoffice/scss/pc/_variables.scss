@@ -192,3 +192,18 @@ $pagination-active-color:           var(--#{$prefix}link-color);
 $pagination-active-bg:              $primary-bg-subtle;
 $pagination-active-border-color:    var(--#{$prefix}pagination-border-color);
 // scss-doc-start pagination
+
+// base values for p and m classes
+$spacers: (
+  0: 0,
+  1:  $spacer * .25,
+  2:  $spacer * .5,
+  3:  $spacer,
+  4:  $spacer * 1.5,
+  5:  $spacer * 3,
+  12: $spacer * .75,
+  32: $spacer * 2,
+  40: $spacer * 2.5,
+  56: $spacer * 3.5,
+);
+

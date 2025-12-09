@@ -800,8 +800,8 @@ class GetOffererStatsTest(GetEndpointHelper):
     @pytest.mark.parametrize(
         "venue_factory,expected_revenue_text",
         [
-            (offerers_factories.VenueFactory, "Chiffre d'affaires total réalisé 70,48 €"),
-            (offerers_factories.CaledonianVenueFactory, "Chiffre d'affaires total réalisé 70,48 € (8410 CFP)"),
+            (offerers_factories.VenueFactory, "Chiffre d'affaires 70,48 €"),
+            (offerers_factories.CaledonianVenueFactory, "Chiffre d'affaires 70,48 € (8410 CFP)"),
         ],
     )
     def test_get_stats(self, authenticated_client, venue_factory, expected_revenue_text):
@@ -842,7 +842,7 @@ class GetOffererStatsTest(GetEndpointHelper):
             in html_parser.extract_cards_text(response.data)[0]
         )
         assert "Réservations N/A individuelle N/A collective" in html_parser.extract_cards_text(response.data)[1]
-        assert "Chiffre d'affaires total réalisé N/A" in html_parser.extract_cards_text(response.data)[2]
+        assert "Chiffre d'affaires N/A" in html_parser.extract_cards_text(response.data)[2]
 
     @pytest.mark.settings(CLICKHOUSE_BACKEND="pcapi.connectors.clickhouse.backend.ClickhouseBackend")
     @patch("pcapi.connectors.clickhouse.backend.BaseBackend.run_query")
@@ -859,7 +859,7 @@ class GetOffererStatsTest(GetEndpointHelper):
             in html_parser.extract_cards_text(response.data)[0]
         )
         assert "Réservations N/A individuelle N/A collective" in html_parser.extract_cards_text(response.data)[1]
-        assert "Chiffre d'affaires total réalisé N/A" in html_parser.extract_cards_text(response.data)[2]
+        assert "Chiffre d'affaires N/A" in html_parser.extract_cards_text(response.data)[2]
 
 
 class GetOffererRevenueDetailsTest(GetEndpointHelper):
