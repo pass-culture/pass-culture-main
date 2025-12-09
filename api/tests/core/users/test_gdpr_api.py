@@ -16,6 +16,7 @@ import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
+from pcapi.connectors.beamer import BeamerException
 from pcapi.connectors.dms import models as dms_models
 from pcapi.core import token as token_utils
 from pcapi.core.bookings import factories as bookings_factories
@@ -437,7 +438,60 @@ def _assert_user_is_anonymized(user, prefix="anonymous"):
     assert user.backoffice_profile is None
 
 
-class AnonymizeProUserTest:
+class AnonymizeProUserFunctionTest:
+    @pytest.mark.parametrize(
+        "user_offerer_factory,expected_status",
+        [
+            (offerers_factories.UserOffererFactory, ValidationStatus.DELETED),
+            (offerers_factories.NewUserOffererFactory, ValidationStatus.REJECTED),
+            (offerers_factories.PendingUserOffererFactory, ValidationStatus.REJECTED),
+            (offerers_factories.RejectedUserOffererFactory, ValidationStatus.REJECTED),
+        ],
+    )
+    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_user", return_value=True)
+    def test_anonymize_pro_user_success(
+        self, mock_anonymize_user, mock_delete_beamer_user, user_offerer_factory, expected_status
+    ):
+        user_offerer = user_offerer_factory()
+        user = user_offerer.user
+
+        result = gdpr_api.anonymize_pro_user(user)
+
+        assert result is True
+        mock_anonymize_user.assert_called_once_with(user)
+        mock_delete_beamer_user.assert_called_once_with(user.id)
+        db.session.refresh(user_offerer)
+        assert user_offerer.validationStatus == expected_status
+
+    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_user", return_value=False)
+    def test_anonymize_pro_user_failure(self, mock_anonymize_user, mock_delete_beamer_user):
+        user_offerer = offerers_factories.UserOffererFactory()
+        user = user_offerer.user
+
+        result = gdpr_api.anonymize_pro_user(user)
+
+        assert result is False
+        mock_anonymize_user.assert_called_once_with(user)
+        mock_delete_beamer_user.assert_not_called()
+        db.session.refresh(user_offerer)
+        assert user_offerer.validationStatus == ValidationStatus.VALIDATED
+
+    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user", side_effect=BeamerException())
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_user", return_value=True)
+    def test_anonymize_pro_user_beamer_exception(self, mock_anonymize_user, mock_delete_beamer_user, caplog):
+        user = users_factories.ProFactory()
+
+        result = gdpr_api.anonymize_pro_user(user)
+
+        assert result is True
+        mock_anonymize_user.assert_called_once_with(user)
+        mock_delete_beamer_user.assert_called_once_with(user.id)
+        assert "Could not delete Beamer user" in caplog.text
+
+
+class AnonymizeProUsersTest:
     @pytest.mark.parametrize(
         "offerer_validation_status,user_offerer_validation_status",
         [
@@ -451,9 +505,9 @@ class AnonymizeProUserTest:
             (ValidationStatus.CLOSED, ValidationStatus.DELETED),
         ],
     )
-    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_pro_user", return_value=True)
     def test_anonymize_pro_user(
-        self, delete_beamer_user_mock, offerer_validation_status, user_offerer_validation_status
+        self, mock_anonymize_pro_user, offerer_validation_status, user_offerer_validation_status
     ):
         user_offerer_to_anonymize = offerers_factories.NonAttachedUserOffererFactory(
             user__lastConnectionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 3),
@@ -467,12 +521,11 @@ class AnonymizeProUserTest:
 
         gdpr_api.anonymize_pro_users()
 
-        _assert_user_is_anonymized(user_offerer_to_anonymize.user)
         assert user_offerer_to_keep.user.has_non_attached_pro_role
-        delete_beamer_user_mock.assert_called_once_with(user_offerer_to_anonymize.user.id)
+        mock_anonymize_pro_user.assert_called_once_with(user_offerer_to_anonymize.user)
 
-    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
-    def test_keep_pro_users_with_activity_less_than_three_years(self, delete_beamer_user_mock):
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_pro_user", return_value=True)
+    def test_keep_pro_users_with_activity_less_than_three_years(self, mock_anonymize_pro_user):
         users_factories.NonAttachedProFactory(
             lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=3, days=-1)
         )
@@ -481,10 +534,10 @@ class AnonymizeProUserTest:
         gdpr_api.anonymize_pro_users()
 
         assert db.session.query(users_models.User).filter(users_models.User.has_non_attached_pro_role).count() == 2
-        delete_beamer_user_mock.assert_not_called()
+        mock_anonymize_pro_user.assert_not_called()
 
-    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
-    def test_keep_pro_users_also_beneficiariy_or_candidate(self, delete_beamer_user_mock):
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_pro_user", return_value=True)
+    def test_keep_pro_users_also_beneficiariy_or_candidate(self, mock_anonymize_pro_user):
         offerers_factories.DeletedUserOffererFactory(
             user=users_factories.BeneficiaryGrant18Factory(
                 roles=[users_models.UserRole.NON_ATTACHED_PRO, users_models.UserRole.BENEFICIARY],
@@ -506,10 +559,10 @@ class AnonymizeProUserTest:
         gdpr_api.anonymize_pro_users()
 
         assert db.session.query(users_models.User).filter(users_models.User.has_non_attached_pro_role).count() == 3
-        delete_beamer_user_mock.assert_not_called()
+        mock_anonymize_pro_user.assert_not_called()
 
-    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
-    def test_keep_when_attached_to_another_active_offerer(self, delete_beamer_user_mock):
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_pro_user", return_value=True)
+    def test_keep_when_attached_to_another_active_offerer(self, mock_anonymize_pro_user):
         user_offerer = offerers_factories.DeletedUserOffererFactory(
             user__lastConnectionDate=date_utils.get_naive_utc_now() - relativedelta(years=4),
         )
@@ -518,10 +571,10 @@ class AnonymizeProUserTest:
         gdpr_api.anonymize_pro_users()
 
         assert user_offerer.user.has_any_pro_role
-        delete_beamer_user_mock.assert_not_called()
+        mock_anonymize_pro_user.assert_not_called()
 
-    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
-    def test_anonymize_non_attached_pro_user(self, delete_beamer_user_mock):
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_pro_user", return_value=True)
+    def test_anonymize_non_attached_pro_user(self, mock_anonymize_pro_user):
         user_to_anonymize = users_factories.NonAttachedProFactory(
             lastConnectionDate=date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 3)
         )
@@ -530,13 +583,12 @@ class AnonymizeProUserTest:
 
         gdpr_api.anonymize_pro_users()
 
-        _assert_user_is_anonymized(user_to_anonymize)
         assert user_to_keep1.has_non_attached_pro_role
         assert user_to_keep2.has_non_attached_pro_role
-        delete_beamer_user_mock.assert_called_once_with(user_to_anonymize.id)
+        mock_anonymize_pro_user.assert_called_once_with(user_to_anonymize)
 
-    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
-    def test_anonymize_non_attached_never_connected_pro(self, delete_beamer_user_mock):
+    @mock.patch("pcapi.core.users.gdpr_api.anonymize_pro_user", return_value=True)
+    def test_anonymize_non_attached_never_connected_pro(self, mock_anonymize_pro_user):
         user_to_anonymize = users_factories.NonAttachedProFactory(
             dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=366 * 3)
         )
@@ -544,9 +596,8 @@ class AnonymizeProUserTest:
 
         gdpr_api.anonymize_pro_users()
 
-        _assert_user_is_anonymized(user_to_anonymize)
         assert user_to_keep.has_non_attached_pro_role
-        delete_beamer_user_mock.assert_called_once_with(user_to_anonymize.id)
+        mock_anonymize_pro_user.assert_called_once_with(user_to_anonymize)
 
 
 class AnonymizeInternalUserTest:
