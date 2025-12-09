@@ -63,7 +63,6 @@ class Return200Test:
                 "city": "Paris",
                 "departmentCode": "75",
                 "id": offerer_address_1.id,
-                "isLinkedToVenue": False,
                 "label": "1ere adresse",
                 "postalCode": "75002",
                 "street": "1 boulevard Poissonnière",
@@ -72,7 +71,6 @@ class Return200Test:
                 "city": "Paris",
                 "departmentCode": "75",
                 "id": offerer_address_2.id,
-                "isLinkedToVenue": False,
                 "label": "2eme adresse",
                 "postalCode": "75007",
                 "street": "20 Avenue de Ségur",
@@ -81,7 +79,6 @@ class Return200Test:
                 "city": "Paris",
                 "departmentCode": "75",
                 "id": offerer_address_3.id,
-                "isLinkedToVenue": False,
                 "label": "3eme adresse",
                 "postalCode": "75008",
                 "street": "3 rue des moutons",
@@ -148,7 +145,6 @@ class Return200Test:
                     "city": "Paris",
                     "departmentCode": "75",
                     "id": offerer_address_id,
-                    "isLinkedToVenue": True,
                     "label": "Venue public name",
                     "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
@@ -161,8 +157,7 @@ class Return200Test:
             assert response.status_code == 200
             assert len(response.json) == 2
 
-    @pytest.mark.parametrize("linked_to_venue", [True, False])
-    def test_get_offerer_addresses_is_editable(self, client, linked_to_venue):
+    def test_get_offerer_addresses_is_editable(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         pro = user_offerer.user
         offerer = user_offerer.offerer
@@ -191,12 +186,6 @@ class Return200Test:
             address__banId="75108_7560_00000",
         )
 
-        if linked_to_venue:
-            venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address_1)
-            venue_public_name = venue.common_name
-        else:
-            venue_public_name = None
-
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
         offerer_address_1_id = offerer_address_1.id
@@ -211,8 +200,7 @@ class Return200Test:
                     "city": "Paris",
                     "departmentCode": "75",
                     "id": offerer_address_1_id,
-                    "isLinkedToVenue": linked_to_venue,
-                    "label": venue_public_name or "1ere adresse",
+                    "label": "1ere adresse",
                     "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
                 },
@@ -220,7 +208,6 @@ class Return200Test:
                     "city": "Paris",
                     "departmentCode": "75",
                     "id": offerer_address_2_id,
-                    "isLinkedToVenue": False,
                     "label": "2eme adresse",
                     "postalCode": "75007",
                     "street": "20 Avenue de Ségur",
@@ -229,7 +216,6 @@ class Return200Test:
                     "city": "Paris",
                     "departmentCode": "75",
                     "id": offerer_address_3_id,
-                    "isLinkedToVenue": False,
                     "label": "3eme adresse",
                     "postalCode": "75008",
                     "street": "1 rue de la Paix",
