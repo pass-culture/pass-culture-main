@@ -5,6 +5,7 @@ import { BannerRGS } from '@/components/BannerRGS/BannerRGS'
 import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
 
 import { Forms } from './constants'
+import { UserAnonymization } from './UserAnonymization/UserAnonymization'
 import { UserEmail, type UserEmailInitialValues } from './UserEmail/UserEmail'
 import { UserIdentity } from './UserIdentity/UserIdentity'
 import { UserPassword } from './UserPassword/UserPassword'
@@ -45,6 +46,7 @@ export const UserProfile = ({
         setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
         showForm={currentForm === Forms.USER_PASSWORD}
       />
+      <UserAnonymization />
     </div>
   )
 }
