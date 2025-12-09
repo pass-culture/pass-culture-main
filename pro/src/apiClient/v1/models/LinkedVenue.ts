@@ -2,7 +2,11 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CombinedInvoiceListModel = {
-  invoiceReferences: Array<string>;
+/**
+ * A venue that is already linked to a bank account.
+ */
+export type LinkedVenue = {
+  commonName: string;
+  id: number;
 };
 

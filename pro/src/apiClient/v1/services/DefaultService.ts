@@ -2761,10 +2761,10 @@ export class DefaultService {
    * @throws ApiError
    */
   public getInvoicesV2(
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-    bankAccountId?: number | null,
-    offererId?: number | null,
+    periodBeginningDate?: (string | null),
+    periodEndingDate?: (string | null),
+    bankAccountId?: (number | null),
+    offererId?: (number | null),
   ): CancelablePromise<InvoiceListV2ResponseModel> {
     return this.httpRequest.request({
       method: 'GET',

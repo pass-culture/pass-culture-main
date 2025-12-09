@@ -60,6 +60,7 @@ class HttpBodyModel(pydantic_v2.BaseModel):
 class HttpQueryParamsModel(pydantic_v2.BaseModel):
     model_config = pydantic_v2.ConfigDict(
         alias_generator=alias_generators.to_camel,
+        validate_by_name=True,
         allow_inf_nan=False,
         str_strip_whitespace=True,
         url_preserve_empty_path=True,

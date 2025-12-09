@@ -18,6 +18,7 @@ from pcapi.core.offerers.models import Target
 from pcapi.models import db
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization.address_serialize import AddressResponseModel
@@ -324,13 +325,10 @@ class InviteMemberQueryModel(BaseModel):
             raise ValueError(email) from e
 
 
-class GetOffererBankAccountsResponseModel(BaseModel):
+class GetOffererBankAccountsResponseModel(HttpBodyModel):
     id: int
-    bankAccounts: list[finance_serialize.BankAccountResponseModel]
-    managedVenues: list[finance_serialize.ManagedVenues]
-
-    class Config:
-        orm_mode = True
+    bank_accounts: list[finance_serialize.BankAccountResponseModel]
+    managed_venues: list[finance_serialize.ManagedVenue]
 
 
 class TopOffersResponseData(offerers_models.TopOffersData):

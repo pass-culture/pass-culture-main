@@ -28,7 +28,6 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base
-from pcapi.routes.serialization.finance_serialize import BankAccountResponseModel
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
@@ -310,7 +309,6 @@ class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasAdageId: bool
     adageInscriptionDate: datetime | None
-    bankAccount: BankAccountResponseModel | None
     hasOffers: bool
     location: address_serialize.LocationResponseModel | None
     hasActiveIndividualOffer: bool

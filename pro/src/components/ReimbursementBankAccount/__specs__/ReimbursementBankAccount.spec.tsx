@@ -5,11 +5,11 @@ import { Route, Routes } from 'react-router'
 import {
   BankAccountApplicationStatus,
   type BankAccountResponseModel,
-  type ManagedVenues,
+  type ManagedVenue,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { defaultManagedVenues } from '@/commons/utils/factories/individualApiFactories'
+import { defaultManagedVenue } from '@/commons/utils/factories/individualApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -22,7 +22,7 @@ const mockUpdateButtonClick = vi.fn()
 
 const renderReimbursementBankAccount = (
   bankAccount: BankAccountResponseModel,
-  managedVenues: ManagedVenues[],
+  managedVenues: ManagedVenue[],
   offererId = 0,
   hasWarning = false,
   options: RenderWithProvidersOptions = {}
@@ -51,7 +51,7 @@ const renderReimbursementBankAccount = (
 
 describe('ReimbursementBankAccount', () => {
   let bankAccount: BankAccountResponseModel
-  let managedVenues: ManagedVenues[]
+  let managedVenues: ManagedVenue[]
 
   beforeEach(() => {
     bankAccount = {
@@ -67,7 +67,7 @@ describe('ReimbursementBankAccount', () => {
 
     managedVenues = [
       {
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
         bankAccountId: 1,
         hasPricingPoint: false,
       },
@@ -119,7 +119,7 @@ describe('ReimbursementBankAccount', () => {
   it('should not render venues linked to bank account with only one bank account', () => {
     bankAccount.linkedVenues = []
     managedVenues.push({
-      ...defaultManagedVenues,
+      ...defaultManagedVenue,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
@@ -153,7 +153,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render with several venues not linked to bank account', () => {
     managedVenues.push({
-      ...defaultManagedVenues,
+      ...defaultManagedVenue,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
@@ -176,7 +176,7 @@ describe('ReimbursementBankAccount', () => {
 
   it('should render with several venues not linked to bank account', () => {
     managedVenues.push({
-      ...defaultManagedVenues,
+      ...defaultManagedVenue,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues)
 
@@ -188,7 +188,7 @@ describe('ReimbursementBankAccount', () => {
   it('should display error icon if one or more venues are not linked to an account', () => {
     bankAccount.linkedVenues = []
     managedVenues.push({
-      ...defaultManagedVenues,
+      ...defaultManagedVenue,
     })
     renderReimbursementBankAccount(bankAccount, managedVenues, 1, true)
 
@@ -345,7 +345,7 @@ describe('ReimbursementBankAccount', () => {
       })
       // Adds a venue not linked to a bank account
       managedVenues.push({
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
       })
       renderReimbursementBankAccount(bankAccount, managedVenues, 0, false)
 

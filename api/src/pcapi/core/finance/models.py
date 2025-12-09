@@ -313,6 +313,19 @@ class BankAccount(PcObject, Model, DeactivableMixin):
         passive_deletes=True,
     )
 
+    @property
+    def linked_venues(self) -> list["offerers_models.Venue"]:
+        """Return venues currently linked to venue"""
+        now = date_utils.get_naive_utc_now()
+        linked_venues = []
+
+        for link in self.venueLinks:
+            is_active_link = link.timespan.lower <= now and (not link.timespan.upper or now <= link.timespan.upper)
+            if is_active_link and link.venue is not None:  # ignore soft-deleted venues when the link is still active
+                linked_venues.append(link.venue)
+
+        return linked_venues
+
 
 class BankAccountStatusHistory(PcObject, Model):
     __tablename__ = "bank_account_status_history"

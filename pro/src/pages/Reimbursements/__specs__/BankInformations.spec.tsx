@@ -10,7 +10,7 @@ import {
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import {
   defaultGetOffererResponseModel,
-  defaultManagedVenues,
+  defaultManagedVenue,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
@@ -70,7 +70,7 @@ describe('BankInformations', () => {
       id: 1,
       managedVenues: [
         {
-          ...defaultManagedVenues,
+          ...defaultManagedVenue,
           commonName: 'wanted',
         },
       ],

@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { BankAccountResponseModel } from './BankAccountResponseModel';
 import type { BannerMetaModel } from './BannerMetaModel';
 import type { DisplayedActivity } from './DisplayedActivity';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
@@ -21,7 +20,6 @@ export type GetVenueResponseModel = {
   activity?: DisplayedActivity | null;
   adageInscriptionDate?: string | null;
   audioDisabilityCompliant?: boolean | null;
-  bankAccount?: BankAccountResponseModel | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
