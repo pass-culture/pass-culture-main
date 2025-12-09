@@ -123,14 +123,18 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-
-  publish-prelease:
-    needs: [version,deploy-prod]
+  publish-github-prerelease:
+    runs-on: ubuntu-22.04
+    needs: deploy-prod
     if: github.event.inputs.target_environment == 'production'
-    uses: ./.github/workflows/dev_on_workflow_publish_github_prelease.yml
-    with:
-      tag_name: ${{ needs.version.outputs.APP_VERSION }}
-
+    steps:
+      - uses: actions/checkout@v6
+      - name: "Publish Github prerelease"
+        run: |
+          gh release edit "${{ github.ref_name }}" \
+          --prerelease=false \
+          --latest \
+          --verify-tag
 
   slack-notification:
     name: "Send Slack notification"
