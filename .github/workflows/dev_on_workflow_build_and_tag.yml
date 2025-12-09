@@ -139,10 +139,12 @@ jobs:
         if: "${{ github.event.inputs.previous_tag != '' }}"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
+        # generate notes vs the latest release
         run: |
+          latest_release=$(gh release list --json name,isLatest --jq '.[] | select(.isLatest)|.name')
           gh release create "$TAG_NAME" \
           --title "$TAG_NAME" \
           --verify-tag  \
           --generate-notes  \ 
-          --notes-start-tag=previous_tag \          
+          --notes-start-tag="$latest_release" \          
           --prerelease \
