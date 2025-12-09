@@ -16,8 +16,8 @@ jobs:
       - name: "Authenticate to Google Cloud"
         uses: "google-github-actions/auth@v2"
         with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.V2_GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.V2_GCP_SERVICE_ACCOUNT }}
 
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v3'
