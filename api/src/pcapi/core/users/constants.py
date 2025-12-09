@@ -37,6 +37,9 @@ ACCOUNT_UNSUSPENSION_DELAY = 60  # days
 
 EDUCONNECT_SAML_REQUEST_ID_TTL = 24 * 60 * 60  # 1 day in seconds
 
+# During the process of bonification, the beneficiary is allowed to retry in case of a mistake but not indefinitely.
+MAX_QF_BONUS_RETRIES = 3
+
 GDPR_EXTRACT_DATA_LOCK = "pcapi:core:users:gdpr_extract_data_lock"
 GDPR_EXTRACT_DATA_COUNTER = "pcapi:core:users:gdpr_extract_data_counter"
 

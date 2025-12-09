@@ -2404,19 +2404,6 @@
                 "title": "FavoriteResponse",
                 "type": "object"
             },
-            "FraudCheckStatus": {
-                "description": "An enumeration.",
-                "enum": [
-                    "canceled",
-                    "error",
-                    "ko",
-                    "ok",
-                    "pending",
-                    "started",
-                    "suspiscious"
-                ],
-                "title": "FraudCheckStatus"
-            },
             "GTL": {
                 "properties": {
                     "code": {
@@ -4332,6 +4319,21 @@
                 "title": "ProfileUpdateRequest",
                 "type": "object"
             },
+            "QFBonificationStatus": {
+                "description": "An enumeration.",
+                "enum": [
+                    "eligible",
+                    "not_eligible",
+                    "started",
+                    "custodian_not_found",
+                    "not_in_tax_household",
+                    "quotient_familial_too_high",
+                    "too_many_retries",
+                    "granted",
+                    "ko"
+                ],
+                "title": "QFBonificationStatus"
+            },
             "Rates": {
                 "properties": {
                     "pacificFrancToEuro": {
@@ -5479,14 +5481,6 @@
                         "title": "Birthdate",
                         "type": "string"
                     },
-                    "bonificationStatus": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/FraudCheckStatus"
-                            }
-                        ],
-                        "nullable": true
-                    },
                     "bookedOffers": {
                         "additionalProperties": {
                             "type": "integer"
@@ -5586,10 +5580,6 @@
                         "title": "Iseligibleforbeneficiaryupgrade",
                         "type": "boolean"
                     },
-                    "isEligibleForBonification": {
-                        "title": "Iseligibleforbonification",
-                        "type": "boolean"
-                    },
                     "lastName": {
                         "nullable": true,
                         "title": "Lastname",
@@ -5608,6 +5598,14 @@
                         "nullable": true,
                         "title": "Postalcode",
                         "type": "string"
+                    },
+                    "qfBonificationStatus": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/QFBonificationStatus"
+                            }
+                        ],
+                        "nullable": true
                     },
                     "recreditAmountToShow": {
                         "nullable": true,
@@ -5672,8 +5670,7 @@
                     "roles",
                     "showEligibleCard",
                     "status",
-                    "subscriptions",
-                    "isEligibleForBonification"
+                    "subscriptions"
                 ],
                 "title": "UserProfileResponse",
                 "type": "object"

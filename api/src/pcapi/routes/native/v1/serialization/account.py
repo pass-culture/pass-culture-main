@@ -210,10 +210,8 @@ class UserProfileGetterDict(GetterDict):
                 return profile_options.ActivityIdEnum(activity.name)
             except ValueError:
                 return None
-        if key == "isEligibleForBonification":
-            return users_api.get_user_is_eligible_for_bonification(user)
-        if key == "bonificationStatus":
-            return users_api.get_user_bonification_status(user)
+        if key == "qfBonificationStatus":
+            return users_api.get_user_qf_bonification_status(user)
         if key == "recreditTypeToShow":
             return users_api.get_latest_user_recredit_type(user)
 
@@ -255,8 +253,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     status: YoungStatusResponse
     subscription_message: subscription_serialization.SubscriptionMessage | None
     subscriptions: NotificationSubscriptions  # if we send user.notification_subscriptions, pydantic will take the column and not the property
-    is_eligible_for_bonification: bool
-    bonification_status: subscription_models.FraudCheckStatus | None
+    qf_bonification_status: subscription_models.QFBonificationStatus | None
 
     _convert_recredit_amount_to_show = validator("recredit_amount_to_show", pre=True, allow_reuse=True)(convert_to_cent)
 
