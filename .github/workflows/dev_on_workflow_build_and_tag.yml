@@ -22,6 +22,11 @@ on:
         type: boolean
         default: false
 
+      previous_tag:
+        # 199.0.3 for example.
+        required: false
+        type: string
+
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
         required: true
@@ -131,11 +136,13 @@ jobs:
         run: git push origin "${{ inputs.base_ref }}"
 
       - name: Create Github prerelease
+        if: "${{ github.event.inputs.previous_tag != '' }}"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         run: |
-          gh release create --title "$TAG_NAME" \
-          --fail-on-no-commits \
+          gh release create "$TAG_NAME" \
+          --title "$TAG_NAME" \
           --verify-tag  \
-          --generate-notes  \
-          --prerelease
+          --generate-notes  \ 
+          --notes-start-tag=previous_tag \          
+          --prerelease \
