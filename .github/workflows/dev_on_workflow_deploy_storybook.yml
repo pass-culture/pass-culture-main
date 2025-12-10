@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@safe-chain-setup/v1.0.0
       - name: "Install dependencies"
         working-directory: pro
         # we cannot use an action like nick-fields/retry@v3 along with `working-directory`
