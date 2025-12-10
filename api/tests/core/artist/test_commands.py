@@ -340,19 +340,26 @@ class ComputeArtistsMostRelevantImageTest:
 class UpdateArtistFromDeltaTest:
     @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
     def test_update_action_modifies_existing_artist(self, mock_artist_delta_query):
-        artist_to_update = ArtistFactory(name="Ancien Nom", description="Description initiale")
+        artist_to_update = ArtistFactory(name="Richard Paul Astley", description="chanteur")
         mock_artist_delta_query.return_value = [
             DeltaArtistModel(
                 id=artist_to_update.id,
-                name="Nouveau Nom",
-                description="Description mise à jour",
-                wikidata_id="Q12345",
+                name="Rick Astley",
+                description="Chanteur britannique",
+                wikidata_id="Q219237",
+                wikipedia_url="https://fr.wikipedia.org/wiki/Rick_Astley",
+                biography="Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows...",
                 action=DeltaAction.UPDATE,
             ),
         ]
 
         ArtistImporter().run_delta_update()
 
-        assert artist_to_update.name == "Nouveau Nom"
-        assert artist_to_update.description == "Description mise à jour"
-        assert artist_to_update.wikidata_id == "Q12345"
+        assert artist_to_update.name == "Rick Astley"
+        assert artist_to_update.description == "Chanteur britannique"
+        assert artist_to_update.wikidata_id == "Q219237"
+        assert artist_to_update.wikipedia_url == "https://fr.wikipedia.org/wiki/Rick_Astley"
+        assert (
+            artist_to_update.biography
+            == "Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows..."
+        )

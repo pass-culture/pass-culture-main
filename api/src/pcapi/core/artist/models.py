@@ -65,6 +65,7 @@ class Artist(Model):
         sa.Boolean, nullable=False, server_default=sa.false(), default=False
     )
     wikidata_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    wikipedia_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     biography: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(

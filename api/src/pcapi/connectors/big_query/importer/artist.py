@@ -35,6 +35,8 @@ class ArtistImporter(
             image_license=model.image_license,
             image_license_url=model.image_license_url,
             wikidata_id=model.wikidata_id,
+            biography=model.biography,
+            wikipedia_url=model.wikipedia_url,
         )
 
     def update(self, sqlalchemy_obj: artist_models.Artist, delta_model: bq_artist_queries.DeltaArtistModel) -> None:
@@ -45,6 +47,8 @@ class ArtistImporter(
         sqlalchemy_obj.image_license = delta_model.image_license
         sqlalchemy_obj.image_license_url = delta_model.image_license_url
         sqlalchemy_obj.wikidata_id = delta_model.wikidata_id
+        sqlalchemy_obj.biography = delta_model.biography
+        sqlalchemy_obj.wikipedia_url = delta_model.wikipedia_url
 
 
 class ArtistProductLinkImporter(
