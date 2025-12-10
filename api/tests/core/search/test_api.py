@@ -8,6 +8,7 @@ import pcapi.core.artist.factories as artists_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.search.testing as search_testing
+from pcapi import settings
 from pcapi.core import search
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
@@ -131,9 +132,9 @@ def test_index_offers_of_venues_in_queue(app, clear_redis):
     search.index_offers_of_venues_in_queue()
     assert app.redis_client.scard(queue) == 0
 
-    assert bookable_offer.id in search_testing.search_store["offers"]
-    assert unbookable_offer.id not in search_testing.search_store["offers"]
-    assert closed_offer.id not in search_testing.search_store["offers"]
+    assert bookable_offer.id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
+    assert unbookable_offer.id not in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
+    assert closed_offer.id not in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
 
 
 @pytest.mark.settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
@@ -155,9 +156,9 @@ class ReindexOfferIdsTest:
     def test_index_new_offer(self):
         offer = make_bookable_offer()
         future_offer = make_future_offer()
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
         search.reindex_offer_ids([offer.id, future_offer.id])
-        assert set(search_testing.search_store["offers"]) == {offer.id, future_offer.id}
+        assert set(search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]) == {offer.id, future_offer.id}
 
     def test_no_unexpected_query_made(self):
         offer_ids = [make_bookable_offer().id for _ in range(3)]
@@ -169,25 +170,25 @@ class ReindexOfferIdsTest:
     def test_unindex_unbookable_offer(self, app, clear_redis):
         # given
         offer = make_unbookable_offer()
-        search_testing.search_store["offers"][offer.id] = "dummy"
+        search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id] = "dummy"
         app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
 
         # when
         search.reindex_offer_ids([offer.id])
 
         # then
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
     def test_closed_offerer(self, app, clear_redis):
         offer = make_bookable_offer(
             offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
         )
-        search_testing.search_store["offers"][offer.id] = "dummy"
+        search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id] = "dummy"
         app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
 
         search.reindex_offer_ids([offer.id])
 
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
     def test_that_base_query_is_correct(self, app, clear_redis):
         # Make sure that `get_base_query_for_offer_indexation` loads
@@ -203,7 +204,7 @@ class ReindexOfferIdsTest:
         offers_factories.EventStockFactory(offer=multi_dates_bookable, beginningDatetime=future)
         offer_ids = {unbookable.id, bookable.id, future_offer.id, multi_dates_unbookable.id, multi_dates_bookable.id}
         for offer_id in offer_ids:
-            search_testing.search_store["offers"][offer_id] = "dummy"
+            search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer_id] = "dummy"
             app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer_id, "")
 
         num_queries = 1  # base query for indexation
@@ -214,30 +215,35 @@ class ReindexOfferIdsTest:
             with assert_no_duplicated_queries():
                 search.reindex_offer_ids(offer_ids)
 
-        assert set(search_testing.search_store["offers"]) == {bookable.id, future_offer.id, multi_dates_bookable.id}
+        assert set(search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]) == {
+            bookable.id,
+            future_offer.id,
+            multi_dates_bookable.id,
+        }
 
-    @mock.patch("pcapi.core.search.backends.testing.FakeClient.save_objects", fail)
+    @mock.patch("pcapi.core.search.backends.testing.TestingBackend.save_objects", fail)
     @pytest.mark.settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
     def test_handle_indexation_error(self, app, clear_redis):
         offer = make_bookable_offer()
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
         search.reindex_offer_ids([offer.id])
 
-        assert offer.id not in search_testing.search_store["offers"]
+        assert offer.id not in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
         error_queue = redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
-    @mock.patch("pcapi.core.search.backends.testing.FakeClient.delete_objects", fail)
+    @mock.patch("pcapi.core.search.backends.testing.TestingBackend.delete_objects", fail)
     @pytest.mark.settings(CATCH_INDEXATION_EXCEPTIONS=True)  # as on prod: don't raise errors
     def test_handle_unindexation_error(self, app, clear_redis):
         offer = make_unbookable_offer()
-        search_testing.search_store["offers"][offer.id] = "dummy"
+        search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id] = "dummy"
         app.redis_client.hset(redis_queues.REDIS_HASHMAP_INDEXED_OFFERS_NAME, offer.id, "")
+        assert offer.id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
 
         search.reindex_offer_ids([offer.id])
 
-        assert offer.id in search_testing.search_store["offers"]
+        assert offer.id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
         error_queue = redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
@@ -247,10 +253,10 @@ class ReindexOfferIdsTest:
         offer.product = offers_factories.ProductFactory()
         offer.product.artists.append(artist)
 
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
         search.reindex_offer_ids([offer.id])
-        assert offer.id in search_testing.search_store["offers"]
+        assert offer.id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
 
         artist_queue = redis_queues.REDIS_ARTIST_IDS_TO_INDEX
         artist_ids = app.redis_client.smembers(artist_queue)
@@ -259,10 +265,10 @@ class ReindexOfferIdsTest:
     @pytest.mark.features(ENABLE_VENUE_STRICT_SEARCH=True)
     def test_reindex_venues_after_reindexing_offers(self, app, clear_redis):
         offer = make_bookable_offer()
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
         search.reindex_offer_ids([offer.id])
-        assert offer.id in search_testing.search_store["offers"]
+        assert offer.id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
 
         venue_queue = redis_queues.REDIS_VENUE_IDS_TO_INDEX
         venue_ids = app.redis_client.smembers(venue_queue)
@@ -273,12 +279,17 @@ class ReindexOfferIdsTest:
     @pytest.mark.features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=True)
     def test_index_last_30_days_bookings(self, app):
         offer = make_booked_offer()
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
         search.reindex_offer_ids([offer.id])
-        assert offer.id in search_testing.search_store["offers"]
-        assert search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"] == 6
+        assert offer.id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
         assert (
-            search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookingsRange"]
+            search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id]["offer"]["last30DaysBookings"]
+            == 6
+        )
+        assert (
+            search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id]["offer"][
+                "last30DaysBookingsRange"
+            ]
             == serialization.Last30DaysBookingsRange.MEDIUM.value
         )
 
@@ -286,21 +297,26 @@ class ReindexOfferIdsTest:
     @pytest.mark.features(ALGOLIA_BOOKINGS_NUMBER_COMPUTATION=False)
     def test_last_30_days_bookings_computation_feature_toggle(self, app):
         offer = make_booked_offer()
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
         search.reindex_offer_ids([offer.id])
-        assert offer.id in search_testing.search_store["offers"]
-        assert search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookings"] == 0
+        assert offer.id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
         assert (
-            search_testing.search_store["offers"][offer.id]["offer"]["last30DaysBookingsRange"]
+            search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id]["offer"]["last30DaysBookings"]
+            == 0
+        )
+        assert (
+            search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id]["offer"][
+                "last30DaysBookingsRange"
+            ]
             == serialization.Last30DaysBookingsRange.VERY_LOW.value
         )
 
     def test_caledonian_offer_is_indexed(self):
         offer_id = offers_factories.StockFactory(offer__venue=offerers_factories.CaledonianVenueFactory()).offer.id
 
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
         search.reindex_offer_ids([offer_id])
-        assert offer_id in search_testing.search_store["offers"]
+        assert offer_id in search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME]
 
 
 class ReindexArtistIdsTest:
@@ -394,9 +410,9 @@ class ReindexVenueIdsTest:
         venue = offerers_factories.CaledonianVenueFactory()
         offers_factories.StockFactory(offer__venue=venue)
 
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
         search.reindex_venue_ids([venue.id])
-        assert search_testing.search_store["offers"] == {}
+        assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
 
 @pytest.mark.settings(REDIS_OFFER_IDS_CHUNK_SIZE=3)
@@ -450,11 +466,11 @@ def test_unindex_offer_ids(app, clear_redis):
     offer1 = make_bookable_offer()
     offer2 = make_bookable_offer()
 
-    search_testing.search_store["offers"][offer1.id] = offer1
-    search_testing.search_store["offers"][offer2.id] = offer2
+    search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer1.id] = offer1
+    search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer2.id] = offer2
 
     search.unindex_offer_ids([offer1.id, offer2.id])
-    assert search_testing.search_store["offers"] == {}
+    assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
     venue_ids = app.redis_client.smembers(redis_queues.REDIS_VENUE_IDS_TO_INDEX)
     venue_ids = {int(venue_id) for venue_id in venue_ids}
@@ -462,12 +478,12 @@ def test_unindex_offer_ids(app, clear_redis):
 
 
 def test_unindex_all_offers():
-    search_testing.search_store["offers"][1] = "dummy"
-    search_testing.search_store["offers"][2] = "dummy"
+    search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][1] = "dummy"
+    search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][2] = "dummy"
 
     search.unindex_all_offers()
 
-    assert search_testing.search_store["offers"] == {}
+    assert search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME] == {}
 
 
 class UpdateProductBookingCountTest:
@@ -512,7 +528,12 @@ class ReadProductBookingCountTest:
 
         search.reindex_offer_ids([stock.offer.id])
 
-        assert search_testing.search_store["offers"][stock.offer.id]["offer"].get("last30DaysBookings") == 1
+        assert (
+            search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][stock.offer.id]["offer"].get(
+                "last30DaysBookings"
+            )
+            == 1
+        )
 
     @mock.patch("pcapi.core.search.get_last_30_days_bookings_for_eans", return_value={"1234567890987": 1})
     def test_reindex_latest_computed_booking_count_only(self, _mock):
@@ -524,7 +545,10 @@ class ReadProductBookingCountTest:
         bookings_factories.BookingFactory(stock__offer=offer)
         search.reindex_offer_ids([offer.id])
 
-        assert search_testing.search_store["offers"][offer.id]["offer"].get("last30DaysBookings") == 1
+        assert (
+            search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id]["offer"].get("last30DaysBookings")
+            == 1
+        )
 
 
 @mock.patch("pcapi.core.search.update_last_30_days_bookings_for_eans", return_value=list(range(101)))
@@ -551,4 +575,7 @@ def test_booking_count_for_movies():
     search.update_last_30_days_bookings_for_movies()
     search.reindex_offer_ids([offer.id])
 
-    assert search_testing.search_store["offers"][offer.id]["offer"].get("last30DaysBookings") == 1
+    assert (
+        search_testing.search_store[settings.ALGOLIA_OFFERS_INDEX_NAME][offer.id]["offer"].get("last30DaysBookings")
+        == 1
+    )

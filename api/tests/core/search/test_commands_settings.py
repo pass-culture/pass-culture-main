@@ -120,7 +120,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._set_settings(index_type, config_path, apply=False)
+            outputs = commands_settings._set_settings(index_type, config_path, apply=True)
 
         assert requests_mocker.call_count == 2
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
@@ -142,7 +142,7 @@ class AlgoliaSettingsTest:
                 complete_qs=False,
             )
 
-            outputs = commands_settings._get_settings(index_type, not_dry=True)
+            outputs = commands_settings._get_settings(index_type, not_dry=False)
 
         assert not requests_mocker.called
         assert len(outputs) == 2  # dry sim messages: settings fetched + settings displayed
@@ -182,8 +182,6 @@ class AlgoliaSettingsTest:
         assert requests_mocker.request_history[0].method == "GET"
 
         mock_open.assert_called_once_with(commands_settings._get_index_default_file(index_type), "r", encoding="utf-8")
-        assert len(outputs) == 3
-        assert outputs[0] == f"settings will be read from {config_path}"
-        assert outputs[1] == f"settings will be applied to {index_type.value} Algolia index"
-        assert outputs[2] == commands_settings._get_dict_diff(old_index_settings, config_file_content)
-        assert '"random_field": "random_value"' in outputs[2] and '"random_field": "other_value"' in outputs[2]
+        assert len(outputs) == 1
+        assert outputs[0] == commands_settings._get_dict_diff(old_index_settings, config_file_content)
+        assert '"random_field": "random_value"' in outputs[0] and '"random_field": "other_value"' in outputs[0]
