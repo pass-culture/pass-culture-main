@@ -97,6 +97,7 @@ import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
+import type { ProAnonymizationEligibilityResponseModel } from '../models/ProAnonymizationEligibilityResponseModel';
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
@@ -2363,6 +2364,21 @@ export class DefaultService {
       path: {
         'search_input': searchInput,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_anonymization_eligibility <GET>
+   * @returns ProAnonymizationEligibilityResponseModel OK
+   * @throws ApiError
+   */
+  public getAnonymizationEligibility(): CancelablePromise<ProAnonymizationEligibilityResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/users/anonymize/eligibility',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

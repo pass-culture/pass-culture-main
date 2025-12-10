@@ -21,6 +21,7 @@ from pcapi.core.token.serialization import ConnectAsInternalModel
 from pcapi.core.users import api as users_api
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions as users_exceptions
+from pcapi.core.users import gdpr_api
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repo
 from pcapi.core.users.api import update_user_password
@@ -387,4 +388,19 @@ def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None
             "source_page": body.location,
         },
         technical_message_id="user_review",
+    )
+
+
+@private_api.route("/users/anonymize/eligibility", methods=["GET"])
+@login_required
+@spectree_serialize(
+    response_model=users_serializers.ProAnonymizationEligibilityResponseModel, api=blueprint.pro_private_schema
+)
+def get_anonymization_eligibility() -> users_serializers.ProAnonymizationEligibilityResponseModel:
+    user = current_user._get_current_object()
+
+    return users_serializers.ProAnonymizationEligibilityResponseModel(
+        is_only_pro=gdpr_api.is_only_pro(user),
+        has_active_offerer=gdpr_api.has_active_offerer(user),
+        is_sole_user_with_ongoing_activities=gdpr_api.is_sole_user_with_ongoing_activities(user),
     )

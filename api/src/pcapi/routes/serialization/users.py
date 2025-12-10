@@ -353,3 +353,13 @@ class GdprDataContainer(BaseModel):
     generationDate: datetime
     internal: GdprInternal
     external: GdprExternal
+
+
+class ProAnonymizationEligibilityResponseModel(BaseModel):
+    is_only_pro: bool
+    has_active_offerer: bool
+    is_sole_user_with_ongoing_activities: bool
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
