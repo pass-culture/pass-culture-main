@@ -725,8 +725,7 @@ def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booki
 def cancel_booking_by_offerer(booking: models.Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
-    if not FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
-        push_notification_job.send_cancel_booking_notification.delay([booking.id])
+    push_notification_job.send_cancel_booking_notification.delay([booking.id])
     user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
 
 
