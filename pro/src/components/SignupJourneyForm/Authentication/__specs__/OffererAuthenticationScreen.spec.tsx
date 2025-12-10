@@ -130,9 +130,7 @@ describe('screens:SignupJourney::OffererAuthentication', () => {
     renderOffererAuthenticationScreen(contextValue)
 
     expect(
-      await screen.findByText(
-        'Tous les champs suivis d’un * sont obligatoires.'
-      )
+      await screen.findByText('Les champs suivis d’un * sont obligatoires.')
     ).toBeInTheDocument()
 
     expect(
