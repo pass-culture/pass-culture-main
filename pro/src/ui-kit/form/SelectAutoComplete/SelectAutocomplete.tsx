@@ -10,6 +10,7 @@ import {
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import { noop } from '@/commons/utils/noop'
+import type { RequiredIndicator } from '@/design-system/common/types'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import { OptionsList } from './OptionsList/OptionsList'
@@ -38,6 +39,8 @@ type CommonProps = {
   disabled?: boolean
   /** Indicates if the field is required */
   required?: boolean
+  /** What type of required indicator is displayed */
+  requiredIndicator?: RequiredIndicator
   /** Additional CSS class names */
   className?: string
   /** Error message to display */
@@ -84,6 +87,7 @@ export const SelectAutocomplete = forwardRef(
       disabled = false,
       name,
       required = true,
+      requiredIndicator = 'symbol',
       label,
       options,
       resetOnOpen = true,
@@ -278,6 +282,7 @@ export const SelectAutocomplete = forwardRef(
         className={className}
         error={error}
         required={required}
+        requiredIndicator={requiredIndicator}
         label={label}
         name={name}
         showError={!!error}

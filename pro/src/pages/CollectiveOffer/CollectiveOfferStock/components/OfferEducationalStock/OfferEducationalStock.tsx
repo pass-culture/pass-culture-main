@@ -122,7 +122,7 @@ export const OfferEducationalStock = <
                 Offre importée automatiquement
               </BannerPublicApi>
             )}
-            <FormLayout.MandatoryInfo areAllFieldsMandatory />
+            <FormLayout.MandatoryInfo />
             <Callout
               className={styles['offer-educational-stock-banner']}
               links={[
@@ -164,7 +164,7 @@ export const OfferEducationalStock = <
                   {...form.register('priceDetail')}
                   description={PRICE_DETAIL_PLACEHOLDER}
                   error={form.formState.errors.priceDetail?.message}
-                  requiredIndicator="hidden"
+                  requiredIndicator="symbol"
                   required
                 />
               </FormLayout.Row>
@@ -189,7 +189,7 @@ export const OfferEducationalStock = <
                   error={form.formState.errors.bookingLimitDatetime?.message}
                   className={styles['input-date']}
                   required
-                  requiredIndicator="hidden"
+                  requiredIndicator="symbol"
                 />
               </FormLayout.Row>
             </FormLayout.Section>
