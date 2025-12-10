@@ -17,7 +17,6 @@ from pydantic.v1.networks import HttpUrl
 import pcapi.core.external.batch as batch_notification
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.subscription.ubble.constants as ubble_fraud_constants
-import pcapi.utils.repository as pcapi_repository
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.external.attributes import api as external_attributes_api
@@ -36,6 +35,7 @@ from pcapi.models.feature import FeatureToggle
 from pcapi.tasks import ubble_tasks
 from pcapi.utils import requests as requests_utils
 from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import on_commit
 
 from . import errors
@@ -293,7 +293,11 @@ def _update_identity_fraud_check(
     else:
         fraud_check.resultContent = content.dict(exclude_none=True)
 
-    pcapi_repository.save(fraud_check)
+    db.session.add(fraud_check)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def get_most_relevant_ubble_error(
