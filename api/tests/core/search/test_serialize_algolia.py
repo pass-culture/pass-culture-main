@@ -566,6 +566,7 @@ def test_serialize_venue():
         "offerer_name": venue.managingOfferer.name,
         "venue_type": venue.venueTypeCode.name,
         "description": venue.description,
+        "open_to_public": False,
         "audio_disability": True,
         "mental_disability": False,
         "motor_disability": False,
