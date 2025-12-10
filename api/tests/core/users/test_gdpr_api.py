@@ -23,6 +23,8 @@ from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
+from pcapi.core.educational import factories as educational_factories
+from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import api as geography_api
 from pcapi.core.geography import models as geography_models
@@ -31,6 +33,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories as offers_factories
+from pcapi.core.offers import models as offers_models
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import api as users_api
 from pcapi.core.users import constants as users_constants
@@ -489,6 +492,188 @@ class AnonymizeProUserFunctionTest:
         mock_anonymize_user.assert_called_once_with(user)
         mock_delete_beamer_user.assert_called_once_with(user.id)
         assert "Could not delete Beamer user" in caplog.text
+
+
+class IsOnlyProTest:
+    def test_user_with_only_pro_role(self):
+        user = users_factories.ProFactory()
+
+        assert gdpr_api.is_only_pro(user) is True
+
+    def test_user_with_non_attached_pro_role(self):
+        user = users_factories.NonAttachedProFactory()
+
+        assert gdpr_api.is_only_pro(user) is True
+
+    def test_user_with_pro_and_beneficiary_roles(self):
+        user = users_factories.BeneficiaryGrant18Factory(
+            roles=[users_models.UserRole.BENEFICIARY, users_models.UserRole.PRO]
+        )
+
+        assert gdpr_api.is_only_pro(user) is False
+
+    def test_user_with_pro_role_and_beneficiary_fraud_check(self):
+        user = users_factories.ProFactory()
+        subscription_factories.BeneficiaryFraudCheckFactory(user=user)
+
+        assert gdpr_api.is_only_pro(user) is False
+
+
+class HasSuspendedOffererTest:
+    def test_user_with_active_offerer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        assert gdpr_api.has_suspended_offerer(user_offerer.user) is False
+
+    def test_user_with_inactive_offerer(self):
+        offerer = offerers_factories.OffererFactory(isActive=False)
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+
+        assert gdpr_api.has_suspended_offerer(user_offerer.user) is True
+
+    def test_user_with_multiple_offerers_one_inactive(self):
+        user = users_factories.ProFactory()
+        offerers_factories.UserOffererFactory(user=user)  # Active offerer
+        offerer_inactive = offerers_factories.OffererFactory(isActive=False)
+        offerers_factories.UserOffererFactory(user=user, offerer=offerer_inactive)
+
+        assert gdpr_api.has_suspended_offerer(user) is True
+
+    def test_rejected_user_with_inactive_offerer(self):
+        offerer = offerers_factories.OffererFactory(isActive=False)
+        user_offerer = offerers_factories.RejectedUserOffererFactory(offerer=offerer)
+
+        assert gdpr_api.has_suspended_offerer(user_offerer.user) is True
+
+    def test_user_with_rejected_inactive_offerer(self):
+        offerer = offerers_factories.RejectedOffererFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=offerer)
+
+        assert gdpr_api.has_suspended_offerer(user_offerer.user) is False
+
+
+class IsSoleUserWithOngoingActivitiesTest:
+    def test_sole_user_with_active_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory(
+            offer__venue=venue,
+            offer__validation=offers_models.OfferValidationStatus.APPROVED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_inactive_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory(
+            offer__venue=venue,
+            offer__validation=offers_models.OfferValidationStatus.DRAFT,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_sole_user_with_confirmed_booking(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        bookings_factories.BookingFactory(
+            stock__offer__venue=venue,
+            status=bookings_models.BookingStatus.CONFIRMED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_used_booking(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        bookings_factories.BookingFactory(
+            stock__offer__venue=venue,
+            status=bookings_models.BookingStatus.USED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_active_collective_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferFactory(venue=venue, isActive=True)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_inactive_collective_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferFactory(venue=venue, isActive=False)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_sole_user_with_active_collective_offer_template(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, isActive=True)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_inactive_collective_offer_template(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, isActive=False)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_sole_user_with_pending_collective_booking(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        educational_factories.CollectiveBookingFactory(
+            offerer=user_offerer.offerer,
+            status=educational_models.CollectiveBookingStatus.PENDING,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_confirmed_collective_booking(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        educational_factories.CollectiveBookingFactory(
+            offerer=user_offerer.offerer,
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_used_collective_booking(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        educational_factories.CollectiveBookingFactory(
+            offerer=user_offerer.offerer,
+            status=educational_models.CollectiveBookingStatus.CONFIRMED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_multiple_users_with_active_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(offerer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory(
+            offer__venue=venue,
+            offer__validation=offers_models.OfferValidationStatus.APPROVED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_multiple_users_with_active_collective_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(offerer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferFactory(venue=venue, isActive=True)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_multiple_users_with_active_collective_offer_template(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(offerer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        educational_factories.CollectiveOfferTemplateFactory(venue=venue, isActive=True)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
 
 
 class AnonymizeProUsersTest:

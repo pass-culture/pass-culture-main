@@ -15,6 +15,7 @@ from sqlalchemy import func
 from sqlalchemy import orm as sa_orm
 
 import pcapi.core.bookings.models as bookings_models
+import pcapi.core.educational.models as educational_models
 import pcapi.core.history.models as history_models
 import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.offerers.models as offerers_models
@@ -43,6 +44,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models
 from pcapi.core.users import schemas
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.notifications import push as push_api
 from pcapi.utils import date as date_utils
@@ -233,6 +235,132 @@ def is_only_beneficiary(user: models.User) -> bool:
     # Check if the user is admin, pro or anonymised
     beneficiary_roles = {models.UserRole.BENEFICIARY, models.UserRole.UNDERAGE_BENEFICIARY}
     return beneficiary_roles.issuperset(user.roles)
+
+
+def is_only_pro(user: models.User) -> bool:
+    return {models.UserRole.PRO, models.UserRole.NON_ATTACHED_PRO}.issuperset(user.roles) and not db.session.query(
+        sa.exists().where(subscription_models.BeneficiaryFraudCheck.userId == user.id)
+    ).scalar()
+
+
+def has_suspended_offerer(user: models.User) -> bool:
+    return bool(
+        db.session.query(
+            sa.select(1)
+            .select_from(offerers_models.UserOfferer)
+            .join(offerers_models.Offerer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+            .where(
+                offerers_models.UserOfferer.userId == user.id,
+                offerers_models.Offerer.isActive.is_(False),
+                offerers_models.Offerer.validationStatus != ValidationStatus.REJECTED,
+            )
+            .exists()
+        ).scalar()
+    )
+
+
+def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
+    inner_user_offerer = sa.orm.aliased(offerers_models.UserOfferer)
+
+    user_count_subquery = (
+        sa.select(func.count(inner_user_offerer.userId))
+        .where(
+            inner_user_offerer.offererId == offerers_models.UserOfferer.offererId,
+            inner_user_offerer.isValidated,
+        )
+        .correlate(offerers_models.UserOfferer)
+        .scalar_subquery()
+    )
+
+    has_active_offer = (
+        sa.select(1)
+        .select_from(offers_models.Offer)
+        .join(offerers_models.Venue, offers_models.Offer.venueId == offerers_models.Venue.id)
+        .where(
+            offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
+            offers_models.Offer.status == OfferStatus.ACTIVE.name,
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    has_active_collective_offer = (
+        sa.select(1)
+        .select_from(educational_models.CollectiveOffer)
+        .join(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId)
+        .where(
+            educational_models.CollectiveOffer.isActive.is_(True),
+            educational_models.CollectiveOffer.venueId == offerers_models.Venue.id,
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    has_active_collective_offer_template = (
+        sa.select(1)
+        .select_from(educational_models.CollectiveOfferTemplate)
+        .join(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId)
+        .where(
+            educational_models.CollectiveOfferTemplate.isActive.is_(True),
+            educational_models.CollectiveOfferTemplate.venueId == offerers_models.Venue.id,
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    has_ongoing_booking = (
+        sa.select(1)
+        .select_from(bookings_models.Booking)
+        .where(
+            bookings_models.Booking.offererId == offerers_models.UserOfferer.offererId,
+            bookings_models.Booking.status.in_(
+                [
+                    bookings_models.BookingStatus.CONFIRMED,
+                    bookings_models.BookingStatus.USED,
+                ]
+            ),
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    has_ongoing_collective_booking = (
+        sa.select(1)
+        .select_from(educational_models.CollectiveBooking)
+        .where(
+            educational_models.CollectiveBooking.offererId == offerers_models.UserOfferer.offererId,
+            educational_models.CollectiveBooking.status.in_(
+                [
+                    educational_models.CollectiveBookingStatus.CONFIRMED,
+                    educational_models.CollectiveBookingStatus.PENDING,
+                    educational_models.CollectiveBookingStatus.USED,
+                ]
+            ),
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    result = db.session.query(
+        sa.exists(
+            sa.select(1)
+            .select_from(offerers_models.UserOfferer)
+            .where(
+                offerers_models.UserOfferer.userId == user.id,
+                offerers_models.UserOfferer.isValidated,
+                user_count_subquery == 1,
+                sa.or_(
+                    has_active_offer,
+                    has_active_collective_offer,
+                    has_ongoing_booking,
+                    has_ongoing_collective_booking,
+                    has_active_collective_offer_template,
+                ),
+            )
+        )
+    ).scalar()
+
+    return bool(result)
 
 
 def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_action: bool = False) -> None:
