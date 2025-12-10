@@ -127,7 +127,7 @@ const renderForm = async (
   )
 
   await waitFor(() => {
-    screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
+    screen.getByText('Les champs suivis d’un * sont obligatoires.')
   })
 }
 

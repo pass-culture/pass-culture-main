@@ -79,7 +79,7 @@ describe('screens:SignupJourney::Activity', () => {
       })
     ).toBeInTheDocument()
     expect(
-      screen.getByText('Tous les champs suivis d’un * sont obligatoires.')
+      screen.getByText('Les champs suivis d’un * sont obligatoires.')
     ).toBeInTheDocument()
     expect(screen.getByLabelText(/Activité principale/)).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)

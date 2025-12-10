@@ -130,16 +130,19 @@ describe('FormStock', () => {
 
     const userDateInput = format(addDays(new Date(), 5), FORMAT_ISO_DATE_ONLY)
 
-    const startDatetimeInput = screen.getByLabelText('Date de début')
+    const startDatetimeInput = screen.getByLabelText(/Date de début */)
     await userEvent.click(startDatetimeInput)
     await waitFor(() => userEvent.type(startDatetimeInput, userDateInput))
 
-    const timeInput = screen.getByLabelText('Horaire')
-    await userEvent.click(screen.getByLabelText('Horaire'))
+    const timeInput = screen.getByLabelText(/Horaire */)
+    await userEvent.click(timeInput)
     await waitFor(() => userEvent.type(timeInput, '00:00'))
 
-    await userEvent.type(screen.getByLabelText(/Nombre de participants/), '10')
-    await userEvent.type(screen.getByLabelText(/Prix total TTC/), '100')
+    await userEvent.type(
+      screen.getByLabelText(/Nombre de participants */),
+      '10'
+    )
+    await userEvent.type(screen.getByLabelText(/Prix total TTC */), '100')
 
     await waitFor(() => {
       expect(
@@ -175,11 +178,11 @@ describe('FormStock', () => {
       },
     })
     const userDateInput = format(addDays(new Date(), 1), FORMAT_ISO_DATE_ONLY)
-    const startDatetimeInput = screen.getByLabelText('Date de début')
+    const startDatetimeInput = screen.getByLabelText(/Date de début */)
     await userEvent.click(startDatetimeInput)
     await userEvent.clear(startDatetimeInput)
     await waitFor(() => userEvent.type(startDatetimeInput, userDateInput))
-    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
     expect(endDatetimeInput).toHaveValue(userDateInput)
   })
 
@@ -239,9 +242,9 @@ describe('FormStock', () => {
       },
     })
 
-    const startDatetimeInput = screen.getByLabelText('Date de début')
-    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
-    const eventTimeInput = screen.getByLabelText('Horaire')
+    const startDatetimeInput = screen.getByLabelText(/Date de début */)
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
+    const eventTimeInput = screen.getByLabelText(/Horaire */)
 
     expect(startDatetimeInput).toBeDisabled()
     expect(endDatetimeInput).toBeDisabled()
@@ -260,11 +263,11 @@ describe('FormStock', () => {
       },
     })
 
-    const startDatetimeInput = screen.getByLabelText('Date de début')
-    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
-    const eventTimeInput = screen.getByLabelText('Horaire')
-    const placeInput = screen.getByLabelText(/Nombre de participants/)
-    const priceInput = screen.getByLabelText(/Prix total TTC/)
+    const startDatetimeInput = screen.getByLabelText(/Date de début */)
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
+    const eventTimeInput = screen.getByLabelText(/Horaire */)
+    const placeInput = screen.getByLabelText(/Nombre de participants */)
+    const priceInput = screen.getByLabelText(/Prix total TTC */)
 
     expect(placeInput).toBeDisabled()
     expect(priceInput).toBeDisabled()
@@ -285,11 +288,11 @@ describe('FormStock', () => {
       },
     })
 
-    const startDatetimeInput = screen.getByLabelText('Date de début')
-    const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
-    const eventTimeInput = screen.getByLabelText('Horaire')
-    const placeInput = screen.getByLabelText(/Nombre de participants/)
-    const priceInput = screen.getByLabelText(/Prix total TTC/)
+    const startDatetimeInput = screen.getByLabelText(/Date de début */)
+    const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
+    const eventTimeInput = screen.getByLabelText(/Horaire */)
+    const placeInput = screen.getByLabelText(/Nombre de participants */)
+    const priceInput = screen.getByLabelText(/Prix total TTC */)
 
     expect(placeInput).not.toBeDisabled()
     expect(priceInput).not.toBeDisabled()
