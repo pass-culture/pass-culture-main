@@ -437,6 +437,117 @@ def _assert_user_is_anonymized(user, prefix="anonymous"):
     assert user.backoffice_profile is None
 
 
+class IsOnlyProTest:
+    def test_user_with_only_pro_role(self):
+        user = users_factories.ProFactory()
+
+        assert gdpr_api.is_only_pro(user) is True
+
+    def test_user_with_pro_and_beneficiary_roles(self):
+        user = users_factories.BeneficiaryGrant18Factory(
+            roles=[users_models.UserRole.BENEFICIARY, users_models.UserRole.PRO]
+        )
+
+        assert gdpr_api.is_only_pro(user) is False
+
+
+class HasActiveOffererTest:
+    def test_user_with_validated_user_offerer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+
+        assert gdpr_api.has_active_offerer(user_offerer.user) is True
+
+    def test_user_with_rejected_user_offerer(self):
+        user_offerer = offerers_factories.RejectedUserOffererFactory()
+
+        assert gdpr_api.has_active_offerer(user_offerer.user) is False
+
+    def test_user_with_multiple_user_offerers_one_validated(self):
+        user = users_factories.ProFactory()
+        offerers_factories.RejectedUserOffererFactory(user=user)
+        offerers_factories.UserOffererFactory(user=user)
+
+        assert gdpr_api.has_active_offerer(user) is True
+
+
+class IsSoleUserWithOngoingActivitiesTest:
+    def test_sole_user_with_active_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory(offer__venue=venue)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_active_booking(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        bookings_factories.BookingFactory(
+            stock__offer__venue=venue,
+            stock__offer__isActive=False,
+            status=bookings_models.BookingStatus.CONFIRMED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_inactive_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory(offer__venue=venue, offer__isActive=False)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_sole_user_with_ended_booking(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        bookings_factories.BookingFactory(
+            offerer=user_offerer.offerer,
+            status=bookings_models.BookingStatus.USED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_multiple_users_with_active_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offerers_factories.UserOffererFactory(offerer=user_offerer.offerer)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory(offer__venue=venue, offer__isActive=True)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_user_with_rejected_user_offerer(self):
+        user_offerer = offerers_factories.RejectedUserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.StockFactory(offer__venue=venue, offer__isActive=True)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+
+class IsProAnonymizableTest:
+    @pytest.mark.parametrize(
+        "is_only_pro,has_active_offerer,is_sole_user_with_ongoing_activities,expected",
+        [
+            (True, True, False, True),
+            (False, True, False, False),
+            (True, False, False, False),
+            (True, True, True, False),
+            (False, False, False, False),
+            (False, False, True, False),
+        ],
+    )
+    def test_is_pro_anonymizable_combinations(
+        self, mocker, is_only_pro, has_active_offerer, is_sole_user_with_ongoing_activities, expected
+    ):
+        mocker.patch("pcapi.core.users.gdpr_api.is_only_pro", return_value=is_only_pro)
+        mocker.patch("pcapi.core.users.gdpr_api.has_active_offerer", return_value=has_active_offerer)
+        mocker.patch(
+            "pcapi.core.users.gdpr_api.is_sole_user_with_ongoing_activities",
+            return_value=is_sole_user_with_ongoing_activities,
+        )
+
+        user = users_factories.UserFactory()
+
+        assert gdpr_api.is_pro_anonymizable(user) is expected
+
+
 class AnonymizeProUserTest:
     @pytest.mark.parametrize(
         "offerer_validation_status,user_offerer_validation_status",

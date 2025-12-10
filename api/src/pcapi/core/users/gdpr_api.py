@@ -226,6 +226,82 @@ def is_only_beneficiary(user: models.User) -> bool:
     return beneficiary_roles.issuperset(user.roles)
 
 
+def is_pro_anonymizable(user: models.User) -> bool:
+    return is_only_pro(user) and has_active_offerer(user) and not is_sole_user_with_ongoing_activities(user)
+
+
+def is_only_pro(user: models.User) -> bool:
+    return {models.UserRole.PRO}.issuperset(user.roles)
+
+
+def has_active_offerer(user: models.User) -> bool:
+    return bool(
+        db.session.query(
+            sa.exists().where(
+                offerers_models.UserOfferer.userId == user.id,
+                offerers_models.UserOfferer.isValidated,
+            )
+        ).scalar()
+    )
+
+
+def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
+    inner_user_offerer = sa.orm.aliased(offerers_models.UserOfferer)
+
+    user_count_subquery = (
+        sa.select(func.count(inner_user_offerer.userId))
+        .where(
+            inner_user_offerer.offererId == offerers_models.UserOfferer.offererId,
+            inner_user_offerer.isValidated,
+        )
+        .scalar_subquery()
+    )
+
+    has_active_offer = (
+        sa.select(1)
+        .select_from(offers_models.Stock)
+        .join(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId)
+        .join(
+            offers_models.Offer,
+            sa.and_(
+                offers_models.Stock.offerId == offers_models.Offer.id,
+                offers_models.Stock.isSoftDeleted.is_(False),
+                offers_models.Offer.isActive,
+                offers_models.Offer.venueId == offerers_models.Venue.id,
+            ),
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    has_active_booking = (
+        sa.select(1)
+        .select_from(bookings_models.Booking)
+        .where(
+            bookings_models.Booking.offererId == offerers_models.UserOfferer.offererId,
+            bookings_models.Booking.status == bookings_models.BookingStatus.CONFIRMED,
+            bookings_models.Booking.displayAsEnded.is_not(True),
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    result = db.session.query(
+        sa.exists(
+            sa.select(sa.literal(1))
+            .select_from(offerers_models.UserOfferer)
+            .where(
+                offerers_models.UserOfferer.userId == user.id,
+                offerers_models.UserOfferer.isValidated,
+                user_count_subquery == 1,
+                sa.or_(has_active_offer, has_active_booking),
+            )
+        )
+    ).scalar()
+
+    return bool(result)
+
+
 def pre_anonymize_user(user: models.User, author: models.User, is_backoffice_action: bool = False) -> None:
     if has_user_pending_anonymization(user.id):
         raise exceptions.UserAlreadyHasPendingAnonymization()
