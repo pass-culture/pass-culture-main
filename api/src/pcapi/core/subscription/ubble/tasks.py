@@ -13,6 +13,7 @@ from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.utils import sentry as sentry_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -40,6 +41,8 @@ def update_ubble_workflow_task(payload: ubble_schemas.UpdateWorkflowPayload) -> 
         )
     )
     fraud_check = db.session.scalars(fraud_check_stmt).one()
+
+    sentry_utils.setup_user_and_correlation_id(fraud_check.user.id)
 
     with atomic():
         ubble_api.update_ubble_workflow(fraud_check)

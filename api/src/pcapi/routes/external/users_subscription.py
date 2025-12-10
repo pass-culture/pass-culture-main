@@ -19,6 +19,7 @@ from pcapi.routes.apis import public_api
 from pcapi.routes.external import authentication
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests as requests_utils
+from pcapi.utils import sentry as sentry_utils
 from pcapi.utils.transaction_manager import atomic
 
 
@@ -75,6 +76,8 @@ def ubble_v2_webhook_update_application_status(
     if not fraud_check:
         logger.error("no Ubble fraud check found with identification_id %s", identification_id)
         return ubble_serializers.WebhookDummyReponse()
+
+    sentry_utils.setup_user_and_correlation_id(fraud_check.user.id)
 
     finished_status_v2 = [FraudCheckStatus.OK, FraudCheckStatus.KO, FraudCheckStatus.CANCELED]
     if fraud_check.status in finished_status_v2:
