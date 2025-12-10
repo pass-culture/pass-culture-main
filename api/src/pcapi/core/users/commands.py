@@ -267,3 +267,17 @@ def _send_notification_favorites_not_booked() -> None:
         except Exception:
             log_extra = {"offer": row.offer_id, "users": row.user_ids, "count": len(row.user_ids)}
             logger.error("Favorites not booked: failed to send notification", extra=log_extra)
+
+
+@blueprint.cli.command("delete_expired_sessions")
+@cron_decorators.log_cron
+@atomic()
+def delete_expired_sessions() -> None:
+    # TODO (rpa 10/12/2025):  move this code to users/session.py and clean imports
+    import sqlalchemy as sa
+
+    from pcapi.core.users import models as users_models
+
+    db.session.query(users_models.UserSession).filter(
+        users_models.UserSession.expirationDatetime < sa.func.now()
+    ).delete()
