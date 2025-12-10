@@ -48,6 +48,7 @@ class ConfiguredBaseModel(BaseModel):
 class HttpBodyModel(pydantic_v2.BaseModel):
     model_config = pydantic_v2.ConfigDict(
         alias_generator=alias_generators.to_camel,
+        from_attributes=True,
         validate_by_name=True,
         json_encoders={datetime.datetime: format_into_utc_date},
         allow_inf_nan=False,
