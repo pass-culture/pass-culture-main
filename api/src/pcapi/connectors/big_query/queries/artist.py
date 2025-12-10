@@ -1,34 +1,36 @@
-import pydantic.v1 as pydantic_v1
+from pydantic import BaseModel as BaseModelV2
 
 from pcapi import settings
 from pcapi.connectors.big_query.importer.base import DeltaAction
 from pcapi.connectors.big_query.queries.base import BaseQuery
 
 
-class ArtistModel(pydantic_v1.BaseModel):
+class ArtistModel(BaseModelV2):
     id: str
     name: str
-    description: str | None
-    image: str | None
-    image_author: str | None
-    image_license: str | None
-    image_license_url: str | None
-    wikidata_id: str | None
+    description: str | None = None
+    image: str | None = None
+    image_author: str | None = None
+    image_license: str | None = None
+    image_license_url: str | None = None
+    wikidata_id: str | None = None
+    biography: str | None = None
+    wikipedia_url: str | None = None
 
 
-class ArtistProductLinkModel(pydantic_v1.BaseModel):
+class ArtistProductLinkModel(BaseModelV2):
     artist_id: str
     product_id: int
-    artist_type: str | None
+    artist_type: str | None = None
 
 
-class ArtistAliasModel(pydantic_v1.BaseModel):
-    artist_id: str | None
-    artist_alias_name: str | None
-    artist_cluster_id: str | None
-    artist_type: str | None
-    artist_wiki_data_id: str | None
-    offer_category_id: str | None
+class ArtistAliasModel(BaseModelV2):
+    artist_id: str | None = None
+    artist_alias_name: str | None = None
+    artist_cluster_id: str | None = None
+    artist_type: str | None = None
+    artist_wiki_data_id: str | None = None
+    offer_category_id: str | None = None
 
 
 class ArtistQuery(BaseQuery):
@@ -41,7 +43,9 @@ class ArtistQuery(BaseQuery):
             wikidata_image_author as author,
             wikidata_image_license as license,
             wikidata_image_license_url as license_url,
-            wikidata_id
+            wikidata_id,
+            artist_biography as biography,
+            wikipedia_url
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist`
     """
@@ -102,6 +106,8 @@ class ArtistDeltaQuery(BaseQuery):
             wikidata_image_license as license,
             wikidata_image_license_url as license_url,
             wikidata_id,
+            artist_biography as biography,
+            wikipedia_url,
             action
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist_delta`
