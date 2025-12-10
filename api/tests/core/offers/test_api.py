@@ -1015,60 +1015,6 @@ class DeleteStockTest:
             "can_be_asynchronously_retried": False,
         }
 
-    @pytest.mark.features(WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION=True)
-    def test_delete_stock_cancel_bookings_and_send_emails_with_FF(self):
-        offerer_email = "offerer@example.com"
-        stock = factories.EventStockFactory(
-            offer__bookingEmail=offerer_email,
-            offer__venue__pricing_point="self",
-        )
-        booking1 = bookings_factories.BookingFactory(stock=stock)
-        booking2 = bookings_factories.CancelledBookingFactory(stock=stock)
-        booking3 = bookings_factories.UsedBookingFactory(stock=stock)
-        event4 = finance_factories.UsedBookingFinanceEventFactory(booking__stock=stock)
-        booking4 = event4.booking
-        finance_factories.PricingFactory(
-            event=event4,
-            booking=booking4,
-            status=finance_models.PricingStatus.PROCESSED,
-        )
-
-        booking_id_1 = booking1.id
-        booking_id_2 = booking2.id
-        booking_id_3 = booking3.id
-        booking_id_4 = booking4.id
-
-        api.delete_stock(stock)
-
-        # cancellation can trigger more than one request to Batch
-        assert len(push_testing.requests) >= 1
-        db.session.expunge_all()
-        stock = db.session.query(models.Stock).one()
-        assert stock.isSoftDeleted
-        booking1 = db.session.get(bookings_models.Booking, booking_id_1)
-        assert booking1.status == bookings_models.BookingStatus.CANCELLED
-        assert booking1.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking2 = db.session.get(bookings_models.Booking, booking_id_2)
-        assert booking2.status == bookings_models.BookingStatus.CANCELLED  # unchanged
-        assert booking2.cancellationReason == bookings_models.BookingCancellationReasons.BENEFICIARY
-        booking3 = db.session.get(bookings_models.Booking, booking_id_3)
-        assert booking3.status == bookings_models.BookingStatus.CANCELLED  # cancel used booking for event offer
-        assert booking3.cancellationReason == bookings_models.BookingCancellationReasons.OFFERER
-        booking4 = db.session.get(bookings_models.Booking, booking_id_4)
-        assert booking4.status == bookings_models.BookingStatus.USED  # unchanged
-        assert booking4.cancellationDate is None
-        assert booking4.pricings[0].status == finance_models.PricingStatus.PROCESSED  # unchanged
-
-        assert len(mails_testing.outbox) == 3
-        assert {email_data["To"] for email_data in mails_testing.outbox} == {
-            booking1.email,
-            booking3.email,
-            offerer_email,
-        }
-
-        cancel_notification_requests = [req for req in push_testing.requests if req.get("group_id") == "Cancel_booking"]
-        assert len(cancel_notification_requests) == 0
-
     def test_can_delete_if_stock_from_provider(self):
         provider = providers_factories.PublicApiProviderFactory()
         offer = factories.OfferFactory(lastProvider=provider, idAtProvider="1")

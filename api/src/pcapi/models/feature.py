@@ -130,18 +130,6 @@ class FeatureToggle(enum.Enum):
     )
     WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour du statut actif des offres"
     WIP_ASYNCHRONOUS_CELERY_UBBLE = "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
-    WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION = (
-        "Désactiver la notification push Batch pour l'annulation d'une réservation"
-    )
-    WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED = (
-        "Désactiver la notification push Batch pour les réservations sur le point d'expirer"
-    )
-    WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED = (
-        "Désactiver la notification push Batch pour les favoris non-réservés"
-    )
-    WIP_DISABLE_TODAY_STOCK_NOTIFICATION = (
-        "Désactiver la notification push Batch pour les réservations se déroulant le jour même"
-    )
     WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK = (
         "Activer la fonctionnalité de partage du lien de l'offre vitrine sur Adage"
     )
@@ -214,10 +202,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
-    FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION,
-    FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED,
-    FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED,
-    FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION,
     FeatureToggle.WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK,
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_OHO,

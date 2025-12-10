@@ -10,7 +10,6 @@ from pcapi import settings
 from pcapi.core.bookings.exceptions import BookingIsExpired
 from pcapi.core.bookings.repository import get_soon_expiring_bookings
 from pcapi.core.offers.repository import find_today_event_stock_ids_metropolitan_france
-from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.push.transactional_notifications import (
     get_soon_expiring_bookings_with_offers_notification_data,
 )
@@ -27,9 +26,6 @@ def send_today_events_notifications_metropolitan_france() -> None:
     France but not the morning (11h UTC -> 12h/13h local time) and
     send notifications to all the users.
     """
-    if FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION.is_active():
-        return
-
     today_min, today_max = _setup_today_min_max(utc_mean_offset=1)
     stock_ids = find_today_event_stock_ids_metropolitan_france(today_min, today_max)
 
@@ -54,9 +50,6 @@ def send_today_events_notifications_overseas(utc_mean_offset: int, departments: 
         to target bookings from la Réunion,
         send_today_events_notifications_overseas(5, ["974"])
     """
-    if FeatureToggle.WIP_DISABLE_TODAY_STOCK_NOTIFICATION.is_active():
-        return
-
     today_min, today_max = _setup_today_min_max(utc_mean_offset)
     stock_ids = offers_repository.find_today_event_stock_ids_from_departments(today_min, today_max, departments)
 
@@ -111,9 +104,6 @@ def notify_users_bookings_not_retrieved() -> None:
     Find soon expiring bookings that will expire in exactly N days and
     send a notification to each user.
     """
-    if FeatureToggle.WIP_DISABLE_NOTIFY_USERS_BOOKINGS_NOT_RETRIEVED.is_active():
-        return
-
     bookings = get_soon_expiring_bookings(settings.SOON_EXPIRING_BOOKINGS_DAYS_BEFORE_EXPIRATION)
     for booking in bookings:
         try:

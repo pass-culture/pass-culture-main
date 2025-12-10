@@ -1208,13 +1208,12 @@ def _delete_stock(stock: models.Stock, author_id: int | None = None, user_connec
 
         transactional_mails.send_booking_cancellation_confirmation_by_pro_email(cancelled_bookings)
 
-        if not feature.FeatureToggle.WIP_DISABLE_CANCEL_BOOKING_NOTIFICATION.is_active():
-            on_commit(
-                partial(
-                    push_notification_job.send_cancel_booking_notification.delay,
-                    [booking.id for booking in cancelled_bookings],
-                )
+        on_commit(
+            partial(
+                push_notification_job.send_cancel_booking_notification.delay,
+                [booking.id for booking in cancelled_bookings],
             )
+        )
 
     # do not keep stocks without any booking: they have never been used,
     # there is no need to keep useless rows inside the database.

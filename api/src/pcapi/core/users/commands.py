@@ -250,9 +250,6 @@ def _send_notification_favorites_not_booked() -> None:
 
     To narrow the number of calls to the Batch api, group by offer.
     """
-    if FeatureToggle.WIP_DISABLE_SEND_NOTIFICATIONS_FAVORITES_NOT_BOOKED.is_active():
-        return
-
     max_length = settings.BATCH_MAX_USERS_PER_TRANSACTIONAL_NOTIFICATION
     rows = big_query_queries.FavoritesNotBooked().execute(max_length)
 
