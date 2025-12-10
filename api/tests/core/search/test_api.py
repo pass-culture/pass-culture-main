@@ -494,15 +494,15 @@ class UpdateProductBookingCountTest:
     @mock.patch("pcapi.core.search.async_index_offer_ids")
     def test_all_offers_are_indexed(self, mock_async_index_offer_ids, mock_update_booking_count_by_product, app):
         product = offers_factories.ProductFactory()
-        mock_update_booking_count_by_product.return_value = [product]
+        mock_update_booking_count_by_product.return_value = [product.id]
         offer1 = offers_factories.OfferFactory(product=product)
         offer2 = offers_factories.OfferFactory(product=product)
 
-        search.update_products_last_30_days_booking_count(1)
+        search.update_products_last_30_days_booking_count(batch_size=1)
 
         assert mock_async_index_offer_ids.call_count == 2
-        mock_async_index_offer_ids.assert_any_call({offer1.id}, reason=IndexationReason.BOOKING_COUNT_CHANGE)
-        mock_async_index_offer_ids.assert_any_call({offer2.id}, reason=IndexationReason.BOOKING_COUNT_CHANGE)
+        mock_async_index_offer_ids.assert_any_call((offer1.id,), reason=IndexationReason.BOOKING_COUNT_CHANGE)
+        mock_async_index_offer_ids.assert_any_call((offer2.id,), reason=IndexationReason.BOOKING_COUNT_CHANGE)
 
 
 class ReadProductBookingCountTest:
