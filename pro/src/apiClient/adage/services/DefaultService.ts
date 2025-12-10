@@ -71,13 +71,14 @@ export class DefaultService {
   }
   /**
    * book_collective_offer <POST>
-   * @param requestBody
    * @returns BookCollectiveOfferResponse OK
    * @throws ApiError
    */
-  public bookCollectiveOffer(
+  public bookCollectiveOffer({
+    requestBody,
+  }: {
     requestBody: BookCollectiveOfferRequest,
-  ): CancelablePromise<BookCollectiveOfferResponse> {
+  }): CancelablePromise<BookCollectiveOfferResponse> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/collective/bookings',
@@ -122,13 +123,14 @@ export class DefaultService {
   }
   /**
    * get_collective_offer_templates <GET>
-   * @param ids
    * @returns ListCollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOfferTemplates(
+  public getCollectiveOfferTemplates({
+    ids,
+  }: {
     ids: Array<number>,
-  ): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
+  }): CancelablePromise<ListCollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/offers-template/',
@@ -144,13 +146,14 @@ export class DefaultService {
   }
   /**
    * get_collective_offer_template <GET>
-   * @param offerId
    * @returns CollectiveOfferTemplateResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOfferTemplate(
+  public getCollectiveOfferTemplate({
+    offerId,
+  }: {
     offerId: number,
-  ): CancelablePromise<CollectiveOfferTemplateResponseModel> {
+  }): CancelablePromise<CollectiveOfferTemplateResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/offers-template/{offer_id}',
@@ -166,15 +169,16 @@ export class DefaultService {
   }
   /**
    * create_collective_request <POST>
-   * @param offerId
-   * @param requestBody
    * @returns CollectiveRequestResponseModel OK
    * @throws ApiError
    */
-  public createCollectiveRequest(
+  public createCollectiveRequest({
+    offerId,
+    requestBody,
+  }: {
     offerId: number,
     requestBody: PostCollectiveRequestBodyModel,
-  ): CancelablePromise<CollectiveRequestResponseModel> {
+  }): CancelablePromise<CollectiveRequestResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/collective/offers-template/{offer_id}/request',
@@ -207,13 +211,14 @@ export class DefaultService {
   }
   /**
    * get_collective_offer <GET>
-   * @param offerId
    * @returns CollectiveOfferResponseModel OK
    * @throws ApiError
    */
-  public getCollectiveOffer(
+  public getCollectiveOffer({
+    offerId,
+  }: {
     offerId: number,
-  ): CancelablePromise<CollectiveOfferResponseModel> {
+  }): CancelablePromise<CollectiveOfferResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/offers/{offer_id}',
@@ -229,13 +234,14 @@ export class DefaultService {
   }
   /**
    * delete_favorite_for_collective_offer_template <DELETE>
-   * @param offerTemplateId
    * @returns void
    * @throws ApiError
    */
-  public deleteFavoriteForCollectiveOfferTemplate(
+  public deleteFavoriteForCollectiveOfferTemplate({
+    offerTemplateId,
+  }: {
     offerTemplateId: number,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'DELETE',
       url: '/adage-iframe/collective/template/{offer_template_id}/favorites',
@@ -250,13 +256,14 @@ export class DefaultService {
   }
   /**
    * post_collective_template_favorites <POST>
-   * @param offerId
    * @returns void
    * @throws ApiError
    */
-  public postCollectiveTemplateFavorites(
+  public postCollectiveTemplateFavorites({
+    offerId,
+  }: {
     offerId: number,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/collective/templates/{offer_id}/favorites',
@@ -287,13 +294,14 @@ export class DefaultService {
   }
   /**
    * log_booking_modal_button_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logBookingModalButtonClick(
+  public logBookingModalButtonClick({
+    requestBody,
+  }: {
     requestBody: StockIdBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/booking-modal-button',
@@ -308,13 +316,14 @@ export class DefaultService {
   }
   /**
    * log_catalog_view <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logCatalogView(
+  public logCatalogView({
+    requestBody,
+  }: {
     requestBody: CatalogViewBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/catalog-view',
@@ -329,13 +338,14 @@ export class DefaultService {
   }
   /**
    * log_consult_offer <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logConsultOffer(
+  public logConsultOffer({
+    requestBody,
+  }: {
     requestBody: ConsultOfferBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/consult-offer',
@@ -350,13 +360,14 @@ export class DefaultService {
   }
   /**
    * log_consult_playlist_element <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logConsultPlaylistElement(
+  public logConsultPlaylistElement({
+    requestBody,
+  }: {
     requestBody: PlaylistBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/consult-playlist-element',
@@ -371,13 +382,14 @@ export class DefaultService {
   }
   /**
    * log_contact_modal_button_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logContactModalButtonClick(
+  public logContactModalButtonClick({
+    requestBody,
+  }: {
     requestBody: OfferBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/contact-modal-button',
@@ -392,13 +404,14 @@ export class DefaultService {
   }
   /**
    * log_contact_url_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logContactUrlClick(
+  public logContactUrlClick({
+    requestBody,
+  }: {
     requestBody: OfferIdBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/contact-url-click',
@@ -413,13 +426,14 @@ export class DefaultService {
   }
   /**
    * log_fav_offer_button_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logFavOfferButtonClick(
+  public logFavOfferButtonClick({
+    requestBody,
+  }: {
     requestBody: OfferFavoriteBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/fav-offer/',
@@ -434,13 +448,14 @@ export class DefaultService {
   }
   /**
    * log_has_seen_whole_playlist <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logHasSeenWholePlaylist(
+  public logHasSeenWholePlaylist({
+    requestBody,
+  }: {
     requestBody: PlaylistBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/has-seen-whole-playlist/',
@@ -455,13 +470,14 @@ export class DefaultService {
   }
   /**
    * log_header_link_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logHeaderLinkClick(
+  public logHeaderLinkClick({
+    requestBody,
+  }: {
     requestBody: AdageHeaderLogBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/header-link-click/',
@@ -476,13 +492,14 @@ export class DefaultService {
   }
   /**
    * log_open_highlight_banner <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logOpenHighlightBanner(
+  public logOpenHighlightBanner({
+    requestBody,
+  }: {
     requestBody: HighlightBannerBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/highlight-banner',
@@ -497,13 +514,14 @@ export class DefaultService {
   }
   /**
    * log_offer_details_button_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logOfferDetailsButtonClick(
+  public logOfferDetailsButtonClick({
+    requestBody,
+  }: {
     requestBody: StockIdBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/offer-detail',
@@ -518,13 +536,14 @@ export class DefaultService {
   }
   /**
    * log_offer_list_view_switch <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logOfferListViewSwitch(
+  public logOfferListViewSwitch({
+    requestBody,
+  }: {
     requestBody: OfferListSwitch,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/offer-list-view-switch',
@@ -539,13 +558,14 @@ export class DefaultService {
   }
   /**
    * log_offer_template_details_button_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logOfferTemplateDetailsButtonClick(
+  public logOfferTemplateDetailsButtonClick({
+    requestBody,
+  }: {
     requestBody: OfferIdBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/offer-template-detail',
@@ -560,13 +580,14 @@ export class DefaultService {
   }
   /**
    * log_has_seen_all_playlist <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logHasSeenAllPlaylist(
+  public logHasSeenAllPlaylist({
+    requestBody,
+  }: {
     requestBody: AdageBaseModel,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/playlist',
@@ -581,13 +602,14 @@ export class DefaultService {
   }
   /**
    * log_request_form_popin_dismiss <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logRequestFormPopinDismiss(
+  public logRequestFormPopinDismiss({
+    requestBody,
+  }: {
     requestBody: CollectiveRequestBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/request-popin-dismiss',
@@ -602,13 +624,14 @@ export class DefaultService {
   }
   /**
    * log_open_satisfaction_survey <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logOpenSatisfactionSurvey(
+  public logOpenSatisfactionSurvey({
+    requestBody,
+  }: {
     requestBody: AdageBaseModel,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/sat-survey',
@@ -623,13 +646,14 @@ export class DefaultService {
   }
   /**
    * log_search_button_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logSearchButtonClick(
+  public logSearchButtonClick({
+    requestBody,
+  }: {
     requestBody: SearchBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/search-button',
@@ -644,13 +668,14 @@ export class DefaultService {
   }
   /**
    * log_search_show_more <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logSearchShowMore(
+  public logSearchShowMore({
+    requestBody,
+  }: {
     requestBody: TrackingShowMoreBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/search-show-more',
@@ -665,13 +690,14 @@ export class DefaultService {
   }
   /**
    * log_tracking_autocomplete_suggestion_click <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logTrackingAutocompleteSuggestionClick(
+  public logTrackingAutocompleteSuggestionClick({
+    requestBody,
+  }: {
     requestBody: TrackingAutocompleteSuggestionBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/tracking-autocompletion',
@@ -686,13 +712,14 @@ export class DefaultService {
   }
   /**
    * log_tracking_cta_share <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logTrackingCtaShare(
+  public logTrackingCtaShare({
+    requestBody,
+  }: {
     requestBody: TrackingCTAShareBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/tracking-cta-share',
@@ -707,13 +734,14 @@ export class DefaultService {
   }
   /**
    * log_tracking_filter <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logTrackingFilter(
+  public logTrackingFilter({
+    requestBody,
+  }: {
     requestBody: TrackingFilterBody,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/tracking-filter',
@@ -728,13 +756,14 @@ export class DefaultService {
   }
   /**
    * log_tracking_map <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public logTrackingMap(
+  public logTrackingMap({
+    requestBody,
+  }: {
     requestBody: AdageBaseModel,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/logs/tracking-map',
@@ -810,13 +839,14 @@ export class DefaultService {
   }
   /**
    * save_redactor_preferences <POST>
-   * @param requestBody
    * @returns void
    * @throws ApiError
    */
-  public saveRedactorPreferences(
+  public saveRedactorPreferences({
+    requestBody,
+  }: {
     requestBody: RedactorPreferences,
-  ): CancelablePromise<void> {
+  }): CancelablePromise<void> {
     return this.httpRequest.request({
       method: 'POST',
       url: '/adage-iframe/redactor/preferences',
@@ -846,15 +876,16 @@ export class DefaultService {
   }
   /**
    * get_venue_by_siret <GET>
-   * @param siret
-   * @param getRelative
    * @returns VenueResponse OK
    * @throws ApiError
    */
-  public getVenueBySiret(
+  public getVenueBySiret({
+    siret,
+    getRelative = false,
+  }: {
     siret: string,
-    getRelative: boolean = false,
-  ): CancelablePromise<VenueResponse> {
+    getRelative?: boolean,
+  }): CancelablePromise<VenueResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/venues/siret/{siret}',
@@ -872,15 +903,16 @@ export class DefaultService {
   }
   /**
    * get_venue_by_id <GET>
-   * @param venueId
-   * @param getRelative
    * @returns VenueResponse OK
    * @throws ApiError
    */
-  public getVenueById(
+  public getVenueById({
+    venueId,
+    getRelative = false,
+  }: {
     venueId: number,
-    getRelative: boolean = false,
-  ): CancelablePromise<VenueResponse> {
+    getRelative?: boolean,
+  }): CancelablePromise<VenueResponse> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/venues/{venue_id}',
