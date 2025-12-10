@@ -68,6 +68,15 @@ def is_suspended_for_less_than_five_years(user: models.User) -> bool:
     return False
 
 
+def anonymize_user_by_id(user_id: int) -> bool:
+    user = db.session.query(models.User).filter(models.User.id == user_id).one_or_none()
+    if not user:
+        logger.error("User not found", extra={"user_id": user_id})
+        return False
+
+    return anonymize_user(user=user)
+
+
 def anonymize_user(user: models.User, *, author: models.User | None = None) -> bool:
     if has_unprocessed_extract(user):
         return False

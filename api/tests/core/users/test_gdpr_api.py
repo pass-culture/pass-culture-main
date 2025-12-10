@@ -2002,3 +2002,18 @@ class BypassEmailConfirmationTest:
             },
         }
         assert user.isEmailValidated
+
+
+class AnonymizeUserByIdTest:
+    def test_user_found(self):
+        email = "email@example.com"
+        user = users_factories.UserFactory(email=email)
+
+        gdpr_api.anonymize_user_by_id(user.id)
+        db.session.flush()
+
+        assert db.session.query(users_models.User).filter(users_models.User.email == email).count() == 0
+
+    def test_user_not_found(self):
+        gdpr_api.anonymize_user_by_id(0)
+        assert True
