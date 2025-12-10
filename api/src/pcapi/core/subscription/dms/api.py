@@ -34,6 +34,7 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils import repository
+from pcapi.utils import sentry as sentry_utils
 from pcapi.utils.postal_code import PostalCode
 
 from . import repository as dms_repository
@@ -217,6 +218,8 @@ def handle_dms_application(
             latest_modification_datetime=dms_application.latest_modification_datetime,
         )
         return None
+
+    sentry_utils.setup_user_and_correlation_id(user.id)
 
     fraud_check = fraud_dms_api.get_fraud_check(user, application_number)
     if fraud_check is None:
