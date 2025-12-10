@@ -122,6 +122,9 @@ export const FieldLayout = ({
           >
             {label}
             {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
+            {required && requiredIndicator === 'explicit' && (
+              <span className={styles['field-header-right']}>Obligatoire</span>
+            )}
           </label>
           {help && (
             <Button
