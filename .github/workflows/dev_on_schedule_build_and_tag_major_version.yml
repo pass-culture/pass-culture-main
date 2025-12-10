@@ -87,6 +87,8 @@ jobs:
     steps:
       - name: "Checkout new tag"
         uses: actions/checkout@v6
+        with:
+          ref: v${{ needs.prepare-variables.outputs.releaseNumber }}.0.0
       - name: "Create vN maintenance branch"
         run: |
           git checkout -b "$NEW_MAINTENANCE_BRANCH"
