@@ -1,5 +1,3 @@
-import typing
-
 import pydantic as pydantic_v2
 
 from pcapi.connectors.serialization import acceslibre_serializers
@@ -66,41 +64,41 @@ class VenueResponse(HttpBodyModel):
     timezone: str
     withdrawal_details: str | None
 
-    model_config = pydantic_v2.ConfigDict(from_attributes=True)
-
-    @pydantic_v2.model_validator(mode="before")
     @classmethod
-    def populate(cls, venue: dict | offerers_models.Venue) -> typing.Any:
-        if isinstance(venue, dict):
-            return venue
-
-        model_dict: dict[str, typing.Any] = {}
-        model_dict["id"] = venue.id
+    def build(cls, venue: offerers_models.Venue) -> "VenueResponse":
+        accessibility_data = None
+        accessibility_url = None
+        banner_credit = None
+        banner_is_from_google = False
         if venue.accessibilityProvider:
-            model_dict["accessibility_data"] = AccessibilityData.model_validate(
+            accessibility_data = AccessibilityData.model_validate(
                 acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
                     venue.accessibilityProvider.externalAccessibilityData
                 ),
-                from_attributes=True,
             )
-            model_dict["accessibility_url"] = venue.accessibilityProvider.externalAccessibilityUrl
+            accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
 
-        model_dict["activity"] = venue.activity
         if venue.bannerMeta:
-            model_dict["banner_credit"] = venue.bannerMeta.get("image_credit", None)
-            model_dict["banner_is_from_google"] = venue.bannerMeta.get("is_from_google", False)
+            banner_credit = venue.bannerMeta.get("image_credit")
+            banner_is_from_google = venue.bannerMeta.get("is_from_google", False)
 
-        model_dict["banner_url"] = venue.bannerUrl
-        model_dict["city"] = venue.offererAddress.address.city
-        model_dict["contact"] = VenueContact.model_validate(venue.contact, from_attributes=True)
-        model_dict["description"] = venue.description
-        model_dict["is_open_to_public"] = venue.isOpenToPublic
-        model_dict["is_permanent"] = venue.isPermanent
-        model_dict["name"] = venue.common_name
-        model_dict["opening_hours"] = venue.opening_hours
-        model_dict["postal_code"] = venue.offererAddress.address.postalCode
-        model_dict["street"] = venue.offererAddress.address.street
-        model_dict["timezone"] = venue.offererAddress.address.timezone
-        model_dict["withdrawal_details"] = venue.withdrawalDetails
-
-        return model_dict
+        return cls(
+            id=venue.id,
+            accessibility_data=accessibility_data,
+            accessibility_url=accessibility_url,
+            activity=venue.activity,
+            banner_credit=banner_credit,
+            banner_is_from_google=banner_is_from_google,
+            banner_url=venue.bannerUrl,
+            city=venue.offererAddress.address.city,
+            contact=VenueContact.model_validate(venue.contact),
+            description=venue.description,
+            is_open_to_public=venue.isOpenToPublic,
+            is_permanent=venue.isPermanent,
+            name=venue.common_name,
+            opening_hours=venue.opening_hours,
+            postal_code=venue.offererAddress.address.postalCode,
+            street=venue.offererAddress.address.street,
+            timezone=venue.offererAddress.address.timezone,
+            withdrawal_details=venue.withdrawalDetails,
+        )

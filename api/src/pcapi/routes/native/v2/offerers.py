@@ -14,4 +14,4 @@ def get_venue_v2(venue_id: int) -> serializers.VenueResponse:
     if not venue:
         abort(404)
 
-    return serializers.VenueResponse.model_validate(venue)
+    return serializers.VenueResponse.build(venue)
