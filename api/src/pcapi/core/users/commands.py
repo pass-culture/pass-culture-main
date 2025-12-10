@@ -154,6 +154,18 @@ def anonymize_inactive_users(category: str) -> None:
         gdpr_api.anonymize_internal_users()
 
 
+@blueprint.cli.command("anonymize_user")
+@click.option(
+    "--user_id",
+    type=int,
+    help="""Id of the user to anonymize""",
+    required=True,
+)
+@atomic()
+def anonymize_user(user_id: int) -> None:
+    gdpr_api.anonymize_user_by_id(user_id=user_id)
+
+
 @blueprint.cli.command("execute_gdpr_extract")
 @cron_decorators.log_cron_with_transaction
 def execute_gdpr_extract() -> None:
