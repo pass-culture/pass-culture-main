@@ -27,7 +27,6 @@ from pcapi.core.users import utils as users_utils
 from pcapi.models import db
 from pcapi.models.feature import DisabledFeatureError
 from pcapi.models.feature import FeatureToggle
-from pcapi.utils import repository
 from pcapi.utils.email import anonymize_email
 
 
@@ -697,7 +696,8 @@ def validate_beneficiary(
         if handler:
             handler(user, review, None if user.eligibility is None else reviewed_eligibility)
 
-    repository.save(review)
+    db.session.add(review)
+    db.session.flush()
     return review
 
 

@@ -111,7 +111,7 @@ class ActionHistory(PcObject, Model):
     - have a constraint which forces to link the action to at least one resource,
     - join with user, offerer and venue tables to get the resource data without additional requests
     - create an action on a resource which is not stored in database yet, so does not have id, so that all objects are
-      stored in a single repository.save(). It would not be possible to store everything in a single db transaction if
+      stored in a single commit. It would not be possible to store everything in a single db transaction if
       ids were stored as values in a JSONB column.
 
     Additional information related to a specific action (e.g. reasonCode which is related to user suspension) may be
