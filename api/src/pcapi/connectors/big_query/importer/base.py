@@ -94,7 +94,7 @@ class AbstractImporter[BigQueryModel, BigQueryDeltaModel, SQLAlchemyModel: HasId
         class_name = self.get_sqlalchemy_class().__name__
         try:
             with transaction():
-                db.session.bulk_save_objects(items)
+                db.session.add_all(items)
             logger.info(f"Successfully imported {len(items)} {class_name}")
         except sa_exc.IntegrityError as exc:
             logger.warning(f"Failed to bulk import {class_name}: {exc}. Importing one by one.")
