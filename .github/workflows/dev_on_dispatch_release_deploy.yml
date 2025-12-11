@@ -59,6 +59,22 @@ jobs:
         id: "app-version"
         run: echo APP_VERSION="$(cat ./api/version.txt)" | tee -a $GITHUB_OUTPUT
   
+
+  deployment-confirmed:
+    name: "Update message with deployment confirmation"
+    needs: [ask-for-review-on-slack,version]
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
+      method: update
+      message-ts: ${{ needs.ask-for-review-on-slack.outputs.posted_message_ts }}
+      color: "#28A745"  # green
+      message: ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été approuvé sur `${{ github.event.inputs.target_environment }}`"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+
   # DELETE THIS : mgeoffray 2025-09-04
   # As soon as we are confident in our staging automatic deployments 
   deploy-ehp:

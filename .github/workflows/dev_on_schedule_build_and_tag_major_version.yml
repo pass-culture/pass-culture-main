@@ -102,11 +102,13 @@ jobs:
 
   end-slack-success-notification:
     name: "Send workflow success notification"
-    needs: [prepare-variables,build-and-tag, edit-maintenance-branches]
+    needs: [beginning-slack-notification,prepare-variables,build-and-tag, edit-maintenance-branches]
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      method: update
+      message-ts: ${{ needs.beginning-slack-notification.outputs.posted_message_ts }}
       color: "#28A745"  # green
       message: ":github-success: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a réussi"
     secrets:
@@ -115,11 +117,13 @@ jobs:
 
   end-slack-failure-notification:
     name: "Send workflow failure notification"
-    needs: [prepare-variables,build-and-tag, edit-maintenance-branches]
+    needs: [beginning-slack-notification,prepare-variables,build-and-tag, edit-maintenance-branches]
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      method: update
+      message-ts: ${{ needs.beginning-slack-notification.outputs.posted_message_ts }}
       color: "#A30002"  # red
       message: ":github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a rencontré un problème"
     secrets:
