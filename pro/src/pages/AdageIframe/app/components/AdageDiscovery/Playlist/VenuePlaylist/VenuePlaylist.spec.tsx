@@ -16,6 +16,19 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
+class MockIntersectionObserver {
+  public readonly root: Element | Document | null = null
+  public readonly rootMargin: string = '0px'
+  public readonly thresholds: ReadonlyArray<number> = []
+  public takeRecords = vi.fn()
+
+  public observe = vi.fn()
+  public unobserve = vi.fn()
+  public disconnect = vi.fn()
+}
+
+window.IntersectionObserver = MockIntersectionObserver
+
 const mockTrackPlaylistElementClicked = vi.fn()
 const mockOnWholePlaylistSeen = vi.fn()
 
@@ -41,6 +54,7 @@ describe('VenuePlaylist', () => {
   const notifyError = vi.fn()
 
   beforeEach(async () => {
+    vi.resetAllMocks()
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
     vi.spyOn(apiAdage, 'getLocalOfferersPlaylist').mockResolvedValue({
       venues: [mockLocalOfferersPlaylistOffer],
@@ -52,12 +66,6 @@ describe('VenuePlaylist', () => {
     vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
       ...notifsImport,
       error: notifyError,
-    }))
-
-    window.IntersectionObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
     }))
   })
 

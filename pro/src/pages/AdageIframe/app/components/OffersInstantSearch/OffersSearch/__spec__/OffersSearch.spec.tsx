@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { vi } from 'vitest'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
@@ -26,6 +27,19 @@ interface getItems {
   popularity: number
   nb_words: number
 }
+
+class MockIntersectionObserver {
+  public readonly root: Element | Document | null = null
+  public readonly rootMargin: string = '0px'
+  public readonly thresholds: ReadonlyArray<number> = []
+  public takeRecords = vi.fn()
+
+  public observe = vi.fn()
+  public unobserve = vi.fn()
+  public disconnect = vi.fn()
+}
+
+window.IntersectionObserver = MockIntersectionObserver
 
 const mockVenueSuggestions = [
   {
@@ -171,11 +185,6 @@ describe('offersSearch component', () => {
       setFilters: () => {},
       initialFilters: {},
     }
-    window.IntersectionObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    }))
 
     const notifsImport = (await vi.importActual(
       '@/commons/hooks/useNotification'

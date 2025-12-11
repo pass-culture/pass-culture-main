@@ -240,6 +240,7 @@ describe('BankInformations page', () => {
   })
 
   it('should update displayed link venue after closing link venue dialog', async () => {
+    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
     vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
       id: 1,
       bankAccounts: [{ ...defaultBankAccount }],

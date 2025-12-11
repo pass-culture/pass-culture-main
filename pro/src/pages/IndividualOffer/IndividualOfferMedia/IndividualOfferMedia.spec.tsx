@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 
 import { api } from '@/apiClient/api'
 import { IndividualOfferContextProvider } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
@@ -30,18 +30,18 @@ describe('IndividialOfferMedia', () => {
       categories: [],
       subcategories: [],
     })
+    vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
   })
 
-  it('should render a spinner until offer is fetched', () => {
+  it('should render a spinner until offer is fetched', async () => {
     renderIndividualOfferMedia()
 
-    const spinner = screen.getByTestId('spinner')
-    expect(spinner).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByTestId('spinner')).toBeInTheDocument()
+    })
   })
 
   it('should display the page once the offer is fetched', async () => {
-    vi.spyOn(api, 'getOffer').mockResolvedValue(offer)
-
     renderIndividualOfferMedia()
 
     const heading = await screen.findByRole('heading', {

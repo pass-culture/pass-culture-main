@@ -1,5 +1,6 @@
 import { screen } from '@testing-library/react'
 
+import { api } from '@/apiClient/api'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -31,6 +32,16 @@ describe('<Offerers />', () => {
     },
   } satisfies OfferersProps
 
+  beforeEach(() => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 2,
+        managingOffererId: 1,
+        name: 'Venue A1',
+      })
+    )
+  })
+
   it('should display soft-deleted warning when selected offerer is inactive', () => {
     renderOfferers(propsBase)
 
@@ -41,7 +52,7 @@ describe('<Offerers />', () => {
     ).toBeInTheDocument()
   })
 
-  it('should display partner pages section when there is at least one permanent venue', () => {
+  it('should display partner pages section when there is at least one permanent venue', async () => {
     const props = {
       ...propsBase,
       selectedOfferer: {
@@ -60,7 +71,7 @@ describe('<Offerers />', () => {
     renderOfferers(props)
 
     expect(
-      screen.getByRole('heading', { name: /Votre page partenaire/i })
+      await screen.findByRole('heading', { name: /Votre page partenaire/i })
     ).toBeInTheDocument()
   })
 

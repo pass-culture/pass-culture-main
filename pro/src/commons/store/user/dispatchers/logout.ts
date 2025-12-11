@@ -23,7 +23,6 @@ export const logout = createAsyncThunk<void, void, AppThunkApiConfig>(
       await fetch(`${API_URL}/users/signout`, {
         credentials: 'include',
       })
-
       window.location.reload()
     } catch (err) {
       handleError(err, 'Une erreur est survenue lors de la déconnexion.')

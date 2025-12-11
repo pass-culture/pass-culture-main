@@ -29,6 +29,7 @@ describe('StatusToggleButton', () => {
   let props: StatusToggleButtonProps
   const offerId = 12
   beforeEach(() => {
+    vi.resetAllMocks()
     props = {
       offer: getIndividualOfferFactory({
         id: offerId,

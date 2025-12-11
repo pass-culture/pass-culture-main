@@ -242,8 +242,9 @@ describe('VenueSettingsScreen', () => {
   })
 
   it('should submit the form with valid payload', async () => {
-    const apiPatchVenue = vi.spyOn(api, 'editVenue')
-
+    const apiPatchVenue = vi
+      .spyOn(api, 'editVenue')
+      .mockResolvedValueOnce(defaultVenue)
     await renderForm({ venue: { ...defaultVenue, siret: '123 456 789 01234' } })
 
     const publicNameField = await screen.findByRole('textbox', {
@@ -275,7 +276,9 @@ describe('VenueSettingsScreen', () => {
   })
 
   it('should submit the form with valid payload for New Caledonia', async () => {
-    const apiPatchVenue = vi.spyOn(api, 'editVenue')
+    const apiPatchVenue = vi
+      .spyOn(api, 'editVenue')
+      .mockResolvedValueOnce(defaultVenue)
 
     await renderForm({
       offerer: { ...defaultOfferer, siren: 'NC1234567' },
@@ -381,8 +384,9 @@ describe('VenueSettingsScreen', () => {
   })
 
   it('should update address fields when an address is selected from autocomplete', async () => {
-    const apiPatchVenue = vi.spyOn(api, 'editVenue')
-
+    const apiPatchVenue = vi
+      .spyOn(api, 'editVenue')
+      .mockResolvedValueOnce(defaultVenue)
     await renderForm({
       venue: {
         ...defaultVenue,
@@ -429,7 +433,9 @@ describe('VenueSettingsScreen', () => {
   })
 
   it('should update address fields when an address is selected from manual', async () => {
-    const apiPatchVenue = vi.spyOn(api, 'editVenue')
+    const apiPatchVenue = vi
+      .spyOn(api, 'editVenue')
+      .mockResolvedValueOnce(defaultVenue)
 
     await renderForm({
       venue: {

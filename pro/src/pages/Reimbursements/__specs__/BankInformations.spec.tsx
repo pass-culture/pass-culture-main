@@ -62,6 +62,7 @@ function renderBankInformations() {
 
 describe('BankInformations', () => {
   beforeEach(() => {
+    vi.spyOn(api, 'linkVenueToBankAccount').mockResolvedValue()
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )

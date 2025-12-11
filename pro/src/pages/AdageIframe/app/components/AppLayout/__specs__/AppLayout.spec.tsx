@@ -34,6 +34,19 @@ vi.mock(
   }
 )
 
+class MockIntersectionObserver {
+  public readonly root: Element | Document | null = null
+  public readonly rootMargin: string = '0px'
+  public readonly thresholds: ReadonlyArray<number> = []
+  public takeRecords = vi.fn()
+
+  public observe = vi.fn()
+  public unobserve = vi.fn()
+  public disconnect = vi.fn()
+}
+
+window.IntersectionObserver = MockIntersectionObserver
+
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getVenueById: vi.fn(),
@@ -116,14 +129,6 @@ const featureOverrides = {
 }
 
 describe('AppLayout', () => {
-  beforeEach(() => {
-    window.IntersectionObserver = vi.fn().mockImplementation(() => ({
-      observe: vi.fn(),
-      unobserve: vi.fn(),
-      disconnect: vi.fn(),
-    }))
-  })
-
   it('should redirect to the search page if the user is in Marseille en Grand and if the FF is active', () => {
     renderAppLayout(featureOverrides, {
       ...defaultAdageUser,

@@ -37,6 +37,13 @@ const mockLogEvent = vi.fn()
 
 describe('SignupJourneyRoutes::trackers', () => {
   it('should track logout', async () => {
+    // because we directly use fetch in logout
+    fetchMock.mockResponse((req) => {
+      if (req.url.includes('/users/signout') && req.method === 'GET') {
+        return { status: 200, body: JSON.stringify({ success: true }) }
+      }
+      return { status: 404 }
+    })
     const windowLocationReloadSpy = vi.fn()
     vi.spyOn(window, 'location', 'get').mockReturnValue({
       ...window.location,

@@ -90,6 +90,13 @@ const BASE_BANK_ACCOUNTS: Array<BankAccountResponseModel> = [
 
 describe('reimbursementsWithFilters', () => {
   beforeEach(() => {
+    vi.spyOn(api, 'getOffererBankAccountsAndAttachedVenues').mockResolvedValue({
+      id: 1,
+      bankAccounts: BASE_BANK_ACCOUNTS,
+      managedVenues: [],
+    })
+    vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+    vi.spyOn(api, 'getInvoicesV2').mockResolvedValue(BASE_INVOICES)
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
@@ -280,8 +287,22 @@ describe('reimbursementsWithFilters', () => {
         cashflowLabels: ['VIR7', 'VIR5'],
       },
     ])
-    vi.spyOn(api, 'getReimbursementsCsvV2')
+    vi.spyOn(api, 'getReimbursementsCsvV2').mockResolvedValueOnce('data')
     vi.spyOn(api, 'hasInvoice').mockResolvedValue({ hasInvoice: true })
+
+    fetchMock.mockResponseOnce((request) => {
+      if (
+        request.url === 'http://localhost:3000/J123456789.invoice' &&
+        request.method === 'GET'
+      ) {
+        return {
+          status: 200,
+          body: 'Mock PDF Content',
+          headers: { 'Content-Type': 'application/pdf' },
+        }
+      }
+      return { status: 404 }
+    })
 
     renderReimbursementsInvoices()
 
