@@ -5,13 +5,13 @@ from datetime import timedelta
 import pytest
 import time_machine
 
-import pcapi.core.artist.factories as artist_factories
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -22,13 +22,13 @@ from pcapi.utils.human_ids import humanize
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    # get user_session
-    # get user
-    # get offer + artists (2 queries)
+    # get user_session + user
+    # get offer
+    # get artist
     # check user_offerer exists
     # rollback
     # rollback
-    num_queries = 7
+    num_queries = 6
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -53,11 +53,10 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    num_queries = 1  # session
-    num_queries += 1  # user
+    num_queries = 1  # session + user
     num_queries += 1  # payload (joined query)
+    num_queries += 1  # get artist
     num_queries += 1  # user offerer
-    num_queries += 1  # artists
 
     def test_access_by_pro_user(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -469,16 +468,16 @@ class Returns200Test:
         artist = artist_factories.ArtistFactory()
         another_artist = artist_factories.ArtistFactory()
         artist_factories.ArtistOfferLinkFactory(
-            offer_id=offer.id,
+            offer_id=offer_id,
             artist_id=artist.id,
         )
         artist_factories.ArtistOfferLinkFactory(
-            offer_id=offer.id,
+            offer_id=offer_id,
             artist_id=another_artist.id,
         )
         custom_name = "Simone"
         artist_factories.ArtistOfferLinkFactory(
-            offer_id=offer.id,
+            offer_id=offer_id,
             custom_name=custom_name,
             artist_type=artist_models.ArtistType.AUTHOR,
         )

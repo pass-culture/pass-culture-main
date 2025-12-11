@@ -104,9 +104,8 @@ def assert_venue_equals(result_card_text: str, expected_venue: offerers_models.V
 class SearchProUserTest:
     endpoint = "backoffice_web.pro.search_pro"
 
-    # - fetch session
-    # - fetch authenticated user
-    expected_num_queries_when_no_query = 2
+    # - fetch session + user
+    expected_num_queries_when_no_query = 1
     # - fetch results
     # - fetch count for pagination
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -321,11 +320,10 @@ class SearchProUserTest:
 class SearchOffererTest:
     endpoint = "backoffice_web.pro.search_pro"
 
-    # - fetch session
-    # - fetch authenticated user
+    # - fetch session + user
     # - fetch results
     # - fetch count for pagination
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def _create_offerers(
         self,
@@ -491,11 +489,10 @@ class SearchOffererTest:
 class SearchVenueTest:
     endpoint = "backoffice_web.pro.search_pro"
 
-    # - fetch session
-    # - fetch authenticated user
+    # - fetch session + user
     # - fetch results
     # - fetch count for pagination
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def _create_venues(
         self,
@@ -746,9 +743,9 @@ class SearchVenueTest:
 class SearchBankAccountTest:
     endpoint = "backoffice_web.pro.search_pro"
 
-    # session + current user (2 queries)
+    # session + current user (1 query)
     # results + count in .paginate (2 queries)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def _search_for_one(self, authenticated_client, search_query: typing.Any, expected_id: int):
         with assert_num_queries(self.expected_num_queries):
@@ -824,10 +821,9 @@ class LogsTest:
 class ConnectAsProUserTest(PostEndpointHelper):
     endpoint = "backoffice_web.pro.connect_as"
     needed_permission = perm_models.Permissions.CONNECT_AS_PRO
-    # session
-    # current user
+    # session + user
     # pro user data
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     @pytest.mark.parametrize("roles", [[users_models.UserRole.PRO], [users_models.UserRole.NON_ATTACHED_PRO]])
     def test_connect_as_user(self, authenticated_client, legit_user, roles):

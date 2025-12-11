@@ -1749,7 +1749,7 @@ class RunIntegrationTest:
         ]
         dms_subscription_api.import_all_updated_dms_applications(6712558)
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.get("/native/v2/subscription/stepper")
 
         assert response.status_code == 200

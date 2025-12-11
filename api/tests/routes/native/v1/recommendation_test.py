@@ -35,7 +35,7 @@ class SimilarOffersTest:
     def test_authenticated(self, client, db_session):
         user = users_factories.UserFactory(id=3)
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
 
         # User authentication
         with testing.assert_num_queries(1):
@@ -105,7 +105,7 @@ class PlaylistTest:
     def test_post_recommendation_playlist(self, requests_mock, client):
         user = users_factories.UserFactory()
 
-        response = client.with_token(user.email).post("/native/v1/recommendation/playlist", json={})
+        response = client.with_token(user).post("/native/v1/recommendation/playlist", json={})
 
         assert response.status_code == 200
         assert response.json["params"] == {
@@ -129,7 +129,7 @@ class PlaylistTest:
     def test_authenticated(self, client, db_session):
         user = users_factories.UserFactory(id=3)
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         # User authentication
         with testing.assert_num_queries(1):
             response = client.post("/native/v1/recommendation/playlist", json={})
@@ -145,7 +145,7 @@ class PlaylistTest:
         user = users_factories.UserFactory(id=3)
         mocked = requests_mock.post("https://example.com/recommendation/playlist_recommendation/3")
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
 
         # User authentication
         with testing.assert_num_queries(1):
@@ -167,7 +167,7 @@ class PlaylistTest:
             exc=requests.exceptions.ConnectTimeout("a timeout error"),
         )
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         # User authentication
         with testing.assert_num_queries(1):
             response = client.post("/native/v1/recommendation/playlist", json={})
@@ -186,7 +186,7 @@ class PlaylistTest:
             exc=requests.exceptions.TooManyRedirects("a redirect error"),
         )
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         # User authentication
         with testing.assert_num_queries(1):
             response = client.post("/native/v1/recommendation/playlist", json={})

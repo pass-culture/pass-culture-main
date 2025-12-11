@@ -8,8 +8,7 @@ from pcapi.core import testing
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    num_queries = 1  # get user_session
-    num_queries += 1  # get user
+    num_queries = 1  # get user_session + user
     num_queries += 1  # get venue
     num_queries += 1  # check user_offerer exists
     num_queries += 1  # rollback
@@ -40,8 +39,7 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    num_queries = 1  # session
-    num_queries += 1  # user
+    num_queries = 1  # session + user
     num_queries += 1  # venue
     num_queries += 1  # user offerer
     num_queries += 1  # payload (joined query)
@@ -68,8 +66,7 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns404Test:
-    num_queries = 1  # session
-    num_queries += 1  # user
+    num_queries = 1  # session + user
     num_queries += 1  # venue
     num_queries += 1  # user offerer
     num_queries += 1  # payload (joined query)

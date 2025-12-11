@@ -33,7 +33,7 @@ class PostReactionTest:
 
     def test_offer_not_found(self, client):
         user = users_factories.BeneficiaryFactory()
-        client.with_token(user.email)
+        client.with_token(user)
 
         with assert_num_queries(self.num_queries_failure):
             response = client.post("/native/v1/reaction", json={"offerId": 1, "reactionType": "LIKE"})
@@ -45,7 +45,7 @@ class PostReactionTest:
         bookings_factories.UsedBookingFactory(
             user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success):
@@ -62,7 +62,7 @@ class PostReactionTest:
         bookings_factories.UsedBookingFactory(
             user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success):
@@ -75,7 +75,7 @@ class PostReactionTest:
         bookings_factories.UsedBookingFactory(
             user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success):
@@ -100,7 +100,7 @@ class PostReactionTest:
         bookings_factories.UsedBookingFactory(
             user=user, stock__offer=offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25)
         )
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_success_with_product):
@@ -126,7 +126,7 @@ class PostReactionTest:
         bookings_factories.UsedBookingFactory(
             user=user, stock__offer=other_offer, dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(days=25)
         )
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         other_offer_id = other_offer.id
@@ -157,7 +157,7 @@ class PostReactionTest:
             stock__offer=offer,
             dateUsed=date_utils.get_naive_utc_now() - datetime.timedelta(hours=25),
         )
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
@@ -171,7 +171,7 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         bookings_factories.CancelledBookingFactory(user=user, stock__offer=offer)
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
@@ -185,7 +185,7 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         offer = offers_factories.ThingOfferFactory(subcategoryId=subcategories.LIVRE_PAPIER.id)
         bookings_factories.BookingFactory(user=user, stock__offer=offer)
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
@@ -199,7 +199,7 @@ class PostReactionTest:
         user = users_factories.BeneficiaryFactory()
         offer = offers_factories.OfferFactory(subcategoryId=subcategories.ATELIER_PRATIQUE_ART.id)
         bookings_factories.BookingFactory(user=user, stock__offer=offer)
-        client.with_token(user.email)
+        client.with_token(user)
 
         offer_id = offer.id
         with assert_num_queries(self.num_queries_failure):
@@ -218,7 +218,7 @@ class GetAvailableReactionTest:
 
     def test_get_available_reactions_empty_if_no_booking(self, client):
         user = users_factories.BeneficiaryFactory()
-        client.with_token(user.email)
+        client.with_token(user)
 
         with assert_num_queries(2):
             # SELECT user, booking
@@ -266,7 +266,7 @@ class GetAvailableReactionTest:
         bookings_factories.UsedBookingFactory(user=user_1, stock__offer=offer_5, dateUsed=a_lot_more_than_31d_ago)
 
         med_1 = offers_factories.MediationFactory(offer=offer_1)
-        client.with_token(user_1.email)
+        client.with_token(user_1)
 
         with assert_num_queries(2):
             # SELECT user, booking

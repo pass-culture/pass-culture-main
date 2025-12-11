@@ -233,8 +233,7 @@ ALL = THINGS | DIGITAL | ACTIVITY
 class CreateOfferBase:
     endpoint = "/v2/offers"
 
-    success_num_queries = 1  # fetch user session
-    success_num_queries += 1  # fetch user
+    success_num_queries = 1  # fetch user session + user
     success_num_queries += 1  # fetch venue
     success_num_queries += 2  # get_or_create_offer_location: select + insert
     success_num_queries += 1  # user offerer check

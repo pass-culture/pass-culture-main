@@ -53,10 +53,9 @@ def override_homeview_fixture(app, request):
 
 
 class HomePageTest:
-    # - session
-    # - authenticated user
+    # - session + user
     # - data inserted in cards (stats got in a single request)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_view_home_page_as_anonymous(self, client):
         response = client.get(url_for("backoffice_web.home"))

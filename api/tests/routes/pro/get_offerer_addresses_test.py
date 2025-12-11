@@ -13,11 +13,10 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
-    # session
-    # user
+    # session + user
     # user_offerer
     # oa retrieving request
-    num_queries = 4
+    num_queries = 3
 
     def test_get_offerer_addresses_success(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -229,6 +228,6 @@ class Return400Test:
         offerer = offerers_factories.OffererFactory()
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = client.get(f"/offerers/{offerer_id}/offerer_addresses")
             assert response.status_code == 403

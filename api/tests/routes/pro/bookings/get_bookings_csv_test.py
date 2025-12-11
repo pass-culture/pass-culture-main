@@ -54,9 +54,7 @@ class Returns401Test:
         offer_unauthorized = offers_factories.OfferFactory()
 
         client = client.with_session_auth(user_offerer.user.email)
-        expected_num_queries = (
-            8  # offer + session + user + offer + venue + SELECT EXISTS user_offerer + rollback + rollback
-        )
+        expected_num_queries = 7  # offer + session + offer + venue + SELECT EXISTS user_offerer + rollback + rollback
         with assert_num_queries(expected_num_queries):
             response = client.get(f"/bookings/offer/{offer_unauthorized.id}/csv?event_date=2021-01-01&status=all")
             assert response.status_code == 403

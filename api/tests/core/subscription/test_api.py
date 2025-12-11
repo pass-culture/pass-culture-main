@@ -100,7 +100,7 @@ class EduconnectFlowTest:
     def test_educonnect_subscription(self, mock_get_educonnect_saml_client, client, app):
         ine_hash = "5ba682c0fc6a05edf07cd8ed0219258f"
         user = users_factories.UserFactory(dateOfBirth=datetime(2004, 1, 1), firstName=None, lastName=None)
-        access_token = create_access_token(identity=user.email)
+        access_token = create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         mock_saml_client = MagicMock()
         mock_get_educonnect_saml_client.return_value = mock_saml_client

@@ -50,10 +50,9 @@ class ListIncidentsTest(GetEndpointHelper):
     endpoint = "backoffice_web.finance_incidents.list_incidents"
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
-    # Fetch Session
-    # Fetch User
+    # Fetch Session + user
     # Fetch Finance Incidents
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_list_incidents_without_filter(self, authenticated_client):
         partial_booking_incident = finance_factories.IndividualBookingFinanceIncidentFactory(
@@ -456,7 +455,7 @@ class GetIncidentValidationFormTest(GetEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_INCIDENTS
 
-    expected_num_queries = 2
+    expected_num_queries = 1
     expected_num_queries += 1  # get incident info
 
     def test_get_incident_validation_form(self, authenticated_client):
@@ -1353,8 +1352,7 @@ class GetIncidentTest(GetEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
     expected_num_queries = 0
-    expected_num_queries += 1  # Fetch Session
-    expected_num_queries += 1  # Fetch User
+    expected_num_queries += 1  # Fetch Session + User
     expected_num_queries += 1  # Fetch Incident infos
 
     def test_get_overpayment_incident(self, authenticated_client):
@@ -1407,8 +1405,7 @@ class GetOverpaymentIncidentTest(GetEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
     expected_num_queries = 0
-    expected_num_queries += 1  # Fetch Session
-    expected_num_queries += 1  # Fetch User
+    expected_num_queries += 1  # Fetch Session + User
     expected_num_queries += 1  # Fetch Incidents infos
 
     @pytest.mark.parametrize(
@@ -1522,8 +1519,7 @@ class GetCommercialGestureTest(GetEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
     expected_num_queries = 0
-    expected_num_queries += 1  # Fetch Session
-    expected_num_queries += 1  # Fetch User
+    expected_num_queries += 1  # Fetch Session User
     expected_num_queries += 1  # Fetch Incidents infos
 
     @pytest.mark.parametrize(
@@ -1649,7 +1645,7 @@ class GetOverpaymentCreationFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
-    expected_num_queries = 7
+    expected_num_queries = 5
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
@@ -1768,7 +1764,7 @@ class GetCollectiveBookingOverpaymentFormTest(PostEndpointHelper):
     endpoint_kwargs = {"collective_booking_id": 1}
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
 
-    expected_num_queries = 10
+    expected_num_queries = 8
 
     def test_get_form(self, authenticated_client):
         collective_booking = educational_factories.ReimbursedCollectiveBookingFactory(
@@ -2027,7 +2023,7 @@ class GetCommercialGestureCreationFormTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.CREATE_INCIDENTS
     error_message_template = "Erreur %s Annuler"
 
-    expected_num_queries = 7
+    expected_num_queries = 5
 
     @pytest.mark.parametrize(
         "venue_factory,show_xfp_amount",
@@ -2430,8 +2426,8 @@ class GetIncidentHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"finance_incident_id": 1}
     needed_permission = perm_models.Permissions.READ_INCIDENTS
 
-    # session + current user + incident data
-    expected_num_queries = 3
+    # session + incident data
+    expected_num_queries = 2
 
     def test_get_incident_history(self, legit_user, authenticated_client):
         finance_incident = finance_factories.FinanceIncidentFactory()

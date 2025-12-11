@@ -1,8 +1,9 @@
 import logging
 
+from flask_login import current_user
+
 from pcapi.core.cultural_survey import cultural_survey
 from pcapi.core.external.attributes.api import update_external_user
-from pcapi.core.users import models as users_models
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.tasks.cultural_survey_tasks import upload_answers_task
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
-def get_cultural_survey_questions(user: users_models.User) -> serializers.CulturalSurveyQuestionsResponse:
+def get_cultural_survey_questions() -> serializers.CulturalSurveyQuestionsResponse:
     return serializers.CulturalSurveyQuestionsResponse(
         questions=cultural_survey.ALL_CULTURAL_SURVEY_QUESTIONS,
     )
@@ -37,19 +38,19 @@ def get_cultural_survey_questions(user: users_models.User) -> serializers.Cultur
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
-def post_cultural_survey_answers(user: users_models.User, body: serializers.CulturalSurveyAnswersRequest) -> None:
+def post_cultural_survey_answers(body: serializers.CulturalSurveyAnswersRequest) -> None:
     payload = CulturalSurveyAnswersForData(
-        user_id=user.id,
+        user_id=current_user.id,
         submitted_at=date_utils.get_naive_utc_now().isoformat(),  # type: ignore[arg-type]
         answers=body.answers,
     )
 
     upload_answers_task.delay(payload)
     with transaction():
-        user.needsToFillCulturalSurvey = False
-        user.culturalSurveyFilledDate = date_utils.get_naive_utc_now()
+        current_user.needsToFillCulturalSurvey = False
+        current_user.culturalSurveyFilledDate = date_utils.get_naive_utc_now()
 
     update_external_user(
-        user,
+        current_user,
         cultural_survey_answers={answer.question_id: answer.answer_ids for answer in body.answers},  # type: ignore[misc]
     )

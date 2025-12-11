@@ -2,7 +2,6 @@ import pytest
 
 import pcapi.core.users.backoffice.api as backoffice_api
 from pcapi.core.permissions import models as perm_models
-from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -88,17 +87,3 @@ def test_update_roles_keep_roles(permissions, roles) -> None:
     backoffice_api.upsert_roles(user, [perm_models.Roles.SUPPORT_N2, perm_models.Roles.SUPPORT_PRO])
 
     assert set(user.backoffice_profile.roles) == {roles[1], roles[2]}
-
-
-def test_fetch_user_with_profile(permissions, roles) -> None:
-    user: users_models.User = users_factories.AdminFactory(backoffice_profile__roles=[roles[0], roles[1]])
-
-    user_id = user.id
-    with assert_num_queries(1):
-        user_with_profile = backoffice_api.fetch_user_with_profile(user_id)
-
-        # user_with_profile.backoffice_profile.permission contains Permissions enum items
-        # permissions contains Permission objects from database
-        assert set(perm.name for perm in user_with_profile.backoffice_profile.permissions) == set(
-            perm.name for perm in permissions[1:4]
-        )

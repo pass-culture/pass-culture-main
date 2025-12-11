@@ -18,7 +18,7 @@ class E2EUbbleIdentificationTest:
 
     def test_user_is_identified_if_no_errors(self, client):
         user = users_factories.ProfileCompletedUserFactory(age=17)
-        client.with_token(email=user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification/e2e", {})
         ubble_status = self.get_ubble_fraud_check_status(user)
         assert response.status_code == 204
@@ -26,7 +26,7 @@ class E2EUbbleIdentificationTest:
 
     def test_user_is_not_identified_if_errors(self, client):
         user = users_factories.ProfileCompletedUserFactory(age=17)
-        client.with_token(email=user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification/e2e", {"errors": [1201, 2201]})
         ubble_status = self.get_ubble_fraud_check_status(user)
         assert response.status_code == 204

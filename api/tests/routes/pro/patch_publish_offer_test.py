@@ -41,18 +41,17 @@ now_datetime_with_tz = datetime.datetime.now(datetime.timezone.utc)
 @patch("pcapi.core.search.async_index_offer_ids")
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    num_queries = 1  # 1 session
-    num_queries += 1  # 2 user
-    num_queries += 1  # 3 offerer
-    num_queries += 1  # 4 user_offerer
-    num_queries += 1  # 5 offer+stock+offererAddress+Address+mediaton+venue
-    num_queries += 1  # 6 available stock (date comparison)
-    num_queries += 1  # 7 select offer
+    num_queries = 1  # 1 session + user
+    num_queries += 1  # 2 offerer
+    num_queries += 1  # 3 user_offerer
+    num_queries += 1  # 4 offer+stock+offererAddress+Address+mediaton+venue
+    num_queries += 1  # 5 available stock (date comparison)
+    num_queries += 1  # 6 select offer
+    num_queries += 1  # 7 offerer_confidence
     num_queries += 1  # 8 offerer_confidence
-    num_queries += 1  # 9 offerer_confidence
-    num_queries += 1  # 10 offer_validation_rule + offer_validation_sub_rule
-    num_queries += 1  # 11 update offer
-    num_queries += 1  # 12 artists
+    num_queries += 1  # 9 offer_validation_rule + offer_validation_sub_rule
+    num_queries += 1  # 10 update offer
+    num_queries += 1  # 11 artists
 
     @time_machine.travel(now_datetime_with_tz, tick=False)
     @patch("pcapi.core.mails.transactional.send_first_venue_approved_offer_email_to_pro")

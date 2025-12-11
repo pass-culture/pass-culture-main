@@ -108,11 +108,10 @@ class ListVenuesTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch venue_label for select (1 query)
     # - fetch venues with joinedload including extra data (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_venues_without_filter(self, authenticated_client):
         response = authenticated_client.get(url_for(self.endpoint))
@@ -310,10 +309,9 @@ class GetVenueTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get venue (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_keep_search_parameters_on_top(self, authenticated_client, venue):
         url = url_for(self.endpoint, venue_id=venue.id, q=venue.name, departments=["75", "77"])
@@ -549,11 +547,10 @@ class GetVenueStatsTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get venue with pricing point (1 query)
     # get collective offers templates count (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_venue_total_revenue_from_clickhouse(self, authenticated_client):
         venue_id = offerers_factories.VenueFactory().id
@@ -599,10 +596,9 @@ class GetVenueRevenueDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session
-    # user
+    # session + user
     # venue and offerer (to check is_caledonian)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
@@ -2207,10 +2203,9 @@ class GetVenueHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get history (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -2452,10 +2447,9 @@ class GetVenueCollectiveDmsApplicationsTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get applications (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_venue_with_dms_adage_application(self, authenticated_client):
         venue = offerers_factories.VenueFactory(siret="1234567891234")
@@ -2526,7 +2520,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": ""},
-            expected_num_queries=2,  # session + current user
+            expected_num_queries=1,  # session
         )
         assert response.status_code == 200
 
@@ -2539,7 +2533,7 @@ class GetBatchEditVenuesFormTest(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": ",".join(str(venue.id) for venue in venues)},
-            expected_num_queries=3,  # session + current user + criteria
+            expected_num_queries=2,  # session + criteria
         )
         assert response.status_code == 200
 
@@ -2775,10 +2769,9 @@ class GetSetPricingPointFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.venue.get_set_pricing_point_form"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # +1 session
-    # +1 user
+    # +1 session + user
     # +1 venue and venues from the same offerer
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def get_set_pricing_point_form(self, authenticated_client):
         venue = offerers_factories.VenueWithoutSiretFactory()
@@ -2793,13 +2786,12 @@ class SetPricingPointTest(PostEndpointHelper):
     endpoint = "backoffice_web.venue.set_pricing_point"
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # +1 session
-    # +1 user
+    # +1 session + user
     # +1 venue and venues from the same offerer
     # +1 pricing point validation
     # +1 check if the venue already has a link
     # +3 set pricing point
-    expected_num_queries = 8
+    expected_num_queries = 7
 
     def test_set_pricing_point(self, authenticated_client):
         venue_with_no_siret = offerers_factories.VenueWithoutSiretFactory()
@@ -3421,10 +3413,9 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
     endpoint_kwargs = {"venue_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get venue (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_venue_entreprise_info(self, authenticated_client):
         venue = offerers_factories.VenueFactory(siret="12345678200010")

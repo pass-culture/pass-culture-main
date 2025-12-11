@@ -26,11 +26,10 @@ pytestmark = [
 class ListChroniclesTest(GetEndpointHelper):
     endpoint = "backoffice_web.chronicles.list_chronicles"
     needed_permission = perm_models.Permissions.READ_CHRONICLE
-    # session
-    # current user
-    # count chronicles
+    # session + user
     # list chronicles
-    expected_num_queries = 4
+    # count chronicles
+    expected_num_queries = 3
 
     def test_without_filters(self, authenticated_client):
         product = offers_factories.ProductFactory()
@@ -229,11 +228,10 @@ class GetChronicleDetailsTest(GetEndpointHelper):
     endpoint = "backoffice_web.chronicles.details"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.READ_CHRONICLE
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch chronicle and its products
     # - fetch chronicle's action history
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     @pytest.mark.parametrize(
         "product_idx, product_identifier,product_identifier_type,club_type,identifier_display_content",
@@ -340,8 +338,8 @@ class GetUpdateChronicleContentFormTest(GetEndpointHelper):
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
 
-    # session + current user + get chronicle
-    expected_num_queries = 3
+    # session + get chronicle
+    expected_num_queries = 2
 
     def test_get_update_chronicle_content_form(self, authenticated_client, legit_user):
         chronicle = chronicles_factories.ChronicleFactory(content="Blabla bla blabla blablabla")
@@ -363,11 +361,10 @@ class UpdateChronicleContentTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.update_chronicle_content"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
-    # session
-    # current user
+    # session + user
     # get chronicle
     # update chronicle
-    expected_num_queries = 4
+    expected_num_queries = 3
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
     expected_route_queries = expected_num_queries + GetChronicleDetailsTest.expected_num_queries
     # one query to regenerate the table line
@@ -414,12 +411,11 @@ class PublishChronicleTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.publish_chronicle"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
-    # session
-    # current user
+    # session + user
     # get chronicle
     # update chronicle
     # reload chronicle
-    expected_num_queries = 5
+    expected_num_queries = 4
     # ListChroniclesTest.expected_num_queries (follow redirect)
     expected_route_queries = expected_num_queries + ListChroniclesTest.expected_num_queries
     # one query to regenerate the table line
@@ -485,12 +481,11 @@ class UnpublishChronicleTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.unpublish_chronicle"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
-    # session
-    # current user
+    # session + user
     # get chronicle
     # update chronicle
     # reload chronicle
-    expected_num_queries = 5
+    expected_num_queries = 4
     # ListChroniclesTest.expected_num_queries (follow redirect)
     expected_route_queries = expected_num_queries + ListChroniclesTest.expected_num_queries
     # one query to regenerate the table line
@@ -556,15 +551,14 @@ class AttachProductTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.attach_product"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
-    # session
-    # current user
+    # session + user
     # get chronicle
     # get product
     # get every chronicle with same productIdentifier
     # check if the chronicle is not already attached to the product
     # attach product to chronicle
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 7 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 6 + GetChronicleDetailsTest.expected_num_queries
 
     @pytest.mark.parametrize(
         "product_identifier,product_identifier_type",
@@ -751,12 +745,11 @@ class DetachProductTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.detach_product"
     endpoint_kwargs = {"chronicle_id": 1, "product_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
-    # session
-    # current user
+    # session + user
     # get current chronicle
     # delete link between the chronicle and the product
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 3 + GetChronicleDetailsTest.expected_num_queries
 
     def test_detach_product(self, authenticated_client, legit_user):
         product = offers_factories.ProductFactory()
@@ -830,12 +823,11 @@ class CommentChronicleTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.comment_chronicle"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.READ_CHRONICLE
-    # session
-    # current user
+    # session + user
     # get chronicle
     # insert actionHistory
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 3 + GetChronicleDetailsTest.expected_num_queries
 
     def test_comment_chronicle(self, authenticated_client, legit_user):
         comment = "A very serious and concerned comment about the chronicle"
@@ -862,14 +854,13 @@ class AttachOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.attach_offer"
     endpoint_kwargs = {"chronicle_id": 1}
     needed_permission = perm_models.Permissions.READ_CHRONICLE
-    # session
-    # current user
+    # session + user
     # get chronicle
     # get offer
     # get other chronicles and offers
     # insert offer_chronicles
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 6 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 5 + GetChronicleDetailsTest.expected_num_queries
 
     def test_attach_offer(self, authenticated_client):
         chronicle = chronicles_factories.ChronicleFactory()
@@ -976,11 +967,10 @@ class DetachOfferTest(PostEndpointHelper):
     endpoint_kwargs = {"chronicle_id": 1, "offer_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
     # session
-    # current user
     # get current chronicle
     # delete link between the chronicle and the offer
     # GetChronicleDetailsTest.expected_num_queries (follow redirect)
-    expected_num_queries = 4 + GetChronicleDetailsTest.expected_num_queries
+    expected_num_queries = 3 + GetChronicleDetailsTest.expected_num_queries
 
     def test_detach_offer(self, authenticated_client, legit_user):
         offer = offers_factories.OfferFactory()
@@ -1051,14 +1041,13 @@ class DetachOfferTest(PostEndpointHelper):
 class CreateChronicleTest(PostEndpointHelper):
     endpoint = "backoffice_web.chronicles.create_chronicle"
     needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
-    # session
-    # current user
+    # session + user
     # retrieve the user to attach
     # check if there is another chronicle to get the products
     # check if there is another chronicle to get the offers
     # retrieve the product/offer
     # insert chronicle
-    expected_num_queries = 7 + ListChroniclesTest.expected_num_queries
+    expected_num_queries = 6 + ListChroniclesTest.expected_num_queries
 
     def test_create_chronicle(self, authenticated_client):
         form = {

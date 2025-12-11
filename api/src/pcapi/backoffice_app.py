@@ -10,6 +10,7 @@ from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
 
 from pcapi import settings
+from pcapi.core.users.sessions import install_backoffice_login
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
 from pcapi.routes.backoffice import static_utils
@@ -69,9 +70,9 @@ with app.app_context():
     from pcapi.routes.backoffice import install_routes
     from pcapi.routes.backoffice.blueprint import backoffice_web
     import pcapi.routes.backoffice.error_handlers  # noqa F401
-    import pcapi.utils.login_manager  # noqa F401
 
     static_utils.generate_bundles()
+    install_backoffice_login()
     install_routes(app)
     app.register_blueprint(backoffice_web, url_prefix="/")
 
