@@ -101,11 +101,13 @@ jobs:
 
   end-slack-success-notification:
     name: "Send workflow end success"
-    needs: [create-pro-staging-release,create-pro-integration-release,create-pro-production-release,deploy-staging]
+    needs: [beginning-slack-notification,create-pro-staging-release,create-pro-integration-release,create-pro-production-release,deploy-staging]
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      method: update
+      message-ts: ${{ needs.beginning-slack-notification.outputs.posted_message_ts }}
       color: "#28A745"  # green
       message:
         ':github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a réussi'
@@ -115,11 +117,13 @@ jobs:
 
   end-slack-failure-notification:
     name: "Send workflow end failure"
-    needs: [create-pro-staging-release,create-pro-integration-release,create-pro-production-release,deploy-staging]
+    needs: [beginning-slack-notification,create-pro-staging-release,create-pro-integration-release,create-pro-production-release,deploy-staging]
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      method: update
+      message-ts: ${{ needs.beginning-slack-notification.outputs.posted_message_ts }}
       color: "#A30002"  # red
       message:
         ':github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a échoué'
