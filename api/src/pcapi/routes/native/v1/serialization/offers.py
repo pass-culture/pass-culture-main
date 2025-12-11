@@ -643,7 +643,7 @@ class VenueMovieScreeningsRequest(HttpBodyModel):
 
 
 class MovieScreenings(HttpBodyModel):
-    duration: str | None
+    duration: int | None
     genres: list[str]
     last_30_days_bookings: int
     movie_name: str
