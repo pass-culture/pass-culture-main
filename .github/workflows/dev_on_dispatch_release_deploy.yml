@@ -137,68 +137,27 @@ jobs:
           --latest \
           --verify-tag
 
-  slack-notification:
-    name: "Send Slack notification"
-    runs-on: ubuntu-22.04
-    if: always()
-    needs:
-      - version
-      - deploy-prod
-      - deploy-ehp
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v3"
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Post outcome on #alertes-deploiement"
-        if: always()
-        uses: slackapi/slack-github-action@v2.1.1
-        with:
-          method: chat.postMessage
-          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
-          payload: |
-            channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-            attachments:
-              - color: "${{ fromJSON('["#28A745", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}"
-                blocks:
-                  - type: "context"
-                    elements:
-                      - type: "image"
-                        image_url: "https://github.com/${{github.actor}}.png"
-                        alt_text: "image de profil Github de ${{github.actor}}"
-                      - type: "mrkdwn"
-                        text: "*${{github.actor}}*"
-                  - type: "section"
-                    text:
-                      type: "mrkdwn"
-                      text: "Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a ${{ fromJSON('["réussi", "échoué"]')[env.WORKFLOW_CONCLUSION != 'success'] }} sur `${{ github.event.inputs.target_environment }}`"
-      - name: "Post success on #shérif"
-        if: env.WORKFLOW_CONCLUSION == 'success'
-        uses: slackapi/slack-github-action@v2.1.1
-        with:
-          method: chat.postMessage
-          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
-          payload: |
-            channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-            attachments:
-              - color: "#28A745"  # green
-                blocks:
-                  - type: "context"
-                    elements:
-                      - type: "image"
-                        image_url: "https://github.com/${{github.actor}}.png"
-                        alt_text: "image de profil Github de ${{github.actor}}"
-                      - type: "mrkdwn"
-                        text: "*${{github.actor}}*"
-                  - type: "section"
-                    text:
-                      type: "mrkdwn"
-                      text: "La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ github.event.inputs.target_environment }}`"
+  end-slack-success-notification:
+    name: "Send workflow success notification"
+    needs: [version,deploy-prod,deploy-ehp]
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#28A745"  # green
+      message: ":github-success: La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ github.event.inputs.target_environment }}`"
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  end-slack-failure-notification:
+    name: "Send workflow failure notification"
+    needs: [version,deploy-prod,deploy-ehp]
+    if: always() && (failure() || cancelled())
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#A30002"  # red
+      message: ":github-failure:Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a échoué sur `${{ github.event.inputs.target_environment }}`"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
