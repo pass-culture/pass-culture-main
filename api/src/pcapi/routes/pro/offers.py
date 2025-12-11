@@ -343,65 +343,6 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
     return offers_serialize.GetIndividualOfferResponseModel.from_orm(offer)
 
 
-@private_api.route("/v2/offers/<int:offer_id>", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def update_offer(
-    offer_id: int, body: offers_serialize.PatchOfferBodyModel
-) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
-    try:
-        offer = offers_repository.get_offer_by_id(
-            offer_id,
-            load_options=[
-                "stock",
-                "venue",
-                "offerer_address",
-                "product",
-                "bookings_count",
-                "is_non_free_offer",
-                "meta_data",
-            ],
-        )
-    except exceptions.OfferNotFound:
-        raise api_errors.ResourceNotFoundError()
-
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    updates = body.dict(by_alias=True, exclude_unset=True)
-    if body_extra_data := offers_api.deserialize_extra_data(body.extraData, offer.subcategoryId):
-        if "ean" in body_extra_data:
-            updates["ean"] = body_extra_data.pop("ean")
-        updates["extraData"] = body_extra_data
-
-    offer = offers_api.update_offer(
-        offer,
-        offers_schemas.UpdateOffer(**updates),
-        is_from_private_api=True,
-    )
-    db.session.flush()
-    offer = offers_repository.get_offer_by_id(
-        offer_id,
-        load_options=[
-            "bookings_count",
-            "headline_offer",
-            "is_non_free_offer",
-            "meta_data",
-            "offerer_address",
-            "pending_bookings",
-            "product",
-            "stock",
-            "venue",
-            "highlight_requests",
-        ],
-    )
-
-    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
-
-
 @private_api.route("/offers", methods=["POST"])
 @login_required
 @spectree_serialize(
@@ -571,6 +512,7 @@ def patch_offer(
             "product",
             "stock",
             "venue",
+            "highlight_requests",
         ],
     )
 

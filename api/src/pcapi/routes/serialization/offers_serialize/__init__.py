@@ -705,6 +705,7 @@ class MinimalPostOfferBodyModel(ConfiguredBaseModel):
 
 
 class PostOfferBodyModel(MinimalPostOfferBodyModel):
+    address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     url: HttpUrl | None
     address: offerers_schemas.AddressBodyModel | None
     booking_contact: EmailStr | None
