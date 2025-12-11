@@ -21,7 +21,6 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import finance_serialize
-from pcapi.routes.serialization.address_serialize import AddressResponseModel
 from pcapi.routes.serialization.venues_serialize import BannerMetaModel
 from pcapi.routes.serialization.venues_serialize import DMSApplicationForEAC
 from pcapi.routes.shared import validation
@@ -438,16 +437,6 @@ class GetOffererAddressesQueryModel(BaseModel):
 
 class PatchOffererAddressRequest(BaseModel):
     label: str
-
-
-class OffererAddressResponseModel(BaseModel):
-    id: int
-    label: str | None
-    offererId: int
-    location: AddressResponseModel
-
-    class Config:
-        orm_mode = True
 
 
 class OffererEligibilityResponseModel(BaseModel):
