@@ -17,12 +17,25 @@ on:
       message:
         type: string
         required: true
+      message-ts:
+        type: string
+        required: false
+      method:
+        type: string
+        required: false
+        default: post
+    outputs:
+      posted_message_ts:
+        value: ${{ jobs.call-slack-api.outputs.posted_message_ts }}
+
 
 
 jobs:
-  post-slack-message:
-    name: "Post Slack message"
+  call-slack-api:
+    name: "Call Slack API"
     runs-on: ubuntu-24.04
+    outputs:
+      posted_message_ts: ${{ steps.post-message.outputs.ts }}
     steps:
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
@@ -35,7 +48,9 @@ jobs:
         with:
           secrets: |-
             SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Call Slack API"
+      - name: "Post message"
+        id: post-message
+        if: inputs.method == 'post'
         uses: slackapi/slack-github-action@v2.1.1
         with:
           method: chat.postMessage
@@ -44,6 +59,33 @@ jobs:
             channel: ${{ inputs.channel }}
             attachments:
               - color: "${{ inputs.color }}"
+                fallback: "${{ inputs.message }}"
+                blocks:
+                  - type: "context"
+                    elements:
+                      - type: "image"
+                        image_url: "https://github.com/${{github.actor}}.png"
+                        alt_text: "image de profil Github de ${{github.actor}}"
+                      - type: "mrkdwn"
+                        text: "*${{github.actor}}*"
+                  - type: "section"
+                    text:
+                      type: "mrkdwn"
+                      text: "${{ inputs.message }}"
+
+      - name: "Update message"
+        id: update-message
+        if: inputs.method == 'update' && inputs.message-ts != ''
+        uses: slackapi/slack-github-action@v2.1.1
+        with:
+          method: chat.update
+          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
+          payload: |
+            channel: ${{ inputs.channel }}
+            ts: ${{ inputs.message-ts }}
+            attachments:
+              - color: "${{ inputs.color }}"
+                fallback: "${{ inputs.message }}"
                 blocks:
                   - type: "context"
                     elements:
