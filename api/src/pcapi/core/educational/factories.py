@@ -25,7 +25,7 @@ class EducationalDomainFactory(BaseFactory[models.EducationalDomain]):
     class Meta:
         model = models.EducationalDomain
 
-    name = "Architecture"
+    name = factory.Faker("name")
 
 
 def _institution_email_builder(institution: models.EducationalInstitution) -> str:

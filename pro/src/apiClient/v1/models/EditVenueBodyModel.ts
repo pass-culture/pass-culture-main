@@ -14,6 +14,7 @@ export type EditVenueBodyModel = {
   city?: string | null;
   comment?: string | null;
   contact?: VenueContactModel | null;
+  culturalDomains?: Array<string> | null;
   description?: string | null;
   inseeCode?: string | null;
   isAccessibilityAppliedOnAllOffers?: boolean | null;

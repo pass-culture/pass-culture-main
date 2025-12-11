@@ -368,6 +368,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     activity: offerers_models.OnboardingActivity | None
+    culturalDomains: list[str] | None
     name: offerers_schemas.VenueName | None
     street: offerers_schemas.VenueAddress | None
     banId: offerers_schemas.VenueBanId | None
