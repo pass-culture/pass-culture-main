@@ -56,7 +56,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#D4AD3B"
+      color: "#D4AD3B"  # yellow
       message:
         ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|pose du tag et la construction> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` sont lancées"
     secrets:
@@ -107,7 +107,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#D4AD3B"
+      color: "#28A745"  # green
       message: ":github-success: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a réussi"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -120,7 +120,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#D4AD3B"
+      color: "#A30002"  # red
       message: ":github-failure: Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|tag> de la version `v${{ needs.prepare-variables.outputs.releaseNumber }}` a rencontré un problème"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
