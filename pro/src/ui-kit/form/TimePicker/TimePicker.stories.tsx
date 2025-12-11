@@ -1,8 +1,8 @@
-import type { Meta, StoryObj } from '@storybook/react/*'
 import type { PropsWithChildren } from 'react'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 
 import { TimePicker } from './TimePicker'
+import { Meta, StoryObj } from '@storybook/react-vite'
 
 const Wrapper = ({ children }: PropsWithChildren) => {
   const hookForm = useForm<{ group: string }>({
