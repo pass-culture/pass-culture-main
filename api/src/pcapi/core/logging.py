@@ -6,12 +6,14 @@ import enum
 import json
 import logging
 import os
+import pprint
 import sys
 import time
 import typing
 import uuid
 
 import flask
+import pytz
 from flask_login import current_user
 
 from pcapi import settings
@@ -215,6 +217,22 @@ class JsonFormatter(logging.Formatter):
             return serialized
 
 
+class PlainTextFormatter(logging.Formatter):
+    """Formatter for dev environments let's keep it simple"""
+
+    def format(self, record: logging.LogRecord) -> str:
+        extra = getattr(record, "extra", {})
+        formated_extra = ""
+        if record.msg == "HTTP request at %s":
+            formated_extra = f" {extra.get('statusCode')}"
+            extra = {}
+        if extra:
+            formated_extra = f"\n {pprint.pformat(extra, indent=4, width=200)}"
+
+        formated_time = datetime.datetime.now(tz=pytz.timezone("Europe/Paris")).strftime("%H:%M:%S.%f")
+        return f"{formated_time} {record.levelname}:{record.name}:{record.getMessage()}{formated_extra}"
+
+
 def install_logging() -> None:
     global _internal_logger  # noqa: PLW0603 (global-statement)
 
@@ -226,7 +244,13 @@ def install_logging() -> None:
     monkey_patch_logger_log()
     if settings.LOG_PLAIN_TEXT:
         # JSON is hard to read, keep the default plain text logger.
-        logging.basicConfig(level=settings.LOG_LEVEL)
+        handler = logging.StreamHandler()
+        handler.setFormatter(PlainTextFormatter())
+        logging.basicConfig(
+            force=True,
+            handlers=[handler],
+            level=settings.LOG_LEVEL,
+        )
         _silence_noisy_loggers()
 
         return
