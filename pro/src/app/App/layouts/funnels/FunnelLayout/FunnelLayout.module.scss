@@ -4,17 +4,17 @@
 $connect-as-header-height: rem.torem(52px);
 
 .layout {
+  background-color: var(--color-background-subtle);
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background-color: var(--color-background-subtle);
 }
 
 .page-layout {
+  border-top: none;
   display: flex;
   height: 100%;
   overflow: hidden;
-  border-top: none;
   width: 100%;
 
   &-connect-as {
@@ -28,24 +28,30 @@ $connect-as-header-height: rem.torem(52px);
 }
 
 .content-wrapper {
+  background-color: var(--color-background-default);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   width: 100%;
-  overflow-y: auto;
-  background-color: var(--color-background-default);
+
+  &-with-vertical-scroll {
+    overflow-y: auto;
+  }
 }
 
 .content-container {
-  width: 100%;
-  flex-grow: 1;
-  padding: 0;
   display: flex;
   flex-direction: column;
+  flex-grow: 1;
   justify-content: space-between;
+  min-height: 0;
+  padding: 0;
+  width: 100%;
 }
 
 .content {
+  margin: var(--size-spacing-xxl) auto 0 auto;
+  max-width: size.$signup-content-width;
   min-height: calc(
     100vh -
       (
@@ -53,11 +59,20 @@ $connect-as-header-height: rem.torem(52px);
           size.$action-bar-sticky-height
       )
   );
-  margin: var(--size-spacing-xxl) auto 0 auto;
   padding: var(--size-spacing-xl);
-  max-width: size.$signup-content-width;
 
   @media screen and (min-width: size.$tablet) {
     padding-bottom: rem.torem(size.$action-bar-sticky-height);
   }
+}
+
+.content-flex {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin: 0 auto;
+  max-width: 100%;
+  min-height: 0;
+  padding: size.$main-content-padding size.$main-content-padding 0;
+  width: size.$main-content-width;
 }

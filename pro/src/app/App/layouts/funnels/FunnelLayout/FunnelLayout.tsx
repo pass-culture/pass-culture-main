@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
 import type React from 'react'
 
@@ -18,9 +17,16 @@ export interface FunnelLayoutProps {
    * Make sure that only one heading is displayed per page.
    */
   mainHeading: React.ReactNode
+  withFlexContent?: boolean
+  withVerticalScroll?: boolean
 }
 
-export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
+export const FunnelLayout = ({
+  children,
+  mainHeading,
+  withFlexContent = false,
+  withVerticalScroll = false,
+}: FunnelLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
 
   return (
@@ -30,18 +36,31 @@ export const FunnelLayout = ({ children, mainHeading }: FunnelLayoutProps) => {
         <ConnectedAsAside currentUser={currentUser} />
       )}
       <Header disableHomeLink={!currentUser?.hasUserOfferer} />
+
       <div
         className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
-        <div id="content-wrapper" className={styles['content-wrapper']}>
+        {/* biome-ignore lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */}
+        <div
+          id="content-wrapper"
+          className={cn(styles['content-wrapper'], {
+            [styles['content-wrapper-with-vertical-scroll']]:
+              withVerticalScroll,
+          })}
+        >
           <div className={styles['content-container']}>
-            <main id="content">
-              <div className={styles.content}>
-                <MainHeading mainHeading={mainHeading} />
-                {children}
-              </div>
+            <main
+              id="content"
+              className={
+                withFlexContent ? styles['content-flex'] : styles['content']
+              }
+              tabIndex={-1}
+            >
+              <MainHeading mainHeading={mainHeading} />
+
+              {children}
             </main>
           </div>
         </div>
