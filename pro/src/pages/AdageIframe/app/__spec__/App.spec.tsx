@@ -38,6 +38,19 @@ vi.mock(
   }
 )
 
+class MockIntersectionObserver {
+  public readonly root: Element | Document | null = null
+  public readonly rootMargin: string = '0px'
+  public readonly thresholds: ReadonlyArray<number> = []
+  public takeRecords = vi.fn()
+
+  public observe = vi.fn()
+  public unobserve = vi.fn()
+  public disconnect = vi.fn()
+}
+
+window.IntersectionObserver = MockIntersectionObserver
+
 window.scrollTo = vi.fn().mockImplementation(() => {})
 
 vi.mock('react-instantsearch', async () => {
@@ -138,11 +151,6 @@ describe('app', () => {
         institutionName: 'COLLEGE BELLEVUE',
         institutionCity: 'ALES',
       })
-      window.IntersectionObserver = vi.fn().mockImplementation(() => ({
-        observe: vi.fn(),
-        unobserve: vi.fn(),
-        disconnect: vi.fn(),
-      }))
     })
 
     it('should display venue tag when siret is provided and public name exists', async () => {

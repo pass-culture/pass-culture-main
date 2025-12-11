@@ -1,3 +1,4 @@
+import { api } from '@/apiClient/api'
 import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 
@@ -38,6 +39,8 @@ describe('getsiretData', () => {
   })
 
   it('should return an error when the SIRET is inactive', async () => {
+    vi.spyOn(api, 'getStructureData').mockRejectedValue({})
+
     const siret = '11111111111111'
 
     try {

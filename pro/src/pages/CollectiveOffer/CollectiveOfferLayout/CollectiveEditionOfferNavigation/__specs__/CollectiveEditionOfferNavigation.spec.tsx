@@ -89,6 +89,9 @@ describe('CollectiveEditionOfferNavigation', () => {
     })
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(templateOffer)
+    vi.spyOn(api, 'getCollectiveOffer').mockResolvedValue(
+      getCollectiveOfferFactory({ id: props.offerId })
+    )
 
     vi.spyOn(api, 'listEducationalOfferers').mockResolvedValue({
       educationalOfferers: [],
@@ -107,6 +110,32 @@ describe('CollectiveEditionOfferNavigation', () => {
   })
 
   it('should log event when clicking "Dupliquer" button', async () => {
+    vi.spyOn(api, 'duplicateCollectiveOffer').mockResolvedValueOnce(
+      // Simuler la nouvelle offre dupliquée
+      getCollectiveOfferFactory({
+        id: 999,
+      })
+    )
+    vi.spyOn(api, 'attachOfferImage').mockResolvedValueOnce({
+      imageUrl: 'my url',
+    })
+
+    fetchMock.mockResponseOnce((request) => {
+      // Si l'offre mockée a cette URL, l'intercepter ici.
+      if (
+        request.url === 'https://example.com/image.jpg' &&
+        request.method === 'GET'
+      ) {
+        return {
+          status: 200,
+          // Retourner un contenu simulé (ex: un faux buffer)
+          body: 'Mock Image Data',
+          headers: { 'Content-Type': 'image/jpeg' },
+        }
+      }
+      return { status: 404 }
+    })
+
     renderCollectiveEditingOfferNavigation({
       ...props,
       isTemplate: true,

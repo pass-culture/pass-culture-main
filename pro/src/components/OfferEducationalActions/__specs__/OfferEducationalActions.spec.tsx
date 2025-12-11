@@ -60,6 +60,7 @@ describe('OfferEducationalActions', () => {
   const notifySuccess = vi.fn()
 
   beforeEach(async () => {
+    vi.resetAllMocks()
     const notifsImport = (await vi.importActual(
       '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>

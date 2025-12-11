@@ -151,7 +151,9 @@ describe('VideoUploaderContext', () => {
   })
 
   it('should update offer on click on submit', async () => {
-    vi.spyOn(api, 'patchDraftOffer')
+    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
+      getIndividualOfferFactory()
+    )
 
     const offer = getIndividualOfferFactory({
       videoData: {},

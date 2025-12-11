@@ -94,7 +94,9 @@ describe('components:UserPhoneForm', () => {
   })
 
   it('should trigger onSubmit callback when submitting', async () => {
-    vi.spyOn(api, 'patchUserPhone')
+    vi.spyOn(api, 'patchUserPhone').mockResolvedValue({
+      phoneNumber: '+262692790350',
+    })
 
     renderUserPhoneForm(props)
 
@@ -113,7 +115,9 @@ describe('components:UserPhoneForm', () => {
   })
 
   it('should reset phone number onclick "annuler', async () => {
-    vi.spyOn(api, 'patchUserPhone')
+    vi.spyOn(api, 'patchUserPhone').mockResolvedValue({
+      phoneNumber: '+262692790350',
+    })
 
     renderUserPhoneForm(props)
 

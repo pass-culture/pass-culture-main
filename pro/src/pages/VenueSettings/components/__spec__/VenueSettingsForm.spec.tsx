@@ -2,6 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect, it, vi } from 'vitest'
 
+import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
 import {
   type GetVenueResponseModel,
@@ -146,6 +147,19 @@ const renderVenueSettingsForm = async (
 
 describe('VenueSettingsForm', () => {
   beforeEach(() => {
+    vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
+      {
+        address: '',
+        city: '',
+        inseeCode: '',
+        id: '',
+        latitude: 1,
+        longitude: 2,
+        label: '',
+        postalCode: '',
+      },
+    ])
+
     vi.spyOn(api, 'getProvidersByVenue').mockResolvedValue([
       {
         name: 'Ciné Office',

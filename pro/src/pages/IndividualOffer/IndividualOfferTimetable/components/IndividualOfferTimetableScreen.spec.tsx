@@ -1,7 +1,11 @@
 import { screen, waitFor } from '@testing-library/react'
 
+import { api } from '@/apiClient/api'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  getIndividualOfferFactory,
+  getStocksResponseFactory,
+} from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import {
@@ -27,6 +31,10 @@ function renderIndividualOfferTimetableScreen(
 
 describe('IndividualOfferTimetableScreen', () => {
   it('should render the timetable type choice', async () => {
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
+      getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
+    )
+
     renderIndividualOfferTimetableScreen(
       { offer: getIndividualOfferFactory({ isEvent: true, hasStocks: false }) },
       ['WIP_ENABLE_OHO']
@@ -42,6 +50,10 @@ describe('IndividualOfferTimetableScreen', () => {
   })
 
   it('should not render the timetable type choice if the WIP_ENABLE_OHO FF is disabled', async () => {
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
+      getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
+    )
+
     renderIndividualOfferTimetableScreen({
       offer: getIndividualOfferFactory({ isEvent: true, hasStocks: false }),
     })

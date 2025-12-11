@@ -50,6 +50,9 @@ describe('Desk', () => {
     })
 
     it('should indicate the number of characters missing', async () => {
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+        defaultGetBookingResponse
+      )
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AA')
@@ -57,6 +60,9 @@ describe('Desk', () => {
     })
 
     it('should indicate the maximum number of caracters', async () => {
+      vi.spyOn(api, 'getBookingByToken').mockResolvedValue(
+        defaultGetBookingResponse
+      )
       renderDesk()
       const contremarque = screen.getByLabelText('Contremarque')
       await userEvent.type(contremarque, 'AAOURIRIR')

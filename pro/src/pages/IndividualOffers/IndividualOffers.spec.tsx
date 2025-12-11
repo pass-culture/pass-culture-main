@@ -127,6 +127,7 @@ describe('IndividualOffers', () => {
     })
     vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: proVenues })
     vi.spyOn(api, 'getOffererAddresses').mockResolvedValue(offererAddress)
+    vi.spyOn(api, 'listOffers').mockResolvedValue(offersRecap)
   })
 
   afterEach(() => {
