@@ -11,7 +11,7 @@ export const isFeatureActive = (
     return false
   }
   const currentFeature = features.find(
-    (feature) => feature.nameKey === featureName
+    (feature) => feature.name === featureName
   )
   return Boolean(currentFeature?.isActive)
 }
