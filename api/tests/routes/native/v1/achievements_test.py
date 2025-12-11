@@ -19,7 +19,7 @@ class MarkAchievementsAsSeenTest:
             user=user, name=achievements_models.AchievementEnum.FIRST_LIVE_MUSIC_BOOKING
         )
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/achievements/mark_as_seen", json={"achievementIds": [achievement_1.id, achievement_2.id]}
         )
 
@@ -31,9 +31,7 @@ class MarkAchievementsAsSeenTest:
     def test_achievement_not_found(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        response = client.with_token(user.email).post(
-            "/native/v1/achievements/mark_as_seen", json={"achievementIds": [1]}
-        )
+        response = client.with_token(user).post("/native/v1/achievements/mark_as_seen", json={"achievementIds": [1]})
 
         assert response.status_code == 404, response.json
         assert response.json["code"] == "ACHIEVEMENT_NOT_FOUND"

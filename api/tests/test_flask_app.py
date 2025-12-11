@@ -13,8 +13,8 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def test_log_request_details(client, caplog):
-    users_factories.BeneficiaryGrant18Factory(email="email@example.com")
-    client.with_token("email@example.com")
+    user = users_factories.BeneficiaryGrant18Factory(email="email@example.com")
+    client.with_token(user)
 
     with caplog.at_level(logging.INFO):
         client.get(

@@ -70,7 +70,7 @@ class PostReminderTest:
 
     def test_future_offer_not_found(self, client):
         user = users_factories.BeneficiaryFactory()
-        client.with_token(user.email)
+        client.with_token(user)
 
         num_queries = 1  # select usersession
         num_queries += 1  # select user
@@ -111,7 +111,7 @@ class PostReminderTest:
         _ = reminders_factories.OfferReminderFactory(offer=offer_1, user=user)
         reminder_2 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user)
 
-        client.with_token(user.email)
+        client.with_token(user)
 
         num_queries = 1  # select user
         num_queries += 1  # select future_offer

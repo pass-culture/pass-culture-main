@@ -56,26 +56,25 @@ class GetProductDetailsTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     # Expected SQL queries:
-    # 1) Session
-    # 2) User
+    # 1) Session + user
 
     # Product and related data
-    # 3) Product
-    # 4) ProductMediation (via selectinload)
+    # 2) Product
+    # 3) ProductMediation (via selectinload)
 
     # Linked offers and stock
-    # 5) Linked Offer
-    # 6) Linked Offer -> Criteria (via selectinload)
-    # 7) Linked Offer -> Stock (via selectinload)
+    # 4) Linked Offer
+    # 5) Linked Offer -> Criteria (via selectinload)
+    # 6) Linked Offer -> Stock (via selectinload)
 
     # Unlinked offers and stock
-    # 8) Unlinked Offer
-    # 9) Unlinked Offer -> Criteria (via selectinload)
-    # 10) Unlinked Offer -> Stock (via selectinload)
+    # 7) Unlinked Offer
+    # 8) Unlinked Offer -> Criteria (via selectinload)
+    # 9) Unlinked Offer -> Stock (via selectinload)
 
     # Whitelist
-    # 11) Whitelisted Product
-    expected_num_queries = 11
+    # 10) Whitelisted Product
+    expected_num_queries = 10
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_get_detail_product(self, mock_get_by_ean13, authenticated_client):
@@ -276,8 +275,8 @@ class GetProductSynchronizationWithTiteliveFormTest(GetEndpointHelper):
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # session + user + product
-    expected_num_queries = 3
+    # session + product
+    expected_num_queries = 2
 
     @patch("pcapi.routes.backoffice.products.blueprint.get_by_ean13")
     def test_confirm_product_synchronization_with_titelive_form(self, mock_get_by_ean13, authenticated_client):
@@ -406,8 +405,8 @@ class GetProductWhitelistConfirmationFormTest(GetEndpointHelper):
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # session + user + product
-    expected_num_queries = 3
+    # session + product
+    expected_num_queries = 2
 
     def test_confirm_product_whitelist_form(self, authenticated_client):
         product = offers_factories.ProductFactory.create(name="One Piece")
@@ -461,8 +460,8 @@ class GetProductBlacklistConfirmationFormTest(GetEndpointHelper):
     endpoint_kwargs = {"product_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # session + user + product
-    expected_num_queries = 3
+    # session + product
+    expected_num_queries = 2
 
     def test_confirm_product_blacklist_form(self, authenticated_client):
         product = offers_factories.ProductFactory.create(name="One Piece")
@@ -730,11 +729,10 @@ class GetTagOffersFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS
 
     # Expected SQL queries:
-    # 1. session
-    # 2. user
-    # 3. product + linked offers
-    # 4. unlinked offers
-    expected_num_queries = 4
+    # 1. session + user
+    # 2. product + linked offers
+    # 3. unlinked offers
+    expected_num_queries = 3
 
     @pytest.mark.parametrize(
         "identifier_props, identifier_string",

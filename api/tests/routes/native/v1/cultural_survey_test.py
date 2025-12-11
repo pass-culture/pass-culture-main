@@ -26,7 +26,7 @@ class CulturalSurveyQuestionsTest:
             - relativedelta(years=18, months=5),
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/cultural_survey/questions")
             assert response.status_code == 200
@@ -272,7 +272,7 @@ class CulturalSurveyQuestionsTest:
     @patch("pcapi.tasks.cultural_survey_tasks.store_public_object")
     def test_post_cultural_survey_answers(self, store_public_object_mock, client):
         user: users_models.User = users_factories.UserFactory()
-        client.with_token(user.email)
+        client.with_token(user)
 
         all_answers = [
             {

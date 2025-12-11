@@ -4,6 +4,7 @@ from flask_wtf.csrf import CSRFProtect
 from sentry_sdk import set_tag
 
 from pcapi import settings
+from pcapi.core.users.sessions import install_mingled_login
 from pcapi.flask_app import app
 from pcapi.flask_app import setup_metrics
 
@@ -26,11 +27,10 @@ jwt = JWTManager(app)
 csrf = CSRFProtect()
 csrf.init_app(app)
 
-
 with app.app_context():
-    import pcapi.utils.login_manager  # noqa F401
     from pcapi.routes import install_all_routes
 
+    install_mingled_login()
     install_all_routes(app)
 
     setup_metrics(app)

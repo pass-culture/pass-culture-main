@@ -45,10 +45,9 @@ class ListGdprUserExtractDataTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session +user (1 query)
     # - fetch gdpr_data_extract
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_list_gdpr_user_extract_data(self, authenticated_client, list_of_gdpr_user_extract_data):
         with assert_num_queries(self.expected_num_queries):
@@ -107,10 +106,9 @@ class DownloadPublicAccountExtractTest(PostEndpointHelper, StorageFolderManager)
     endpoint_kwargs = {"extract_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
     storage_folder = settings.LOCAL_STORAGE_DIR / settings.GCP_GDPR_EXTRACT_BUCKET / settings.GCP_GDPR_EXTRACT_FOLDER
-    # - session
-    # - current user
+    # - session + user
     # - get extract + user
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_download_public_account_extract(self, authenticated_client):
         extract = users_factories.GdprUserDataExtractBeneficiaryFactory(dateProcessed=date_utils.get_naive_utc_now())
