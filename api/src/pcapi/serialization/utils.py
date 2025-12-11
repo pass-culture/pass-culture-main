@@ -11,7 +11,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_naive_utc_now
 
-from . import PydanticError
+from .exceptions import PydanticError
 
 
 NOW_LITERAL = typing.Literal["now"]
@@ -42,7 +42,6 @@ def before_handler(
         "value_error.datetime": "Format de date invalide",
         "value_error.extra": "Vous ne pouvez pas changer cette information",
         "value_error.missing": "Ce champ est obligatoire",
-        "missing": "Ce champ est obligatoire",
         "value_error.url.scheme": 'L\'URL doit commencer par "http://" ou "https://"',
         "value_error.url.host": 'L\'URL doit terminer par une extension (ex. ".fr")',
         "value_error.email": "Le format d'email est incorrect.",
@@ -51,6 +50,7 @@ def before_handler(
         "value_error.decimal.not_finite": "La valeur n'est pas un nombre décimal valide",
         # pydantic V2
         "missing": "Ce champ est obligatoire",
+        "float_parsing": "Saisissez un nombre valide",
         "greater_than_equal": "Saisissez un nombre supérieur ou égal à {ge}",
     }
 

@@ -1,3 +1,4 @@
+import decimal
 import logging
 import typing
 
@@ -179,6 +180,7 @@ def upsert_offer_stocks(
     stock_inputs: list[offers_schemas.ThingStockUpsertInput] = []
     for stock in body.stocks:
         data = stock.dict(by_alias=False, exclude={"offer_id"})
+        data["price"] = decimal.Decimal(data["price"])
         stock_inputs.append(typing.cast(offers_schemas.ThingStockUpsertInput, data))
 
     offers_api.upsert_offer_thing_stocks(offer, stock_inputs)

@@ -125,7 +125,7 @@ describe('VenueEdition', () => {
   beforeEach(() => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(baseVenue)
     vi.spyOn(api, 'listVenueProviders').mockResolvedValue({
-      venue_providers: [defaultVenueProvider],
+      venueProviders: [defaultVenueProvider],
     })
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel

@@ -147,7 +147,7 @@ class DisableVenueProviderTest:
         venue_provider = providers_factories.VenueProviderFactory()
         venue = venue_provider.venue
 
-        request = PostVenueProviderBody(venueId=venue.id, providerId=venue_provider.providerId, isActive=False)
+        request = PostVenueProviderBody(venueId=venue.id, provider_id=venue_provider.providerId, is_active=False)
         api.update_venue_provider(venue_provider, request, user)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent
@@ -169,7 +169,7 @@ class DisableVenueProviderTest:
         venue_provider = providers_factories.VenueProviderFactory()
         venue = venue_provider.venue
 
-        request = PostVenueProviderBody(venueId=venue.id, providerId=venue_provider.providerId, isActive=False)
+        request = PostVenueProviderBody(venueId=venue.id, provider_id=venue_provider.providerId, is_active=False)
         api.update_venue_provider(venue_provider, request, user)
 
         assert len(mails_testing.outbox) == 1  # test number of emails sent

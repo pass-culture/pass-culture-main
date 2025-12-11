@@ -34,7 +34,7 @@ const secondVenueProvider = {
   id: 2,
   isActive: true,
   isFromAllocineProvider: true,
-  lastSyncDate: undefined,
+  lastSyncDate: null,
   venueId: 2,
   dateCreated: '2021-08-15T00:00:00Z',
   venueIdAtOfferProvider: 'allocine_id_1',
