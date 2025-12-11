@@ -40,6 +40,8 @@ jobs:
         with:
           node-version-file: "pro/package.json"
 
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@safe-chain-setup/v1.0.0
+
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
         uses: pass-culture-github-actions/cache@v1.0.0
