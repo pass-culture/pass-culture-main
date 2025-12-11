@@ -2360,13 +2360,6 @@ algoliasearch@>=4:
     "@algolia/requester-fetch" "5.24.0"
     "@algolia/requester-node-http" "5.24.0"
 
-allure-js-commons@3.4.2:
-  version "3.4.2"
-  resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.4.2.tgz#91059468f1d3d0962f4484a6fa801f3262295bb6"
-  integrity sha512-bWzqduvU/LzSTI4wJKzWbHWe64xluF30pDxFfSP+jlloQx9F1Vytdqrit5oAgNj+czzdA+Nocv3Dh6d4COCTvA==
-  dependencies:
-    md5 "^2.3.0"
-
 allure-js-commons@3.4.3:
   version "3.4.3"
   resolved "https://registry.yarnpkg.com/allure-js-commons/-/allure-js-commons-3.4.3.tgz#a56f231d50638693bdf8edff2fbf1e310f7dae2f"
@@ -3041,10 +3034,10 @@ cypress-fail-fast@7.1.1:
   dependencies:
     chalk "4.1.2"
 
-cypress@15.7.0:
-  version "15.7.0"
-  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.7.0.tgz#4d2a317766360232920f63c7d11ea8f5d83bc358"
-  integrity sha512-1C81zKxnQckYm2XGi37rPV4rN0bzUoWhydhKdOyshJn5gJKszEx5as9VLSZI0jp0ye49QxmnbU4TtMpcD+OmGQ==
+cypress@15.7.1:
+  version "15.7.1"
+  resolved "https://registry.yarnpkg.com/cypress/-/cypress-15.7.1.tgz#5ff5101a07b2627809adbaba86a66ff0dc499e88"
+  integrity sha512-U3sYnJ+Cnpgr6IPycxsznTg//mGVXfPGeGV+om7VQCyp5XyVkhG4oPr3X3hTq1+OB0Om0O5DxusYmt7cbvwqMQ==
   dependencies:
     "@cypress/request" "^3.0.9"
     "@cypress/xvfb" "^1.2.4"
