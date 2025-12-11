@@ -3,10 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type FeatureResponseModel = {
-  description: string;
   id: number;
   isActive: boolean;
   name: string;
-  nameKey: string;
 };
 

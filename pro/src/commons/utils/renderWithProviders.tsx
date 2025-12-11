@@ -79,9 +79,7 @@ export const renderWithProviders = (
     (feature, index): FeatureResponseModel => ({
       id: index,
       isActive: true,
-      nameKey: feature,
       name: feature,
-      description: '',
     })
   )
 
