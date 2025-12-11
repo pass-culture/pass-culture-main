@@ -313,13 +313,6 @@ class BankAccount(PcObject, Model, DeactivableMixin):
         passive_deletes=True,
     )
 
-    @property
-    def current_link(self) -> "offerers_models.VenueBankAccountLink | None":
-        for link in self.venueLinks:
-            if link.timespan.upper is None and link.timespan.lower <= date_utils.get_naive_utc_now():
-                return link
-        return None
-
 
 class BankAccountStatusHistory(PcObject, Model):
     __tablename__ = "bank_account_status_history"
