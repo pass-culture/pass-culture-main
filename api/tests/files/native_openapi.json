@@ -2832,7 +2832,7 @@
                     "duration": {
                         "anyOf": [
                             {
-                                "type": "string"
+                                "type": "integer"
                             },
                             {
                                 "type": "null"

@@ -1730,7 +1730,7 @@ class MovieCalendarTest:
 
 class VenueMovieCalendarTest:
     def test_get_venue_movie_calendar(self, client):
-        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id)
+        product = offers_factories.ProductFactory(subcategoryId=subcategories.SEANCE_CINE.id, durationMinutes=116)
         stock = offers_factories.EventStockFactory(
             offer__product=product, beginningDatetime=datetime.now() + timedelta(hours=1)
         )
@@ -1746,7 +1746,7 @@ class VenueMovieCalendarTest:
         assert calendar == {
             today.isoformat(): [
                 {
-                    "duration": None,
+                    "duration": 116,
                     "genres": [],
                     "last30DaysBookings": 0,
                     "movieName": stock.offer.name,
@@ -1770,7 +1770,7 @@ class VenueMovieCalendarTest:
             ],
             tomorrow.isoformat(): [
                 {
-                    "duration": None,
+                    "duration": 116,
                     "genres": [],
                     "last30DaysBookings": 0,
                     "movieName": stock.offer.name,
