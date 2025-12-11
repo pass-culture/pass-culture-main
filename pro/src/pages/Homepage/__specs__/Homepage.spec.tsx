@@ -11,6 +11,7 @@ import {
   defaultGetOffererVenueResponseModel,
 } from '@/commons/utils/factories/individualApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -101,7 +102,7 @@ describe('Homepage', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'getOffererStats').mockResolvedValueOnce({
+    vi.spyOn(api, 'getOffererStats').mockResolvedValue({
       jsonData: {
         dailyViews: [],
         topOffers: [],
@@ -109,6 +110,19 @@ describe('Homepage', () => {
       },
       syncDate: null,
       offererId: 1,
+    })
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 2,
+        managingOffererId: 1,
+        name: 'Venue A1',
+      })
+    )
+    vi.spyOn(api, 'getOffererV2Stats').mockResolvedValue({
+      pendingEducationalOffers: 0,
+      pendingPublicOffers: 0,
+      publishedEducationalOffers: 0,
+      publishedPublicOffers: 0,
     })
     vi.spyOn(api, 'getHighlights').mockResolvedValue([])
   })

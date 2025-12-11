@@ -61,6 +61,7 @@ describe('OffersFavorites', () => {
     vi.spyOn(apiAdage, 'getCollectiveFavorites').mockResolvedValue({
       favoritesTemplate: [],
     })
+    vi.spyOn(apiAdage, 'logFavOfferButtonClick').mockResolvedValue()
   })
 
   it('should render favorites title', async () => {

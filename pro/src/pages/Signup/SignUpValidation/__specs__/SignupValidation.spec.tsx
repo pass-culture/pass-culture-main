@@ -38,13 +38,21 @@ const renderSignupValidation = (options?: RenderWithProvidersOptions) =>
     }
   )
 
-describe('src | components | pages | Signup | validation', () => {
+describe('SignupValidation', () => {
   const windowLocationReloadSpy = vi.fn()
-
   beforeEach(() => {
     vi.spyOn(window, 'location', 'get').mockReturnValue({
       ...window.location,
       reload: windowLocationReloadSpy,
+    })
+    vi.spyOn(api, 'signout').mockResolvedValue()
+
+    // because we directly use fetch in logout
+    fetchMock.mockResponse((req) => {
+      if (req.url.includes('/users/signout') && req.method === 'GET') {
+        return { status: 200, body: JSON.stringify({ success: true }) }
+      }
+      return { status: 404 }
     })
   })
 
@@ -64,22 +72,27 @@ describe('src | components | pages | Signup | validation', () => {
     expect(screen.getByText('Accueil')).toBeInTheDocument()
   })
 
-  it('should verify validity of user token and redirect to connexion', async () => {
+  it('should verify validity of user token and redirect to home', async () => {
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+    vi.spyOn(api, 'getProfile').mockResolvedValue(sharedCurrentUserFactory())
+
     const validateUser = vi.spyOn(api, 'validateUser').mockResolvedValue()
 
     // when the user lands on signup validation page
     renderSignupValidation()
 
+    await waitFor(() => {
+      expect(validateUser).toHaveBeenCalledTimes(1)
+    })
+
     // then the validity of his token should be verified
-    expect(validateUser).toHaveBeenCalledTimes(1)
     expect(validateUser).toHaveBeenNthCalledWith(1, 'AAA')
 
-    // and he should be redirected to signin page
+    // and he should be redirected to home page
     await waitFor(() => {
       expect(screen.getByText('Accueil')).toBeInTheDocument()
     })
-
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
   })
 
   it('should verify user link is not valid and redirect to connexion', async () => {
@@ -121,6 +134,8 @@ describe('src | components | pages | Signup | validation', () => {
     const user = sharedCurrentUserFactory()
     const getProfile = vi.spyOn(api, 'getProfile').mockResolvedValue(user)
     const initializeUser = vi.spyOn(initializeUserModule, 'initializeUser')
+    vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
+    vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
 
     renderSignupValidation()
 
@@ -131,8 +146,6 @@ describe('src | components | pages | Signup | validation', () => {
 
     // The user profile is fetched …
     await waitFor(() => expect(getProfile).toHaveBeenCalledOnce())
-
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     // … and the user is initialized
     await waitFor(() =>

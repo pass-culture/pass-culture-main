@@ -111,6 +111,7 @@ describe('IndividualOffersScreen', () => {
   const mockNotifyInfo = vi.fn()
   const mockNotifySuccess = vi.fn()
   beforeEach(async () => {
+    vi.resetAllMocks()
     offersRecap = [listOffersOfferFactory()]
 
     props = {
