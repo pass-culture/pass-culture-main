@@ -105,7 +105,7 @@ jobs:
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
-      channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
         ':github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a réussi'
@@ -119,7 +119,7 @@ jobs:
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
-      channel: ${{vars.SLACK_SHERIF_CHANNEL_ID}}
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       color: "#D4AD3B"
       message:
         ':github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a échoué'
