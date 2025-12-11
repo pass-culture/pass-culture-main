@@ -30,7 +30,7 @@
     "test:unit:hookcoverage": "vitest related --run --coverage.enabled=true --coverage.100=true",
     "test:unit:ci": "vitest run --coverage",
     "storybook": "NODE_PATH=src storybook dev -p 6006",
-    "build-storybook": "NODE_PATH=src storybook build -o docs-build"
+    "build-storybook": "NODE_PATH=src storybook build -o docs-build && node scripts/fixStorybookBuild.js"
   },
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "1.19.4",
