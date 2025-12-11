@@ -88,6 +88,7 @@ const offererId = 1
 
 describe('CollectiveOffers', () => {
   beforeEach(() => {
+    vi.resetAllMocks()
     vi.spyOn(api, 'getCollectiveOffers').mockResolvedValue(offersRecap)
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({ offerersNames: [] })
     vi.spyOn(api, 'getOfferer').mockResolvedValue({
@@ -242,6 +243,9 @@ describe('CollectiveOffers', () => {
         )
         await userEvent.click(screen.getByText('Rechercher'))
         await waitFor(() => {
+          expect(localisationSelect).toHaveValue(
+            offererAddress[0].id.toString()
+          )
           expect(api.getCollectiveOffers).toHaveBeenLastCalledWith(
             null,
             offererId,

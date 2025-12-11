@@ -128,6 +128,7 @@ const renderIndividualOffersContext = () => {
 
 describe('HeadlineOfferContext', () => {
   beforeEach(() => {
+    vi.resetAllMocks()
     vi.spyOn(api, 'getOffererHeadlineOffer').mockResolvedValue(
       MOCK_DATA.headlineOffer
     )

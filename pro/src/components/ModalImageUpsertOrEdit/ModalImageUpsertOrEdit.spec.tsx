@@ -42,6 +42,23 @@ const renderModalImageCrop = (props: ModalImageUpsertOrEditTestProps = {}) => {
 }
 
 describe('ModalImageUpsertOrEdit', () => {
+  beforeEach(() => {
+    fetchMock.mockResponse((request) => {
+      if (
+        request.url === 'http://example.com/image.jpg' &&
+        request.method === 'GET'
+      ) {
+        return {
+          status: 200,
+          body: 'Mock Image Data',
+          headers: { 'Content-Type': 'image/jpeg' },
+        }
+      }
+
+      return { status: 404 }
+    })
+  })
+
   it('should render a cancel and a save button', async () => {
     renderModalImageCrop()
     await waitForRender()

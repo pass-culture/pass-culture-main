@@ -10,6 +10,7 @@ import {
   CancelablePromise,
   type GetIndividualOfferResponseModel,
   OfferStatus,
+  type StockStatsResponseModel,
 } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
@@ -31,6 +32,7 @@ import {
   getIndividualOfferFactory,
   getOfferManagingOffererFactory,
   getOfferVenueFactory,
+  getStocksResponseFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
@@ -162,6 +164,13 @@ const renderIndividualOfferSummaryScreen: RenderComponentFunction<
   )
 }
 
+const stocksStats: StockStatsResponseModel = {
+  stockCount: 1,
+  remainingQuantity: 637,
+  oldestStock: '2021-01-01T00:00:00+01:00',
+  newestStock: '2021-01-01T00:00:00+01:00',
+}
+
 describe('IndividualOfferSummaryScreen', () => {
   const offerBase = getIndividualOfferFactory({
     audioDisabilityCompliant: false,
@@ -226,6 +235,13 @@ describe('IndividualOfferSummaryScreen', () => {
       getIndividualOfferFactory()
     )
     vi.spyOn(api, 'getMusicTypes').mockResolvedValue(musicTypes)
+    vi.spyOn(api, 'getStocksStats').mockResolvedValue(stocksStats)
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
+      getStocksResponseFactory({ totalStockCount: 0, stocks: [] })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
   })
 
   afterEach(() => {
@@ -280,14 +296,16 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(screen.queryByText('Visualiser dans l’app')).toBeInTheDocument()
     })
 
-    it('should render a media section', () => {
+    it('should render a media section', async () => {
       const contextValues = { offer: draftOfferBase }
 
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
-      expect(
-        screen.getByRole('heading', { name: 'Image et vidéo' })
-      ).toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.getByRole('heading', { name: 'Image et vidéo' })
+        ).toBeInTheDocument()
+      })
     })
 
     it('should render component with new sections', async () => {
@@ -305,12 +323,14 @@ describe('IndividualOfferSummaryScreen', () => {
       ).toBeInTheDocument()
     })
 
-    it('should render component with right buttons', () => {
+    it('should render component with right buttons', async () => {
       const contextValues = { offer: draftOfferBase }
 
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
-      expect(screen.getByText('Retour')).toBeInTheDocument()
+      await waitFor(() => {
+        expect(screen.getByText('Retour')).toBeInTheDocument()
+      })
       expect(
         screen.getByText('Sauvegarder le brouillon et quitter')
       ).toBeInTheDocument()
@@ -506,6 +526,17 @@ describe('IndividualOfferSummaryScreen', () => {
     })
 
     it('should display redirect modal if first offer', async () => {
+      vi.spyOn(api, 'getOfferer').mockResolvedValueOnce({
+        ...defaultGetOffererResponseModel,
+        hasNonFreeOffer: false,
+        hasValidBankAccount: false,
+        hasPendingBankAccount: false,
+      })
+      vi.spyOn(api, 'patchPublishOffer').mockResolvedValue(
+        getIndividualOfferFactory({
+          isNonFreeOffer: true,
+        })
+      )
       const expectedOffererId = 2
 
       const venueId = 1
@@ -530,9 +561,11 @@ describe('IndividualOfferSummaryScreen', () => {
         screen.getByRole('button', { name: /Publier l’offre/ })
       )
 
-      expect(
-        await screen.findByText('Félicitations, vous avez créé votre offre !')
-      ).toBeInTheDocument()
+      await waitFor(() => {
+        expect(
+          screen.getByText('Félicitations, vous avez créé votre offre !')
+        ).toBeInTheDocument()
+      })
       expect(
         screen.getByRole('link', {
           name: 'Ajouter un compte bancaire',
@@ -720,12 +753,14 @@ describe('IndividualOfferSummaryScreen', () => {
       ).toHaveLength(2)
     })
 
-    it('should display pre publishing banner in creation', () => {
+    it('should display pre publishing banner in creation', async () => {
       const contextValues = { offer: draftOfferBase }
 
       renderIndividualOfferSummaryScreen({ contextValues, path })
 
-      expect(screen.getByText('Vous y êtes presque !')).toBeInTheDocument()
+      expect(
+        await screen.findByText('Vous y êtes presque !')
+      ).toBeInTheDocument()
     })
 
     it('should display a notification when saving as draft', async () => {

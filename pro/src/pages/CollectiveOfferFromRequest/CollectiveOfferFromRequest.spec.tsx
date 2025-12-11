@@ -53,6 +53,17 @@ describe('CollectiveOfferFromRequest', () => {
   }
 
   beforeEach(async () => {
+    fetchMock.mockResponse((req) => {
+      if (req.url === 'https://example.com/image.jpg' && req.method === 'GET') {
+        return {
+          status: 200,
+          body: 'Mock Image Data',
+          headers: { 'Content-Type': 'image/jpeg' },
+        }
+      }
+      return { status: 404 }
+    })
+
     const notifsImport = (await vi.importActual(
       '@/commons/hooks/useNotification'
     )) as ReturnType<typeof useNotification.useNotification>

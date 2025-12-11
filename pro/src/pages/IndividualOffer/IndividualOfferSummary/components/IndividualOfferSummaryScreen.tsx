@@ -173,7 +173,6 @@ export const IndividualOfferSummaryScreen = ({
     ...offerSubCategory.conditionalFields,
     ...offerConditionalFields,
   ]
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onPublish)}>
