@@ -1,5 +1,4 @@
 import datetime
-import typing
 from math import isfinite
 
 import pydantic as pydantic_v2

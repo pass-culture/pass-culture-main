@@ -4,9 +4,9 @@
 /* eslint-disable */
 export type EventStockUpdateBodyModel = {
   beginningDatetime: string;
-  bookingLimitDatetime?: string | null;
+  bookingLimitDatetime?: (string | null);
   id: number;
   priceCategoryId: number;
-  quantity?: number | null;
+  quantity?: (number | null);
 };
 

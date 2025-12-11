@@ -99,8 +99,8 @@ class Returns200Test:
                     "id": None,
                     "offerId": offer.id,
                     "activationCodes": activation_codes,
-                    "activationCodesExpirationDatetime": activation_codes_expiration_datetime.isoformat(),
-                    "bookingLimitDatetime": booking_limit_datetime.isoformat(),
+                    "activationCodesExpirationDatetime": format_into_utc_date(activation_codes_expiration_datetime),
+                    "bookingLimitDatetime": format_into_utc_date(booking_limit_datetime),
                     "price": 0,
                     "quantity": None,  # server should set to len(activation_codes)
                 }
