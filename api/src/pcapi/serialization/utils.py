@@ -1,13 +1,17 @@
 import datetime
 import typing
+from functools import partial
 
 import flask
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 import pytz
 
 from pcapi.models.api_errors import ApiErrors
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import get_naive_utc_now
+
+from . import PydanticError
 
 
 NOW_LITERAL = typing.Literal["now"]
@@ -24,7 +28,7 @@ def to_camel(string: str) -> str:
 def before_handler(
     _request: flask.Request,
     _response: flask.Response,
-    pydantic_error: pydantic_v1.ValidationError | None,
+    pydantic_error: pydantic_v1.ValidationError | pydantic_v2.ValidationError | None,
     _: typing.Any,
 ) -> None:
     """Raises an ``ApiErrors` exception if input validation fails.
@@ -45,6 +49,9 @@ def before_handler(
         "value_error.number.not_gt": "Saisissez un nombre supérieur à {limit_value}",
         "value_error.number.not_ge": "Saisissez un nombre supérieur ou égal à {limit_value}",
         "value_error.decimal.not_finite": "La valeur n'est pas un nombre décimal valide",
+        # pydantic V2
+        "missing": "Ce champ est obligatoire",
+        "greater_than_equal": "Saisissez un nombre supérieur ou égal à {ge}",
     }
 
     if pydantic_error and pydantic_error.errors():
@@ -140,23 +147,29 @@ def without_timezone(d: datetime.datetime) -> datetime.datetime:
     return datetime.datetime(d.year, d.month, d.day, d.hour, d.minute, d.second, d.microsecond)
 
 
-def check_date_in_future_and_remove_timezone(value: datetime.datetime | NOW_LITERAL | None) -> datetime.datetime | None:
+def check_date_in_future_and_remove_timezone(
+    value: datetime.datetime | NOW_LITERAL | None,
+    pydantic_version: typing.Literal["v1"] | typing.Literal["v2"],
+) -> datetime.datetime | None:
+    ErrorClass = PydanticError if pydantic_version == "v2" else ValueError
+
     if not value:
         return None
+
     if value == "now":
         return get_naive_utc_now()
 
     assert isinstance(value, datetime.datetime)  # to make mypy happy
 
     if value.tzinfo is None:
-        raise ValueError("The datetime must be timezone-aware.")
+        raise ErrorClass("The datetime must be timezone-aware.")
     no_tz_value = as_utc_without_timezone(value)
     if no_tz_value < date_utils.get_naive_utc_now():
-        raise ValueError("The datetime must be in the future.")
+        raise ErrorClass("The datetime must be in the future.")
     return no_tz_value
 
 
 def validate_datetime(field_name: str, always: bool = False) -> classmethod:
     return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(
-        check_date_in_future_and_remove_timezone
+        partial(check_date_in_future_and_remove_timezone, pydantic_version="v1")
     )
