@@ -2,122 +2,65 @@ import decimal
 import typing
 from datetime import datetime
 
-from pydantic.v1 import Field
+import pydantic as pydantic_v2
+from typing_extensions import Annotated
 
 import pcapi.serialization.utils as serialization_utils
 from pcapi.core.offers import models
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class ThingStockCreateBodyModel(BaseModel):
+Quantity = Annotated[int, pydantic_v2.Field(ge=0, le=models.Stock.MAX_STOCK_QUANTITY)]
+
+
+class ThingStockUpsertBodyModel(HttpBodyModel):
+    id: int | None = None
+    activation_codes: list[str] | None = None
+    activation_codes_expiration_datetime: datetime | None = None
+    booking_limit_datetime: datetime | None = None
     offer_id: int
-    price: decimal.Decimal
+    price: float
+    quantity: int | None = None
 
-    activation_codes: list[str] | None
-    activation_codes_expiration_datetime: datetime | None
-    booking_limit_datetime: datetime | None
-    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
+    @pydantic_v2.field_validator("booking_limit_datetime", "activation_codes_expiration_datetime", mode="after")
+    @classmethod
+    def validate_datetime(cls, value: datetime | None) -> datetime | None:
+        return serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
 
-    _validate_activation_codes_expiration_datetime = serialization_utils.validate_datetime(
-        "activation_codes_expiration_datetime"
-    )
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    @pydantic_v2.field_validator("price", mode="after")
+    @classmethod
+    def validate_price(cls, value: float) -> decimal.Decimal:
+        return decimal.Decimal(value)
 
 
-class ThingStockUpdateBodyModel(BaseModel):
-    price: decimal.Decimal | None
-    booking_limit_datetime: datetime | None
-    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
-
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class ThingStockUpsertBodyModel(BaseModel):
-    id: typing.Optional[int]
-    activation_codes: typing.Optional[list[str]]
-    activation_codes_expiration_datetime: typing.Optional[datetime]
-    booking_limit_datetime: typing.Optional[datetime]
-    offer_id: int
-    price: decimal.Decimal
-    quantity: typing.Optional[int]
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class ThingStocksBulkUpsertBodyModel(BaseModel):
+class ThingStocksBulkUpsertBodyModel(HttpBodyModel):
     stocks: list[ThingStockUpsertBodyModel]
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
-
-class EventStockCreateBodyModel(BaseModel):
+class EventStockCreateBodyModel(HttpBodyModel):
     beginning_datetime: datetime
     price_category_id: int
-    quantity: int | None = Field(None, ge=0, le=models.Stock.MAX_STOCK_QUANTITY)
-    booking_limit_datetime: datetime | None
+    quantity: Quantity | None = None
+    booking_limit_datetime: datetime | None = None
 
-    _validate_beginning_datetime = serialization_utils.validate_datetime("beginning_datetime")
-    _validate_booking_limit_datetime = serialization_utils.validate_datetime("booking_limit_datetime")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    @pydantic_v2.field_validator("beginning_datetime", "booking_limit_datetime", mode="after")
+    @classmethod
+    def validate_datetime(cls, value: datetime | None) -> datetime | None:
+        return serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
 
 
 class EventStockUpdateBodyModel(EventStockCreateBodyModel):
     id: int
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
-
-class StocksResponseModel(BaseModel):
-    stocks_count: int
-
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-
-
-class EventStocksBulkCreateBodyModel(BaseModel):
+class EventStocksBulkCreateBodyModel(HttpBodyModel):
     offer_id: int
     stocks: list[EventStockCreateBodyModel]
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
-
-class EventStocksBulkUpdateBodyModel(BaseModel):
+class EventStocksBulkUpdateBodyModel(HttpBodyModel):
     offer_id: int
     stocks: list[EventStockUpdateBodyModel]
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
-
-
-class StockIdResponseModel(BaseModel):
-    id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
 
 
 EventStocksList = typing.TypeVar("EventStocksList", list[EventStockCreateBodyModel], list[EventStockUpdateBodyModel])
