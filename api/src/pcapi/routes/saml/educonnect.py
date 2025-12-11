@@ -77,13 +77,13 @@ def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.E
     app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     educonnect_user = users_factories.EduconnectUserFactory.create(
-        birth_date=body.birthDate,
+        birth_date=body.birth_date,
         civility=users_models.GenderEnum.F,
         connection_datetime=date_utils.get_naive_utc_now(),
         educonnect_id=f"educonnect-id_e2e-test_{user.id}",
-        first_name=body.firstName,
+        first_name=body.first_name,
         ine_hash=f"inehash_e2e-test_{user.id}",
-        last_name=body.lastName,
+        last_name=body.last_name,
         saml_request_id=mocked_saml_request_id,
     )
 

@@ -1,9 +1,9 @@
 import datetime
 
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class EduconnectUserE2ERequest(BaseModel):
-    birthDate: datetime.date
-    firstName: str
-    lastName: str
+class EduconnectUserE2ERequest(HttpBodyModel):
+    birth_date: datetime.date
+    first_name: str
+    last_name: str
