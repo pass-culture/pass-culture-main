@@ -6,7 +6,8 @@ from pcapi.core.offerers.models import OffererAddress
 from pcapi.routes.serialization import BaseModel
 
 
-class AddressResponseModel(BaseModel):
+# Legacy (pydantic V1)
+class AddressResponseIsLinkedToVenueModel(BaseModel):
     id: int
     banId: str | None
     inseeCode: str | None
@@ -16,6 +17,10 @@ class AddressResponseModel(BaseModel):
     latitude: float
     longitude: float
     departmentCode: str | None
+    label: str | None = None
+    id_oa: int
+    isLinkedToVenue: bool | None
+    isManualEdition: bool
 
     class Config:
         orm_mode = True
@@ -26,13 +31,6 @@ class AddressResponseModel(BaseModel):
         with the model definition.
         """
         return round(value, 5)
-
-
-class AddressResponseIsLinkedToVenueModel(AddressResponseModel):
-    label: str | None = None
-    id_oa: int
-    isLinkedToVenue: bool | None
-    isManualEdition: bool
 
 
 class VenueAddressInfoGetter(pydantic_v1.utils.GetterDict):
