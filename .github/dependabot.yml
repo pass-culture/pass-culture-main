@@ -111,17 +111,17 @@ updates:
     ignore:
       - dependency-name: 'flask'
         update-types:
-          "major"
+          - "version-update:semver-major"
       - dependency-name: 'sqlalchemy'
         update-types:
-          "major"
+          - "version-update:semver-major"
       - dependency-name: 'pydantic'
         update-types:
-          "major"
+          - "version-update:semver-major"
       # boto3 updates very frequently
       - dependency-name: 'boto3'
         update-types:
-          "patch"
+          - "version-update:semver-patch"
 
     # Disable automatic PR rebasing
     rebase-strategy: 'disabled'
@@ -160,12 +160,12 @@ updates:
       timezone: "Europe/Paris"
     open-pull-requests-limit: 10
     cooldown:
-      default-days: 7
-      semver-major-days: 14
+      # The property 'semver-major-days' is not supported for the package ecosystem 'github-actions'.
+      default-days: 14
     ignore:
       - dependency-name: 'flask'
         update-types:
-          "major"
+          - "version-update:semver-major"
     groups:
       not-ours:
         # Open PRs for each major and minor versions
