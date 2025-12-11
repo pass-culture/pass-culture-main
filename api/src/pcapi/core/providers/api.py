@@ -1,3 +1,4 @@
+import decimal
 import enum
 import functools
 import logging
@@ -180,7 +181,7 @@ def update_venue_provider(
     venue_provider_payload: PostVenueProviderBody,
     author: users_models.User,
 ) -> providers_models.VenueProvider:
-    activate_or_deactivate_venue_provider(venue_provider, bool(venue_provider_payload.isActive), author)
+    activate_or_deactivate_venue_provider(venue_provider, bool(venue_provider_payload.is_active), author)
     if venue_provider.isFromAllocineProvider:
         venue_provider = _update_allocine_venue_provider(venue_provider, venue_provider_payload)
     else:
@@ -194,7 +195,7 @@ def update_venue_provider(
 def _update_cinema_venue_provider(
     venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.VenueProvider:
-    venue_provider.isDuoOffers = bool(venue_provider_payload.isDuo)
+    venue_provider.isDuoOffers = bool(venue_provider_payload.is_duo)
 
     return venue_provider
 
@@ -203,10 +204,10 @@ def _update_allocine_venue_provider(
     allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
 ) -> providers_models.AllocineVenueProvider:
     allocine_venue_provider.quantity = venue_provider_payload.quantity
-    assert venue_provider_payload.isDuo is not None  # helps mypy, see PostVenueProviderBody
-    allocine_venue_provider.isDuo = venue_provider_payload.isDuo
+    assert venue_provider_payload.is_duo is not None  # helps mypy, see PostVenueProviderBody
+    allocine_venue_provider.isDuo = venue_provider_payload.is_duo
     assert venue_provider_payload.price is not None  # helps mypy
-    allocine_venue_provider.price = venue_provider_payload.price
+    allocine_venue_provider.price = decimal.Decimal(venue_provider_payload.price)
 
     return allocine_venue_provider
 

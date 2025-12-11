@@ -1,4 +1,3 @@
-import decimal
 import typing
 from datetime import datetime
 
@@ -26,11 +25,6 @@ class ThingStockUpsertBodyModel(HttpBodyModel):
     @classmethod
     def validate_datetime(cls, value: datetime | None) -> datetime | None:
         return serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
-
-    @pydantic_v2.field_validator("price", mode="after")
-    @classmethod
-    def validate_price(cls, value: float) -> decimal.Decimal:
-        return decimal.Decimal(value)
 
 
 class ThingStocksBulkUpsertBodyModel(HttpBodyModel):

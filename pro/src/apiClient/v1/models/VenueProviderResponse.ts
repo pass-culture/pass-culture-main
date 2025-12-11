@@ -2,18 +2,18 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ProviderOfVenueResponse } from './ProviderOfVenueResponse';
+import type { ProviderResponse } from './ProviderResponse';
 export type VenueProviderResponse = {
   dateCreated: string;
   id: number;
   isActive: boolean;
-  isDuo?: boolean | null;
+  isDuo: (boolean | null);
   isFromAllocineProvider: boolean;
-  lastSyncDate?: string | null;
-  price?: number | null;
-  provider: ProviderOfVenueResponse;
-  quantity?: number | null;
+  lastSyncDate: (string | null);
+  price?: (number | null);
+  provider: ProviderResponse;
+  quantity?: (number | null);
   venueId: number;
-  venueIdAtOfferProvider?: string | null;
+  venueIdAtOfferProvider: (string | null);
 };
 

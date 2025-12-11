@@ -479,7 +479,7 @@ export const defaultVenueProvider: VenueProviderResponse = {
   id: 1,
   isActive: true,
   isFromAllocineProvider: false,
-  lastSyncDate: undefined,
+  lastSyncDate: null,
   venueId: 2,
   dateCreated: '2021-08-15T00:00:00Z',
   venueIdAtOfferProvider: 'cdsdemorc1',

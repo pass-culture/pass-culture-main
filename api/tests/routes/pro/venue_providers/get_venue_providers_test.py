@@ -33,10 +33,10 @@ class Returns200Test:
             response = auth_request.get(f"/venueProviders?venueId={venue_id}")
             assert response.status_code == 200
 
-        assert response.json["venue_providers"][0].get("id") == venue_provider.id
-        assert response.json["venue_providers"][0].get("venueId") == venue_provider.venue.id
-        assert response.json["venue_providers"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"
-        assert response.json["venue_providers"][0].get("dateCreated") == "2021-08-15T00:00:00Z"
+        assert response.json["venueProviders"][0].get("id") == venue_provider.id
+        assert response.json["venueProviders"][0].get("venueId") == venue_provider.venue.id
+        assert response.json["venueProviders"][0].get("lastSyncDate") == "2021-08-16T00:00:00Z"
+        assert response.json["venueProviders"][0].get("dateCreated") == "2021-08-15T00:00:00Z"
 
     @pytest.mark.usefixtures("db_session")
     def test_get_list_that_include_allocine_with_valid_venue_id(self, client):
@@ -57,9 +57,9 @@ class Returns200Test:
             assert response.status_code == 200
 
         assert response.status_code == 200
-        assert response.json["venue_providers"][0].get("id") == allocine_venue_provider.id
-        assert response.json["venue_providers"][0].get("venueId") == allocine_venue_provider.venue.id
-        assert response.json["venue_providers"][0].get("price") == 123.2
+        assert response.json["venueProviders"][0].get("id") == allocine_venue_provider.id
+        assert response.json["venueProviders"][0].get("venueId") == allocine_venue_provider.venue.id
+        assert response.json["venueProviders"][0].get("price") == 123.2
 
 
 class Returns400Test:
