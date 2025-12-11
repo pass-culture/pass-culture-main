@@ -17,7 +17,6 @@ from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.notifications import sms as sms_notifications
 from pcapi.utils import phone_number as phone_number_utils
-from pcapi.utils import repository
 from pcapi.utils import requests
 from pcapi.utils.transaction_manager import is_managed_transaction
 
@@ -116,7 +115,12 @@ def _ensure_phone_number_unicity(
         thirdPartyId=f"PC-{user_validating_phone.id}",
     )
 
-    repository.save(unvalidated_by_peer_check, unvalidated_for_peer_check)
+    db.session.add(unvalidated_by_peer_check)
+    db.session.add(unvalidated_for_peer_check)
+    if is_managed_transaction():
+        db.session.flush()
+    else:
+        db.session.commit()
 
 
 def _check_and_update_phone_validation_attempts(redis: Redis, user: users_models.User) -> None:
