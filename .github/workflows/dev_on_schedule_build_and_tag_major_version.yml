@@ -75,7 +75,6 @@ jobs:
     with:
       base_ref: ${{ needs.prepare-variables.outputs.commitHash }}
       tag_number: ${{ needs.prepare-variables.outputs.releaseNumber }}.0.0
-      previous_tag: ${{ needs.prepare-variables.outputs.latestTag }}
 
 
   edit-maintenance-branches:
