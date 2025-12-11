@@ -19,7 +19,6 @@ export { BankAccountApplicationStatus } from './models/BankAccountApplicationSta
 export type { BankAccountResponseModel } from './models/BankAccountResponseModel';
 export type { BannerMetaModel } from './models/BannerMetaModel';
 export { BookingExportType } from './models/BookingExportType';
-export { BookingFormula } from './models/BookingFormula';
 export { BookingOfferType } from './models/BookingOfferType';
 export type { BookingRecapResponseBeneficiaryModel } from './models/BookingRecapResponseBeneficiaryModel';
 export type { BookingRecapResponseBookingStatusHistoryModel } from './models/BookingRecapResponseBookingStatusHistoryModel';

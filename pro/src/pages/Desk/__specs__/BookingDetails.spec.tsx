@@ -43,7 +43,7 @@ describe('BookingDetails', () => {
     renderBookingDetails({
       booking: {
         ...defaultGetBookingResponse,
-        offerDepartmentCode: undefined,
+        offerDepartmentCode: null,
       },
     })
 
