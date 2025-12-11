@@ -99,59 +99,27 @@ jobs:
       REF: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
-  slack-notification:
-    runs-on: ubuntu-22.04
-    needs:
-      - find-hotfix-tag-number
-      - build-and-tag-version
-      - create-pro-staging-release
-      - create-pro-integration-release
-      - create-pro-production-release
-    if: always()
-    env:
-      TAG_NAME: v${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
-    steps:
-      - uses: technote-space/workflow-conclusion-action@v3
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      - name: "Get Secret"
-        id: "secrets"
-        uses: "google-github-actions/get-secretmanager-secrets@v3"
-        with:
-          secrets: |-
-            SLACK_BOT_TOKEN:passculture-metier-ehp/passculture-ci-slack-bot-token
-      - name: "Slack output"
-        id: "slack-text"
-        run: |
-          if [ "${{ env.WORKFLOW_CONCLUSION }}" == "success" ]; then
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a réussi. Vous pouvez maintenant le <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|déployer> :rocket:" | tee -a $GITHUB_OUTPUT
-          elif [ "${{ env.WORKFLOW_CONCLUSION }}" == "cancelled" ]; then
-            echo text="La pose du tag a été annulée. Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
-          else
-            echo text="La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>" | tee -a $GITHUB_OUTPUT
-          fi
-      - name: "Post on #shérif"
-        if: always()
-        uses: slackapi/slack-github-action@v2.1.1
-        with:
-          method: chat.postMessage
-          token: ${{ steps.secrets.outputs.SLACK_BOT_TOKEN }}
-          payload: |
-            channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
-            attachments:
-              - color: "${{ fromJSON('["#36a64f", "#A30002"]')[env.WORKFLOW_CONCLUSION == 'failure'] }}"
-                blocks:
-                  - type: "context"
-                    elements:
-                      - type: "image"
-                        image_url: "https://github.com/${{github.actor}}.png"
-                        alt_text: "image de profil Github de ${{github.actor}}"
-                      - type: "mrkdwn"
-                        text: "*${{github.actor}}*"
-                  - type: "section"
-                    text:
-                      type: "mrkdwn"
-                      text: "${{ steps.slack-text.outputs.text }}"
+  end-slack-success-notification:
+    name: "Send workflow success notification"
+    needs: [build-and-tag-version, create-pro-staging-release, create-pro-integration-release, create-pro-production-release]
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#28A745"  # green
+      message: ":github-success: La pose du tag *${{ env.TAG_NAME }}* a réussi. Vous pouvez maintenant le <https://github.com/pass-culture/pass-culture-main/actions/workflows/dev_on_dispatch_release_deploy.yml|déployer> :rocket:"
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  end-slack-failure-notification:
+    name: "Send workflow failure notification"
+    needs: [build-and-tag-version, create-pro-staging-release, create-pro-integration-release, create-pro-production-release]
+    if: always() && (failure() || cancelled())
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#A30002"  # red
+      message: ":github-failure: La pose du tag *${{ env.TAG_NAME }}* a échoué :x: Détails sur <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|Github>"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
