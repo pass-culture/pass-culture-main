@@ -3,8 +3,8 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CollectiveStockCreationBodyModel = {
-  bookingLimitDatetime?: string | null;
-  educationalPriceDetail?: string | null;
+  bookingLimitDatetime: (string | null);
+  educationalPriceDetail: (string | null);
   endDatetime: string;
   numberOfTickets: number;
   offerId: number;

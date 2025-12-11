@@ -1,4 +1,5 @@
 import datetime
+import decimal
 import logging
 from functools import partial
 
@@ -48,7 +49,7 @@ def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> mod
         startDatetime=start,
         endDatetime=end,
         bookingLimitDatetime=booking_limit_datetime,
-        price=total_price,
+        price=decimal.Decimal(total_price),
         numberOfTickets=number_of_tickets,
         priceDetail=educational_price_detail,
     )
@@ -183,11 +184,12 @@ def _extract_updatable_fields_from_stock_data(
     if "bookingLimitDatetime" not in stock_data.keys():
         booking_limit_datetime = stock.bookingLimitDatetime
 
+    price = stock_data.get("price")
     updatable_fields = {
         "startDatetime": start_datetime,
         "endDatetime": end_datetime,
         "bookingLimitDatetime": booking_limit_datetime,
-        "price": stock_data.get("price"),
+        "price": decimal.Decimal(price) if price is not None else None,
         "numberOfTickets": stock_data.get("numberOfTickets"),
         "priceDetail": stock_data.get("educationalPriceDetail"),
     }
