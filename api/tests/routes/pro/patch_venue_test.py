@@ -4,6 +4,7 @@ from unittest.mock import patch
 import pytest
 
 import pcapi.connectors.entreprise.exceptions as entreprise_exceptions
+import pcapi.core.educational.factories as educational_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offerers.models as offerers_models
 from pcapi.connectors import acceslibre as acceslibre_connector
@@ -70,6 +71,8 @@ class Returns200Test:
             name="old name", managingOfferer=user_offerer.offerer, offererAddress=initial_location
         )
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
+        cultural_domain = educational_factories.EducationalDomainFactory()
+        venue.collectiveDomains.append(cultural_domain)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 
@@ -182,6 +185,59 @@ class Returns200Test:
                 "old_info": None,
             },
         }
+
+        # Not providing culturalDomains does not change the venue's collective domains
+        assert venue.collectiveDomains == [cultural_domain]
+
+    @pytest.mark.parametrize(
+        "isOpenToPublic,initial_domains,target_domains",
+        (
+            pytest.param(True, [0], [1], id="open to public should update the domain"),
+            pytest.param(False, [0], [1], id="closed to public should update the domain"),
+            pytest.param(True, [], [0, 1], id="adding two domains with no initial domain"),
+            pytest.param(True, [0, 1], [], id="removing the two initial domains"),
+        ),
+    )
+    def test_should_update_venue_with_cultual_domain(
+        self, isOpenToPublic, initial_domains, target_domains, client
+    ) -> None:
+        DOMAINS = [
+            "Architecture",
+            "Arts du cirque et arts de la rue",
+            "Arts numériques",
+        ]
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__lastConnectionDate=date_utils.get_naive_utc_now(),
+        )
+        venue = offerers_factories.VenueFactory(
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+            isOpenToPublic=isOpenToPublic,
+        )
+
+        cultural_domains = []
+        for i in range(3):
+            cultural_domains.append(educational_factories.EducationalDomainFactory(name=DOMAINS[i]))
+            if i in initial_domains:
+                venue.collectiveDomains.append(cultural_domains[i])
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+
+        venue_data = populate_missing_data_from_venue(
+            {
+                "publicName": "Ma librairie",
+                "culturalDomains": [cultural_domains[i].name for i in target_domains],
+            },
+            venue,
+        )
+        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
+        assert response.status_code == 200
+
+        # the venue should be updated
+        assert venue.publicName == "Ma librairie"
+
+        # Not providing culturalDomains does not change the venue's collective domains
+        assert set(venue.collectiveDomains) == set([cultural_domains[i] for i in target_domains])
 
     def test_update_venue_is_open_to_public_should_set_is_permanent_to_true_and_sync_acceslibre(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory(user__lastConnectionDate=date_utils.get_naive_utc_now())
