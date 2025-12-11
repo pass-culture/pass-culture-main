@@ -61,7 +61,7 @@ jobs:
           payload: |
             channel: ${{vars.SLACK_DEV_CHANNEL_ID}}
             attachments:
-              - color: "#A30002"
+              - color: "#A30002"  # red
                 blocks:
                   - type: "context"
                     elements:

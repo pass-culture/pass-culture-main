@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
-      color: "#D4AD3B"
+      color: "#D4AD3B"  # yellow
       message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -167,7 +167,7 @@ jobs:
           payload: |
             channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
             attachments:
-              - color: "${{ fromJSON('["#36a64f", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}"
+              - color: "${{ fromJSON('["#28A745", "#A30002"]')[ env.WORKFLOW_CONCLUSION == 'failure'] }}"
                 blocks:
                   - type: "context"
                     elements:
@@ -189,7 +189,7 @@ jobs:
           payload: |
             channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
             attachments:
-              - color: "#36A64F"
+              - color: "#28A745"  # green
                 blocks:
                   - type: "context"
                     elements:
