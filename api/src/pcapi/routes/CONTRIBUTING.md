@@ -18,8 +18,8 @@ On utilise la librairie `pydantic` pour sérialiser les données.
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
-def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse:
-    return serializers.UserProfileResponse.from_orm(user)
+def get_user_profile() -> serializers.UserProfileResponse:
+    return serializers.UserProfileResponse.from_orm(current_user)
 
 ```
 

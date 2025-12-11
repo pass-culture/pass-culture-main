@@ -135,10 +135,9 @@ class ListOffersTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    expected_num_queries_with_no_result = 3
+    expected_num_queries_with_no_result = 2
     # - fetch venue addresses and offer addresses (2 x selectinload: 2 queries)
     expected_num_queries_with_results = expected_num_queries_with_no_result + 2
     # - fetch providers (selectinload: 1 query)
@@ -1750,7 +1749,7 @@ class GetEditOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, offer_id=offer.id)
 
-        with assert_num_queries(3):  # session + current user + tested_query
+        with assert_num_queries(2):  # session + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -1840,14 +1839,13 @@ class BatchEditOfferTest(PostEndpointHelper):
         }
 
         # Expected queries:
-        # 1 x user_session
-        # 1 x user
+        # 1 x user_session + user
         # 1 x all offers
         # 1 x all criteria
         # 1 x update offers (for 3 offers)
         # 1 x insert into offer_criterion (for 3 insertions)
         # 1 x re-fetch to render updated rows (3 queries)
-        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=9)
+        response = self.post_to_endpoint(authenticated_client, form=base_form, expected_num_queries=8)
         assert response.status_code == 200
         # ensure rows are rendered
         html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}")
@@ -1872,10 +1870,9 @@ class ListAlgoliaOffersTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch offers with joinedload including extra data (1 query)
-    expected_num_queries_with_no_result = 3
+    expected_num_queries_with_no_result = 2
     # - fetch addresses (2 x selectinload: 2 queries)
     expected_num_queries_with_results = expected_num_queries_with_no_result + 2
 
@@ -2233,7 +2230,7 @@ class GetValidateOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, offer_id=offer.id)
 
-        with assert_num_queries(3):  # session + current user + tested_query
+        with assert_num_queries(2):  # session + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -2348,7 +2345,7 @@ class GetRejectOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, offer_id=offer.id)
 
-        with assert_num_queries(3):  # session + current user + tested_query
+        with assert_num_queries(2):  # session + tested_query
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -2384,7 +2381,7 @@ class BatchOfferValidateTest(PostEndpointHelper):
         # fetch the venues for AO label if needed (3 in 1 query)
         # re-fetch updated offers to render updated rows (3 queries)
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=8 + additional_query_count
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=7 + additional_query_count
         )
 
         assert response.status_code == 200
@@ -2804,8 +2801,8 @@ class GetOfferStockEditFormTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    # session + current user + check is_stock_editable + retrieve stock + get booking prices
-    expected_num_queries = 5
+    # session + check is_stock_editable + retrieve stock + get booking prices
+    expected_num_queries = 4
 
     def test_get_stock_edit_form(self, authenticated_client):
         booking = bookings_factories.UsedBookingFactory(stock__offer__subcategoryId=subcategories.CONFERENCE.id)
@@ -3483,8 +3480,8 @@ class DownloadBookingsCSVTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + bookings
+    expected_num_queries = 2
 
     def test_download_bookings_csv(self, legit_user, authenticated_client):
         offerer = offerers_factories.UserOffererFactory().offerer  # because of join on UserOfferers
@@ -3508,8 +3505,8 @@ class DownloadBookingsXLSXTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1, "stock_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + bookings
+    expected_num_queries = 2
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))
@@ -3539,11 +3536,10 @@ class ActivateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.activate_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # session
-    # current user
+    # session + user
     # get offer
     # update offers
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_activate_offer_with_stocks(self, legit_user, authenticated_client):
         offer_to_activate = offers_factories.OfferFactory(isActive=False)
@@ -3614,10 +3610,9 @@ class GetActivateOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_activate_offer_form"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # session
-    # current user
+    # session + user
     # get offer
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_activate_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
@@ -3633,11 +3628,10 @@ class DeactivateOfferTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.deactivate_offer"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # session
-    # current user
+    # session + user
     # get offer
     # update offers
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_deactivate_offer_with_stocks(self, legit_user, authenticated_client):
         offer_to_deactivate = offers_factories.OfferFactory(isActive=True)
@@ -3708,10 +3702,9 @@ class GetDeactivateOfferFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer.get_deactivate_offer_form"
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # session
-    # current user
+    # session + user
     # get offer
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_deactivate_form_test(self, legit_user, authenticated_client):
         offer = offers_factories.OfferFactory()
@@ -3726,12 +3719,11 @@ class GetDeactivateOfferFormTest(GetEndpointHelper):
 class BatchOfferActivateTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.batch_activate_offers"
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # session
-    # current user
+    # session + user
     # get offers
     # update offers
     # re-fetch to render updated offer rows (3 queries)
-    expected_num_queries = 7
+    expected_num_queries = 6
 
     def test_batch_activate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3, isActive=False)
@@ -3756,12 +3748,11 @@ class BatchOfferActivateTest(PostEndpointHelper):
 class BatchOfferDeactivateTest(PostEndpointHelper):
     endpoint = "backoffice_web.offer.batch_deactivate_offers"
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
-    # session
-    # current user
+    # session + user
     # get offers
     # update offers
     # re-fetch to render updated offer rows (3 queries)
-    expected_num_queries = 7
+    expected_num_queries = 6
 
     def test_batch_deactivate_offers(self, legit_user, authenticated_client):
         offers = offers_factories.OfferFactory.create_batch(3)
@@ -3788,8 +3779,8 @@ class GetOfferDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offer_id": 1}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + offer with joined data
-    expected_num_queries = 3
+    # session + offer with joined data
+    expected_num_queries = 2
 
     def test_get_detail_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory(

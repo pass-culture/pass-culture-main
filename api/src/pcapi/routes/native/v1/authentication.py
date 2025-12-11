@@ -2,6 +2,7 @@ import logging
 
 from flask_jwt_extended import get_jwt_identity
 from flask_jwt_extended import jwt_required
+from flask_login import current_user
 
 import pcapi.core.token as token_utils
 from pcapi.connectors import api_recaptcha
@@ -125,12 +126,12 @@ def reset_password(body: ResetPasswordRequest) -> ResetPasswordResponse:
 @blueprint.native_route("/change_password", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 @authenticated_and_active_user_required
-def change_password(user: User, body: ChangePasswordRequest) -> None:
-    if user.password is None:
+def change_password(body: ChangePasswordRequest) -> None:
+    if current_user.password is None:
         raise ApiErrors({"code": "NO_CURRENT_PASSWORD"})
 
     try:
-        users_repo.check_user_and_credentials(user, body.current_password)
+        users_repo.check_user_and_credentials(current_user, body.current_password)
     except users_exceptions.InvalidIdentifier:
         raise ApiErrors({"code": "INVALID_PASSWORD", "currentPassword": ["Le mot de passe est incorrect"]})
     except users_exceptions.CredentialsException:
@@ -141,8 +142,8 @@ def change_password(user: User, body: ChangePasswordRequest) -> None:
     except ApiErrors:
         raise ApiErrors({"code": "WEAK_PASSWORD", "newPassword": ["Le nouveau mot de passe est trop faible"]})
 
-    user.setPassword(body.new_password)
-    db.session.add(user)
+    current_user.setPassword(body.new_password)
+    db.session.add(current_user)
     db.session.commit()
 
 

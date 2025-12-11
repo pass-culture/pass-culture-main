@@ -6,8 +6,7 @@ from pcapi.core.testing import assert_num_queries
 
 VALID_UAI = "0470009E"
 
-expected_num_queries = 1  # user
-expected_num_queries += 1  # session
+expected_num_queries = 1  # session + user
 expected_num_queries_error = expected_num_queries + 1  # rollback
 
 

@@ -38,8 +38,8 @@ class SearchEanTest(GetEndpointHelper):
     endpoint_kwargs = {"ean": "9782070455379"}
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + current user + query
-    expected_num_queries = 3
+    # session + query
+    expected_num_queries = 2
 
     def test_search_ean_initial(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries - 1):  # no query, only session + user
@@ -144,7 +144,7 @@ class ProductBlackListFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     def test_get_search_form(self, authenticated_client):
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url_for(self.endpoint, **self.endpoint_kwargs))
             assert response.status_code == 200
 

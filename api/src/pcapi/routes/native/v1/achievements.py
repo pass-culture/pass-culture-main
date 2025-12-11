@@ -1,8 +1,9 @@
 import logging
 
+from flask_login import current_user
+
 from pcapi.core.achievements import api as achievements_api
 from pcapi.core.achievements import exceptions as achievements_exceptions
-from pcapi.core.users import models as users_models
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization import achievements as serialization
@@ -19,14 +20,12 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(api=blueprint.api, response_model=serialization.AchievementsResponse)
 @authenticated_and_active_user_required
 @atomic()
-def mark_achievements_as_seen(
-    user: users_models.User, body: serialization.MarkAchievementsAsSeenRequest
-) -> serialization.AchievementsResponse:
+def mark_achievements_as_seen(body: serialization.MarkAchievementsAsSeenRequest) -> serialization.AchievementsResponse:
     try:
-        achievements_api.mark_achievements_as_seen(user, body.achievement_ids)
+        achievements_api.mark_achievements_as_seen(current_user, body.achievement_ids)
     except achievements_exceptions.AchievementNotFound:
         raise ApiErrors({"code": "ACHIEVEMENT_NOT_FOUND"}, status_code=404)
 
     return serialization.AchievementsResponse(
-        __root__=[serialization.AchievementResponse.from_orm(achievement) for achievement in user.achievements]
+        __root__=[serialization.AchievementResponse.from_orm(achievement) for achievement in current_user.achievements]
     )

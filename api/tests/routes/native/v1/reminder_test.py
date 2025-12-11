@@ -48,17 +48,16 @@ class GetRemindersTest:
         }
 
         for user, expected_reminders in [(user_1, expected_reminders_1), (user_2, expected_reminders_2)]:
-            user_email = user.email
+            client = TestClient(app.test_client()).with_token(user)
             with assert_num_queries(self.num_queries_success):
-                response = TestClient(app.test_client()).with_token(user_email).get("/native/v1/me/reminders")
+                response = client.get("/native/v1/me/reminders")
                 assert response.status_code == 200
 
             assert response.json == expected_reminders
 
 
 class PostReminderTest:
-    num_queries_success = 1  # select usersession
-    num_queries_success += 1  # select user
+    num_queries_success = 1  # select user
     num_queries_success += 1  # select offer
     num_queries_success += 1  # select offer_reminder
     num_queries_success += 1  # insert offer_reminder
@@ -70,11 +69,11 @@ class PostReminderTest:
 
     def test_future_offer_not_found(self, client):
         user = users_factories.BeneficiaryFactory()
-        client.with_token(user.email)
+        client.with_token(user)
 
-        num_queries = 1  # select usersession
-        num_queries += 1  # select user
+        num_queries = 1  # select user
         num_queries += 1  # select future_offer
+        num_queries += 1  # rollback
         num_queries += 1  # rollback
         with assert_num_queries(num_queries):
             response = client.post("/native/v1/me/reminders", json={"offerId": 1})
@@ -89,12 +88,9 @@ class PostReminderTest:
 
         for user in [user_1, user_2]:
             offer_id = offer.id
+            client = TestClient(app.test_client()).with_token(user)
             with assert_num_queries(self.num_queries_success):
-                response = (
-                    TestClient(app.test_client())
-                    .with_token(user.email)
-                    .post("/native/v1/me/reminders", json={"offerId": offer_id})
-                )
+                response = client.post("/native/v1/me/reminders", json={"offerId": offer_id})
                 assert response.status_code == 201
             reminder = user.offer_reminders[0]
             assert reminder.offerId == offer.id
@@ -111,7 +107,7 @@ class PostReminderTest:
         _ = reminders_factories.OfferReminderFactory(offer=offer_1, user=user)
         reminder_2 = reminders_factories.OfferReminderFactory(offer=offer_2, user=user)
 
-        client.with_token(user.email)
+        client.with_token(user)
 
         num_queries = 1  # select user
         num_queries += 1  # select future_offer
@@ -147,9 +143,9 @@ class DeleteReminderTest:
         num_queries += 1  # rollback
 
         reminder_id = 0
-        user_email = user.email
+        client.with_token(user)
         with assert_num_queries(num_queries):
-            response = client.with_token(user_email).delete(f"/native/v1/me/reminders/{reminder_id}")
+            response = client.delete(f"/native/v1/me/reminders/{reminder_id}")
             assert response.status_code == 404
 
     def test_reminder_is_not_users(self, client):
@@ -172,9 +168,9 @@ class DeleteReminderTest:
         num_queries += 1  # rollback
 
         reminder_id = reminder_2.id
-        user_email = user_1.email
+        client.with_token(user_1)
         with assert_num_queries(num_queries):
-            response = client.with_token(user_email).delete(f"/native/v1/me/reminders/{reminder_id}")
+            response = client.delete(f"/native/v1/me/reminders/{reminder_id}")
             assert response.status_code == 404
 
         assert len(user_1.offer_reminders) == 1
@@ -193,9 +189,9 @@ class DeleteReminderTest:
         assert len(user.offer_reminders) == 2
 
         reminder_id = offer_reminder_1.id
-        user_email = user.email
+        client.with_token(user)
         with assert_num_queries(self.num_queries_success):
-            response = client.with_token(user_email).delete(f"/native/v1/me/reminders/{reminder_id}")
+            response = client.delete(f"/native/v1/me/reminders/{reminder_id}")
             assert response.status_code == 204
 
         assert len(user.offer_reminders) == 1
