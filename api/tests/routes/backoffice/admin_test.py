@@ -35,8 +35,8 @@ class GetRolesTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles"
     needed_permission = perm_models.Permissions.READ_PERMISSIONS
 
-    # session + current user + roles + permissions
-    expected_num_queries = 4
+    # session + roles + permissions
+    expected_num_queries = 3
 
     def test_get_roles_matrix(self, authenticated_client):
         count_roles = db.session.query(perm_models.Role).count()
@@ -62,8 +62,8 @@ class GetRolesManagementTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles_management"
     needed_permission = perm_models.Permissions.MANAGE_PERMISSIONS
 
-    # session + current user + roles + permissions
-    expected_num_queries = 4
+    # session + roles + permissions
+    expected_num_queries = 3
 
     def test_can_list_roles_and_permissions(self, authenticated_client):
         perm_factories.RoleFactory(name="test_role_1")
@@ -231,8 +231,8 @@ class GetRolesHistoryTest(GetEndpointHelper):
     endpoint = "backoffice_web.get_roles_history"
     needed_permission = perm_models.Permissions.READ_PERMISSIONS
 
-    # session + current user + history
-    expected_num_queries = 3
+    # session + history
+    expected_num_queries = 2
 
     def test_get_log_history_admin(self, legit_user, authenticated_client):
         permission1 = (
@@ -279,8 +279,8 @@ class GetRolesHistoryTest(GetEndpointHelper):
 class ListFeatureFlagsTest(GetEndpointWithoutPermissionHelper):
     endpoint = "backoffice_web.list_feature_flags"
 
-    # user + session + list of feature flags
-    expected_num_queries = 3
+    # session + list of feature flags
+    expected_num_queries = 2
 
     def test_list_feature_flags(self, authenticated_client):
         first_feature_flag = db.session.query(feature_models.Feature).order_by(feature_models.Feature.name).first()
@@ -387,11 +387,10 @@ class SearchBoUsersTest(GetEndpointHelper):
     endpoint = "backoffice_web.bo_users.search_bo_users"
     needed_permission = perm_models.Permissions.READ_ADMIN_ACCOUNTS
 
-    # - fetch session
-    # - fetch authenticated user
+    # - fetch session and user
     # - fetch results
     # - fetch count for pagination
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_search_without_filter(self, authenticated_client, legit_user):
         user1 = users_factories.AdminFactory()
@@ -464,7 +463,7 @@ class SearchBoUsersTest(GetEndpointHelper):
         assert_user_equals(cards_text[0], users[0])
 
     def test_search_invalid(self, authenticated_client):
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, q="%"))
             assert response.status_code == 400
 
@@ -476,10 +475,9 @@ class GetBoUserTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_ADMIN_ACCOUNTS
 
-    # - fetch session (1 query)
-    # - fetch authenticated user (1 query)
+    # - fetch session  and user (1 query)
     # - fetch displayed user with joinedloaded data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_bo_user(self, authenticated_client):
         user = users_factories.AdminFactory()

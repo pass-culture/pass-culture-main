@@ -39,8 +39,8 @@ class ListRulesTest(GetEndpointHelper):
     endpoint = "backoffice_web.offer_price_limitation_rules.list_rules"
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # session + current_user + rules
-    expected_num_queries = 3
+    # session + rules
+    expected_num_queries = 2
 
     def test_list_rules(self, authenticated_client, offer_price_limitation_rules):
         with assert_num_queries(self.expected_num_queries):
@@ -95,7 +95,7 @@ class GetCreateOfferPriceLimitationRuleFormTest(GetEndpointHelper):
     def test_get_create_form_test(self, legit_user, authenticated_client):
         form_url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -144,7 +144,7 @@ class GetDeleteOfferPriceLimitationRuleFormTest(GetEndpointHelper):
     endpoint_kwargs = {"rule_id": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    expected_num_queries = 3  # session + current user + rule
+    expected_num_queries = 2  # session + rule
 
     def test_get_delete_form_test(self, legit_user, authenticated_client, offer_price_limitation_rules):
         form_url = url_for(self.endpoint, rule_id=offer_price_limitation_rules[0].id)
@@ -181,7 +181,7 @@ class GetEditOfferPriceLimitationRuleFormTest(GetEndpointHelper):
     def test_get_edit_form_test(self, legit_user, authenticated_client, offer_price_limitation_rules):
         form_url = url_for(self.endpoint, rule_id=offer_price_limitation_rules[0].id)
 
-        with assert_num_queries(3):  # session + current user + rule
+        with assert_num_queries(2):  # session + rule
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 

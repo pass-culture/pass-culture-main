@@ -76,11 +76,10 @@ class Returns200Test:
 
         url = f"/offers/{offer.id}/opening-hours"
 
-        # fetch user_session
-        # fetch user
+        # fetch user_session + user
         # fetch offer with its venue
         # check user has access to offer
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = auth_client.get(url)
 
         assert response.status_code == 200
@@ -101,11 +100,10 @@ class Returns200Test:
 
         url = f"/offers/{offer.id}/opening-hours"
 
-        # fetch user_session
-        # fetch user
+        # fetch user_session + user
         # fetch offer with its venue
         # check user has access to offer
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = auth_client.get(url)
 
         assert response.status_code == 200

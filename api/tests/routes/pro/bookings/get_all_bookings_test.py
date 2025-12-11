@@ -33,9 +33,8 @@ class GetAllBookingsTest:
         pro = users_factories.ProFactory()
 
         auth_client = client.with_session_auth(pro.email)
-        # get user_session
-        # get user
-        with assert_num_queries(2):
+        # get user_session + user
+        with assert_num_queries(1):
             response = auth_client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&page=3")
             assert response.status_code == 200
 
@@ -59,9 +58,8 @@ class GetAllBookingsTest:
         pro = users_factories.ProFactory()
 
         auth_client = client.with_session_auth(pro.email)
-        # get user_session
-        # get user
-        with assert_num_queries(2):
+        # get user_session + user
+        with assert_num_queries(1):
             response = auth_client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked")
             assert response.status_code == 200
 
@@ -86,10 +84,9 @@ class GetAllBookingsTest:
         venue = offerers_factories.VenueFactory()
 
         auth_client = client.with_session_auth(pro.email)
+        # get user_session + user
         # get venue
-        # get user_session
-        # get user
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = auth_client.get(
                 f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&venueId={venue.id}"
             )
@@ -116,10 +113,9 @@ class GetAllBookingsTest:
         offer = offers_factories.OfferFactory()
 
         auth_client = client.with_session_auth(pro.email)
+        # get user_session + user
         # get offer
-        # get user_session
-        # get user
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = auth_client.get(
                 f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&bookingStatusFilter=booked&offerId={offer.id}"
             )
@@ -141,8 +137,7 @@ class GetAllBookingsTest:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    expected_num_queries = 1  # Fetch the session
-    expected_num_queries += 1  # Fetch the user
+    expected_num_queries = 1  # Fetch the session + user
     # the user timezones query is duplicated for better readability
     expected_num_queries += 1  # Fetch user timezones (for the count)
     expected_num_queries += 1  # Fetch user timezones (for the query)
@@ -352,7 +347,7 @@ class Returns200Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns400Test:
-    num_queries = 3  # user + session + rollback
+    num_queries = 2  # session + rollback
 
     def when_page_number_is_not_a_number(self, client: Any):
         pro = users_factories.ProFactory()

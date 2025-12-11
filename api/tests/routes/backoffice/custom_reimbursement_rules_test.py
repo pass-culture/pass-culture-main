@@ -32,10 +32,9 @@ class ListCustomReimbursementRulesTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch custom reimbursement rules with extra data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_list_custom_reimbursement_rules(self, authenticated_client):
         start = date_utils.get_naive_utc_now() - datetime.timedelta(days=365)
@@ -209,7 +208,7 @@ class GetCreateCustomReimbursementRuleFormTest(GetEndpointHelper):
     def test_get_create_form_test(self, legit_user, authenticated_client):
         form_url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -524,7 +523,7 @@ class GetEditCustomReimbursementRuleFormTest(GetEndpointHelper):
         form_url = url_for(self.endpoint, reimbursement_rule_id=custom_reimbursement_rule.id)
         db.session.expire(custom_reimbursement_rule)
 
-        with assert_num_queries(3):  # session + current user + rule
+        with assert_num_queries(2):  # session + rule
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -615,10 +614,9 @@ class GetReimburementStatsTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch custom reimbursement rules statistics (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_data(self, authenticated_client):
         finance_factories.CustomReimbursementRuleFactory.create_batch(4, offerer=offerers_factories.OffererFactory())

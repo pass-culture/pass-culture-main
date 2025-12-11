@@ -11,12 +11,11 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class Return200Test:
-    expected_num_queries = 4
-
-    # get user_session
-    # get user
+    expected_num_queries = 3
+    # get user_session + user
     # count active educational_institution
     # select educational_institution
+
     def test_get_educational_institutions(self, client: Any) -> None:
         institution1 = EducationalInstitutionFactory(
             name="aaaaaaaaaaaaaaaaa",

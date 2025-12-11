@@ -1,3 +1,4 @@
+from flask_login import current_user
 from sqlalchemy.orm import joinedload
 from werkzeug.exceptions import BadRequest
 
@@ -12,7 +13,6 @@ from pcapi.core.offers import repository
 from pcapi.core.offers.models import Offer
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import Reason
-from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ResourceNotFoundError
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -104,7 +104,7 @@ def get_movie_screenings_by_venue(
 @blueprint.native_route("/offer/report/reasons", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.OfferReportReasons)
 @authenticated_and_active_user_required
-def report_offer_reasons(user: User) -> serializers.OfferReportReasons:
+def report_offer_reasons() -> serializers.OfferReportReasons:
     return serializers.OfferReportReasons(reasons=Reason.get_full_meta())
 
 
@@ -126,7 +126,7 @@ def offer_chronicles(offer_id: int) -> serializers.OfferChronicles:
 @blueprint.native_route("/send_offer_webapp_link_by_email/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
-def send_offer_app_link(user: User, offer_id: int) -> None:
+def send_offer_app_link(offer_id: int) -> None:
     """
     On iOS native app, users cannot book numeric offers with price > 0, so
     give them webapp link.
@@ -136,17 +136,17 @@ def send_offer_app_link(user: User, offer_id: int) -> None:
         .options(joinedload(Offer.venue))
         .filter(Offer.id == offer_id, Offer.validation == OfferValidationStatus.APPROVED)
     )
-    transactional_mails.send_offer_link_to_ios_user_email(user, offer)
+    transactional_mails.send_offer_link_to_ios_user_email(current_user, offer)
 
 
 @blueprint.native_route("/send_offer_link_by_push/<int:offer_id>", methods=["POST"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
-def send_offer_link_by_push(user: User, offer_id: int) -> None:
+def send_offer_link_by_push(offer_id: int) -> None:
     offer = get_or_404(Offer, offer_id)
     if offer.validation != OfferValidationStatus.APPROVED:
         raise ResourceNotFoundError()
-    push_notification_job.send_offer_link_by_push_job.delay(user.id, offer_id)
+    push_notification_job.send_offer_link_by_push_job.delay(current_user.id, offer_id)
 
 
 @blueprint.native_route("/subcategories/v2", methods=["GET"])

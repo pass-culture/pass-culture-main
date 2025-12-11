@@ -91,10 +91,9 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch collective bookings with extra data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_list_bookings_without_filter(self, authenticated_client, collective_bookings):
         with assert_num_queries(self.expected_num_queries - 1):
@@ -374,7 +373,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
         authenticated_client,
         collective_bookings,
     ):
-        with assert_num_queries(3):  # user_session + user + rollback
+        with assert_num_queries(2):  # user_session + rollback
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,

@@ -17,13 +17,12 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    # session
-    # user
+    # session + user
     # offerer
     # user_offerer
     # collective_offer
     # google_places_info
-    num_queries = 6
+    num_queries = 5
 
     def test_basics(self, client):
         template = educational_factories.CollectiveOfferTemplateFactory()
@@ -357,9 +356,8 @@ class Returns403Test:
 
         client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
-        expected_num_queries = 6
-        # session
-        # user
+        expected_num_queries = 5
+        # session + user
         # offerer
         # user_offerer
         # rollback
@@ -396,11 +394,10 @@ class GetCollectiveOfferRequestTest:
         )
         client = client.with_session_auth(email=pro_user.email)
 
-        # fetch session (1 query)
-        # fetch user (1 query)
+        # fetch session + user (1 query)
         # fetch collective offer request and related data (1 query)
         # check whether user has access to offerer (1 query)
-        with testing.assert_num_queries(4):
+        with testing.assert_num_queries(3):
             response = client.get(dst)
 
         assert response.status_code == 200
@@ -442,9 +439,8 @@ class GetCollectiveOfferRequestTest:
         )
 
         client = client.with_session_auth(email=pro_user.email)
-        expected_num_queries = 6
-        # session
-        # user
+        expected_num_queries = 5
+        # session + user
         # collective_offer_request
         # user_offerer
         # rollback
@@ -467,6 +463,6 @@ class GetCollectiveOfferRequestTest:
         )
 
         client = client.with_session_auth(email=pro_user.email)
-        with assert_num_queries(5):  #  session + user + collective_offer_request + rollback + rollback
+        with assert_num_queries(4):  #  session + collective_offer_request + rollback + rollback
             response = client.get(dst)
             assert response.status_code == 404

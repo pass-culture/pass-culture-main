@@ -184,8 +184,8 @@ class SearchPublicAccountsTest(search_helpers.SearchHelper, GetEndpointHelper):
     endpoint = "backoffice_web.public_accounts.search_public_accounts"
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    # session + current user + user tags
-    expected_num_queries_when_no_query = 3
+    # session + user tags
+    expected_num_queries_when_no_query = 2
 
     # + results + count
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -775,12 +775,11 @@ class GetPublicAccountTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
     # user session
-    # current backoffice user
     # user and joinedload data
     # 8 x subqueryload for additional user data
     # check if user is waiting to be anonymized
     # user tags (for tag account form display)
-    expected_num_queries = 13
+    expected_num_queries = 12
 
     class ReviewButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW
@@ -1376,10 +1375,10 @@ class GetUserActivityTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 queries)
     # - special events (1 query)
     # - chronicles (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_beneficiary_activity(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
@@ -4698,7 +4697,7 @@ class ExtractPublicAccountTest(PostEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT
 
-    expected_queries = 4  # session + user + targeted user with joined data + gdpr insert
+    expected_queries = 3  # session + targeted user with joined data + gdpr insert
 
     def test_extract_public_account(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
@@ -4770,11 +4769,10 @@ class InvalidatePublicAccountPasswordTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     # session
-    # user
     # targeted user by id
     # UPDATE user
     # INSERT actionhistory
-    expected_queries = 5
+    expected_queries = 4
 
     def test_invalidate_public_account_password(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
@@ -4816,9 +4814,8 @@ class SendPublicAccountPasswordResetEmailTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
 
     # authenticated user session
-    # authenticated user
     # targeted user by id
-    expected_queries = 3
+    expected_queries = 2
 
     def test_send_public_account_reset_password_email(self, authenticated_client, legit_user):
         user = users_factories.BeneficiaryFactory()
@@ -4858,10 +4855,9 @@ class ListAccountTagsTest(GetEndpointHelper):
     endpoint = "backoffice_web.account_tag.list_account_tags"
     needed_permission = perm_models.Permissions.READ_TAGS
 
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch categories and tags (2 queries)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_account_tags(self, authenticated_client):
         category = users_factories.UserTagCategoryFactory(label="tagjeune")

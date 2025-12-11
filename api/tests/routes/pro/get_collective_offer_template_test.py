@@ -11,13 +11,12 @@ from pcapi.utils.date import format_into_utc_date
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    # session
-    # user
+    # session + user
     # offerer
     # user_offerer
     # collective_offer_template
     # google_places_info
-    num_queries = 6
+    num_queries = 5
 
     # location / address
     num_queries_with_location = num_queries + 1
@@ -251,9 +250,8 @@ class Returns403Test:
 
         client = client.with_session_auth(email=pro_user.email)
         offer_id = offer.id
-        expected_num_queries = 6
-        # get user_session
-        # get user
+        expected_num_queries = 5
+        # get user_session + user
         # get offerer
         # check user_offerer exists
         # rollback

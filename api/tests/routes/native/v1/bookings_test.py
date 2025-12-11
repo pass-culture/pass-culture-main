@@ -59,7 +59,7 @@ class PostBookingTest:
         stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=yesterday)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 200
@@ -70,18 +70,18 @@ class PostBookingTest:
         assert booking.status == BookingStatus.CONFIRMED
 
     def test_no_stock_found(self, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": 400, "quantity": 1})
 
         assert response.status_code == 400
 
     def test_insufficient_credit(self, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = offers_factories.StockFactory(price=501)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
@@ -91,7 +91,7 @@ class PostBookingTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(user=user)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": booking.stock.id, "quantity": 1})
 
         assert response.status_code == 400
@@ -101,9 +101,9 @@ class PostBookingTest:
         stock = offers_factories.StockFactory(
             offer__subcategoryId=subcategories.VISITE_VIRTUELLE.id, offer__url="affreuse-offer.com"
         )
-        users_factories.UnderageBeneficiaryFactory(email=self.identifier)
+        user = users_factories.UnderageBeneficiaryFactory(email=self.identifier)
 
-        client.with_token(self.identifier)
+        client.with_token(user)
 
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
@@ -112,11 +112,11 @@ class PostBookingTest:
 
     @patch("pcapi.core.bookings.api.book_offer")
     def test_unexpected_offer_provider(self, mocked_book_offer, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = offers_factories.EventStockFactory()
         mocked_book_offer.side_effect = InactiveProvider()
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
@@ -124,11 +124,11 @@ class PostBookingTest:
 
     @patch("pcapi.core.bookings.api.book_offer")
     def test_inactive_provider(self, mocked_book_offer, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = offers_factories.EventStockFactory()
         mocked_book_offer.side_effect = InactiveProvider()
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
@@ -136,11 +136,11 @@ class PostBookingTest:
 
     @patch("pcapi.core.bookings.api.book_offer")
     def test_provider_timeout(self, mocked_book_offer, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         stock = offers_factories.EventStockFactory()
         mocked_book_offer.side_effect = ExternalBookingTimeoutException()
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
@@ -154,7 +154,7 @@ class PostBookingTest:
         stock = offers_factories.StockFactory(price=price, offer__subcategoryId=subcategoryId)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 200
@@ -178,7 +178,7 @@ class PostBookingTest:
         stock = offers_factories.StockFactory(price=price, offer__subcategoryId=subcategory.id)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 200
@@ -215,7 +215,7 @@ class PostBookingTest:
             quantity=20,
         )
 
-        response = client.with_token(self.identifier).post(
+        response = client.with_token(user).post(
             "/native/v1/bookings",
             json={"stockId": stock.id, "quantity": 1},
         )
@@ -278,7 +278,7 @@ class PostBookingTest:
             status_code=201,
         )
 
-        response = client.with_token(self.identifier).post(
+        response = client.with_token(user).post(
             "/native/v1/bookings",
             json={"stockId": stock.id, "quantity": 1},
         )
@@ -359,7 +359,7 @@ class PostBookingTest:
             status_code=201,
         )
 
-        response = client.with_token(self.identifier).post(
+        response = client.with_token(user).post(
             "/native/v1/bookings",
             json={"stockId": stock.id, "quantity": 1},
         )
@@ -407,7 +407,7 @@ class PostBookingTest:
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_sold_out(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
-        users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryGrant18Factory(
             email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101"
         )
         provider = providers_factories.ProviderFactory(
@@ -429,9 +429,7 @@ class PostBookingTest:
 
         requests_mock.post(external_booking_url, json={"error": "sold_out", "remainingQuantity": 0}, status_code=409)
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"}
@@ -441,7 +439,7 @@ class PostBookingTest:
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_book_sold_out_cinema_stock_does_not_book_anything(self, client, requests_mock):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
         requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         id_at_provider = "test_id_at_provider"
 
@@ -471,9 +469,7 @@ class PostBookingTest:
         with patch("pcapi.core.providers.clients.cgr_client.CGRAPIClient.book_ticket") as mock_book_ticket:
             mock_book_ticket.side_effect = RuntimeError("test")
 
-            response = client.with_token(self.identifier).post(
-                "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
-            )
+            response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json == {"code": "CINEMA_PROVIDER_BOOKING_FAILED"}
@@ -482,7 +478,7 @@ class PostBookingTest:
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_not_enough_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
-        users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryGrant18Factory(
             email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
         )
         provider = providers_factories.ProviderFactory(
@@ -507,9 +503,7 @@ class PostBookingTest:
             external_booking_url, json={"error": "not_enough_seats", "remainingQuantity": 1}, status_code=409
         )
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 2}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 2})
 
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_STOCK_NOT_ENOUGH_SEATS"}
@@ -520,7 +514,7 @@ class PostBookingTest:
     @time_machine.travel("2022-10-12 17:09:25")
     def test_bookings_with_external_event_booking_when_response_fields_are_too_long(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         provider = providers_factories.ProviderFactory(
             bookingExternalUrl=external_booking_url,
             cancelExternalUrl=external_booking_url,
@@ -542,7 +536,7 @@ class PostBookingTest:
             status_code=201,
         )
 
-        response = client.with_token(self.identifier).post(
+        response = client.with_token(user).post(
             "/native/v1/bookings",
             json={"stockId": stock.id, "quantity": 1},
         )
@@ -562,7 +556,7 @@ class PostBookingTest:
         ],
     )
     def test_handle_ems_showtime_fully_booked_cases(self, error_payload, client, requests_mock):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -579,7 +573,7 @@ class PostBookingTest:
             json=error_payload,
         )
 
-        response = client.with_token(self.identifier).post(
+        response = client.with_token(user).post(
             "/native/v1/bookings",
             json={"stockId": stock.id, "quantity": 1},
         )
@@ -589,7 +583,7 @@ class PostBookingTest:
 
     @pytest.mark.features(ENABLE_EMS_INTEGRATION=True)
     def test_handle_ems_showtime_does_not_exist_case(self, client, requests_mock):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         ems_provider = get_provider_by_local_class("EMSStocks")
         venue_provider = providers_factories.VenueProviderFactory(provider=ems_provider)
         cinema_provider_pivot = providers_factories.CinemaProviderPivotFactory(venue=venue_provider.venue)
@@ -606,7 +600,7 @@ class PostBookingTest:
             json={"statut": 0, "code_erreur": 105, "message_erreur": "La séance n'a pas été trouvée"},
         )
 
-        response = client.with_token(self.identifier).post(
+        response = client.with_token(user).post(
             "/native/v1/bookings",
             json={"stockId": stock.id, "quantity": 1},
         )
@@ -625,7 +619,7 @@ class PostBookingTest:
         ],
     )
     def test_handle_cgr_showtime_does_not_exist_case(self, error_message, client, requests_mock):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
         requests_mock.get("http://example.com/web_service?wsdl", text=soap_definitions.WEB_SERVICE_DEFINITION)
         requests_mock.post(
             "http://example.com/web_service",
@@ -659,9 +653,7 @@ class PostBookingTest:
             idAtProviders="#1",
         )
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_SHOW_DOES_NOT_EXIST"}
@@ -670,7 +662,7 @@ class PostBookingTest:
 
     @time_machine.travel("2022-10-12 17:09:25")
     def test_handle_boost_showtime_does_not_exist_case(self, client, requests_mock):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
 
         id_at_provider = "test_id_at_provider"
 
@@ -702,9 +694,7 @@ class PostBookingTest:
         )
         post_adapter = requests_mock.post("https://cinema-0.example.com/api/sale/complete")
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_SHOW_DOES_NOT_EXIST"}
@@ -719,7 +709,7 @@ class PostBookingTest:
         client,
         requests_mock,
     ):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, dateOfBirth=datetime(2007, 1, 1))
 
         id_at_provider = "test_id_at_provider"
 
@@ -772,9 +762,7 @@ class PostBookingTest:
             json={},
         )
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json == {"code": "PROVIDER_SHOW_DOES_NOT_EXIST"}
@@ -786,7 +774,7 @@ class PostBookingTest:
     def test_bookings_with_external_event_api_return_less_tickets_than_quantity(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
-        users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryGrant18Factory(
             email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
         )
         provider = providers_factories.ProviderFactory(
@@ -819,9 +807,7 @@ class PostBookingTest:
             status_code=200,
         )
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 2}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 2})
 
         assert response.status_code == 400
         assert response.json == {
@@ -837,7 +823,7 @@ class PostBookingTest:
     def test_bookings_with_external_event_api_return_nothing(self, client, requests_mock):
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
-        users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryGrant18Factory(
             email=self.identifier, dateOfBirth=datetime(2007, 1, 1), phoneNumber="+33101010101", deposit__amount=500
         )
         provider = providers_factories.ProviderFactory(
@@ -860,9 +846,7 @@ class PostBookingTest:
             status_code=201,
         )
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
         assert response.json == {
@@ -876,7 +860,7 @@ class PostBookingTest:
         external_booking_url = "https://book_my_offer.com/confirm"
         cancel_booking_url = "https://book_my_offer.com/cancel"
         eighteen_years_ago = datetime(date.today().year - 18, 1, 1)
-        users_factories.BeneficiaryGrant18Factory(
+        user = users_factories.BeneficiaryGrant18Factory(
             email=self.identifier, dateOfBirth=eighteen_years_ago, phoneNumber="+33101010101", deposit__amount=500
         )
         provider = providers_factories.ProviderFactory(
@@ -910,9 +894,7 @@ class PostBookingTest:
             status_code=200,
         )
 
-        response = client.with_token(self.identifier).post(
-            "/native/v1/bookings", json={"stockId": stock.id, "quantity": 1}
-        )
+        response = client.with_token(user).post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 200
         external_booking = db.session.query(bookings_models.ExternalBooking).one()
@@ -929,9 +911,9 @@ class PostBookingTest:
     )
     def test_offerer_not_validated(self, client, validation_status):
         stock = offers_factories.StockFactory(offer__venue__managingOfferer__validationStatus=validation_status)
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
@@ -941,9 +923,9 @@ class PostBookingTest:
     def test_offer_cannot_be_booked_if_not_bookable_yet(self, client):
         later = datetime.now(timezone.utc) + timedelta(days=64)
         stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=later)
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 400
@@ -954,7 +936,7 @@ class PostBookingTest:
         stock = offers_factories.StockFactory(offer__bookingAllowedDatetime=None)
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post("/native/v1/bookings", json={"stockId": stock.id, "quantity": 1})
 
         assert response.status_code == 200
@@ -1031,7 +1013,7 @@ class GetBookingsTest:
             id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit"
         )
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v1/bookings")
@@ -1138,7 +1120,7 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
 
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v1/bookings")
@@ -1154,7 +1136,7 @@ class GetBookingsTest:
         )
         ReactionFactory(user=ongoing_booking.user, offer=stock.offer)
 
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v1/bookings")
@@ -1170,7 +1152,7 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(3):
             # select user, booking, offer
             response = client.get("/native/v1/bookings")
@@ -1186,7 +1168,7 @@ class GetBookingsTest:
             stock__offer=offer,
             dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=60 * 24 * 3600),
         )
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         with assert_num_queries(2):
             # select user, booking, offer
             response = client.get("/native/v1/bookings")
@@ -1201,7 +1183,7 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
         booking_factories.BookingFactory(stock=stock, user=ongoing_booking.user, status=BookingStatus.CANCELLED)
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v1/bookings")
@@ -1227,7 +1209,7 @@ class GetBookingsTest:
             user=user, stock=offers_factories.StockFactory(price=10, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
 
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v1/bookings")
@@ -1244,7 +1226,7 @@ class GetBookingsTest:
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
         )
 
-        test_client = client.with_token(user.email)
+        test_client = client.with_token(user)
         with assert_num_queries(2):
             # select user, booking
             response = test_client.get("/native/v1/bookings")
@@ -1263,8 +1245,9 @@ class GetBookingsTest:
             stock__offer__withdrawalDelay=60 * 30,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v1/bookings")
+            response = client.get("/native/v1/bookings")
             assert response.status_code == 200
 
         offer = response.json["ongoing_bookings"][0]["stock"]["offer"]
@@ -1287,8 +1270,9 @@ class GetBookingsTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v1/bookings")
+            response = client.get("/native/v1/bookings")
             assert response.status_code == 200
 
         booking_response = response.json["ongoing_bookings"][0]
@@ -1307,8 +1291,9 @@ class GetBookingsTest:
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v1/bookings")
+            response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoing_bookings"][0]["stock"]["offer"]["address"]["label"] == venue.offererAddress.label
@@ -1318,7 +1303,7 @@ class GetBookingsTest:
         user = users_factories.BeneficiaryFactory(age=19)
         booking_factories.BookingFactory(user=user)
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         with assert_num_queries(2):  # user + booking
             response = client.get("/native/v1/bookings")
 
@@ -1329,7 +1314,7 @@ class GetBookingsTest:
         venue = offerers_factories.VenueFactory(name="Legal name", publicName="Public name")
         booking = booking_factories.BookingFactory(stock__offer__venue=venue)
 
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1339,7 +1324,7 @@ class GetBookingsTest:
         venue = offerers_factories.VenueFactory(bannerUrl="http://bannerUrl.com")
         booking = booking_factories.BookingFactory(stock__offer__venue=venue)
 
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1349,7 +1334,7 @@ class GetBookingsTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         booking = booking_factories.BookingFactory(stock__offer__venue=venue)
 
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         response = client.get("/native/v1/bookings")
 
         assert response.status_code == 200
@@ -1363,7 +1348,7 @@ class CancelBookingTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory(user=user)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         with assert_num_queries(28):
             response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
@@ -1379,7 +1364,7 @@ class CancelBookingTest:
         initial_deposit_amount = user.deposit.amount
         booking = booking_factories.BookingFactory(user=user)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         with assert_num_queries(28):
             response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
@@ -1405,7 +1390,7 @@ class CancelBookingTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier, postalCode="98818")
         booking = booking_factories.BookingFactory(user=user)
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         with assert_num_queries(28):
             response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
@@ -1428,10 +1413,10 @@ class CancelBookingTest:
         }
 
     def test_cancel_others_booking(self, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         booking = booking_factories.BookingFactory()
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         # fetch booking
         # fetch user
         # fetch booking (by email cloud task)
@@ -1446,7 +1431,7 @@ class CancelBookingTest:
             user=user, cancellation_limit_date=date_utils.get_naive_utc_now() - timedelta(days=1)
         )
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         # fetch booking
         # fetch user
         # fetch booking (by email cloud task)
@@ -1467,7 +1452,7 @@ class CancelBookingTest:
             cancellationReason=BookingCancellationReasons.BENEFICIARY,
         )
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         # fetch booking
         # fetch user
         # fetch booking (by email cloud task)
@@ -1499,7 +1484,7 @@ class CancelBookingTest:
         booking_factories.ExternalBookingFactory(booking=booking)
         mocked_cancel_external_booking.side_effect = UnexpectedCinemaProvider("Unknown Provider: Toto")
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
@@ -1529,7 +1514,7 @@ class CancelBookingTest:
             f"No active cinema venue provider found for venue #{venue_provider.venue.id}"
         )
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post(f"/native/v1/bookings/{booking.id}/cancel")
 
         assert response.status_code == 400
@@ -1545,7 +1530,7 @@ class ToggleBookingVisibilityTest:
         booking = booking_factories.BookingFactory(user=user, displayAsEnded=None)
         booking_id = booking.id
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         response = client.post(f"/native/v1/bookings/{booking_id}/toggle_display", json={"ended": True})
 
         assert response.status_code == 204
@@ -1571,7 +1556,7 @@ class ToggleBookingVisibilityTest:
             activationCode=activation_code,
         )
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         with assert_num_queries(2):  # user + booking
             response = client.get("/native/v1/bookings")
             assert response.status_code == 200

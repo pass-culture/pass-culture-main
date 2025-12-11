@@ -43,8 +43,8 @@ class ListEventsTest(GetEndpointHelper):
     endpoint = "backoffice_web.operations.list_events"
     needed_permission = perm_models.Permissions.READ_SPECIAL_EVENTS
 
-    # authenticated user + user session + list of special events + count
-    expected_num_queries = 4
+    # user session + list of special events + count
+    expected_num_queries = 3
 
     def test_list_events(self, authenticated_client, special_events):
         with assert_num_queries(self.expected_num_queries):
@@ -92,10 +92,9 @@ class CreateEventTest(PostEndpointHelper):
     endpoint = "backoffice_web.operations.create_event"
     needed_permission = perm_models.Permissions.MANAGE_SPECIAL_EVENTS
 
-    # - authenticated user
-    # - user session
+    # - session + user
     # - insert into special_event or rollback
-    expected_num_queries = 3
+    expected_num_queries = 2
     # - get special event
     # - get special event questions
     # - insert into special_event_questions
@@ -229,13 +228,12 @@ class GetEventDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"special_event_id": 1}
     needed_permission = perm_models.Permissions.READ_SPECIAL_EVENTS
 
-    # get authenticated user
-    # get user session
+    # get session + user
     # get special event
     # get special event stats
     # get special event responses
     # count special event responses (for pagination)
-    expected_num_queries = 6
+    expected_num_queries = 5
 
     def test_get_event_details(self, authenticated_client):
         event = operations_factories.SpecialEventFactory(

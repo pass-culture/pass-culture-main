@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from flask_login import current_user
+
 from pcapi.core import token as token_utils
 from pcapi.core.users import api
 from pcapi.core.users import constants
@@ -23,8 +25,8 @@ from .serialization import account as serializers
 @blueprint.native_route("/profile/email_update/status", version="v2", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.EmailUpdateStatusResponse)
 @authenticated_and_active_user_required
-def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateStatusResponse:
-    latest_email_update_event = email_repository.get_email_update_latest_event(user)
+def get_email_update_status() -> serializers.EmailUpdateStatusResponse:
+    latest_email_update_event = email_repository.get_email_update_latest_event(current_user)
     if not latest_email_update_event:
         raise api_errors.ResourceNotFoundError
 
@@ -32,16 +34,18 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
     reset_password_token: token_utils.Token | None = None
     if latest_email_update_event.eventType == users_models.EmailHistoryEventTypeEnum.CONFIRMATION:
         new_email_selection_token = token_utils.Token.get_token(
-            token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, user.id
+            token_utils.TokenType.EMAIL_CHANGE_NEW_EMAIL_SELECTION, current_user.id
         )
-        if user.password is None:
-            reset_password_token = token_utils.Token.get_token(token_utils.TokenType.RESET_PASSWORD, user.id)
+        if current_user.password is None:
+            reset_password_token = token_utils.Token.get_token(token_utils.TokenType.RESET_PASSWORD, current_user.id)
 
-    has_recently_reset_password = token_utils.Token.token_exists(token_utils.TokenType.RECENTLY_RESET_PASSWORD, user.id)
+    has_recently_reset_password = token_utils.Token.token_exists(
+        token_utils.TokenType.RECENTLY_RESET_PASSWORD, current_user.id
+    )
 
     return serializers.EmailUpdateStatusResponse(
         new_email=latest_email_update_event.newEmail,
-        expired=(email_api.get_active_token_expiration(user) or datetime.min) < date_utils.get_naive_utc_now(),
+        expired=(email_api.get_active_token_expiration(current_user) or datetime.min) < date_utils.get_naive_utc_now(),
         status=latest_email_update_event.eventType,
         token=new_email_selection_token.encoded_token if new_email_selection_token else None,
         reset_password_token=reset_password_token.encoded_token if reset_password_token else None,
@@ -53,9 +57,9 @@ def get_email_update_status(user: users_models.User) -> serializers.EmailUpdateS
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 @atomic()
-def update_user_email(user: users_models.User) -> None:
+def update_user_email() -> None:
     try:
-        email_api.request_email_update(user)
+        email_api.request_email_update(current_user)
     except exceptions.EmailUpdateTokenExists as e:
         raise account_errors.EmailUpdatePendingError() from e
     except exceptions.EmailUpdateLimitReached as e:
@@ -107,14 +111,14 @@ def select_new_password(body: authentication_serializers.ResetPasswordRequest) -
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 @atomic()
-def select_new_email(user: users_models.User, body: serializers.NewEmailSelectionRequest) -> None:
-    if user.password is None:
+def select_new_email(body: serializers.NewEmailSelectionRequest) -> None:
+    if current_user.password is None:
         raise api_errors.ApiErrors(
             {"code": "PASSWORD_NEEDED", "message": "Un mot de passe doit être défini pour changer d'email"},
             status_code=403,
         )
     try:
-        email_api.confirm_new_email_selection_and_send_mail(user, body.token, body.new_email)
+        email_api.confirm_new_email_selection_and_send_mail(current_user, body.token, body.new_email)
     except exceptions.InvalidToken as e:
         raise api_errors.ApiErrors(
             {"code": "INVALID_TOKEN", "message": "Aucune demande de changement d'email en cours"},

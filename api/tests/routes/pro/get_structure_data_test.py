@@ -124,7 +124,7 @@ class Returns500Test:
         pro = users_factories.ProFactory()
         client = client.with_session_auth(pro.email)
 
-        with assert_num_queries(2):
+        with assert_num_queries(1):
             response = client.get(f"{GET_STRUCTURE_DATA_URL}{DIFFUSIBLE_SIRET}")
 
         assert response.status_code == 500

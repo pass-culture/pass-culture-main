@@ -1,8 +1,6 @@
-import flask_jwt_extended
+from flask_login import current_user
 
 import pcapi.connectors.recommendation as recommendation_api
-import pcapi.core.users.models as users_models
-import pcapi.core.users.repository as users_repository
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -13,13 +11,11 @@ from .serialization import recommendation as serializers
 
 @blueprint.native_route("/recommendation/similar_offers/<int:offer_id>", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.SimilarOffersResponse)
-@flask_jwt_extended.jwt_required(optional=True)
 def similar_offers(
     offer_id: int,
     query: serializers.SimilarOffersRequestQuery,
 ) -> serializers.SimilarOffersResponse:
-    email = flask_jwt_extended.get_jwt_identity()
-    user = users_repository.find_user_by_email(email) if email else None
+    user = current_user if not current_user.is_anonymous else None
     try:
         raw_response = recommendation_api.get_similar_offers(
             offer_id,
@@ -39,13 +35,12 @@ def similar_offers(
 @spectree_serialize(api=blueprint.api, response_model=serializers.PlaylistResponse)
 @authenticated_and_active_user_required
 def playlist(
-    user: users_models.User,
     query: serializers.PlaylistRequestQuery,
     body: serializers.PlaylistRequestBody,
 ) -> serializers.PlaylistResponse:
     try:
         raw_response = recommendation_api.get_playlist(
-            user,
+            current_user,
             params=query.dict(),
             body=body.dict(),
         )

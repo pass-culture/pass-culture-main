@@ -6,7 +6,6 @@ import werkzeug
 from authlib.integrations.base_client import MismatchingStateError
 from flask import redirect
 from flask import render_template
-from flask import session
 from flask import url_for
 from flask_login import login_user
 from flask_login import logout_user
@@ -26,9 +25,6 @@ from . import blueprint
 from . import utils
 
 
-# a french worker cannot work for more than 12 hours so disconnecting them after 13 hours is safe
-MAXIMUM_SESSION_LENGTH_HOURS = 13
-
 logger = logging.getLogger(__name__)
 
 
@@ -39,8 +35,6 @@ def login() -> utils.BackofficeResponse:
     )
 
     if use_google_without_credentials:
-        from pcapi.utils import login_manager
-
         local_admin_email = settings.BACKOFFICE_LOCAL_USER_EMAIL
         local_admin = users_repository.find_user_by_email(local_admin_email)
 
@@ -53,7 +47,6 @@ def login() -> utils.BackofficeResponse:
         db.session.flush()
 
         login_user(local_admin, remember=True)
-        login_manager.stamp_session(user=local_admin, duration=datetime.timedelta(hours=MAXIMUM_SESSION_LENGTH_HOURS))
         return werkzeug.utils.redirect(url_for(".home"))
 
     redirect_uri = url_for(".authorize", _external=True)
@@ -62,8 +55,6 @@ def login() -> utils.BackofficeResponse:
 
 @blueprint.backoffice_web.route("/authorize", methods=["GET"])
 def authorize() -> utils.BackofficeResponse:
-    from pcapi.utils import login_manager
-
     try:
         token = backoffice_oauth.google.authorize_access_token()
     except MismatchingStateError:
@@ -92,7 +83,6 @@ def authorize() -> utils.BackofficeResponse:
                 extra={"identifier": google_email, "user": None, "avoid_current_user": True, "success": False},
                 technical_message_id="backoffice.authorize",
             )
-            session["google_email"] = google_email
             return redirect(url_for(".user_not_found"))
 
     if not user:
@@ -114,16 +104,12 @@ def authorize() -> utils.BackofficeResponse:
     )
 
     login_user(user, remember=True)
-    login_manager.stamp_session(user=user, duration=datetime.timedelta(hours=MAXIMUM_SESSION_LENGTH_HOURS))
     return redirect(url_for(".home"))
 
 
 @blueprint.backoffice_web.route("/logout", methods=["POST"])
 @utils.custom_login_required(redirect_to=".home")
 def logout() -> utils.BackofficeResponse:
-    from pcapi.utils import login_manager
-
-    login_manager.discard_session()
     logout_user()
     return redirect(url_for(".home"), code=303)
 

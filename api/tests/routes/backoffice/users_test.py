@@ -495,7 +495,7 @@ class GetBatchSuspendUsersFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS
 
     def test_get_batch_suspend_users_form(self, authenticated_client):
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -681,7 +681,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
     def test_beneficiary_in_brevo(self, mocked_get_contact_url, authenticated_client):
         user = users_factories.BeneficiaryFactory()
         user_id = user.id
-        with assert_num_queries(3):  # session + current user + get_user
+        with assert_num_queries(2):  # session + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 302
 
@@ -692,7 +692,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
     def test_beneficiary_not_in_brevo(self, authenticated_client):
         user = users_factories.BeneficiaryFactory()
         user_id = user.id
-        with assert_num_queries(3):  # session + current user + get_user
+        with assert_num_queries(2):  # session + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 303
 
@@ -703,7 +703,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
         )
 
     def test_user_does_not_exists(self, authenticated_client):
-        with assert_num_queries(4):  # session + current user + get_user + rollback
+        with assert_num_queries(3):  # session + get_user + rollback
             response = authenticated_client.get(url_for(self.endpoint, user_id=0))
             assert response.status_code == 404
 
@@ -713,7 +713,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
     def test_pro_in_brevo(self, mocked_get_contact_url, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
         user_id = user_offerer.user.id
-        with assert_num_queries(3):  # session + current user + get_user
+        with assert_num_queries(2):  # session + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 302
 
@@ -724,7 +724,7 @@ class GetRedirectToBrevoUserPageTest(GetEndpointHelper):
     def test_pro_not_in_brevo(self, authenticated_client):
         user_offerer = offerers_factories.UserOffererFactory()
         user_id = user_offerer.user.id
-        with assert_num_queries(3):  # session + current user + get_user
+        with assert_num_queries(2):  # session + get_user
             response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
             assert response.status_code == 303
 

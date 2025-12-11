@@ -9,8 +9,7 @@ from pcapi.models import db
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    num_queries = 1  # authentication
-    num_queries += 1  # load current_user
+    num_queries = 1  # authentication + user
     num_queries += 1  # ensure there is no existing archived offer
     num_queries += 1  # retrieve all collective_order.ids to batch them in pool for update
     num_queries += 1  # update dateArchive on collective_offer

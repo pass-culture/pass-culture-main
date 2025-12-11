@@ -42,11 +42,10 @@ class ListBlacklistedDomainNamesTest(GetEndpointHelper):
 
         url = url_for("backoffice_web.fraud.list_blacklisted_domain_names")
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
+        # get session + user(1 query)
         # get history (1 query)
         # get blacklisted domains (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -67,11 +66,10 @@ class PrepareBlacklistDomainNamesTest(GetEndpointHelper):
 
         url = url_for("backoffice_web.fraud.prepare_blacklist_domain_name", domain=domain)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
+        # get session + user (1 query)
         # get beneficiary emails (1 query)
         # get pro users emails (1 query)
-        with assert_num_queries(4):
+        with assert_num_queries(3):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 

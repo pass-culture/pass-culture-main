@@ -39,8 +39,8 @@ class GetProUserTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + pro user data
-    expected_num_queries = 3
+    # session + pro user data
+    expected_num_queries = 2
 
     class EmailValidationButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -276,8 +276,8 @@ class GetProUserHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + user + actions + former user_offerer
-    expected_num_queries = 5
+    # session + user + actions + former user_offerer
+    expected_num_queries = 4
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -378,8 +378,8 @@ class GetProUserOfferersTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session + current user + user + actions + user_offerer objects
-    expected_num_queries = 5
+    # session + user + actions + user_offerer objects
+    expected_num_queries = 4
 
     def test_get_user_offerers(self, authenticated_client):
         pro_user = users_factories.ProFactory()

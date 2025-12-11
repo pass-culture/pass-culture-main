@@ -35,7 +35,7 @@ class EduconnectTest:
 
     def connect_to_educonnect(self, client, app):
         user = users_factories.UserFactory(email=self.email, activity="Collégien")
-        access_token = create_access_token(identity=self.email)
+        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         # Calling /saml/educonnect/login redirects to educonnect login
@@ -52,8 +52,8 @@ class EduconnectTest:
         assert int(app.redis_client.get(f"{self.request_id_key_prefix}{request_id}")) == user.id
 
     def test_educonnect_login_no_redirect(self, client):
-        users_factories.UserFactory(email=self.email)
-        access_token = create_access_token(identity=self.email)
+        user = users_factories.UserFactory(email=self.email)
+        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
         response = client.get("/saml/educonnect/login?redirect=false")
 
@@ -67,7 +67,7 @@ class EduconnectTest:
     )
     def test_get_educonnect_login_production(self, client, app):
         user = users_factories.UserFactory(email=self.email)
-        access_token = create_access_token(identity=self.email)
+        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         response = client.get("/saml/educonnect/login")

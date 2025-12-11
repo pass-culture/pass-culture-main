@@ -693,7 +693,8 @@ class Returns200Test:
         }
         offer_id = offer.id
         http_client = client.with_session_auth("user@example.com")
-        # select user + session (2 queries)
+
+        # select user + session
         # select offer + artists (2 queries)
         # select user_offerer
         # select offerer_address in get_or_create_offer_location (1 query)
@@ -702,7 +703,7 @@ class Returns200Test:
         # select offer + artists (2 queries)
         # select mediation (1 query)
         # select price category
-        with assert_num_queries(12):
+        with assert_num_queries(11):
             response = http_client.patch(self.endpoint.format(offer_id=offer_id), json=data)
         get_address_mock.assert_not_called()
 
