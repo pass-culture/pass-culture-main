@@ -34,6 +34,7 @@ jobs:
   call-slack-api:
     name: "Call Slack API"
     runs-on: ubuntu-24.04
+    continue-on-error: true
     outputs:
       posted_message_ts: ${{ steps.post-message.outputs.ts }}
     steps:
