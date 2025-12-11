@@ -33,7 +33,6 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version-file: '${{ inputs.doc-api-entrypoint }}/package.json'
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@safe-chain-setup/v1.0.0
       - name: "Build documentation"
         run: |
           set -e
