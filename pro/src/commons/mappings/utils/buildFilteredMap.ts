@@ -54,7 +54,12 @@ function putKeyAtTheEnd(key: string): (val: Entries) => Entries {
   return (val: Entries): Entries => {
     const otherIndex = val.findIndex(([k]) => k === key)
     const other = val[otherIndex]
-    return otherIndex > -1 ? val.toSpliced(otherIndex, 1).concat([other]) : val
+    const valCopy: Entries = [...val]
+    if (otherIndex > -1) {
+      valCopy.splice(otherIndex, 1)
+      return valCopy.concat([other])
+    }
+    return val
   }
 }
 
