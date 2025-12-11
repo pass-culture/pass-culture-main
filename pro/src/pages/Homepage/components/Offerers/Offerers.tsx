@@ -46,7 +46,6 @@ export const Offerers = ({
           venueHasPartnerPage={selectedVenue.hasPartnerPage}
         />
       )}
-      {!withSwitchVenueFeature}
       {isOffererSoftDeleted && <SoftDeletedOffererWarning />}
       {!userHasOfferers && <OffererCreationLinks />}
     </>

@@ -1,0 +1,40 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+
+.venue-buttons-box {
+  display: grid;
+  flex-grow: 1;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-top: var(--size-spacing-l);
+  padding-right: var(--size-spacing-l);
+  overflow-y: auto;
+}
+
+.venue-button {
+  @include fonts.button;
+
+  aspect-ratio: 3 / 2;
+  background-color: var(--color-background-default);
+  border: solid 1px var(--color-border-subtle);
+  border-radius: var(--size-border-radius-m);
+  cursor: pointer;
+  height: 100%;
+  padding: var(--size-spacing-xl);
+  width: 100%;
+}
+
+.venue-name {
+  /* font-size: var(--font-size-m); */
+
+  /* font-weight: var(--font-weight-bold); */
+
+  /* margin-bottom: 8px; */
+}
+
+.venue-address {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+
+  /* font-weight: var(--font-weight-regular); */
+}

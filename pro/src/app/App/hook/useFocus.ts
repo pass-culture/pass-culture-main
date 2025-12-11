@@ -1,12 +1,18 @@
-import { useEffect } from 'react'
-import { useLocation } from 'react-router'
+import { useEffect, useRef } from 'react'
+import { useLocation, useMatches } from 'react-router'
 
+import { RouteId } from '@/app/AppRouter/constants'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
+const EXCLUDED_ROUTES: string[] = [RouteId.Hub]
+
 export const useFocus = (): void => {
+  const previousLocationPathname = useRef<string | null>(null)
+
   const location = useLocation()
+  const matches = useMatches()
 
   const currentRoute = findCurrentRoute(location)
   const isErrorPage = currentRoute?.isErrorPage
@@ -15,6 +21,17 @@ export const useFocus = (): void => {
   const isConnected = !!currentUser
 
   useEffect(() => {
+    if (
+      // This useEffect is a complex pattern to maintain,
+      // it will likely be replaced by a focus handling done within its page to clarify responsability.
+      // In the meantime, to prevent multiple useEffect deps warnings,
+      // we include all of them and prevent re-focus with this page-change check:
+      location.pathname === previousLocationPathname.current ||
+      matches.some((route) => EXCLUDED_ROUTES.includes(route.id))
+    ) {
+      return
+    }
+
     /* istanbul ignore next : E2E tested */
     document.getElementById('content-wrapper')?.scrollTo(0, 0)
 
@@ -61,5 +78,5 @@ export const useFocus = (): void => {
     }
 
     // If none of above is called, focus will be document.activeElement = body.
-  }, [location.pathname])
+  }, [isConnected, isErrorPage, location.pathname, matches])
 }

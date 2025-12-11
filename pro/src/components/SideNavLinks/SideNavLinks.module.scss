@@ -43,9 +43,12 @@
 .nav-links {
   display: flex;
   flex-direction: column;
-  padding-top: var(--size-spacing-xl);
   height: 100%;
   border-right: rem.torem(1px) solid var(--color-border-subtle);
+
+  &-with-padding-top {
+    padding-top: var(--size-spacing-xl);
+  }
 
   &-open {
     height: calc(100% - #{size.$top-menu-height});
@@ -60,6 +63,8 @@
   &-group {
     display: flex;
     flex-direction: column;
+
+    /* align-items: center; */
 
     &:nth-child(2) {
       height: 100%;
@@ -135,6 +140,18 @@
 
   &-scroll {
     overflow-y: auto;
+  }
+
+  &-switch-venue-button {
+    align-items: center;
+    background-color: var(--color-background-default);
+    border: solid 1px var(--color-border-subtle);
+    border-radius: var(--size-border-radius-m);
+    display: flex;
+    height: rem.torem(64px);
+    line-height: rem.torem(64px);
+    margin: var(--size-spacing-l);
+    padding: 0 var(--size-spacing-s);
   }
 }
 
