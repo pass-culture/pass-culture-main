@@ -137,6 +137,7 @@ jobs:
 
       - name: Create Github prerelease
         if: "${{ inputs.previous_tag != '' }}"
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         # generate notes vs the latest release
