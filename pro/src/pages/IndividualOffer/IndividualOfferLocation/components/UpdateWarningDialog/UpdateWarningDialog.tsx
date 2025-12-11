@@ -2,9 +2,8 @@ import { useState } from 'react'
 
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 
 import styles from './UpdateWarningDialog.module.scss'
 
@@ -35,11 +34,11 @@ export const UpdateWarningDialog = ({
       <div className={styles['update-oa-wrapper']}>
         <div>{message ?? 'Vous avez modifié la localisation.'}</div>
 
-        <Callout variant={CalloutVariant.WARNING}>
-          Si vous souhaitez que les réservations en cours conservent les données
-          actuelles, veuillez créer une nouvelle offre avec les nouvelles
-          informations.
-        </Callout>
+        <Banner
+          title=""
+          variant={BannerVariants.WARNING}
+          description="Si vous souhaitez que les réservations en cours conservent les données actuelles, veuillez créer une nouvelle offre avec les nouvelles informations."
+        ></Banner>
 
         <FormLayout.Row>
           <Checkbox

@@ -7,8 +7,8 @@ import type {
 } from '@/commons/core/OfferEducational/types'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Banner } from '@/design-system/Banner/Banner'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
@@ -67,10 +67,13 @@ export const FormDates = ({
             value: 'specific_dates',
             collapsed: (
               <>
-                <Callout className={styles.banner}>
-                  Votre offre sera mise en pause automatiquement à l’issue des
-                  dates précisées ci-dessous.
-                </Callout>
+                <div className={styles.banner}>
+                  <Banner
+                    title=""
+                    description="Votre offre sera mise en pause automatiquement à l’issue des dates précisées ci-dessous."
+                  />
+                </div>
+
                 <FormLayout.Row className={styles['row-container']}>
                   <DatePicker
                     label="Date de début"

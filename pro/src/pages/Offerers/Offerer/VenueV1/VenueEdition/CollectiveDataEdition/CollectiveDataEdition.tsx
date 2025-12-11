@@ -8,8 +8,8 @@ import { GET_EDUCATIONAL_STATUSES_QUERY_KEY } from '@/commons/config/swrQueryKey
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
+import { Banner } from '@/design-system/Banner/Banner'
 import { PartnerPageCollectiveSection } from '@/pages/Homepage/components/Offerers/components/PartnerPages/components/PartnerPageCollectiveSection'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import type { Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -79,10 +79,10 @@ export const CollectiveDataEdition = ({
   return (
     <>
       {showCollectiveDataForm && (
-        <Callout title="Les informations suivantes sont visibles par les enseignants et établissements sur ADAGE">
-          Cela leur permet de mieux comprendre votre démarche d’éducation
-          artistique et culturelle.
-        </Callout>
+        <Banner
+          title="Les informations suivantes sont visibles par les enseignants et établissements sur ADAGE"
+          description="Cela leur permet de mieux comprendre votre démarche d’éducation artistique et culturelle."
+        />
       )}
 
       <PartnerPageCollectiveSection

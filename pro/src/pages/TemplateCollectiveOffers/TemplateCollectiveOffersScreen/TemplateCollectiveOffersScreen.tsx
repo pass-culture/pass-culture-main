@@ -22,9 +22,9 @@ import { AccessibleScrollContainer } from '@/components/AccessibleScrollContaine
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
 import { useStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { Banner } from '@/design-system/Banner/Banner'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeNoBooking from '@/icons/stroke-no-booking.svg'
-import { Callout } from '@/ui-kit/Callout/Callout'
 import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import styles from './TemplateCollectiveOffersScreen.module.scss'
@@ -156,10 +156,12 @@ export const TemplateCollectiveOffersScreen = ({
       />
       <output aria-live="polite">
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
-          <Callout className={styles['offers-table-callout']}>
-            L’affichage est limité à {MAX_OFFERS_TO_DISPLAY} offres. Modifiez
-            les filtres pour affiner votre recherche.
-          </Callout>
+          <div className={styles['offers-table-callout']}>
+            <Banner
+              title=""
+              description={`L’affichage est limité à ${MAX_OFFERS_TO_DISPLAY} offres. Modifiez les filtres pour affiner votre recherche.`}
+            />
+          </div>
         )}
         {hasOffers && (
           <div className={styles['offers-table-title']}>

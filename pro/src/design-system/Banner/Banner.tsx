@@ -16,14 +16,14 @@ export enum BannerVariants {
   ERROR = 'error',
 }
 
-type BannerLink = {
+export type BannerLink = {
   label: string
   href: string
   isExternal?: boolean
   icon?: string
   iconAlt?: string
   /** Action type (e.g. "link", "button") */
-  type: string
+  type: 'link' | 'button'
   onClick?: () => void
 }
 
@@ -90,6 +90,8 @@ export const Banner = ({
                         icon={a.icon}
                         iconAlt={a.iconAlt}
                         isExternal={a.isExternal}
+                        onClick={() => a.onClick?.()}
+                        isSectionLink={a.href.startsWith('#')}
                       >
                         {a.label}
                       </ButtonLink>

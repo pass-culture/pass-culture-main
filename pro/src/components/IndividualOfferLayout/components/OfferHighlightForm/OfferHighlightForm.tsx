@@ -13,11 +13,10 @@ import {
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
+import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { Callout } from '@/ui-kit/Callout/Callout'
-import { CalloutVariant } from '@/ui-kit/Callout/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -99,23 +98,25 @@ export function OfferHighlightForm({
         noValidate
       >
         <div className={styles['form-content']}>
-          <Callout
-            variant={CalloutVariant.INFO}
+          <Banner
+            variant={BannerVariants.DEFAULT}
             title="Pré-requis pour être sélectionnée par notre équipe éditoriale :"
-          >
-            <div className={styles['form-info-callout']}>
-              <ul className={styles['form-info-callout-list']}>
-                <li>- L’offre est liée à la thématique choisie</li>
-                <li>- L’offre se déroule pendant le temps fort</li>
-                <li>- L’offre est au statut publiée</li>
-                <li>- L’offre a une image</li>
-              </ul>
-              <p>
-                Un email de validation vous sera envoyé au moment de la
-                valorisation sur l’application.
-              </p>
-            </div>
-          </Callout>
+            description={
+              <div className={styles['form-info-callout']}>
+                <ul className={styles['form-info-callout-list']}>
+                  <li>- L’offre est liée à la thématique choisie</li>
+                  <li>- L’offre se déroule pendant le temps fort</li>
+                  <li>- L’offre est au statut publiée</li>
+                  <li>- L’offre a une image</li>
+                </ul>
+                <p>
+                  Un email de validation vous sera envoyé au moment de la
+                  valorisation sur l’application.
+                </p>
+              </div>
+            }
+          />
+
           <CheckboxGroup
             label="Les prochains temps forts :"
             variant="detailed"
