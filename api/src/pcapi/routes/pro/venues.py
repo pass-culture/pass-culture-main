@@ -158,6 +158,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         "isAccessibilityAppliedOnAllOffers",
         "contact",
         "openingHours",
+        "culturalDomains",
     }
     update_venue_attrs = body.dict(exclude=not_venue_fields, exclude_unset=True)
 
@@ -194,6 +195,7 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         author=current_user,
         contact_data=body.contact,
         opening_hours=body.openingHours,
+        cultural_domains=body.culturalDomains,
         is_manual_edition=body.isManualEdition or False,
     )
 
