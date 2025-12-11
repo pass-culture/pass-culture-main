@@ -1,7 +1,12 @@
 import parsePhoneNumberFromString from 'libphonenumber-js'
+import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
-export const validationSchema = (shouldRequireCulturalDomains: boolean) =>
+import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
+
+export const validationSchema = (
+  shouldRequireCulturalDomains: boolean
+): ObjectSchema<ActivityFormValues> =>
   yup.object().shape({
     venueTypeCode: yup
       .string()
@@ -23,11 +28,13 @@ export const validationSchema = (shouldRequireCulturalDomains: boolean) =>
         yup.object().shape({
           url: yup
             .string()
-            .url('Veuillez renseigner une URL valide. Ex : https://exemple.com')
-            .nullable(),
+            .default('')
+            .url(
+              'Veuillez renseigner une URL valide. Ex : https://exemple.com'
+            ),
         })
       )
-      .nullable(),
+      .required(),
     targetCustomer: yup
       .object()
       .test({
@@ -37,8 +44,8 @@ export const validationSchema = (shouldRequireCulturalDomains: boolean) =>
           Object.values(values).includes(true),
       })
       .shape({
-        individual: yup.boolean(),
-        educational: yup.boolean(),
+        individual: yup.boolean().required(),
+        educational: yup.boolean().required(),
       })
       .required('Veuillez sélectionner au moins une option'),
     phoneNumber: yup
