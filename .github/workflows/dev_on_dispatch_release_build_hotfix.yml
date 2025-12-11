@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-22.04
     outputs:
       hotfixTagNumber: ${{ steps.find-hotfix-tag-number.outputs.hotfixTagNumber }}
+      previousTag: ${{ steps.find-hotfix-tag-number.outputs.previousTag }}
     steps:
       - name: "Checkout 🛎️"
         uses: actions/checkout@v6
@@ -40,6 +41,7 @@ jobs:
           CURRENT_PATCH_NUMBER=$(git tag -l "v${MAJOR_NUMBER}.0.*" | sort -V | tail -n 1 | cut -d. -f3)
           NEXT_PATCH_NUMBER=$((CURRENT_PATCH_NUMBER + 1))
           echo "hotfixTagNumber=${MAJOR_NUMBER}.0.${NEXT_PATCH_NUMBER}" | tee -a $GITHUB_OUTPUT
+          echo "previousTag=$CURRENT_PATCH_NUMBER" >> $GITHUB_OUTPUT
 
   build-and-tag-version:
     name: "Build and tag version"
@@ -54,6 +56,7 @@ jobs:
       base_ref: ${{ github.ref }}
       tag_number: ${{ needs.find-hotfix-tag-number.outputs.hotfixTagNumber }}
       base_ref_is_a_branch: true
+      previous_tag: ${{ needs.find-hotfix-tag-number.outputs.previousTag }}
 
   create-pro-staging-release:
     name: "Pro staging"

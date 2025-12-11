@@ -24,7 +24,7 @@ on:
 
       previous_tag:
         # 199.0.3 for example.
-        required: false
+        required: true
         type: string
 
     secrets:
@@ -136,7 +136,7 @@ jobs:
         run: git push origin "${{ inputs.base_ref }}"
 
       - name: Create Github prerelease
-        if: "${{ github.event.inputs.previous_tag != '' }}"
+        if: "${{ inputs.previous_tag != '' }}"
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         # generate notes vs the latest release
