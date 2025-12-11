@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BankAccountResponseModel } from './BankAccountResponseModel';
-import type { ManagedVenues } from './ManagedVenues';
+import type { ManagedVenue } from './ManagedVenue';
 export type GetOffererBankAccountsResponseModel = {
   bankAccounts: Array<BankAccountResponseModel>;
   id: number;
-  managedVenues: Array<ManagedVenues>;
+  managedVenues: Array<ManagedVenue>;
 };
 

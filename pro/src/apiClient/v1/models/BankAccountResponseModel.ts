@@ -3,14 +3,14 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BankAccountApplicationStatus } from './BankAccountApplicationStatus';
-import type { LinkedVenues } from './LinkedVenues';
+import type { LinkedVenue } from './LinkedVenue';
 export type BankAccountResponseModel = {
   dateCreated: string;
-  dsApplicationId?: number | null;
+  dsApplicationId: (number | null);
   id: number;
   isActive: boolean;
   label: string;
-  linkedVenues: Array<LinkedVenues>;
+  linkedVenues: Array<LinkedVenue>;
   obfuscatedIban: string;
   status: BankAccountApplicationStatus;
 };

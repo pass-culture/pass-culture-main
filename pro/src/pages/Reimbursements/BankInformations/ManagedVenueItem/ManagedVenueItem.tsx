@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import type { BankAccountResponseModel, ManagedVenues } from '@/apiClient/v1'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -11,12 +11,12 @@ import { PricingPointDialog } from '../PricingPointDialog/PricingPointDialog'
 import styles from './ManagedVenueItem.module.scss'
 
 type ManadgedVenueItemProps = {
-  venue: ManagedVenues
+  venue: ManagedVenue
   updateBankAccountVenuePricingPoint: (venueId: number) => void
   selectedBankAccount: BankAccountResponseModel
   selectedVenuesIds: number[]
   setSelectedVenuesIds: (ids: number[]) => void
-  venuesForPricingPoint: ManagedVenues[]
+  venuesForPricingPoint: ManagedVenue[]
 }
 
 export function ManadgedVenueItem({
@@ -27,7 +27,7 @@ export function ManadgedVenueItem({
   setSelectedVenuesIds,
   venuesForPricingPoint,
 }: ManadgedVenueItemProps) {
-  const [selectedVenue, setSelectedVenue] = useState<ManagedVenues | null>(null)
+  const [selectedVenue, setSelectedVenue] = useState<ManagedVenue | null>(null)
   const [isPricingPointDialogOpen, setIsPricingPointDialogOpen] =
     useState<boolean>(false)
 

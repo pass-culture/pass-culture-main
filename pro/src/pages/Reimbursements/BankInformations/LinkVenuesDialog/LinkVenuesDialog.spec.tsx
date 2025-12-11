@@ -2,11 +2,11 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import type { BankAccountResponseModel, ManagedVenues } from '@/apiClient/v1'
+import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
 import * as useNotification from '@/commons/hooks/useNotification'
 import {
   defaultBankAccount,
-  defaultManagedVenues,
+  defaultManagedVenue,
 } from '@/commons/utils/factories/individualApiFactories'
 import {
   type RenderWithProvidersOptions,
@@ -19,7 +19,7 @@ const mockUpdateVenuePricingPoint = vi.fn()
 const renderLinkVenuesDialog = (
   offererId: number,
   selectedBankAccount: BankAccountResponseModel,
-  managedVenues: Array<ManagedVenues>,
+  managedVenues: Array<ManagedVenue>,
   closeDialog: (update?: boolean) => void = vi.fn(),
   updateBankAccountVenuePricingPoint: (
     venueId: number
@@ -41,8 +41,8 @@ const renderLinkVenuesDialog = (
 describe('LinkVenueDialog', () => {
   it('should select all venues when clicking on select all checkbox', async () => {
     const managedVenues = [
-      { ...defaultManagedVenues, id: 1, commonName: 'Lieu 1' },
-      { ...defaultManagedVenues, id: 2, commonName: 'Lieu 2' },
+      { ...defaultManagedVenue, id: 1, commonName: 'Lieu 1' },
+      { ...defaultManagedVenue, id: 2, commonName: 'Lieu 2' },
     ]
 
     renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
@@ -57,8 +57,8 @@ describe('LinkVenueDialog', () => {
 
   it('should display select siret button if venue does not have pricing point', () => {
     const managedVenues = [
-      defaultManagedVenues,
-      { ...defaultManagedVenues, id: 2, hasPricingPoint: false },
+      defaultManagedVenue,
+      { ...defaultManagedVenue, id: 2, hasPricingPoint: false },
     ]
 
     renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
@@ -70,7 +70,7 @@ describe('LinkVenueDialog', () => {
 
   it('should display pricing point pop-in when clicking select siret button', async () => {
     const managedVenues = [
-      { ...defaultManagedVenues, id: 1, hasPricingPoint: false },
+      { ...defaultManagedVenue, id: 1, hasPricingPoint: false },
     ]
 
     renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
@@ -90,9 +90,9 @@ describe('LinkVenueDialog', () => {
   it('should update venue selection when selecting pricing point', async () => {
     vi.spyOn(api, 'linkVenueToPricingPoint').mockResolvedValue()
     const managedVenues = [
-      { ...defaultManagedVenues, id: 1, hasPricingPoint: true },
+      { ...defaultManagedVenue, id: 1, hasPricingPoint: true },
       {
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
         id: 2,
         commonName: 'Lieu sans siret',
         hasPricingPoint: false,
@@ -136,9 +136,9 @@ describe('LinkVenueDialog', () => {
       error: mockNotifyError,
     }))
     const managedVenues = [
-      { ...defaultManagedVenues, id: 1, hasPricingPoint: true, name: 'raison' },
+      { ...defaultManagedVenue, id: 1, hasPricingPoint: true, name: 'raison' },
       {
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
         id: 2,
         commonName: 'Lieu sans siret',
         hasPricingPoint: false,
@@ -170,8 +170,8 @@ describe('LinkVenueDialog', () => {
 
   it('should display banner if at least one venue has no pricing point', () => {
     const managedVenues = [
-      { ...defaultManagedVenues, id: 1, hasPricingPoint: true },
-      { ...defaultManagedVenues, id: 2, hasPricingPoint: false },
+      { ...defaultManagedVenue, id: 1, hasPricingPoint: true },
+      { ...defaultManagedVenue, id: 2, hasPricingPoint: false },
     ]
 
     renderLinkVenuesDialog(1, defaultBankAccount, managedVenues)
@@ -184,11 +184,11 @@ describe('LinkVenueDialog', () => {
   it('should display "Sélectionner un SIRET" button for venue that has no pricing point', () => {
     const managedVenues = [
       {
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
         id: 1,
         hasPricingPoint: false,
         commonName: 'Lieu sans SIRET',
-        siret: undefined,
+        siret: null,
       },
     ]
 
@@ -208,7 +208,7 @@ describe('LinkVenueDialog', () => {
   it('should not display "Sélectionner un SIRET" button for venue that has pricing point', () => {
     const managedVenues = [
       {
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
         id: 1,
         hasPricingPoint: true,
         commonName: 'Lieu avec SIRET',
@@ -228,7 +228,7 @@ describe('LinkVenueDialog', () => {
     const venueName = 'Mon super lieu'
     const venues = [
       {
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
         name: venueName,
         id: 1,
         hasPricingPoint: true,
@@ -245,7 +245,7 @@ describe('LinkVenueDialog', () => {
     const venueName = 'Mon super lieu'
     const venues = [
       {
-        ...defaultManagedVenues,
+        ...defaultManagedVenue,
         id: 1,
         name: venueName,
         hasPricingPoint: true,

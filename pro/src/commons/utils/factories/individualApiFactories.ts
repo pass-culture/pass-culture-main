@@ -19,7 +19,7 @@ import {
   type GetStocksResponseModel,
   type ListOffersOfferResponseModel,
   type ListOffersStockResponseModel,
-  type ManagedVenues,
+  type ManagedVenue,
   OfferStatus,
   type PriceCategoryResponseModel,
   SubcategoryIdEnum,
@@ -466,11 +466,12 @@ export const defaultBankAccount: BankAccountResponseModel = {
   status: BankAccountApplicationStatus.ACCEPTE,
 }
 
-export const defaultManagedVenues: ManagedVenues = {
+export const defaultManagedVenue: ManagedVenue = {
   commonName: 'Mon super lieu',
   name: 'RAISON SOCIALE',
   id: 1,
   siret: '123456789',
+  bankAccountId: null,
   hasPricingPoint: true,
 }
 

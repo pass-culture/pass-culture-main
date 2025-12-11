@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum BankAccountApplicationStatus {
   EN_CONSTRUCTION = 'en_construction',
   EN_INSTRUCTION = 'en_instruction',
