@@ -125,8 +125,8 @@ def link_cultural_domains_to_venue(
 
     if venue:
         venue.collectiveDomains = educational_domains
-        if not venue_type_code:
-            venue.venueTypeCode = offerers_utils.get_venue_type_code_from_educational_domains(venue.collectiveDomains)
+        if not venue_type_code and educational_domains:
+            venue.venueTypeCode = offerers_utils.get_venue_type_code_from_educational_domains(educational_domains)
 
 
 def update_venue(
@@ -139,6 +139,7 @@ def update_venue(
     contact_data: offerers_schemas.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    cultural_domains: list[str] | None = None,
     is_manual_edition: bool = False,
 ) -> models.Venue:
     new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
@@ -194,6 +195,8 @@ def update_venue(
             for weekday, change in changes.items()
         }
         venue_snapshot.trace_update_raw(raw_trace_data)
+
+    link_cultural_domains_to_venue(cultural_domains, venue, modifications.get("venueTypeCode"))
 
     if external_accessibility_url is not offerers_constants.UNCHANGED:
         external_accessibility_id = external_accessibility_url.split("/")[-2] if external_accessibility_url else None

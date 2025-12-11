@@ -835,6 +835,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
             criteria=criteria,
             external_accessibility_url=form.acceslibre_url.data if hasattr(form, "acceslibre_url") else "",
             is_manual_edition=((not venue.isVirtual) and form.is_manual_address.data == "on"),
+            # TODO(activation): should we also update culturalDomaines ?
         )
     except sa.exc.IntegrityError as err:
         # mostly errors about address / offerer_address tables
