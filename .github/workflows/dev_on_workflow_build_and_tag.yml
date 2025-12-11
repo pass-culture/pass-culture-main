@@ -22,10 +22,6 @@ on:
         type: boolean
         default: false
 
-      previous_tag:
-        # 199.0.3 for example.
-        required: false
-        type: string
 
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
@@ -136,7 +132,7 @@ jobs:
         run: git push origin "${{ inputs.base_ref }}"
 
       - name: Create Github prerelease
-        if: "${{ github.event.inputs.previous_tag != '' }}"
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ steps.github-token.outputs.token }}
         # generate notes vs the latest release
@@ -147,4 +143,4 @@ jobs:
           --verify-tag  \
           --generate-notes  \ 
           --notes-start-tag="$latest_release" \          
-          --prerelease \
+          --prerelease
