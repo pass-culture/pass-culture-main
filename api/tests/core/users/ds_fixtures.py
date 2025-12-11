@@ -69,7 +69,7 @@ DS_RESPONSE_EMAIL_CHANGED = {
                             # "__typename": "MultipleDropDownListChamp",
                             "id": "Q2hhbXAtMzM0NjEyMA==",
                             # "label": "S\u00e9lectionne la modification souhait\u00e9e",
-                            "values": ["changement d'adresse de mail"],
+                            "values": ["Changement d'adresse de mail"],
                         },
                         {
                             # "__typename": "TitreIdentiteChamp",
@@ -192,7 +192,7 @@ DS_RESPONSE_EMAIL_CHANGED_DUPLICATE = {
                             # "__typename": "MultipleDropDownListChamp",
                             "id": "Q2hhbXAtMzM0NjEyMA==",
                             # "label": "S\u00e9lectionne la modification souhait\u00e9e",
-                            "values": ["changement d'adresse de mail"],
+                            "values": ["Changement d'adresse de mail"],
                         },
                         {
                             # "__typename": "TitreIdentiteChamp",
@@ -315,7 +315,7 @@ DS_RESPONSE_FIRSTNAME_CHANGED_DUPLICATE = {
                             # "__typename": "MultipleDropDownListChamp",
                             "id": "Q2hhbXAtMzM0NjEyMA==",
                             # "label": "S\u00e9lectionne la modification souhait\u00e9e",
-                            "values": ["changement de pr\u00e9nom"],
+                            "values": ["Changement de pr\u00e9nom"],
                         },
                         {
                             # "__typename": "TitreIdentiteChamp",
@@ -461,7 +461,7 @@ DS_RESPONSE_FIRSTNAME_LASTNAME_CHANGED_DUPLICATE = {
                             # "__typename": "MultipleDropDownListChamp",
                             "id": "Q2hhbXAtMzM0NjEyMA==",
                             # "label": "S\u00e9lectionne la modification souhait\u00e9e",
-                            "values": ["changement de pr\u00e9nom", "changement de nom"],
+                            "values": ["Changement de pr\u00e9nom", "Changement de nom"],
                         },
                         {
                             # "__typename": "TitreIdentiteChamp",
@@ -614,7 +614,7 @@ DS_RESPONSE_PHONE_NUMBER_CHANGED = {
                             # "__typename": "MultipleDropDownListChamp",
                             "id": "Q2hhbXAtMzM0NjEyMA==",
                             # "label": "S\u00e9lectionne la modification souhait\u00e9e",
-                            "values": ["changement de n\u00b0 de t\u00e9l\u00e9phone"],
+                            "values": ["Changement de n\u00b0 de t\u00e9l\u00e9phone"],
                         },
                         {
                             # "__typename": "TitreIdentiteChamp",
@@ -746,7 +746,7 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                             # "__typename": "MultipleDropDownListChamp",
                             "id": "Q2hhbXAtMzM0NjEyMA==",
                             # "label": "S\u00e9lectionne la modification souhait\u00e9e",
-                            "values": ["changement de pr\u00e9nom"],
+                            "values": ["Changement de pr\u00e9nom"],
                         },
                         {
                             # "__typename": "TitreIdentiteChamp",
@@ -871,7 +871,7 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
                             # "__typename": "MultipleDropDownListChamp",
                             "id": "Q2hhbXAtMzM0NjEyMA==",
                             # "label": "S\u00e9lectionne la modification souhait\u00e9e",
-                            "values": ["changement de nom"],
+                            "values": ["Changement de nom"],
                         },
                         {
                             # "__typename": "TitreIdentiteChamp",
@@ -949,6 +949,64 @@ DS_RESPONSE_TWO_APPLICATIONS_FIRST_NAME_LAST_NAME_CHANGED = {
     }
 }
 
+DS_RESPONSE_LOST_CREDENTIALS = {
+    "demarche": {
+        "number": 104118,
+        "dossiers": {
+            "pageInfo": {
+                "hasNextPage": False,
+                "endCursor": "MjAyNC0xMS0yNlQxNToxNDoxNC4yNTgyMjEwMDBaOzIxMTc2MTkz",
+            },
+            "nodes": [
+                {
+                    "id": "UHJvY4VkdXKlLTI5NTgw",
+                    "number": 21176193,
+                    "archived": False,
+                    "state": "en_construction",
+                    "dateDerniereModification": "2024-11-26T16:14:14+01:00",
+                    "dateDepot": "2024-11-26T16:14:14+01:00",
+                    "datePassageEnConstruction": "2024-11-26T16:14:14+01:00",
+                    "datePassageEnInstruction": None,
+                    "dateTraitement": None,
+                    "dateExpiration": "2025-11-26T16:14:14+01:00",
+                    "dateSuppressionParUsager": None,
+                    "dateDerniereCorrectionEnAttente": None,
+                    "dateDerniereModificationChamps": "2024-11-26T16:14:02+01:00",
+                    "dateDerniereModificationAnnotations": "2024-11-26T16:13:30+01:00",
+                    "usager": {"email": "jeune@example.com"},
+                    "prenomMandataire": None,
+                    "nomMandataire": None,
+                    "deposeParUnTiers": False,
+                    "demandeur": {"nom": "En d\u00e9tresse", "prenom": "Jeune", "email": None},
+                    "demarche": {"revision": {"id": "UHJvY2VkdXJlUmV2aXNpb24tMTYyOTUz"}},
+                    "instructeurs": [],
+                    "champs": [
+                        {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-07-06"},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["Perte de l'identifiant de connexion"]},
+                        {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
+                        {"id": "Q2hhbXAtMzM0NjE2MA==", "value": "nouvelle.adresse@example.com"},
+                        {"id": "Q2hhbXAtMzM0NjIzNQ==", "value": None},
+                        {"id": "Q2hhbXAtMzM0NjIzOA==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI0MQ==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1Mw==", "checked": True},
+                        {"id": "Q2hhbXAtMzM0NjI1NA==", "value": None},
+                    ],
+                    "messages": [
+                        {
+                            "email": "contact.demarche.numerique@example.com",
+                            "createdAt": "2024-11-26T16:14:14+01:00",
+                            "correction": None,
+                        }
+                    ],
+                }
+            ],
+        },
+    }
+}
+
+# Legacy, option removed from DN
 DS_RESPONSE_ACCOUNT_HAS_SAME = {
     "demarche": {
         "number": 104118,
@@ -1036,7 +1094,7 @@ DS_RESPONSE_APPLIED_BY_PROXY = {
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-08-07"},
-                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement de n\u00b0 de t\u00e9l\u00e9phone"]},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["Changement de n\u00b0 de t\u00e9l\u00e9phone"]},
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM2MDE5OQ==", "value": "07-33-44-55-66"},
@@ -1102,7 +1160,7 @@ DS_RESPONSE_CORRECTION_RESOLVED = {
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-09-08"},
                         {
                             "id": "Q2hhbXAtMzM0NjEyMA==",
-                            "values": ["changement d'adresse de mail", "changement de n\u00b0 de t\u00e9l\u00e9phone"],
+                            "values": ["Changement d'adresse de mail", "Changement de n\u00b0 de t\u00e9l\u00e9phone"],
                         },
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
@@ -1166,7 +1224,7 @@ DS_RESPONSE_MISSING_VALUE = {
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": None},  # birth date missing
                         {
                             "id": "Q2hhbXAtMzM0NjEyMA==",
-                            "values": ["changement d'adresse de mail", "changement de n\u00b0 de t\u00e9l\u00e9phone"],
+                            "values": ["Changement d'adresse de mail", "Changement de n\u00b0 de t\u00e9l\u00e9phone"],
                         },
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
@@ -1223,7 +1281,7 @@ DS_RESPONSE_INVALID_VALUE = {
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-11-10"},
-                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement de n\u00b0 de t\u00e9l\u00e9phone"]},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["Changement de n\u00b0 de t\u00e9l\u00e9phone"]},
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM2MDE5OQ==", "value": "0700000000"},
@@ -1285,7 +1343,7 @@ DS_RESPONSE_EMAIL_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
-                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement d'adresse de mail"]},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["Changement d'adresse de mail"]},
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0NA==", "value": "other@example.com"},
@@ -1357,7 +1415,7 @@ DS_RESPONSE_FIRSTNAME_CHANGED_WITH_SET_WITHOUT_CONTINUATION = {
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
-                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement de pr\u00e9nom"]},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["Changement de pr\u00e9nom"]},
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM2MDIwNA==", "value": "Nouveau"},
@@ -1428,7 +1486,7 @@ DS_RESPONSE_EMAIL_CHANGED_FROM_DRAFT_WITH_SET_WITHOUT_CONTINUATION = {
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
-                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement d'adresse de mail"]},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["Changement d'adresse de mail"]},
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0NA==", "value": "beneficiaire@example.com"},
@@ -1500,7 +1558,7 @@ DS_RESPONSE_ARCHIVED = {
                     "champs": [
                         {"id": "Q2hhbXAtMzM0NjAwOA==", "value": None},
                         {"id": "Q2hhbXAtMzM0NjAwOQ==", "date": "2006-06-05"},
-                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["changement d'adresse de mail"]},
+                        {"id": "Q2hhbXAtMzM0NjEyMA==", "values": ["Changement d'adresse de mail"]},
                         {"id": "Q2hhbXAtMzM0NjEzOA==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0Mw==", "grantType": "piece_justificative"},
                         {"id": "Q2hhbXAtMzM0NjE0NA==", "value": "ancienne.adresse@example.com"},

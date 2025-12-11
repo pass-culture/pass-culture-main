@@ -135,7 +135,11 @@
       {{ update_request.data_check_flags | format_user_account_update_flags }}
       {% if update_request.has_email_update %}
         <div>
-          <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(update_request.oldEmail) }} → {{ text_or_question_mark(update_request.newEmail) }}
+          {% set old_email = update_request.oldEmail %}
+          {% if update_request.has_lost_credentials and update_request.status != update_request.status.accepted %}
+            {% set old_email = update_request.user.email %}
+          {% endif %}
+          <span class="fw-bold">Email&nbsp;:</span> {{ text_or_question_mark(old_email) }} → {{ text_or_question_mark(update_request.newEmail) }}
         </div>
       {% endif %}
       {% if update_request.has_phone_number_update %}
@@ -157,6 +161,11 @@
           <span class="fw-bold">Nom&nbsp;:</span>
           {% if update_request.user and not update_request.is_accepted %}{{ update_request.user.lastName | empty_string_if_null }} →{% endif %}
           {{ text_or_question_mark(update_request.newLastName) }}
+        </div>
+      {% endif %}
+      {% if update_request.has_lost_credentials %}
+        <div>
+          <span class="fw-bold">Perte de l'identifiant de connexion</span>
         </div>
       {% endif %}
       {% if update_request.has_account_has_same_info_update %}

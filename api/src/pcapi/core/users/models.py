@@ -1125,6 +1125,8 @@ class UserAccountUpdateType(enum.Enum):
     PHONE_NUMBER = "PHONE_NUMBER"
     FIRST_NAME = "FIRST_NAME"
     LAST_NAME = "LAST_NAME"
+    LOST_CREDENTIALS = "LOST_CREDENTIALS"
+    # Deprecated but still existing in applications; may be removed after all applications deleted (early 2027?):
     ACCOUNT_HAS_SAME_INFO = "ACCOUNT_HAS_SAME_INFO"
 
 
@@ -1228,7 +1230,10 @@ class UserAccountUpdateRequest(PcObject, Model):
 
     @property
     def has_email_update(self) -> bool:
-        return UserAccountUpdateType.EMAIL in self.updateTypes
+        return (
+            UserAccountUpdateType.EMAIL in self.updateTypes
+            or UserAccountUpdateType.LOST_CREDENTIALS in self.updateTypes
+        )
 
     @property
     def has_phone_number_update(self) -> bool:
@@ -1243,6 +1248,10 @@ class UserAccountUpdateRequest(PcObject, Model):
         return UserAccountUpdateType.LAST_NAME in self.updateTypes
 
     @property
+    def has_lost_credentials(self) -> bool:
+        return UserAccountUpdateType.LOST_CREDENTIALS in self.updateTypes
+
+    @property
     def has_account_has_same_info_update(self) -> bool:
         return UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO in self.updateTypes
 
@@ -1252,13 +1261,9 @@ class UserAccountUpdateRequest(PcObject, Model):
             self.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going)
             and self.userId is not None
             and self.updateTypes
-            and not self.updateTypes == [UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO]
             and not (
-                set(self.flags)
-                & {
-                    UserAccountUpdateFlag.MISSING_VALUE,
-                    UserAccountUpdateFlag.INVALID_VALUE,
-                }
+                self.updateTypes == [UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO]
+                or set(self.flags) & {UserAccountUpdateFlag.MISSING_VALUE, UserAccountUpdateFlag.INVALID_VALUE}
             )
         )
 
