@@ -26,11 +26,10 @@ pytestmark = [
 class ListHighlightsTest(GetEndpointHelper):
     endpoint = "backoffice_web.highlights.list_highlights"
     needed_permission = perm_models.Permissions.READ_HIGHLIGHT
-    # session
-    # current user
+    # session + user
     # list highlights
     # count highlights
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_without_filters(self, authenticated_client):
         highlight_1 = highlights_factories.HighlightFactory()
@@ -86,7 +85,7 @@ class GetCreateHighlightFormTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
 
     # session + current user
-    expected_num_queries = 2
+    expected_num_queries = 1
 
     def test_get_create_highlight_form(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
@@ -98,10 +97,9 @@ class CreateHighlightTest(PostEndpointHelper):
     endpoint = "backoffice_web.highlights.create_highlight"
     needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
 
-    # - authenticated user
-    # - user session
+    # - session + user
     # - insert into highlight or rollback
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_create_highlight(self, authenticated_client):
         today = datetime.date.today()
@@ -371,7 +369,7 @@ class GetUpdateHighlightFormTest(GetEndpointHelper):
 
     # session + current user
     # get highlight
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_update_highlight_form(self, authenticated_client):
         highlight = highlights_factories.HighlightFactory.create()
@@ -386,11 +384,10 @@ class UpdateHighlightTest(PostEndpointHelper):
     endpoint_kwargs = {"highlight_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_HIGHLIGHT
 
-    # - authenticated user
-    # - user session
+    # - session + user
     # - get highlight
     # - insert update highlight or rollback
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_update_highlight(self, authenticated_client):
         today = datetime.date.today()

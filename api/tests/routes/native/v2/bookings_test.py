@@ -89,7 +89,7 @@ class GetBookingsTest:
             id=111, offer=used2.stock.offer, thumbCount=1, credit="street credit"
         )
 
-        client = client.with_token(self.identifier)
+        client = client.with_token(user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v2/bookings")
@@ -203,7 +203,7 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
 
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v2/bookings")
@@ -219,7 +219,7 @@ class GetBookingsTest:
         )
         ReactionFactory(user=ongoing_booking.user, offer=stock.offer)
 
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v2/bookings")
@@ -235,7 +235,7 @@ class GetBookingsTest:
             stock=stock, user__deposit__expirationDate=now + timedelta(days=180)
         )
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ongoing_booking.user, product=stock.offer.product)
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(3):
             # select user, booking, offer
             response = client.get("/native/v2/bookings")
@@ -251,7 +251,7 @@ class GetBookingsTest:
             stock__offer=offer,
             dateUsed=date_utils.get_naive_utc_now() - timedelta(seconds=60 * 24 * 3600),
         )
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         with assert_num_queries(2):
             # select user, booking, offer
             response = client.get("/native/v2/bookings")
@@ -268,7 +268,7 @@ class GetBookingsTest:
         booking_factories.BookingFactory(
             stock=stock, user=ongoing_booking.user, status=booking_models.BookingStatus.CANCELLED
         )
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v2/bookings")
@@ -294,7 +294,7 @@ class GetBookingsTest:
             user=user, stock=offers_factories.StockFactory(price=10, offer__subcategoryId=subcategories.CARTE_MUSEE.id)
         )
 
-        client = client.with_token(ongoing_booking.user.email)
+        client = client.with_token(ongoing_booking.user)
         with assert_num_queries(2):
             # select user, booking
             response = client.get("/native/v2/bookings")
@@ -311,7 +311,7 @@ class GetBookingsTest:
             stock__offer__subcategoryId=subcategories.TELECHARGEMENT_LIVRE_AUDIO.id,
         )
 
-        test_client = client.with_token(user.email)
+        test_client = client.with_token(user)
         with assert_num_queries(2):
             # select user, booking
             response = test_client.get("/native/v2/bookings")
@@ -330,8 +330,9 @@ class GetBookingsTest:
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["label"] == venue.offererAddress.label
@@ -352,8 +353,9 @@ class GetBookingsTest:
         )
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
         assert response.json["ongoingBookings"][0]["stock"]["offer"]["address"]["label"] == offer.offererAddress.label
@@ -365,7 +367,7 @@ class GetBookingsTest:
         user = users_factories.BeneficiaryFactory(age=19)
         booking_factories.BookingFactory(user=user)
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         with assert_num_queries(2):  # user + booking
             response = client.get("/native/v2/bookings")
 
@@ -376,7 +378,7 @@ class GetBookingsTest:
         venue = offerers_factories.VenueFactory(name="Legal name", publicName="Public name")
         booking = booking_factories.BookingFactory(stock__offer__venue=venue)
 
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -386,7 +388,7 @@ class GetBookingsTest:
         venue = offerers_factories.VenueFactory(bannerUrl="http://bannerUrl.com")
         booking = booking_factories.BookingFactory(stock__offer__venue=venue)
 
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -396,7 +398,7 @@ class GetBookingsTest:
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
         booking = booking_factories.BookingFactory(stock__offer__venue=venue)
 
-        client = client.with_token(booking.user.email)
+        client = client.with_token(booking.user)
         response = client.get("/native/v2/bookings")
 
         assert response.status_code == 200
@@ -468,8 +470,9 @@ class GetBookingsListTest:
         offers_factories.MediationFactory(id=2, offer=ended_booking_1.stock.offer, thumbCount=1, credit="photo credit")
         offers_factories.MediationFactory(id=3, offer=ended_booking_2.stock.offer, thumbCount=1, credit="photo credit")
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + bookings
-            response = client.with_token(self.identifier).get("/native/v2/bookings/ongoing")
+            response = client.get("/native/v2/bookings/ongoing")
 
         assert response.status_code == 200
 
@@ -571,8 +574,9 @@ class GetBookingsListTest:
 
         ReactionFactory(reactionType=ReactionTypeEnum.LIKE, user=ended_booking.user, offer=ended_booking.stock.offer)
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + bookings
-            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+            response = client.get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
 
@@ -697,8 +701,9 @@ class GetBookingsListTest:
             id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + bookings
-            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+            response = client.get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
 
@@ -781,8 +786,9 @@ class GetBookingsListTest:
             id=2, offer=ended_booking.stock.offer, thumbCount=1, credit="photo credit"
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + bookings
-            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+            response = client.get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
 
@@ -855,8 +861,9 @@ class GetBookingsListTest:
             stock__price=0,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + bookings
-            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+            response = client.get("/native/v2/bookings/ended")
 
         assert response.status_code == 200
 
@@ -869,10 +876,11 @@ class GetBookingsListTest:
         assert booking_response["stock"]["isAutomaticallyUsed"] == True
 
     def test_get_bookings_list_raises_error_when_status_is_unknown(self, client):
-        users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
 
+        client.with_token(user)
         with assert_num_queries(1):  # user
-            response_to_unknown_status = client.with_token(self.identifier).get("/native/v2/bookings/invalid_status")
+            response_to_unknown_status = client.get("/native/v2/bookings/invalid_status")
 
         assert response_to_unknown_status.status_code == 404
 
@@ -885,7 +893,7 @@ class GetBookingTest:
         booking = booking_factories.BookingFactory(user=user)
         booking_factories.BookingFactory(user=user)
 
-        response = client.with_token(self.identifier).get(f"/native/v2/bookings/{booking.id}")
+        response = client.with_token(user).get(f"/native/v2/bookings/{booking.id}")
 
         assert response.json == {
             "canReact": False,
@@ -953,16 +961,16 @@ class GetBookingTest:
         }
 
     def test_get_booking_returns_404_when_booking_does_not_exist(self, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         wrong_id = 1234567890
-        response = client.with_token(self.identifier).get(f"/native/v2/bookings/{wrong_id}")
+        response = client.with_token(user).get(f"/native/v2/bookings/{wrong_id}")
         assert response.status_code == 404
 
     def test_get_booking_returns_404_when_booking_does_not_belong_to_user(self, client):
-        users_factories.BeneficiaryGrant18Factory(email=self.identifier)
+        user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
         other_user = users_factories.BeneficiaryGrant18Factory()
         booking = booking_factories.BookingFactory(user=other_user)
-        response = client.with_token(self.identifier).get(f"/native/v2/bookings/{booking.id}")
+        response = client.with_token(user).get(f"/native/v2/bookings/{booking.id}")
         assert response.status_code == 404
 
 
@@ -979,8 +987,9 @@ class GetBookingTicketTest:
             stock__offer__withdrawalDelay=60 * 30,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -996,8 +1005,9 @@ class GetBookingTicketTest:
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1016,8 +1026,9 @@ class GetBookingTicketTest:
             stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.NO_TICKET,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1048,8 +1059,9 @@ class GetBookingTicketTest:
             stock__beginningDatetime=beginningDatetime,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1067,8 +1079,9 @@ class GetBookingTicketTest:
             activationCode=digital_stock.activationCodes[0],
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1091,8 +1104,9 @@ class GetBookingTicketTest:
             stock=digital_stock,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1110,8 +1124,9 @@ class GetBookingTicketTest:
             stock__offer__subcategoryId=subcategories.LIVRE_PAPIER.id,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1153,8 +1168,9 @@ class GetBookingTicketTest:
             stock__offer__withdrawalType=withdrawal_type,
         )
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1185,8 +1201,9 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]
@@ -1218,8 +1235,9 @@ class GetBookingTicketTest:
         ExternalBookingFactory(booking=booking, barcode="111111111", seat="A_1")
         ExternalBookingFactory(booking=booking, barcode="111111112", seat="A_2")
 
+        client.with_token(user)
         with assert_num_queries(2):  # user + booking
-            response = client.with_token(self.identifier).get("/native/v2/bookings")
+            response = client.get("/native/v2/bookings")
             assert response.status_code == 200
 
         ticket = response.json["ongoingBookings"][0]["ticket"]

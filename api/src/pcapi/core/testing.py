@@ -15,9 +15,8 @@ from pcapi.models import db
 from pcapi.models.feature import Feature
 
 
-# 1. SELECT the user session.
-# 2. SELECT the user.
-AUTHENTICATION_QUERIES = 2
+# 1. SELECT the user session and the user.
+AUTHENTICATION_QUERIES = 1
 
 
 @contextlib.contextmanager

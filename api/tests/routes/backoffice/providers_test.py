@@ -33,10 +33,9 @@ class ListProvidersTest(GetEndpointHelper):
     endpoint = "backoffice_web.providers.list_providers"
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch providers and associated api keys (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_list_providers(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Aaaaaah je suis au début")
@@ -206,10 +205,9 @@ class GetProviderTest(GetEndpointHelper):
     endpoint_kwargs = {"provider_id": 1}
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get provider (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_provider(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Le videur pro")
@@ -258,10 +256,9 @@ class GetProviderStatsTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, provider_id=provider.id)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
+        # get session + user (1 query)
         # get provider counts (1 query)
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -275,10 +272,9 @@ class GetProviderStatsTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, provider_id=provider.id)
 
-        # get session (1 query)
-        # get user with profile and permissions (1 query)
+        # get session + user (1 query)
         # get provider counts (1 query)
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -294,9 +290,9 @@ class GetProviderVenuesTest(GetEndpointHelper):
     endpoint_kwargs = {"provider_id": 1}
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 query)
     # - venues with joined data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_linked_venues(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(name="Le videur pro")

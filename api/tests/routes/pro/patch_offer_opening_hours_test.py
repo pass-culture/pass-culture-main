@@ -37,14 +37,13 @@ class Returns200Test:
         data = {"openingHours": {"MONDAY": [["10:00", "18:00"]]}}
         url = f"/offers/{offer.id}/opening-hours"
 
-        # fetch user_session
-        # fetch user
+        # fetch user_session + user
         # fetch offer with its venue
         # check user has access to offer
         # delete offer's opening hours
         # insert opening hours
         # reload offer (with its opening hours)
-        with assert_num_queries(7):
+        with assert_num_queries(6):
             response = auth_client.patch(url, json=data)
 
         assert response.status_code == 200
@@ -74,13 +73,12 @@ class Returns200Test:
         data = {"openingHours": opening_hours}
         url = f"/offers/{offer.id}/opening-hours"
 
-        # fetch user_session
-        # fetch user
+        # fetch user_session + user
         # fetch offer with its venue
         # check user has access to offer
         # delete offer's existing opening hours
         # reload offer (with its opening hours)
-        with assert_num_queries(6):
+        with assert_num_queries(5):
             response = auth_client.patch(url, json=data)
 
         assert response.status_code == 200

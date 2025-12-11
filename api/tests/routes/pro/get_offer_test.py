@@ -22,13 +22,12 @@ from pcapi.utils.human_ids import humanize
 
 @pytest.mark.usefixtures("db_session")
 class Returns403Test:
-    # get user_session
-    # get user
+    # get user_session + user
     # get offer
     # check user_offerer exists
     # rollback
     # rollback
-    num_queries = 6
+    num_queries = 5
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -53,8 +52,7 @@ class Returns403Test:
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    num_queries = 1  # session
-    num_queries += 1  # user
+    num_queries = 1  # session + user
     num_queries += 1  # payload (joined query)
     num_queries += 1  # user offerer
 

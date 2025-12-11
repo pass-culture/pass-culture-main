@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 
 import flask_sqlalchemy
 import sqlalchemy as sa
+import sqlalchemy.dialects.postgresql
+import sqlalchemy.ext.mutable
 import sqlalchemy.orm as sa_orm
 
 from pcapi.models import Model

@@ -38,8 +38,8 @@ class ListAccountUpdateRequestsTest(GetEndpointHelper):
     endpoint = "backoffice_web.account_update.list_account_update_requests"
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
-    # session + current_user + results + results count
-    expected_num_queries = 4
+    # session + results + results count
+    expected_num_queries = 3
 
     def test_list_account_update_requests(self, authenticated_client):
         now = date_utils.get_naive_utc_now()
@@ -682,8 +682,8 @@ class GetAcceptFormTest(GetEndpointHelper):
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
-    # authenticated user + user session + update request joined with user
-    expected_num_queries = 3
+    # session + update request joined with user
+    expected_num_queries = 2
     # + search for duplicate in case of email update
     expected_num_queries_email_update = expected_num_queries + 1
 
@@ -1266,8 +1266,8 @@ class GetAskForCorrectionFormTest(GetEndpointHelper):
     endpoint_kwargs = {"ds_application_id": 1, "correction_reason": "unreadable-photo"}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
-    # authenticated user + user session + update request joined with user
-    expected_num_queries = 3
+    # user session + update request joined with user
+    expected_num_queries = 2
 
     def test_get_form(self, authenticated_client):
         ds_application_id = 21268381
@@ -1475,8 +1475,8 @@ class GetIdentityTheftFormTest(GetEndpointHelper):
     endpoint_kwargs = {"ds_application_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
 
-    # authenticated user + user session + update request joined with user
-    expected_num_queries = 3
+    # user session + update request joined with user
+    expected_num_queries = 2
 
     def test_get_form(self, authenticated_client):
         ds_application_id = 21268381

@@ -34,9 +34,9 @@ class AutocompleteTestBase:
         expected_texts: list[str],
         expected_num_queries: int = 0,
     ):
-        # user + session + data requested
+        # session + data requested
         if not expected_num_queries:
-            expected_num_queries = 3 if search_query.isnumeric() or len(search_query) >= 2 else 2
+            expected_num_queries = 2 if search_query.isnumeric() or len(search_query) >= 2 else 1
 
         with assert_num_queries(expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, q=search_query))
@@ -251,24 +251,24 @@ class AutocompleteProvidersTest(AutocompleteTestBase):
     @pytest.mark.parametrize(
         "search_query, expected_texts, expected_queries",
         [
-            ("", set(), 2),
+            ("", set(), 1),
             (
                 "a",
                 {
                     "A good id",
                 },
-                3,
+                2,
             ),
             (
                 "bon",
                 {
                     "Bon providér",
                 },
-                3,
+                2,
             ),
-            ("12", {"Bon providér"}, 3),
-            ("nothing", set(), 3),
-            ("912", {"A good id"}, 3),
+            ("12", {"Bon providér"}, 2),
+            ("nothing", set(), 2),
+            ("912", {"A good id"}, 2),
         ],
     )
     def test_autocomplete_providers(self, authenticated_client, search_query, expected_texts, expected_queries):
@@ -288,14 +288,14 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
     @pytest.mark.parametrize(
         "search_query, expected_texts, expected_queries",
         [
-            ("", set(), 2),
+            ("", set(), 1),
             (
                 "co",
                 {
                     f"Temps costaud - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
                     f" → {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
                 },
-                3,
+                2,
             ),
             (
                 "fort",
@@ -303,7 +303,7 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
                     f"Temps Fôrt - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
                     f" → {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}",
                 },
-                3,
+                2,
             ),
             (
                 "1",
@@ -311,9 +311,9 @@ class AutocompleteHighlightsTest(AutocompleteTestBase):
                     f"Temps costaud - {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=11)).date(), '%d/%m/%Y')}"
                     f" → {datetime.datetime.strftime((date_utils.get_naive_utc_now() + datetime.timedelta(days=12)).date(), '%d/%m/%Y')}"
                 },
-                3,
+                2,
             ),
-            ("nothing", set(), 3),
+            ("nothing", set(), 2),
         ],
     )
     def test_autocomplete_highlights(self, authenticated_client, search_query, expected_texts, expected_queries):

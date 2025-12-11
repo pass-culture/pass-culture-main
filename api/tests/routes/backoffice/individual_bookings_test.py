@@ -117,9 +117,8 @@ class ListIndividualBookingsTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
-    expected_num_queries_when_no_query = 2
+    # - fetch session + user (1 query)
+    expected_num_queries_when_no_query = 1
     # - fetch individual bookings with extra data (1 query)
     expected_num_queries = expected_num_queries_when_no_query + 1
 
@@ -1172,7 +1171,7 @@ class GetBatchMarkAsUsedIndividualBookingsFormTest(GetEndpointHelper):
 
     def test_get_batch_mark_as_used_booking_form(self, legit_user, authenticated_client):
         bookings_factories.BookingFactory()
-        with assert_num_queries(2):  # session + tested_query
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url_for(self.endpoint))
             # Rendering is not checked, but at least the fetched frame does not crash
             assert response.status_code == 200
@@ -1412,7 +1411,7 @@ class GetBatchCancelIndividualBookingsFormTest(GetEndpointHelper):
 
     def test_get_batch_cancel_booking_form(self, legit_user, authenticated_client):
         bookings_factories.BookingFactory()
-        with assert_num_queries(2):  # session + tested_query
+        with assert_num_queries(1):  # session
             url = url_for(self.endpoint)
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
@@ -1670,8 +1669,8 @@ class GetIndividualBookingCSVDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_individual_booking_csv_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + bookings
+    expected_num_queries = 2
 
     def test_csv_length(self, authenticated_client, bookings):
         venue_id = bookings[0].venueId
@@ -1687,8 +1686,8 @@ class GetIndividualBookingXLSXDownloadTest(GetEndpointHelper):
     endpoint = "backoffice_web.individual_bookings.get_individual_booking_xlsx_download"
     needed_permission = perm_models.Permissions.READ_BOOKINGS
 
-    # session + current user + bookings
-    expected_num_queries = 3
+    # session + bookings
+    expected_num_queries = 2
 
     def reader_from_response(self, response):
         wb = openpyxl.load_workbook(BytesIO(response.data))

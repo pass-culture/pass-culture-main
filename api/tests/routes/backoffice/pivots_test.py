@@ -36,7 +36,7 @@ class GetPivotsTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
     def test_get_pivots_page(self, authenticated_client):
-        with assert_num_queries(2):
+        with assert_num_queries(1):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
 
@@ -46,10 +46,9 @@ class ListPivotsTest(GetEndpointHelper):
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.READ_TECH_PARTNERS
 
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch a single pivot with joinedload (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_list_pivots_allocine(self, authenticated_client):
         allocine_pivot = providers_factories.AllocinePivotFactory()
@@ -297,9 +296,8 @@ class GetCreatePivotFormTest(GetEndpointHelper):
     endpoint_kwargs = {"name": "allocine"}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
-    # - fetch session (1 query)
-    # - fetch user (1 query)
-    expected_num_queries = 2
+    # - fetch session + user (1 query)
+    expected_num_queries = 1
 
     def test_get_create_pivot_form_allocine(self, authenticated_client):
         with assert_num_queries(self.expected_num_queries):
@@ -501,20 +499,18 @@ class GetUpdatePivotFormTest(GetEndpointHelper):
     endpoint_kwargs = {"name": "allocine", "pivot_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_TECH_PARTNERS
 
+    # - fetch session + user (1 query)
     # - fetch cinema details (1 query)
-    # - fetch session (1 query)
-    # - fetch user (1 query)
     # - fetch pivot (1 query)
     # - fetch venue for form validate (1 query)
     # - fetch venue to fill autocomplete (1 query)
-    expected_num_queries = 6
+    expected_num_queries = 5
 
     def test_get_update_pivot_form_allocine(self, authenticated_client):
-        # - fetch session (1 query)
-        # - fetch user (1 query)
+        # - fetch session + user (1 query)
         # - fetch pivot (1 query)
         # - fetch venue to fill autocomplete (1 query)
-        allocine_pivot_expected_num_queries = 4
+        allocine_pivot_expected_num_queries = 3
 
         allocine_pivot = providers_factories.AllocinePivotFactory()
         pivot_id = allocine_pivot.id

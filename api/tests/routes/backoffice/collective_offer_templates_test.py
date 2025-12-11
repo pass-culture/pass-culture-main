@@ -60,9 +60,8 @@ class ListCollectiveOfferTemplatesTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
-    expected_num_queries_when_no_query = 2
+    # - fetch session + user (1 query)
+    expected_num_queries_when_no_query = 1
     # - fetch collective offer templates with joinedload including extra data (1 query)
     expected_num_queries = expected_num_queries_when_no_query + 1
 
@@ -291,10 +290,9 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch CollectiveOfferTemplate including joinedload of venue and offerer
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_nominal(self, authenticated_client):
         collectiveOfferTemplate = educational_factories.CollectiveOfferTemplateFactory(
@@ -526,7 +524,7 @@ class ValidateCollectiveOfferTemplateFormTest(GetEndpointHelper):
 
         url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
-        with assert_num_queries(3):  # session + current user + collective offer
+        with assert_num_queries(2):  # session + collective offer
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -625,7 +623,7 @@ class RejectCollectiveOfferTemplateFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_template_id=collective_offer_template.id)
 
-        with assert_num_queries(3):  # session + current user + collective offer
+        with assert_num_queries(2):  # session + collective offer
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -789,7 +787,7 @@ class GetBatchCollectiveOfferTemplatesApproveFormTest(GetEndpointHelper):
     def test_get_batch_collective_offer_templates_approve_form(self, legit_user, authenticated_client):
         url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -801,6 +799,6 @@ class GetBatchCollectiveOfferTemplatesRejectFormTest(GetEndpointHelper):
     def test_get_batch_collective_offer_templates_reject_form(self, legit_user, authenticated_client):
         url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url)
             assert response.status_code == 200

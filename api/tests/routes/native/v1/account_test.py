@@ -12,6 +12,7 @@ import jwt
 import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
+from flask_jwt_extended.utils import create_access_token
 
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
@@ -66,7 +67,11 @@ class AccountTest:
     def test_get_user_profile_not_found(self, client, app):
         users_factories.UserFactory(email=self.identifier)
 
-        client.with_token(email="other-email@example.com")
+        token = create_access_token("other-email@example.com", additional_claims={"user_claims": {"user_id": 0}})
+        client.auth_header = {
+            "Authorization": f"Bearer {token}",
+        }
+
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/me")
             assert response.status_code == 403
@@ -74,9 +79,9 @@ class AccountTest:
         assert response.json["email"] == ["Utilisateur introuvable"]
 
     def test_get_user_profile_not_active(self, client, app):
-        users_factories.UserFactory(email=self.identifier, isActive=False)
+        user = users_factories.UserFactory(email=self.identifier, isActive=False)
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/me")
             assert response.status_code == 403
@@ -116,7 +121,7 @@ class AccountTest:
         CancelledBookingFactory(user=user, amount=Decimal("123.45"))
 
         expected_num_queries = 7  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + achievement + fraud check + action_history
-        client.with_token(self.identifier)
+        client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200, response.json
@@ -175,7 +180,7 @@ class AccountTest:
             6  # user + beneficiary_fraud_review + beneficiary_fraud_check + deposit + booking + achievement
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
 
@@ -185,11 +190,11 @@ class AccountTest:
         }
 
     def test_get_user_not_beneficiary(self, client, app):
-        users_factories.UserFactory(email=self.identifier)
+        user = users_factories.UserFactory(email=self.identifier)
 
         expected_num_queries = 5  # user + achievement + booking + deposit + fraud check
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
 
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -198,11 +203,11 @@ class AccountTest:
         assert not response.json["domainsCredit"]
 
     def test_get_user_profile_empty_first_name(self, client, app):
-        users_factories.UserFactory(email=self.identifier, firstName="")
+        user = users_factories.UserFactory(email=self.identifier, firstName="")
 
         expected_num_queries = 5  # user + achievement + booking + deposit + fraud check
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
             assert response.status_code == 200
@@ -213,11 +218,12 @@ class AccountTest:
         assert response.json["roles"] == []
 
     def test_get_user_profile_legacy_activity(self, client):
-        users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
+        user = users_factories.UserFactory(email=self.identifier, activity="activity not in enum")
 
         expected_num_queries = 5  # user + achievement + booking + deposit + fraud check
+        client.with_token(user)
         with assert_num_queries(expected_num_queries):
-            response = client.with_token(email=self.identifier).get("/native/v1/me")
+            response = client.get("/native/v1/me")
 
         assert response.status_code == 200
         assert "activity" not in response.json
@@ -232,12 +238,11 @@ class AccountTest:
         expected_num_queries += 1  # achievements
         expected_num_queries += 1  # bookings (from _get_booked_offers)
         expected_num_queries += 1  # bookings (from get_domains_credit)
-        expected_num_queries += 1  # deposit
-        expected_num_queries += 1  # recredit
         expected_num_queries += 1  # beneficiary fraud checks
-        expected_num_queries += 1  # action_history
+        expected_num_queries += 1  # user_profile_refresh_campaign.
+        expected_num_queries += 1  # recredit
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         with assert_num_queries(expected_num_queries):
             me_response = client.get("/native/v1/me")
 
@@ -259,7 +264,7 @@ class AccountTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
-        client.with_token(user.email)
+        client.with_token(user)
 
         expected_num_queries = 7  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + deposit + booking + achievement
         with assert_num_queries(expected_num_queries):
@@ -290,7 +295,7 @@ class AccountTest:
             reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         expected_num_queries = 7  # user + beneficiary_fraud_review + beneficiary_fraud_check + user_profile_refresh_campaign + deposit + booking + achievement
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -319,7 +324,7 @@ class AccountTest:
 
         expected_num_queries = 6  # user + booking + deposit + beneficiary_fraud_review * 2 + achievement
 
-        client.with_token(user.email)
+        client.with_token(user)
         features.ENABLE_CULTURAL_SURVEY = enable_cultural_survey
         features.ENABLE_NATIVE_CULTURAL_SURVEY = enable_native_cultural_survey
         with assert_num_queries(expected_num_queries):
@@ -333,7 +338,7 @@ class AccountTest:
 
         expected_num_queries = 5  # user + achievement + booking + deposit + fraud check
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
 
@@ -345,7 +350,7 @@ class AccountTest:
 
         expected_num_queries = 6  # user + booking + deposit + beneficiary_fraud_review * 2 + achievement
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
 
@@ -366,11 +371,11 @@ class AccountTest:
             status=subscription_models.FraudCheckStatus.SUSPICIOUS,
             reasonCodes=[subscription_models.FraudReasonCode.ID_CHECK_NOT_SUPPORTED],
         )
-        client.with_token(user.email)
+        client.with_token(user)
 
         response = client.get("/native/v1/me")
         assert response.status_code == 200
-        client.with_token(user.email)
+        client.with_token(user)
         n_queries = 1  # get user
         n_queries += 1  # get bookings
 
@@ -380,7 +385,7 @@ class AccountTest:
     def test_num_queries_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        client.with_token(user.email)
+        client.with_token(user)
 
         n_queries = 1  # user
         n_queries += 1  # user bookings
@@ -398,7 +403,7 @@ class AccountTest:
 
         expected_num_queries = 7  # user + deposit + booking(from _get_booked_offers) + booking (from get_domains_credit) + achievement + fraud check + action history
 
-        client.with_token(user.email)
+        client.with_token(user)
 
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/me")
@@ -412,7 +417,7 @@ class AccountTest:
 
         expected_num_queries = 6  # user(update) + user + achievements + bookings + deposit + fraud check
         with assert_num_queries(expected_num_queries):
-            response = client.with_token(user.email).get("/native/v1/me")
+            response = client.with_token(user).get("/native/v1/me")
             assert response.status_code == 200, response.json
 
         assert response.json["hasPassword"] == False
@@ -422,7 +427,7 @@ class AccountTest:
 
         expected_num_queries = 6  # user*2 + achievements + bookings + deposit + fraud check
         with assert_num_queries(expected_num_queries):
-            response = client.with_token(user.email).get("/native/v1/me")
+            response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200, response.json
         assert response.json["currency"] == "XPF"
@@ -441,7 +446,7 @@ class AccountTest:
             user=user, name=achievements_models.AchievementEnum.FIRST_BOOK_BOOKING, unlockedDate=now
         )
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200, response.json
         assert response.json["achievements"] == [
@@ -465,7 +470,7 @@ class AccountTest:
         before_profile_expiry_date = campaign_date - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(beneficiaryFraudChecks__dateCreated=before_profile_expiry_date)
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["hasProfileExpired"]
@@ -479,7 +484,7 @@ class AccountTest:
             user=user, dateCreated=campaign_date + relativedelta(days=1)
         )
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200
         assert not response.json["hasProfileExpired"]
@@ -490,7 +495,7 @@ class AccountTest:
         before_campaign_date = campaign_date - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(beneficiaryFraudChecks__dateCreated=before_campaign_date)
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["hasProfileExpired"] is True
@@ -513,7 +518,7 @@ class AccountTest:
             actionDate=campaign_date + relativedelta(days=1),
         )
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200
         assert not response.json["hasProfileExpired"]
@@ -523,7 +528,7 @@ class AccountTest:
         users_factories.UserProfileRefreshCampaignFactory(campaignDate=campaign_date)
         user = users_factories.PhoneValidatedUserFactory()
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["hasProfileExpired"] is False
@@ -534,14 +539,14 @@ class AccountTest:
         before_campaign_date = campaign_date - relativedelta(days=1)
         user = users_factories.FreeBeneficiaryFactory(beneficiaryFraudChecks__dateCreated=before_campaign_date)
 
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
 
         assert response.status_code == 200
         assert response.json["hasProfileExpired"] is False
 
     def test_get_user_profile_bonification_status_is_eligible(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == "eligible"
 
@@ -555,7 +560,7 @@ class AccountTest:
     def test_get_user_profile_bonification_status_is_eligible_after_error(self, client, fraud_check_status):
         user = users_factories.BeneficiaryFactory(age=18)
         subscription_factories.BonusFraudCheckFactory(status=fraud_check_status, user=user)
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == "eligible"
 
@@ -583,14 +588,14 @@ class AccountTest:
             reasonCodes=[reason_code],
             user=user,
         )
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == expected_qf_bonification_status.value
 
     def test_get_user_profile_bonification_status_granted(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
         subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.OK)
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.GRANTED.value
 
@@ -602,19 +607,19 @@ class AccountTest:
             status=subscription_models.FraudCheckStatus.KO,
             reasonCodes=[subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD],
         )
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.TOO_MANY_RETRIES.value
 
     def test_get_user_profile_bonification_status_is_not_eligible_for_under_17(self, client):
         user = users_factories.BeneficiaryFactory(age=17)
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
 
     def test_get_user_profile_bonification_status_is_not_eligible_for_non_beneficiary(self, client):
         user = users_factories.HonorStatementValidatedUserFactory(age=18)
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.NOT_ELIGIBLE.value
 
@@ -625,7 +630,7 @@ class AccountTest:
             reasonCodes=None,
             user=user,
         )
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.UNKNOWN_KO.value
 
@@ -642,14 +647,14 @@ class AccountTest:
             reasonCodes=None,
             user=user,
         )
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["qfBonificationStatus"] == subscription_models.QFBonificationStatus.GRANTED.value
 
     def test_get_user_profile_recredit_type(self, client):
         user = users_factories.BeneficiaryFactory(age=18)
         deposit_api.recredit_bonus_credit(user)
-        response = client.with_token(user.email).get("/native/v1/me")
+        response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
         assert response.json["recreditAmountToShow"] == 50_00
         assert response.json["recreditTypeToShow"] == "BonusCredit"
@@ -1126,7 +1131,7 @@ class UserProfileUpdateTest:
         password = "some_random_string"
         user = users_factories.UserFactory(email=self.identifier, password=password)
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.patch(
             "/native/v1/profile",
             json={
@@ -1146,7 +1151,7 @@ class UserProfileUpdateTest:
     def test_unsubscribe_push_notifications(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         response = client.patch(
             "/native/v1/profile",
             json={"subscriptions": {"marketingPush": False, "marketingEmail": False, "subscribedThemes": []}},
@@ -1184,7 +1189,7 @@ class UserProfileUpdateTest:
         }
 
     def test_subscription_logging_to_data(self, client, caplog):
-        users_factories.UserFactory(
+        user = users_factories.UserFactory(
             email=self.identifier,
             notificationSubscriptions={
                 "marketing_push": True,
@@ -1193,8 +1198,8 @@ class UserProfileUpdateTest:
             },
         )
 
+        client.with_token(user)
         with caplog.at_level(logging.INFO):
-            client.with_token(email=self.identifier)
             response = client.patch(
                 "/native/v1/profile",
                 json={
@@ -1224,7 +1229,7 @@ class UserProfileUpdateTest:
     def test_address_update(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         response = client.patch("/native/v1/profile", json={"address": "new address"})
 
         assert response.status_code == 200
@@ -1233,7 +1238,7 @@ class UserProfileUpdateTest:
     def test_postal_code_update(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         response = client.patch("/native/v1/profile", json={"postalCode": "38000", "city": "Grenoble"})
 
         assert response.status_code == 200
@@ -1244,7 +1249,7 @@ class UserProfileUpdateTest:
     def test_ineligible_postal_code_update(self, client, postal_code):
         user = users_factories.UserFactory(email=self.identifier)
 
-        response = client.with_token(email=self.identifier).patch(
+        response = client.with_token(user).patch(
             "/native/v1/profile", json={"postalCode": postal_code, "city": "Grenoble"}
         )
 
@@ -1256,7 +1261,7 @@ class UserProfileUpdateTest:
     def test_activity_update(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         response = client.patch("/native/v1/profile", json={"activity_id": users_models.ActivityEnum.UNEMPLOYED.name})
 
         assert response.status_code == 200
@@ -1278,9 +1283,7 @@ class UserProfileUpdateTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
-        response = client.with_token(email=user.email).patch(
-            "/native/v1/profile", json={"phoneNumber": requested_phone_number}
-        )
+        response = client.with_token(user).patch("/native/v1/profile", json={"phoneNumber": requested_phone_number})
 
         assert response.status_code == 200
         assert user.phoneNumber == "+33601020304"
@@ -1291,7 +1294,7 @@ class UserProfileUpdateTest:
             email=self.identifier, phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED
         )
 
-        response = client.with_token(email=user.email).patch("/native/v1/profile", json={"phoneNumber": "0601020304"})
+        response = client.with_token(user).patch("/native/v1/profile", json={"phoneNumber": "0601020304"})
 
         assert response.status_code == 200
         assert user.phoneNumber == "+33601020304"
@@ -1300,7 +1303,7 @@ class UserProfileUpdateTest:
     def test_invalid_phone_number_update(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        response = client.with_token(email=user.email).patch("/native/v1/profile", json={"phoneNumber": "060102030405"})
+        response = client.with_token(user).patch("/native/v1/profile", json={"phoneNumber": "060102030405"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_PHONE_NUMBER"
@@ -1308,7 +1311,7 @@ class UserProfileUpdateTest:
     def test_invalid_phone_number_country_code_update(self, client):
         user = users_factories.UserFactory(email=self.identifier)
 
-        response = client.with_token(email=user.email).patch("/native/v1/profile", json={"phoneNumber": "+46766123456"})
+        response = client.with_token(user).patch("/native/v1/profile", json={"phoneNumber": "+46766123456"})
 
         assert response.status_code == 400
         assert response.json["code"] == "INVALID_COUNTRY_CODE"
@@ -1329,7 +1332,7 @@ class UserProfileUpdateTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         response = client.patch("/native/v1/profile", json={})
 
         assert response.status_code == 200
@@ -1358,7 +1361,7 @@ class ResetRecreditAmountToShow:
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
         user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
 
-        client.with_token(email=self.identifier)
+        client.with_token(user)
         response = client.post("/native/v1/reset_recredit_amount_to_show")
 
         assert response.status_code == 200
@@ -1515,7 +1518,7 @@ class GetTokenExpirationTest:
         )
         expiration_date = token.get_expiration_date_from_token()
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         expected_num_queries = 1  # user_email
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/profile/token_expiration")
@@ -1528,7 +1531,7 @@ class GetTokenExpirationTest:
     def test_no_token(self, app, client):
         user = users_factories.UserFactory(email=self.email)
 
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         expected_num_queries = 1  # user
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/profile/token_expiration")
@@ -1661,7 +1664,7 @@ class ShowEligibleCardTest:
 class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code(self, client, app):
         user = users_factories.UserFactory()
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
 
@@ -1698,7 +1701,7 @@ class SendPhoneValidationCodeTest:
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, days=5),
         )
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
         assert response.status_code == 204
@@ -1730,7 +1733,7 @@ class SendPhoneValidationCodeTest:
 
     def test_send_phone_validation_code_already_beneficiary(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
 
@@ -1742,7 +1745,7 @@ class SendPhoneValidationCodeTest:
         user = users_factories.BeneficiaryGrant18Factory(
             isEmailValidated=True, phoneNumber="+33601020304", roles=[users_models.UserRole.BENEFICIARY]
         )
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
@@ -1754,7 +1757,7 @@ class SendPhoneValidationCodeTest:
 
     def test_send_phone_validation_code_for_new_phone_updates_phone(self, client):
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
@@ -1766,7 +1769,7 @@ class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code_for_new_unvalidated_duplicated_phone_number(self, client, app):
         users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33102030405")
         user = users_factories.UserFactory(isEmailValidated=True, phoneNumber="+33601020304")
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
@@ -1787,7 +1790,7 @@ class SendPhoneValidationCodeTest:
             phoneNumber="+33601020304",
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, days=5),
         )
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33102030405"})
 
@@ -1829,7 +1832,7 @@ class SendPhoneValidationCodeTest:
     def test_send_phone_validation_code_with_invalid_number(self, client):
         # user's phone number should be in international format (E.164): +33601020304
         user = users_factories.UserFactory(isEmailValidated=True)
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "060102030405"})
 
@@ -1839,7 +1842,7 @@ class SendPhoneValidationCodeTest:
 
     def test_send_phone_validation_code_with_non_french_number(self, client):
         user = users_factories.UserFactory(isEmailValidated=True)
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+46766123456"})
 
@@ -1857,7 +1860,7 @@ class SendPhoneValidationCodeTest:
         user = users_factories.UserFactory(
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, days=5),
         )
-        client.with_token(email=user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/send_phone_validation_code", json={"phoneNumber": "+33601020304"})
 
@@ -1895,7 +1898,7 @@ class ValidatePhoneNumberTest:
         user = users_factories.UserFactory(
             phoneNumber="+33607080900", dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18)
         )
-        client.with_token(email=user.email)
+        client.with_token(user)
         token = create_phone_validation_token(user, "+33607080900")
 
         # try one attempt with wrong code
@@ -1923,7 +1926,7 @@ class ValidatePhoneNumberTest:
         first_number = "+33611111111"
         second_number = "+33622222222"
         user = users_factories.UserFactory(phoneNumber=second_number)
-        client.with_token(email=user.email)
+        client.with_token(user)
         first_token = create_phone_validation_token(user, first_number)
         create_phone_validation_token(user, second_number)
 
@@ -1952,7 +1955,7 @@ class ValidatePhoneNumberTest:
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
-        client.with_token(email=user.email)
+        client.with_token(user)
         token = create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
@@ -1968,7 +1971,7 @@ class ValidatePhoneNumberTest:
             phoneNumber="+33607080900",
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, days=5),
         )
-        client.with_token(email=user.email)
+        client.with_token(user)
         token = create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": "wrong code"})
@@ -2009,7 +2012,7 @@ class ValidatePhoneNumberTest:
     @time_machine.travel("2022-05-17 15:00")
     def test_phone_validation_remaining_attempts(self, client):
         user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, days=5))
-        client.with_token(email=user.email)
+        client.with_token(user)
         response = client.get("/native/v1/phone_validation/remaining_attempts")
 
         assert response.json["counterResetDatetime"] is None
@@ -2024,7 +2027,7 @@ class ValidatePhoneNumberTest:
 
     def test_wrong_code(self, client):
         user = users_factories.UserFactory(phoneNumber="+33607080900")
-        client.with_token(email=user.email)
+        client.with_token(user)
         create_phone_validation_token(user, "+33607080900")
 
         response = client.post("/native/v1/validate_phone_number", {"code": "mauvais-code"})
@@ -2062,7 +2065,7 @@ class ValidatePhoneNumberTest:
             token = create_phone_validation_token(user, "+33607080900")
 
             with time_machine.travel(date_utils.get_naive_utc_now() + timedelta(hours=15)):
-                client.with_token(email=user.email)
+                client.with_token(user)
                 response = client.post("/native/v1/validate_phone_number", {"code": token.encoded_token})
 
             assert response.status_code == 400
@@ -2078,7 +2081,7 @@ class ValidatePhoneNumberTest:
             roles=[users_models.UserRole.BENEFICIARY],
         )
         user = users_factories.UserFactory(phoneNumber="+33607080900")
-        client.with_token(email=user.email)
+        client.with_token(user)
         token = create_phone_validation_token(user, "+33607080900")
 
         # try one attempt with wrong code
@@ -2094,7 +2097,7 @@ class SuspendAccountTest:
         booking = booking_factories.BookingFactory()
         user = booking.user
 
-        client.with_token(email=user.email)
+        client.with_token(user)
         response = client.post("/native/v1/account/suspend")
 
         assert response.status_code == 204
@@ -2113,7 +2116,7 @@ class SuspendAccountTest:
         reason = users_constants.SuspensionReason.FRAUD_SUSPICION
         history_factories.SuspendedUserActionHistoryFactory(user=user, reason=reason)
 
-        client.with_token(email=user.email)
+        client.with_token(user)
         response = client.post("/native/v1/account/suspend")
 
         # Any API call is forbidden for suspended user
@@ -2193,7 +2196,7 @@ class GetAccountSuspendedDateTest:
             user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
 
-        client.with_token(email=user.email)
+        client.with_token(user)
         expected_num_queries = 2  # user + action_history
         with assert_num_queries(expected_num_queries):
             response = client.get("/native/v1/account/suspension_date")
@@ -2235,7 +2238,7 @@ class GetAccountSuspendedDateTest:
             self.assert_no_suspension_date_returned(client, user)
 
         def assert_no_suspension_date_returned(self, client, user) -> None:
-            client.with_token(email=user.email)
+            client.with_token(user)
 
             expected_num_queries = 2  # user + action_history
             with assert_num_queries(expected_num_queries):
@@ -2279,7 +2282,7 @@ class SuspensionStatusTest:
         self.assert_status(client, user, "ACTIVE")
 
     def assert_status(self, client, user, status):
-        client.with_token(email=user.email)
+        client.with_token(user)
         response = client.get("/native/v1/account/suspension_status")
 
         assert response.status_code == 200
@@ -2293,7 +2296,7 @@ class UnsuspendAccountTest:
             user=user, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
 
-        client.with_token(email=user.email)
+        client.with_token(user)
         response = client.post("/native/v1/account/unsuspend")
 
         assert response.status_code == 204
@@ -2310,7 +2313,7 @@ class UnsuspendAccountTest:
     def test_error_when_not_suspended(self, client):
         user = users_factories.BeneficiaryGrant18Factory(isActive=True)
 
-        response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+        response = client.with_token(user).post("/native/v1/account/unsuspend")
         self.assert_code(response, "ALREADY_UNSUSPENDED")
 
     @pytest.mark.parametrize(
@@ -2324,7 +2327,7 @@ class UnsuspendAccountTest:
         user = users_factories.BeneficiaryGrant18Factory(isActive=False)
         history_factories.SuspendedUserActionHistoryFactory(user=user, reason=suspension_reason)
 
-        response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+        response = client.with_token(user).post("/native/v1/account/unsuspend")
         self.assert_code_and_not_active(response, user, "UNSUSPENSION_NOT_ALLOWED")
 
     def test_error_when_suspension_time_limit_reached(self, client):
@@ -2335,7 +2338,7 @@ class UnsuspendAccountTest:
             user=user, actionDate=suspension_date, reason=users_constants.SuspensionReason.UPON_USER_REQUEST
         )
 
-        response = client.with_token(email=user.email).post("/native/v1/account/unsuspend")
+        response = client.with_token(user).post("/native/v1/account/unsuspend")
         self.assert_code_and_not_active(response, user, "UNSUSPENSION_LIMIT_REACHED")
 
     def assert_code(self, response, code):
@@ -2426,7 +2429,7 @@ class SuspendAccountForHackSuspicionTest:
         booking = booking_factories.BookingFactory()
         user = booking.user
 
-        response = client.with_token(user.email).post("/native/v1/account/suspend_for_hack_suspicion")
+        response = client.with_token(user).post("/native/v1/account/suspend_for_hack_suspicion")
 
         assert response.status_code == 204
         assert booking.status == BookingStatus.CANCELLED
@@ -2451,7 +2454,7 @@ class AnonymizeUserTest:
     def test_anonymize_ex_beneficiary(self, client, roles):
         user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1), roles=roles)
 
-        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+        response = client.with_token(user).post("/native/v1/account/anonymize")
 
         assert response.status_code == 204
         assert not user.isActive
@@ -2465,7 +2468,7 @@ class AnonymizeUserTest:
     def test_no_deposit(self, client):
         user = users_factories.UserFactory(age=16)
 
-        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+        response = client.with_token(user).post("/native/v1/account/anonymize")
 
         assert response.status_code == 204
         assert not user.isActive
@@ -2480,7 +2483,7 @@ class AnonymizeUserTest:
         user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1))
         users_factories.GdprUserDataExtractBeneficiaryFactory(user=user)
 
-        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+        response = client.with_token(user).post("/native/v1/account/anonymize")
 
         assert response.status_code == 400
         assert response.json["code"] == "EXISTING_UNPROCESSED_GDPR_EXTRACT"
@@ -2499,7 +2502,7 @@ class AnonymizeUserTest:
     def test_not_anonymizable_role(self, client, role):
         user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1), roles=[role])
 
-        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+        response = client.with_token(user).post("/native/v1/account/anonymize")
 
         assert response.status_code == 400
         assert response.json["code"] == "NOT_ANONYMIZABLE_BENEFICIARY"
@@ -2509,7 +2512,7 @@ class AnonymizeUserTest:
     def test_active_beneficiary(self, client):
         user = users_factories.BeneficiaryFactory()
 
-        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+        response = client.with_token(user).post("/native/v1/account/anonymize")
 
         assert response.status_code == 400
         assert response.json["code"] == "NOT_ANONYMIZABLE_BENEFICIARY"
@@ -2520,7 +2523,7 @@ class AnonymizeUserTest:
         user = users_factories.BeneficiaryFactory(validatedBirthDate=date(2000, 1, 1))
         users_factories.GdprUserAnonymizationFactory(user=user)
 
-        response = client.with_token(email=user.email).post("/native/v1/account/anonymize")
+        response = client.with_token(user).post("/native/v1/account/anonymize")
 
         assert response.status_code == 400
         assert response.json["code"] == "ALREADY_HAS_PENDING_ANONYMIZATION"

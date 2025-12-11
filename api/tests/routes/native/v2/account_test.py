@@ -24,7 +24,7 @@ class UpdateUserEmailTest:
     def test_update_user_email(self, client):
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
-        response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        response = client.with_token(user).post("/native/v2/profile/update_email")
 
         assert response.status_code == 204, response.json
 
@@ -45,9 +45,9 @@ class UpdateUserEmailTest:
     def test_update_email_too_many_attempts(self, _ongoing_email_check_mock, client):
         user = users_factories.UserFactory()
 
-        response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        response = client.with_token(user).post("/native/v2/profile/update_email")
         assert response.status_code == 204
-        response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        response = client.with_token(user).post("/native/v2/profile/update_email")
 
         assert response.status_code == 400
         assert response.json["error_code"] == account_errors.EMAIL_UPDATE_LIMIT.code
@@ -56,9 +56,9 @@ class UpdateUserEmailTest:
     def test_ongoing_email_update_blocks_the_next_update_request(self, client):
         user = users_factories.UserFactory()
 
-        first_response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        first_response = client.with_token(user).post("/native/v2/profile/update_email")
         assert first_response.status_code == 204
-        second_response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        second_response = client.with_token(user).post("/native/v2/profile/update_email")
 
         assert second_response.status_code == 400
         assert second_response.json["error_code"] == account_errors.EMAIL_UPDATE_PENDING.code
@@ -130,7 +130,7 @@ class NewEmailSelectionTest:
         ).encoded_token
 
         new_email = "alice@example.com"
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v2/profile/email_update/new_email", json={"token": token, "newEmail": new_email}
         )
 
@@ -152,7 +152,7 @@ class NewEmailSelectionTest:
             user_id=user.id,
         ).encoded_token
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v2/profile/email_update/new_email",
             json={"token": token, "newEmail": "alice@example.com"},
         )
@@ -163,7 +163,7 @@ class NewEmailSelectionTest:
     def test_email_selection_with_invalid_token(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v2/profile/email_update/new_email",
             json={"token": "invalid token", "newEmail": "alice@example.com"},
         )
@@ -188,7 +188,7 @@ class NewEmailSelectionTest:
             user_id=user.id,
         ).encoded_token
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v2/profile/email_update/new_email", json={"token": token, "newEmail": another_user.email}
         )
 
@@ -212,7 +212,7 @@ class EmailUpdateStatusTest:
             user_id=user.id,
         )
 
-        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+        response = client.with_token(user).get("/native/v2/profile/email_update/status")
 
         assert response.status_code == 200, response.json
         assert response.json == {
@@ -238,7 +238,7 @@ class EmailUpdateStatusTest:
             user_id=user.id,
         )
 
-        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+        response = client.with_token(user).get("/native/v2/profile/email_update/status")
 
         assert response.status_code == 200, response.json
         assert response.json == {
@@ -264,7 +264,7 @@ class EmailUpdateStatusTest:
             user_id=user.id,
         )
 
-        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+        response = client.with_token(user).get("/native/v2/profile/email_update/status")
 
         assert response.status_code == 200, response.json
         assert response.json == {
@@ -289,7 +289,7 @@ class EmailUpdateStatusTest:
             user_id=user.id,
         )
 
-        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+        response = client.with_token(user).get("/native/v2/profile/email_update/status")
 
         assert response.status_code == 200, response.json
         assert response.json == {
@@ -320,7 +320,7 @@ class EmailUpdateStatusTest:
             data={"new_email": "alice@example.com"},
         )
 
-        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+        response = client.with_token(user).get("/native/v2/profile/email_update/status")
 
         assert response.status_code == 200, response.json
         assert response.json == {
@@ -336,7 +336,7 @@ class EmailUpdateStatusTest:
     def test_status_without_prior_history(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        response = client.with_token(user.email).get("/native/v2/profile/email_update/status")
+        response = client.with_token(user).get("/native/v2/profile/email_update/status")
 
         assert response.status_code == 404, response.json
 
@@ -350,7 +350,7 @@ class UpdateUserEmailIntegrationTest:
     def test_user_email_update_flow(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        email_update_start_response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        email_update_start_response = client.with_token(user).post("/native/v2/profile/update_email")
         assert email_update_start_response == 204, email_update_start_response.json
 
         [email_update_confirmation_token] = _get_last_sent_email_url_params()["token"]
@@ -361,14 +361,14 @@ class UpdateUserEmailIntegrationTest:
 
         new_email = "alice@example.com"
         new_email_selection_token = email_update_confirmation_response.json["newEmailSelectionToken"]
-        new_email_selection_response = client.with_token(user.email).post(
+        new_email_selection_response = client.with_token(user).post(
             "/native/v2/profile/email_update/new_email",
             json={"token": new_email_selection_token, "newEmail": new_email},
         )
         assert new_email_selection_response == 204, new_email_selection_response
 
         [email_update_confirmation_token] = _get_last_sent_email_url_params()["token"]
-        email_update_confirmation_response = client.with_token(user.email).put(
+        email_update_confirmation_response = client.with_token(user).put(
             "/native/v1/profile/email_update/validate",
             json={"token": email_update_confirmation_token},
         )
@@ -379,7 +379,7 @@ class UpdateUserEmailIntegrationTest:
     def test_user_email_update_flow_without_password(self, client):
         user = users_factories.UserFactory(password=None)
 
-        email_update_start_response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        email_update_start_response = client.with_token(user).post("/native/v2/profile/update_email")
         assert email_update_start_response == 204, email_update_start_response.json
 
         [email_update_confirmation_token] = _get_last_sent_email_url_params()["token"]
@@ -389,7 +389,7 @@ class UpdateUserEmailIntegrationTest:
         assert email_update_confirmation_response == 200, email_update_confirmation_response.json
 
         reset_password_token = email_update_confirmation_response.json["resetPasswordToken"]
-        reset_password_response = client.with_token(user.email).post(
+        reset_password_response = client.with_token(user).post(
             "/native/v2/profile/email_update/new_password",
             json={"reset_password_token": reset_password_token, "newPassword": "user@AZERTY123"},
         )
@@ -397,14 +397,14 @@ class UpdateUserEmailIntegrationTest:
 
         new_email = "alice@example.com"
         new_email_selection_token = email_update_confirmation_response.json["newEmailSelectionToken"]
-        new_email_selection_response = client.with_token(user.email).post(
+        new_email_selection_response = client.with_token(user).post(
             "/native/v2/profile/email_update/new_email",
             json={"token": new_email_selection_token, "newEmail": new_email},
         )
         assert new_email_selection_response == 204, new_email_selection_response
 
         [email_update_confirmation_token] = _get_last_sent_email_url_params()["token"]
-        email_update_confirmation_response = client.with_token(user.email).put(
+        email_update_confirmation_response = client.with_token(user).put(
             "/native/v1/profile/email_update/validate",
             json={"token": email_update_confirmation_token},
         )
@@ -416,7 +416,7 @@ class UpdateUserEmailIntegrationTest:
         user = users_factories.BeneficiaryGrant18Factory()
         current_email = user.email
 
-        email_update_start_response = client.with_token(user.email).post("/native/v2/profile/update_email")
+        email_update_start_response = client.with_token(user).post("/native/v2/profile/update_email")
         assert email_update_start_response == 204, email_update_start_response.json
 
         [email_update_cancellation_token] = _get_last_sent_email_url_params("CANCELLATION_LINK")["token"]

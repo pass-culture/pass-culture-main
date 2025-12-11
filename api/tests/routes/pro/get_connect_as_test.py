@@ -8,10 +8,9 @@ from pcapi.core.users import models as users_models
 class Returns200Test:
     # user to connect as
     # INSERT INTO action_history
-    # DELETE FROM user_session
     # user
     # INSERT INTO user_session
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_current_user_has_rights_to_impersonate_a_pro(self, client, db_session):
         # given

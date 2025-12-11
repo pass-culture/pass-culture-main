@@ -2,6 +2,8 @@ import enum
 import urllib.parse
 import uuid
 
+from flask_login import current_user
+
 from pcapi import settings
 from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.subscription import api as subscription_api
@@ -35,17 +37,17 @@ class E2EUbbleIdCheck(BaseModel):
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 @atomic()
-def ubble_identification(user: users_models.User, body: E2EUbbleIdCheck) -> None:
-    content = make_identification_response(user, body.errors)
+def ubble_identification(body: E2EUbbleIdCheck) -> None:
+    content = make_identification_response(current_user, body.errors)
     fraud_check = subscription_api.initialize_identity_fraud_check(
-        eligibility_type=user.eligibility,
+        eligibility_type=current_user.eligibility,
         fraud_check_type=subscription_models.FraudCheckType.UBBLE,
         identity_content=content,
         third_party_id=str(content.identification_id),
-        user=user,
+        user=current_user,
     )
     ubble_fraud_api.on_ubble_result(fraud_check)
-    subscription_api.activate_beneficiary_if_no_missing_step(user=user)
+    subscription_api.activate_beneficiary_if_no_missing_step(user=current_user)
 
 
 def make_identification_response(

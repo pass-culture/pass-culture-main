@@ -1,5 +1,7 @@
 import logging
 
+from flask_login import current_user
+
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.exceptions as bookings_exceptions
 from pcapi.core.bookings.models import Booking
@@ -8,7 +10,6 @@ from pcapi.core.offers.exceptions import StockDoesNotExist
 from pcapi.core.offers.exceptions import UnexpectedCinemaProvider
 from pcapi.core.offers.models import Stock
 from pcapi.core.providers.exceptions import InactiveProvider
-from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import first_or_404
@@ -29,7 +30,7 @@ logger = logging.getLogger(__name__)
 @blueprint.native_route("/bookings", methods=["POST"])
 @spectree_serialize(api=blueprint.api, response_model=BookOfferResponse, on_error_statuses=[400])
 @authenticated_and_active_user_required
-def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
+def book_offer(body: BookOfferRequest) -> BookOfferResponse:
     stock = db.session.get(Stock, body.stock_id)
     if not stock:
         logger.info("Could not book offer: stock does not exist", extra={"stock_id": body.stock_id})
@@ -37,7 +38,7 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 
     try:
         booking = bookings_api.book_offer(
-            beneficiary=user,
+            beneficiary=current_user,
             stock_id=body.stock_id,
             quantity=body.quantity,
         )
@@ -65,7 +66,11 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
     except bookings_exceptions.OfferCategoryNotBookableByUser:
         logger.info(
             "Could not book offer: category is not bookable by user",
-            extra={"stock_id": body.stock_id, "subcategory_id": stock.offer.subcategoryId, "user_roles": user.roles},
+            extra={
+                "stock_id": body.stock_id,
+                "subcategory_id": stock.offer.subcategoryId,
+                "user_roles": current_user.roles,
+            },
         )
         raise ApiErrors({"code": "OFFER_CATEGORY_NOT_BOOKABLE_BY_USER"})
     except UnexpectedCinemaProvider:
@@ -105,8 +110,8 @@ def book_offer(user: User, body: BookOfferRequest) -> BookOfferResponse:
 @blueprint.native_route("/bookings", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=BookingsResponse)
 @authenticated_and_active_user_required
-def get_bookings(user: User) -> BookingsResponse:
-    individual_bookings = bookings_api.get_individual_bookings(user)
+def get_bookings() -> BookingsResponse:
+    individual_bookings = bookings_api.get_individual_bookings(current_user)
     ended_bookings, ongoing_bookings = bookings_api.classify_and_sort_bookings(individual_bookings)
 
     return BookingsResponse(
@@ -121,10 +126,12 @@ def get_bookings(user: User) -> BookingsResponse:
 @blueprint.native_route("/bookings/<int:booking_id>/cancel", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400, 404])
 @authenticated_and_active_user_required
-def cancel_booking(user: User, booking_id: int) -> None:
-    booking = first_or_404(db.session.query(Booking).filter(Booking.id == booking_id, Booking.userId == user.id))
+def cancel_booking(booking_id: int) -> None:
+    booking = first_or_404(
+        db.session.query(Booking).filter(Booking.id == booking_id, Booking.userId == current_user.id)
+    )
     try:
-        bookings_api.cancel_booking_by_beneficiary(user, booking)
+        bookings_api.cancel_booking_by_beneficiary(current_user, booking)
     except bookings_exceptions.BookingIsCancelled:
         # Do not raise an error, to avoid showing an error in case double-click => double call
         # Booking is cancelled so a success status is ok
@@ -134,7 +141,7 @@ def cancel_booking(user: User, booking_id: int) -> None:
     except bookings_exceptions.CannotCancelConfirmedBooking:
         raise ApiErrors({"code": "CONFIRMED_BOOKING", "message": "La date limite d'annulation est dépassée."})
     except RuntimeError:
-        logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", user.id)
+        logger.error("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s", current_user.id)
         raise ApiErrors()
     except UnexpectedCinemaProvider:
         raise ApiErrors({"external_booking": "L'annulation de réservation a échoué."})
@@ -149,8 +156,10 @@ def cancel_booking(user: User, booking_id: int) -> None:
 @blueprint.native_route("/bookings/<int:booking_id>/toggle_display", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204, on_error_statuses=[400])
 @authenticated_and_active_user_required
-def flag_booking_as_used(user: User, booking_id: int, body: BookingDisplayStatusRequest) -> None:
-    booking = first_or_404(db.session.query(Booking).filter(Booking.userId == user.id, Booking.id == booking_id))
+def flag_booking_as_used(booking_id: int, body: BookingDisplayStatusRequest) -> None:
+    booking = first_or_404(
+        db.session.query(Booking).filter(Booking.userId == current_user.id, Booking.id == booking_id)
+    )
     booking.displayAsEnded = body.ended
     db.session.add(booking)
     db.session.commit()

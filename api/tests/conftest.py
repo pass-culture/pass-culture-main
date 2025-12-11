@@ -8,7 +8,6 @@ import time
 import typing
 import urllib.parse
 from dataclasses import dataclass
-from datetime import timedelta
 from pathlib import Path
 from pprint import pprint
 from unittest.mock import MagicMock
@@ -91,8 +90,6 @@ def build_backoffice_app():
     app.teardown_request_funcs[None].remove(remove_db_session)
 
     with app.app_context():
-        from pcapi.utils import login_manager
-
         app.test_client_class = FlaskLoginClient
         app.config["TESTING"] = True
 
@@ -110,7 +107,6 @@ def build_backoffice_app():
             user = db.session.query(User).filter_by(id=user_id).one()
 
             login_user(user, remember=True)
-            login_manager.stamp_session(user, timedelta(minutes=15))
 
             return ""
 
@@ -243,6 +239,7 @@ def client_fixture(app: Flask):
     # trouble during tests (backoffice only, api routes do not have the
     # the csrf protection enabled during tests)
     g.pop("csrf_token", default=None)
+    g.pop("jwt_data", default=None)
     return TestClient(app.test_client())
 
 
@@ -390,9 +387,10 @@ class TestClient:
         }
         return self
 
-    def with_token(self, email: str) -> "TestClient":
+    def with_token(self, user) -> "TestClient":
+        token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
         self.auth_header = {
-            "Authorization": f"Bearer {create_access_token(email)}",
+            "Authorization": f"Bearer {token}",
         }
         return self
 

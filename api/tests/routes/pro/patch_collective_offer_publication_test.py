@@ -12,8 +12,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 
 @pytest.mark.usefixtures("db_session")
 class Returns204Test:
-    num_queries = 1  # session
-    num_queries += 1  # user
+    num_queries = 1  # session + user
     num_queries += 1  # offer
     num_queries += 1  # user_offerer
     num_queries += 1  # venue_already_has_validated_offer
