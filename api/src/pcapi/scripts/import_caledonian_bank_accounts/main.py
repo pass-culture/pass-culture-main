@@ -107,10 +107,12 @@ def validated_bank_account_email_notification(
 def link_venue_to_bank_account(
     bank_account: finance_models.BankAccount, venue: offerers_models.Venue, ds_id: int
 ) -> offerers_models.VenueBankAccountLink | None:
-    if bank_account.venueLinks:
-        current_link = bank_account.current_link
-        assert current_link  # helps mypy
-        if current_link.venue == venue:
+    for link in bank_account.venueLinks:
+        if (
+            link.timespan.upper is None
+            and link.timespan.lower <= date_utils.get_naive_utc_now()
+            and link.venue == venue
+        ):
             logger.info(
                 "bank_account already linked to its venue",
                 extra={
