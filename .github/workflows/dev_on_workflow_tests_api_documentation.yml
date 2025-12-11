@@ -34,9 +34,6 @@ jobs:
         with:
           node-version-file: '${{ inputs.doc-api-entrypoint }}/package.json'
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@safe-chain-setup/v1.0.0
-        with:
-          version: "1.2.2"
-          checksum: "db58cbdebb132f3172cd872ef1a3de407cd59d9fe16ce058f87ab43a4b49f799"
       - name: "Build documentation"
         run: |
           set -e
