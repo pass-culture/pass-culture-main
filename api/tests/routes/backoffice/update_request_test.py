@@ -689,13 +689,8 @@ class GetAcceptFormTest(GetEndpointHelper):
 
     button_label = "Appliquer les modifications et accepter"
 
-    def test_email_update(self, authenticated_client):
-        ds_application_id = 21268381
-        update_request = users_factories.EmailUpdateRequestFactory(
-            user__email="ancien_email@example.com",
-            oldEmail="ancien_email@example.com",
-            dsApplicationId=ds_application_id,
-        )
+    def _test_email_update(self, authenticated_client, update_request, expected_modification_text):
+        ds_application_id = update_request.dsApplicationId
 
         with assert_num_queries(self.expected_num_queries_email_update):
             response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
@@ -709,10 +704,10 @@ class GetAcceptFormTest(GetEndpointHelper):
         assert f"Email : {update_request.user.email} " in content
         assert f"Date de naissance : {update_request.user.birth_date.strftime('%d/%m/%Y')} " in content
         assert f"Âge : {update_request.user.age} ans " in content
-        assert "Modifications demandées : Email " in content
+        assert f"Modifications demandées : {expected_modification_text} " in content
         assert f"Dossier : {update_request.dsApplicationId} " in content
         assert f"Dépôt de la demande : {update_request.dateCreated.strftime('%d/%m/%Y')} " in content
-        assert f"Ancien email : {update_request.oldEmail} " in content
+        assert f"Ancien email : {update_request.user.email} " in content
         assert f"Nouvel email : {update_request.newEmail} " in content
         assert "Ancien numéro " not in content
         assert "Nouveau numéro " not in content
@@ -720,6 +715,20 @@ class GetAcceptFormTest(GetEndpointHelper):
         assert "Nouveau nom " not in content
         assert "Doublon" not in content
         assert self.button_label in content
+
+    def test_email_update(self, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(
+            user__email="ancien_email@example.com",
+            oldEmail="ancien_email@example.com",
+        )
+
+        self._test_email_update(authenticated_client, update_request, "Email")
+
+    def test_lost_credentials(self, authenticated_client):
+        user = users_factories.BeneficiaryGrant18Factory()
+        update_request = users_factories.LostCredentialsUpdateRequestFactory(user=user)
+
+        self._test_email_update(authenticated_client, update_request, "Perte de l'identifiant")
 
     def test_phone_number_update(self, authenticated_client):
         ds_application_id = 21268381
@@ -930,21 +939,14 @@ class AcceptTest(PostEndpointHelper):
             "ds_status": dms_models.GraphQLApplicationStates.accepted.value,
         }
 
-    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
-    def test_accept_email_update(self, mock_make_accepted, legit_user, authenticated_client):
-        update_request = users_factories.EmailUpdateRequestFactory(
-            user__email="ancien_email@example.com", oldEmail="ancien_email@example.com", dsApplicationId=21268381
-        )
-
-        self._test_successful_request(update_request, mock_make_accepted, legit_user, authenticated_client)
-
+    def _check_accept_email_update(self, update_request, old_email):
         assert update_request.user.email == update_request.newEmail
 
         assert len(update_request.user.action_history) == 1
 
         assert len(update_request.user.email_history) == 1
         history = update_request.user.email_history[0]
-        assert history.oldEmail == update_request.oldEmail
+        assert history.oldEmail == old_email
         assert history.newEmail == update_request.newEmail
         assert history.eventType == users_models.EmailHistoryEventTypeEnum.ADMIN_UPDATE
 
@@ -957,6 +959,24 @@ class AcceptTest(PostEndpointHelper):
             "LASTNAME": update_request.user.lastName,
             "UPDATED_FIELD": "EMAIL",
         }
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_accept_email_update(self, mock_make_accepted, legit_user, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(
+            user__email="ancien_email@example.com", oldEmail="ancien_email@example.com", dsApplicationId=21268381
+        )
+
+        self._test_successful_request(update_request, mock_make_accepted, legit_user, authenticated_client)
+        self._check_accept_email_update(update_request, update_request.oldEmail)
+
+    @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
+    def test_accept_lost_credentials(self, mock_make_accepted, legit_user, authenticated_client):
+        old_email = "perdu@example.com"
+        user = users_factories.BeneficiaryGrant18Factory(email=old_email)
+        update_request = users_factories.LostCredentialsUpdateRequestFactory(user=user)
+
+        self._test_successful_request(update_request, mock_make_accepted, legit_user, authenticated_client)
+        self._check_accept_email_update(update_request, old_email)
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.make_accepted")
     def test_accept_phone_number_update(self, mock_make_accepted, legit_user, authenticated_client):

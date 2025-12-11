@@ -667,6 +667,7 @@ class UserAccountUpdateRequestCanBeAcceptedTest:
             ([user_models.UserAccountUpdateType.LAST_NAME], True),
             ([user_models.UserAccountUpdateType.EMAIL], True),
             ([user_models.UserAccountUpdateType.PHONE_NUMBER], True),
+            ([user_models.UserAccountUpdateType.LOST_CREDENTIALS], True),
             ([user_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO], False),
             ([], False),
         ],

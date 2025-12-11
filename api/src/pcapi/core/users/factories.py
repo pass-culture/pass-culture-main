@@ -1218,7 +1218,9 @@ class UserAccountUpdateRequestFactory(BaseFactory):
         lastName="du Backoffice",
     )
     dateLastUserMessage = LazyAttribute(lambda _: date_utils.get_naive_utc_now() - relativedelta(days=1))
-    dateLastInstructorMessage = factory.LazyAttribute(lambda _: date_utils.get_naive_utc_now() - relativedelta(days=3))
+    dateLastInstructorMessage: factory.declarations.BaseDeclaration | None = factory.LazyAttribute(
+        lambda _: date_utils.get_naive_utc_now() - relativedelta(days=3)
+    )
 
 
 class EmailUpdateRequestFactory(UserAccountUpdateRequestFactory):
@@ -1241,6 +1243,13 @@ class FirstNameUpdateRequestFactory(UserAccountUpdateRequestFactory):
 class LastNameUpdateRequestFactory(UserAccountUpdateRequestFactory):
     updateTypes = [models.UserAccountUpdateType.LAST_NAME]
     newLastName = "Nouveau-Nom"
+
+
+class LostCredentialsUpdateRequestFactory(UserAccountUpdateRequestFactory):
+    lastName = "Perdu"
+    updateTypes = [models.UserAccountUpdateType.LOST_CREDENTIALS]
+    newEmail = factory.Sequence(lambda n: f"email_retrouve_{n + 1}@example.com")
+    dateLastInstructorMessage = None
 
 
 class GdprUserDataExtractBeneficiaryFactory(BaseFactory):

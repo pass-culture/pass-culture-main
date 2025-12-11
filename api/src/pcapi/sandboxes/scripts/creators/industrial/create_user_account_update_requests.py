@@ -137,4 +137,12 @@ def create_user_account_update_requests() -> None:
         ],
     )
 
+    users_factories.LostCredentialsUpdateRequestFactory.create(
+        status=dms_models.GraphQLApplicationStates.draft,
+        user=None,
+        newEmail="perdu@example.com",
+        lastInstructor=None,
+        dateLastUserMessage=None,
+    )
+
     logger.info("created user account update requests")

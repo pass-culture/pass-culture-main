@@ -658,9 +658,7 @@ class DeleteProUserTest(PostEndpointHelper):
     ):
         user = users_factories.BeneficiaryFactory(roles=[users_models.UserRole.NON_ATTACHED_PRO])
         history_factories.SuspendedUserActionHistoryFactory(user=user)
-        uaur_id = users_factories.UserAccountUpdateRequestFactory(
-            user=user, updateTypes=[users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO]
-        ).id
+        uaur_id = users_factories.LostCredentialsUpdateRequestFactory(user=user).id
         user_id = user.id
         deposit_id = user.deposits[0].id
         beneficiary_fraud_check_id = user.beneficiaryFraudChecks[0].id

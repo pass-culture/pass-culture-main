@@ -967,6 +967,8 @@ def format_user_account_update_type(update_type: users_models.UserAccountUpdateT
             return "Prénom"
         case users_models.UserAccountUpdateType.LAST_NAME:
             return "Nom"
+        case users_models.UserAccountUpdateType.LOST_CREDENTIALS:
+            return "Perte de l'identifiant"
         case users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO:
             return "Compte a les mêmes infos"
         case _:

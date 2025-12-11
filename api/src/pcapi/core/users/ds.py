@@ -48,10 +48,13 @@ class DsUserAccountUpdateProcredureField(enum.Enum):
 
 
 DS_CHOICE_TO_UPDATE_TYPE = {
+    # Keep lowercase
     "changement d'adresse de mail": users_models.UserAccountUpdateType.EMAIL,
     "changement de n° de téléphone": users_models.UserAccountUpdateType.PHONE_NUMBER,
     "changement de prénom": users_models.UserAccountUpdateType.FIRST_NAME,
     "changement de nom": users_models.UserAccountUpdateType.LAST_NAME,
+    "perte de l'identifiant de connexion": users_models.UserAccountUpdateType.LOST_CREDENTIALS,
+    # Deprecated but still existing in applications; may be removed after all applications deleted (early 2027?):
     "compte a les mêmes informations": users_models.UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO,
 }
 
@@ -340,7 +343,7 @@ def _sync_ds_application(
         for field in fields:
             match field["id"]:
                 case DsUserAccountUpdateProcredureField.CHOICES.value:
-                    data["updateTypes"] = [DS_CHOICE_TO_UPDATE_TYPE.get(value) for value in field["values"]]
+                    data["updateTypes"] = [DS_CHOICE_TO_UPDATE_TYPE.get(value.lower()) for value in field["values"]]
 
                 case DsUserAccountUpdateProcredureField.BIRTH_DATE.value:
                     if field["date"]:  # was not mandatory

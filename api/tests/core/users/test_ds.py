@@ -230,6 +230,42 @@ class SyncUserAccountUpdateRequestsTest:
 
     @patch(
         "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_LOST_CREDENTIALS,
+    )
+    def test_lost_credentials(self, mocked_get_applications, instructor):
+        beneficiary = users_factories.UserFactory(email="jeune@example.com")
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        mocked_get_applications.assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+        assert uaur.dsApplicationId == 21176193
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
+        assert uaur.status == dms_models.GraphQLApplicationStates.draft
+        assert uaur.dateCreated == datetime(2024, 11, 26, 15, 14, 14)
+        assert uaur.dateLastStatusUpdate == uaur.dateCreated
+        assert uaur.firstName == "Jeune"
+        assert uaur.lastName == "En détresse"
+        assert uaur.email == "jeune@example.com"
+        assert uaur.birthDate == date(2006, 7, 6)
+        assert uaur.user == beneficiary
+        assert uaur.updateTypes == [users_models.UserAccountUpdateType.LOST_CREDENTIALS]
+        assert uaur.oldEmail is None
+        assert uaur.newEmail == "nouvelle.adresse@example.com"
+        assert uaur.newPhoneNumber is None
+        assert uaur.newFirstName is None
+        assert uaur.newLastName is None
+        assert uaur.allConditionsChecked is True
+        assert uaur.lastInstructor is None
+        assert uaur.dateLastUserMessage is None
+        assert uaur.dateLastInstructorMessage is None
+        assert uaur.flags == []
+
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
         return_value=ds_fixtures.DS_RESPONSE_APPLIED_BY_PROXY,
     )
     def test_applied_by_proxy(self, mocked_get_applications, instructor):
