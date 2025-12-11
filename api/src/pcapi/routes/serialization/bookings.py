@@ -1,112 +1,63 @@
-from datetime import datetime
-from decimal import Decimal
-from enum import Enum
-
-import pydantic.v1 as pydantic_v1
+import enum
 
 from pcapi.core.bookings.models import Booking
-from pcapi.core.categories import subcategories
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.human_ids import humanize
 
 
-class BookingOfferType(str, Enum):
+class BookingOfferType(enum.StrEnum):
     BIEN = "BIEN"
     EVENEMENT = "EVENEMENT"
 
 
-class BookingFormula(str, Enum):
-    PLACE = "PLACE"
-    ABO = "ABO"
-
-
-class GetBookingResponse(BaseModel):
-    bookingId: str
-    dateOfBirth: str | None
+class GetBookingResponse(HttpBodyModel):
+    booking_id: str
+    date_of_birth: str | None
     datetime: str  # avoid breaking legacy value "" returned for void date
     ean13: str | None
     email: str
-    formula: BookingFormula | None = pydantic_v1.Field(
-        description="S'applique uniquement aux offres de catégorie Cinéma. Abonnement (ABO) ou place (PLACE)."
-    )
-    isUsed: bool
-    offerId: int
-    publicOfferId: str
-    offerName: str
-    offerType: BookingOfferType
-    priceCategoryLabel: str | None
-    phoneNumber: str | None
-    price: Decimal
+    is_used: bool
+    offer_id: int
+    public_offer_id: str
+    offer_name: str
+    offer_type: BookingOfferType
+    price_category_label: str | None
+    phone_number: str | None
+    price: float
     quantity: int
-    theater: dict = pydantic_v1.Field(
-        description="Identifiant du film et de la salle dans le cas d’une offre synchronisée par Allociné.",
-        example={"film_id": "...", "salle_id": "..."},
-    )
-    userName: str
-    firstName: str | None
-    lastName: str | None
-    offerAddress: str | None
-    offerDepartmentCode: str | None
-    venueName: str
+    user_name: str
+    first_name: str | None
+    last_name: str | None
+    offer_address: str | None
+    offer_department_code: str | None
+    venue_name: str
 
 
 def get_booking_response(booking: Booking) -> GetBookingResponse:
-    if booking.stock.offer.subcategoryId == subcategories.SEANCE_CINE.id:
-        formula = BookingFormula.PLACE
-    elif booking.stock.offer.subcategoryId in (
-        subcategories.CARTE_CINE_ILLIMITE.id,
-        subcategories.CARTE_CINE_MULTISEANCES.id,
-    ):
-        formula = BookingFormula.ABO
-    else:
-        formula = None
-
-    extra_data = booking.stock.offer.extraData or {}
-
     birth_date = booking.user.birth_date.isoformat() if booking.user.birth_date else None
     return GetBookingResponse(
-        bookingId=humanize(booking.id),  # type: ignore[arg-type]
-        dateOfBirth=birth_date,
+        booking_id=humanize(booking.id),
+        date_of_birth=birth_date,
         datetime=(format_into_utc_date(booking.stock.beginningDatetime) if booking.stock.beginningDatetime else ""),
         ean13=booking.stock.offer.ean,
         email=booking.email,
-        formula=formula,
-        isUsed=booking.is_used_or_reimbursed,
-        offerId=booking.stock.offer.id,
-        publicOfferId=humanize(booking.stock.offer.id),  # type: ignore[arg-type]
-        offerName=booking.stock.offer.name,
-        offerType=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
-        phoneNumber=booking.user.phoneNumber,
-        price=booking.amount,
-        priceCategoryLabel=booking.priceCategoryLabel,
+        is_used=booking.is_used_or_reimbursed,
+        offer_id=booking.stock.offer.id,
+        public_offer_id=humanize(booking.stock.offer.id),
+        offer_name=booking.stock.offer.name,
+        offer_type=BookingOfferType.EVENEMENT if booking.stock.offer.isEvent else BookingOfferType.EVENEMENT,
+        phone_number=booking.user.phoneNumber,
+        price=float(booking.amount),
+        price_category_label=booking.priceCategoryLabel,
         quantity=booking.quantity,
-        theater=extra_data.get("theater", ""),  # type: ignore[arg-type]
-        userName=booking.userName,
-        firstName=booking.user.firstName,
-        lastName=booking.user.lastName,
+        user_name=booking.userName,
+        first_name=booking.user.firstName,
+        last_name=booking.user.lastName,
         # TODO bdalbianco 02/06/2025: CLEAN_OA remove check when no virtual venue
-        offerAddress=booking.stock.offer.offererAddress.address.street if booking.stock.offer.offererAddress else None,
-        offerDepartmentCode=booking.stock.offer.offererAddress.address.departmentCode
+        offer_address=booking.stock.offer.offererAddress.address.street if booking.stock.offer.offererAddress else None,
+        offer_department_code=booking.stock.offer.offererAddress.address.departmentCode
         if booking.stock.offer.offererAddress
         else None,
-        venueName=booking.venue.name,
+        venue_name=booking.venue.name,
     )
-
-
-class PostBookingStockModel(BaseModel):
-    price: float
-
-
-class PostBookingBodyModel(BaseModel):
-    stock_id: str
-    quantity: int
-
-    class Config:
-        alias_generator = to_camel
-
-
-class ActivationCode(BaseModel):
-    code: str
-    expirationDate: datetime | None
