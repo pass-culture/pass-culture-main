@@ -1,1 +1,0 @@
-import{c as a,i as e,a as r}from"./store-DIjpKlue.js";import{i as o}from"./useAppDispatch-1SyfhbVG.js";const c=t=>{const i={features:{...e,initialized:!0},notification:o,user:r};return a({...i,...t}).store};export{c};
