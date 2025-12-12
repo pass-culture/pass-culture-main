@@ -1,3 +1,4 @@
+from datetime import UTC
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
@@ -43,11 +44,11 @@ class Returns204Test:
         offer2 = db.session.query(Offer).filter_by(id=offer_id_2).one()
 
         assert offer1.isActive
-        assert offer1.publicationDatetime == now_datetime_without_tz
+        assert offer1.publicationDatetime == now_datetime_with_tz
         assert not offer1.bookingAllowedDatetime
 
         assert offer2.isActive
-        assert offer2.publicationDatetime == now_datetime_without_tz
+        assert offer2.publicationDatetime == now_datetime_with_tz
         assert not offer2.bookingAllowedDatetime
 
     def when_deactivating_all_existing_offers(self, client):
@@ -77,7 +78,7 @@ class Returns204Test:
     def should_update_offers_by_given_filters(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        publication_datetime = datetime(2020, 10, 9, 12, 0, 0)
+        publication_datetime = datetime(2020, 10, 9, 12, 0, 0, tzinfo=UTC)
         matching_offer1 = offers_factories.OfferFactory(
             name="OKAY 1",
             venue=venue,
@@ -181,7 +182,7 @@ class Returns204Test:
 
         assert response.status_code == 202
         assert approved_offer.isActive
-        assert approved_offer.publicationDatetime == now_datetime_without_tz
+        assert approved_offer.publicationDatetime == now_datetime_with_tz
         assert not approved_offer.bookingAllowedDatetime
 
         assert not pending_offer.isActive

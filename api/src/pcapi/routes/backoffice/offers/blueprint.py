@@ -1257,7 +1257,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
                 or offer.publicationDatetime <= datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
             )
             if is_not_a_future_offer:
-                offer.publicationDatetime = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+                offer.publicationDatetime = datetime.datetime.now(datetime.UTC)
             if offer.isThing:
                 offer.lastValidationPrice = max_price
 

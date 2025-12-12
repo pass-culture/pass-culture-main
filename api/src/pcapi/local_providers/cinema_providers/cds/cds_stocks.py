@@ -1,6 +1,7 @@
 import decimal
 import logging
 import typing
+from datetime import UTC
 from datetime import datetime
 from typing import Iterator
 
@@ -152,7 +153,7 @@ class CDSStocks(LocalProvider):
         offer.bookingEmail = self.venue.bookingEmail
         offer.withdrawalDetails = self.venue.withdrawalDetails
         offer.subcategoryId = subcategories.SEANCE_CINE.id
-        offer.publicationDatetime = offer.publicationDatetime or utils_date.get_naive_utc_now()
+        offer.publicationDatetime = offer.publicationDatetime or datetime.now(UTC)
         self.update_from_movie_information(offer)
 
         is_new_offer_to_insert = offer.id is None
