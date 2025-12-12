@@ -463,7 +463,8 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         assert offer.hasImage is False
         assert not (UPLOAD_FOLDER / offer._get_image_storage_id()).exists()
 
-    def test_should_update_expired_booking(self):
+    @pytest.mark.parametrize("input_with_timezone", (True, False))
+    def test_should_update_expired_booking(self, input_with_timezone):
         now = date_utils.get_naive_utc_now()
         limit = now - timedelta(days=2)
 
@@ -483,7 +484,11 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         )
 
         new_limit = now + timedelta(days=1)
-        payload = {"bookingLimitDatetime": new_limit.isoformat()}
+        limit_in_payload = new_limit.isoformat()
+        if input_with_timezone:
+            limit_in_payload = limit_in_payload + "Z"
+        payload = {"bookingLimitDatetime": limit_in_payload}
+
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
             response = self.make_request(key, {"offer_id": stock.collectiveOffer.id}, json_body=payload)
             assert response.status_code == 200
