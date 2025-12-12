@@ -7,8 +7,8 @@ import { Notification } from '@/components/Notification/Notification'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
 
 const renderComponent = (
-  action: () => CancelablePromise<any> = () =>
-    new CancelablePromise<any>((resolve) => resolve({}))
+  action: () => CancelablePromise<void> = () =>
+    new CancelablePromise<void>((resolve) => resolve())
 ) =>
   renderWithProviders(
     <>
@@ -20,9 +20,7 @@ const renderComponent = (
 describe('ReSendEmailCallout', () => {
   it('should render correctly', () => {
     renderComponent()
-    expect(
-      screen.getByText(/Vous n’avez pas reçu d’email ?/)
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Email non reçu ?/)).toBeInTheDocument()
     expect(screen.getByText('cliquez ici')).toBeEnabled()
   })
 
@@ -36,7 +34,7 @@ describe('ReSendEmailCallout', () => {
   it('should display a notification on action success', async () => {
     renderComponent(
       () =>
-        new CancelablePromise<any>((_resolve, reject) =>
+        new CancelablePromise<void>((_resolve, reject) =>
           reject(new Error('error'))
         )
     )

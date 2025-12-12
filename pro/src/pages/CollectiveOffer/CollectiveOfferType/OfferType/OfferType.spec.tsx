@@ -195,7 +195,7 @@ describe('OfferType', () => {
 
     expect(
       await screen.findByText(
-        'Vous avez une demande de référencement en cours de traitement'
+        'Votre demande est actuellement en cours de traitement.'
       )
     ).toBeInTheDocument()
   })
@@ -303,7 +303,7 @@ describe('OfferType', () => {
 
     expect(
       await screen.findByText(
-        'Votre structure est en cours de validation par les équipes pass Culture.'
+        'Votre structure est actuellement en cours de validation par nos équipes.'
       )
     ).toBeInTheDocument()
   })

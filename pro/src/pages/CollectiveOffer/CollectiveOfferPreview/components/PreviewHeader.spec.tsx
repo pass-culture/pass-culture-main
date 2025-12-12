@@ -41,7 +41,7 @@ describe('PreviewHeader', () => {
   })
 
   it.each([
-    [CollectiveOfferDisplayedStatus.UNDER_REVIEW, "en cours d'instruction"],
+    [CollectiveOfferDisplayedStatus.UNDER_REVIEW, 'en cours d’instruction'],
     [CollectiveOfferDisplayedStatus.REJECTED, 'non conforme'],
     [CollectiveOfferDisplayedStatus.CANCELLED, 'annulée'],
     [CollectiveOfferDisplayedStatus.EXPIRED, 'expirée'],
@@ -52,10 +52,10 @@ describe('PreviewHeader', () => {
   ])('should show not visible preview callout for status %s', (status, expectedLabel) => {
     renderPreviewHeader(status)
 
+    expect(screen.getByText(`Offre ${expectedLabel}`)).toBeInTheDocument()
+
     expect(
-      screen.getByText(
-        `Cet aperçu n'est pas visible par l'enseignant car votre offre est ${expectedLabel}.`
-      )
+      screen.getByText("L’aperçu n'est pas visible par l'enseignant.")
     ).toBeInTheDocument()
   })
 })

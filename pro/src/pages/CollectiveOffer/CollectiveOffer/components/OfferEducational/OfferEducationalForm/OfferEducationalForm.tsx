@@ -146,14 +146,12 @@ export const OfferEducationalForm = ({
 
       <FormLayout className={styles['educational-form']} fullWidthActions>
         {isCollectiveOffer(offer) && offer.isPublicApi && (
-          <BannerPublicApi className={styles['banner-space']}>
-            Offre importée automatiquement
-          </BannerPublicApi>
+          <BannerPublicApi className={styles['banner-space']} />
         )}
         {!userOfferer?.allowedOnAdage ? (
           <Banner
-            title=""
-            description="Vous ne pouvez pas créer d’offre collective tant que votre entité juridique n’est pas validée."
+            title="Validation requise"
+            description="La création d'offres collectives nécessite la validation de votre entité juridique."
           />
         ) : (
           <>

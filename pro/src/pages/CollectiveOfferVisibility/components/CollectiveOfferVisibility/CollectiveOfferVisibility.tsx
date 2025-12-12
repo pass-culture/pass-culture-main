@@ -365,9 +365,7 @@ export const CollectiveOfferVisibilityScreen = ({
           <form onSubmit={handleSubmit(onSubmit)}>
             <FormLayout>
               {isCollectiveOffer(offer) && offer.isPublicApi && (
-                <BannerPublicApi className={styles['banner-space']}>
-                  Offre importée automatiquement
-                </BannerPublicApi>
+                <BannerPublicApi className={styles['banner-space']} />
               )}
               <FormLayout.Section title="Renseignez l'établissement scolaire et l'enseignant">
                 <p className={styles['description-text']}>

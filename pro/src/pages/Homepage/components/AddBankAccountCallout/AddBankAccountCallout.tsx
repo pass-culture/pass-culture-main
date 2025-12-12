@@ -31,7 +31,7 @@ export const AddBankAccountCallout = ({
   return (
     <div className={styles['reimbursements-banner']}>
       <Banner
-        title=""
+        title="Compte bancaire manquant"
         variant={BannerVariants.ERROR}
         actions={[
           {
@@ -47,7 +47,7 @@ export const AddBankAccountCallout = ({
             },
           },
         ]}
-        description="Aucun compte bancaire configuré pour percevoir vos remboursements"
+        description="Configurez un compte bancaire pour recevoir vos remboursements."
       />
     </div>
   )

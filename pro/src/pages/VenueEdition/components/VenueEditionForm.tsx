@@ -204,8 +204,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                         }
                       >
                         <Banner
-                          title=""
-                          description="Pour modifier l’adresse de votre structure, rendez-vous dans votre page Paramètres généraux."
+                          title="Modification dans Paramètres"
+                          description="L'adresse de votre structure se modifie dans la page Paramètres généraux."
                         />
                       </div>
                     </FormLayout.Row>

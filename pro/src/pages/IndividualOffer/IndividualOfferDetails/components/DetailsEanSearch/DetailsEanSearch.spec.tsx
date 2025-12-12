@@ -86,8 +86,9 @@ vi.mock('@/apiClient/api', () => ({
   api: { getProductByEan: vi.fn() },
 }))
 
-const successMessage = /Les informations suivantes ont été synchronisées/
-const infoMessage = /Les informations de cette page ne sont pas modifiables/
+const successMessage = /Ces informations ont été récupérées depuis l’EAN./
+const infoMessage =
+  /Ces informations proviennent de l’EAN et ne peuvent pas être modifiées./
 const errorMessage = /Une erreur est survenue lors de la recherche/
 const formatErrorMessage = /doit être composé de 13 chiffres/
 const subCatErrorMessage = /doivent être liées à un produit/

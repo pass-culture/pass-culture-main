@@ -14,7 +14,7 @@ export const OperatingProcedures = (): JSX.Element => {
   return (
     <div className={styles['desk-callout']}>
       <Banner
-        title=""
+        title="Prenez connaissance des modalités"
         actions={[
           {
             href: 'https://passculture.zendesk.com/hc/fr/articles/4411999179665',
@@ -29,8 +29,7 @@ export const OperatingProcedures = (): JSX.Element => {
         ]}
         description={
           <p className={styles.description}>
-            Nous vous invitons à prendre connaissance des modalités de
-            fonctionnement avant de renseigner les champs suivants.
+            Consultez le fonctionnement avant de remplir les champs suivants.
           </p>
         }
       />

@@ -14,7 +14,7 @@ type PreviewHeaderProps = {
 }
 
 const statusLabel: Partial<Record<CollectiveOfferDisplayedStatus, string>> = {
-  [CollectiveOfferDisplayedStatus.UNDER_REVIEW]: "en cours d'instruction",
+  [CollectiveOfferDisplayedStatus.UNDER_REVIEW]: 'en cours d’instruction',
   [CollectiveOfferDisplayedStatus.REJECTED]: 'non conforme',
   [CollectiveOfferDisplayedStatus.CANCELLED]: 'annulée',
   [CollectiveOfferDisplayedStatus.EXPIRED]: 'expirée',
@@ -38,8 +38,8 @@ export const PreviewHeader = ({ offer }: PreviewHeaderProps) => {
       {shouldShowCallout && (
         <div className={styles['callout']}>
           <Banner
-            description={`Cet aperçu n'est pas visible par l'enseignant car votre offre est ${statusLabel[offer.displayedStatus]}.`}
-            title=""
+            description="L’aperçu n'est pas visible par l'enseignant."
+            title={`Offre ${statusLabel[offer.displayedStatus]}`}
           />
         </div>
       )}

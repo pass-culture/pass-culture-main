@@ -86,7 +86,7 @@ export const DetailsSubForm = ({
         {displayRedirectionCallout && (
           <div className={styles.callout}>
             <Banner
-              title=""
+              title="EAN requis"
               actions={[
                 {
                   href: '#eanSearch',
@@ -96,7 +96,7 @@ export const DetailsSubForm = ({
                 },
               ]}
               variant={BannerVariants.ERROR}
-              description="Cette catégorie nécessite un EAN."
+              description="Cette catégorie nécessite un code EAN."
             />
           </div>
         )}

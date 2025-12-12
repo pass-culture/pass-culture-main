@@ -141,7 +141,7 @@ describe('VenueEditionFormScreen', () => {
     await waitFor(() => {
       expect(
         screen.getByText(
-          'Sans offre publiée, les jeunes n’ont pas accès à votre page sur l’application.'
+          "Publiez une offre pour rendre votre page accessible aux jeunes dans l'application."
         )
       ).toBeInTheDocument()
     })

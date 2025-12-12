@@ -92,11 +92,11 @@ export const AddressManual = ({
       {coords && (
         <div className={styles['callout']}>
           <Banner
-            title=""
+            title="Vérification de localisation"
             actions={[
               {
                 href: `https://google.com/maps/place/${decodeURIComponent(coords)}`,
-                label: 'Vérifiez la localisation en cliquant ici',
+                label: 'Contrôlez la précision de vos coordonnées GPS.',
                 isExternal: true,
                 icon: fullLinkIcon,
                 iconAlt: 'Nouvelle fenêtre',
@@ -109,11 +109,11 @@ export const AddressManual = ({
 
       <div className={styles['callout']}>
         <Banner
-          title=""
+          title="Coordonnées GPS importantes"
           variant={BannerVariants.WARNING}
           description={
             gpsCalloutMessage ??
-            'Les coordonnées GPS sont des informations à ne pas négliger. Elles vont permettre aux jeunes de pouvoir géolocaliser votre offre sur leur application.'
+            "Les coordonnées GPS permettent aux jeunes de géolocaliser votre offre dans l'application."
           }
         />
       </div>

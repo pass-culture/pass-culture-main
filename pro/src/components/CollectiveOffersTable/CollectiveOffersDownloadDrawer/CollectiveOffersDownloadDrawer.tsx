@@ -54,9 +54,8 @@ export const CollectiveOffersDownloadDrawer = ({
     >
       <div className={styles['callout']}>
         <Banner
-          title=""
-          description="Appliquez des filtres à votre tableau pour sélectionner les offres que
-          vous souhaitez télécharger."
+          title="Utilisation des filtres"
+          description="Appliquez des filtres à votre tableau pour sélectionner les offres que vous souhaitez télécharger."
         />
       </div>
       <DialogBuilder.Footer>

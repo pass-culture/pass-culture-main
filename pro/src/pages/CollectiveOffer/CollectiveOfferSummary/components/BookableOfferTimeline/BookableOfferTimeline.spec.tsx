@@ -383,7 +383,7 @@ describe('BookableOfferTimeline - step type rendering', () => {
 
       expect(
         screen.getByText(
-          "Vous avez commencé à rédiger un brouillon. Vous pouvez le reprendre à tout moment afin de finaliser sa rédaction et l'envoyer à un établissement."
+          'Finalisez et envoyez votre brouillon à un établissement quand vous le souhaitez.'
         )
       ).toBeInTheDocument()
       expect(screen.getByText('Reprendre mon brouillon')).toBeInTheDocument()

@@ -23,7 +23,7 @@ export const LegalInfos = ({ className }: LegalInfoProps): JSX.Element => {
   return (
     <div className={cn(styles['legal-infos-callout'], className)}>
       <Banner
-        title=""
+        title="Acceptation des conditions et protection des données"
         description={
           <>
             <p className={styles['legal-infos-paragraph']}>

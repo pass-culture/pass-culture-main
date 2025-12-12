@@ -38,7 +38,7 @@ export const OffersForMyInstitution = () => {
       <h1 className={styles['title']}>Pour mon établissement</h1>
       <div className={styles['my-institution-callout']}>
         <Banner
-          title=""
+          title="Processus de réservation"
           actions={[
             {
               href: `${document.referrer}adage/passculture/index`,
@@ -53,22 +53,13 @@ export const OffersForMyInstitution = () => {
           description={
             <>
               <p className={styles['callout-text']}>
-                Retrouvez sur cette page les offres destinées aux professeurs de
-                votre établissement et rédigées par les acteurs culturels
-                partenaires de l’établissement scolaire.
-              </p>
-              <p className={styles['callout-text']}>
-                Le contenu, la date et le montant de chaque offre ont été
-                définis lors d’échanges entre un professeur et la structure
-                culturelle concernée.
+                Les offres de cette page sont destinées aux professeurs et
+                co-construites avec les partenaires culturels.
               </p>
               <p>
-                Processus : vous cliquez sur “Préréserver” l’offre qui vous est
-                destinée. L’offre va disparaitre de cette page, mais vous
-                pourrez la retrouver dans la page “Suivi pass Culture”. Puis,
-                vous associerez l’offre à votre projet pédagogique dans la page
-                “Les projets”. Enfin, votre chef d’établissement confirmera la
-                réservation de l’offre dans “Suivi pass Culture”.
+                Pour réserver : 1) Préréservez l'offre, 2) Associez-la à un
+                projet pédagogique dans "Les projets", 3) Le chef
+                d'établissement validera dans "Suivi pass Culture".
               </p>
             </>
           }

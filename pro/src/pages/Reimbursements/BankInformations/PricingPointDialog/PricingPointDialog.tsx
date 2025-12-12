@@ -78,8 +78,8 @@ export const PricingPointDialog = ({
     <div className={styles.dialog}>
       <div className={styles['callout']}>
         <Banner
-          title=""
-          description="Comme indiqué dans nos CGUs, le barème de remboursement se définit sur la base d’un établissement et donc d’un SIRET. Afin de vous faire rembourser les offres de cette structure, vous devez sélectionner le SIRET à partir duquel calculé votre taux de remboursement. Attention, vous ne pourrez plus modifier votre choix après validation."
+          title="Sélection du SIRET de remboursement"
+          description="Choisissez le SIRET qui déterminera votre taux de remboursement pour cette structure. Ce choix sera définitif après validation."
         />
       </div>
       <form

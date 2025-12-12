@@ -17,19 +17,21 @@ export const AccessibilityCallout = ({
         label: 'Éditer sur acceslibre',
         href: `https://acceslibre.beta.gouv.fr/contrib/edit-infos/${externalAccessibilityId}/`,
         content:
-          'Les modalités ci-dessus sont issues de la plateforme acceslibre.gouv.fr. Vous pouvez les modifier directement depuis cette plateforme.',
+          "Ces modalités proviennent d'acceslibre.gouv.fr et peuvent être modifiées directement sur cette plateforme.",
+        title: 'Données Acceslibre',
       }
     : {
         label: 'Aller sur acceslibre.beta.gouv.fr',
         href: 'https://acceslibre.beta.gouv.fr/',
         content:
-          'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr',
+          "Complétez les modalités d'accessibilité de votre établissement sur acceslibre.beta.gouv.fr, la plateforme collaborative de l'accessibilité.",
+        title: "Renseignez l'accessibilité",
       }
 
   return (
     <div data-testid="accessibility-callout" className={className}>
       <Banner
-        title=""
+        title={callout.title}
         actions={[
           {
             href: callout.href,

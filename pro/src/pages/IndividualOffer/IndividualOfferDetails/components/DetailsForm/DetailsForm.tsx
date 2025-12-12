@@ -83,7 +83,7 @@ export const DetailsForm = ({
         {showAddVenueBanner && (
           <FormLayout.Row className={styles.row}>
             <Banner
-              title=""
+              title="Structure requise"
               actions={[
                 {
                   href: `/inscription/structure/recherche`,
@@ -93,7 +93,7 @@ export const DetailsForm = ({
                 },
               ]}
               variant={BannerVariants.ERROR}
-              description="Pour créer une offre, vous devez d’abord créer une structure."
+              description="Créez une structure avant de pouvoir créer une offre."
             />
           </FormLayout.Row>
         )}

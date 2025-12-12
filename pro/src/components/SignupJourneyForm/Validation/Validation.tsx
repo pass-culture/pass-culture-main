@@ -229,9 +229,8 @@ export const Validation = (): JSX.Element | undefined => {
         </div>
       </section>
       <Banner
-        title=""
-        description="Vous pourrez modifier certaines de ces informations dans la page dédiée
-        de votre espace."
+        title="Modification possible"
+        description="Ces informations pourront être modifiées dans la page dédiée de votre espace."
       />
 
       <ActionBar

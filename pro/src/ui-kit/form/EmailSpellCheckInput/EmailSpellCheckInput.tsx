@@ -92,7 +92,7 @@ export const EmailSpellCheckInput = forwardRef(
                   </Button>
                 </>
               }
-              title=""
+              title="Correction suggérée"
             />
           </div>
         )}

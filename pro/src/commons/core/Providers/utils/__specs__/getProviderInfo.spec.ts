@@ -6,7 +6,7 @@ describe('getProviderInfo', () => {
       id: 'fnac',
       logo: expect.any(String),
       name: 'FNAC',
-      synchronizedOfferMessage: 'Offre synchronisée avec FNAC',
+      synchronizedOfferMessage: 'Cette offre est synchronisée avec FNAC',
     })
   })
 
@@ -15,7 +15,8 @@ describe('getProviderInfo', () => {
       id: 'titelive stocks',
       logo: expect.any(String),
       name: 'Titelive stocks',
-      synchronizedOfferMessage: 'Offre synchronisée avec Titelive stocks',
+      synchronizedOfferMessage:
+        'Cette offre est synchronisée avec Titelive stocks',
     })
   })
   it('should return provider information if not known by the front', () => {
@@ -23,7 +24,8 @@ describe('getProviderInfo', () => {
       id: 'mon provider à moi !',
       logo: expect.any(String),
       name: 'Mon provider à moi !',
-      synchronizedOfferMessage: 'Offre synchronisée avec Mon provider à moi !',
+      synchronizedOfferMessage:
+        'Cette offre est synchronisée avec Mon provider à moi !',
     })
   })
 })

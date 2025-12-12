@@ -353,7 +353,7 @@ describe('VenueEdition', () => {
 
       expect(
         screen.getByText(
-          'Renseignez facilement les modalités d’accessibilité de votre établissement sur la plateforme collaborative acceslibre.beta.gouv.fr'
+          /Complétez les modalités d'accessibilité de votre établissement sur acceslibre.beta.gouv.fr/
         )
       ).toBeInTheDocument()
     })

@@ -28,7 +28,7 @@ describe('SynchronizedProviderInformation', () => {
       props: { providerName: 'leslibraires.fr' },
     })
     expect(
-      screen.getByText('Offre synchronisée avec leslibraires.fr')
+      screen.getByText('Cette offre est synchronisée avec leslibraires.fr')
     ).toBeInTheDocument()
     expect(screen.queryByText('À SAVOIR')).not.toBeInTheDocument()
   })
@@ -38,7 +38,7 @@ describe('SynchronizedProviderInformation', () => {
       props: { providerName: 'allociné' },
     })
     expect(
-      screen.getByText('Offre synchronisée avec allociné')
+      screen.getByText('Cette offre est synchronisée avec allociné')
     ).toBeInTheDocument()
     expect(screen.queryByText('À SAVOIR')).not.toBeInTheDocument()
   })

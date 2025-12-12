@@ -16,8 +16,8 @@ export const DraftBanner = ({ offerId }: { offerId: number }) => {
             type: 'button',
           },
         ]}
-        description="Vous avez commencé à rédiger un brouillon. Vous pouvez le reprendre à tout moment afin de finaliser sa rédaction et l'envoyer à un établissement."
-        title=""
+        description="Finalisez et envoyez votre brouillon à un établissement quand vous le souhaitez."
+        title="Brouillon en cours"
       />
     </div>
   )

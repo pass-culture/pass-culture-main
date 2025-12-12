@@ -69,8 +69,8 @@ export const FormDates = ({
               <>
                 <div className={styles.banner}>
                   <Banner
-                    title=""
-                    description="Votre offre sera mise en pause automatiquement à l’issue des dates précisées ci-dessous."
+                    title="Mise en pause automatique"
+                    description="L'offre sera automatiquement désactivée à l'issue des dates ci-dessous."
                   />
                 </div>
 

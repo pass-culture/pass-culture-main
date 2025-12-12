@@ -21,8 +21,6 @@ describe('SignupConfirmation', () => {
     expect(
       screen.getByText('Cliquez sur le lien envoyé par email')
     ).toBeInTheDocument()
-    expect(
-      screen.getByText(/Vous n’avez pas reçu d’email ?/)
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Email non reçu ?/)).toBeInTheDocument()
   })
 })

@@ -694,9 +694,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       contextValue,
     })
     expect(
-      screen.getByText(
-        'Pour créer une offre, vous devez d’abord créer une structure.'
-      )
+      screen.getByText('Créez une structure avant de pouvoir créer une offre.')
     ).toBeInTheDocument()
   })
 

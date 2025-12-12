@@ -28,10 +28,10 @@ export const ReSendEmailCallout = ({
 
   return (
     <Banner
-      title=""
+      title="Email non reçu ?"
       description={
         <p className={styles['re-send-callout']}>
-          Vous n’avez pas reçu d’email ? <br /> Vérifiez vos spams
+          Vérifiez vos spams
           {hideLink ? (
             '.'
           ) : (

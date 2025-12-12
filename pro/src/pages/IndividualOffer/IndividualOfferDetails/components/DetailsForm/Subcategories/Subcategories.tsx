@@ -161,8 +161,8 @@ export function Subcategories({
           {!readOnlyFields.includes('categoryId') && (
             <div className={styles['subcategory-callout']}>
               <Banner
-                title=""
-                description="En fonction de la sous-catégorie choisie, certaines étapes seront adaptées automatiquement."
+                title="Étapes adaptatives"
+                description="Le formulaire s'adaptera automatiquement selon la sous-catégorie sélectionnée."
               />
             </div>
           )}

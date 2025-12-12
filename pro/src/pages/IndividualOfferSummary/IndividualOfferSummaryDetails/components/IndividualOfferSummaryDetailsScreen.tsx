@@ -153,8 +153,8 @@ export function IndividualOfferSummaryDetailsScreen({
       <SummaryContent>
         {cannotEditDetails && (
           <Banner
-            title=""
-            description="Les informations de cette page ne sont pas modifiables car elles sont liées à l’EAN renseigné."
+            title="Informations verrouillées"
+            description="Ces informations proviennent de l'EAN et ne peuvent pas être modifiées."
           />
         )}
 

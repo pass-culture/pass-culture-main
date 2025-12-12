@@ -126,8 +126,8 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
       {!offerer?.isValidated && (
         <div className={styles['pending-offerer-callout']}>
           <Banner
-            title=""
-            description="Votre structure est en cours de validation par les équipes pass Culture."
+            title="Validation en cours"
+            description="Votre structure est actuellement en cours de validation par nos équipes."
           />
         </div>
       )}
@@ -136,7 +136,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
         (lastDmsApplication ? (
           <div className={styles['pending-offerer-callout']}>
             <Banner
-              title=""
+              title="Référencement en cours"
               actions={[
                 {
                   href: `/structures/${queryOffererId}/lieux/${lastDmsApplication.venueId}/collectif`,
@@ -145,13 +145,13 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
                   icon: fullNextIcon,
                 },
               ]}
-              description="Vous avez une demande de référencement en cours de traitement"
+              description="Votre demande est actuellement en cours de traitement."
             />
           </div>
         ) : (
           <div className={styles['pending-offerer-callout']}>
             <Banner
-              title=""
+              title="Référencement requis"
               actions={[
                 {
                   href: 'https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage',
@@ -172,7 +172,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
                 },
               ]}
               variant={BannerVariants.ERROR}
-              description="Pour proposer des offres à destination d’un groupe scolaire, vous devez être référencé auprès du ministère de l’Éducation Nationale et du ministère de la Culture."
+              description="Les offres collectives nécessitent un référencement auprès des ministères de l'Éducation Nationale et de la Culture."
             />
           </div>
         ))}

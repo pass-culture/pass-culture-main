@@ -163,8 +163,8 @@ export const IndividualOffersContainer = ({
         {offers.length > MAX_OFFERS_TO_DISPLAY && (
           <div className={styles['offers-table-callout']}>
             <Banner
-              description={`L’affichage est limité à ${MAX_OFFERS_TO_DISPLAY} offres. Modifiez les filtres pour affiner votre recherche.`}
-              title=""
+              title="Limite d'affichage atteinte"
+              description={`${MAX_OFFERS_TO_DISPLAY} offres maximum sont affichées. Affinez vos filtres pour cibler votre recherche.`}
             />
           </div>
         )}

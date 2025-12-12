@@ -6,7 +6,7 @@ import styles from './BannerInvisibleSiren.module.scss'
 export const BannerInvisibleSiren = (): JSX.Element => (
   <div className={styles.banner}>
     <Banner
-      title=""
+      title="SIRET non visible"
       actions={[
         {
           href: 'https://statut-diffusion-sirene.insee.fr/',
@@ -18,8 +18,7 @@ export const BannerInvisibleSiren = (): JSX.Element => (
         },
       ]}
       variant={BannerVariants.ERROR}
-      description="Le SIRET doit être rendu visible pour valider votre inscription. Vous pouvez
-      effectuer cette démarche sur le site de l’INSEE."
+      description="Pour valider votre inscription, rendez votre SIRET visible sur le site de l'INSEE."
     />
   </div>
 )

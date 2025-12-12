@@ -59,7 +59,7 @@ const LABELS = {
     publicVenueName: 'TATA',
     description: 'my description',
     productBasedCallout:
-      'Les informations de cette page ne sont pas modifiables',
+      "Ces informations proviennent de l'EAN et ne peuvent pas être modifiées.",
   },
 }
 

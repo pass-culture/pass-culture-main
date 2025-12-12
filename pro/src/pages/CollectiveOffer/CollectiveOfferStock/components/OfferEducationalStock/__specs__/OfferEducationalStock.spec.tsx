@@ -75,7 +75,9 @@ describe('OfferEducationalStock', () => {
     renderWithProviders(<OfferEducationalStock {...testProps} />)
 
     expect(
-      screen.getByText('Offre importée automatiquement')
+      screen.getByText(
+        'Cette offre a été importée automatiquement depuis votre système de billetterie.'
+      )
     ).toBeInTheDocument()
   })
 

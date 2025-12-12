@@ -16,9 +16,9 @@ export const NonRefundableCallout = () => (
           type: 'link',
         },
       ]}
-      title=""
+      title="Offre non remboursée"
       variant={BannerVariants.WARNING}
-      description="Cette offre ne sera pas remboursée."
+      description="Cette offre n'est pas éligible au remboursement."
     />
   </div>
 )

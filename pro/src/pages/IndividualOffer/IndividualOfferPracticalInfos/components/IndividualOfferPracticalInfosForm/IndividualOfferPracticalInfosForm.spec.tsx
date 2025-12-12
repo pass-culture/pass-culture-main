@@ -57,9 +57,7 @@ describe('IndividualOfferPracticalInfosForm', () => {
       offer: getIndividualOfferFactory({ isEvent: false }),
     })
 
-    expect(
-      screen.getByText(/La validation de la contremarque est obligatoire/)
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Validation obligatoire/)).toBeInTheDocument()
   })
 
   it('should show the withdrawal block if the sub category is withdrawable', () => {
@@ -84,9 +82,7 @@ describe('IndividualOfferPracticalInfosForm', () => {
       }),
     })
 
-    expect(
-      screen.getByText(/La livraison d’article est interdite/)
-    ).toBeInTheDocument()
+    expect(screen.getByText(/Livraison interdite/)).toBeInTheDocument()
   })
 
   it('should show the notification email field if the notification checkbox is checked', async () => {
@@ -122,7 +118,7 @@ describe('IndividualOfferPracticalInfosForm', () => {
 
     expect(
       screen.getByText(
-        /la réservation sera automatiquement annulée et remise en vente au bout de 10 jours/
+        /la réservation sera annulée et remise en vente après 10 jours/
       )
     ).toBeInTheDocument()
   })

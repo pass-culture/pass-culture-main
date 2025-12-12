@@ -227,8 +227,8 @@ export const RequestFormDialog = ({
             {isPreview && (
               <div className={styles['contact-callout']}>
                 <Banner
-                  title=""
-                  description="Vous ne pouvez pas envoyer de demande de contact car ceci est un aperçu de test du formulaire que verront les enseignants une fois l’offre publiée."
+                  title="Aperçu de test"
+                  description="Les demandes de contact sont désactivées dans cet aperçu. Les enseignants pourront vous contacter une fois l'offre publiée."
                 />
               </div>
             )}
@@ -266,8 +266,8 @@ export const RequestFormDialog = ({
           {isPreview && (
             <div className={styles['contact-callout']}>
               <Banner
-                title=""
-                description="Vous ne pouvez pas envoyer de demande de contact car ceci est un aperçu de test du formulaire que verront les enseignants une fois l’offre publiée."
+                title="Aperçu de test"
+                description="Les demandes de contact sont désactivées dans cet aperçu. Les enseignants pourront vous contacter une fois l'offre publiée."
               />
             </div>
           )}
@@ -275,8 +275,8 @@ export const RequestFormDialog = ({
       ) : (
         <div className={styles['contact-readonly']}>
           <Banner
-            title=""
-            description="Vous ne pouvez voir les informations de contact du partenaire car vous n’avez pas les droits ADAGE adaptés"
+            title="Droits ADAGE insuffisants"
+            description="Les informations de contact du partenaire nécessitent des droits ADAGE spécifiques."
           />
         </div>
       )}

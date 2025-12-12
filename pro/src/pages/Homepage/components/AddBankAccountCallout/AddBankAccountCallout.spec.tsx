@@ -73,7 +73,7 @@ describe('AddBankAccountCallout', () => {
 
     expect(
       screen.getByText(
-        'Aucun compte bancaire configuré pour percevoir vos remboursements'
+        'Configurez un compte bancaire pour recevoir vos remboursements.'
       )
     ).toBeInTheDocument()
     expect(screen.getByText(/Ajouter un compte bancaire/)).toBeInTheDocument()

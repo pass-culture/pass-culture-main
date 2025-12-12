@@ -21,7 +21,7 @@ describe('UserEmail', () => {
 
     expect(
       await screen.findByText(
-        'Pour valider ce changement, un lien de confirmation valable 24 heures vous a été envoyé à l’adresse :'
+        'Un lien de confirmation valable 24h a été envoyé à l’adresse :'
       )
     ).toBeInTheDocument()
   })

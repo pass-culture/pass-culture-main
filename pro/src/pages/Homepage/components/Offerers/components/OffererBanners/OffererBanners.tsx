@@ -52,7 +52,7 @@ export const OffererBanners = ({ offerer }: OffererBannersProps) => {
     return (
       <div className={styles['banner']}>
         <Banner
-          title=""
+          title="Créez votre structure"
           actions={[
             {
               type: 'link',
@@ -64,20 +64,7 @@ export const OffererBanners = ({ offerer }: OffererBannersProps) => {
               isExternal: true,
             },
           ]}
-          description={
-            <>
-              <p>
-                Nous vous invitons à créer une structure, cela vous permettra
-                ensuite de créer des offres physiques ou des évènements qui
-                seront réservables.
-              </p>
-              <br />
-              <p>
-                Vous avez la possibilité de créer dès maintenant des offres
-                numériques.
-              </p>
-            </>
-          }
+          description="Pour proposer des offres physiques ou des événements réservables, créez d'abord une structure. Les offres numériques sont déjà disponibles."
         />
       </div>
     )

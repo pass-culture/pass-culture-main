@@ -7,8 +7,9 @@ const renderEanSearchCallout = (isDraftOffer = false) => {
 }
 
 const LABELS = {
-  calloutSuccess: /Les informations suivantes ont été synchronisées/,
-  calloutInfo: /Les informations de cette page ne sont pas modifiables/,
+  calloutSuccess: /Ces informations ont été récupérées depuis l’EAN./,
+  calloutInfo:
+    /Ces informations proviennent de l’EAN et ne peuvent pas être modifiées./,
 }
 
 describe('EanSearchCallout', () => {

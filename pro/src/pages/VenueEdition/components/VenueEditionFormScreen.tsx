@@ -33,8 +33,8 @@ export const VenueEditionFormScreen = ({
       {shouldDisplayAccessToPageWarning && (
         <div className={styles['page-status']}>
           <Banner
-            title=""
-            description="Sans offre publiée, les jeunes n’ont pas accès à votre page sur l’application."
+            title="Page invisible"
+            description="Publiez une offre pour rendre votre page accessible aux jeunes dans l'application."
             variant={BannerVariants.WARNING}
           />
         </div>
