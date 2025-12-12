@@ -144,6 +144,7 @@ jobs:
     needs: deploy-prod
     if: github.event.inputs.target_environment == 'production'
     steps:
+      - uses: actions/checkout@v6
       - name: "Publish Github prerelease"
         env:
           GH_TOKEN: ${{ github.token }}
