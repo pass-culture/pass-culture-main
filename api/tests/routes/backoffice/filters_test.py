@@ -158,3 +158,11 @@ class FormatStringListTest:
         assert filters.format_string_list(data) == "Paris, Marseille, Lyon, Toulouse, Nice, Nantes, Montpellier"
         assert filters.format_string_list(data, max_characters=30) == "Paris, Marseille, Lyon…"
         assert filters.format_string_list(data, max_characters=3) == "Par…"
+
+
+class FormatCountTest:
+    def test_format_count(self):
+        assert filters.format_count(0) == "0"
+        assert filters.format_count(100) == "100"
+        assert filters.format_count(1000) == "1\u202f000"
+        assert filters.format_count(12345678) == "12\u202f345\u202f678"

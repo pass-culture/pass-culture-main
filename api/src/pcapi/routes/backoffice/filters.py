@@ -343,6 +343,10 @@ def format_cents(
     return format_amount(finance_utils.cents_to_full_unit(amount_in_cents), target=target)
 
 
+def format_count(number: int) -> str:
+    return "{:,}".format(number).replace(",", "\u202f")
+
+
 def format_rate(rate: float | None, display_percent_sign: bool = True) -> str:
     if rate is None:
         return "N/A"
@@ -2009,6 +2013,7 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["empty_string_if_null"] = empty_string_if_null
     app.jinja_env.filters["format_action_type"] = format_action_type
     app.jinja_env.filters["format_amount"] = format_amount
+    app.jinja_env.filters["format_count"] = format_count
     app.jinja_env.filters["format_badge"] = format_badge
     app.jinja_env.filters["format_booking_cancellation"] = format_booking_cancellation
     app.jinja_env.filters["format_booking_status"] = format_booking_status
