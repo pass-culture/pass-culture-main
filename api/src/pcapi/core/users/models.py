@@ -898,6 +898,25 @@ class User(PcObject, Model, DeactivableMixin):
     def is_caledonian(self) -> bool:
         return self.postalCode.startswith(regions_utils.NEW_CALEDONIA_DEPARTMENT_CODE) if self.postalCode else False
 
+    @property
+    def gender(self) -> GenderEnum | None:
+        from pcapi.core.subscription import fraud_check_api
+        from pcapi.core.subscription import schemas as subscription_schemas
+
+        id_fraud_check = fraud_check_api.get_last_filled_identity_fraud_check(self)
+        if not id_fraud_check:
+            return None
+
+        id_source_data = id_fraud_check.source_data()
+        if not isinstance(id_source_data, subscription_schemas.IdentityCheckContent):
+            return None
+
+        civility = id_source_data.get_civility()
+        if not civility:
+            return None
+
+        return GenderEnum(civility)
+
 
 class DiscordUser(PcObject, Model):
     __tablename__ = "discord_user"
