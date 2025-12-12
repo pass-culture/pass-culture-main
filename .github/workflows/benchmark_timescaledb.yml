@@ -1,0 +1,147 @@
+name: "0 Benchmark TimescaleDB"
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  benchmark:
+    name: Benchmark
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://pass_culture:passq@0.0.0.0:5434/pass_culture
+      TIMESCALEDB_DATABASE_URL: postgresql://pass_culture:passq@0.0.0.0:5435/pass_culture
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+
+      - name: Install Python dependencies
+        working-directory: ./api
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          poetry install --no-interaction --no-ansi
+
+      - name: Start Docker services
+        run: |
+          docker compose -f ./docker-compose-backend.yml up -d postgres timescaledb
+          until docker compose -f ./docker-compose-backend.yml exec -T postgres pg_isready -U pass_culture; do
+            echo "Waiting for PostgreSQL..."
+            sleep 2
+          done
+          until docker compose -f ./docker-compose-backend.yml exec -T timescaledb pg_isready -U pass_culture; do
+            echo "Waiting for TimescaleDB..."
+            sleep 2
+          done
+
+      - name: Migrate databases
+        working-directory: ./api
+        run: |
+          poetry run alembic upgrade pre@head
+          poetry run alembic upgrade post@head
+          DATABASE_URL_OVERRIDE="postgresql://pass_culture:passq@localhost:5435/pass_culture" poetry run alembic upgrade pre@head
+          DATABASE_URL_OVERRIDE="postgresql://pass_culture:passq@localhost:5435/pass_culture" poetry run alembic upgrade post@head
+          poetry run alembic -c alembic_timescaledb.ini upgrade head
+
+      - name: Seed base entities
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/01-seed_base_entities.py --num-users 1000000 --num-offerers 100000
+
+      - name: Seed venues
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/02-seed_venues.py --num-venues 200000
+
+      - name: Seed offers
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/03-seed_offers.py --num-offers 2000000
+
+      - name: Seed stocks
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/04-seed_stocks.py --num-stocks 2000000
+
+      - name: Seed bookings (1/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="1/10"
+      - name: Seed bookings (2/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="2/10"
+      - name: Seed bookings (3/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="3/10"
+      - name: Seed bookings (4/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="4/10"
+      - name: Seed bookings (5/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="5/10"
+      - name: Seed bookings (6/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="6/10"
+      - name: Seed bookings (7/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="7/10"
+      - name: Seed bookings (8/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="8/10"
+      - name: Seed bookings (9/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="9/10"
+      - name: Seed bookings (10/10)
+        working-directory: ./api
+        run: poetry run python ../scripts/seed/05-seed_bookings.py --num-bookings 2000000 --shard="10/10"
+
+      - name: Benchmark (Baseline)
+        working-directory: ./api
+        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service postgres --runs 100 --output ../results/baseline.json
+
+      - name: Benchmark (TimescaleDB)
+        working-directory: ./api
+        run: poetry run python ../scripts/benchmark/benchmark_bookings_query.py --service timescaledb --runs 100 --output ../results/timescaledb.json
+
+      - name: Generate report
+        working-directory: ./api
+        run: |
+          poetry run python ../scripts/benchmark/generate_report.py \
+            --baseline ../results/baseline.json \
+            --compare ../results/timescaledb.json \
+            --output ../results/report.md
+
+      - name: Read report
+        id: report
+        run: |
+          {
+            echo 'content<<EOF'
+            cat ./results/report.md
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Find existing comment
+        uses: peter-evans/find-comment@v3
+        id: find-comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: "github-actions[bot]"
+          body-includes: "<!-- timescaledb-benchmark-report -->"
+
+      - name: Create or update PR comment
+        uses: peter-evans/create-or-update-comment@v5
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            <!-- timescaledb-benchmark-report -->
+            ${{ steps.report.outputs.content }}
+          edit-mode: replace
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Cleanup
+        if: always()
+        run: docker compose -f ./docker-compose-backend.yml down -v

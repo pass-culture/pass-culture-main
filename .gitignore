@@ -51,3 +51,6 @@ allure-report/
 
 # Ignore accidental root yarn lockfile
 /yarn.lock
+
+mise.toml
+/scripts/seed/seed_state.json
