@@ -6,7 +6,7 @@ import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
-const EXCLUDED_ROUTES: string[] = [RouteId.Hub]
+const EXCLUDED_ROUTES: Set<string> = new Set([RouteId.Hub])
 
 export const useFocus = (): void => {
   const previousLocationPathname = useRef<string | null>(null)
@@ -27,7 +27,7 @@ export const useFocus = (): void => {
       // In the meantime, to prevent multiple useEffect deps warnings,
       // we include all of them and prevent re-focus with this page-change check:
       location.pathname === previousLocationPathname.current ||
-      matches.some((route) => EXCLUDED_ROUTES.includes(route.id))
+      matches.some((route) => EXCLUDED_ROUTES.has(route.id))
     ) {
       return
     }

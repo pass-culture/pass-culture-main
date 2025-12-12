@@ -19,22 +19,20 @@
   border-radius: var(--size-border-radius-m);
   cursor: pointer;
   height: 100%;
-  padding: var(--size-spacing-xl);
+  padding: var(--size-spacing-l) var(--size-spacing-xl);
   width: 100%;
 }
 
 .venue-name {
-  /* font-size: var(--font-size-m); */
+  @include fonts.body;
 
-  /* font-weight: var(--font-weight-bold); */
-
-  /* margin-bottom: 8px; */
+  display: block;
 }
 
 .venue-address {
   @include fonts.body-xs;
 
   color: var(--color-text-subtle);
-
-  /* font-weight: var(--font-weight-regular); */
+  display: block;
+  margin-top: var(--size-spacing-xxs);
 }
