@@ -1,6 +1,8 @@
 import {
   forwardRef,
   type Ref,
+  useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -12,7 +14,6 @@ import type {
   FeaturePropertyType,
 } from '@/apiClient/adresse/types'
 import { getDataFromAddress } from '@/apiClient/api'
-import type { SelectOption } from '@/commons/custom_types/form'
 import { normalizeStrForAdressSearch } from '@/commons/utils/searchPatternInOptions'
 import {
   type CustomEvent,
@@ -31,8 +32,6 @@ export type AddressSelectProps = {
   onChange?(event: CustomEvent<'change'>): void
   /** Called when the input loses focus */
   onBlur?(event: CustomEvent<'blur'>): void
-  /** Value of the input */
-  value?: string
   /** Called when an address is chosen from the suggestions */
   onAddressChosen?(data: AdresseData): void
   /** Disables the input and prevents interaction */
@@ -65,88 +64,78 @@ export const AddressSelect = forwardRef(
       name,
       onChange,
       onBlur,
-      value: inputValue,
       required = true,
     }: AddressSelectProps,
     ref: Ref<HTMLInputElement>
   ) => {
-    const [searchField, setSearchField] = useState('') // Represents the value of the searched address
-    const [options, setOptions] = useState<SelectOption[]>([]) // Represents the address suggestions (that can change asynchronously)
-
-    const addressesMap = useRef<Map<string, AdresseData>>(new Map())
+    const [addressSuggestions, setAddressSuggestions] = useState<AdresseData[]>(
+      []
+    )
     const inputRef = useRef<HTMLInputElement>(null) // Ref to pass to <SelectAutoComplete />
 
-    // Handles the "Adresse API" call when searchField change (debounced), and updates the address suggestions
-    const onSearchFieldChange = async () => {
-      // "Adresse API" search's minimum is 3 characters
-      if (searchField.trim().length < 3) {
-        setOptions([])
-        return
-      }
+    const fetchOptions = useCallback(
+      async (searchText: string) => {
+        if (searchText.trim().length < 3) {
+          setAddressSuggestions([])
+          return
+        }
 
-      // API Call
-      try {
-        const addressSuggestions = await getDataFromAddress(searchField, {
-          limit: suggestionLimit,
-          onlyTypes,
-        })
+        try {
+          const addressSuggestions = await getDataFromAddress(searchText, {
+            limit: suggestionLimit,
+            onlyTypes,
+          })
 
-        // Updates the map to have the good address data
-        addressesMap.current = new Map(
-          addressSuggestions.map((address) => [address.label, address])
-        )
-        setOptions(
-          addressSuggestions.map(({ label }) => ({
-            value: label,
-            label,
-          }))
-        )
-      } catch {
-        addressesMap.current = new Map()
-        setOptions([])
-      }
-    }
-
-    const debouncedOnSearch = useDebouncedCallback(
-      onSearchFieldChange,
-      DEBOUNCE_TIME_BEFORE_REQUEST
+          setAddressSuggestions(addressSuggestions)
+        } catch {
+          setAddressSuggestions([])
+        }
+      },
+      [suggestionLimit, onlyTypes]
     )
 
-    // Better search function that allows to find addresses labels with accents or separate words
-    const searchInOptions = (options: SelectOption[], pattern: string) =>
+    const debouncedOnSearch = useDebouncedCallback((searchText: string) => {
+      void fetchOptions(searchText)
+    }, DEBOUNCE_TIME_BEFORE_REQUEST)
+
+    const searchInOptions = (options: string[], pattern: string) =>
       options.filter((option) =>
         normalizeStrForAdressSearch(pattern || '')
           .split(' ')
-          .every((word) =>
-            normalizeStrForAdressSearch(option.label).includes(word)
-          )
+          .every((word) => normalizeStrForAdressSearch(option).includes(word))
       )
 
-    // Connect the external reference to the internal one "inputRef", allowing to get the input's initial value if applicable
+    // biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
+    useEffect(() => {
+      if (inputRef.current?.value) {
+        fetchOptions(inputRef.current?.value)
+      }
+    }, [])
+
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
     return (
       <SelectAutocomplete
         name={name}
         label={label}
-        options={options}
-        resetOnOpen={false}
+        options={addressSuggestions?.map(({ label }) => label) ?? []}
         description={description}
-        value={inputValue}
-        onSearch={(searchText) => {
-          setSearchField(searchText)
-          void debouncedOnSearch()
-        }}
         onChange={(event) => {
+          void debouncedOnSearch(event.target.value)
           onChange?.(event)
-          const addressData = addressesMap.current.get(event.target.value)
-          if (addressData) {
-            onAddressChosen?.(addressData)
-          }
         }}
         onBlur={(event) => {
-          // If the "value" returned by the component is empty, we synchronize this with empty address fields
-          if (event.target.value.trim() === '') {
+          const addressData = addressSuggestions.find(
+            ({ label }) => label === event.target.value
+          )
+          if (addressData) {
+            onBlur?.(event)
+            onAddressChosen?.(addressData)
+          } else {
+            onBlur?.({
+              type: 'blur',
+              target: { name, value: '' },
+            })
             onAddressChosen?.({
               id: '',
               address: '',
@@ -160,7 +149,6 @@ export const AddressSelect = forwardRef(
               inseeCode: '',
             })
           }
-          onBlur?.(event)
         }}
         searchInOptions={searchInOptions}
         disabled={disabled}

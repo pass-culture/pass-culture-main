@@ -1,18 +1,16 @@
 import cx from 'classnames'
 import type { Ref } from 'react'
 
-import type { SelectOption } from '@/commons/custom_types/form'
-
 import styles from './OptionsList.module.scss'
 
 export interface OptionsListProps {
   className?: string
   fieldName: string
-  filteredOptions: SelectOption[]
+  filteredOptions: string[]
   setHoveredOptionIndex: (value: number | null) => void
   listRef: Ref<HTMLUListElement>
   hoveredOptionIndex: number | null
-  selectOption: (value: string) => void
+  selectOption: (option: string) => void
 }
 
 export const OptionsList = ({
@@ -34,7 +32,7 @@ export const OptionsList = ({
     aria-label="options"
   >
     {filteredOptions.length > 0 ? (
-      filteredOptions.map(({ value, label }: SelectOption, index: number) => {
+      filteredOptions.map((option: string, index: number) => {
         const isSelected = hoveredOptionIndex === index
         return (
           // biome-ignore lint/a11y/useKeyWithClickEvents: the onKeyDown is handled in the parent component
@@ -45,20 +43,20 @@ export const OptionsList = ({
             className={
               hoveredOptionIndex === index ? styles['option-hovered'] : ''
             }
-            data-value={value}
+            data-value={option}
             data-selected={isSelected}
-            id={`option-display-${value}`}
-            key={`option-display-${value}`}
+            id={`option-display-${option}`}
+            key={`option-display-${option}`}
             onMouseEnter={() => setHoveredOptionIndex(index)}
             onFocus={() => setHoveredOptionIndex(index)}
             onClick={() => {
-              selectOption(String(value))
+              selectOption(option)
             }}
             // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Seems to be the only solution for combobox pattern
             role="option"
             tabIndex={-1}
           >
-            <span className={cx(styles['options-item'])}>{label}</span>
+            <span className={cx(styles['options-item'])}>{option}</span>
           </li>
         )
       })
