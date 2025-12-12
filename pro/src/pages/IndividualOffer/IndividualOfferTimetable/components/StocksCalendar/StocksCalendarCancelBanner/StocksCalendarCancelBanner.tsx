@@ -6,7 +6,7 @@ const HOW_TO_CANCEL_EVENT_URL =
 
 export const StocksCalendarCancelBanner = () => (
   <Banner
-    title=""
+    title="Délai d'annulation"
     actions={[
       {
         href: HOW_TO_CANCEL_EVENT_URL,
@@ -17,6 +17,6 @@ export const StocksCalendarCancelBanner = () => (
         type: 'link',
       },
     ]}
-    description="Les bénéficiaires ont 48h pour annuler leur réservation. Ils ne peuvent pas le faire à moins de 48h de l’évènement. Vous pouvez annuler un évènement en supprimant la ligne de stock associée. Cette action est irréversible."
+    description="Les bénéficiaires peuvent annuler jusqu'à 48h avant l'événement. Pour annuler un événement, supprimez la ligne de stock (action irréversible)."
   />
 )

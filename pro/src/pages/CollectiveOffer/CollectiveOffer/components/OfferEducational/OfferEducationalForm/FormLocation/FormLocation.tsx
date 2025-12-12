@@ -151,7 +151,7 @@ export const FormLocation = ({
                   {isManualEdition && (
                     <AddressManual
                       gpsCalloutMessage={
-                        'Les coordonnées GPS sont des informations à ne pas négliger. Elles permettent aux enseignants de trouver votre offre sur ADAGE.'
+                        'Les coordonnées GPS permettent aux enseignants de trouver votre offre sur ADAGE.'
                       }
                       readOnlyFields={
                         disableForm

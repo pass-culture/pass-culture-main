@@ -74,7 +74,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
       {!venue.pricingPoint && isBannerVisible && (
         <div className={`${styles['desk-callout']}`}>
           <Banner
-            title=""
+            title="Structure SIRET requise"
             actions={[
               {
                 href: `https://aide.passculture.app/hc/fr/articles/4413973462929--Acteurs-Culturels-Comment-rattacher-mes-points-de-remboursement-et-mes-coordonn%C3%A9es-bancaires-%C3%A0-un-SIRET-de-r%C3%A9f%C3%A9rence-`,
@@ -85,7 +85,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
                 type: 'link',
               },
             ]}
-            description="Si vous souhaitez vous faire rembourser les offres de votre structure sans SIRET, vous devez sélectionner une structure avec SIRET dans votre entité afin de permettre le calcul de votre barème de remboursement. Attention, vous ne pourrez plus modifier votre sélection après validation."
+            description="Pour le remboursement des offres sans SIRET, sélectionnez une structure avec SIRET dans votre entité. Cette sélection sera définitive après validation."
           />
         </div>
       )}

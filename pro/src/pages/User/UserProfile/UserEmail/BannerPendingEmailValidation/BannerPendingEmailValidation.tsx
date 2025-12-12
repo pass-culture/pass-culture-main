@@ -10,7 +10,7 @@ interface Props {
 export const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
   <div className={styles['banner-email-adress']}>
     <Banner
-      title=""
+      title="Confirmation requise"
       actions={[
         {
           href: 'https://aide.passculture.app/hc/fr/articles/5723750427676',
@@ -24,8 +24,7 @@ export const BannerPendingEmailValidation = ({ email }: Props): JSX.Element => (
       variant={BannerVariants.ERROR}
       description={
         <>
-          Pour valider ce changement, un lien de confirmation valable 24 heures
-          vous a été envoyé à l’adresse :
+          Un lien de confirmation valable 24h a été envoyé à l’adresse :
           <span className={styles['banner-email-adress-email']}> {email}</span>
         </>
       }

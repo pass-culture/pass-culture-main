@@ -16,8 +16,8 @@ export const ActivationCodeCallout = () => (
           type: 'link',
         },
       ]}
-      title=""
-      description="Vous pouvez, sur cette page, ajouter des codes d’activation si vous le souhaitez."
+      title="Codes d'activation"
+      description="Ajoutez des codes d'activation sur cette page si nécessaire."
     />
   </div>
 )

@@ -329,11 +329,9 @@ export const ModalImageUpsertOrEdit = ({
                 <div className={style['modal-image-crop-callout']}>
                   <Banner
                     variant={BannerVariants.WARNING}
-                    title=""
+                    title="Image non conforme aux recommandations"
                     description={
                       <div>
-                        La qualité de votre image n’est pas optimale.
-                        <br />
                         Le format recommandé :
                         <ul className={style['modal-image-crop-callout-list']}>
                           <li>Largeur minimale de l’image : 400 px</li>

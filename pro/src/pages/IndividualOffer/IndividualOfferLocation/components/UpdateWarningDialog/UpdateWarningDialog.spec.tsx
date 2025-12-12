@@ -30,7 +30,7 @@ describe('<UpdateWarningDialog />', () => {
 
     expect(
       screen.getByText(
-        /Si vous souhaitez que les réservations en cours conservent les données actuelles/i
+        /Pour conserver les données des réservations actuelles, créez une nouvelle offre avec vos modifications/i
       )
     ).toBeInTheDocument()
 

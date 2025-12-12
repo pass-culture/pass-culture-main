@@ -136,7 +136,9 @@ describe('screens | OfferEducational : edition offerer step', () => {
     renderComponent(props)
     await waitFor(() => {
       expect(
-        screen.getByText('Offre importée automatiquement')
+        screen.getByText(
+          'Cette offre a été importée automatiquement depuis votre système de billetterie.'
+        )
       ).toBeInTheDocument()
     })
   })

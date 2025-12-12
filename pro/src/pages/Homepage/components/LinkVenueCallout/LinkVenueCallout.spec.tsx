@@ -69,7 +69,9 @@ describe('LinkVenueCallout', () => {
       renderWithProviders(<LinkVenueCallout {...props} />)
 
       expect(
-        screen.getByText(/Dernière étape pour vous faire rembourser/)
+        screen.getByText(
+          /Dernière étape pour recevoir vos remboursements : reliez votre structure à un compte bancaire./
+        )
       ).toBeInTheDocument()
       expect(
         screen.getByRole('link', {
@@ -93,7 +95,7 @@ describe('LinkVenueCallout', () => {
 
       expect(
         screen.getByText(
-          /Dernière étape pour vous faire rembourser : rattachez votre structure/
+          /Dernière étape pour recevoir vos remboursements : reliez votre structure à un compte bancaire./
         )
       ).toBeInTheDocument()
     })
@@ -111,7 +113,7 @@ describe('LinkVenueCallout', () => {
 
       expect(
         screen.getByText(
-          /Dernière étape pour vous faire rembourser : rattachez vos structures/
+          /Dernière étape pour recevoir vos remboursements : reliez vos structures à un compte bancaire./
         )
       ).toBeInTheDocument()
     })

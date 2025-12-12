@@ -87,7 +87,9 @@ describe('StocksCalendar', () => {
     })
 
     expect(
-      screen.getByText(/Les bénéficiaires ont 48h pour annuler/)
+      screen.getByText(
+        /Les bénéficiaires peuvent annuler jusqu'à 48h avant l'événement/
+      )
     ).toBeInTheDocument()
   })
 

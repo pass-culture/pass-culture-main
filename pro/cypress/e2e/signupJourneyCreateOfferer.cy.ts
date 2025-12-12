@@ -125,7 +125,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.findAllByLabelText(/Coordonnées GPS/)
       .type('48.853320, 2.348979')
       .blur()
-    cy.findByText('Vérifiez la localisation en cliquant ici').should(
+    cy.findByText('Contrôlez la précision de vos coordonnées GPS.').should(
       'be.visible'
     )
 

@@ -39,7 +39,7 @@ export const ReimbursementFields = ({
       <FormLayout.Section title="Barème de remboursement">
         {!venue.siret && !offererHaveVenueWithSiret ? (
           <Banner
-            title=""
+            title="Structure SIRET nécessaire"
             actions={[
               {
                 href: `/inscription/structure/recherche`,
@@ -48,7 +48,7 @@ export const ReimbursementFields = ({
                 type: 'link',
               },
             ]}
-            description="Afin de pouvoir ajouter de nouvelles coordonnées bancaires, vous devez avoir, au minimum, une structure rattachée à un SIRET."
+            description="L'ajout de coordonnées bancaires nécessite au moins une structure rattachée à un SIRET."
           />
         ) : (
           <PricingPoint offerer={offerer} venue={venue} />

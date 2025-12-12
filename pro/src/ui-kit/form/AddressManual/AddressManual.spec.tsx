@@ -83,7 +83,9 @@ describe('AddressManual', () => {
 
     renderAddressManual({ coords })
 
-    const callout = screen.getByText('Vérifiez la localisation en cliquant ici')
+    const callout = screen.getByText(
+      'Contrôlez la précision de vos coordonnées GPS.'
+    )
 
     expect(callout).toBeInTheDocument()
     expect(callout).toBeInTheDocument()
@@ -92,7 +94,7 @@ describe('AddressManual', () => {
       'https://google.com/maps/place/48.8566,2.3522'
     )
     expect(callout).toHaveTextContent(
-      'Vérifiez la localisation en cliquant ici'
+      'Contrôlez la précision de vos coordonnées GPS.'
     )
   })
 
@@ -101,10 +103,10 @@ describe('AddressManual', () => {
 
     renderAddressManual({ coords })
 
-    screen.queryByText('Vérifiez la localisation en cliquant ici')
+    screen.queryByText('Contrôlez la précision de vos coordonnées GPS')
 
     expect(
-      screen.queryByText('Vérifiez la localisation en cliquant ici')
+      screen.queryByText('Contrôlez la précision de vos coordonnées GPS')
     ).not.toBeInTheDocument()
   })
 })

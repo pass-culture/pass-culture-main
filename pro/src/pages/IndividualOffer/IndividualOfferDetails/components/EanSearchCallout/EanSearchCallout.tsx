@@ -11,12 +11,19 @@ export const EanSearchCallout = ({ isDraftOffer }: EanSearchCalloutProps) => {
     ? BannerVariants.SUCCESS
     : BannerVariants.DEFAULT
   const calloutLabel = isDraftOffer
-    ? 'Les informations suivantes ont été synchronisées à partir de l’EAN renseigné.'
-    : 'Les informations de cette page ne sont pas modifiables car elles sont liées à l’EAN renseigné.'
+    ? 'Ces informations ont été récupérées depuis l’EAN.'
+    : 'Ces informations proviennent de l’EAN et ne peuvent pas être modifiées.'
+  const calloutTitle = isDraftOffer
+    ? 'Synchronisation réussie.'
+    : 'Informations verrouillées'
 
   return (
     <div className={styles['ean-search-callout']}>
-      <Banner title="" variant={calloutVariant} description={calloutLabel} />
+      <Banner
+        title={calloutTitle}
+        variant={calloutVariant}
+        description={calloutLabel}
+      />
     </div>
   )
 }

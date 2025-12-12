@@ -3,6 +3,7 @@ import { useLocation } from 'react-router'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
 import styles from '../../Homepage.module.scss'
@@ -29,7 +30,7 @@ export const LinkVenueCallout = ({
   return (
     <div className={styles['reimbursements-banner']}>
       <Banner
-        title=""
+        title="Rattachement bancaire requis"
         actions={[
           {
             href: `/remboursements/informations-bancaires?structure=${offerer.id}`,
@@ -44,11 +45,7 @@ export const LinkVenueCallout = ({
           },
         ]}
         variant={BannerVariants.ERROR}
-        description={`Dernière étape pour vous faire rembourser : rattachez ${
-          offerer.venuesWithNonFreeOffersWithoutBankAccounts.length > 1
-            ? ' vos structures '
-            : ' votre structure '
-        } à un compte bancaire`}
+        description={`Dernière étape pour recevoir vos remboursements : reliez ${pluralizeFr(offerer.venuesWithNonFreeOffersWithoutBankAccounts.length, 'votre structure', 'vos structures')} à un compte bancaire.`}
       ></Banner>
     </div>
   )

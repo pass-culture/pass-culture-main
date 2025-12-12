@@ -17,7 +17,7 @@ export const SynchronizedProviderInformation = ({
 
   return (
     <Banner
-      title=""
+      title="Synchronisation active"
       description={
         <div className={styles['banner-content']}>
           {providerInfo.logo && (

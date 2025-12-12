@@ -162,7 +162,7 @@ describe('IndividualOfferLayout', () => {
       renderIndividualOfferLayout({ props: { offer } })
 
       expect(
-        screen.getByText('Offre synchronisée avec Boost')
+        screen.getByText('Cette offre est synchronisée avec Boost')
       ).toBeInTheDocument()
     })
 

@@ -119,14 +119,12 @@ export const OfferEducationalStock = <
 
           <FormLayout className={styles['offer-educational-stock-form-layout']}>
             {isCollectiveOffer(offer) && offer.isPublicApi && (
-              <BannerPublicApi className={styles['banner-space']}>
-                Offre importée automatiquement
-              </BannerPublicApi>
+              <BannerPublicApi className={styles['banner-space']} />
             )}
             <FormLayout.MandatoryInfo />
             <div className={styles['offer-educational-stock-banner']}>
               <Banner
-                title=""
+                title="Modification autorisée"
                 actions={[
                   {
                     href: 'https://passculture.zendesk.com/hc/fr/articles/4412973958673--Acteurs-culturels-Comment-modifier-une-offre-collective-pr%C3%A9-r%C3%A9serv%C3%A9e-',
@@ -138,7 +136,7 @@ export const OfferEducationalStock = <
                     iconAlt: 'Nouvelle fenêtre',
                   },
                 ]}
-                description="Vous pouvez modifier ces informations en fonction de vos échanges avec l’établissement scolaire tant que le chef d’établissement n’a pas validé la réservation."
+                description="Ces informations peuvent être modifiées jusqu'à validation de la réservation par le chef d'établissement."
               />
             </div>
             <FormLayout.Section title="Indiquez le prix et la date de votre offre">

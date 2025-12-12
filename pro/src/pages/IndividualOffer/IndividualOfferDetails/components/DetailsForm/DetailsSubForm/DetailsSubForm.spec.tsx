@@ -87,7 +87,7 @@ const renderDetailsSubForm = ({
   )
 }
 
-const calloutLabel = /Cette catégorie nécessite un EAN./
+const calloutLabel = /Cette catégorie nécessite un code EAN./
 
 describe('DetailsSubForm', () => {
   it('should always display conditional fields based on the selected category / subcategory', () => {

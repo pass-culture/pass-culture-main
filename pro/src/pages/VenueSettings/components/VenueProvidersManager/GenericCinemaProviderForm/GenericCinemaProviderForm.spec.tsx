@@ -155,7 +155,7 @@ describe('GenericCinemaProviderForm', () => {
       expect(priceInput).toBeInTheDocument()
 
       const callout = screen.getByText(
-        'Pour le moment, seules les séances "classiques" peuvent être importées. Les séances spécifiques (3D, Dolby Atmos, 4DX...) ne génèreront pas d’offres. Nous travaillons actuellement à l’ajout de séances spécifiques.'
+        'Seules les séances “classiques” peuvent être importées pour le moment. Les séances spécifiques (3D, Dolby Atmos, 4DX...) seront bientôt disponibles.'
       )
 
       expect(callout).toBeInTheDocument()

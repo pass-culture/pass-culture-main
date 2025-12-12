@@ -68,9 +68,9 @@ export function IndividualOfferPracticalInfosForm({
         {!offer?.isEvent && (
           <FormLayout.Row mdSpaceAfter>
             <Banner
-              title=""
+              title="Validation obligatoire"
               variant={BannerVariants.WARNING}
-              description={`La validation de la contremarque est obligatoire ${offerWillBeReimbursed ? ' pour que votre structure soit remboursée' : ''}, sinon la réservation sera automatiquement annulée et remise en vente au bout de ${reimbursmentDelay} jours.`}
+              description={`Sans validation de la contremarque, la réservation sera annulée et remise en vente après ${reimbursmentDelay} jours. ${offerWillBeReimbursed ? 'Vous ne serez pas remboursé.' : ''}`}
             ></Banner>
           </FormLayout.Row>
         )}
@@ -88,7 +88,7 @@ export function IndividualOfferPracticalInfosForm({
         <FormLayout.Section>
           <FormLayout.Row mdSpaceAfter>
             <Banner
-              title=""
+              title="Livraison interdite"
               variant={BannerVariants.WARNING}
               actions={[
                 {
@@ -100,7 +100,7 @@ export function IndividualOfferPracticalInfosForm({
                   type: 'link',
                 },
               ]}
-              description="La livraison d’article est interdite. Pour plus d’informations, veuillez consulter nos CGU."
+              description="La livraison d’articles n’est pas autorisée. Consultez nos CGU pour plus d'informations."
             />
           </FormLayout.Row>
         </FormLayout.Section>

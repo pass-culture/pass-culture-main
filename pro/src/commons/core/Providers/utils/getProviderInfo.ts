@@ -56,6 +56,6 @@ export const getProviderInfo = (
     id: providerName.toLowerCase(),
     logo: providerLogo ? providerLogo.logo : '',
     name: providerName,
-    synchronizedOfferMessage: `Offre synchronisée avec ${providerName}`,
+    synchronizedOfferMessage: `Cette offre est synchronisée avec ${providerName}`,
   }
 }

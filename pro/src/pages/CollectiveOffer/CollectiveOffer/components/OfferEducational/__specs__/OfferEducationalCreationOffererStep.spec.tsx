@@ -51,7 +51,7 @@ describe('screens | OfferEducational : creation offerer step', () => {
       renderWithProviders(<OfferEducational {...props} userOfferer={null} />)
       expect(
         await screen.findByText(
-          /Vous ne pouvez pas créer d’offre collective tant que votre entité juridique n’est pas validée./
+          /La création d'offres collectives nécessite la validation de votre entité juridique./
         )
       ).toBeInTheDocument()
     })

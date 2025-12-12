@@ -180,7 +180,7 @@ describe('ModalImageUpsertOrEdit', () => {
         })
         await waitForRender()
         expect(
-          screen.getByText(/La qualité de votre image n’est pas optimale./)
+          screen.getByText(/Image non conforme aux recommandations/)
         ).toBeInTheDocument()
       })
     })

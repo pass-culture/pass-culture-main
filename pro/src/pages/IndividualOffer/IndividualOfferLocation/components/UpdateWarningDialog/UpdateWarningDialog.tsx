@@ -35,9 +35,9 @@ export const UpdateWarningDialog = ({
         <div>{message ?? 'Vous avez modifié la localisation.'}</div>
 
         <Banner
-          title=""
+          title="Réservations en cours"
           variant={BannerVariants.WARNING}
-          description="Si vous souhaitez que les réservations en cours conservent les données actuelles, veuillez créer une nouvelle offre avec les nouvelles informations."
+          description="Pour conserver les données des réservations actuelles, créez une nouvelle offre avec vos modifications."
         ></Banner>
 
         <FormLayout.Row>

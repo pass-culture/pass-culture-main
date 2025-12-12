@@ -28,7 +28,6 @@ export const BankAccountHasPendingCorrectionCallout = ({
   return (
     <div className={styles['reimbursements-banner']}>
       <Banner
-        title=""
         actions={[
           {
             href: `/remboursements/informations-bancaires?structure=${offerer.id}`,
@@ -47,7 +46,8 @@ export const BankAccountHasPendingCorrectionCallout = ({
           },
         ]}
         variant={BannerVariants.ERROR}
-        description="Compte bancaire incomplet"
+        title="Compte bancaire incomplet"
+        description="Des informations manquent pour finaliser votre compte bancaire."
       />
     </div>
   )

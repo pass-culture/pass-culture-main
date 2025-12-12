@@ -50,7 +50,7 @@ describe('CollectiveOfferSummary', () => {
       }),
     })
     expect(
-      screen.getByText('Offre synchronisée avec Mollat')
+      screen.getByText('Cette offre est synchronisée avec Mollat')
     ).toBeInTheDocument()
   })
 
