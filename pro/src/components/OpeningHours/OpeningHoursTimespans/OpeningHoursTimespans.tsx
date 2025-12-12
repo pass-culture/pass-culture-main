@@ -51,6 +51,7 @@ export function OpeningHoursTimespans({
         <div className={styles['timespan-inputs']}>
           <TimePicker
             label="Ouvre à"
+            required
             isLabelHidden={i === 1}
             className={styles['time-picker']}
             {...form.register(`openingHours.${weekDay}.${i}.0`)}
@@ -70,6 +71,7 @@ export function OpeningHoursTimespans({
           </span>
           <TimePicker
             label="Ferme à"
+            required
             className={styles['time-picker']}
             isLabelHidden={i === 1}
             {...form.register(`openingHours.${weekDay}.${i}.1`)}

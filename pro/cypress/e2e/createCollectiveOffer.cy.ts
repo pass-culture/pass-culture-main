@@ -104,19 +104,19 @@ describe('Create collective offers', () => {
   }
 
   const fillDatesAndPrice = (data = commonOfferData) => {
-    cy.findByLabelText('Date de début').type(format(data.date, 'yyyy-MM-dd'))
-    cy.findByLabelText('Horaire').type(data.time)
-    cy.findByLabelText('Nombre de participants').type(data.participants)
+    cy.findByLabelText(/Date de début */).type(format(data.date, 'yyyy-MM-dd'))
+    cy.findByLabelText(/Horaire */).type(data.time)
+    cy.findByLabelText(/Nombre de participants */).type(data.participants)
     cy.findByLabelText(/Prix total TTC/).type(data.price)
-    cy.findByLabelText('Informations sur le prix').type(data.priceDescription)
-    cy.findByLabelText('Date limite de réservation').type(
+    cy.findByLabelText(/Informations sur le prix */).type(data.priceDescription)
+    cy.findByLabelText(/Date limite de réservation */).type(
       format(data.bookingLimitDate, 'yyyy-MM-dd')
     )
     cy.findByText('Enregistrer et continuer').click()
   }
 
   const fillInstitution = (data = commonOfferData) => {
-    cy.findByLabelText('Nom de l’établissement scolaire ou code UAI *').type(
+    cy.findByLabelText(/Nom de l’établissement scolaire ou code UAI */).type(
       data.institution
     )
     cy.get('#list-institution').findByText(new RegExp(data.institution)).click()

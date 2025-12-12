@@ -454,7 +454,7 @@ describe('CollectiveOfferVisibility', () => {
       })
 
       const institutionInput = await screen.findByLabelText(
-        /Nom de l’établissement scolaire ou code UAI/
+        /Nom de l’établissement scolaire ou code UAI */
       )
 
       expect(institutionInput).toHaveValue(

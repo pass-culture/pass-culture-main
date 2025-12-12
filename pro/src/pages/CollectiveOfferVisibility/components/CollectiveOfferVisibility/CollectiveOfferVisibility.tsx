@@ -354,8 +354,6 @@ export const CollectiveOfferVisibilityScreen = ({
 
   return (
     <>
-      <FormLayout.MandatoryInfo />
-
       <OfferEducationalActions
         className={styles.actions}
         offer={offer}
@@ -363,101 +361,105 @@ export const CollectiveOfferVisibilityScreen = ({
       />
 
       <FormProvider {...form}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormLayout>
-            {isCollectiveOffer(offer) && offer.isPublicApi && (
-              <BannerPublicApi className={styles['banner-space']}>
-                Offre importée automatiquement
-              </BannerPublicApi>
-            )}
-            <FormLayout.Section title="Renseignez l'établissement scolaire et l'enseignant">
-              <p className={styles['description-text']}>
-                L’établissement et l’enseignant renseignés sont les seuls à
-                pouvoir visualiser et préréserver votre offre sur ADAGE.
-              </p>
-              <FormLayout.Row className={styles['row-layout']}>
-                {isLoadingInstitutions ? (
-                  <Spinner />
-                ) : (
+        <div className={styles.container}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormLayout>
+              {isCollectiveOffer(offer) && offer.isPublicApi && (
+                <BannerPublicApi className={styles['banner-space']}>
+                  Offre importée automatiquement
+                </BannerPublicApi>
+              )}
+              <FormLayout.Section title="Renseignez l'établissement scolaire et l'enseignant">
+                <p className={styles['description-text']}>
+                  L’établissement et l’enseignant renseignés sont les seuls à
+                  pouvoir visualiser et préréserver votre offre sur ADAGE.
+                </p>
+                <FormLayout.Row className={styles['row-layout']}>
+                  {isLoadingInstitutions ? (
+                    <Spinner />
+                  ) : (
+                    <SelectAutocomplete
+                      name="institution"
+                      options={institutionsOptions}
+                      label="Nom de l’établissement scolaire ou code UAI"
+                      description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
+                      onReset={() => {
+                        setValue('institution', '')
+                        setValue('teacher', '')
+                      }}
+                      onChange={(event) => {
+                        setValue('institution', event.target.value, {
+                          shouldDirty: true,
+                          shouldValidate: true,
+                        })
+
+                        setValue('teacher', undefined)
+                      }}
+                      disabled={!canEditInstitution}
+                      searchInOptions={(options, pattern) =>
+                        searchPatternInOptions(options, pattern, 300)
+                      }
+                      value={watch('institution')}
+                      error={errors.institution?.message}
+                      required
+                      requiredIndicator="explicit"
+                    />
+                  )}
+                </FormLayout.Row>
+                <FormLayout.Row className={styles['row-layout']}>
                   <SelectAutocomplete
-                    name="institution"
-                    options={institutionsOptions}
-                    label="Nom de l’établissement scolaire ou code UAI"
-                    description="Ex : Lycee General Simone Weil ou 010456E ou Le Havre"
+                    name="teacher"
+                    options={teachersOptions}
+                    label="Prénom et nom de l’enseignant (au moins 3 caractères)"
+                    required={false}
+                    description="Ex: Camille Dupont"
                     onReset={() => {
-                      setValue('institution', '')
                       setValue('teacher', '')
                     }}
+                    onSearch={onSearchTeacher}
+                    disabled={
+                      !canEditInstitution ||
+                      !watch('institution') ||
+                      isPreloadingRedactors
+                    }
                     onChange={(event) => {
-                      setValue('institution', event.target.value, {
+                      setValue('teacher', event.target.value, {
                         shouldDirty: true,
                         shouldValidate: true,
                       })
-
-                      setValue('teacher', undefined)
                     }}
-                    disabled={!canEditInstitution}
-                    searchInOptions={(options, pattern) =>
-                      searchPatternInOptions(options, pattern, 300)
-                    }
-                    value={watch('institution')}
-                    error={errors.institution?.message}
+                    value={watch('institution') ? watch('teacher') : undefined}
+                    error={errors.teacher?.message}
                   />
-                )}
-              </FormLayout.Row>
-              <FormLayout.Row className={styles['row-layout']}>
-                <SelectAutocomplete
-                  name="teacher"
-                  options={teachersOptions}
-                  label="Prénom et nom de l’enseignant (au moins 3 caractères)"
-                  required={false}
-                  description="Ex: Camille Dupont"
-                  onReset={() => {
-                    setValue('teacher', '')
-                  }}
-                  onSearch={onSearchTeacher}
-                  disabled={
-                    !canEditInstitution ||
-                    !watch('institution') ||
-                    isPreloadingRedactors
-                  }
-                  onChange={(event) => {
-                    setValue('teacher', event.target.value, {
-                      shouldDirty: true,
-                      shouldValidate: true,
-                    })
-                  }}
-                  value={watch('institution') ? watch('teacher') : undefined}
-                  error={errors.teacher?.message}
-                />
-              </FormLayout.Row>
-            </FormLayout.Section>
-            <ActionsBarSticky>
-              <ActionsBarSticky.Left>
-                <ButtonLink
-                  variant={ButtonVariant.SECONDARY}
-                  to={
-                    mode === Mode.CREATION
-                      ? `/offre/${offer.id}/collectif/stocks${
-                          requestId ? `?requete=${requestId}` : ''
-                        }`
-                      : '/offres/collectives'
-                  }
-                >
-                  {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
-                </ButtonLink>
-              </ActionsBarSticky.Left>
-              <ActionsBarSticky.Right dirtyForm={isDirty} mode={mode}>
-                <Button
-                  type="submit"
-                  disabled={!watch('institution') || !canEditInstitution}
-                >
-                  Enregistrer et continuer
-                </Button>
-              </ActionsBarSticky.Right>
-            </ActionsBarSticky>
-          </FormLayout>
-        </form>
+                </FormLayout.Row>
+              </FormLayout.Section>
+              <ActionsBarSticky>
+                <ActionsBarSticky.Left>
+                  <ButtonLink
+                    variant={ButtonVariant.SECONDARY}
+                    to={
+                      mode === Mode.CREATION
+                        ? `/offre/${offer.id}/collectif/stocks${
+                            requestId ? `?requete=${requestId}` : ''
+                          }`
+                        : '/offres/collectives'
+                    }
+                  >
+                    {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
+                  </ButtonLink>
+                </ActionsBarSticky.Left>
+                <ActionsBarSticky.Right dirtyForm={isDirty} mode={mode}>
+                  <Button
+                    type="submit"
+                    disabled={!watch('institution') || !canEditInstitution}
+                  >
+                    Enregistrer et continuer
+                  </Button>
+                </ActionsBarSticky.Right>
+              </ActionsBarSticky>
+            </FormLayout>
+          </form>
+        </div>
       </FormProvider>
       <RouteLeavingGuardCollectiveOfferCreation
         when={isDirty && !isSubmitting}

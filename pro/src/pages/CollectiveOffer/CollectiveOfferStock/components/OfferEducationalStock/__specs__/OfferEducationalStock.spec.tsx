@@ -10,7 +10,6 @@ import { FORMAT_HH_mm, FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { DETAILS_PRICE_LABEL } from '../constants/labels'
 import {
   OfferEducationalStock,
   type OfferEducationalStockProps,
@@ -124,7 +123,7 @@ it('should disable booking limit datetime when form access is read only', () => 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   const bookingLimitDatetimeInput = screen.getByLabelText(
-    'Date limite de réservation'
+    'Date limite de réservation *'
   )
 
   expect(bookingLimitDatetimeInput).toBeDisabled()
@@ -153,9 +152,9 @@ it('should not disable start datetime, end datetime and event time inputs when d
 
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
-  const startDatetimeInput = screen.getByLabelText('Date de début')
-  const endDatetimeInput = screen.getAllByLabelText(/Date de fin/)[1]
-  const eventTimeInput = screen.getByLabelText('Horaire')
+  const startDatetimeInput = screen.getByLabelText(/Date de début */)
+  const endDatetimeInput = screen.getAllByLabelText(/Date de fin */)[1]
+  const eventTimeInput = screen.getByLabelText(/Horaire */)
 
   expect(startDatetimeInput).not.toBeDisabled()
   expect(endDatetimeInput).not.toBeDisabled()
@@ -174,10 +173,10 @@ it('should not disable description, price and places when action CAN_EDIT_DISCOU
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   const descriptionInput = screen.getByRole('textbox', {
-    name: `${DETAILS_PRICE_LABEL}`,
+    name: /Informations sur le prix(?: |\u00A0)\*/,
   })
-  const priceInput = screen.getByLabelText(/Prix total TTC/)
-  const placeInput = screen.getByLabelText('Nombre de participants')
+  const priceInput = screen.getByLabelText(/Prix total TTC */)
+  const placeInput = screen.getByLabelText(/Nombre de participants */)
 
   expect(descriptionInput).not.toBeDisabled()
   expect(priceInput).not.toBeDisabled()
@@ -196,10 +195,10 @@ it('should disable description, price and places when allowed action CAN_EDIT_DI
   renderWithProviders(<OfferEducationalStock {...testProps} />)
 
   const descriptionInput = screen.getByRole('textbox', {
-    name: `${DETAILS_PRICE_LABEL}`,
+    name: /Informations sur le prix(?: |\u00A0)\*/,
   })
   const priceInput = screen.getByLabelText(/Prix total TTC/)
-  const placeInput = screen.getByLabelText('Nombre de participants')
+  const placeInput = screen.getByLabelText(/Nombre de participants/)
 
   expect(descriptionInput).toBeDisabled()
   expect(priceInput).toBeDisabled()

@@ -15,7 +15,7 @@ export const MandatoryInfo = ({
     <p className={cn(style['mandatory-info'], className)}>
       {areAllFieldsMandatory
         ? 'Tous les champs sont obligatoires.'
-        : 'Tous les champs suivis d’un * sont obligatoires.'}
+        : 'Les champs suivis d’un * sont obligatoires.'}
     </p>
   )
 }

@@ -69,13 +69,13 @@ export const FormStock = ({
         error={formState.errors.startDatetime?.message}
         className={styles['input-date']}
         required
-        requiredIndicator="hidden"
+        requiredIndicator="symbol"
       />
       <DatePicker
         disabled={!canEditDates}
         label={
           <span className={styles['label-container']}>
-            Date de fin
+            Date de fin *
             <Tooltip content="Le remboursement de votre offre sera effectué 2 à 3 semaines après la fin de votre évènement.">
               <button type="button" className={styles['help-button']}>
                 <SvgIcon src={fullHelpIcon} />
@@ -97,7 +97,7 @@ export const FormStock = ({
         error={formState.errors.eventTime?.message}
         className={styles['custom-field-layout']}
         required
-        requiredIndicator="hidden"
+        requiredIndicator="symbol"
       />
       <TextInput
         disabled={!canEditDiscount}
@@ -107,7 +107,7 @@ export const FormStock = ({
         type="number"
         icon={strokeCollaborator}
         required
-        requiredIndicator="hidden"
+        requiredIndicator="symbol"
       />
       <TextInput
         disabled={!canEditDiscount}
@@ -118,7 +118,7 @@ export const FormStock = ({
         min={0}
         type="number"
         required
-        requiredIndicator="hidden"
+        requiredIndicator="symbol"
       />
     </FormLayout.Row>
   )

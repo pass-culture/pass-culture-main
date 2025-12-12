@@ -13,6 +13,7 @@
     display: flex;
     align-items: center;
     white-space: nowrap;
+    justify-content: space-between;
 
     &-container {
       margin-bottom: rem.torem(forms.$label-space-before-input);
@@ -147,4 +148,10 @@ $icon-size: rem.torem(20px);
 
 .visually-hidden {
   @include a11y.visually-hidden;
+}
+
+.field-header-right {
+  @include fonts.body-accent-xs;
+
+  color: var(--color-text-subtle);
 }
