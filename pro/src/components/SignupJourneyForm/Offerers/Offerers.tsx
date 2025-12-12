@@ -42,9 +42,6 @@ export const Offerers = (): JSX.Element => {
 
   const [isVenueListOpen, setIsVenueListOpen] = useState<boolean>(false)
   const [showLinkDialog, setShowLinkDialog] = useState<boolean>(false)
-  const isNewOffererLinkEnabled = useActiveFeature(
-    'WIP_ENABLE_NEW_USER_OFFERER_LINK'
-  )
 
   const { offerer, setOfferer } = useSignupJourneyContext()
   const isLocalAuthority = MAYBE_LOCAL_AUTHORITY_APE_CODE.includes(
@@ -209,10 +206,6 @@ export const Offerers = (): JSX.Element => {
             Vous souhaitez ajouter une nouvelle structure à cet espace ?
           </div>
           <Button
-            className={
-              /* istanbul ignore next: displaying changes */
-              isNewOffererLinkEnabled ? styles['button-add-new-offerer'] : ''
-            }
             onClick={redirectToOnboarding}
             variant={ButtonVariant.SECONDARY}
           >
