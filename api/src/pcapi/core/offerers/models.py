@@ -389,11 +389,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "OpeningHours", foreign_keys="OpeningHours.venueId", back_populates="venue", passive_deletes=True
     )
 
-    offererAddressId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offerer_address.id"), nullable=False, index=True
-    )
     offererAddress: sa_orm.Mapped["OffererAddress"] = sa_orm.relationship(
-        "OffererAddress", foreign_keys=[offererAddressId], back_populates="venues"
+        "OffererAddress",
+        primaryjoin="and_(Venue.id==OffererAddress.venueId, cast(OffererAddress.type, String)=='VENUE_LOCATION')",
+        back_populates="venue",
     )
 
     cinemaProviderPivot: sa_orm.Mapped["providers_models.CinemaProviderPivot | None"] = sa_orm.relationship(
@@ -1225,7 +1224,9 @@ class Offerer(
             sa.select(sa.func.array_agg(sa.distinct(geography_models.Address.departmentCode)))
             .select_from(geography_models.Address)
             .join(OffererAddress, geography_models.Address.id == OffererAddress.addressId)
-            .join(Venue, Venue.offererAddressId == OffererAddress.id)
+            .join(
+                Venue, sa.and_(Venue.id == OffererAddress.venueId, OffererAddress.type == LocationType.VENUE_LOCATION)
+            )
             .filter(Venue.managingOffererId == Offerer.id)
             .filter(sa.not_(Venue.isSoftDeleted.is_(True)))
             .correlate(Offerer)
@@ -1240,7 +1241,9 @@ class Offerer(
             sa.select(sa.func.array_agg(sa.distinct(geography_models.Address.city)))
             .select_from(geography_models.Address)
             .join(OffererAddress, geography_models.Address.id == OffererAddress.addressId)
-            .join(Venue, Venue.offererAddressId == OffererAddress.id)
+            .join(
+                Venue, sa.and_(Venue.id == OffererAddress.venueId, OffererAddress.type == LocationType.VENUE_LOCATION)
+            )
             .filter(Venue.managingOffererId == Offerer.id)
             .filter(sa.not_(Venue.isSoftDeleted.is_(True)))
             .correlate(Offerer)
@@ -1492,14 +1495,8 @@ class OffererAddress(PcObject, Model):
     venueId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id", ondelete="CASCADE"), nullable=True
     )
-    # TODO (prouzet, 2025-10-08) CLEAN_OA back_populates="offererAddress" -- currently in conflict with Venue.offererAddressId
+    # Do not add back_populates="offererAddress" because it is not always the venue location
     venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship("Venue", foreign_keys=[venueId])
-    # TODO (prouzet, 2025-10-08) CLEAN_OA Remove relationship when venueId replaces usage of Venue.offererAddressId
-    venues: sa_orm.Mapped[list["Venue"]] = sa_orm.relationship(
-        "Venue", foreign_keys="Venue.offererAddressId", back_populates="offererAddress"
-    )
-
-    _isLinkedToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
 
     __table_args__ = (
         # TODO (prouzet, 2025-10-09) When type and venueId are declared as non-nullable, index should be:
@@ -1553,17 +1550,6 @@ class OffererAddress(PcObject, Model):
             "type",
         ),
     )
-
-    @hybrid_property
-    def isLinkedToVenue(self) -> bool:
-        return db.session.query(sa.select(1).exists().where(Venue.offererAddressId == self.id)).scalar()
-
-    @isLinkedToVenue.inplace.expression
-    @classmethod
-    def _isLinkedToVenueExpression(cls) -> Exists:
-        aliased_venue = sa_orm.aliased(Venue)
-
-        return sa.select(1).where(aliased_venue.offererAddressId == cls.id).exists()
 
 
 class OffererConfidenceLevel(enum.Enum):

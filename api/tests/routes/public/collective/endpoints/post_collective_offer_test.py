@@ -300,7 +300,7 @@ class CollectiveOffersPublicPostOfferTest(PublicAPIEndpointBaseHelper):
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
-        assert offer.offererAddressId == venue.offererAddressId
+        assert offer.offererAddress == venue.offererAddress
         assert offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 

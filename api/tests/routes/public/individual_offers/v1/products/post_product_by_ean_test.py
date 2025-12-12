@@ -179,7 +179,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant == venue.mentalDisabilityCompliant
         assert created_offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
         assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
-        assert created_offer.offererAddressId == venue.offererAddressId
+        assert created_offer.offererAddress == venue.offererAddress
         assert created_offer.publicationDatetime == datetime.datetime(2025, 7, 15)
         assert created_offer.bookingAllowedDatetime == None
 

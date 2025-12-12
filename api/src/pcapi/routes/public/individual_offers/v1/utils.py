@@ -98,7 +98,7 @@ def _retrieve_offer_tied_to_user_query() -> sa_orm.Query:
         .join(providers_models.VenueProvider.provider)
         .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
         .filter(providers_models.VenueProvider.isActive)
-        .options(sa_orm.joinedload(offers_models.Offer.venue))
+        .options(sa_orm.joinedload(offers_models.Offer.venue).joinedload(offerers_models.Venue.offererAddress))
     )
 
 
@@ -115,9 +115,10 @@ def get_filtered_offers_linked_to_provider(
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(
-            sa_orm.joinedload(offers_models.Offer.venue).load_only(
-                offerers_models.Venue.id, offerers_models.Venue.offererAddressId
-            )
+            sa_orm.joinedload(offers_models.Offer.venue)
+            .load_only(offerers_models.Venue.id)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .load_only(offerers_models.OffererAddress.id, offerers_models.OffererAddress.addressId),
         )
     )
 
