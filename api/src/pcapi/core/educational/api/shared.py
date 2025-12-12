@@ -18,8 +18,7 @@ def update_collective_stock_booking(
     last_booking = stock.lastBooking
     booking_limit_value = stock.bookingLimitDatetime
     expired_booking_to_update = None
-    if _should_update_collective_booking_pending(last_booking, booking_limit_value):
-        assert last_booking is not None  # checked by should_update_collective_booking_pending
+    if last_booking is not None and _should_update_collective_booking_pending(last_booking, booking_limit_value):
         expired_booking_to_update = last_booking
         _update_collective_booking_pending(last_booking)
 
@@ -66,6 +65,10 @@ def _update_collective_booking_pending(expired_booking: models.CollectiveBooking
 
 
 def _should_update_collective_booking_pending(
-    booking: models.CollectiveBooking | None, booking_limit: datetime.datetime
+    booking: models.CollectiveBooking, booking_limit: datetime.datetime
 ) -> bool:
-    return booking is not None and booking.is_expired and booking_limit > date_utils.get_naive_utc_now()
+    # if the input date has a timezone (resp. does not have one), we need to compare it with an aware datetime (resp. a naive datetime)
+    now = (
+        date_utils.get_naive_utc_now() if booking_limit.tzinfo is None else datetime.datetime.now(datetime.timezone.utc)
+    )
+    return booking.is_expired and booking_limit > now
