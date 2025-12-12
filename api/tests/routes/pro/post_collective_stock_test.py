@@ -4,11 +4,11 @@ import decimal
 import pytest
 import time_machine
 
-import pcapi.core.educational.factories as educational_factories
-import pcapi.core.offerers.factories as offerers_factories
 from pcapi import settings
+from pcapi.core.educational import factories
 from pcapi.core.educational.models import CollectiveOffer
 from pcapi.core.educational.models import CollectiveStock
+from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -19,14 +19,14 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 def _create_educational_year():
-    educational_factories.create_educational_year(date_time=datetime.datetime.fromisoformat("2022-01-17T22:00:00Z"))
+    factories.create_educational_year(date_time=datetime.datetime.fromisoformat("2022-01-17T22:00:00Z"))
 
 
 class Return200Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offer(self, client):
         _create_educational_year()
-        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
+        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -55,15 +55,13 @@ class Return200Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_valid_stock_for_collective_offe_with_start_end_datetime(self, client):
-        offer = educational_factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
+        offer = factories.CollectiveOfferFactory(validation=OfferValidationStatus.DRAFT)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,
         )
 
-        educational_factories.EducationalYearFactory(
-            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
-        )
+        factories.EducationalYearFactory(beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z")
 
         stock_payload = {
             "offerId": offer.id,
@@ -93,7 +91,7 @@ class Return200Test:
 class Return400Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_collective_stocks_should_not_be_available_if_user_not_linked_to_offerer(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com")
 
         stock_payload = {
@@ -103,6 +101,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 38,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -115,7 +114,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_missing_end_datetime(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -124,6 +123,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 10,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         response = client.with_session_auth("user@example.com").post("/collective/stocks/", json=stock_payload)
@@ -133,7 +133,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_number_of_tickets_to_be_negative_on_creation(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -143,6 +143,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": -1,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -153,7 +154,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_negative_on_creation(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -163,6 +164,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": -1500,
             "numberOfTickets": 30,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -173,7 +175,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_price_to_be_too_high(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -183,6 +185,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": settings.EAC_OFFER_PRICE_LIMIT + 1,
             "numberOfTickets": 1,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -193,7 +196,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_too_many_tickets(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -203,6 +206,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 100,
             "numberOfTickets": settings.EAC_NUMBER_OF_TICKETS_LIMIT + 1,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -213,7 +217,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_bookingLimitDatetime_after_startDatetime(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -223,6 +227,7 @@ class Return400Test:
             "bookingLimitDatetime": "2022-01-18T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 30,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -237,7 +242,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_price_details_with_more_than_1000_caracters(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -259,7 +264,7 @@ class Return400Test:
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_allow_multiple_stocks(self, client):
         _create_educational_year()
-        offer = educational_factories.CollectiveStockFactory().collectiveOffer
+        offer = factories.CollectiveStockFactory().collectiveOffer
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -280,7 +285,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_create_invalid_stock_for_collective_offer(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -301,12 +306,10 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_after_endDatetime(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        educational_factories.EducationalYearFactory(
-            beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z"
-        )
+        factories.EducationalYearFactory(beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z")
 
         stock_payload = {
             "offerId": offer.id,
@@ -315,6 +318,7 @@ class Return400Test:
             "bookingLimitDatetime": "2022-01-16T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 30,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -326,7 +330,7 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def test_missing_educational_year(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -336,6 +340,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 30,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         response = client.with_session_auth("user@example.com").post("/collective/stocks", json=stock_payload)
@@ -345,13 +350,13 @@ class Return400Test:
 
     @time_machine.travel("2020-11-17 15:00:00")
     def should_not_accept_payload_with_startDatetime_endDatetime_in_different_educational_year(self, client):
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        educational_factories.EducationalYearFactory(
+        factories.EducationalYearFactory(
             beginningDate="2021-09-01T22:00:00Z", expirationDate="2022-07-31T22:00:00Z", id=1
         )
-        educational_factories.EducationalYearFactory(
+        factories.EducationalYearFactory(
             beginningDate="2022-09-01T22:00:00Z", expirationDate="2023-07-31T22:00:00Z", id=2
         )
 
@@ -362,6 +367,7 @@ class Return400Test:
             "bookingLimitDatetime": "2021-12-31T20:00:00Z",
             "totalPrice": 1500,
             "numberOfTickets": 30,
+            "educationalPriceDetail": "Détail du prix",
         }
 
         client.with_session_auth("user@example.com")
@@ -382,7 +388,7 @@ class Return400Test:
 
     def should_not_accept_payload_with_dates_in_the_past(self, client):
         past = (date_utils.get_naive_utc_now() - datetime.timedelta(days=1)).isoformat() + "Z"
-        offer = educational_factories.CollectiveOfferFactory()
+        offer = factories.CollectiveOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
         stock_payload = {
@@ -409,7 +415,7 @@ class Return400Test:
     @pytest.mark.parametrize("status", [OfferValidationStatus.PENDING, OfferValidationStatus.REJECTED])
     def should_not_accept_stock_creation_for_pending_and_rejected_offer(self, status, client):
         _create_educational_year()
-        offer = educational_factories.CollectiveOfferFactory(validation=status)
+        offer = factories.CollectiveOfferFactory(validation=status)
         offerers_factories.UserOffererFactory(
             user__email="user@example.com",
             offerer=offer.venue.managingOfferer,

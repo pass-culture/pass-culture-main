@@ -54,7 +54,7 @@ def create_collective_stock(
     except exceptions.EducationalException as exc:
         raise ApiErrors(exc.errors)
 
-    return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
+    return collective_stock_serialize.CollectiveStockResponseModel.model_validate(collective_stock)
 
 
 @private_api.route("/collective/stocks/<int:collective_stock_id>", methods=["PATCH"])
@@ -80,8 +80,10 @@ def edit_collective_stock(
     check_user_has_access_to_offerer(current_user, offerer.id)
 
     try:
-        educational_api_stock.edit_collective_stock(stock=collective_stock, stock_data=body.dict(exclude_unset=True))
-        return collective_stock_serialize.CollectiveStockResponseModel.from_orm(collective_stock)
+        educational_api_stock.edit_collective_stock(
+            stock=collective_stock, stock_data=body.model_dump(exclude_unset=True)
+        )
+        return collective_stock_serialize.CollectiveStockResponseModel.model_validate(collective_stock)
     except exceptions.CollectiveOfferIsPublicApi:
         raise ForbiddenError({"global": ["Les stocks créés par l'api publique ne sont pas editables."]})
     except exceptions.CollectiveOfferForbiddenAction:

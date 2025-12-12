@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type CollectiveStockResponseModel = {
-  bookingLimitDatetime?: string | null;
-  educationalPriceDetail?: string | null;
-  endDatetime?: string | null;
+  bookingLimitDatetime: (string | null);
+  educationalPriceDetail: (string | null);
+  endDatetime: (string | null);
   id: number;
-  numberOfTickets?: number | null;
+  numberOfTickets: (number | null);
   price: number;
-  startDatetime?: string | null;
+  startDatetime: (string | null);
 };
 
