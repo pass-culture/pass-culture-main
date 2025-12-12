@@ -150,8 +150,14 @@ def format_time_in_second_to_human_readable(time_in_second: int) -> str | None:
 
 
 def to_naive_utc_datetime(dt: datetime) -> datetime:
+    """
+    If the input datetime has no TZ, we assume it represents an UTC datetime and return it as is
+    If the input datetime has a TZ, convert it to UTC and remove the TZ
+    """
+
     if dt.tzinfo is None:
-        raise ValueError("dt must be timezone-aware")
+        return dt
+
     return dt.astimezone(ZoneInfo(DEFAULT_STORED_TIMEZONE)).replace(tzinfo=None)
 
 
