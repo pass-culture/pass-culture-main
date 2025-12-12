@@ -5,4 +5,5 @@ export const DEFAULT_ACTIVITY_VALUES: ActivityContext = {
   socialUrls: [''],
   targetCustomer: undefined,
   phoneNumber: '',
+  culturalDomains: undefined,
 }

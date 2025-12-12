@@ -1,7 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
-import { expect } from 'vitest'
+import useSWR, { type SWRResponse } from 'swr'
+import { expect, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
@@ -27,6 +28,10 @@ vi.mock('@/apiClient/api', () => ({
     getVenueTypes: vi.fn(),
   },
 }))
+vi.mock('swr', async (importOriginal) => ({
+  ...(await importOriginal()),
+  default: vi.fn(),
+}))
 
 const venueTypes: VenueTypeResponseModel[] = [
   { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
@@ -38,7 +43,8 @@ const onSubmit = vi.fn()
 function renderActivityForm(
   initialValues: Partial<ActivityFormValues>,
   props: ActivityFormProps,
-  contextValue: SignupJourneyContextValues
+  contextValue: SignupJourneyContextValues,
+  features: string[] = []
 ) {
   const Wrapper = () => {
     const methods = useForm({
@@ -59,11 +65,13 @@ function renderActivityForm(
   renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Wrapper />
-    </SignupJourneyContext.Provider>
+    </SignupJourneyContext.Provider>,
+    { features }
   )
 }
 
 describe('screens:SignupJourney::ActivityForm', () => {
+  const useSWRMock = vi.mocked(useSWR)
   let activity: ActivityContext
   let contextValue: SignupJourneyContextValues
   let props: ActivityFormProps
@@ -83,6 +91,26 @@ describe('screens:SignupJourney::ActivityForm', () => {
       setInitialAddress: noop,
     }
     vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
+    useSWRMock.mockReturnValue({
+      isLoading: false,
+      data: [
+        {
+          id: 1,
+          name: 'domaine 1',
+          nationalPrograms: [],
+        },
+        {
+          id: 2,
+          name: 'domaine b',
+          nationalPrograms: [],
+        },
+        {
+          id: 3,
+          name: 'domaine III',
+          nationalPrograms: [],
+        },
+      ],
+    } as SWRResponse)
   })
 
   it('should render activity form', async () => {
@@ -203,6 +231,59 @@ describe('screens:SignupJourney::ActivityForm', () => {
     await userEvent.click(screen.getByText('Culture scientifique'))
     await waitFor(() => {
       expect(screen.getByText('Culture scientifique')).toBeInTheDocument()
+    })
+  })
+  describe('with FF WIP_VENUE_CULTURAL_DOMAINS', () => {
+    it('should render cultural domains input', async () => {
+      renderActivityForm(initialValues, props, contextValue, [
+        'WIP_VENUE_CULTURAL_DOMAINS',
+      ])
+      const multiSelect = screen.getByLabelText(
+        'Sélectionnez un ou plusieurs domaines d’activité'
+      )
+
+      expect(multiSelect).toBeInTheDocument()
+      await userEvent.click(multiSelect)
+      await waitFor(() => {
+        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+      })
+      expect(screen.getByText(/3 résultats trouvés/)).toBeInTheDocument()
+      expect(screen.getByText(/domaine III/)).toBeInTheDocument()
+    })
+
+    it('should render cultural domains input with context value', async () => {
+      renderActivityForm(
+        { ...initialValues, culturalDomains: ['1'] },
+        props,
+        contextValue,
+        ['WIP_VENUE_CULTURAL_DOMAINS']
+      )
+
+      await userEvent.click(screen.getByLabelText('domaine sélectionné'))
+      await waitFor(() => {
+        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+      })
+      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
+    })
+
+    it('should select cultural domain', async () => {
+      renderActivityForm(initialValues, props, contextValue, [
+        'WIP_VENUE_CULTURAL_DOMAINS',
+      ])
+
+      await userEvent.click(
+        screen.getByLabelText(
+          'Sélectionnez un ou plusieurs domaines d’activité'
+        )
+      )
+      await waitFor(() => {
+        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+      })
+      expect(screen.getAllByText(/domaine 1/)).toHaveLength(1)
+      await userEvent.click(screen.getByText(/domaine 1/))
+      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
+      await userEvent.click(screen.getByText(/domaine III/))
+      expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
     })
   })
 })

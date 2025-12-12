@@ -6,4 +6,5 @@ export const defaultActivityFormValues = {
     educational: false,
   },
   phoneNumber: '',
+  culturalDomains: undefined,
 }

@@ -2,9 +2,12 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getActivities } from '@/commons/mappings/mappings'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -12,6 +15,7 @@ import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
+import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
@@ -29,6 +33,7 @@ export interface ActivityFormValues {
     educational: boolean
   }
   phoneNumber: string
+  culturalDomains: string[] | undefined
 }
 
 export interface ActivityFormProps {
@@ -38,12 +43,16 @@ export interface ActivityFormProps {
 export const ActivityForm = ({
   venueTypes,
 }: ActivityFormProps): JSX.Element => {
+  const { data, isLoading } = useEducationalDomains()
   const { offerer } = useSignupJourneyContext()
 
   const { register, control, formState, watch, setValue, trigger, setFocus } =
     useFormContext<ActivityFormValues>()
 
   const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
+  const isCulturalDomainsEnabled = useActiveFeature(
+    'WIP_VENUE_CULTURAL_DOMAINS'
+  )
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -56,6 +65,23 @@ export const ActivityForm = ({
     isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
       ? buildSelectOptions(getActivities())
       : venueTypes
+
+  const defaultCulturalDomain: Option[] | undefined =
+    data.length === 0 ||
+    !formState.defaultValues ||
+    !formState.defaultValues?.culturalDomains
+      ? undefined
+      : formState.defaultValues.culturalDomains.map((formDefault) => {
+          const apiValue = data.find(
+            (educationalDomain) => String(educationalDomain.id) === formDefault
+          )
+          assertOrFrontendError(
+            apiValue,
+            `CulturalDomain withId ${formDefault} not found`
+          )
+          return { id: String(apiValue.id), label: apiValue.name }
+        })
+
   return (
     <FormLayout.Section>
       <FormLayout.Row mdSpaceAfter>
@@ -74,6 +100,40 @@ export const ActivityForm = ({
           required
         />
       </FormLayout.Row>
+
+      {isCulturalDomainsEnabled && !isLoading && (
+        <FormLayout.Row mdSpaceAfter>
+          <MultiSelect
+            name="culturalDomains"
+            options={data.map((educationalDomain) => ({
+              id: String(educationalDomain.id),
+              label: educationalDomain.name,
+            }))}
+            defaultOptions={defaultCulturalDomain}
+            error={formState.errors.culturalDomains?.message}
+            label="Domaine(s) d’activité"
+            className={styles['cultural-domains-select']}
+            required={offerer?.isOpenToPublic === 'false'}
+            onSelectedOptionsChanged={(selectedOptions, y, z) => {
+              setValue(
+                'culturalDomains',
+                selectedOptions.length > 0
+                  ? selectedOptions.map((opt) => opt.id)
+                  : undefined
+              )
+            }}
+            buttonLabel={
+              (watch('culturalDomains') ?? []).length > 0
+                ? pluralizeFr(
+                    (watch('culturalDomains') ?? []).length,
+                    'domaine sélectionné',
+                    'domaines sélectionnés'
+                  )
+                : 'Sélectionnez un ou plusieurs domaines d’activité'
+            }
+          />
+        </FormLayout.Row>
+      )}
 
       <FormLayout.Row mdSpaceAfter>
         <PhoneNumberInput
