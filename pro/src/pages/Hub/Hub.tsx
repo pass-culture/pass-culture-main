@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
@@ -9,6 +10,7 @@ import { useNavigateByRouteId } from '@/commons/hooks/useNavigateByRouteId'
 import { setSelectedVenueById } from '@/commons/store/user/dispatchers/setSelectedVenueById'
 import { ensureVenues } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './Hub.module.scss'
 
@@ -19,6 +21,8 @@ export const Hub = () => {
   const navigate = useNavigate()
   const navigateByRouteId = useNavigateByRouteId()
 
+  const [isLoading, setIsLoading] = useState(false)
+
   const setSelectedVenueByIdAndRedirect = async (
     nextSelectedVenueId: number
   ) => {
@@ -27,6 +31,8 @@ export const Hub = () => {
 
       return
     }
+
+    setIsLoading(true)
 
     const nextUserAccess = await dispatch(
       setSelectedVenueById(nextSelectedVenueId)
@@ -37,6 +43,14 @@ export const Hub = () => {
   }
 
   useFocusOnMounted('#content')
+
+  if (isLoading) {
+    return (
+      <div aria-busy="true" className={styles['spinner-container']}>
+        <Spinner message="Chargement de la structure en cours…" />
+      </div>
+    )
+  }
 
   return (
     <FunnelLayout
