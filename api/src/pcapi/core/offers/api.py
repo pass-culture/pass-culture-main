@@ -306,6 +306,9 @@ def create_offer(
     """
     body.extra_data = _format_extra_data(body.subcategory_id, body.extra_data) or {}
 
+    validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+
     if is_from_private_api:
         # TODO(jbaudet): should be ok to remove from this if-block since
         # only internal api calls will pass product as a parameter.
@@ -320,19 +323,19 @@ def create_offer(
             visual_disability_compliant=body.visual_disability_compliant,
         )
 
-    validation.check_offer_withdrawal(
-        withdrawal_type=body.withdrawal_type,
-        withdrawal_delay=body.withdrawal_delay,
-        subcategory_id=body.subcategory_id,
-        booking_contact=body.booking_contact,
-        provider=provider,
-        venue_provider=venue_provider,
-    )
-    validation.check_offer_subcategory_is_valid(body.subcategory_id)
+    if not is_from_private_api:
+        validation.check_offer_withdrawal(
+            withdrawal_type=body.withdrawal_type,
+            withdrawal_delay=body.withdrawal_delay,
+            subcategory_id=body.subcategory_id,
+            booking_contact=body.booking_contact,
+            provider=provider,
+            venue_provider=venue_provider,
+        )
+        validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
+
     validation.check_offer_extra_data(body.subcategory_id, body.extra_data, venue, is_from_private_api, ean=body.ean)
-    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
     validation.check_is_duo_compliance(body.is_duo, subcategory)
-    validation.check_url_is_coherent_with_subcategory(subcategory, body.url)
     validation.check_can_input_id_at_provider(provider, body.id_at_provider)
     validation.check_can_input_id_at_provider_for_this_venue(venue.id, body.id_at_provider)
     validation.check_offer_name_does_not_contain_ean(body.name)
@@ -542,14 +545,15 @@ def update_offer(
                 continue
         changes[key] = {"oldValue": getattr(offer, key), "newValue": value}
         setattr(offer, key, value)
-    with db.session.no_autoflush:
-        validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
 
+    with db.session.no_autoflush:
         # the creation process is splitted into several steps. URL and
         # address might be set only in the end. Therefore, this
         # validation is meaningless until the offer has been finalized.
         if offer.status != models.OfferStatus.DRAFT:
+            validation.check_url_is_coherent_with_subcategory(offer.subcategory, offer.url)
             validation.check_url_and_offererAddress_are_not_both_set(offer.url, offer.offererAddress)
+
     if offer.isFromAllocine:
         offer.fieldsUpdated = list(set(offer.fieldsUpdated) | updates_set)
     repository.add_to_session(offer)
