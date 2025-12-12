@@ -144,6 +144,9 @@ class FeatureToggle(enum.Enum):
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
     WIP_VENUE_ACTIVITY = "Active la nouvelle liste d'activité principale pour les structures"
+    WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
+        "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
+    )
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -206,6 +209,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_HIGHLIGHT,
+    FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
     FeatureToggle.WIP_VENUE_ACTIVITY,
