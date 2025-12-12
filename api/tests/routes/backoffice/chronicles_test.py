@@ -1048,3 +1048,208 @@ class DetachOfferTest(PostEndpointHelper):
         assert html_parser.extract_alerts(response.data) == [
             "L'offre n'existe pas ou n'était pas attachée à la chronique"
         ]
+
+
+class CreateChronicleTest(PostEndpointHelper):
+    endpoint = "backoffice_web.chronicles.create_chronicle"
+    needed_permission = perm_models.Permissions.MANAGE_CHRONICLE
+    # session
+    # current user
+    # retrieve the user to attach
+    # check if there is another chronicle to get the products
+    # check if there is another chronicle to get the offers
+    # retrieve the product/offer
+    # insert chronicle
+    expected_num_queries = 7 + ListChroniclesTest.expected_num_queries
+
+    def test_create_chronicle(self, authenticated_client):
+        form = {
+            "club_type": "CINE_CLUB",
+            "email": "beneficiary@example.com",
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "EAN",
+            "product_identifier": "1234567890123",
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+
+        chronicle = db.session.query(chronicles_models.Chronicle).one()
+
+        assert chronicle.email == form["email"]
+        assert chronicle.firstName == form["first_name"]
+        assert chronicle.age == int(form["age"])
+        assert chronicle.city == form["city"]
+        assert chronicle.isIdentityDiffusible == True
+        assert chronicle.isSocialMediaDiffusible == True
+        assert chronicle.content == form["content"]
+        assert chronicle.productIdentifierType == chronicles_models.ChronicleProductIdentifierType.EAN
+        assert chronicle.productIdentifier == form["product_identifier"]
+        assert chronicle.clubType == chronicles_models.ChronicleClubType.CINE_CLUB
+
+    def test_attach_user(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+
+        form = {
+            "club_type": "CINE_CLUB",
+            "email": user.email,
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "EAN",
+            "product_identifier": "1234567890123",
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries,
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+
+        chronicle = db.session.query(chronicles_models.Chronicle).one()
+        assert chronicle.user == user
+
+    def test_attach_product_from_ean(self, authenticated_client):
+        product = offers_factories.ProductFactory(ean="1234567890123")
+
+        form = {
+            "club_type": "CINE_CLUB",
+            "email": "beneficiary@example.com",
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "EAN",
+            "product_identifier": product.ean,
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries + 2,  # get the product and attach it
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+
+        chronicle = db.session.query(chronicles_models.Chronicle).one()
+        assert chronicle.products == [product]
+
+    def test_attach_product_from_old_chronicle(self, authenticated_client):
+        product = offers_factories.ProductFactory(ean="9876543210987")
+
+        chronicles_factories.ChronicleFactory(
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            productIdentifier="1234567890123",
+            products=[product],
+        )
+
+        form = {
+            "club_type": "CINE_CLUB",
+            "email": "beneficiary@example.com",
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "EAN",
+            "product_identifier": "1234567890123",
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries + 3,  # get product from old chronicle and attach it
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+
+        chronicle = (
+            db.session.query(chronicles_models.Chronicle).order_by(chronicles_models.Chronicle.id.desc()).first()
+        )
+        assert chronicle.products == [product]
+
+    def test_attach_offer_from_id(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        form = {
+            "club_type": "CINE_CLUB",
+            "email": "beneficiary@example.com",
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "OFFER_ID",
+            "product_identifier": offer.id,
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries + 1,  # get the offer and attach it
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+
+        chronicle = db.session.query(chronicles_models.Chronicle).one()
+        assert chronicle.offers == [offer]
+
+    def test_attach_offer_from_old_chronicle(self, authenticated_client):
+        offer = offers_factories.OfferFactory()
+
+        chronicles_factories.ChronicleFactory(
+            productIdentifierType=chronicles_models.ChronicleProductIdentifierType.EAN,
+            productIdentifier="1234567890123",
+            offers=[offer],
+        )
+
+        form = {
+            "club_type": "CINE_CLUB",
+            "email": "beneficiary@example.com",
+            "first_name": "beneficiary",
+            "age": "21",
+            "city": "Brest",
+            "is_identity_diffusible": "true",
+            "is_social_media_diffusible": "true",
+            "content": "some great chronicle",
+            "product_identifier_type": "EAN",
+            "product_identifier": "1234567890123",
+        }
+
+        response = self.post_to_endpoint(
+            follow_redirects=True,
+            expected_num_queries=self.expected_num_queries + 2,  # get offer from old chronicle and attach it
+            client=authenticated_client,
+            form=form,
+        )
+
+        assert response.status_code == 200
+
+        chronicle = (
+            db.session.query(chronicles_models.Chronicle).order_by(chronicles_models.Chronicle.id.desc()).first()
+        )
+        assert chronicle.offers == [offer]

@@ -3,10 +3,16 @@
 {% from "components/collapsable_text.html" import collapsable_text with context %}
 {% from "components/dynamic/modal.html" import build_static_htmx_modal with context %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
+{% from "components/generic_modal.html" import build_modal_form with context %}
 {% set rows_count = rows.total %}
 {% set pagination = True %}
 {% block title %}Chroniques{% endblock %}
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
+{% block before_table %}
+  <div>
+    {{ build_modal_form("create-chronicle", url_for("backoffice_web.chronicles.create_chronicle") , create_chronicle_form, "Créer une chronique", "Créer une chronique", "Enregistrer") }}
+  </div>
+{% endblock before_table %}
 {% block table_header %}
   {% if has_permission("MANAGE_CHRONICLE") %}<th>Actions</th>{% endif %}
   <th>ID</th>

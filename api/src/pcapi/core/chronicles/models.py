@@ -69,8 +69,8 @@ class ChronicleProductIdentifierType(enum.Enum):
 
 
 class ChronicleClubType(enum.Enum):
-    BOOK_CLUB = "BOOK"
     CINE_CLUB = "CINE"
+    BOOK_CLUB = "BOOK"
     ALBUM_CLUB = "ALBUM"
     CONCERT_CLUB = "CONCERT"
 
