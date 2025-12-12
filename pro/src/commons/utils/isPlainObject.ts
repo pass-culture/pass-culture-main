@@ -1,4 +1,6 @@
-export const isPlainObject = (value: object | null | undefined) => {
+export const isPlainObject = (
+  value: unknown
+): value is Record<string, unknown> => {
   if (!value || typeof value !== 'object') {
     return false
   }

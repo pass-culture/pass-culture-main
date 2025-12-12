@@ -5,13 +5,16 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 
 import type {
+  PartialBy,
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../types'
+import { removeVenueTypeFieldIf } from '../utils/removeVenueTypeFieldIf'
 import { saveVenueSettings } from '../utils/saveVenueSettings'
 
 export const useSaveVenueSettings = ({
@@ -25,13 +28,27 @@ export const useSaveVenueSettings = ({
   const location = useLocation()
   const notify = useNotification()
   const { logEvent } = useAnalytics()
+  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const saveAndContinue = async (
-    formValues: VenueSettingsFormValues,
+    formValues: PartialBy<VenueSettingsFormValues, 'venueType'>,
     formContext: VenueSettingsFormContext
   ) => {
     try {
-      await saveVenueSettings(formValues, formContext, { venue })
+      /*
+        If WIP_VENUE_ACTIVITY is activated, then the "venueType" field is made conditional.
+        Condition is:
+          If venue is `openToPublic`, then the "venueType" field isn't handled in this form anymore,
+          so we need to EXPLICITLY ignore the value here.
+        
+        (Else, We still update the "venueType" in this form)
+      */
+
+      const filteredFormValues = removeVenueTypeFieldIf(
+        isVenueActivityFeatureActive && venue.isOpenToPublic
+      )(formValues)
+
+      await saveVenueSettings(filteredFormValues, formContext, { venue })
 
       navigate(getVenuePagePathToNavigateTo(venue.managingOfferer.id, venue.id))
 

@@ -1,7 +1,7 @@
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import type { VenueEditionFormValues } from '../types'
-import { validationSchema } from '../validationSchema'
+import { getValidationSchema } from '../validationSchema'
 
 describe('VenueEditionForm validationSchema', () => {
   const defaultValues: VenueEditionFormValues = {
@@ -121,7 +121,7 @@ describe('VenueEditionForm validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        validationSchema,
+        getValidationSchema({ isVenueActivityFeatureActive: false }),
         formValues
       )
       expect(errors).toEqual(expectedErrors)
