@@ -1496,7 +1496,10 @@ def get_user_is_eligible_for_bonification(user: models.User) -> bool:
 
 def get_user_qf_bonification_status(user: models.User) -> subscription_models.QFBonificationStatus:
     qf_bonus_credit_fraud_checks = [
-        e for e in user.beneficiaryFraudChecks if e.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        and fraud_check.status != subscription_models.FraudCheckStatus.MOCK_CONFIG
     ]
     # Get the latest BeneficiaryFraudCheck because `user.beneficiaryFraudChecks` are ordered by creation date
     bonus_fraud_check = qf_bonus_credit_fraud_checks[-1] if qf_bonus_credit_fraud_checks else None

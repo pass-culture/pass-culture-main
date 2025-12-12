@@ -27,13 +27,13 @@ if typing.TYPE_CHECKING:
 
 
 class FraudCheckType(enum.Enum):
-    QF_BONUS_CREDIT = "qf_bonus_credit"
     DMS = "dms"
     EDUCONNECT = "educonnect"
     HONOR_STATEMENT = "honor_statement"
     INTERNAL_REVIEW = "internal_review"
     PHONE_VALIDATION = "phone_validation"
     PROFILE_COMPLETION = "profile_completion"
+    QF_BONUS_CREDIT = "qf_bonus_credit"
     UBBLE = "ubble"
     # Deprecated but kept for backwards compatibility
     JOUVE = "jouve"
@@ -120,6 +120,7 @@ class FraudCheckStatus(enum.Enum):
     PENDING = "pending"
     STARTED = "started"
     SUSPICIOUS = "suspiscious"
+    MOCK_CONFIG = "mock_config"
 
 
 class QFBonificationStatus(enum.Enum):
