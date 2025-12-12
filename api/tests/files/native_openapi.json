@@ -412,6 +412,21 @@
                 "title": "BannerResponse",
                 "type": "object"
             },
+            "BonificationStatus": {
+                "description": "An enumeration.",
+                "enum": [
+                    "eligible",
+                    "not_eligible",
+                    "started",
+                    "custodian_not_found",
+                    "not_in_tax_household",
+                    "quotient_familial_too_high",
+                    "too_many_retries",
+                    "granted",
+                    "ko"
+                ],
+                "title": "BonificationStatus"
+            },
             "BonusCreditRequest": {
                 "properties": {
                     "birthCityCogCode": {
@@ -2403,19 +2418,6 @@
                 ],
                 "title": "FavoriteResponse",
                 "type": "object"
-            },
-            "FraudCheckStatus": {
-                "description": "An enumeration.",
-                "enum": [
-                    "canceled",
-                    "error",
-                    "ko",
-                    "ok",
-                    "pending",
-                    "started",
-                    "suspiscious"
-                ],
-                "title": "FraudCheckStatus"
             },
             "GTL": {
                 "properties": {
@@ -5482,7 +5484,7 @@
                     "bonificationStatus": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/FraudCheckStatus"
+                                "$ref": "#/components/schemas/BonificationStatus"
                             }
                         ],
                         "nullable": true
@@ -5586,10 +5588,6 @@
                         "title": "Iseligibleforbeneficiaryupgrade",
                         "type": "boolean"
                     },
-                    "isEligibleForBonification": {
-                        "title": "Iseligibleforbonification",
-                        "type": "boolean"
-                    },
                     "lastName": {
                         "nullable": true,
                         "title": "Lastname",
@@ -5672,8 +5670,7 @@
                     "roles",
                     "showEligibleCard",
                     "status",
-                    "subscriptions",
-                    "isEligibleForBonification"
+                    "subscriptions"
                 ],
                 "title": "UserProfileResponse",
                 "type": "object"

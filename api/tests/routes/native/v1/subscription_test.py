@@ -793,3 +793,78 @@ class BonusTest:
 
         mocked_task.assert_called_once()
         mocked_task.assert_called_with({"fraud_check_id": bonus_fraud_check.id})
+
+    @pytest.mark.parametrize(
+        "fraud_check_status",
+        [
+            subscription_models.FraudCheckStatus.OK,
+            subscription_models.FraudCheckStatus.PENDING,
+            subscription_models.FraudCheckStatus.STARTED,
+        ],
+    )
+    def test_create_bonus_fraud_check_not_eligible(self, client, fraud_check_status):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BonusFraudCheckFactory(user=user, status=fraud_check_status)
+
+        response = client.with_token(user.email).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "91100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
+
+    def test_create_bonus_fraud_check_not_eligible_after_too_many_retries(self, client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BonusFraudCheckFactory.create_batch(
+            size=3, user=user, status=subscription_models.FraudCheckStatus.KO
+        )
+
+        response = client.with_token(user.email).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "91100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 400
+        assert response.json["code"] == "BONUS_NOT_ELIGIBLE"
+
+    @patch("pcapi.core.subscription.bonus.tasks.apply_for_quotient_familial_bonus_task.delay")
+    def test_create_bonus_fraud_check_eligible_after_one_failing_try(self, mocked_task, client):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
+
+        response = client.with_token(user.email).post(
+            "/native/v1/subscription/bonus/quotient_familial",
+            json={
+                "lastName": "Lefebvre",
+                "firstNames": ["Alexis"],
+                "birthDate": "1982-12-27",
+                "gender": "Mme",
+                "birthCountryCogCode": "91100",
+                "birthCityCogCode": "08480",
+            },
+        )
+
+        assert response.status_code == 204
+        bonus_fraud_checks = [
+            e for e in user.beneficiaryFraudChecks if e.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        ]
+        assert len(bonus_fraud_checks) == 2
+        assert {e.status for e in bonus_fraud_checks} == {
+            subscription_models.FraudCheckStatus.STARTED,
+            subscription_models.FraudCheckStatus.KO,
+        }
