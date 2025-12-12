@@ -268,10 +268,7 @@ describe('Signup journey with known offerer...', () => {
       cy.stepLog({ message: 'I add a new offerer' })
       cy.url().should('contain', '/inscription/structure/rattachement')
 
-      // Hack because "aller au contenu" is focued by `useFocus`
-      cy.findByText('Aller au contenu').click()
-
-      cy.findByText('Ajouter une nouvelle structure').click()
+      cy.findByText('Ajouter une nouvelle structure').focus().click()
       cy.wait('@search5Address')
 
       cy.stepLog({ message: 'I fill identification form with a new address' })
@@ -334,11 +331,8 @@ describe('Signup journey with known offerer...', () => {
       cy.findByText('Continuer').click()
       cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
-      // Hack because "aller au contenu" is focued by `useFocus`
-      cy.findByText('Aller au contenu').click()
-
       cy.stepLog({ message: 'I chose to join the space' })
-      cy.contains('Rejoindre cet espace').click()
+      cy.contains('Rejoindre cet espace').focus().click()
 
       cy.findByTestId('confirm-dialog-button-confirm').click()
       cy.wait('@postOfferers').its('response.statusCode').should('eq', 201)

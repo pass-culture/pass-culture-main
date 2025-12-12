@@ -240,12 +240,9 @@ describe('Didactic Onboarding feature', () => {
 })
 
 function fromOnBoardingGoToCollectiveModal() {
-  // Hack because "aller au contenu" is focued by `useFocus`
-  cy.findByText('Aller au contenu').click()
-
   // Display modal
   cy.stepLog({ message: `I open the referencing modal for teachers` })
-  cy.findByLabelText('Commencer la création d’offre sur ADAGE').click()
+  cy.findByLabelText('Commencer la création d’offre sur ADAGE').focus().click()
   cy.findByRole('heading', { level: 1, name: 'Quelles sont les étapes ?' })
 
   // Check if link for submitting a file is present and correct
@@ -266,12 +263,9 @@ function fromOnBoardingGoToFirstOfferCreation() {
     message: 'I start my first offer for the beneficiaries on the mobile app',
   })
 
-  // Hack because "aller au contenu" is focued by `useFocus`
-  cy.findByText('Aller au contenu').click()
-
-  cy.findByLabelText(
-    'Commencer la création d’offre sur l’application mobile'
-  ).click()
+  cy.findByLabelText('Commencer la création d’offre sur l’application mobile')
+    .focus()
+    .click()
   cy.findByRole('heading', {
     level: 1,
     name: 'Offre à destination des jeunes',
