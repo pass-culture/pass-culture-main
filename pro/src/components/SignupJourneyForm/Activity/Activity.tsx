@@ -10,6 +10,7 @@ import {
   type ActivityContext,
   useSignupJourneyContext,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -22,7 +23,10 @@ import { validationSchema } from './validationSchema'
 
 export const Activity = (): JSX.Element => {
   const navigate = useNavigate()
-  const { activity, setActivity } = useSignupJourneyContext()
+  const { activity, setActivity, offerer } = useSignupJourneyContext()
+  const isCulturalDomainsEnabled = useActiveFeature(
+    'WIP_VENUE_CULTURAL_DOMAINS'
+  )
 
   const { data: venueTypes, isLoading } = useSWR(
     [GET_VENUE_TYPES_QUERY_KEY],
@@ -55,7 +59,11 @@ export const Activity = (): JSX.Element => {
     defaultValues: activity
       ? serializeActivityContext(activity)
       : defaultActivityFormValues,
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(
+      validationSchema(
+        isCulturalDomainsEnabled && offerer?.isOpenToPublic === 'false'
+      )
+    ),
   })
 
   const serializeActivityFormToSubmit = (

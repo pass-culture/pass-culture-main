@@ -134,6 +134,7 @@ describe('ValidationScreen', () => {
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
         phoneNumber: '',
+        culturalDomains: undefined,
       },
       offerer: {
         name: 'nom',
@@ -162,6 +163,7 @@ describe('ValidationScreen', () => {
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
+          culturalDomains: undefined,
         },
         offerer: {
           name: 'nom',
@@ -212,6 +214,7 @@ describe('ValidationScreen', () => {
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
+          culturalDomains: undefined,
         },
         offerer: {
           name: 'nom',
@@ -354,6 +357,7 @@ describe('ValidationScreen', () => {
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
+          culturalDomains: undefined,
         },
         offerer: {
           name: 'nom',

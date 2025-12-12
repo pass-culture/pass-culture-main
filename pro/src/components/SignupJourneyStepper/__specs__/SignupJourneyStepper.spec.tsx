@@ -130,6 +130,7 @@ describe('test SignupJourneyStepper', () => {
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: '',
+      culturalDomains: undefined,
     }
     const { tabAuthentication, tabActivity, tabValidation } =
       renderSignupStepper(contextValue, '/inscription/structure/confirmation')
