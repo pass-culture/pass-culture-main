@@ -86,24 +86,27 @@
 *   [PcFormsCheckValidity][82]
 *   [PcHideOnClick][83]
 *   [PcHtmxManager][84]
-*   [PcOverrideCustomTextareaEnter][85]
-    *   [Examples][86]
-*   [PcPostalAddressAutocomplete][87]
-    *   [Examples][88]
-*   [PcProSearchForm][89]
-*   [PcRegistrationSteps][90]
-*   [PcSectionFocusOnload][91]
-*   [PcSortTable][92]
-*   [PcStripQueryString][93]
-*   [PcSubmitFormButton][94]
-*   [PcTableManager][95]
-*   [PcTablePaginator][96]
-    *   [HTML Configuration][97]
-    *   [Data Attributes for `<table>`][98]
-    *   [Data Attributes for `<td>`][99]
-    *   [Examples][100]
-*   [PcValidationFilters][101]
-    *   [Examples][102]
+*   [PcOfferCriterionForm][85]
+*   [PcOverrideCustomTextareaEnter][86]
+    *   [Examples][87]
+*   [PcPostalAddressAutocomplete][88]
+    *   [Examples][89]
+*   [PcProSearchForm][90]
+*   [PcRegistrationSteps][91]
+*   [PcSectionFocusOnload][92]
+*   [PcSortTable][93]
+*   [PcStripQueryString][94]
+*   [PcSubmitFormButton][95]
+*   [PcTableManager][96]
+*   [PcTablePaginator][97]
+    *   [HTML Configuration][98]
+    *   [Data Attributes for `<table>`][99]
+    *   [Data Attributes for `<td>`][100]
+    *   [Examples][101]
+*   [PcTextareaCounter][102]
+    *   [Examples][103]
+*   [PcValidationFilters][104]
+    *   [Examples][105]
 
 ## PcBackofficeApp
 
@@ -114,7 +117,7 @@ See below for how to regenerate the documentation or initialize the application.
 
 ### Parameters
 
-*   `config` **{addOns: [Array][103]<[PcAddOn][40]>}** the application configuration.
+*   `config` **{addOns: [Array][106]<[PcAddOn][40]>}** the application configuration.
 
     *   `config.addOns` &#x20;
 
@@ -231,7 +234,7 @@ Push a callback function to window\.onload
 
 #### Parameters
 
-*   `callback` **[function][104]** the function to be called on `window.onload`
+*   `callback` **[function][107]** the function to be called on `window.onload`
 
 ### debounce
 
@@ -239,10 +242,10 @@ Debounce a function (prevents function to be called until a certain delay. Can b
 
 #### Parameters
 
-*   `callback` **[function][104]** the function to debounce
-*   `ms` **[number][105]** the debounce delay in milliseconds
+*   `callback` **[function][107]** the function to debounce
+*   `ms` **[number][108]** the debounce delay in milliseconds
 
-Returns **[function][104]** the debounced function
+Returns **[function][107]** the debounced function
 
 ## KeyboardKeyCode
 
@@ -286,7 +289,7 @@ This singleton utility class can be used to bind/unbind event in the style of `j
 
 It is heavily inspired from Bootstrap (v5.3.0-alpha1): `dom/event-handler.js`
 
-Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][106]
+Original source: [https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js][109]
 
 As the original source, this addon is licensed as MIT.
 
@@ -321,14 +324,14 @@ class PcLoggingOnImage extend PcAddOn {
 
 ### off
 
-Read more: [https://api.jquery.com/off/#off-events-selector-data][107]
+Read more: [https://api.jquery.com/off/#off-events-selector-data][110]
 
 #### Parameters
 
-*   `element` **[element][108]** the parent element to unbind from
-*   `originalTypeEvent` **[string][109]** the event name to unbind
-*   `handler` **[string][109]** the selector for element bind apply
-*   `delegationFunction` **[function][104]** the event method to unbind
+*   `element` **[element][111]** the parent element to unbind from
+*   `originalTypeEvent` **[string][112]** the event name to unbind
+*   `handler` **[string][112]** the selector for element bind apply
+*   `delegationFunction` **[function][107]** the event method to unbind
 
 #### Examples
 
@@ -338,14 +341,14 @@ EventHandler.off(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### on
 
-Read more: [https://api.jquery.com/on/#on-events-selector-data][110]
+Read more: [https://api.jquery.com/on/#on-events-selector-data][113]
 
 #### Parameters
 
-*   `element` **[element][108]** the parent element to apply bind
-*   `event` **[string][109]** the event name to bind
-*   `handler` **[string][109]** the selector for elements bind apply
-*   `delegationFunction` **[function][104]** the event method to bind
+*   `element` **[element][111]** the parent element to apply bind
+*   `event` **[string][112]** the event name to bind
+*   `handler` **[string][112]** the selector for elements bind apply
+*   `delegationFunction` **[function][107]** the event method to bind
 
 #### Examples
 
@@ -355,14 +358,14 @@ EventHandler.on(document.body, 'click', '.nav-link', onNavLinkClick)
 
 ### one
 
-Read more: [https://api.jquery.com/one/#one-events-selector-data][111]
+Read more: [https://api.jquery.com/one/#one-events-selector-data][114]
 
 #### Parameters
 
-*   `element` **[element][108]** the parent element to apply bind
-*   `event` **[string][109]** the event name to bind
-*   `handler` **[string][109]** the selector for element bind apply
-*   `delegationFunction` **[function][104]** the event method to bind
+*   `element` **[element][111]** the parent element to apply bind
+*   `event` **[string][112]** the event name to bind
+*   `handler` **[string][112]** the selector for element bind apply
+*   `delegationFunction` **[function][107]** the event method to bind
 
 #### Examples
 
@@ -372,12 +375,12 @@ EventHandler.one(document.body, 'click', '.nav-link#something', onNavLinkClick)
 
 ### trigger
 
-Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][112]
+Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][115]
 
 #### Parameters
 
-*   `element` **[element][108]** DOM element to trigger event on
-*   `event` **[string][109]** The event to trigger
+*   `element` **[element][111]** DOM element to trigger event on
+*   `event` **[string][112]** The event to trigger
 *   `args` **any** Arguments to be passed to the event
 
 #### Examples
@@ -386,7 +389,7 @@ Read more: [https://api.jquery.com/trigger/#trigger-events-selector-data][112]
 EventHandler.trigger(document.querySelectorAll('.nav-link')[2], 'click')
 ```
 
-Returns **(null | [Event][113])** null if element is undefined or event is not a string, the triggered event otherwise
+Returns **(null | [Event][116])** null if element is undefined or event is not a string, the triggered event otherwise
 
 ## PcAddOn
 
@@ -396,7 +399,7 @@ This abstract class can be extended to create new addon for new JavaScript featu
 
 ### Parameters
 
-*   `config` **{name: [string][109], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
+*   `config` **{name: [string][112], app: [PcBackofficeApp][1], addOnState: any}** the addon configuration
 
     *   `config.name` &#x20;
     *   `config.app` &#x20;
@@ -441,7 +444,7 @@ Can be useful to prevent code duplication between addons when you only need to p
 
 #### Parameters
 
-*   `event` **[event][113]** the event
+*   `event` **[event][116]** the event
 
 ### \_preventSubmitOnEnter
 
@@ -450,7 +453,7 @@ Can be useful to prevent code duplication between addons when you only need to p
 
 #### Parameters
 
-*   `event` **[event][113]** the event
+*   `event` **[event][116]** the event
 
 ### bindEvents
 
@@ -524,7 +527,7 @@ END DRAG AND DROP \*
 
 This adds PcAddOn support for bootstrap 5 tooltips.
 It works using bootstrap 5 html markup.
-Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][114]
+Read documentation: [https://getbootstrap.com/docs/5.0/components/tooltips/#examples][117]
 
 ## getValidTarget
 
@@ -722,7 +725,7 @@ Add `data-confirm-modal=".my-modal-123"` on your input with `.my-modal-123` bein
 Display a date range picker.
 
 We have a minimal set of options, to add more options, you should interface using data attributes
-To read all options : [https://github.com/alumuko/vanilla-datetimerange-picker/][115]
+To read all options : [https://github.com/alumuko/vanilla-datetimerange-picker/][118]
 
 Implemented:
 
@@ -859,17 +862,24 @@ JS to handle htmx interactions while waiting for backend's response:
 *   refresh tom select inside newly loaded forms
 *   display loader spinner while loading distant content
 
+## PcOfferCriterionForm
+
+**Extends PcAddOn**
+
+Enables or disables highlight selection depending on selected categories.
+
 ## PcOverrideCustomTextareaEnter
 
 **Extends PcAddOn**
 
 This class tricks the default event of a `<textarea />` by submitting the form on <kbd>ENTER</kbd>,
-and goes to the next line on <kbd>CTRL</kbd>+<kbd>ENTER</kbd> or <kbd>SHIFT</kbd>+<kbd>ENTER</kbd>.
+and optionnally goes to the next line on <kbd>CTRL</kbd>+<kbd>ENTER</kbd> or <kbd>SHIFT</kbd>+<kbd>ENTER</kbd>.
 
 ### Examples
 
 ```javascript
-<textarea class="pc-override-custom-textarea-enter"></textarea>
+<textarea class="pc-override-custom-textarea-enter" data-allow-line-breaks="true"></textarea>
+<textarea class="pc-override-custom-textarea-enter" data-allow-line-breaks="false"></textarea>
 ```
 
 ## PcPostalAddressAutocomplete
@@ -1035,6 +1045,19 @@ It is configured using data attributes on the table and its cells.
     </tr>
   </tbody>
 </table>
+```
+
+## PcTextareaCounter
+
+**Extends PcAddOn**
+
+Displays the number of characters in a textarea.
+
+### Examples
+
+```javascript
+<textarea class="pc-textarea-counter"></textarea>
+<span class="pc-textarea-counter-container">0</span>
 ```
 
 ## PcValidationFilters
@@ -1222,64 +1245,70 @@ Addon to add filters toggling using a button and make their state persistent.
 
 [84]: #pchtmxmanager
 
-[85]: #pcoverridecustomtextareaenter
+[85]: #pcoffercriterionform
 
-[86]: #examples-22
+[86]: #pcoverridecustomtextareaenter
 
-[87]: #pcpostaladdressautocomplete
+[87]: #examples-22
 
-[88]: #examples-23
+[88]: #pcpostaladdressautocomplete
 
-[89]: #pcprosearchform
+[89]: #examples-23
 
-[90]: #pcregistrationsteps
+[90]: #pcprosearchform
 
-[91]: #pcsectionfocusonload
+[91]: #pcregistrationsteps
 
-[92]: #pcsorttable
+[92]: #pcsectionfocusonload
 
-[93]: #pcstripquerystring
+[93]: #pcsorttable
 
-[94]: #pcsubmitformbutton
+[94]: #pcstripquerystring
 
-[95]: #pctablemanager
+[95]: #pcsubmitformbutton
 
-[96]: #pctablepaginator
+[96]: #pctablemanager
 
-[97]: #html-configuration
+[97]: #pctablepaginator
 
-[98]: #data-attributes-for-table
+[98]: #html-configuration
 
-[99]: #data-attributes-for-td
+[99]: #data-attributes-for-table
 
-[100]: #examples-24
+[100]: #data-attributes-for-td
 
-[101]: #pcvalidationfilters
+[101]: #examples-24
 
-[102]: #examples-25
+[102]: #pctextareacounter
 
-[103]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
+[103]: #examples-25
 
-[104]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
+[104]: #pcvalidationfilters
 
-[105]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
+[105]: #examples-26
 
-[106]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
+[106]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array
 
-[107]: https://api.jquery.com/off/#off-events-selector-data
+[107]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function
 
-[108]: https://developer.mozilla.org/docs/Web/API/Element
+[108]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number
 
-[109]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
+[109]: https://github.com/twbs/bootstrap/blob/cf9454caa00872899215603e5e036d9a824b1b11/js/src/dom/event-handler.js
 
-[110]: https://api.jquery.com/on/#on-events-selector-data
+[110]: https://api.jquery.com/off/#off-events-selector-data
 
-[111]: https://api.jquery.com/one/#one-events-selector-data
+[111]: https://developer.mozilla.org/docs/Web/API/Element
 
-[112]: https://api.jquery.com/trigger/#trigger-events-selector-data
+[112]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String
 
-[113]: https://developer.mozilla.org/docs/Web/API/Event
+[113]: https://api.jquery.com/on/#on-events-selector-data
 
-[114]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
+[114]: https://api.jquery.com/one/#one-events-selector-data
 
-[115]: https://github.com/alumuko/vanilla-datetimerange-picker/
+[115]: https://api.jquery.com/trigger/#trigger-events-selector-data
+
+[116]: https://developer.mozilla.org/docs/Web/API/Event
+
+[117]: https://getbootstrap.com/docs/5.0/components/tooltips/#examples
+
+[118]: https://github.com/alumuko/vanilla-datetimerange-picker/
