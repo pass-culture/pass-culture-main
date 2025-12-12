@@ -234,18 +234,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     siret: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(14), nullable=True, unique=True)
 
-    _deprecated_departementCode: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
-        "departementCode", sa.String(3), nullable=True, index=True
-    )
-
-    _deprecated_latitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(
-        "latitude", sa.Numeric(8, 5), nullable=True
-    )
-
-    _deprecated_longitude: sa_orm.Mapped[decimal.Decimal | None] = sa_orm.mapped_column(
-        "longitude", sa.Numeric(8, 5), nullable=True
-    )
-
     venueProviders: sa_orm.Mapped[list["providers_models.VenueProvider"]] = sa_orm.relationship(
         "VenueProvider", foreign_keys="VenueProvider.venueId", back_populates="venue"
     )
