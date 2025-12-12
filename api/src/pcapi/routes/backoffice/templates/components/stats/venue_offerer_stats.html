@@ -6,12 +6,12 @@
         <div>
           <h5>Offres</h5>
           <div class="d-flex justify-content-between">
-            <div>
+            <div class="pe-3">
               <h2 class="text-black">
                 {% set individual_offers = 0 %}
                 {% if stats.active_individual_offers is not none  and stats.inactive_individual_offers is not none %}
                   {% set individual_offers = stats.active_individual_offers + stats.inactive_individual_offers %}
-                  {{ individual_offers }}
+                  {{ individual_offers | format_count }}
                 {% else %}
                   N/A
                 {% endif %}
@@ -24,25 +24,28 @@
                   individuelle{{ individual_offers|pluralize }}
                 {% endif %}
               </div>
-              {% if stats.active_individual_offers is not none %}
-                {{ stats.active_individual_offers }}
-              {% else %}
-                N/A
-              {% endif %}
-              réservable{{ stats.active_individual_offers| pluralize }} |
-              {% if stats.inactive_individual_offers is not none %}
-                {{ stats.inactive_individual_offers }}
-              {% else %}
-                N/A
-              {% endif %}
-              non réservable{{ stats.inactive_individual_offers | pluralize }}
+              <span class="text-nowrap">
+                {% if stats.active_individual_offers is not none %}
+                  {{ stats.active_individual_offers | format_count }}
+                {% else %}
+                  N/A
+                {% endif %}
+              réservable{{ stats.active_individual_offers| pluralize }} |</span>
+              <span class="text-nowrap">
+                {% if stats.inactive_individual_offers is not none %}
+                  {{ stats.inactive_individual_offers | format_count }}
+                {% else %}
+                  N/A
+                {% endif %}
+                non réservable{{ stats.inactive_individual_offers | pluralize }}
+              </span>
             </div>
-            <div>
+            <div class="pe-3">
               <h2 class="text-black">
                 {% set collective_offers = 0 %}
                 {% if stats.active_collective_offers is not none and stats.inactive_collective_offers is not none %}
                   {% set collective_offers = stats.active_collective_offers +  stats.inactive_collective_offers %}
-                  {{ collective_offers }}
+                  {{ collective_offers | format_count }}
                 {% else %}
                   N/A
                 {% endif %}
@@ -55,23 +58,26 @@
                   collective{{ collective_offers | pluralize }}
                 {% endif %}
               </div>
-              {% if stats.active_collective_offers is not none %}
-                {{ stats.active_collective_offers }}
-              {% else %}
-                N/A
-              {% endif %}
-              réservable{{ stats.active_collective_offers | pluralize }} |
-              {% if stats.inactive_collective_offers is not none %}
-                {{ stats.inactive_collective_offers }}
-              {% else %}
-                N/A
-              {% endif %}
-              non réservable{{ stats.inactive_collective_offers | pluralize }}
+              <span class="text-nowrap">
+                {% if stats.active_collective_offers is not none %}
+                  {{ stats.active_collective_offers | format_count }}
+                {% else %}
+                  N/A
+                {% endif %}
+              réservable{{ stats.active_collective_offers | pluralize }} |</span>
+              <span class="text-nowrap">
+                {% if stats.inactive_collective_offers is not none %}
+                  {{ stats.inactive_collective_offers | format_count }}
+                {% else %}
+                  N/A
+                {% endif %}
+                non réservable{{ stats.inactive_collective_offers | pluralize }}
+              </span>
             </div>
             <div class="me-5">
               <h2 class="text-black">
                 {% if stats.total_collective_offer_templates is not none %}
-                  {{ stats.total_collective_offer_templates }}
+                  {{ stats.total_collective_offer_templates | format_count }}
                 {% else %}
                   N/A
                 {% endif %}
@@ -95,10 +101,10 @@
       <div class="card-body p-4">
         <h5>Réservations</h5>
         <div class="d-flex justify-content-between">
-          <div>
+          <div class="pe-3">
             <h2 class="text-black">
               {% if stats.individual_bookings is not none %}
-                {{ stats.individual_bookings }}
+                {{ stats.individual_bookings | format_count }}
               {% else %}
                 N/A
               {% endif %}
@@ -113,7 +119,7 @@
           <div class="me-5">
             <h2 class="text-black">
               {% if stats.collective_bookings is not none %}
-                {{ stats.collective_bookings }}
+                {{ stats.collective_bookings | format_count }}
               {% else %}
                 N/A
               {% endif %}

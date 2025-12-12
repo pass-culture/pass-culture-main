@@ -304,25 +304,25 @@
     {% endif %}
     <hr />
     {% call description_detail_vertical("Nombre d'offres") %}
-      {{ product.offers | length + unlinked_offers | length }}
+      {{ (product.offers | length + unlinked_offers | length) | format_count }}
     {% endcall %}
     {% call description_detail_vertical("Nombre d'offres associées") %}
-      {{ product.offers | length }}
+      {{ product.offers | length | format_count }}
     {% endcall %}
     {% call description_detail_vertical("Nombre d'offres non liées") %}
-      {{ unlinked_offers | length }}
+      {{ unlinked_offers | length | format_count }}
     {% endcall %}
     {% call description_detail_vertical("Approuvées actives") %}
-      {{ approved_active_offers_count }}
+      {{ approved_active_offers_count | format_count }}
     {% endcall %}
     {% call description_detail_vertical("Approuvées inactives") %}
-      {{ approved_inactive_offers_count }}
+      {{ approved_inactive_offers_count | format_count }}
     {% endcall %}
     {% call description_detail_vertical("En attente") %}
-      {{ pending_offers_count }}
+      {{ pending_offers_count | format_count }}
     {% endcall %}
     {% call description_detail_vertical("Rejetées") %}
-      {{ rejected_offers_count }}
+      {{ rejected_offers_count | format_count }}
     {% endcall %}
     {% if active_offers_count > 0 %}
       <hr />

@@ -142,7 +142,7 @@
       {{ clipboard.copy_to_clipboard(artist.id, "Copier") }}
     {% endcall %}
     {% call description_detail_vertical("Nombre de produits") %}
-      {{ artist.products | length }}
+      {{ artist.products | length | format_count }}
     {% endcall %}
     {% call description_detail_vertical("Alias") %}
       {% if artist.aliases %}

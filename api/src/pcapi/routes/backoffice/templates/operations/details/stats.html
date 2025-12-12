@@ -2,21 +2,21 @@
 <div id="special-event-stats-container"
      {% if is_partial_response %}hx-swap-oob="outerHTML"{% endif %}>
   {% call description_detail_vertical("Nombre de candidats total") %}
-    {{ stats.total }}
+    {{ stats.total | format_count }}
   {% endcall %}
   {% call description_detail_vertical("Nouvelles candidatures") %}
-    {{ stats.new }}
+    {{ stats.new | format_count }}
   {% endcall %}
   {% call description_detail_vertical("Candidatures en attente") %}
-    {{ stats.waiting }}
+    {{ stats.waiting | format_count }}
   {% endcall %}
   {% call description_detail_vertical("Candidatures à contacter") %}
-    {{ stats.to_contact }}
+    {{ stats.to_contact | format_count }}
   {% endcall %}
   {% call description_detail_vertical("Candidatures confirmées") %}
-    {{ stats.validated }}
+    {{ stats.validated | format_count }}
   {% endcall %}
   {% call description_detail_vertical("Candidatures de backup") %}
-    {{ stats.backup }}
+    {{ stats.backup | format_count }}
   {% endcall %}
 </div>
