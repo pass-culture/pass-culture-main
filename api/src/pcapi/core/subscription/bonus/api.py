@@ -2,10 +2,13 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.finance import deposit_api
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
+from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.users import models as users_models
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic
@@ -27,7 +30,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
 
     source_data = quotient_familial_fraud_check.source_data()
     if not isinstance(source_data, bonus_schemas.QuotientFamilialBonusCreditContent):
-        raise ValueError(f"BonusCreditContent was expected while {type(source_data)} was given")
+        raise ValueError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
 
     quotient_familial_response: api_particulier.QuotientFamilialResponse | None = None
     try:
@@ -79,7 +82,11 @@ def _get_user_quotient_familial_response(
     MONTHS_IN_A_YEAR = 12
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = sixteenth_birthday + relativedelta(months=month_offset)
-        quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
+
+        if settings.ENABLE_PARTICULIER_API_MOCK:
+            quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(custodian, at_date, user)
+        else:
+            quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
 
         all_quotient_familial_responses.append(quotient_familial_at_date)
 
@@ -126,7 +133,7 @@ def _get_credit_bonus_status(
     if not _is_user_part_of_tax_household(user, quotient_familial_data.enfants):
         return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD]
 
-    if quotient_familial_data.quotient_familial.valeur > QUOTIENT_FAMILIAL_THRESHOLD:
+    if quotient_familial_data.quotient_familial.valeur > bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD:
         return subscription_models.FraudCheckStatus.KO, [subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH]
 
     return (subscription_models.FraudCheckStatus.OK, [])

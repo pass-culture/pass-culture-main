@@ -17,7 +17,6 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.sql import text
 
-from pcapi import settings
 from pcapi.models import Model
 from pcapi.models import db
 from pcapi.models.deactivable_mixin import DeactivableMixin
@@ -219,9 +218,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_VENUE_CULTURAL_DOMAINS,
     # Please keep alphabetic order
 )
-
-if settings.IS_PROD:
-    FEATURES_DISABLED_BY_DEFAULT += (FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE,)
 
 
 def add_feature_to_database(feature: Feature) -> None:
