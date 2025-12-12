@@ -1,6 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import useSWR, { type SWRResponse } from 'swr'
 import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
@@ -89,6 +90,11 @@ vi.spyOn(apiAdresse, 'getDataFromAddress').mockResolvedValue([
   },
 ])
 
+vi.mock('swr', async (importOriginal) => ({
+  ...(await importOriginal()),
+  default: vi.fn(),
+}))
+
 // Mock l’appel à https://data.geopf.fr/geocodage/search/?limit=${limit}&q=${address}
 // Appel fait dans getDataFromAddress
 fetchMock.mockResponse(
@@ -127,6 +133,8 @@ const baseVenue: GetVenueResponseModel = {
 }
 
 describe('VenueEditionFormScreen', () => {
+  const useSWRMock = vi.mocked(useSWR)
+
   it('should display access to partner page is impossible warning', async () => {
     const venue: GetVenueResponseModel = {
       ...defaultGetVenue,
@@ -698,6 +706,96 @@ describe('VenueEditionFormScreen', () => {
         })
         expect(visualAccessibilityCheckbox).not.toBeChecked()
       })
+    })
+  })
+  describe('with FF WIP_VENUE_CULTURAL_DOMAINS', () => {
+    beforeEach(() => {
+      useSWRMock.mockReturnValue({
+        isLoading: false,
+        data: [
+          {
+            id: 1,
+            name: 'domaine 1',
+            nationalPrograms: [],
+          },
+          {
+            id: 2,
+            name: 'domaine b',
+            nationalPrograms: [],
+          },
+          {
+            id: 3,
+            name: 'domaine III',
+            nationalPrograms: [],
+          },
+        ],
+      } as SWRResponse)
+    })
+    it('should display about activity at top without the FF enabled', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          description: 'TOTOTO',
+          contact: {
+            phoneNumber: '123',
+            email: 'e@mail.fr',
+            website: 'site.web',
+          },
+        },
+        { initialRouterEntries: ['/'] }
+      )
+      const h3Titles = screen.getAllByRole('heading', { level: 3 })
+      expect(h3Titles).toHaveLength(3)
+      expect(h3Titles[0].textContent).toEqual('À propos de votre activité')
+      expect(
+        screen.queryByText(/Domaine(s) d’activité :/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display about activity at top with the FF enabled', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          description: 'TOTOTO',
+          contact: {
+            phoneNumber: '123',
+            email: 'e@mail.fr',
+            website: 'site.web',
+          },
+          collectiveDomains: [
+            { id: 1, name: 'domaine 1' },
+            { id: 3, name: 'domaine III' },
+          ],
+        },
+        {
+          initialRouterEntries: ['/'],
+          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
+        }
+      )
+      const h3Titles = screen.getAllByRole('heading', { level: 3 })
+      expect(h3Titles).toHaveLength(3)
+      expect(h3Titles[1].textContent).toEqual('À propos de votre activité')
+      expect(screen.getByText(/Domaine\(s\) d’activité/)).toBeInTheDocument()
+      expect(screen.getByText(/domaine 1, domaine III/)).toBeInTheDocument()
+    })
+
+    it('should display no domain if not present', () => {
+      renderForm(
+        {
+          ...baseVenue,
+          description: 'TOTOTO',
+          contact: {
+            phoneNumber: '123',
+            email: 'e@mail.fr',
+            website: 'site.web',
+          },
+        },
+        {
+          initialRouterEntries: ['/'],
+          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
+        }
+      )
+      expect(screen.getByText(/Non renseigné/)).toBeInTheDocument()
     })
   })
 })

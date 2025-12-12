@@ -1,4 +1,7 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
@@ -13,6 +16,52 @@ interface VenueEditionReadOnlyProps {
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
+  const isCulturalDomainsEnabled = useActiveFeature(
+    'WIP_VENUE_CULTURAL_DOMAINS'
+  )
+
+  const { data } = useEducationalDomains()
+
+  const aboutSectionDescription = [
+    {
+      title: 'Description',
+      text: venue.description ?? 'Non renseignée',
+    },
+    ...(venue.activity
+      ? [
+          {
+            title: 'Activité',
+            text: getActivityLabel(venue.activity),
+          },
+        ]
+      : []),
+  ]
+  if (isCulturalDomainsEnabled) {
+    const venueDomains = venue.collectiveDomains.map((domain) => {
+      const apiValue = data.find(
+        (educationalDomain) => educationalDomain.id === domain.id
+      )
+      assertOrFrontendError(
+        apiValue,
+        `CulturalDomain withId ${domain.id} not found`
+      )
+
+      return apiValue.name
+    })
+    aboutSectionDescription.push({
+      title: 'Domaine(s) d’activité',
+      text: venueDomains?.join(', ') || 'Non renseignés',
+    })
+  }
+  const aboutSection = (
+    <SummarySubSection
+      title="À propos de votre activité"
+      shouldShowDivider={false}
+    >
+      <SummaryDescriptionList descriptions={aboutSectionDescription} />
+    </SummarySubSection>
+  )
+
   return (
     <SummarySection
       title="Vos informations pour le grand public"
@@ -22,27 +71,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         '/edition'
       )}
     >
-      <SummarySubSection
-        title="À propos de votre activité"
-        shouldShowDivider={false}
-      >
-        <SummaryDescriptionList
-          descriptions={[
-            {
-              title: 'Description',
-              text: venue.description ?? 'Non renseignée',
-            },
-            ...(venue.activity
-              ? [
-                  {
-                    title: 'Activité',
-                    text: getActivityLabel(venue.activity),
-                  },
-                ]
-              : []),
-          ]}
-        />
-      </SummarySubSection>
+      {!isCulturalDomainsEnabled && aboutSection}
       <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
         {!venue.isOpenToPublic && (
           <span>Accueil du public dans la structure : Non</span>
@@ -57,6 +86,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           </>
         )}
       </SummarySubSection>
+      {isCulturalDomainsEnabled && aboutSection}
       <SummarySubSection
         title="Informations de contact"
         shouldShowDivider={false}
