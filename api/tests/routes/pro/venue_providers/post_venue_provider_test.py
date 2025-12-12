@@ -437,7 +437,7 @@ class Returns400Test:
 
         # Then
         assert response.status_code == 400
-        assert response.json["price"] == ["Le prix doit être positif."]
+        assert response.json["price"] == ["Saisissez un nombre supérieur ou égal à 0.0"]
         assert db.session.query(VenueProvider).count() == 0
 
 

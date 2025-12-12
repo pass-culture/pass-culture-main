@@ -36,7 +36,7 @@ const VenueSettings = (): JSX.Element | null => {
     [GET_VENUE_PROVIDERS_QUERY_KEY, Number(venueId)],
     ([, venueIdParam]) => api.listVenueProviders(venueIdParam)
   )
-  const venueProviders = venueProvidersQuery.data?.venue_providers
+  const venueProviders = venueProvidersQuery.data?.venueProviders
 
   const isNotReady =
     venueQuery.isLoading ||

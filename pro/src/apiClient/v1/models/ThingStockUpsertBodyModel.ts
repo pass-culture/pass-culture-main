@@ -3,12 +3,12 @@
 /* tslint:disable */
 /* eslint-disable */
 export type ThingStockUpsertBodyModel = {
-  activationCodes?: Array<string> | null;
-  activationCodesExpirationDatetime?: string | null;
-  bookingLimitDatetime?: string | null;
-  id?: number | null;
+  activationCodes?: (Array<string> | null);
+  activationCodesExpirationDatetime?: (string | null);
+  bookingLimitDatetime?: (string | null);
+  id?: (number | null);
   offerId: number;
   price: number;
-  quantity?: number | null;
+  quantity?: (number | null);
 };
 

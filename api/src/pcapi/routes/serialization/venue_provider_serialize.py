@@ -1,82 +1,53 @@
-import decimal
 from datetime import datetime
-from typing import Any
+from typing import Annotated
 
-import pydantic.v1
-from pydantic.v1.utils import GetterDict
+import pydantic as pydantic_v2
+from pydantic import RootModel
 
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
-from pcapi.utils.date import format_into_utc_date
-
-
-class PostVenueProviderBody(BaseModel):
-    venueId: int
-    providerId: int
-    venueIdAtOfferProvider: str | None
-    price: decimal.Decimal | None
-    # absent/ignored for regular providers, required for cinema-related providers
-    isDuo: bool | None
-    quantity: int | None
-    isActive: bool | None
-
-    @pydantic.v1.validator("price")
-    def price_must_be_positive(cls, value: decimal.Decimal | None) -> decimal.Decimal | None:
-        if not value:
-            return value
-        if value < 0:
-            raise ValueError("Le prix doit être positif.")
-        return value
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
-class ProviderOfVenueResponse(BaseModel):
+class ProviderResponse(HttpBodyModel):
+    id: int
     name: str
+    enabled_for_pro: bool
+    is_active: bool
+    has_offerer_provider: bool
+
+
+class ListProviderResponse(RootModel):
+    root: list[ProviderResponse]
+
+
+class PostVenueProviderBody(HttpBodyModel):
+    venue_id: int
+    provider_id: int
+    venue_id_at_offer_provider: str | None = None
+    price: Annotated[float, pydantic_v2.Field(ge=0)] | None = None
+    # absent/ignored for regular providers, required for cinema-related providers
+    is_duo: bool | None = None
+    quantity: int | None = None
+    is_active: bool | None = None
+
+
+class VenueProviderResponse(HttpBodyModel):
     id: int
     isActive: bool
-    hasOffererProvider: bool
-    enabledForPro: bool
-
-    class Config:
-        orm_mode = True
-
-
-class VenueProviderGetterDict(GetterDict):
-    def get(self, key: str, default: Any | None = None) -> Any:
-        venue_provider = self._obj
-        if key == "isDuo" and not venue_provider.isFromAllocineProvider:
-            return venue_provider.isDuoOffers
-
-        return super().get(key, default)
-
-
-class VenueProviderResponse(BaseModel):
-    id: int
-    isActive: bool
-    isDuo: bool | None
+    isDuoOffers: bool | None = pydantic_v2.Field(alias="isDuo")
     isFromAllocineProvider: bool
     lastSyncDate: datetime | None
     dateCreated: datetime
-    price: float | None
-    provider: ProviderOfVenueResponse
-    quantity: int | None
+    price: float | None = None
+    provider: ProviderResponse
+    quantity: int | None = None
     venueId: int
     venueIdAtOfferProvider: str | None
 
-    class Config:
-        orm_mode = True
-        getter_dict = VenueProviderGetterDict
 
-
-class ListVenueProviderResponse(BaseModel):
+class ListVenueProviderResponse(HttpBodyModel):
     venue_providers: list[VenueProviderResponse]
 
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
 
-
-class ListVenueProviderQuery(BaseModel):
+class ListVenueProviderQuery(HttpQueryParamsModel):
     venue_id: int
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
