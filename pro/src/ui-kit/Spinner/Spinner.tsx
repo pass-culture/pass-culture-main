@@ -48,9 +48,12 @@ export const Spinner = ({
   testId = 'spinner',
 }: SpinnerProps): JSX.Element => {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: `<output />` is for calculations results + accessibility support is partial.
     <div
+      aria-live="polite"
       className={cn(styles['loading-spinner'], className)}
       data-testid={testId}
+      role="status"
     >
       <SvgIcon
         src={strokePass}
