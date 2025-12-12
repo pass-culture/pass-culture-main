@@ -120,6 +120,7 @@ describe('screens:SignupJourney::Activity', () => {
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
       phoneNumber: '0605120510',
+      culturalDomains: undefined,
     }
 
     renderActivityScreen(contextValue)
@@ -146,6 +147,7 @@ describe('screens:SignupJourney::Activity', () => {
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: '0605120510',
+      culturalDomains: undefined,
     }
 
     renderActivityScreen(contextValue)
@@ -172,6 +174,7 @@ describe('screens:SignupJourney::Activity', () => {
       socialUrls: [],
       targetCustomer: Target.EDUCATIONAL,
       phoneNumber: '0605120510',
+      culturalDomains: undefined,
     }
 
     renderActivityScreen(contextValue)

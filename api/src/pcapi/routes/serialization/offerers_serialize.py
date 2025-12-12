@@ -5,10 +5,10 @@ from typing import Iterable
 
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
-from pydantic.v1 import root_validator
 from pydantic.v1.utils import GetterDict
 from sqlalchemy.engine import Row
 
+import pcapi.core.educational.repository as educational_repository
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offerers.repository as offerers_repository
 import pcapi.core.offers.models as offers_models
@@ -285,6 +285,7 @@ class CreateOffererQueryModel(BaseModel):
 class SaveNewOnboardingDataQueryModel(BaseModel):
     activity: offerers_models.OnboardingActivity | None
     address: offerers_schemas.AddressBodyModel
+    culturalDomains: list[str] | None
     createVenueWithoutSiret: bool = False
     isOpenToPublic: bool
     publicName: str | None
@@ -301,7 +302,19 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
         extra = "forbid"
         anystr_strip_whitespace = True
 
-    @root_validator
+    @pydantic_v1.validator("culturalDomains", pre=True)
+    def check_cultural_domains(cls: "SaveNewOnboardingDataQueryModel", value: Any) -> Any:
+        if not isinstance(value, list) or value is None:
+            return value  # for consistency, let pydantic deal with this issues
+        if not value:
+            raise ValueError("culturalDomains cannot be an empty list")
+        educational_domains = educational_repository.get_educational_domain_from_names(value)
+        if len(educational_domains) != len(value):
+            missing_domains = set(value) - {domain.name for domain in educational_domains}
+            raise ValueError(f"Unknown cultural domains: {', '.join(missing_domains)}")
+        return value
+
+    @pydantic_v1.root_validator
     def check_activity_and_venue_type_code(cls: "SaveNewOnboardingDataQueryModel", values: dict) -> dict:
         activity = values.get("activity")
         venue_type_code = values.get("venueTypeCode")

@@ -1037,6 +1037,7 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         comment=offerers_schemas.VenueComment(
             "Partenaire culturel sans SIRET car dépend du SIRET d'un autre partenaire culturel"
         ),
+        culturalDomains=[domain.name for domain in attachment_venue.collectiveDomains],
         siret=None,
         bookingEmail=offerers_schemas.VenueBookingEmail(attachment_venue.bookingEmail),
         managingOffererId=offerer_id,
