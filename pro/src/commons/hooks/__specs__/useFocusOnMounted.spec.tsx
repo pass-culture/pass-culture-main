@@ -14,7 +14,7 @@ describe('useFocusOnMounted()', () => {
 
     expect(focusSpy).toHaveBeenCalledTimes(1)
 
-    document.body.removeChild(mockElement)
+    mockElement.remove()
   })
 
   it('should focus element by HTMLElement reference when mounted', () => {
@@ -27,7 +27,7 @@ describe('useFocusOnMounted()', () => {
 
     expect(focusSpy).toHaveBeenCalledTimes(1)
 
-    document.body.removeChild(mockElement)
+    mockElement.remove()
   })
 
   it('should not throw when element is not found', () => {

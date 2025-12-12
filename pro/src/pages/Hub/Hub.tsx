@@ -47,15 +47,23 @@ export const Hub = () => {
         {venues.map((venue) => (
           <div key={venue.id}>
             <button
+              aria-describedby={
+                venue.address ? `venue-${venue.id}-address` : undefined
+              }
               className={styles['venue-button']}
               onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
               type="button"
             >
-              <p className={styles['venue-name']}>{venue.name}</p>
+              <span className={styles['venue-name']} id={`venue-${venue.id}`}>
+                {venue.name}
+              </span>
               {venue.address && (
-                <p className={styles['venue-address']}>
+                <span
+                  className={styles['venue-address']}
+                  id={`venue-${venue.id}-address`}
+                >
                   {withVenueHelpers(venue).fullAddressAsString}
-                </p>
+                </span>
               )}
             </button>
           </div>

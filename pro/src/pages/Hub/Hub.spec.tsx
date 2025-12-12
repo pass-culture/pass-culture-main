@@ -157,7 +157,7 @@ describe('Hub', () => {
 
     renderHub({ venues: venuesBase })
 
-    const venueBButton = screen.getByRole('button', { name: /Venue B/ })
+    const venueBButton = screen.getByRole('button', { name: 'Venue B' })
     await userEvent.click(venueBButton)
 
     await waitFor(() => {
@@ -171,7 +171,7 @@ describe('Hub', () => {
 
     renderHub({ venues: venuesBase })
 
-    const venueAButton = screen.getByRole('button', { name: /Venue A/ })
+    const venueAButton = screen.getByRole('button', { name: 'Venue A' })
     await userEvent.click(venueAButton)
 
     expect(getVenueSpy).not.toHaveBeenCalled()
