@@ -2,12 +2,14 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.finance import deposit_api
 from pcapi.core.subscription import fraud_check_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
+from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.users import models as users_models
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic
@@ -21,7 +23,7 @@ QUOTIENT_FAMILIAL_THRESHOLD = 3000
 def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     """
     Gets the lowest Quotient Familial from the fraud check custodian, over the fraud check beneficiary seventeenth year,
-    and updates the fraud check. If the Quotient Familial is eligible, then gives the bonus recredit to the beneficiary.
+    and updates the fraud check. Then gives the bonus recredit to the beneficiary if eligible.
     """
     user = quotient_familial_fraud_check.user
     if not deposit_api.can_receive_bonus_credit(user):
@@ -33,7 +35,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
 
     quotient_familial_content: bonus_schemas.QuotientFamilialContent | None = None
     try:
-        quotient_familial_content = _get_user_quotient_familial_content(source_data.custodian, user)
+        quotient_familial_content, children = _get_user_quotient_familial_content(source_data.custodian, user)
     except api_particulier.ParticulierApiQuotientFamilialNotFound:
         status = subscription_models.FraudCheckStatus.KO
         reason_codes = [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
@@ -47,7 +49,7 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         if not quotient_familial_content:
             return
 
-        _update_bonus_fraud_check_content(quotient_familial_fraud_check, quotient_familial_content)
+        _update_bonus_fraud_check_content(quotient_familial_fraud_check, quotient_familial_content, children)
 
         if status != subscription_models.FraudCheckStatus.OK:
             return
@@ -65,10 +67,9 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
 
 def _get_user_quotient_familial_content(
     custodian: bonus_schemas.QuotientFamilialCustodian, user: users_models.User
-) -> bonus_schemas.QuotientFamilialContent | None:
+) -> tuple[bonus_schemas.QuotientFamilialContent, list[bonus_schemas.QuotientFamilialChild]]:
     """
     Calls the Quotient Familial API twelve times, deserializing the lowest one.
-    Returns None if the custodian exists but the user was not found in the tax household.
     """
     birth_date = user.validatedBirthDate
     if not birth_date:
@@ -82,25 +83,26 @@ def _get_user_quotient_familial_content(
     MONTHS_IN_A_YEAR = 12
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = sixteenth_birthday + relativedelta(months=month_offset)
-        quotient_familial_at_date = api_particulier.get_quotient_familial(
-            last_name=custodian.last_name,
-            first_names=custodian.first_names,
-            common_name=custodian.common_name,
-            birth_date=custodian.birth_date,
-            gender=custodian.gender,
-            country_insee_code=custodian.birth_country_cog_code,
-            city_insee_code=custodian.birth_city_cog_code,
-            quotient_familial_date=at_date,
-        )
 
-        if _is_user_part_of_tax_household(user, quotient_familial_at_date):
-            quotient_familial_responses.append(quotient_familial_at_date)
+        if settings.ENABLE_API_PARTICULIER_MOCK:
+            quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(custodian, at_date, user)
+        else:
+            quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
 
-    if not quotient_familial_responses:
-        return None
+        quotient_familial_responses.append(quotient_familial_at_date)
 
-    lowest_quotient_familial = min(quotient_familial_responses, key=lambda qf: qf.data.quotient_familial.valeur)
-    return bonus_schemas.QuotientFamilialContent(
+    quotients_familial_with_user = [
+        qf for qf in quotient_familial_responses if _is_user_part_of_tax_household(user, qf)
+    ]
+    if quotients_familial_with_user:
+        relevant_qf_responses = quotients_familial_with_user
+    else:
+        # we store the quotient familial even if the user does not seem to belong to the tax household,
+        # to allow the support department to have the last say if the identity matching algorithm fails
+        relevant_qf_responses = quotient_familial_responses
+
+    lowest_quotient_familial = min(relevant_qf_responses, key=lambda qf: qf.data.quotient_familial.valeur)
+    lowest_qf_content = bonus_schemas.QuotientFamilialContent(
         provider=lowest_quotient_familial.data.quotient_familial.fournisseur,
         value=lowest_quotient_familial.data.quotient_familial.valeur,
         year=lowest_quotient_familial.data.quotient_familial.annee,
@@ -108,6 +110,17 @@ def _get_user_quotient_familial_content(
         computation_year=lowest_quotient_familial.data.quotient_familial.annee_calcul,
         computation_month=lowest_quotient_familial.data.quotient_familial.mois_calcul,
     )
+    lowest_qf_children = [
+        bonus_schemas.QuotientFamilialChild(
+            last_name=child.nom_naissance,
+            common_name=child.nom_usage,
+            first_names=child.prenoms.split(" ") if child.prenoms else [],
+            birth_date=child.date_naissance,
+            gender=child.sexe,
+        )
+        for child in lowest_quotient_familial.data.enfants
+    ]
+    return lowest_qf_content, lowest_qf_children
 
 
 def _is_user_part_of_tax_household(
@@ -128,7 +141,8 @@ def _is_user_part_of_tax_household(
             user.lastName, child.nom_usage
         )
         has_birth_day_match = user.validatedBirthDate == child.date_naissance
-        has_gender_match = id_source_data.get_civility() == child.sexe.value
+        child_gender = child.sexe.value if child.sexe else None
+        has_gender_match = id_source_data.get_civility() == child_gender
         if has_first_name_match and has_last_name_match and has_birth_day_match and has_gender_match:
             return True
 
@@ -154,9 +168,13 @@ def _get_credit_bonus_status(
 def _update_bonus_fraud_check_content(
     fraud_check: subscription_models.BeneficiaryFraudCheck,
     quotient_familial_content: bonus_schemas.QuotientFamilialContent,
+    children: list[bonus_schemas.QuotientFamilialChild],
 ) -> None:
     if not fraud_check.resultContent:
         fraud_check.resultContent = {}
+
     if not fraud_check.resultContent.get("quotient_familial"):
         fraud_check.resultContent["quotient_familial"] = {}
     fraud_check.resultContent["quotient_familial"].update(**quotient_familial_content.model_dump())
+
+    fraud_check.resultContent["children"] = [child.model_dump() for child in children]
