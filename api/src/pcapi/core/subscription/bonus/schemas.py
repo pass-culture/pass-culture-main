@@ -44,5 +44,5 @@ class QuotientFamilialContent(BaseModelV2):
 class QuotientFamilialBonusCreditContent(BaseModelV2):
     custodian: QuotientFamilialCustodian
     quotient_familial: QuotientFamilialContent | None = None
-    children: list[QuotientFamilialChild]
-    http_status_code: int | None
+    children: list[QuotientFamilialChild] | None = None
+    http_status_code: int | None = None

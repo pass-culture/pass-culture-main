@@ -1,4 +1,6 @@
 import datetime
+import logging
+import typing
 
 from pydantic import BaseModel
 from pydantic import field_validator
@@ -7,6 +9,9 @@ from pcapi import settings
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
 from pcapi.utils import requests
+
+
+logger = logging.getLogger(__name__)
 
 
 QUOTIENT_FAMILIAL_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/quotient_familial/identite"
@@ -35,18 +40,23 @@ class ParticulierApiRateLimitExceeded(ParticulierApiException):
 
 
 class QuotientFamilialPerson(BaseModel):
-    nom_naissance: str
+    nom_naissance: str | None = None
     nom_usage: str | None = None
-    prenoms: str
-    date_naissance: datetime.date
-    sexe: users_models.GenderEnum
+    prenoms: str | None = None
+    date_naissance: datetime.date | None = None
+    sexe: users_models.GenderEnum | None = None
 
     @field_validator("sexe", mode="before")
     @classmethod
-    def parse_gender(cls, gender: str | users_models.GenderEnum) -> users_models.GenderEnum:
+    def parse_gender(cls, gender: typing.Any) -> users_models.GenderEnum | None:
         if isinstance(gender, str):
             return users_models.GenderEnum[gender]
-        return gender
+        if isinstance(gender, users_models.GenderEnum):
+            return gender
+        if gender is None:
+            return None
+
+        raise ValueError(f"Unexpected {gender = } given")
 
 
 class QuotientFamilial(BaseModel):

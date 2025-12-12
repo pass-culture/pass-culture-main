@@ -74,3 +74,15 @@ QF_DESERIALIZED_RESPONSE = api_particulier.QuotientFamilialResponse(
         ),
     )
 )
+
+CUSTODIAN_NOT_FOUND_FIXTURE = {
+    "errors": [
+        {
+            "code": "37003",
+            "detail": "Le dossier allocataire n'a pas été trouvé auprès de la CNAV.",
+            "meta": {"provider": "CNAV"},
+            "source": None,
+            "title": "Dossier allocataire absent CNAV",
+        }
+    ]
+}

@@ -2,12 +2,14 @@ import logging
 
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.finance import deposit_api
 from pcapi.core.subscription import fraud_check_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
+from pcapi.core.subscription.bonus import staging_api
 from pcapi.core.users import models as users_models
 from pcapi.utils.clean_accents import clean_accents
 from pcapi.utils.transaction_manager import atomic
@@ -81,8 +83,11 @@ def _get_user_quotient_familial_content(
     MONTHS_IN_A_YEAR = 12
     for month_offset in range(MONTHS_IN_A_YEAR):
         at_date = sixteenth_birthday + relativedelta(months=month_offset)
-        quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
 
+        if settings.ENABLE_API_PARTICULIER_MOCK:
+            quotient_familial_at_date = staging_api.get_and_mock_quotient_familial(custodian, at_date, user)
+        else:
+            quotient_familial_at_date = api_particulier.get_quotient_familial(custodian, at_date)
 
         quotient_familial_responses.append(quotient_familial_at_date)
 
