@@ -35,8 +35,6 @@ from pcapi.serialization.utils import validate_datetime
 from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
-from . import deprecated  # noqa: F401
-
 
 class SubcategoryGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
@@ -707,7 +705,6 @@ class MinimalPostOfferBodyModel(ConfiguredBaseModel):
 class PostOfferBodyModel(MinimalPostOfferBodyModel):
     address: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     url: HttpUrl | None
-    address: offerers_schemas.AddressBodyModel | None
     booking_contact: EmailStr | None
     booking_email: EmailStr | None
     external_ticket_office_url: HttpUrl | None
