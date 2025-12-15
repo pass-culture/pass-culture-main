@@ -114,6 +114,9 @@ class GetOffererTest(GetEndpointHelper):
         assert offerer.name in content
         assert f"Offerer ID : {offerer.id} " in content
         assert f"SIREN : {offerer.siren} " in content
+        assert "Région : Occitanie " in content
+        assert "Département : 31 " in content
+        assert "Ville : Toulouse " in content
         assert "Peut créer une offre EAC : Oui" in content
         assert "Présence CB dans les partenaires culturels : 0 OK / 1 KO " in content
         assert "Tags : Collectivité Top acteur " in content
@@ -261,7 +264,46 @@ class GetOffererTest(GetEndpointHelper):
         assert "SIREN" not in content
         assert nc_offerer.siren not in content
         assert f"RID7 : {nc_offerer.rid7} " in content
+        assert "Région : Nouvelle-Calédonie " in content
+        assert "Département : 988 " in content
+        assert "Ville : Nouméa " in content
         assert "Peut créer une offre EAC : Non" in content
+
+    def test_offerer_with_several_locations(self, authenticated_client):
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__address=geography_factories.AddressFactory(
+                departmentCode="35", postalCode="35400", city="Saint-Malo"
+            ),
+        )
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__address=geography_factories.AddressFactory(
+                departmentCode="971", postalCode="97110", city="Pointe-à-Pitre"
+            ),
+        )
+        offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__address=geography_factories.AddressFactory(
+                departmentCode="29", postalCode="29200", city="Brest"
+            ),
+        )
+
+        url = url_for(self.endpoint, offerer_id=offerer.id)
+        db.session.expire_all()
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+
+        assert offerer.name in content
+        assert f"Offerer ID : {offerer.id} " in content
+        assert "Régions : Bretagne, Guadeloupe " in content
+        assert "Départements : 29, 35, 971 " in content
+        assert "Villes : Brest, Pointe-à-Pitre, Saint-Malo " in content
 
     def test_get_closed_offerer(self, authenticated_client):
         closed_offerer = offerers_factories.ClosedOffererFactory()
