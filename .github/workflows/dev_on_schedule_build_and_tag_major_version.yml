@@ -95,10 +95,9 @@ jobs:
       - name: "Delete vN-2 maintenance branch"
         continue-on-error: true
         run: |
-          git checkout master
           release_number=${{ needs.prepare-variables.outputs.releaseNumber }}
           old_branch_number=$((release_number-2))
-          git branch --delete --force "maint/v$old_branch_number"
+          git push origin --delete "maint/v$old_branch_number"
 
   end-slack-success-notification:
     name: "Send workflow success notification"
