@@ -1498,7 +1498,8 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
     qf_bonus_credit_fraud_checks = [
         e for e in user.beneficiaryFraudChecks if e.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
     ]
-    bonus_fraud_check = qf_bonus_credit_fraud_checks[0] if qf_bonus_credit_fraud_checks else None
+    # Get the latest BeneficiaryFraudCheck because `user.beneficiaryFraudChecks` are ordered by creation date
+    bonus_fraud_check = qf_bonus_credit_fraud_checks[-1] if qf_bonus_credit_fraud_checks else None
     bonus_fraud_check_status = bonus_fraud_check.status if bonus_fraud_check is not None else None
 
     if bonus_fraud_check_status in (
@@ -1539,7 +1540,7 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
         if subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND in reason_codes:
             return subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND
 
-    return subscription_models.QFBonificationStatus.KO
+    return subscription_models.QFBonificationStatus.UNKNOWN_KO
 
 
 def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:
