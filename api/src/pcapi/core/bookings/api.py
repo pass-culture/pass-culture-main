@@ -227,6 +227,7 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
                 models.Booking.cancellationReason,
                 models.Booking.dateCreated,
                 models.Booking.dateUsed,
+                models.Booking.displayAsEnded,
                 models.Booking.quantity,
                 models.Booking.status,
             ),
@@ -239,6 +240,7 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
                 offers_models.Stock.id,
                 offers_models.Stock.beginningDatetime,
                 offers_models.Stock.offerId,
+                offers_models.Stock.price,
             )
             .joinedload(offers_models.Stock.offer)
             .load_only(

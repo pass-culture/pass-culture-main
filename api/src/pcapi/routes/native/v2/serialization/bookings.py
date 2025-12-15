@@ -132,6 +132,7 @@ class BookingStockResponseV2GetterDict(GetterDict):
 
 class BookingStockResponseV2(ConfiguredBaseModel):
     id: int
+    is_automatically_used: bool
     beginning_datetime: datetime | None
     features: list[str]
     offer: BookingOfferResponseV2
@@ -272,6 +273,7 @@ class BookingResponse(ConfiguredBaseModel):
     date_created: datetime
     date_used: datetime | None
     expiration_date: datetime | None
+    is_archivable: bool | None
     quantity: int
     stock: BookingStockResponseV2
     total_amount: int
@@ -349,6 +351,7 @@ class BookingListItemOfferResponse(ConfiguredBaseModel):
 
 class BookingListItemStockResponse(ConfiguredBaseModel):
     beginning_datetime: datetime | None
+    is_automatically_used: bool
     offer: BookingListItemOfferResponse
 
 
@@ -360,6 +363,7 @@ class BookingListItemResponse(ConfiguredBaseModel):
     cancellation_reason: bookings_models.BookingCancellationReasons | None
     date_created: datetime
     date_used: datetime | None
+    is_archivable: bool | None
     expiration_date: datetime | None
     quantity: int
     stock: BookingListItemStockResponse

@@ -1,6 +1,5 @@
 from datetime import datetime
 from datetime import timedelta
-from decimal import Decimal
 
 import pytest
 
@@ -136,13 +135,15 @@ class GetBookingsTest:
             "dateCreated": used2.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "dateUsed": "2023-03-02T00:00:00Z",
             "expirationDate": None,
+            "isArchivable": True,
             "quantity": 1,
             "id": used2.id,
             "stock": {
                 "beginningDatetime": None,
                 "features": ["VO"],
                 "id": used2.stock.id,
-                "price": Decimal(used2.stock.price * 100),
+                "isAutomaticallyUsed": False,
+                "price": used2.stock.price * 100,
                 "priceCategoryLabel": None,
                 "offer": {
                     "address": {
@@ -483,11 +484,13 @@ class GetBookingsListTest:
             "dateCreated": ongoing_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "canReact": ongoing_booking.can_react,
             "id": ongoing_booking.id,
+            "isArchivable": None,
             "quantity": ongoing_booking.quantity,
             "dateUsed": ongoing_booking.dateUsed,
             "expirationDate": ongoing_booking.expirationDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "stock": {
                 "beginningDatetime": ongoing_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                "isAutomaticallyUsed": False,
                 "offer": {
                     "address": {
                         "timezone": ongoing_booking.stock.offer.offererAddress.address.timezone,
@@ -586,11 +589,13 @@ class GetBookingsListTest:
             "canReact": ended_booking.can_react,
             "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "id": ended_booking.id,
+            "isArchivable": True,
             "quantity": ended_booking.quantity,
             "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%SZ"),
             "expirationDate": None,
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "isAutomaticallyUsed": False,
                 "offer": {
                     "address": {
                         "timezone": ended_booking.stock.offer.offererAddress.address.timezone,
@@ -706,6 +711,7 @@ class GetBookingsListTest:
             "activationCode": None,
             "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "id": ended_booking.id,
+            "isArchivable": False,
             "quantity": ended_booking.quantity,
             "canReact": ended_booking.can_react,
             "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%SZ")
@@ -714,6 +720,7 @@ class GetBookingsListTest:
             "expirationDate": None,
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "isAutomaticallyUsed": False,
                 "offer": {
                     "address": {
                         "timezone": ended_booking.stock.offer.offererAddress.address.timezone,
@@ -788,12 +795,14 @@ class GetBookingsListTest:
             "activationCode": None,
             "dateCreated": ended_booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "id": ended_booking.id,
+            "isArchivable": True,
             "quantity": ended_booking.quantity,
             "canReact": ended_booking.can_react,
             "dateUsed": ended_booking.dateUsed.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "expirationDate": None,
             "stock": {
                 "beginningDatetime": ended_booking.stock.beginningDatetime.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "isAutomaticallyUsed": False,
                 "offer": {
                     "address": {
                         "timezone": ended_booking.stock.offer.offererAddress.address.timezone,
@@ -820,6 +829,44 @@ class GetBookingsListTest:
             "userReaction": None,
             "totalAmount": int(ended_booking.total_amount * 100),
         }
+
+    def test_get_bookings_list_returns_ended_bookings_when_booking_is_automatically_used(self, client):
+        user = users_factories.BeneficiaryFactory(email=self.identifier, age=18)
+
+        address_on_offer = AddressFactory()
+
+        paris_timezone = "Europe/Paris"
+
+        booking_start_date = datetime(2023, 3, 2)
+
+        booking_factories.UsedBookingFactory(
+            user=user,
+            status=booking_models.BookingStatus.CONFIRMED,
+            stock__offer__venue=offerers_factories.VenueFactory(
+                name="fnac",
+                offererAddress__address__timezone=paris_timezone,
+            ),
+            stock__offer__offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer),
+            displayAsEnded=True,
+            stock__offer__subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
+            stock__offer__withdrawalType=offer_models.WithdrawalTypeEnum.ON_SITE,
+            stock__offer__withdrawalDelay=60 * 30,
+            stock__beginningDatetime=booking_start_date,
+            stock__price=0,
+        )
+
+        with assert_num_queries(2):  # user + bookings
+            response = client.with_token(self.identifier).get("/native/v2/bookings/ended")
+
+        assert response.status_code == 200
+
+        bookings = response.json["bookings"]
+        assert len(bookings) == 1
+
+        booking_response = bookings[0]
+
+        assert booking_response["isArchivable"] == True
+        assert booking_response["stock"]["isAutomaticallyUsed"] == True
 
     def test_get_bookings_list_raises_error_when_status_is_unknown(self, client):
         users_factories.BeneficiaryFactory(email=self.identifier, age=18)
@@ -851,11 +898,13 @@ class GetBookingTest:
             "enablePopUpReaction": False,
             "expirationDate": booking.expirationDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "id": booking.id,
+            "isArchivable": None,
             "quantity": booking.quantity,
             "stock": {
                 "beginningDatetime": booking.stock.beginningDatetime,
                 "features": booking.stock.features,
                 "id": booking.stock.id,
+                "isAutomaticallyUsed": False,
                 "offer": {
                     "address": {
                         "city": booking.venue.offererAddress.address.city,
