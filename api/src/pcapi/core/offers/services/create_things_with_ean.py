@@ -1,0 +1,2 @@
+class CreateThingWithEan:
+    pass
