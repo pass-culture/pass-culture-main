@@ -3,7 +3,7 @@ from flask_login import login_required
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeListResponseModel
-from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
+from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModelV2
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -15,8 +15,9 @@ from . import blueprint
 @login_required
 @spectree_serialize(response_model=VenueTypeListResponseModel, api=blueprint.pro_private_schema)
 def get_venue_types() -> VenueTypeListResponseModel:
-    venue_types = [
-        VenueTypeResponseModel(value=venue_type.name, label=venue_type.value)
-        for venue_type in offerers_models.VenueTypeCode
-    ]
-    return VenueTypeListResponseModel(__root__=venue_types)
+    return VenueTypeListResponseModel(
+        [
+            VenueTypeResponseModelV2(value=venue_type.name, label=venue_type.value)
+            for venue_type in offerers_models.VenueTypeCode
+        ]
+    )
