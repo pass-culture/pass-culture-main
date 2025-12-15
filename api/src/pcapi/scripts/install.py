@@ -38,6 +38,8 @@ def install_commands(app: flask.Flask) -> None:
         "pcapi.utils.human_ids",
         "pcapi.utils.secrets",
         "pcapi.workers.worker",
+        "pcapi.core.offers.defs.consistency_checks.commands",
+        "pcapi.core.offers.defs.format.commands",
     )
 
     if settings.ENABLE_COMMAND_CLEAN_DATABASE:
