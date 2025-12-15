@@ -2762,31 +2762,6 @@ export class DefaultService {
     });
   }
   /**
-   * update_offer <PATCH>
-   * @param offerId
-   * @param requestBody
-   * @returns GetIndividualOfferWithAddressResponseModel OK
-   * @throws ApiError
-   */
-  public updateOffer(
-    offerId: number,
-    requestBody: PatchOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/v2/offers/{offer_id}',
-      path: {
-        'offer_id': offerId,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * get_reimbursements_csv_v2 <GET>
    * @param invoicesReferences
    * @returns any OK
