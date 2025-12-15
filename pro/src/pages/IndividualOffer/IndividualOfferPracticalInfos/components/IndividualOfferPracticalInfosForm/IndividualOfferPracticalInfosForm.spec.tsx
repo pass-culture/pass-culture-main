@@ -101,12 +101,14 @@ describe('IndividualOfferPracticalInfosForm', () => {
     expect(
       screen.queryByLabelText('Email auquel envoyer les notifications')
     ).not.toBeInTheDocument()
+    expect(screen.queryByText('Obligatoire')).not.toBeInTheDocument()
 
     await userEvent.click(notificationCheckbox)
 
     expect(
       screen.getByLabelText(/Email auquel envoyer les notifications/)
     ).toBeInTheDocument()
+    expect(screen.getByText('Obligatoire')).toBeInTheDocument()
   })
 
   it('should show a warning callout with a 10 days expiration if the offer is a physical book', () => {

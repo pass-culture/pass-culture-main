@@ -151,6 +151,7 @@ export function IndividualOfferPracticalInfosForm({
               disabled={isFormDisabled}
               description="Format : email@exemple.com"
               required
+              requiredIndicator="explicit"
               error={form.formState.errors.bookingEmail?.message}
             />
           </FormLayout.Row>
