@@ -2,5 +2,5 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { VenueTypeResponseModel } from './VenueTypeResponseModel';
-export type VenueTypeListResponseModel = Array<VenueTypeResponseModel>;
+import type { VenueTypeResponseModelV2 } from './VenueTypeResponseModelV2';
+export type VenueTypeListResponseModel = Array<VenueTypeResponseModelV2>;
