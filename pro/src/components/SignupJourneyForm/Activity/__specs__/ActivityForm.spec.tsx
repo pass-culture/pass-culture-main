@@ -205,4 +205,15 @@ describe('screens:SignupJourney::ActivityForm', () => {
       expect(screen.getByText('Culture scientifique')).toBeInTheDocument()
     })
   })
+
+  it('should display "Obligatoire" on required fields', () => {
+    renderActivityForm(initialValues, props, contextValue)
+
+    expect(
+      screen.getAllByText('Obligatoire', { exact: false })[0]
+    ).toBeInTheDocument()
+    expect(
+      screen.getAllByText('Obligatoire', { exact: false })[1]
+    ).toBeInTheDocument()
+  })
 })

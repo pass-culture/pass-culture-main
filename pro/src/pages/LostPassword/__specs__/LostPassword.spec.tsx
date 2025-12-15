@@ -29,11 +29,11 @@ describe('LostPassword', () => {
 
       // when
       renderLostPassword()
-
+      expect(screen.getByText('Obligatoire')).toBeInTheDocument()
       // then
       // user can fill and submit email
       await userEvent.type(
-        screen.getByLabelText(/Adresse email */),
+        screen.getByLabelText(/Adresse email/),
         'coucou@example.com'
       )
       await userEvent.tab()
@@ -66,7 +66,7 @@ describe('LostPassword', () => {
       expect(screen.getByText('Retour à la connexion')).toBeInTheDocument()
 
       await userEvent.type(
-        screen.getByLabelText(/Adresse email */),
+        screen.getByLabelText(/Adresse email/),
         'coucou@example.com'
       )
       await userEvent.tab()
