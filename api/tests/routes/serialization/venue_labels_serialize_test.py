@@ -4,11 +4,8 @@ from pcapi.routes.serialization.venue_labels_serialize import VenueLabelResponse
 
 class SerializeVenueLabelsTest:
     def should_return_dict_with_expected_information(self):
-        # Given
         venue_label = VenueLabel(id=1, label="Maison des illustres")
 
-        # When
-        serialized_label_response = VenueLabelResponseModel.from_orm(venue_label)
+        serialized_label_response = VenueLabelResponseModel.model_validate(venue_label)
 
-        # Then
-        assert serialized_label_response == {"id": venue_label.id, "label": venue_label.label}
+        assert serialized_label_response.model_dump() == {"id": venue_label.id, "label": venue_label.label}

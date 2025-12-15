@@ -15,7 +15,9 @@ from . import blueprint
 @login_required
 @spectree_serialize(response_model=VenueLabelListResponseModel, api=blueprint.pro_private_schema)
 def fetch_venue_labels() -> VenueLabelListResponseModel:
-    venue_label_list = [
-        VenueLabelResponseModel.from_orm(venue_label) for venue_label in offerers_repository.get_all_venue_labels()
-    ]
-    return VenueLabelListResponseModel(__root__=venue_label_list)
+    return VenueLabelListResponseModel(
+        [
+            VenueLabelResponseModel.model_validate(venue_label)
+            for venue_label in offerers_repository.get_all_venue_labels()
+        ]
+    )
