@@ -302,6 +302,13 @@ class Booking(PcObject, Model):
         return self.dateCreated + BOOKINGS_AUTO_EXPIRY_DELAY
 
     @property
+    def isArchivable(self) -> bool | None:
+        return (
+            self.stock.offer.subcategoryId in offers_models.Stock.AUTOMATICALLY_USED_SUBCATEGORIES
+            and not self.stock.price
+        ) or self.displayAsEnded
+
+    @property
     def total_amount(self) -> Decimal:
         return self.amount * self.quantity
 

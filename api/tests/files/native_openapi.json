@@ -740,6 +740,11 @@
                         "title": "Id",
                         "type": "integer"
                     },
+                    "isArchivable": {
+                        "nullable": true,
+                        "title": "Isarchivable",
+                        "type": "boolean"
+                    },
                     "quantity": {
                         "title": "Quantity",
                         "type": "integer"
@@ -779,11 +784,16 @@
                         "title": "Beginningdatetime",
                         "type": "string"
                     },
+                    "isAutomaticallyUsed": {
+                        "title": "Isautomaticallyused",
+                        "type": "boolean"
+                    },
                     "offer": {
                         "$ref": "#/components/schemas/BookingListItemOfferResponse"
                     }
                 },
                 "required": [
+                    "isAutomaticallyUsed",
                     "offer"
                 ],
                 "title": "BookingListItemStockResponse",
@@ -1248,6 +1258,11 @@
                         "title": "Id",
                         "type": "integer"
                     },
+                    "isArchivable": {
+                        "nullable": true,
+                        "title": "Isarchivable",
+                        "type": "boolean"
+                    },
                     "quantity": {
                         "title": "Quantity",
                         "type": "integer"
@@ -1344,6 +1359,10 @@
                         "title": "Id",
                         "type": "integer"
                     },
+                    "isAutomaticallyUsed": {
+                        "title": "Isautomaticallyused",
+                        "type": "boolean"
+                    },
                     "offer": {
                         "$ref": "#/components/schemas/BookingOfferResponseV2"
                     },
@@ -1359,6 +1378,7 @@
                 },
                 "required": [
                     "id",
+                    "isAutomaticallyUsed",
                     "features",
                     "offer",
                     "price"
