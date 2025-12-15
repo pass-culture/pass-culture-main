@@ -115,7 +115,10 @@ def patch_pro_user_rgs_seen() -> None:
 @spectree_serialize(response_model=users_serializers.SharedCurrentUserResponseModel, api=blueprint.pro_private_schema)
 def get_profile() -> users_serializers.SharedCurrentUserResponseModel:
     user = current_user._get_current_object()  # get underlying User object from proxy
-    return users_serializers.SharedCurrentUserResponseModel.from_orm(user)
+    return users_serializers.SharedCurrentUserResponseModel.instantiate_model(
+        user,
+        is_impersonated=flask.session.get("internal_admin_email") is not None,
+    )
 
 
 @private_api.route("/users/identity", methods=["PATCH"])
@@ -130,9 +133,9 @@ def patch_user_identity(body: users_serializers.UserIdentityBodyModel) -> users_
             "firstName", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
         )
         raise errors
-    attributes = body.dict()
+    attributes = body.model_dump()
     users_api.update_user_info(user, author=current_user, **attributes)
-    return users_serializers.UserIdentityResponseModel.from_orm(user)
+    return users_serializers.UserIdentityResponseModel.model_validate(user)
 
 
 @private_api.route("/users/phone", methods=["PATCH"])
@@ -147,7 +150,7 @@ def patch_user_phone(body: users_serializers.UserPhoneBodyModel) -> users_serial
             "phoneNumber", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
         )
         raise errors
-    attributes = body.dict()
+    attributes = body.model_dump()
     users_api.update_user_info(user, author=current_user, **attributes)
     return users_serializers.UserPhoneResponseModel.from_orm(user)
 
@@ -209,7 +212,7 @@ def post_user_email(body: users_serializers.UserResetEmailBodyModel) -> None:
 def get_user_email_pending_validation() -> users_serializers.UserEmailValidationResponseModel:
     user = current_user._get_current_object()
     pending_validation = email_repository.get_latest_pending_email_validation(user)
-    return users_serializers.UserEmailValidationResponseModel.from_orm(pending_validation)
+    return users_serializers.UserEmailValidationResponseModel.model_validate(pending_validation or {})
 
 
 @private_api.route("/users/password", methods=["POST"])
@@ -224,9 +227,9 @@ def post_change_password(body: users_serializers.ChangePasswordBodyModel) -> Non
             "oldPassword", "Vos modifications ne peuvent pas être acceptées tant que votre compte n’a pas été validé"
         )
         raise errors
-    new_password = body.newPassword
-    new_confirmation_password = body.newConfirmationPassword
-    old_password = body.oldPassword
+    new_password = body.new_password
+    new_confirmation_password = body.new_confirmation_password
+    old_password = body.old_password
     check_password_validity(new_password, new_confirmation_password, old_password, user)
     update_user_password(user, new_password)
     transactional_mails.send_reset_password_email_to_connected_pro(user)
@@ -270,7 +273,7 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
     flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     users_api.update_last_connection_date(user)
 
-    return users_serializers.SharedLoginUserResponseModel.from_orm(user)
+    return users_serializers.SharedLoginUserResponseModel.model_validate(user)
 
 
 @private_api.route("/users/signout", methods=["GET"])
@@ -379,12 +382,12 @@ def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None
     if not FeatureToggle.ENABLE_PRO_FEEDBACK.is_active():
         raise ApiErrors(errors={"global": "service not available"}, status_code=503)
 
-    check_user_has_access_to_offerer(current_user, body.offererId)
+    check_user_has_access_to_offerer(current_user, body.offerer_id)
 
-    if body.userComment:
+    if body.user_comment:
         harvestr.create_message(
-            title=f"Retour - {body.pageTitle}",
-            content=body.userComment,
+            title=f"Retour - {body.page_title}",
+            content=body.user_comment,
             requester=harvestr.HaverstrRequester(
                 name=current_user.full_name,
                 externalUid=str(current_user.id),
@@ -396,9 +399,9 @@ def submit_user_review(body: users_serializers.SubmitReviewRequestModel) -> None
     logger.info(
         "User submitting review",
         extra={
-            "offerer_id": body.offererId,
-            "user_satisfaction": body.userSatisfaction,
-            "user_comment": body.userComment,
+            "offerer_id": body.offerer_id,
+            "user_satisfaction": body.user_satisfaction,
+            "user_comment": body.user_comment,
             "source_page": body.location,
         },
         technical_message_id="user_review",

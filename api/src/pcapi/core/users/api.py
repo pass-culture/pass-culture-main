@@ -823,13 +823,13 @@ def create_and_send_signup_email_confirmation(new_pro_user: models.User) -> None
 
 
 def create_pro_user(pro_user: users_serialization.ProUserCreationBodyV2Model) -> models.User:
-    user_kwargs = {
-        k: v for k, v in pro_user.dict(by_alias=True).items() if k not in ("contactOk", "token", "_sa_instance_state")
-    }
-    password_arg = user_kwargs.pop("password")
-    new_pro_user = models.User(**user_kwargs)
-    new_pro_user.setPassword(password_arg)
-    new_pro_user.email = email_utils.sanitize_email(new_pro_user.email)
+    new_pro_user = models.User(
+        email=pro_user.email,
+        firstName=pro_user.first_name,
+        lastName=pro_user.last_name,
+        phoneNumber=pro_user.phone_number,
+    )
+    new_pro_user.setPassword(pro_user.password)
     user_by_email = users_repository.find_user_by_email(new_pro_user.email)
 
     if user_by_email:
