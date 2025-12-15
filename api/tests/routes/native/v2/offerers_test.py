@@ -194,3 +194,12 @@ class GetVenueTest:
         with assert_num_queries(self.expected_num_queries):
             response = client.get(f"/native/v2/venue/{venue_id}")
             assert response.status_code == 200
+
+    def test_get_venue_with_no_contact(self, client):
+        venue = offerers_factories.VenueFactory(contact=None, isPermanent=True)
+        venue_id = venue.id
+
+        response = client.get(f"/native/v2/venue/{venue_id}")
+        assert response.status_code == 200
+        response_contact = response.json["contact"]
+        assert response_contact is None

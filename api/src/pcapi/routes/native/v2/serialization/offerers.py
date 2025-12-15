@@ -91,7 +91,7 @@ class VenueResponse(HttpBodyModel):
             banner_is_from_google=banner_is_from_google,
             banner_url=venue.bannerUrl,
             city=venue.offererAddress.address.city,
-            contact=VenueContact.model_validate(venue.contact),
+            contact=VenueContact.model_validate(venue.contact) if venue.contact else None,
             description=venue.description,
             is_open_to_public=venue.isOpenToPublic,
             is_permanent=venue.isPermanent,
