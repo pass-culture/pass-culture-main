@@ -12,6 +12,9 @@ export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { AggregatedRevenueModel } from './models/AggregatedRevenueModel';
+export type { ArtistQueryModel } from './models/ArtistQueryModel';
+export type { ArtistResponseModel } from './models/ArtistResponseModel';
+export type { ArtistsResponseModel } from './models/ArtistsResponseModel';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
 export type { AudioDisabilityModel } from './models/AudioDisabilityModel';

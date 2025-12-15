@@ -3,6 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
+import type { ArtistsResponseModel } from '../models/ArtistsResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
 import type { BookingExportType } from '../models/BookingExportType';
@@ -124,6 +125,27 @@ import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
 export class DefaultService {
   constructor(public readonly httpRequest: BaseHttpRequest) {}
+  /**
+   * get_artists <GET>
+   * @param search
+   * @returns ArtistsResponseModel OK
+   * @throws ApiError
+   */
+  public getArtists(
+    search: string,
+  ): CancelablePromise<ArtistsResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/artists',
+      query: {
+        'search': search,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
   /**
    * get_bookings_csv <GET>
    * @param page

@@ -3,6 +3,7 @@ from flask import Flask
 
 def install_routes(app: Flask) -> None:
     from . import adage_data
+    from . import artists
     from . import bookings
     from . import collective_bookings
     from . import collective_offers
