@@ -1,13 +1,12 @@
-from pcapi.routes.serialization import BaseModel
+from pydantic import RootModel
+
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class VenueLabelResponseModel(BaseModel):
+class VenueLabelResponseModel(HttpBodyModel):
     id: int
     label: str
 
-    class Config:
-        orm_mode = True
 
-
-class VenueLabelListResponseModel(BaseModel):
-    __root__: list[VenueLabelResponseModel]
+class VenueLabelListResponseModel(RootModel):
+    root: list[VenueLabelResponseModel]
