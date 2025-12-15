@@ -131,7 +131,7 @@ class QFBonificationStatus(enum.Enum):
     QUOTIENT_FAMILIAL_TOO_HIGH = "quotient_familial_too_high"
     TOO_MANY_RETRIES = "too_many_retries"
     GRANTED = "granted"
-    KO = "ko"
+    UNKNOWN_KO = "unknown_ko"
 
 
 VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [
