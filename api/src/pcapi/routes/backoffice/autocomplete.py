@@ -17,7 +17,7 @@ from pcapi.core.providers import models as providers_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_datespan
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
@@ -30,17 +30,17 @@ from .forms import fields
 NUM_RESULTS = 20
 
 
-class AutocompleteStrIdItem(BaseModel):
+class AutocompleteStrIdItem(HttpBodyModel):
     id: str
     text: str
 
 
-class AutocompleteItem(BaseModel):
+class AutocompleteItem(HttpBodyModel):
     id: int
     text: str
 
 
-class AutocompleteResponse(BaseModel):
+class AutocompleteResponse(HttpBodyModel):
     items: list[AutocompleteItem | AutocompleteStrIdItem]
 
 
