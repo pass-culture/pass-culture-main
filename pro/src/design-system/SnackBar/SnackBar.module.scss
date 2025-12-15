@@ -1,0 +1,266 @@
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
+
+.container {
+  position: relative;
+  width: fit-content;
+  max-width: rem.torem(560px);
+
+  .wrapper {
+    align-items: center;
+    animation: wrapper-border-radius-desktop var(--snackbar-duration) linear
+      forwards;
+    border-radius: 0 var(--size-border-radius-s) var(--size-border-radius-s)
+      var(--size-border-radius-s);
+    display: flex;
+    padding: var(--size-spacing-l);
+    gap: var(--size-spacing-s);
+
+    .content {
+      align-items: center;
+      display: flex;
+      flex: 1;
+      gap: var(--size-spacing-s);
+
+      .content-icon {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .content-text {
+        color: var(--color-text-default);
+
+        @include fonts.body-accent;
+      }
+    }
+
+    .close-button-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .close-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+  }
+
+  .progress-bar-container {
+    position: absolute;
+    top: rem.torem(-4px);
+    left: 0;
+    height: rem.torem(4px);
+    width: 100%;
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: var(--size-border-radius-s) var(--size-border-radius-s) 0 0;
+      animation: progress-fill var(--snackbar-duration) linear forwards;
+    }
+  }
+
+  &.show {
+    animation: slide-in-bottom var(--snackbar-animation-duration) ease-out
+      forwards;
+  }
+
+  &.hide {
+    animation: slide-out-bottom var(--snackbar-animation-duration) ease-in
+      forwards;
+  }
+
+  &.success {
+    .wrapper {
+      background-color: var(--color-background-success);
+    }
+
+    .content-icon {
+      .content-icon-svg {
+        color: var(--color-icon-success);
+      }
+    }
+
+    .progress-bar {
+      background-color: var(--color-border-success);
+    }
+  }
+
+  &.error {
+    .wrapper {
+      background-color: var(--color-background-error);
+    }
+
+    .content-icon {
+      .content-icon-svg {
+        color: var(--color-icon-error);
+      }
+    }
+
+    .progress-bar {
+      background-color: var(--color-border-error);
+    }
+  }
+}
+
+@media screen and (max-width: size.$tablet) {
+  .container {
+    max-width: 100%;
+    width: 100%;
+
+    &.show {
+      animation: slide-in-top var(--snackbar-animation-duration) ease-out
+        forwards;
+    }
+
+    &.hide {
+      animation: slide-out-top var(--snackbar-animation-duration) ease-in
+        forwards;
+    }
+
+    .wrapper {
+      border-radius: 0;
+      animation-name: none;
+
+      .content {
+        .content-text {
+          @include fonts.body-accent-s;
+        }
+      }
+    }
+
+    .progress-bar-container {
+      bottom: rem.torem(-4px);
+      top: unset;
+
+      .progress-bar {
+        border-radius: 0 0 var(--size-border-radius-s)
+          var(--size-border-radius-s);
+      }
+    }
+  }
+}
+
+.visually-hidden {
+  @include a11y.visually-hidden;
+}
+
+/**
+ * Progress bar animation
+ */
+@keyframes progress-fill {
+  0% {
+    width: 0%;
+  }
+
+  100% {
+    width: 100%;
+  }
+}
+
+/**
+ * Wrapper border-radius animation (desktop)
+ * Top-right border-radius goes to 0 at the end to avoid visible gap with progress bar
+ */
+@keyframes wrapper-border-radius-desktop {
+  0%,
+  99% {
+    border-radius: 0 var(--size-border-radius-s) var(--size-border-radius-s)
+      var(--size-border-radius-s);
+  }
+
+  100% {
+    border-radius: 0 0 var(--size-border-radius-s) var(--size-border-radius-s);
+  }
+}
+
+/**
+ * Desktop animations (appearance/disappearance down).
+ */
+@keyframes slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Desktop animations (disappearance down).
+ */
+@keyframes slide-out-bottom {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+
+/**
+ * Mobile animations (appearance/disappearance up).
+ */
+@keyframes slide-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Mobile animations (disappearance up).
+ */
+@keyframes slide-out-top {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}
+
+/**
+ * Accessibility: Disable animations for users who prefer reduced motion.
+ */
+@media screen and (prefers-reduced-motion: reduce) {
+  .container {
+    &.show {
+      animation: none;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    &.hide {
+      animation: none;
+      opacity: 0;
+    }
+  }
+
+  .progress-bar {
+    display: none;
+  }
+}
