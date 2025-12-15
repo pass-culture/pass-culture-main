@@ -131,7 +131,7 @@ export const SignupContainer = (): JSX.Element => {
       <OperatingProcedures />
 
       <div className={styles['mandatory']}>
-        <MandatoryInfo areAllFieldsMandatory={true} />
+        <MandatoryInfo />
       </div>
       <FormProvider {...hookForm}>
         <form onSubmit={handleSubmit(onSubmit)}>
