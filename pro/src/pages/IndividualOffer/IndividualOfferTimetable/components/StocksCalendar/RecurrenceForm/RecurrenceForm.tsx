@@ -15,6 +15,7 @@ import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { isDateValid, mapDayToFrench } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullClearIcon from '@/icons/full-clear.svg'
@@ -234,9 +235,7 @@ export const RecurrenceForm = ({
         noValidate
       >
         <div className={styles['form-content']}>
-          <div className={styles['mandatory']}>
-            Tous les champs suivis d’un * sont obligatoires.
-          </div>
+          <MandatoryInfo />
 
           <div className={styles['recurrence-section']}>
             <RadioButtonGroup
