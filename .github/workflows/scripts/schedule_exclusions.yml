@@ -1,0 +1,56 @@
+# This file contains the dates on which we do not want to trigger scheduled deployments
+# Each element should include a date, a day_of_week (informative),
+# and a comment that will be displayed in the workflow run. For example:
+# - date: 2025-12-16
+#   day_of_week: Tuesday
+#   comment: test
+
+- date: 2025-12-24
+  day_of_week: Wednesday
+  comment: Veille de Noël
+- date: 2025-12-25
+  day_of_week: Thursday
+  comment: Noël
+- date: 2025-12-31
+  day_of_week: Wednesday
+  comment: St-Sylvestre
+- date: 2026-01-01
+  day_of_week: Thursday
+  comment: Jour de l'An
+- date: 2026-04-06
+  day_of_week: Monday
+  comment: Lundi de Pâques
+- date: 2026-05-01
+  day_of_week: Friday
+  comment: Fête du travail
+- date: 2026-05-08
+  day_of_week: Friday
+  comment: Victoire 1945
+- date: 2026-05-14
+  day_of_week: Thursday
+  comment: Ascension
+- date: 2026-05-25
+  day_of_week: Monday
+  comment: Lundi de Pentecôte
+- date: 2026-07-13
+  day_of_week: Monday
+  comment: Veille du 14/07
+- date: 2026-07-14
+  day_of_week: Tuesday
+  comment: Fête nationale
+- date: 2026-08-15 # informative, we don't deploy on Saturdays
+  day_of_week: Saturday
+  comment: Assomption
+- date: 2026-11-01   # informative, we don't deploy on Sundays
+  day_of_week: Sunday
+  comment: Toussaint
+- date: 2026-11-10
+  day_of_week: Tuesday
+  comment: Veille du 11/11
+- date: 2026-11-11
+  day_of_week: Wednesday
+  comment: Armistice 1918
+- date: 2026-12-24
+  day_of_week: Thursday
+  comment: Veille de Noël
+- date: 2
