@@ -13,7 +13,20 @@ on:
 permissions: write-all
 
 jobs:
+  check-schedule:
+    runs-on: ubuntu-latest
+    outputs:
+      schedule_exclusion: ${{steps.check-date-exclusion.outputs.schedule_exclusion}}
+    steps:
+      - uses: actions/checkout@v6
+      - id: check-date-exclusion
+        run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> $GITHUB_OUTPUT
+      - run: echo "Today is excluded – ${{ steps.check-date-exclusion.outputs.reason }}"
+
+
   prepare-variables:
+    needs: check-schedule
+    if : needs.check-schedule.outputs.schedule_exclusion  == 'false'
     runs-on: ubuntu-latest
     outputs:
       releaseNumber: ${{ steps.version.outputs.releaseNumber }}
