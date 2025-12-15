@@ -78,8 +78,8 @@
               {{ build_lazy_modal(url_for('backoffice_web.offerer.get_close_offerer_form', offerer_id=offerer.id) , "close-modal-" + offerer.id|string) }}
             {% endif %}
           </div>
-          <div class="row pt-3">
-            <div class="col-4">
+          <div class="d-flex justify-content-between">
+            <div>
               <p class="card-subtitle text-muted mb-3 h5">
                 Offerer ID : {{ offerer.id }} {{ clipboard.copy_to_clipboard(offerer.id, "Copier l'ID de l'entité juridique") }}
               </p>
@@ -87,52 +87,83 @@
                 {{ offerer.identifier_name }} : {{ links.build_siren_to_external_link(offerer) }}
                 <span class="ms-1 link-primary">{{ clipboard.copy_to_clipboard(offerer.identifier, "Copier le " + offerer.identifier_name  + " de l'entité juridique") }}</span>
               </p>
-              {% if zendesk_sell_synchronisation_form %}
-                <div>
-                  <button class="btn  btn-outline-primary-subtle-bg mt-2"
-                          data-bs-toggle="modal"
-                          data-bs-target=".pc-sync-zsell-modal"
-                          type="button">
-                    <i class="bi bi-arrow-repeat"></i>
-                    Sync Zendesk Sell
-                  </button>
-                  <div class="modal modal-lg fade pc-sync-zsell-modal"
-                       tabindex="-1"
-                       aria-describedby="{{ sync_zsell_aria_described_by_id }}"
-                       aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                      <div class="modal-content">
-                        <form action="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
-                              name="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
-                              method="post">
-                          {{ zendesk_sell_synchronisation_form.csrf_token }}
-                          <div class="modal-header"
-                               id="{{ sync_zsell_aria_described_by_id }}">
-                            <h5 class="modal-title">Synchroniser l'entité juridique {{ offerer.name }} sur Zendesk Sell</h5>
-                          </div>
-                          <div class="modal-body row">
-                            <div class="d-flex align-items-center">
-                              <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
-                                 style="font-size: 3.1rem"></i>
-                              <div>
-                                N'oubliez pas de vérifier que l'ID <b>{{ offerer.id }}</b> est bien renseigné dans «&thinsp;Produit Offerer ID&thinsp;» sur Zendesk Sell.
-                              </div>
+            </div>
+            {% if zendesk_sell_synchronisation_form %}
+              <div>
+                <button class="btn  btn-outline-primary-subtle-bg mt-2"
+                        data-bs-toggle="modal"
+                        data-bs-target=".pc-sync-zsell-modal"
+                        type="button">
+                  <i class="bi bi-arrow-repeat"></i>
+                  Sync Zendesk Sell
+                </button>
+                <div class="modal modal-lg fade pc-sync-zsell-modal"
+                     tabindex="-1"
+                     aria-describedby="{{ sync_zsell_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) }}"
+                            name="{{ url_for('backoffice_web.zendesk_sell.update_offerer', offerer_id=offerer.id) | action_to_name }}"
+                            method="post">
+                        {{ zendesk_sell_synchronisation_form.csrf_token }}
+                        <div class="modal-header"
+                             id="{{ sync_zsell_aria_described_by_id }}">
+                          <h5 class="modal-title">Synchroniser l'entité juridique {{ offerer.name }} sur Zendesk Sell</h5>
+                        </div>
+                        <div class="modal-body row">
+                          <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
+                               style="font-size: 3.1rem"></i>
+                            <div>
+                              N'oubliez pas de vérifier que l'ID <b>{{ offerer.id }}</b> est bien renseigné dans «&thinsp;Produit Offerer ID&thinsp;» sur Zendesk Sell.
                             </div>
-                            {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
                           </div>
-                          <div class="modal-footer">
-                            <button type="button"
-                                    class="btn btn-outline-primary-subtle-bg"
-                                    data-bs-dismiss="modal">Annuler</button>
-                            <button type="submit"
-                                    class="btn btn-primary">Confirmer</button>
-                          </div>
-                        </form>
-                      </div>
+                          {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary-subtle-bg"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Confirmer</button>
+                        </div>
+                      </form>
                     </div>
                   </div>
                 </div>
-              {% endif %}
+              </div>
+            {% endif %}
+          </div>
+          <div class="row pt-3">
+            <div class="col-4">
+              <h4 class="text-primary mb-2">Adresse{{ offerer.cities or [] | length | pluralize }} :</h4>
+              <div class="fs-6">
+                {% if regions %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Région{{ regions | length | pluralize }} :</span>
+                    {{ regions | sort | format_string_list(150) }}
+                  </p>
+                {% endif %}
+                {% if offerer.department_codes %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Département{{ offerer.department_codes | length | pluralize }} :</span>
+                    {{ offerer.department_codes | sort | format_string_list(140) }}
+                  </p>
+                {% endif %}
+                {% if offerer.cities %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Ville{{ offerer.cities | length | pluralize }} :</span>
+                    {{ offerer.cities | sort | format_string_list(150) }}
+                  </p>
+                {% endif %}
+                {% if creator_phone_number %}
+                  <p class="mb-1">
+                    <span class="fw-bold">Numéro d'inscription :</span>
+                    {{ creator_phone_number | empty_string_if_null }}
+                  </p>
+                {% endif %}
+              </div>
             </div>
             <div class="col-4">
               <h4 class="text-primary mb-2">Informations générales :</h4>
