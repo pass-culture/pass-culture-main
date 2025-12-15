@@ -1,355 +1,159 @@
-from datetime import date
+import typing
 from datetime import datetime
-from decimal import Decimal
 
-import flask
-import pydantic.v1 as pydantic_v1
-from pydantic.v1 import EmailStr
-from pydantic.v1.class_validators import validator
+import pydantic as pydantic_v2
 
-from pcapi.connectors.dms import models as dms_models
-from pcapi.core.history import models as history_models
 from pcapi.core.users import models as users_models
 from pcapi.core.users.password_utils import check_password_strength
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.utils import phone_number as phone_number_utils
-from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.email import sanitize_email
 
 
-class UserIdentityResponseModel(BaseModel):
-    firstName: str
-    lastName: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-
-
-class UserIdentityBodyModel(BaseModel):
+class UserIdentityResponseModel(HttpBodyModel):
     first_name: str
     last_name: str
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+
+class UserIdentityBodyModel(HttpBodyModel):
+    first_name: str
+    last_name: str
 
 
-class UserPhoneResponseModel(BaseModel):
-    phoneNumber: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-
-
-class UserPhoneBodyModel(BaseModel):
+class UserPhoneResponseModel(HttpBodyModel):
     phone_number: str
 
-    @validator("phone_number")
-    def validate_phone_number(cls, phone_number: str) -> str:
-        if phone_number is None:
-            return phone_number
 
-        try:
-            return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
-        except Exception:
-            raise ValueError(f"numéro de téléphone invalide: {phone_number}")
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+def validate_phone_number(phone_number: str) -> str:
+    try:
+        return phone_number_utils.ParsedPhoneNumber(phone_number).phone_number
+    except Exception:
+        raise PydanticError(f"numéro de téléphone invalide: {phone_number}")
 
 
-class UserResetEmailBodyModel(BaseModel):
-    email: EmailStr
+class UserPhoneBodyModel(HttpBodyModel):
+    phone_number: typing.Annotated[str, pydantic_v2.AfterValidator(validate_phone_number)]
+
+
+class UserResetEmailBodyModel(HttpBodyModel):
+    email: pydantic_v2.EmailStr
     password: str
 
-    @validator("email", pre=True)
+    @pydantic_v2.field_validator("email", mode="before")
     @classmethod
     def validate_emails(cls, email: str) -> str:
         try:
             return sanitize_email(email)
         except Exception as e:
-            raise ValueError(email) from e
+            raise PydanticError(email) from e
 
 
-class UserEmailValidationResponseModel(BaseModel):
-    newEmail: str | None
-
-    class Config:
-        orm_mode = True
+class UserEmailValidationResponseModel(HttpBodyModel):
+    new_email: str | None = None
 
 
-class ProUserCreationBodyV2Model(BaseModel):
-    email: pydantic_v1.EmailStr
+def validate_password_strength(password: str) -> str:
+    check_password_strength("password", password)
+    return password
+
+
+class ProUserCreationBodyV2Model(HttpBodyModel):
+    email: pydantic_v2.EmailStr
     first_name: str
     last_name: str
-    password: str
+    password: typing.Annotated[str, pydantic_v2.AfterValidator(validate_password_strength)]
     phone_number: str | None = None
     contact_ok: bool
     token: str
 
-    @validator("password")
-    def validate_password_strength(cls, password: str) -> str:
-        check_password_strength("password", password)
-        return password
-
-    class Config:
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        extra = "forbid"
+    @pydantic_v2.field_validator("email", mode="after")
+    @classmethod
+    def sanitize_email(cls, value: pydantic_v2.EmailStr) -> str:
+        return value.lower()
 
 
-class LoginUserBodyModel(BaseModel):
+class LoginUserBodyModel(HttpBodyModel):
     identifier: str
     password: str
     captcha_token: str | None = None
 
-    class Config:
-        alias_generator = to_camel
 
-
-class SharedLoginUserResponseModel(BaseModel):
-    activity: str | None
-    address: str | None
-    city: str | None
-    civility: users_models.GenderEnum | None
+class SharedLoginUserResponseModel(HttpBodyModel):
+    activity: str | None = None
+    address: str | None = None
+    city: str | None = None
+    civility: users_models.GenderEnum | None = None
     dateCreated: datetime
-    dateOfBirth: datetime | None
-    departementCode: str | None
+    dateOfBirth: datetime | None = None
+    departementCode: str | None = None
     email: str
-    firstName: str | None
-    hasSeenProTutorials: bool | None
-    hasUserOfferer: bool | None
+    firstName: str | None = None
+    hasSeenProTutorials: bool | None = None
+    has_user_offerer: bool | None = None
     id: int
     isEmailValidated: bool
-    lastConnectionDate: datetime | None
-    lastName: str | None
-    needsToFillCulturalSurvey: bool | None
-    phoneNumber: str | None
-    postalCode: str | None
+    lastConnectionDate: datetime | None = None
+    lastName: str | None = None
+    needsToFillCulturalSurvey: bool | None = None
+    phoneNumber: str | None = None
+    postalCode: str | None = None
     roles: list[users_models.UserRole]
 
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-        orm_mode = True
-        alias_generator = to_camel
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        use_enum_values = True
-
-    @classmethod
-    def from_orm(cls, user: users_models.User) -> "SharedLoginUserResponseModel":
-        user.hasUserOfferer = user.has_user_offerer
-        result = super().from_orm(user)
-        return result
+    model_config = pydantic_v2.ConfigDict(use_enum_values=True, arbitrary_types_allowed=True)
 
 
-class SharedCurrentUserResponseModel(BaseModel):
-    activity: str | None
-    address: str | None
-    city: str | None
-    civility: users_models.GenderEnum | None
+class SharedCurrentUserResponseModel(HttpBodyModel):
+    activity: str | None = None
+    address: str | None = None
+    city: str | None = None
+    civility: users_models.GenderEnum | None = None
     dateCreated: datetime
-    dateOfBirth: datetime | None
-    departementCode: str | None
+    dateOfBirth: datetime | None = None
+    departementCode: str | None = None
     email: str
-    externalIds: dict | None
-    firstName: str | None
-    hasSeenProTutorials: bool | None
-    hasUserOfferer: bool | None
+    externalIds: dict | None = None
+    firstName: str | None = None
+    hasSeenProTutorials: bool | None = None
+    has_user_offerer: bool | None = None
     id: int
-    idPieceNumber: str | None
+    idPieceNumber: str | None = None
     isEmailValidated: bool
-    lastConnectionDate: datetime | None
-    lastName: str | None
-    needsToFillCulturalSurvey: bool | None
-    notificationSubscriptions: dict | None
-    phoneNumber: str | None
-    phoneValidationStatus: users_models.PhoneValidationStatusType | None
-    postalCode: str | None
+    lastConnectionDate: datetime | None = None
+    lastName: str | None = None
+    needsToFillCulturalSurvey: bool | None = None
+    notificationSubscriptions: dict | None = None
+    phoneNumber: str | None = None
+    phoneValidationStatus: users_models.PhoneValidationStatusType | None = None
+    postalCode: str | None = None
     roles: list[users_models.UserRole]
     isImpersonated: bool = False
 
-    class Config:
-        json_encoders = {datetime: format_into_utc_date}
-        alias_generator = to_camel
-        orm_mode = True
-
     @classmethod
-    def from_orm(cls, user: users_models.User) -> "SharedCurrentUserResponseModel":
-        user.hasUserOfferer = user.has_user_offerer
-        user.isImpersonated = flask.session.get("internal_admin_email") is not None
-        result = super().from_orm(user)
-        return result
+    def instantiate_model(cls, user: users_models.User, is_impersonated: bool) -> "SharedCurrentUserResponseModel":
+        instance = cls.model_validate(user)
+        instance.isImpersonated = is_impersonated
+        return instance
 
 
-class ChangeProEmailBody(BaseModel):
+class ChangeProEmailBody(HttpBodyModel):
     token: str
 
 
-class ChangePasswordBodyModel(BaseModel):
-    oldPassword: str
-    newPassword: str
-    newConfirmationPassword: str
+class ChangePasswordBodyModel(HttpBodyModel):
+    old_password: str
+    new_password: str
+    new_confirmation_password: str
 
 
-class ProFlagsQueryModel(BaseModel):
+class ProFlagsQueryModel(HttpQueryParamsModel):
     firebase: dict
 
 
-class SubmitReviewRequestModel(BaseModel):
-    userSatisfaction: str
-    userComment: str
-    offererId: int
+class SubmitReviewRequestModel(HttpBodyModel):
+    user_satisfaction: str
+    user_comment: str
+    offerer_id: int
     location: str
-    pageTitle: str
-
-
-class GdprUserSerializer(BaseModel):
-    activity: str | None
-    address: str | None
-    civility: str | None
-    city: str | None
-    culturalSurveyFilledDate: datetime | None
-    departementCode: str | None
-    dateCreated: datetime
-    dateOfBirth: datetime | None
-    email: str
-    firstName: str | None
-    isActive: bool
-    isEmailValidated: bool | None
-    lastName: str | None
-    marriedName: str | None = pydantic_v1.Field(alias="married_name")
-    postalCode: str | None
-    schoolType: users_models.SchoolTypeEnum | None
-    validatedBirthDate: date | None
-
-    class Config:
-        orm_mode = True
-
-
-class GdprChronicleData(BaseModel):
-    age: int | None
-    city: str | None
-    content: str
-    dateCreated: datetime
-    ean: str | None
-    allocineId: str | None
-    visa: str | None
-    productIdentifier: str
-    productIdentifierType: str
-    email: str
-    firstName: str | None
-    isIdentityDiffusible: bool
-    isSocialMediaDiffusible: bool
-    productName: str | None = None
-
-    class Config:
-        orm_mode = True
-
-
-class GdprAccountUpdateRequests(BaseModel):
-    allConditionsChecked: bool
-    birthDate: date | None
-    dateCreated: datetime
-    dateLastInstructorMessage: datetime | None
-    dateLastStatusUpdate: datetime | None
-    dateLastUserMessage: datetime | None
-    email: str | None
-    firstName: str | None
-    lastName: str | None
-    newEmail: str | None
-    newFirstName: str | None
-    newLastName: str | None
-    newPhoneNumber: str | None
-    oldEmail: str | None
-    status: dms_models.GraphQLApplicationStates
-    updateTypes: list[str]
-
-    class Config:
-        orm_mode = True
-
-
-class GdprMarketing(BaseModel):
-    marketingEmails: bool
-    marketingNotifications: bool
-
-
-class GdprLoginDeviceHistorySerializer(BaseModel):
-    dateCreated: datetime
-    deviceId: str
-    location: str | None
-    source: str | None
-    os: str | None
-
-    class Config:
-        orm_mode = True
-
-
-class GdprEmailHistory(BaseModel):
-    dateCreated: datetime
-    newEmail: str | None
-    oldEmail: str
-
-
-class GdprDepositSerializer(BaseModel):
-    dateCreated: datetime
-    dateUpdated: datetime | None
-    expirationDate: datetime | None
-    amount: float | Decimal
-    source: str
-    type: str
-
-
-class GdprBookingSerializer(BaseModel):
-    cancellationDate: datetime | None
-    dateCreated: datetime
-    dateUsed: datetime | None
-    quantity: int
-    amount: float | Decimal
-    status: str
-    name: str
-    venue: str
-    offerer: str
-
-
-class GdprActionHistorySerializer(BaseModel):
-    actionDate: datetime | None
-    actionType: history_models.ActionType
-
-    class Config:
-        orm_mode = True
-
-
-class GdprBeneficiaryValidation(BaseModel):
-    dateCreated: datetime
-    eligibilityType: str | None
-    status: str | None
-    type: str
-    updatedAt: datetime | None
-
-
-class GdprInternal(BaseModel):
-    user: GdprUserSerializer
-    marketing: GdprMarketing
-    loginDevices: list[GdprLoginDeviceHistorySerializer]
-    emailsHistory: list[GdprEmailHistory]
-    actionsHistory: list[GdprActionHistorySerializer]
-    beneficiaryValidations: list[GdprBeneficiaryValidation]
-    deposits: list[GdprDepositSerializer]
-    bookings: list[GdprBookingSerializer]
-    chronicles: list[GdprChronicleData]
-    accountUpdateRequests: list[GdprAccountUpdateRequests]
-
-
-class GdprExternal(BaseModel):
-    brevo: dict
-
-
-class GdprDataContainer(BaseModel):
-    generationDate: datetime
-    internal: GdprInternal
-    external: GdprExternal
+    page_title: str

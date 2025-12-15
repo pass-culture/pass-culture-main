@@ -1273,7 +1273,7 @@ class DomainsCreditTest:
 
 class CreateProUserTest:
     data = {
-        "email": "prouser@example.com",
+        "email": "prouser@Example.com",  # should be sanitize
         "firstName": "Jean",
         "lastName": "Test",
         "password": "P@ssword12345",

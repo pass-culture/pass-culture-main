@@ -50,6 +50,7 @@ def before_handler(
         "value_error.decimal.not_finite": "La valeur n'est pas un nombre décimal valide",
         # pydantic V2
         "missing": "Ce champ est obligatoire",
+        "string_type": "Ce champ doit être une chaîne de caractères",
         "int_parsing": "Saisissez un entier valide",
         "float_parsing": "Saisissez un nombre valide",
         "greater_than_equal": "Saisissez un nombre supérieur ou égal à {ge}",
