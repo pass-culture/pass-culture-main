@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OfferImage } from './OfferImage';
+import type { OfferImageV2 } from './OfferImageV2';
 export type HeadLineOfferResponseModel = {
   id: number;
-  image?: OfferImage | null;
+  image?: (OfferImageV2 | null);
   name: string;
   venueId: number;
 };

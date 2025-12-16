@@ -1915,7 +1915,7 @@ export class DefaultService {
   ): CancelablePromise<CreateThumbnailResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
-      url: '/offers/thumbnails/',
+      url: '/offers/thumbnails',
       formData: formData,
       mediaType: 'multipart/form-data',
       errors: {

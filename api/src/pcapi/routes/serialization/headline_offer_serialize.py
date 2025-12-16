@@ -1,31 +1,21 @@
-from pcapi.core.offers.models import OfferImage
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class HeadLineOfferResponseModel(BaseModel):
+class OfferImageV2(HttpBodyModel):
+    url: str
+    credit: str | None = None
+
+
+class HeadLineOfferResponseModel(HttpBodyModel):
     id: int
     name: str
-    image: OfferImage | None
+    image: OfferImageV2 | None = None
     venue_id: int
 
-    class Config:
-        orm_mode = True
-        alias_generator = to_camel
-        extra = "forbid"
 
-
-class HeadlineOfferCreationBodyModel(BaseModel):
+class HeadlineOfferCreationBodyModel(HttpBodyModel):
     offer_id: int
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
-
-class HeadlineOfferDeleteBodyModel(BaseModel):
+class HeadlineOfferDeleteBodyModel(HttpBodyModel):
     offerer_id: int
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"

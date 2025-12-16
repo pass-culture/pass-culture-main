@@ -35,16 +35,13 @@ def offerer_fixture(offer):
 @pytest.mark.usefixtures("db_session")
 class CreateThumbnailWithoutImageTest:
     def test_no_image(self, client, offer, offerer):
-        # given
         client = client.with_session_auth(email="user@example.com")
         data = {
             "offerId": offer.id,
         }
 
-        # when
         response = client.post("/offers/thumbnails", form=data)
 
-        # Then
         assert response.status_code == 400
         assert response.json == {"errors": ["Nous n'avons pas réceptionné l'image, merci d'essayer à nouveau."]}
 
@@ -52,7 +49,6 @@ class CreateThumbnailWithoutImageTest:
 @pytest.mark.usefixtures("db_session")
 class CreateThumbnailFromFileTest:
     def test_import_from_file(self, client, offer, offerer):
-        # given
         client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
         data = {
@@ -61,10 +57,8 @@ class CreateThumbnailFromFileTest:
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
-        # when
         response = client.post("/offers/thumbnails", form=data)
 
-        # then
         assert response.status_code == 201
         mediation = db.session.query(Mediation).one()
         assert mediation.thumbCount == 1
@@ -75,7 +69,6 @@ class CreateThumbnailFromFileTest:
         }
 
     def test_wrong_content_type_from_file(self, client, offer, offerer):
-        # given
         client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_fake_jpg.jpg").read_bytes()
         data = {
@@ -83,16 +76,13 @@ class CreateThumbnailFromFileTest:
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
-        # when
         response = client.post("/offers/thumbnails", form=data)
 
-        # then
         assert response.status_code == 400
         assert response.json == {"errors": ["Le fichier fourni n'est pas une image valide"]}
 
     @mock.patch("pcapi.core.offers.validation.check_image")
     def test_content_too_large(self, mock_check_image, client, offer, offerer):
-        # given
         mock_check_image.side_effect = exceptions.FileSizeExceeded(max_size=10_000_000)
         client = client.with_session_auth(email="user@example.com")
         thumb = (IMAGES_DIR / "mouette_full_size.jpg").read_bytes()
@@ -101,10 +91,8 @@ class CreateThumbnailFromFileTest:
             "thumb": (BytesIO(thumb), "image.jpg"),
         }
 
-        # when
         response = client.post("/offers/thumbnails", form=data)
 
-        # then
         assert response.status_code == 400
         assert response.json == {"errors": ["Utilisez une image dont le poids est inférieur à 10.0 MB"]}
 
@@ -118,7 +106,6 @@ class CreateThumbnailFromFileTest:
 
         response = client.post("/offers/thumbnails", form=data)
 
-        # then
         assert response.status_code == 400
         assert response.json["code"] == "BAD_IMAGE_RATIO"
         assert response.json["extra"] == "Bad image ratio: expected 0.6666666666666666, found 1.4989293361884368"
@@ -133,6 +120,5 @@ class CreateThumbnailFromFileTest:
 
         response = client.post("/offers/thumbnails", form=data)
 
-        # then
         assert response.status_code == 404
         assert response.json["global"] == ["Aucun objet ne correspond à cet identifiant dans notre base de données"]

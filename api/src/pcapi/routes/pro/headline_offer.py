@@ -71,7 +71,7 @@ def upsert_headline_offer(
         raise api_errors.ApiErrors(
             errors={"global": ["Une offre doit avoir une image pour être mise à la une"]},
         )
-    return headline_offer_serialize.HeadLineOfferResponseModel.from_orm(headline_offer.offer)
+    return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(headline_offer.offer)
 
 
 @private_api.route("/offers/delete_headline", methods=["POST"])

@@ -2,9 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type CreateThumbnailResponseModel = {
+export type OfferImageV2 = {
   credit?: (string | null);
-  id: number;
   url: string;
 };
 
