@@ -1,33 +1,19 @@
-from pydantic.v1.class_validators import validator
-from pydantic.v1.main import BaseModel
+import typing
 
-from pcapi.models.api_errors import ApiErrors
-from pcapi.serialization.utils import validate_not_empty_string_when_provided
+import pydantic as pydantic_v2
 
-
-class ResetPasswordBodyModel(BaseModel):
-    email: str
-    token: str
-
-    @validator("email")
-    def validate_email_not_empty(cls, email: str) -> str | None:  # typing: ignore
-        if not email or email.isspace():
-            errors = ApiErrors()
-            errors.add_error("email", "L'email renseigné est vide")
-            raise errors
-
-        return email
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class NewPasswordBodyModel(BaseModel):
-    token: str
-    newPassword: str
-
-    _validate_token = validate_not_empty_string_when_provided("token")
-    _validate_newPassword = validate_not_empty_string_when_provided("newPassword")
+class ResetPasswordBodyModel(HttpBodyModel):
+    email: pydantic_v2.EmailStr
+    token: typing.Annotated[str, pydantic_v2.Field(min_length=1)]
 
 
-class CheckTokenBodyModel(BaseModel):
-    token: str
+class NewPasswordBodyModel(HttpBodyModel):
+    token: typing.Annotated[str, pydantic_v2.Field(min_length=1)]
+    newPassword: typing.Annotated[str, pydantic_v2.Field(min_length=1)]
 
-    _validate_token = validate_not_empty_string_when_provided("token")
+
+class CheckTokenBodyModel(HttpBodyModel):
+    token: typing.Annotated[str, pydantic_v2.Field(min_length=1)]

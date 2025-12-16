@@ -13,10 +13,11 @@ from pcapi.utils import date as date_utils
 from pcapi.utils.date import format_into_utc_date
 
 
+pytestmark = pytest.mark.usefixtures("db_session")
+
+
 class Returns200Test:
-    @pytest.mark.usefixtures("db_session")
     def when_account_is_known(self, client, caplog):
-        # given
         now = date_utils.get_naive_utc_now()
         user = users_factories.BeneficiaryGrant18Factory(
             civility=users_models.GenderEnum.M.value,
@@ -33,12 +34,11 @@ class Returns200Test:
 
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
-        # when
         with caplog.at_level(logging.INFO):
             response = client.post("/users/signin", json=data)
 
         db.session.refresh(user)
-        # then
+
         assert response.status_code == 200
         assert not any("password" in field.lower() for field in response.json)
         assert response.json == {
@@ -65,9 +65,7 @@ class Returns200Test:
         assert user.lastConnectionDate > now
         assert "Failed authentication attempt" not in caplog.messages
 
-    @pytest.mark.usefixtures("db_session")
     def when_previous_account_still_logged_and_new_user_is_known(self, client, caplog):
-        # given
         user1 = users_factories.ProFactory()
         user2 = users_factories.BeneficiaryGrant18Factory()
 
@@ -76,41 +74,30 @@ class Returns200Test:
         client.with_session_auth(email=user1.email)
         assert db.session.query(users_models.UserSession).filter_by(userId=user1.id).count() == 1
 
-        # when
         response = client.post("/users/signin", json=data)
 
-        # then
         assert response.status_code == 200
         assert db.session.query(users_models.UserSession).filter_by(userId=user1.id).count() == 0
 
-    @pytest.mark.usefixtures("db_session")
     def when_user_has_no_departement_code(self, client):
-        # given
         user = users_factories.UserFactory(email="USER@example.COM")
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
 
-        # when
         response = client.post("/users/signin", json=data)
 
-        # then
         assert response.status_code == 200
 
         session = db.session.query(users_models.UserSession).filter_by(userId=user.id).first()
         assert session is not None
 
-    @pytest.mark.usefixtures("db_session")
     def when_account_is_known_with_trailing_spaces_in_email(self, client):
-        # given
         user = users_factories.UserFactory(email="user@example.com")
         data = {"identifier": "  user@example.com  ", "password": user.clearTextPassword, "captchaToken": "token"}
 
-        # when
         response = client.post("/users/signin", json=data)
 
-        # then
         assert response.status_code == 200
 
-    @pytest.mark.usefixtures("db_session")
     def when_missing_recaptcha_token(self, client):
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": user.clearTextPassword}
@@ -120,7 +107,6 @@ class Returns200Test:
         assert response.status_code == 400
         assert response.json == {"captchaToken": "Ce champ est obligatoire"}
 
-    @pytest.mark.usefixtures("db_session")
     def test_with_user_offerer(self, client):
         user_offerer = offerers_factories.UserOffererFactory(
             user__lastConnectionDate=date_utils.get_naive_utc_now(),
@@ -166,7 +152,6 @@ class Returns200Test:
 
 
 class Returns401Test:
-    @pytest.mark.usefixtures("db_session")
     def when_identifier_is_missing(self, client, caplog):
         user = users_factories.UserFactory()
         data = {"identifier": None, "password": user.clearTextPassword, "captchaToken": "token"}
@@ -175,10 +160,9 @@ class Returns401Test:
             response = client.post("/users/signin", json=data)
 
         assert response.status_code == 400
-        assert response.json["identifier"] == ["Ce champ doit être une chaîne de caractères"]
+        assert response.json["identifier"] == ["Saisissez une chaîne de caractères valide"]
         assert "Failed authentication attempt" not in caplog.messages
 
-    @pytest.mark.usefixtures("db_session")
     def when_identifier_is_incorrect(self, client, caplog):
         user = users_factories.UserFactory()
         data = {"identifier": "random.email@test.com", "password": user.clearTextPassword, "captchaToken": "token"}
@@ -190,7 +174,6 @@ class Returns401Test:
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
         assert "Failed authentication attempt" in caplog.messages
 
-    @pytest.mark.usefixtures("db_session")
     def when_password_is_missing(self, client):
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": None, "captchaToken": "token"}
@@ -198,9 +181,8 @@ class Returns401Test:
         response = client.post("/users/signin", json=data)
 
         assert response.status_code == 400
-        assert response.json["password"] == ["Ce champ doit être une chaîne de caractères"]
+        assert response.json["password"] == ["Saisissez une chaîne de caractères valide"]
 
-    @pytest.mark.usefixtures("db_session")
     def when_password_is_incorrect(self, client, caplog):
         user = users_factories.UserFactory()
         data = {"identifier": user.email, "password": "wr0ng_p455w0rd", "captchaToken": "token"}
@@ -212,7 +194,6 @@ class Returns401Test:
         assert response.json["identifier"] == ["Identifiant ou mot de passe incorrect"]
         assert "Failed authentication attempt" in caplog.messages
 
-    @pytest.mark.usefixtures("db_session")
     def when_account_is_not_validated(self, client):
         user = users_factories.UserFactory(isEmailValidated=False)
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
@@ -222,7 +203,6 @@ class Returns401Test:
         assert response.status_code == 401
         assert response.json["identifier"] == ["Ce compte n'est pas validé."]
 
-    @pytest.mark.usefixtures("db_session")
     def when_account_is_an_admin_account(self, client):
         user = users_factories.AdminFactory()
         data = {"identifier": user.email, "password": user.clearTextPassword, "captchaToken": "token"}
@@ -232,7 +212,6 @@ class Returns401Test:
         assert response.status_code == 401
         assert response.json["identifier"] == ["Vous ne pouvez pas vous connecter avec un compte ADMIN."]
 
-    @pytest.mark.usefixtures("db_session")
     def test_session_timeout(self, client):
         import time_machine
         from dateutil.relativedelta import relativedelta

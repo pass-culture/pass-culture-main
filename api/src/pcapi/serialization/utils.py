@@ -35,7 +35,7 @@ def before_handler(
 
     This handler is automatically called through the ``spectree_serialize()`` decorator.
     """
-    error_messages = {
+    error_messages_by_error_type = {
         "type_error.decimal": "Saisissez un nombre valide",
         "type_error.integer": "Saisissez un nombre valide",
         "type_error.none.not_allowed": "Ce champ ne peut pas être nul",
@@ -50,17 +50,26 @@ def before_handler(
         "value_error.decimal.not_finite": "La valeur n'est pas un nombre décimal valide",
         # pydantic V2
         "missing": "Ce champ est obligatoire",
-        "string_type": "Ce champ doit être une chaîne de caractères",
         "int_parsing": "Saisissez un entier valide",
         "float_parsing": "Saisissez un nombre valide",
+        "string_type": "Saisissez une chaîne de caractères valide",
+        "string_too_short": "Cette chaîne de caractères doit avoir une taille minimum de {min_length} caractères",
         "greater_than_equal": "Saisissez un nombre supérieur ou égal à {ge}",
+    }
+
+    # pydantic V2 is not precise enough on error_types so for some errors
+    # we must use the message for translation mapping
+    error_messages_by_message = {
+        "value is not a valid email address: An email address must have an @-sign.": "Saisissez un email valide",
     }
 
     if pydantic_error and pydantic_error.errors():
         api_errors = ApiErrors()
         for error in pydantic_error.errors():
-            if error["type"] in error_messages:
-                message = error_messages[error["type"]].format(**error.get("ctx", {}))
+            if error["type"] in error_messages_by_error_type:
+                message = error_messages_by_error_type[error["type"]].format(**error.get("ctx", {}))
+            elif error["msg"] in error_messages_by_message:
+                message = error_messages_by_message[error["msg"]].format(**error.get("ctx", {}))
             else:
                 message = error["msg"]
 
@@ -90,13 +99,6 @@ def public_api_before_handler(
         raise api_errors
 
 
-def check_string_is_not_empty(string: str) -> str:
-    if not string or string.isspace():
-        raise pydantic_v1.MissingError()
-
-    return string
-
-
 # No functools.partial here as it has no __name__ and therefore is not compatible with pydantic
 def check_string_length_wrapper(length: int) -> typing.Callable:
     def check_string_length(string: str) -> str:
@@ -112,10 +114,6 @@ def string_to_boolean(string: str) -> bool | None:
         return {"true": True, "false": False}[string]
     except KeyError:
         raise ValueError("La valeur reçu doit être soit 'true' soit 'false'")
-
-
-def validate_not_empty_string_when_provided(field_name: str) -> classmethod:
-    return pydantic_v1.validator(field_name, pre=True, allow_reuse=True)(check_string_is_not_empty)
 
 
 def string_to_boolean_field(field_name: str) -> classmethod:
