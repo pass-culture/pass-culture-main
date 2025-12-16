@@ -1,5 +1,7 @@
 import datetime
 
+import pytz
+
 from pcapi import settings
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
@@ -259,7 +261,9 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
 
     # case 5: deposit for current year, 2 periods, first period is passed
     institution = next(institutions_iter)
-    passed_period_end = datetime.datetime(2025, 10, 31, 23, 59, 59)
+    PARIS_TZ = pytz.timezone(date_utils.METROPOLE_TIMEZONE)
+    passed_period_end = PARIS_TZ.localize(datetime.datetime(2025, 10, 31, 23, 59, 59))
+    passed_period_next_start = PARIS_TZ.localize(datetime.datetime(2025, 11, 1))
     deposits.extend(
         [
             educational_factories.EducationalDepositFactory.create(
@@ -271,7 +275,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=current_year,
-                period=make_timerange(start=datetime.datetime(2025, 11, 1), end=current_year.expirationDate),
+                period=make_timerange(start=passed_period_next_start, end=current_year.expirationDate),
                 amount=7000,
             ),
         ]
@@ -291,7 +295,7 @@ def create_institutions_with_deposits_by_period() -> list[educational_models.Edu
             educational_factories.EducationalDepositFactory.create(
                 educationalInstitution=institution,
                 educationalYear=current_year,
-                period=make_timerange(start=datetime.datetime(2025, 11, 1), end=current_year.expirationDate),
+                period=make_timerange(start=passed_period_next_start, end=current_year.expirationDate),
                 amount=0,
             ),
         ]
