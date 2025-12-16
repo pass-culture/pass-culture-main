@@ -1247,7 +1247,7 @@ export class DefaultService {
       method: 'GET',
       url: '/get-statistics',
       query: {
-        'venue_ids': venueIds,
+        'venueIds': venueIds,
       },
       errors: {
         403: `Forbidden`,

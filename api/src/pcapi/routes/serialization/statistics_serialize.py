@@ -1,16 +1,16 @@
-import pydantic.v1 as pydantic_v1
+import pydantic as pydantic_v2
 
 from pcapi.connectors.clickhouse.queries import CollectiveRevenue
 from pcapi.connectors.clickhouse.queries import IndividualRevenue
 from pcapi.connectors.clickhouse.queries import TotalRevenue
-from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
-class StatisticsQueryModel(BaseModel):
+class StatisticsQueryModel(HttpQueryParamsModel):
     venue_ids: list[int] = []
 
-    @pydantic_v1.validator("venue_ids", pre=True)
+    @pydantic_v2.field_validator("venue_ids", mode="before")
     def parse_venue_ids(cls, venue_ids: str | int | list[int]) -> list[int]:
         if isinstance(venue_ids, str):
             return [int(venue_ids)]
@@ -19,13 +19,10 @@ class StatisticsQueryModel(BaseModel):
         return venue_ids
 
 
-class AggregatedRevenueModel(ConfiguredBaseModel):
+class AggregatedRevenueModel(HttpBodyModel):
     revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue
-    expected_revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue | None
+    expected_revenue: CollectiveRevenue | IndividualRevenue | TotalRevenue | None = None
 
 
-class StatisticsModel(ConfiguredBaseModel):
+class StatisticsModel(HttpBodyModel):
     income_by_year: dict[str, AggregatedRevenueModel | dict[None, None]]
-
-    class Config:
-        extra = "forbid"

@@ -1,18 +1,21 @@
-import pydantic.v1 as pydantic_v1
+import dataclasses
 
 from pcapi.connectors.clickhouse.queries.base import BaseQuery
+from pcapi.connectors.clickhouse.queries.base import ClickHouseBaseModel
 
 
-class CountBookings(pydantic_v1.BaseModel):
+class CountBookings(ClickHouseBaseModel):
     individual_bookings: int
     collective_bookings: int
 
-    class Config:
-        extra = "forbid"
-        orm_mode = True
+
+@dataclasses.dataclass
+class _Row:
+    individual_bookings: int
+    collective_bookings: int
 
 
-class CountBookingsQuery(BaseQuery[CountBookings]):
+class CountBookingsQuery(BaseQuery[CountBookings, _Row]):
     @property
     def model(self) -> type[CountBookings]:
         return CountBookings

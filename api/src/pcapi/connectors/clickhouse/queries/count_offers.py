@@ -1,20 +1,25 @@
-import pydantic.v1 as pydantic_v1
+import dataclasses
 
 from pcapi.connectors.clickhouse.queries.base import BaseQuery
+from pcapi.connectors.clickhouse.queries.base import ClickHouseBaseModel
 
 
-class CountOffers(pydantic_v1.BaseModel):
+class CountOffers(ClickHouseBaseModel):
     active_individual_offers: int
     inactive_individual_offers: int
     active_collective_offers: int
     inactive_collective_offers: int
 
-    class Config:
-        extra = "forbid"
-        orm_mode = True
+
+@dataclasses.dataclass
+class _Row:
+    active_individual_offers: int
+    inactive_individual_offers: int
+    active_collective_offers: int
+    inactive_collective_offers: int
 
 
-class CountOffersQuery(BaseQuery[CountOffers]):
+class CountOffersQuery(BaseQuery[CountOffers, _Row]):
     @property
     def model(self) -> type[CountOffers]:
         return CountOffers

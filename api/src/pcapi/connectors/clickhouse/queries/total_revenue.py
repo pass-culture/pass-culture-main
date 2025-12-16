@@ -1,19 +1,19 @@
-from decimal import Decimal
-
-import pydantic.v1 as pydantic_v1
+import dataclasses
 
 from pcapi.connectors.clickhouse.queries.base import BaseQuery
+from pcapi.connectors.clickhouse.queries.base import ClickHouseBaseModel
 
 
-class TotalExpectedRevenueModel(pydantic_v1.BaseModel):
-    expected_revenue: Decimal
-
-    class Config:
-        extra = "forbid"
-        orm_mode = True
+class TotalExpectedRevenueModel(ClickHouseBaseModel):
+    expected_revenue: float
 
 
-class TotalExpectedRevenueQuery(BaseQuery[TotalExpectedRevenueModel]):
+@dataclasses.dataclass
+class _Row:
+    expected_revenue: float
+
+
+class TotalExpectedRevenueQuery(BaseQuery[TotalExpectedRevenueModel, _Row]):
     @property
     def model(self) -> type[TotalExpectedRevenueModel]:
         return TotalExpectedRevenueModel

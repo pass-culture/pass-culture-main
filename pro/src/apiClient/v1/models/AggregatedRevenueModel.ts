@@ -6,7 +6,7 @@ import type { CollectiveRevenue } from './CollectiveRevenue';
 import type { IndividualRevenue } from './IndividualRevenue';
 import type { TotalRevenue } from './TotalRevenue';
 export type AggregatedRevenueModel = {
-  expectedRevenue?: (CollectiveRevenue | IndividualRevenue | TotalRevenue) | null;
+  expectedRevenue?: (CollectiveRevenue | IndividualRevenue | TotalRevenue | null);
   revenue: (CollectiveRevenue | IndividualRevenue | TotalRevenue);
 };
 

@@ -3,6 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type StatisticsQueryModel = {
-  venue_ids?: Array<number>;
+  venueIds?: Array<number>;
 };
 
