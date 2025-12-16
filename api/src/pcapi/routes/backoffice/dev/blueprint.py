@@ -6,6 +6,7 @@ from urllib.parse import urlencode
 from flask import flash
 from flask import redirect
 from flask import render_template
+from flask import request
 from flask import url_for
 from markupsafe import Markup
 from sqlalchemy.exc import IntegrityError
@@ -13,7 +14,9 @@ from werkzeug.exceptions import NotFound
 
 from pcapi import settings
 from pcapi.core import token as token_utils
+from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
@@ -88,8 +91,16 @@ def get_generated_user() -> utils.BackofficeResponse:
         birth_date = user.dateOfBirth.date() if user.dateOfBirth else None
         id_document_number = f"{user.id:012}"
         ubble_form = forms.UbbleConfigurationForm(birth_date=birth_date, id_document_number=id_document_number)
+
+        quotient_familial_form = forms.QuotientFamilialConfigurationForm(
+            last_name=user.lastName,
+            first_names=user.firstName,
+            birth_date=user.validatedBirthDate,
+            gender=user.gender.value if user.gender else None,
+        )
     else:
         ubble_form = forms.UbbleConfigurationForm()
+        quotient_familial_form = forms.QuotientFamilialConfigurationForm()
 
     return render_template(
         "dev/users_generator.html",
@@ -100,6 +111,7 @@ def get_generated_user() -> utils.BackofficeResponse:
         form=form,
         dst=url_for("backoffice_web.dev.generate_user"),
         ubble_configuration_form=ubble_form,
+        quotient_familial_form=quotient_familial_form,
     )
 
 
@@ -250,7 +262,7 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     if not form.validate():
         mark_transaction_as_invalid()
         flash(utils.build_form_error_msg(form), "warning")
-        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=303)
+        return redirect(request.referrer or url_for("backoffice_web.dev.get_generated_user"), code=303)
 
     # Ubble response codes can be tested by inserting the ones we want in the external applicant id of the Ubble
     # applicant. See https://docs.ubble.ai/#section/Testing/Declined-verification-on-retry-after-checks-inconclusive
@@ -277,6 +289,61 @@ def configure_ubble_v2_response(user_id: int) -> utils.BackofficeResponse:
     db.session.flush()
 
     flash("La réponse d'Ubble v2 a été configurée pour cet utilisateur", "success")
+
+    token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
+    params: dict[str, typing.Any] = {}
+    if token:
+        params["accessToken"] = token.encoded_token
+        expiration_date = (
+            token.get_expiration_date_from_token()
+            or date_utils.get_naive_utc_now() + users_constants.EMAIL_VALIDATION_TOKEN_LIFE_TIME
+        )
+        params["expirationTimestamp"] = str(int(expiration_date.timestamp()))
+        params["email"] = user.email
+    return redirect(url_for("backoffice_web.dev.get_generated_user", userId=user.id, **params), code=303)
+
+
+@dev_blueprint.route("/<int:user_id>/api_particulier/quotient_familial/configuration", methods=["POST"])
+@utils.custom_login_required(redirect_to=".home")
+def configure_api_quotient_familial_response(user_id: int) -> utils.BackofficeResponse:
+    user = _get_user_if_exists(str(user_id))
+    if user is None:
+        mark_transaction_as_invalid()
+        flash(f"L'utilisateur {user_id} n'a pas été trouvé", "warning")
+        return redirect(url_for("backoffice_web.dev.get_generated_user"), code=404)
+
+    form = forms.QuotientFamilialConfigurationForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer or url_for("backoffice_web.dev.get_generated_user"), code=303)
+
+    quotient_familial_config_fraud_check = subscription_models.BeneficiaryFraudCheck(
+        user=user,
+        eligibilityType=user.eligibility,
+        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+        thirdPartyId=f"qf-bonus-credit-config-{user.id}",
+        status=subscription_models.FraudCheckStatus.MOCK_CONFIG,
+        resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory.build(
+            http_status_code=form.https_status_code.data,
+            quotient_familial=subscription_factories.QuotientFamilialContentFactory(
+                value=form.quotient_familial_value.data
+            ),
+            children=[
+                bonus_schemas.QuotientFamilialChild(
+                    last_name=form.last_name.data,
+                    common_name=form.common_name.data,
+                    first_names=[first_name.strip() for first_name in form.first_names.data.split(",")],
+                    birth_date=form.birth_date.data,
+                    gender=users_models.GenderEnum(form.gender.data),
+                )
+            ],
+        ).model_dump(),
+    )
+    db.session.add(quotient_familial_config_fraud_check)
+    db.session.flush()
+
+    flash("La réponse de l'API Particulier a été configurée pour cet utilisateur", "success")
 
     token = token_utils.Token.get_token(token_utils.TokenType.SIGNUP_EMAIL_CONFIRMATION, user.id)
     params: dict[str, typing.Any] = {}

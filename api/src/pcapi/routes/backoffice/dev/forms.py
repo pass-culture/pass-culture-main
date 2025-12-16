@@ -3,8 +3,10 @@ import datetime
 import wtforms
 from flask_wtf import FlaskForm
 
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
+from pcapi.core.users import models as users_models
 from pcapi.core.users.generator import GeneratedIdProvider
 from pcapi.core.users.generator import GeneratedSubscriptionStep
 from pcapi.routes.backoffice.forms import fields
@@ -100,4 +102,21 @@ class UbbleConfigurationForm(utils.PCForm):
         "Code de réponse intermédiaire (optionnel)",
         choices=_get_ubble_intermediate_code_choices(),
         validators=(wtforms.validators.Optional(),),
+    )
+
+
+class QuotientFamilialConfigurationForm(utils.PCForm):
+    https_status_code = fields.PCSelectField(
+        "Parent trouvé", choices=[(200, "Parent trouvé"), (404, "Parent non-trouvé")], default=200
+    )
+    quotient_familial_value = fields.PCIntegerField(
+        "Valeur du Quotient Familial", default=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD
+    )
+    last_name = fields.PCStringField("Nom de famille de l'enfant")
+    common_name = fields.PCOptStringField("Nom d'usage")
+    first_names = fields.PCStringField("Prénoms de l'enfant, séparés par une virgule")
+    birth_date = fields.PCDateField("Date de naissance")
+    gender = fields.PCSelectField(
+        "Genre de l'enfant",
+        choices=[(users_models.GenderEnum.F.value, "Femme"), (users_models.GenderEnum.M.value, "Homme")],
     )

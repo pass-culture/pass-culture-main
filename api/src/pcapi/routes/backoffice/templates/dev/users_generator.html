@@ -59,6 +59,7 @@
                 </a>
               {% endif %}
               {{ build_modal_form("configure-ubble", url_for("backoffice_web.dev.configure_ubble_v2_response", user_id=user.id) , ubble_configuration_form, "Configurer les réponses d'Ubble v2", "Configurer les réponses d'Ubble v2", "Enregistrer") }}
+              {{ build_modal_form("configure-quotient-familial", url_for("backoffice_web.dev.configure_api_quotient_familial_response", user_id=user.id) , quotient_familial_form, "Configurer les réponses de l'API Quotient Familial", "Configurer les réponses de l'API Quotient Familial", "Enregistrer") }}
             </div>
             <hr>
             <div class="d-flex justify-content-start">

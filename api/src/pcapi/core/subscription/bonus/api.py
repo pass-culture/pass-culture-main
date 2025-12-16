@@ -16,8 +16,6 @@ from pcapi.utils.transaction_manager import atomic
 
 logger = logging.getLogger(__name__)
 
-QUOTIENT_FAMILIAL_THRESHOLD = 3000
-
 
 def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
     """
