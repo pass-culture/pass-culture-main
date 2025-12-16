@@ -551,3 +551,7 @@ class PCImageField(PCFileField):
                     f"Image trop petite, utilisez une image plus grande (supérieure à {MIN_IMAGE_WIDTH}px par {MIN_IMAGE_HEIGHT}px)"
                 )
         super().pre_validate(form)
+
+
+class PCURLField(PCStringField):
+    validators = [validators.Optional(), validators.URL(message="L'URL fournie n'est pas valide.")]

@@ -59,7 +59,26 @@
             {{ artist.name }}
           {% endcall %}
           {% call description_detail_horizontal("Description") %}
-            {{ artist.description | empty_string_if_null | nl2br }}
+            {{ artist.description | nl2br if artist.description else '-' }}
+          {% endcall %}
+          {% set biography_label %}
+            Biographie
+            {% if artist.biography %}
+              <div class="fw-normal text-muted fst-italic mt-1"
+                   style="font-size: 0.75rem;
+                          line-height: 1.1">
+                <i class="bi bi-stars"></i> Contenu généré par IA à partir de Wikipédia
+              </div>
+            {% endif %}
+          {% endset %}
+          {% call description_detail_horizontal(biography_label | safe) %}
+            {{ artist.biography | nl2br if artist.biography else '-' }}
+          {% endcall %}
+          {% call description_detail_horizontal("ID Wikidata") %}
+            {{ links.build_wikidata_external_link(artist.wikidata_id) or '-' }}
+          {% endcall %}
+          {% call description_detail_horizontal("URL Wikipédia") %}
+            {{ links.build_wikipedia_external_link(artist.wikipedia_url) or '-' }}
           {% endcall %}
           <h5>Informations sur l'image</h5>
           {% call description_detail_horizontal("Auteur") %}

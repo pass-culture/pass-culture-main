@@ -39,7 +39,13 @@ class GetArtistDetailsTest(GetEndpointHelper):
 
     def test_get_artist_details_success(self, authenticated_client):
         product1 = offers_factories.ProductFactory.create()
-        artist = artist_factories.ArtistFactory.create(description="A famous artist.", products=[product1])
+        artist = artist_factories.ArtistFactory.create(
+            description="A famous artist.",
+            biography="Born in a small town.",
+            wikidata_id="Q12345",
+            wikipedia_url="https://fr.wikipedia.org/wiki/Artist",
+            products=[product1],
+        )
         artist_factories.ArtistAliasFactory.create(artist=artist, artist_alias_name="Alias 1")
 
         url = url_for(self.endpoint, artist_id=artist.id, _external=True)
@@ -50,6 +56,9 @@ class GetArtistDetailsTest(GetEndpointHelper):
         descriptions = html_parser.extract_descriptions(response.data)
         assert descriptions["Artist ID"] == artist.id
         assert "Alias 1" in descriptions["Alias"]
+        assert "Born in a small town." in descriptions["Biographie Contenu généré par IA à partir de Wikipédia"]
+        assert "Q12345" in descriptions["ID Wikidata"]
+        assert "https://fr.wikipedia.org/wiki/Artist" in descriptions["URL Wikipédia"]
 
 
 class EditArtistButtonTest(button_helpers.ButtonHelper):
@@ -89,8 +98,21 @@ class PostArtistEditTest(PostEndpointHelper):
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     def test_edit_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
-        artist = artist_factories.ArtistFactory.create(name="Old Name")
-        form_data = {"name": "New Name", "description": "New Description"}
+        artist = artist_factories.ArtistFactory.create(
+            name="Old Name",
+            description="Old Desc",
+            biography="Old Bio",
+            wikidata_id="Q111",
+            wikipedia_url="https://fr.wikipedia.org/wiki/Old_Url",
+        )
+
+        form_data = {
+            "name": "New Name",
+            "description": "New Description",
+            "biography": "New Biography Content",
+            "wikidata_id": "Q99999",
+            "wikipedia_url": "https://fr.wikipedia.org/wiki/New_Url",
+        }
 
         response = self.post_to_endpoint(
             authenticated_client, artist_id=artist.id, form=form_data, follow_redirects=True
@@ -101,6 +123,10 @@ class PostArtistEditTest(PostEndpointHelper):
         assert f"L'artiste {artist.name} a été mis à jour." in html_parser.extract_alerts(response.data)
         artist = db_session.query(artist_models.Artist).filter_by(id=artist.id).one()
         assert artist.name == "New Name"
+        assert artist.description == "New Description"
+        assert artist.biography == "New Biography Content"
+        assert artist.wikidata_id == "Q99999"
+        assert artist.wikipedia_url == "https://fr.wikipedia.org/wiki/New_Url"
 
 
 class BlacklistArtistButtonTest(button_helpers.ButtonHelper):
