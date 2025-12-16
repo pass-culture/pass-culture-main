@@ -1,3 +1,4 @@
+import pcapi.core.educational.models as educational_models
 from pcapi.core.finance.utils import CurrencyEnum
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import schemas as offerers_schemas
@@ -90,3 +91,38 @@ def get_venue_type_code_from_activity(
     """
     assert activity.name != offerers_models.Activity.NOT_ASSIGNED.name
     return ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING[activity.name]
+
+
+EDUCATIONAL_DOMAINS_TO_VENUE_TYPE_CODE_MAPPING = {
+    "Architecture": offerers_schemas.VenueTypeCode.PATRIMONY_TOURISM,
+    "Arts du cirque et arts de la rue": offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
+    "Arts numériques": offerers_schemas.VenueTypeCode.ARTISTIC_COURSE,
+    "Arts visuels, arts plastiques, arts appliqués": offerers_schemas.VenueTypeCode.VISUAL_ARTS,
+    "Cinéma, audiovisuel": offerers_schemas.VenueTypeCode.MOVIE,
+    "Culture scientifique, technique et industrielle": offerers_schemas.VenueTypeCode.SCIENTIFIC_CULTURE,
+    "Danse": offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
+    "Design": offerers_schemas.VenueTypeCode.VISUAL_ARTS,
+    "Développement durable": offerers_schemas.VenueTypeCode.SCIENTIFIC_CULTURE,
+    "Univers du livre, de la lecture et des écritures": offerers_schemas.VenueTypeCode.OTHER,
+    "Musique": offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
+    "Patrimoine": offerers_schemas.VenueTypeCode.PATRIMONY_TOURISM,
+    "Photographie": offerers_schemas.VenueTypeCode.VISUAL_ARTS,
+    "Théâtre, expression dramatique, marionnettes": offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
+    "Bande dessinée": offerers_schemas.VenueTypeCode.OTHER,
+    "Média et information": offerers_schemas.VenueTypeCode.OTHER,
+    "Mémoire": offerers_schemas.VenueTypeCode.PATRIMONY_TOURISM,
+}
+
+
+def get_venue_type_code_from_educational_domains(
+    educational_domains: list[educational_models.EducationalDomain],
+) -> offerers_schemas.VenueTypeCode:
+    if not educational_domains:
+        raise ValueError("EducationalDomain expected")
+    venue_type_codes = set(
+        EDUCATIONAL_DOMAINS_TO_VENUE_TYPE_CODE_MAPPING[domain.name] for domain in educational_domains
+    )
+    if len(venue_type_codes) > 1:
+        # Use one random value other than "OTHER"
+        return list(venue_type_codes - {offerers_schemas.VenueTypeCode.OTHER})[0]
+    return list(venue_type_codes)[0]

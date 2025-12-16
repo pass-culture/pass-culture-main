@@ -108,7 +108,11 @@ APE_TAG_MAPPING = {"8411Z": "Collectivité"}
 DMS_TOKEN_REGEX = r"^(?:PRO-)?([a-fA-F0-9]{12})$"
 
 
-def link_cultural_domains_to_venue(cultural_domains: list[str] | None, venue: offerers_models.Venue | None) -> None:
+def link_cultural_domains_to_venue(
+    cultural_domains: list[str] | None,
+    venue: offerers_models.Venue | None,
+    venue_type_code: str | None,
+) -> None:
     if cultural_domains is None:
         return
 
@@ -121,6 +125,8 @@ def link_cultural_domains_to_venue(cultural_domains: list[str] | None, venue: of
 
     if venue:
         venue.collectiveDomains = educational_domains
+        if not venue_type_code:
+            venue.venueTypeCode = offerers_utils.get_venue_type_code_from_educational_domains(venue.collectiveDomains)
 
 
 def update_venue(
@@ -500,12 +506,12 @@ def create_venue(
         venue.adageId = str(int(time.time()))
         venue.adageInscriptionDate = date_utils.get_naive_utc_now()
 
-    assert data.get("venueTypeCode") or data.get("activity")
-    if not data.get("activity"):
+    assert data.get("venueTypeCode") or data.get("activity") or data.get("culturalDomains")
+    if not data.get("activity") and data.get("venueTypeCode"):
         venue.activity = offerers_utils.get_venue_activity_from_type_code(
             data.get("isOpenToPublic"), data.get("venueTypeCode")
         )
-    if not data.get("venueTypeCode"):
+    if not data.get("venueTypeCode") and data.get("activity"):
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(data["activity"])
 
     db.session.add(venue)
@@ -514,7 +520,7 @@ def create_venue(
     db.session.flush()
 
     # Deal with cultural domains
-    link_cultural_domains_to_venue(venue_data.culturalDomains, venue)
+    link_cultural_domains_to_venue(venue_data.culturalDomains, venue, venue_data.venueTypeCode)
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
@@ -2194,7 +2200,7 @@ def create_from_onboarding_data(
     else:
         name = siret_info.name
 
-    link_cultural_domains_to_venue(onboarding_data.culturalDomains, None)
+    link_cultural_domains_to_venue(onboarding_data.culturalDomains, None, None)
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(

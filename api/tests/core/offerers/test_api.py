@@ -280,6 +280,30 @@ class CreateVenueTest:
         assert venue.siret is None
         assert venue.current_pricing_point_id is None
 
+    @pytest.mark.parametrize(
+        "cultural_domains,venue_type_code,expected_venue_type_code",
+        (
+            (("Architecture",), offerers_models.VenueTypeCode.VISUAL_ARTS, offerers_models.VenueTypeCode.VISUAL_ARTS),
+            (("Architecture",), None, offerers_models.VenueTypeCode.PATRIMONY_TOURISM),
+            (("Média et information", "Bande dessinée"), None, offerers_models.VenueTypeCode.OTHER),
+            (("Média et information", "Musique"), None, offerers_models.VenueTypeCode.PERFORMING_ARTS),
+        ),
+    )
+    def test_venue_with_cultural_domains(self, cultural_domains, venue_type_code, expected_venue_type_code):
+        user_offerer = offerers_factories.UserOffererFactory()
+        for domain_name in ["Architecture", "Média et information", "Bande dessinée", "Musique"]:
+            educational_factories.EducationalDomainFactory(name=domain_name)
+        data = self.base_data(user_offerer.offerer) | {"culturalDomains": cultural_domains}
+        if venue_type_code:
+            data["venueTypeCode"] = venue_type_code.name
+        else:
+            del data["venueTypeCode"]
+        offerers_api.create_venue(venues_serialize.PostVenueBodyModel(**data), user_offerer.user)
+
+        venue = db.session.query(offerers_models.Venue).one()
+        assert venue.venueTypeCode == expected_venue_type_code
+        assert {domain.name for domain in venue.collectiveDomains} == set(cultural_domains)
+
 
 class DeleteVenueTest:
     def test_delete_venue_should_abort_when_venue_has_any_bookings(self):
