@@ -687,7 +687,7 @@ def patch_offer(
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
 
 
-@private_api.route("/offers/thumbnails/", methods=["POST"])
+@private_api.route("/offers/thumbnails", methods=["POST"])
 @login_required
 @spectree_serialize(
     on_success_status=201,
@@ -704,19 +704,20 @@ def create_thumbnail(form: CreateThumbnailBodyModel) -> CreateThumbnailResponseM
         )
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
-    image_as_bytes = form.get_image_as_bytes(request)
+    if "thumb" not in request.files:
+        raise validation.exceptions.MissingImage()
 
     thumbnail = offers_api.create_mediation(
         user=current_user,
         offer=offer,
         credit=form.credit,
-        image_as_bytes=image_as_bytes,
+        image_as_bytes=request.files["thumb"].read(),
         crop_params=form.crop_params,
         min_width=None,
         min_height=None,
     )
 
-    return CreateThumbnailResponseModel(id=thumbnail.id, url=thumbnail.thumbUrl, credit=thumbnail.credit)  # type: ignore[arg-type]
+    return CreateThumbnailResponseModel.model_validate(thumbnail)
 
 
 @private_api.route("/offers/thumbnails/<int:offer_id>", methods=["DELETE"])

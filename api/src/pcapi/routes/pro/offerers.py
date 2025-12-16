@@ -351,7 +351,7 @@ def get_offerer_headline_offer(
     except sa_orm.exc.NoResultFound:
         raise ResourceNotFoundError()
 
-    return headline_offer_serialize.HeadLineOfferResponseModel.from_orm(offerer_headline_offer)
+    return headline_offer_serialize.HeadLineOfferResponseModel.model_validate(offerer_headline_offer)
 
 
 @private_api.route("/offerers/<int:offerer_id>/eligibility", methods=["GET"])

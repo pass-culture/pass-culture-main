@@ -1,21 +1,16 @@
-import flask
+import pydantic as pydantic_v2
 
-from pcapi.core.offers import validation
-from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.utils.image_conversion import CropParams
 
 
-class CreateThumbnailBodyModel(BaseModel):
+class CreateThumbnailBodyModel(HttpBodyModel):
     offer_id: int
-    credit: str | None
-    cropping_rect_x: float | None
-    cropping_rect_y: float | None
-    cropping_rect_height: float | None
-    cropping_rect_width: float | None
-
-    class Config:
-        alias_generator = to_camel
+    credit: str | None = None
+    cropping_rect_x: float | None = None
+    cropping_rect_y: float | None = None
+    cropping_rect_height: float | None = None
+    cropping_rect_width: float | None = None
 
     @property
     def crop_params(self) -> CropParams | None:
@@ -29,18 +24,11 @@ class CreateThumbnailBodyModel(BaseModel):
             width_crop_percent=self.cropping_rect_width,
         )
 
-    def get_image_as_bytes(self, request: flask.Request) -> bytes:
-        """
-        Get the image from the POSTed data (request)
-        """
-        if "thumb" in request.files:
-            blob = request.files["thumb"]
-            return blob.read()
-
-        raise validation.exceptions.MissingImage()
+    # this model is applied to a form and some fields are not checked by the serializer
+    model_config = pydantic_v2.ConfigDict(extra="ignore")
 
 
-class CreateThumbnailResponseModel(BaseModel):
+class CreateThumbnailResponseModel(HttpBodyModel):
     id: int
-    url: str
-    credit: str | None
+    thumbUrl: str = pydantic_v2.Field(alias="url")
+    credit: str | None = None

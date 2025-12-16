@@ -189,6 +189,7 @@ export { OffererMemberStatus } from './models/OffererMemberStatus';
 export type { OffererStatsDataModel } from './models/OffererStatsDataModel';
 export type { OffererViewsModel } from './models/OffererViewsModel';
 export type { OfferImage } from './models/OfferImage';
+export type { OfferImageV2 } from './models/OfferImageV2';
 export type { OfferOpeningHoursSchema } from './models/OfferOpeningHoursSchema';
 export { OfferStatus } from './models/OfferStatus';
 export { OnboardingActivity } from './models/OnboardingActivity';
