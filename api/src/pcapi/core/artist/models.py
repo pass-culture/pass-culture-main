@@ -45,37 +45,36 @@ class ArtistProductLink(PcObject, Model):
 
 class Artist(Model):
     __tablename__ = "artist"
-    id: sa_orm.Mapped[str] = sa_orm.mapped_column(
-        sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4())
+    aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship(
+        "ArtistAlias", foreign_keys="ArtistAlias.artist_id", back_populates="artist"
     )
-    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
+    biography: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     computed_image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    image_author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    image_license: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    image_license_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
     )
     date_modified: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
         sa.DateTime, nullable=True, onupdate=sa.func.now()
     )
+    description: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    id: sa_orm.Mapped[str] = sa_orm.mapped_column(
+        sa.Text, primary_key=True, nullable=False, default=lambda _: str(uuid.uuid4())
+    )
+    image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    image_author: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    image_license: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    image_license_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     is_blacklisted: sa_orm.Mapped[bool] = sa_orm.mapped_column(
         sa.Boolean, nullable=False, server_default=sa.false(), default=False
     )
-    wikidata_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    wikipedia_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-    biography: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-
+    is_eligible_for_search: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+    mediation_uuid: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", back_populates="artists", secondary=ArtistProductLink.__table__
     )
-    aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship(
-        "ArtistAlias", foreign_keys="ArtistAlias.artist_id", back_populates="artist"
-    )
-
-    is_eligible_for_search: sa_orm.Mapped["bool"] = sa_orm.query_expression()
+    wikidata_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    wikipedia_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
     __table_args__ = (
         sa.Index(
@@ -89,6 +88,11 @@ class Artist(Model):
         sa.Index(
             "ix_unique_artist_wikidata_id",
             "wikidata_id",
+            unique=True,
+        ),
+        sa.Index(
+            "ix_unique_artist_mediation_uuid",
+            "mediation_uuid",
             unique=True,
         ),
     )
