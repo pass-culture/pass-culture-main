@@ -1,0 +1,28 @@
+name: '2 [on_schedule] Close stale issues and PRs'
+on:
+  schedule:
+    # “At 7:22 UTC on every day-of-week from Monday through Friday.”
+    - cron: '22 7 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: write # for delete-branch option
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@v10.1.1
+        id: stale
+        with:
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+          stale-pr-message: 'Cette PR a été étiqueté `stale` car elle est inactive depuis 30 jours. Elle sera fermée dans 10 jours si elle reste inactive.'
+          close-pr-message: 'Cette PR a été fermée car elle était inactive depuis 40 jours. Vous pouvez la rouvrir si nécessaire'
+          days-before-pr-stale: 30
+          days-before-pr-close: 10
+          operations-per-run: 200
+          delete-branch: true
+          debug-only: false  # set to true for debugging purposes
