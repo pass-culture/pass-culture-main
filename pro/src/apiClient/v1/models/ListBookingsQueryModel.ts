@@ -5,15 +5,15 @@
 import type { BookingExportType } from './BookingExportType';
 import type { BookingStatusFilter } from './BookingStatusFilter';
 export type ListBookingsQueryModel = {
-  bookingPeriodBeginningDate?: string | null;
-  bookingPeriodEndingDate?: string | null;
-  bookingStatusFilter?: BookingStatusFilter | null;
-  eventDate?: string | null;
-  exportType?: BookingExportType | null;
-  offerId?: number | null;
-  offererAddressId?: number | null;
-  offererId?: number | null;
+  bookingPeriodBeginningDate?: (string | null);
+  bookingPeriodEndingDate?: (string | null);
+  bookingStatusFilter?: (BookingStatusFilter | null);
+  eventDate?: (string | null);
+  exportType?: (BookingExportType | null);
+  offerId?: (number | null);
+  offererAddressId?: (number | null);
+  offererId?: (number | null);
   page?: number;
-  venueId?: number | null;
+  venueId?: (number | null);
 };
 

@@ -141,15 +141,15 @@ export class DefaultService {
    */
   public getBookingsCsv(
     page: number = 1,
-    offererId?: number | null,
-    venueId?: number | null,
-    offerId?: number | null,
-    eventDate?: string | null,
-    bookingStatusFilter?: BookingStatusFilter | null,
-    bookingPeriodBeginningDate?: string | null,
-    bookingPeriodEndingDate?: string | null,
-    offererAddressId?: number | null,
-    exportType?: BookingExportType | null,
+    offererId?: (number | null),
+    venueId?: (number | null),
+    offerId?: (number | null),
+    eventDate?: (string | null),
+    bookingStatusFilter?: (BookingStatusFilter | null),
+    bookingPeriodBeginningDate?: (string | null),
+    bookingPeriodEndingDate?: (string | null),
+    offererAddressId?: (number | null),
+    exportType?: (BookingExportType | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -210,15 +210,15 @@ export class DefaultService {
    */
   public getBookingsExcel(
     page: number = 1,
-    offererId?: number | null,
-    venueId?: number | null,
-    offerId?: number | null,
-    eventDate?: string | null,
-    bookingStatusFilter?: BookingStatusFilter | null,
-    bookingPeriodBeginningDate?: string | null,
-    bookingPeriodEndingDate?: string | null,
-    offererAddressId?: number | null,
-    exportType?: BookingExportType | null,
+    offererId?: (number | null),
+    venueId?: (number | null),
+    offerId?: (number | null),
+    eventDate?: (string | null),
+    bookingStatusFilter?: (BookingStatusFilter | null),
+    bookingPeriodBeginningDate?: (string | null),
+    bookingPeriodEndingDate?: (string | null),
+    offererAddressId?: (number | null),
+    exportType?: (BookingExportType | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -285,7 +285,7 @@ export class DefaultService {
       },
       query: {
         'status': status,
-        'event_date': eventDate,
+        'eventDate': eventDate,
       },
       errors: {
         403: `Forbidden`,
@@ -314,7 +314,7 @@ export class DefaultService {
       },
       query: {
         'status': status,
-        'event_date': eventDate,
+        'eventDate': eventDate,
       },
       errors: {
         403: `Forbidden`,
@@ -339,15 +339,15 @@ export class DefaultService {
    */
   public getBookingsPro(
     page: number = 1,
-    offererId?: number | null,
-    venueId?: number | null,
-    offerId?: number | null,
-    eventDate?: string | null,
-    bookingStatusFilter?: BookingStatusFilter | null,
-    bookingPeriodBeginningDate?: string | null,
-    bookingPeriodEndingDate?: string | null,
-    offererAddressId?: number | null,
-    exportType?: BookingExportType | null,
+    offererId?: (number | null),
+    venueId?: (number | null),
+    offerId?: (number | null),
+    eventDate?: (string | null),
+    bookingStatusFilter?: (BookingStatusFilter | null),
+    bookingPeriodBeginningDate?: (string | null),
+    bookingPeriodEndingDate?: (string | null),
+    offererAddressId?: (number | null),
+    exportType?: (BookingExportType | null),
   ): CancelablePromise<ListBookingsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
