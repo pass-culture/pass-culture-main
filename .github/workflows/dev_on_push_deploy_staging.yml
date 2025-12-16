@@ -6,7 +6,6 @@ on:
       - "v[0-9]+.0.0"
   workflow_dispatch:
 
-
 permissions: write-all
 
 jobs:
@@ -15,9 +14,8 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#D4AD3B"  # yellow
-      message:
-        ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` est lancée"
+      color: "#D4AD3B" # yellow
+      message: ":github-pending: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` est lancée"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -77,10 +75,15 @@ jobs:
       PUSH_RELEASE_TO_SENTRY: true
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
-
   deploy-staging:
     name: "Deploy on staging environnement"
-    needs: [prepare-variables,create-pro-staging-release,create-pro-integration-release,create-pro-production-release]
+    needs:
+      [
+        prepare-variables,
+        create-pro-staging-release,
+        create-pro-integration-release,
+        create-pro-production-release,
+      ]
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: staging
@@ -98,35 +101,79 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
+  deploy-to-staging-new-infra:
+    name: Deploy to staging new infra
+    needs:
+      [
+        prepare-variables,
+        create-pro-staging-release,
+        create-pro-integration-release,
+        create-pro-production-release,
+      ]
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    with:
+      environment: staging
+      environment_short_name: stg
+      app_version: ${{ github.sha }}
+      workflow_cluster_name: gke-infra-prd-eu9
+      workflow_project_id: pc-infra-prd
+      app_cluster_name: gke-backend-stg-eu9
+      app_project_id: pc-backend-stg
+      location: europe-west9
+      is_new_infra: true
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
+      deploy_api: true
+      deploy_pro: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT: ${{ secrets.PCAPI_CI_SERVICE_ACCOUNT_STG }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   end-slack-success-notification:
     name: "Send workflow end success"
-    needs: [beginning-slack-notification,create-pro-staging-release,create-pro-integration-release,create-pro-production-release,deploy-staging]
+    needs:
+      [
+        beginning-slack-notification,
+        create-pro-staging-release,
+        create-pro-integration-release,
+        create-pro-production-release,
+        deploy-staging,
+      ]
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       method: update
       message-ts: ${{ needs.beginning-slack-notification.outputs.posted_message_ts }}
-      color: "#28A745"  # green
-      message:
-        ':github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a réussi'
+      color: "#28A745" # green
+      message: ":github-success: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a réussi"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
   end-slack-failure-notification:
     name: "Send workflow end failure"
-    needs: [beginning-slack-notification,create-pro-staging-release,create-pro-integration-release,create-pro-production-release,deploy-staging]
+    needs:
+      [
+        beginning-slack-notification,
+        create-pro-staging-release,
+        create-pro-integration-release,
+        create-pro-production-release,
+        deploy-staging,
+      ]
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
       method: update
       message-ts: ${{ needs.beginning-slack-notification.outputs.posted_message_ts }}
-      color: "#A30002"  # red
-      message:
-        ':github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a échoué'
+      color: "#A30002" # red
+      message: ":github-failure: La <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|MES> de la version `${{ github.ref_name }}` a échoué"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
