@@ -7,6 +7,7 @@ import pytest
 
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import utils
 from pcapi.core.educational.api.institution import ImportDepositPeriodOption
 from pcapi.core.educational.api.institution import import_deposit_institution_csv
 from pcapi.core.educational.api.institution import import_deposit_institution_data
@@ -325,8 +326,7 @@ class ImportDepositPeriodTest:
         )
         # check that deposit has not changed
         assert db.session.query(educational_models.EducationalDeposit).one() == deposit
-        assert deposit.period.lower == year.beginningDate
-        assert deposit.period.upper == year.beginningDate.replace(month=12, day=31, hour=23, minute=59, second=59)
+        assert deposit.period.lower, deposit.period.upper == utils.get_educational_year_first_period_bounds(year)
         assert deposit.amount == Decimal(3000)
 
     def test_deposit_educational_year_overlap_two_periods_error(self):
@@ -353,16 +353,16 @@ class ImportDepositPeriodTest:
 
         assert str(exception.value) == "Found 2 deposits that overlap input period"
         # check that deposits have not changed
-        assert deposit_first_period.period.lower == year.beginningDate
-        assert deposit_first_period.period.upper == year.beginningDate.replace(
-            month=12, day=31, hour=23, minute=59, second=59
-        )
+        assert (
+            deposit_first_period.period.lower,
+            deposit_first_period.period.upper,
+        ) == utils.get_educational_year_first_period_bounds(year)
         assert deposit_first_period.amount == Decimal(3000)
 
-        assert deposit_second_period.period.lower == year.beginningDate.replace(
-            year=year.beginningDate.year + 1, month=1, day=1
-        )
-        assert deposit_second_period.period.upper == year.expirationDate
+        assert (
+            deposit_second_period.period.lower,
+            deposit_second_period.period.upper,
+        ) == utils.get_educational_year_second_period_bounds(year)
         assert deposit_second_period.amount == Decimal(3000)
 
     @pytest.mark.parametrize("with_existing_deposit", (True, False))
@@ -386,8 +386,7 @@ class ImportDepositPeriodTest:
         )
 
         deposit = _get_deposit(year, institution)
-        assert deposit.period.lower == year.beginningDate
-        assert deposit.period.upper == year.beginningDate.replace(month=12, day=31, hour=23, minute=59, second=59)
+        assert deposit.period.lower, deposit.period.upper == utils.get_educational_year_first_period_bounds(year)
         assert deposit.amount == Decimal(1250)
 
     def test_deposit_first_period_overlap_error(self):
@@ -440,8 +439,7 @@ class ImportDepositPeriodTest:
         )
 
         deposit = _get_deposit(year, institution)
-        assert deposit.period.lower == year.beginningDate.replace(year=year.beginningDate.year + 1, month=1, day=1)
-        assert deposit.period.upper == year.expirationDate
+        assert deposit.period.lower, deposit.period.upper == utils.get_educational_year_second_period_bounds(year)
         assert deposit.amount == Decimal(1250)
 
     def test_deposit_second_period_overlap_error(self):
@@ -469,8 +467,7 @@ class ImportDepositPeriodTest:
         )
         # check that deposit has not changed
         assert db.session.query(educational_models.EducationalDeposit).one() == deposit
-        assert deposit.period.lower == year.beginningDate
-        assert deposit.period.upper == year.expirationDate
+        assert deposit.period.lower, deposit.period.upper == utils.get_educational_year_first_period_bounds(year)
         assert deposit.amount == Decimal(3000)
 
     @pytest.mark.parametrize("with_existing_deposit", (True, False))
@@ -506,14 +503,15 @@ class ImportDepositPeriodTest:
             .order_by(educational_models.EducationalDeposit.period)
         )
         deposit_first_period, deposit_second_period = deposits
-        assert deposit_first_period.period.lower == year.beginningDate
-        assert deposit_first_period.period.upper == year.beginningDate.replace(
-            month=12, day=31, hour=23, minute=59, second=59
-        )
-        assert deposit_second_period.period.lower == year.beginningDate.replace(
-            year=year.beginningDate.year + 1, month=1, day=1
-        )
-        assert deposit_second_period.period.upper == year.expirationDate
+        assert (
+            deposit_first_period.period.lower,
+            deposit_first_period.period.upper,
+        ) == utils.get_educational_year_first_period_bounds(year)
+
+        assert (
+            deposit_second_period.period.lower,
+            deposit_second_period.period.upper,
+        ) == utils.get_educational_year_second_period_bounds(year)
         assert deposit_second_period.amount == Decimal(1250)
 
 

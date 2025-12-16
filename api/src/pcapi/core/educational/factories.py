@@ -3,6 +3,7 @@ import re
 import typing
 
 import factory
+import pytz
 from dateutil.relativedelta import relativedelta
 
 from pcapi.core.categories.models import EacFormat
@@ -204,11 +205,10 @@ class EducationalYearFactory(BaseFactory[models.EducationalYear]):
         lambda number: str(int(_get_current_educational_year_adage_id()) + number)
     )
     beginningDate: factory.declarations.BaseDeclaration = factory.Sequence(
-        lambda number: datetime.datetime(_get_current_educational_year(), 9, 1) + relativedelta(years=number)
+        lambda number: _get_educational_year_start(_get_current_educational_year()) + relativedelta(years=number)
     )
     expirationDate: factory.declarations.BaseDeclaration = factory.Sequence(
-        lambda number: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
-        + relativedelta(years=number),
+        lambda number: _get_educational_year_end(_get_current_educational_year() + 1) + relativedelta(years=number),
     )
 
 
@@ -230,8 +230,8 @@ def create_educational_year(date_time: datetime.datetime) -> models.EducationalY
     adage_id = str(beginning_year - ADAGE_STARTING_EDUCATIONAL_YEAR)
 
     return EducationalYearFactory.create(
-        beginningDate=datetime.datetime(beginning_year, 9, 1),
-        expirationDate=datetime.datetime(beginning_year + 1, 8, 31, 23, 59, 59),
+        beginningDate=_get_educational_year_start(beginning_year),
+        expirationDate=_get_educational_year_end(beginning_year + 1),
         adageId=adage_id,
     )
 
@@ -240,11 +240,21 @@ def _get_current_educational_year_adage_id() -> str:
     return str(_get_current_educational_year() - ADAGE_STARTING_EDUCATIONAL_YEAR)
 
 
+def _get_educational_year_start(civil_year: int) -> datetime.datetime:
+    naive_start = datetime.datetime(year=civil_year, month=9, day=1)
+    aware_start = pytz.timezone(date_utils.METROPOLE_TIMEZONE).localize(naive_start)
+    return date_utils.to_naive_utc_datetime(aware_start)
+
+
+def _get_educational_year_end(civil_year: int) -> datetime.datetime:
+    naive_end = datetime.datetime(year=civil_year, month=8, day=31, hour=23, minute=59, second=59)
+    aware_end = pytz.timezone(date_utils.METROPOLE_TIMEZONE).localize(naive_end)
+    return date_utils.to_naive_utc_datetime(aware_end)
+
+
 class EducationalCurrentYearFactory(EducationalYearFactory):
-    beginningDate = factory.LazyFunction(lambda: datetime.datetime(_get_current_educational_year(), 9, 1))
-    expirationDate = factory.LazyFunction(
-        lambda: datetime.datetime(_get_current_educational_year() + 1, 8, 31, 23, 59, 59)
-    )
+    beginningDate = factory.LazyFunction(lambda: _get_educational_year_start(_get_current_educational_year()))
+    expirationDate = factory.LazyFunction(lambda: _get_educational_year_end(_get_current_educational_year() + 1))
     adageId = factory.LazyFunction(_get_current_educational_year_adage_id)
 
 
