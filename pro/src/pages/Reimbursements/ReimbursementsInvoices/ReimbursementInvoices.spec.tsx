@@ -231,26 +231,6 @@ describe('reimbursementsWithFilters', () => {
     expect(screen.getByText('Tous les comptes bancaires')).toBeInTheDocument()
   })
 
-  it('should render a difficulty banner ', async () => {
-    vi.spyOn(
-      api,
-      'getOffererBankAccountsAndAttachedVenues'
-    ).mockResolvedValueOnce({
-      id: 1,
-      bankAccounts: BASE_BANK_ACCOUNTS,
-      managedVenues: [],
-    })
-
-    renderReimbursementsInvoices()
-
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    expect(
-      screen.getByText(
-        /Nous rencontrons exceptionnellement en cette fin d'année des délais de paiement allongés./
-      )
-    ).toBeInTheDocument()
-  })
-
   it('should not disable filter if has invoices', async () => {
     vi.spyOn(
       api,
