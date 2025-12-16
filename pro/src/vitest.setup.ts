@@ -37,6 +37,17 @@ class ResizeObserver {
 
 window.ResizeObserver = ResizeObserver
 
+const IntersectionObserverMock = vi.fn(
+  class {
+    disconnect = vi.fn()
+    observe = vi.fn()
+    takeRecords = vi.fn()
+    unobserve = vi.fn()
+  }
+)
+
+vi.stubGlobal('IntersectionObserver', IntersectionObserverMock)
+
 // Fail on console errors and warnings
 // https://github.com/thomasbrodusch/vitest-fail-on-console#readme
 failOnConsole()
