@@ -2080,9 +2080,9 @@ def get_offerer_total_revenue(offerer_id: int, only_current_year: bool = False) 
     return db.session.execute(total_revenue_query).scalar() or 0.0
 
 
-def get_venues_stats(venue_ids: typing.Iterable[int]) -> dict[str, int | decimal.Decimal | None]:
+def get_venues_stats(venue_ids: typing.Iterable[int]) -> dict[str, int | float | None]:
     tuple_venue_ids = tuple(venue_ids)
-    stats: dict[str, int | decimal.Decimal | None] = defaultdict(lambda: None)
+    stats: dict[str, int | float | None] = defaultdict(lambda: None)
 
     if not tuple_venue_ids:
         return stats

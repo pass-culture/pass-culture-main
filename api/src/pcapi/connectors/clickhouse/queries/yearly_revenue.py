@@ -1,48 +1,34 @@
+import dataclasses
 import json
-from decimal import Decimal
-from typing import Any
-
-import pydantic.v1 as pydantic_v1
 
 from pcapi.connectors.clickhouse.queries.base import BaseQuery
+from pcapi.connectors.clickhouse.queries.base import ClickHouseBaseModel
 
 
-class CollectiveRevenue(pydantic_v1.BaseModel):
-    collective: Decimal
-
-    class Config:
-        extra = "forbid"
+class CollectiveRevenue(ClickHouseBaseModel):
+    collective: float
 
 
-class CollectiveRevenueGetterDict(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        row = self._obj
-        if key == "revenue":
-            return CollectiveRevenue(**json.loads(row.revenue))
-
-        if key == "expected_revenue":
-            if row.expected_revenue is None:
-                return None
-            return CollectiveRevenue(**json.loads(row.expected_revenue))
-
-        return super().get(key, default)
-
-
-class AggregatedCollectiveRevenueModel(pydantic_v1.BaseModel):
+class AggregatedCollectiveRevenueModel(ClickHouseBaseModel):
     year: int
     revenue: CollectiveRevenue
     expected_revenue: CollectiveRevenue
 
-    class Config:
-        extra = "forbid"
-        orm_mode = True
-        getter_dict = CollectiveRevenueGetterDict
+
+@dataclasses.dataclass
+class _Row:
+    year: int
+    revenue: str
+    expected_revenue: str | None
 
 
-class AggregatedCollectiveRevenueQuery(BaseQuery[AggregatedCollectiveRevenueModel]):
-    @property
-    def model(self) -> type[AggregatedCollectiveRevenueModel]:
-        return AggregatedCollectiveRevenueModel
+class AggregatedCollectiveRevenueQuery(BaseQuery[AggregatedCollectiveRevenueModel, _Row]):
+    def _serialize_row(self, row: _Row) -> AggregatedCollectiveRevenueModel:
+        return AggregatedCollectiveRevenueModel(
+            year=row.year,
+            revenue=CollectiveRevenue(**json.loads(row.revenue)),
+            expected_revenue=CollectiveRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,
+        )
 
     @property
     def raw_query(self) -> str:
@@ -62,42 +48,23 @@ class AggregatedCollectiveRevenueQuery(BaseQuery[AggregatedCollectiveRevenueMode
         """
 
 
-class IndividualRevenue(pydantic_v1.BaseModel):
-    individual: Decimal
-
-    class Config:
-        extra = "forbid"
+class IndividualRevenue(ClickHouseBaseModel):
+    individual: float
 
 
-class IndividualRevenueGetterDict(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        row = self._obj
-        if key == "revenue":
-            return IndividualRevenue(**json.loads(row.revenue))
-
-        if key == "expected_revenue":
-            if row.expected_revenue is None:
-                return None
-            return IndividualRevenue(**json.loads(row.expected_revenue))
-
-        return super().get(key, default)
-
-
-class AggregatedIndividualRevenueModel(pydantic_v1.BaseModel):
+class AggregatedIndividualRevenueModel(ClickHouseBaseModel):
     year: int
     revenue: IndividualRevenue
     expected_revenue: IndividualRevenue
 
-    class Config:
-        extra = "forbid"
-        orm_mode = True
-        getter_dict = IndividualRevenueGetterDict
 
-
-class AggregatedIndividualRevenueQuery(BaseQuery[AggregatedIndividualRevenueModel]):
-    @property
-    def model(self) -> type[AggregatedIndividualRevenueModel]:
-        return AggregatedIndividualRevenueModel
+class AggregatedIndividualRevenueQuery(BaseQuery[AggregatedIndividualRevenueModel, _Row]):
+    def _serialize_row(self, row: _Row) -> AggregatedIndividualRevenueModel:
+        return AggregatedIndividualRevenueModel(
+            year=row.year,
+            revenue=IndividualRevenue(**json.loads(row.revenue)),
+            expected_revenue=IndividualRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,
+        )
 
     @property
     def raw_query(self) -> str:
@@ -117,42 +84,25 @@ class AggregatedIndividualRevenueQuery(BaseQuery[AggregatedIndividualRevenueMode
         """
 
 
-class TotalRevenue(IndividualRevenue, CollectiveRevenue):
-    total: Decimal
-
-    class Config:
-        extra = "forbid"
-
-
-class TotalRevenueGetterDict(pydantic_v1.utils.GetterDict):
-    def get(self, key: str, default: Any = None) -> Any:
-        row = self._obj
-        if key == "revenue":
-            return TotalRevenue(**json.loads(row.revenue))
-
-        if key == "expected_revenue":
-            if row.expected_revenue is None:
-                return None
-            return TotalRevenue(**json.loads(row.expected_revenue))
-
-        return super().get(key, default)
+class TotalRevenue(ClickHouseBaseModel):
+    total: float
+    collective: float
+    individual: float
 
 
-class AggregatedTotalRevenueModel(pydantic_v1.BaseModel):
+class AggregatedTotalRevenueModel(ClickHouseBaseModel):
     year: int
     revenue: TotalRevenue
     expected_revenue: TotalRevenue
 
-    class Config:
-        extra = "forbid"
-        orm_mode = True
-        getter_dict = TotalRevenueGetterDict
 
-
-class AggregatedTotalRevenueQuery(BaseQuery[AggregatedTotalRevenueModel]):
-    @property
-    def model(self) -> type[AggregatedTotalRevenueModel]:
-        return AggregatedTotalRevenueModel
+class AggregatedTotalRevenueQuery(BaseQuery[AggregatedTotalRevenueModel, _Row]):
+    def _serialize_row(self, row: _Row) -> AggregatedTotalRevenueModel:
+        return AggregatedTotalRevenueModel(
+            year=row.year,
+            revenue=TotalRevenue(**json.loads(row.revenue)),
+            expected_revenue=TotalRevenue(**json.loads(row.expected_revenue)) if row.expected_revenue else None,
+        )
 
     @property
     def raw_query(self) -> str:

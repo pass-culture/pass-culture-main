@@ -1,4 +1,3 @@
-from decimal import Decimal
 from unittest import mock
 
 import pytest
@@ -17,9 +16,9 @@ class GetYearlyAggregatedOffererRevenueTest:
             results = clickhouse_queries.AggregatedTotalRevenueQuery().execute({"venue_ids": tuple(venue_ids)})
 
         (result_2024,) = [result for result in results if result.year == 2024]
-        assert result_2024.revenue.total == Decimal("24.24")
-        assert result_2024.revenue.individual == Decimal("12.12")
-        assert result_2024.revenue.collective == Decimal("12.12")
-        assert result_2024.expected_revenue.total == Decimal("26.24")
-        assert result_2024.expected_revenue.individual == Decimal("13.12")
-        assert result_2024.expected_revenue.collective == Decimal("13.12")
+        assert result_2024.revenue.total == 24.24
+        assert result_2024.revenue.individual == 12.12
+        assert result_2024.revenue.collective == 12.12
+        assert result_2024.expected_revenue.total == 26.24
+        assert result_2024.expected_revenue.individual == 13.12
+        assert result_2024.expected_revenue.collective == 13.12

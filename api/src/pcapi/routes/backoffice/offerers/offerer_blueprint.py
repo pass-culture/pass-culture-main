@@ -1,5 +1,4 @@
 import datetime
-import decimal
 import typing
 
 import sqlalchemy as sa
@@ -347,7 +346,7 @@ def get_revenue_details(offerer_id: int) -> utils.BackofficeResponse:
             clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute(
                 {"venue_ids": tuple(venue.id for venue in offerer.managedVenues)}
             )
-            future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
+            future = {"individual": 0.0, "collective": 0.0}
             for aggregated_revenue in clickhouse_results:
                 details[str(aggregated_revenue.year)] = {
                     "individual": aggregated_revenue.revenue.individual,

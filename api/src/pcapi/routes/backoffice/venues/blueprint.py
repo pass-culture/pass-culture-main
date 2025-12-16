@@ -1,4 +1,3 @@
-import decimal
 import logging
 from functools import partial
 
@@ -468,7 +467,7 @@ def get_revenue_details(venue_id: int) -> utils.BackofficeResponse:
     try:
         clickhouse_results = clickhouse_queries.AggregatedTotalRevenueQuery().execute({"venue_ids": (venue_id,)})
         details: dict[str, dict] = {}
-        future = {"individual": decimal.Decimal(0.0), "collective": decimal.Decimal(0.0)}
+        future = {"individual": 0.0, "collective": 0.0}
         for aggregated_revenue in clickhouse_results:
             details[str(aggregated_revenue.year)] = {
                 "individual": aggregated_revenue.revenue.individual,
