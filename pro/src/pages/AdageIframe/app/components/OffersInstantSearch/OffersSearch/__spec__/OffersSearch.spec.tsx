@@ -28,19 +28,6 @@ interface getItems {
   nb_words: number
 }
 
-class MockIntersectionObserver {
-  public readonly root: Element | Document | null = null
-  public readonly rootMargin: string = '0px'
-  public readonly thresholds: ReadonlyArray<number> = []
-  public takeRecords = vi.fn()
-
-  public observe = vi.fn()
-  public unobserve = vi.fn()
-  public disconnect = vi.fn()
-}
-
-window.IntersectionObserver = MockIntersectionObserver
-
 const mockVenueSuggestions = [
   {
     objectID: '1',
