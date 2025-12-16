@@ -2,6 +2,8 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
+import * as useMediaQuery from '@/commons/hooks/useMediaQuery'
+
 import {
   ANIMATION_DURATION,
   LONG_TEXT_DURATION,
@@ -26,6 +28,7 @@ const defaultProps: SnackBarProps = {
 
 describe('SnackBar', () => {
   beforeEach(() => {
+    vi.spyOn(useMediaQuery, 'useMediaQuery').mockReturnValue(false)
     vi.useFakeTimers()
     mockOnClose.mockClear()
   })

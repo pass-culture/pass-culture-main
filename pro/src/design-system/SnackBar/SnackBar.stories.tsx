@@ -46,40 +46,42 @@ const SnackBarWithReopenButton = (args: SnackBarProps) => {
 /**
  * Story for the default SnackBar component.
  */
-export const Default: Story = {
+export const DefaultSuccessVariant: Story = {
   parameters: {
     docs: {
-      title: 'Notification success',
+      title: 'Snack Bar - Default Success Variant',
       description: {
-        story: 'Demonstration of a success notification.',
+        story: 'Demonstration of a success snack bar.',
       },
     },
   },
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.SUCCESS,
-    text: 'Default Snack Bar',
+    text: 'Snack Bar with a default success variant',
     autoClose: false,
     testId: 'default-success-snack-bar',
+    forceMobile: true,
   },
 }
 
 /**
  * Story for the error SnackBar component.
  */
-export const ErrorVariant: Story = {
+export const DefaultErrorVariant: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.ERROR,
-    text: 'Snack Bar with an error',
+    text: 'Snack Bar with a default error variant',
     autoClose: false,
-    testId: 'error-snack-bar',
+    testId: 'default-error-snack-bar',
+    forceMobile: true,
   },
   parameters: {
     docs: {
-      title: 'Error notification',
+      title: 'Snack Bar - Default Error Variant',
       description: {
-        story: 'Demonstration of an error notification.',
+        story: 'Demonstration of an error snack bar.',
       },
     },
   },
@@ -88,24 +90,50 @@ export const ErrorVariant: Story = {
 /**
  * Story for the long message success SnackBar component.
  */
-export const LongMessageSuccess: Story = {
+export const LargeSuccessVariant: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.SUCCESS,
-    text: 'Snack Bar with a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
+    text: 'SnackBar with a large success variant',
     autoClose: false,
-    testId: 'long-message-success-snack-bar',
+    testId: 'large-success-snack-bar',
   },
 }
 
 /**
  * Story for the long message success SnackBar component.
  */
-export const LongMessageError: Story = {
+export const LargeErrorVariant: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.ERROR,
-    text: 'Snack Bar with an error and a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
+    text: 'SnackBar with a large error variant',
+    autoClose: false,
+    testId: 'large-error-snack-bar',
+  },
+}
+
+/**
+ * Story for the large message success SnackBar component.
+ */
+export const LargeErrorVariantWithLongMessage: Story = {
+  render: (args) => <SnackBarWithReopenButton {...args} />,
+  args: {
+    variant: SnackBarVariant.SUCCESS,
+    text: 'Snack Bar Success with a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
+    autoClose: false,
+    testId: 'long-message-success-snack-bar',
+  },
+}
+
+/**
+ * Story for the large message error SnackBar component.
+ */
+export const LargeSuccessVariantWithLongMessage: Story = {
+  render: (args) => <SnackBarWithReopenButton {...args} />,
+  args: {
+    variant: SnackBarVariant.ERROR,
+    text: 'Snack Bar Error with a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
     autoClose: false,
     testId: 'long-message-error-snack-bar',
   },
@@ -148,12 +176,15 @@ const PlaygroundComponent = () => {
   return (
     <div style={{ height: '500px' }}>
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', flexDirection: 'column', alignItems: 'flex-start' }}>
-        <button onClick={() => addNotification(SnackBarVariant.SUCCESS, 'Success notification')}>Add a success notification</button>
-        <button onClick={() => addNotification(SnackBarVariant.ERROR, 'Error notification')}>Add an error notification</button>
-        <button onClick={() => addNotification(SnackBarVariant.SUCCESS, 'Ceci est un message très long pour démontrer que la durée est de 10 secondes au lieu de 5 secondes quand le texte dépasse 120 caractères.')}>
-          Add a success notification with a long message.
+          <button onClick={() => addNotification(SnackBarVariant.SUCCESS, 'Success snackBar')}>Add a success snackBar</button>
+        <button onClick={() => addNotification(SnackBarVariant.ERROR, 'Error snackBar')}>Add an error snackBar</button>
+        <button onClick={() => addNotification(SnackBarVariant.SUCCESS, 'Success snackBar with a long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)')}>
+          Add a success snackBar with a long message.
+          </button>
+        <button onClick={() => addNotification(SnackBarVariant.ERROR, 'Error snackBar with a long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)')}>
+          Add an error snackBar with a long message.
         </button>
-        <button onClick={() => setNotifications([])}>Clear all notifications.</button>
+        <button onClick={() => setNotifications([])}>Clear all snackBars.</button>
       </div>
       <div style={{alignItems: 'flex-end', bottom: '24px', display: 'flex', flexDirection: 'column', gap: '8px', position: 'fixed', right: '24px', zIndex: 1000,}}>
         {notificationsToDisplay.map((notif) => (
@@ -179,7 +210,7 @@ export const Playground: Story = {
     docs: {
       description: {
         story:
-          'Demonstration of stacking multiple notifications. Click on the buttons to add notifications that stack on the bottom right.',
+          'Demonstration of stacking multiple snack bars. Click on the buttons to add snack bars that stack on the bottom right.',
       },
     },
   },
