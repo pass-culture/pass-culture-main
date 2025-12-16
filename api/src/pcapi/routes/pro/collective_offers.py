@@ -18,7 +18,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization import educational_redactors
+from pcapi.routes.serialization import educational_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -712,26 +712,52 @@ def delete_offer_template_image(offer_id: int) -> None:
 @atomic()
 @login_required
 @spectree_serialize(
-    response_model=educational_redactors.EducationalRedactors,
+    response_model=educational_serialize.EducationalRedactors,
     api=blueprint.pro_private_schema,
 )
 def get_autocomplete_educational_redactors_for_uai(
-    query: educational_redactors.EducationalRedactorQueryModel,
-) -> educational_redactors.EducationalRedactors:
+    query: educational_serialize.EducationalRedactorQueryModel,
+) -> educational_serialize.EducationalRedactors:
     try:
         redactors = api_adage.autocomplete_educational_redactor_for_uai(uai=query.uai, candidate=query.candidate)
     except exceptions.EducationalRedactorNotFound:
         raise ApiErrors({"UAI": ["UAI non trouvé."]}, status_code=404)
 
-    return educational_redactors.EducationalRedactors(
-        __root__=[
-            educational_redactors.EducationalRedactor(
+    return educational_serialize.EducationalRedactors(
+        [
+            educational_serialize.EducationalRedactor(
                 name=redactor["nom"],
                 surname=redactor["prenom"],
                 gender=redactor.get("civilite"),
                 email=redactor["mail"],
             )
             for redactor in redactors
+        ]
+    )
+
+
+@private_api.route("/collective/educational-domains", methods=["GET"])
+@atomic()
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    response_model=educational_serialize.EducationalDomainsResponseModel,
+    api=blueprint.pro_private_schema,
+)
+def list_educational_domains() -> educational_serialize.EducationalDomainsResponseModel:
+    domains = repository.get_all_educational_domains_ordered_by_name()
+    return educational_serialize.EducationalDomainsResponseModel(
+        [
+            educational_serialize.EducationalDomainResponseModel(
+                id=domain.id,
+                name=domain.name,
+                national_programs=[
+                    educational_serialize.NationalProgramModelV2.model_validate(program)
+                    for program in domain.nationalPrograms
+                    if program.isActive
+                ],
+            )
+            for domain in domains
         ]
     )
 

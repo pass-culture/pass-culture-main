@@ -15,7 +15,7 @@ from pcapi.core.educational.models import CollectiveOfferDisplayedStatus
 from pcapi.core.educational.models import StudentLevels
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.serialization.educational_serialize import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.routes.shared.validation import phone_number_validator
 from pcapi.serialization.utils import to_camel

@@ -13,7 +13,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import collective_offers_serialize
-from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.serialization.educational_serialize import NationalProgramModel
 from pcapi.routes.shared import validation
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
