@@ -1,1 +1,0 @@
-import{c as a,i as e,a as r}from"./store-DfEwiLqq.js";import{i as o}from"./useAppDispatch-C2F0SJcj.js";const c=t=>{const i={features:{...e,initialized:!0},notification:o,user:r};return a({...i,...t}).store};export{c};
