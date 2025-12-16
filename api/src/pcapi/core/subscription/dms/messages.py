@@ -3,7 +3,6 @@ import enum
 import logging
 from dataclasses import dataclass
 
-from pcapi import settings
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
@@ -13,9 +12,6 @@ from pcapi.utils.string import u_nbsp
 
 
 logger = logging.getLogger(__name__)
-
-MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
-MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e"
 
 
 class NounGender(enum.Enum):

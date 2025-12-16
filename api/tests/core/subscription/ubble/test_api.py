@@ -12,6 +12,7 @@ from dateutil.relativedelta import relativedelta
 import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
+from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
@@ -1326,8 +1327,8 @@ class SubscriptionMessageTest:
             ),
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"mailto:support@example.com?subject=%23{fraud_check.user.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -1347,8 +1348,8 @@ class SubscriptionMessageTest:
             ].not_retryable_user_message,
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"mailto:support@example.com?subject=%23{fraud_check.user.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,

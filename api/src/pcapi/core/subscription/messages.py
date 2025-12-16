@@ -10,8 +10,7 @@ from pcapi.core.users import models as users_models
 logger = logging.getLogger(__name__)
 
 
-MAILTO_SUPPORT = f"mailto:{settings.SUPPORT_EMAIL_ADDRESS}"
-MAILTO_SUPPORT_PARAMS = "?subject=%23{id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e"
+SUBSCRIPTION_SUPPORT_FORM_URL = "https://aide.passculture.app/hc/fr/requests/new?ticket_form_id=20669662761500"
 
 MAINTENANCE_PAGE_MESSAGE = subscription_schemas.SubscriptionMessage(
     user_message="La vérification d'identité est momentanément indisponible. L'équipe du pass Culture met tout en oeuvre pour la rétablir au plus vite.",
@@ -35,8 +34,8 @@ REDIRECT_TO_IDENTIFICATION_CHOICE = subscription_schemas.CallToActionMessage(
 def compute_support_call_to_action(user_id: int) -> subscription_schemas.CallToActionMessage:
     return subscription_schemas.CallToActionMessage(
         title="Contacter le support",
-        link=MAILTO_SUPPORT + MAILTO_SUPPORT_PARAMS.format(id=user_id),
-        icon=subscription_schemas.CallToActionIcon.EMAIL,
+        link=SUBSCRIPTION_SUPPORT_FORM_URL,
+        icon=subscription_schemas.CallToActionIcon.EXTERNAL,
     )
 
 
