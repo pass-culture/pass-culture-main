@@ -300,6 +300,8 @@ class RecreditAction(AccountAction):
                 recredit_type = "Recrédit à 17 ans"
             case finance_models.RecreditType.RECREDIT_18:
                 recredit_type = "Recrédit à 18 ans"
+            case finance_models.RecreditType.BONUS_CREDIT:
+                recredit_type = "Recrédit issu de la bonification"
             case finance_models.RecreditType.MANUAL_MODIFICATION:
                 recredit_type = "Recrédit par une action manuelle"
             case finance_models.RecreditType.PREVIOUS_DEPOSIT:

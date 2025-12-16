@@ -159,11 +159,24 @@ class QuotientFamilialCustodianFactory(factory.Factory):
     birth_city_cog_code = "08480"
 
 
+class QuotientFamilialContentFactory(factory.Factory):
+    class Meta:
+        model = bonus_schemas.QuotientFamilialContent
+
+    provider = "CNAF"
+    value = 2550
+    year = 2023
+    month = 6
+    computation_year = 2024
+    computation_month = 12
+
+
 class QuotientFamilialBonusCreditContentFactory(factory.Factory):
     class Meta:
         model = bonus_schemas.QuotientFamilialBonusCreditContent
 
     custodian = factory.SubFactory(QuotientFamilialCustodianFactory)
+    quotient_familial = factory.SubFactory(QuotientFamilialContentFactory)
 
 
 FRAUD_CHECK_TYPE_MODEL_ASSOCIATION: dict[subscription_models.FraudCheckType, type[factory.Factory] | None] = {
