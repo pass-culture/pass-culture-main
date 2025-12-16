@@ -18,14 +18,12 @@ export interface FunnelLayoutProps {
    */
   mainHeading: React.ReactNode
   withFlexContent?: boolean
-  withVerticalScroll?: boolean
 }
 
 export const FunnelLayout = ({
   children,
   mainHeading,
   withFlexContent = false,
-  withVerticalScroll = false,
 }: FunnelLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
 
@@ -46,8 +44,7 @@ export const FunnelLayout = ({
         <div
           id="content-wrapper"
           className={cn(styles['content-wrapper'], {
-            [styles['content-wrapper-with-vertical-scroll']]:
-              withVerticalScroll,
+            [styles['content-wrapper-flex']]: withFlexContent,
           })}
         >
           <div className={styles['content-container']}>
