@@ -110,7 +110,7 @@ class Returns200Test:
     def test_patch_draft_offer_without_product(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=user_offerer.offerer, venue=venue)
         offer = offers_factories.OfferFactory(
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
@@ -424,7 +424,7 @@ class Returns200Test:
     def test_update_offer_accepts_accessibility_fields(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
+        offerer_address = offerers_factories.OfferLocationFactory(offerer=user_offerer.offerer, venue=venue)
         offer = offers_factories.OfferFactory(
             name="Name",
             subcategoryId=subcategories.LIVRE_PAPIER.id,
