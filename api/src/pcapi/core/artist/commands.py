@@ -14,7 +14,6 @@ from pcapi.core.search import async_index_artist_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.models import db
 from pcapi.utils.blueprint import Blueprint
-from pcapi.utils.repository import transaction
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -27,22 +26,6 @@ ARTIST_IMPORTERS: list[AbstractImporter] = [
     ArtistProductLinkImporter(),
     ArtistAliasImporter(),
 ]
-
-
-def truncate_artist_tables() -> None:
-    with transaction():
-        db.session.execute(sa.text("TRUNCATE TABLE artist_product_link"))
-    logger.info("ArtistProductLink table truncated")
-
-    with transaction():
-        db.session.execute(sa.text("TRUNCATE TABLE artist_alias"))
-    logger.info("ArtistAlias table truncated")
-
-    with transaction():
-        # Here we use `DELETE` instead of `TRUNCATE` because we are less likely to get
-        # an Access Exclusive Lock on table `artist`, on which there is more traffic.
-        db.session.execute(sa.text("DELETE FROM artist"))
-    logger.info("Artist table truncated")
 
 
 @blueprint.cli.command("compute_artists_most_relevant_image")
@@ -74,18 +57,6 @@ def compute_artists_most_relevant_image(batch_size: int = BATCH_SIZE) -> None:
             logger.info("Updated %d artists from batch", len(updated_artist_ids))
 
     logger.info("Updated %d artist images", total_artists_updated)
-
-
-@blueprint.cli.command("import_all_artists_data")
-@click.option("--clear", is_flag=True, help="Truncate artists tables before importing data.")
-def import_all_artists_data(clear: bool = False) -> None:
-    if clear:
-        truncate_artist_tables()
-
-    logger.info("Importing all artists data from BigQuery...")
-    for importer in ARTIST_IMPORTERS:
-        importer.import_all()
-    logger.info("Finished importing all artists data.")
 
 
 @blueprint.cli.command("update_artists_from_delta")
