@@ -326,6 +326,7 @@ class Returns200Test:
                 booking.dateCreated, booking.venue.offererAddress.address.departmentCode
             )
         )
+
         assert response.json["page"] == 1
         assert response.json["pages"] == 1
         assert response.json["total"] == 1
@@ -361,7 +362,7 @@ class Returns400Test:
             response = client.get(f"/bookings/pro?{BOOKING_PERIOD_PARAMS}&page=not-a-number")
             assert response.status_code == 400
 
-        assert response.json["page"] == ["Saisissez un nombre valide"]
+        assert response.json["page"] == ["Saisissez un entier valide"]
 
     def when_date_format_incorrect(self, client: Any):
         pro = users_factories.ProFactory()

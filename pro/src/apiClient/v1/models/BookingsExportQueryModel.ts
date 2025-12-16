@@ -4,7 +4,7 @@
 /* eslint-disable */
 import type { BookingsExportStatusFilter } from './BookingsExportStatusFilter';
 export type BookingsExportQueryModel = {
-  event_date: string;
+  eventDate: string;
   status: BookingsExportStatusFilter;
 };
 

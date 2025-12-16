@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum BookingsExportStatusFilter {
   VALIDATED = 'validated',
   ALL = 'all',
