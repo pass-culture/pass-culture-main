@@ -1244,6 +1244,11 @@
                         "title": "Dateused",
                         "type": "string"
                     },
+                    "displayAsEnded": {
+                        "nullable": true,
+                        "title": "Displayasended",
+                        "type": "boolean"
+                    },
                     "enablePopUpReaction": {
                         "title": "Enablepopupreaction",
                         "type": "boolean"
@@ -1257,11 +1262,6 @@
                     "id": {
                         "title": "Id",
                         "type": "integer"
-                    },
-                    "isArchivable": {
-                        "nullable": true,
-                        "title": "Isarchivable",
-                        "type": "boolean"
                     },
                     "quantity": {
                         "title": "Quantity",
