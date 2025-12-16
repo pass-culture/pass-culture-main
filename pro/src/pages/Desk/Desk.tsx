@@ -160,6 +160,8 @@ export const Desk = (): JSX.Element => {
                     tokenRegister.ref(input)
                     tokenInputRef.current = input
                   }}
+                  required
+                  requiredIndicator="explicit"
                 />
               </div>
 

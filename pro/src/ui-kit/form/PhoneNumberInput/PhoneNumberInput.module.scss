@@ -50,6 +50,11 @@ $input-phone-number-padding-left: calc(
         flex: 0 0 15px;
       }
     }
+
+    &-info {
+      display: flex;
+      justify-content: space-between;
+    }
   }
 }
 
@@ -72,4 +77,10 @@ $input-phone-number-padding-left: calc(
 
 .phone-number-inpus {
   position: relative;
+}
+
+.field-header-right {
+  @include fonts.body-accent-xs;
+
+  color: var(--color-text-subtle);
 }

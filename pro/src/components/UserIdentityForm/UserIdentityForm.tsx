@@ -66,40 +66,37 @@ export const UserIdentityForm = ({
   }
 
   return (
-    <>
-      <BoxFormLayout.RequiredMessage />
-      <BoxFormLayout.Fields>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormLayout>
-            <div className={styles['text-input']}>
-              <TextInput
-                label="Prénom"
-                error={errors.firstName?.message}
-                required
-                requiredIndicator="hidden"
-                {...register('firstName')}
-              />
-            </div>
-            <div className={styles['text-input']}>
-              <TextInput
-                label="Nom"
-                error={errors.lastName?.message}
-                required
-                requiredIndicator="hidden"
-                {...register('lastName')}
-              />
-            </div>
-          </FormLayout>
-          <div className={styles['buttons-field']}>
-            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-              Annuler
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              Enregistrer
-            </Button>
+    <BoxFormLayout.Fields>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormLayout>
+          <div className={styles['text-input']}>
+            <TextInput
+              label="Prénom"
+              error={errors.firstName?.message}
+              required
+              requiredIndicator="explicit"
+              {...register('firstName')}
+            />
           </div>
-        </form>
-      </BoxFormLayout.Fields>
-    </>
+          <div className={styles['text-input']}>
+            <TextInput
+              label="Nom"
+              error={errors.lastName?.message}
+              required
+              requiredIndicator="explicit"
+              {...register('lastName')}
+            />
+          </div>
+        </FormLayout>
+        <div className={styles['buttons-field']}>
+          <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+            Annuler
+          </Button>
+          <Button type="submit" isLoading={isSubmitting}>
+            Enregistrer
+          </Button>
+        </div>
+      </form>
+    </BoxFormLayout.Fields>
   )
 }

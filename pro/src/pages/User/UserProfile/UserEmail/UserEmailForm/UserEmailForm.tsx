@@ -74,7 +74,6 @@ export const UserEmailForm = ({
 
   return (
     <>
-      <BoxFormLayout.RequiredMessage />
       <BoxFormLayout.FormHeader
         textSecondary="Adresse email actuelle"
         textPrimary={currentUser.email}
@@ -90,7 +89,7 @@ export const UserEmailForm = ({
                 required
                 type="email"
                 {...register('email')}
-                requiredIndicator="hidden"
+                requiredIndicator="explicit"
               />
             </div>
             <div className={styles['text-input']}>
@@ -99,7 +98,7 @@ export const UserEmailForm = ({
                 error={errors.password?.message}
                 required={true}
                 {...register('password')}
-                requiredIndicator="hidden"
+                requiredIndicator="explicit"
               />
             </div>
           </FormLayout>

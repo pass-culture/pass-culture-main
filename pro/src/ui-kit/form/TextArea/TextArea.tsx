@@ -180,6 +180,9 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           >
             {label}
             {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
+            {required && requiredIndicator === 'explicit' && (
+              <span className={styles['field-header-right']}>Obligatoire</span>
+            )}
           </label>
           {description && (
             <span

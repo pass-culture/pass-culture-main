@@ -9,7 +9,6 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
-import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
@@ -122,10 +121,6 @@ export const UserReviewDialog = ({
               onSubmit={form.handleSubmit((values) => onSubmitReview(values))}
             >
               <div className={styles['dialog-form-content']}>
-                <MandatoryInfo
-                  areAllFieldsMandatory
-                  className={styles['dialog-mandatory']}
-                />
                 <ScrollToFirstHookFormErrorAfterSubmit />
                 <IconRadioGroup
                   name="userSatisfaction"
@@ -133,7 +128,7 @@ export const UserReviewDialog = ({
                   legend="Comment évalueriez-vous votre expérience avec le pass Culture Pro ?"
                   group={group}
                   required
-                  requiredIndicator="hidden"
+                  requiredIndicator="explicit"
                   value={form.watch('userSatisfaction')}
                   onChange={(e) => form.setValue('userSatisfaction', e)}
                 />
@@ -150,7 +145,7 @@ export const UserReviewDialog = ({
                     </>
                   }
                   maxLength={500}
-                  requiredIndicator="hidden"
+                  requiredIndicator="explicit"
                   required
                   error={textareaError}
                   className={styles['text-area-container']}
