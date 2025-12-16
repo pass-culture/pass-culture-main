@@ -105,3 +105,27 @@ class GetCollectiveOfferFullAddressTest:
         result = utils.get_collective_offer_full_address(offer)
 
         assert result == offer.offererAddress.address.fullAddress
+
+
+year_start = datetime.fromisoformat("2020-08-31T22:00:00")  # 01/09 00:00:00 Paris time
+year_end = datetime.fromisoformat("2021-08-31T21:59:59")  # 31/08 23:59:59 Paris time
+
+
+@pytest.mark.usefixtures("db_session")
+class GetPerioBoundsTest:
+    def test_get_educational_year_full_bounds(self):
+        year = factories.EducationalYearFactory(beginningDate=year_start, expirationDate=year_end)
+
+        assert utils.get_educational_year_full_bounds(year) == (year_start, year_end)
+
+    def test_get_educational_year_first_period_bounds(self):
+        year = factories.EducationalYearFactory(beginningDate=year_start, expirationDate=year_end)
+        period_end = datetime.fromisoformat("2020-12-31T22:59:59")  # 31/12 23:59:59 Paris time
+
+        assert utils.get_educational_year_first_period_bounds(year) == (year_start, period_end)
+
+    def test_get_educational_year_second_period_bounds(self):
+        year = factories.EducationalYearFactory(beginningDate=year_start, expirationDate=year_end)
+        period_start = datetime.fromisoformat("2020-12-31T23:00:00")  # 01/01 00:00:00 Paris time
+
+        assert utils.get_educational_year_second_period_bounds(year) == (period_start, year_end)

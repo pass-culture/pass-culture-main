@@ -1412,6 +1412,9 @@ class EducationalYear(PcObject, models.Model):
 
     adageId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(30), unique=True, nullable=False)
 
+    # beginningDate and expirationDate are retrieved from Adage (/v1/annees-scolaires endpoint)
+    # The values we get are in Paris timezone
+    # As we store UTC, we have e.g beginningDate="2025-08-31 22:00:00" in DB (which corresponds to "2025-09-01 00:00:00" in Paris time)
     beginningDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
 
     expirationDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)

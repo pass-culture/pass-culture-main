@@ -4,6 +4,7 @@ from datetime import datetime
 from datetime import timedelta
 
 import jwt
+import pytz
 from psycopg2.extras import DateTimeRange
 
 from pcapi.core.educational import exceptions
@@ -137,14 +138,23 @@ def get_educational_year_full_bounds(educational_year: models.EducationalYear) -
 
 def get_educational_year_first_period_bounds(educational_year: models.EducationalYear) -> tuple[datetime, datetime]:
     period_start = educational_year.beginningDate
-    # Set the time at 23:59:59 to be consistent with educational year expirationDate
-    period_end = educational_year.beginningDate.replace(month=12, day=31, hour=23, minute=59, second=59)
+
+    # Set the time to 23:59:59 Paris time to be consistent with educational year expirationDate
+    naive_end = datetime(year=period_start.year, month=12, day=31, hour=23, minute=59, second=59)
+    aware_end = pytz.timezone(date_utils.METROPOLE_TIMEZONE).localize(naive_end)
+    # Return a naive datetime representing UTC to be consistent with period_start
+    period_end = date_utils.to_naive_utc_datetime(aware_end)
 
     return period_start, period_end
 
 
 def get_educational_year_second_period_bounds(educational_year: models.EducationalYear) -> tuple[datetime, datetime]:
-    period_start = educational_year.beginningDate.replace(year=educational_year.beginningDate.year + 1, month=1, day=1)
+    # Set the time to 00:00:00 Paris time to be consistent with educational year beginningDate
+    naive_start = datetime(year=educational_year.beginningDate.year + 1, month=1, day=1)
+    aware_start = pytz.timezone(date_utils.METROPOLE_TIMEZONE).localize(naive_start)
+    # Return a naive datetime representing UTC to be consistent with period_start
+    period_start = date_utils.to_naive_utc_datetime(aware_start)
+
     period_end = educational_year.expirationDate
 
     return period_start, period_end
