@@ -202,3 +202,21 @@
      class="link-primary"
      title="Page de l'artiste">{{ artist[text_attr] }}</a>
 {% endmacro %}
+{% macro build_wikidata_external_link(wikidata_id) %}
+  {% if wikidata_id %}
+    <a href="https://www.wikidata.org/wiki/{{ wikidata_id }}"
+       target="_blank"
+       rel="noreferrer noopener"
+       title="Voir sur Wikidata"
+       class="link-primary">{{ wikidata_id }} <i class="bi bi-box-arrow-up-right"></i></a>
+  {% endif %}
+{% endmacro %}
+{% macro build_wikipedia_external_link(wikipedia_url) %}
+  {% if wikipedia_url %}
+    <a href="{{ wikipedia_url }}"
+       target="_blank"
+       rel="noreferrer noopener"
+       title="Voir sur Wikipédia"
+       class="link-primary">{{ wikipedia_url }} <i class="bi bi-box-arrow-up-right"></i></a>
+  {% endif %}
+{% endmacro %}

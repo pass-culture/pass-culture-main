@@ -201,6 +201,9 @@ class GetArtistAdvancedSearchForm(BaseArtistAdvancedSearchForm):
 class ArtistEditForm(FlaskForm):
     name = fields.PCStringField("Nom de l'artiste")
     description = fields.PCTextareaField("Description")
+    biography = fields.PCTextareaField("Biographie")
+    wikidata_id = fields.PCOptStringField("ID Wikidata")
+    wikipedia_url = fields.PCURLField("URL Wikipédia")
 
 
 class ProductIdentifierTypeEnum(enum.Enum):

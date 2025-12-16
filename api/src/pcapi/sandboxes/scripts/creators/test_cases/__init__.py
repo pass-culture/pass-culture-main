@@ -316,6 +316,9 @@ def create_artists() -> None:
     artist_2 = artist_factories.ArtistFactory.create(
         name="Avril Lavigne",
         description="chanteuse canadienne",
+        biography="Avril Lavigne est une auteure-compositrice-interprète pop rock et punk rock, active depuis le début des années 2000. Révélée par l’album Let Go (2002), elle enchaîne des succès internationaux avec Under My Skin (2004), The Best Damn Thing (2007) et plusieurs albums certifiés. Elle a vendu plus de 40 millions d’albums et reçu une étoile sur le Hollywood Walk of Fame en 2022.",
+        wikidata_id="Q30449",
+        wikipedia_url="https://fr.wikipedia.org/wiki/Avril_Lavigne",
         image="https://commons.wikimedia.org/wiki/Special:FilePath/Glaston2024%202806%20300624%20%28129%20of%20173%29%20%28cropped%29.jpg",
         image_license="CC BY 2.0",
         image_license_url="https://creativecommons.org/licenses/by/2.0",
