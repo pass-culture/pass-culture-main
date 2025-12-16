@@ -29,15 +29,10 @@
 
 .legal-infos-callout {
   .legal-infos-paragraph {
-    @include fonts.body-accent-s;
-
     margin-bottom: var(--size-spacing-s);
-    color: var(--color-text-subtle);
   }
 
   &-link {
-    @include fonts.body-accent-s;
-
     display: inline;
     color: var(--color-text-brand-primary);
     text-decoration: underline;
