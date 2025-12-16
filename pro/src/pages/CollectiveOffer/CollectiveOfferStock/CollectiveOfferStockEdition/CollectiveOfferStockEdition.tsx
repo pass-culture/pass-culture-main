@@ -18,7 +18,7 @@ import {
   PATCH_SUCCESS_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isCollectiveStockEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
@@ -32,7 +32,7 @@ export const CollectiveOfferStockEdition = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
 
@@ -48,7 +48,7 @@ export const CollectiveOfferStockEdition = ({
     values: OfferEducationalStockFormValues
   ) => {
     if (!offer.collectiveStock) {
-      return notify.error('Impossible de mettre à jour le stock.')
+      return snackBar.error('Impossible de mettre à jour le stock.')
     }
 
     const stockPayload = createPatchStockDataPayload(
@@ -60,9 +60,9 @@ export const CollectiveOfferStockEdition = ({
       await api.editCollectiveStock(offer.collectiveStock.id, stockPayload)
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400) {
-        notify.error(FORM_ERROR_MESSAGE)
+        snackBar.error(FORM_ERROR_MESSAGE)
       } else {
-        notify.error(
+        snackBar.error(
           'Une erreur est survenue lors de la mise à jour de votre stock.'
         )
       }
@@ -76,7 +76,7 @@ export const CollectiveOfferStockEdition = ({
         false
       )}/collectif/recapitulatif`
     )
-    notify.success(PATCH_SUCCESS_MESSAGE)
+    snackBar.success(PATCH_SUCCESS_MESSAGE)
   }
   const stockCanBeEdited = isCollectiveStockEditable(offer)
 

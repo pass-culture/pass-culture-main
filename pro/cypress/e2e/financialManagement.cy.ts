@@ -5,7 +5,7 @@ export function attachmentModificationsDone() {
   cy.stepLog({
     message: 'Modifications done',
   })
-  cy.findAllByTestId('global-notification-success').should(
+  cy.findAllByTestId(`global-snack-bar-success-0`).should(
     'contain',
     'Vos modifications ont bien été prises en compte.'
   )

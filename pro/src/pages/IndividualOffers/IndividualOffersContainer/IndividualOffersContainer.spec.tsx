@@ -15,7 +15,7 @@ import {
   DEFAULT_SEARCH_FILTERS,
 } from '@/commons/core/Offers/constants'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   listOffersOfferFactory,
   venueListItemFactory,
@@ -107,9 +107,8 @@ describe('IndividualOffersScreen', () => {
   let props: IndividualOffersContainerProps
   let offersRecap: ListOffersOfferResponseModel[]
 
-  const mockNotifyError = vi.fn()
-  const mockNotifyInfo = vi.fn()
-  const mockNotifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
   beforeEach(async () => {
     vi.resetAllMocks()
     offersRecap = [listOffersOfferFactory()]
@@ -126,14 +125,13 @@ describe('IndividualOffersScreen', () => {
       ),
     }
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: mockNotifyError,
-      information: mockNotifyInfo,
-      success: mockNotifySuccess,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+      success: snackBarSuccess,
     }))
   })
 
@@ -535,8 +533,8 @@ describe('IndividualOffersScreen', () => {
       await userEvent.click(screen.getByLabelText('Tout sélectionner'))
       await userEvent.click(screen.getByText('Publier'))
 
-      expect(mockNotifyInfo).toHaveBeenCalledWith(
-        'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants'
+      expect(snackBarSuccess).toHaveBeenCalledWith(
+        'Une offre est en cours d’activation, veuillez rafraichir dans quelques instants.'
       )
       expect(patchSpy).toHaveBeenCalledWith({
         categoryId: null,
@@ -621,7 +619,7 @@ describe('IndividualOffersScreen', () => {
     await userEvent.click(screen.getByText('Supprimer ces brouillons'))
 
     expect(api.deleteDraftOffers).toHaveBeenCalledTimes(1)
-    expect(mockNotifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       '2 brouillons ont bien été supprimés'
     )
   })

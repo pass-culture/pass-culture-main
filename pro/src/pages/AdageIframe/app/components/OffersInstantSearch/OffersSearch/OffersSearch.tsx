@@ -19,7 +19,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   setAdageFilter,
   setAdagePageSaved,
@@ -66,7 +66,7 @@ export const OffersSearch = ({
   const { adageUser } = useAdageUser()
   const isUserAdmin = adageUser.role === AdageFrontRoles.READONLY
 
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const adageQueryFromSelector = useAppSelector(adageQuerySelector)
 
   const { scopedResults } = useInstantSearch()
@@ -109,7 +109,7 @@ export const OffersSearch = ({
     useEducationalDomains()
 
   if (educationalDomainsApiError) {
-    notification.error(GET_DATA_ERROR_MESSAGE)
+    snackBar.error(GET_DATA_ERROR_MESSAGE)
   }
 
   const domainsOptions = educationalDomains.map(({ id, name }) => ({

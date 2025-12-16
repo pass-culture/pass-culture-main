@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   collectiveOfferTemplateFactory,
   defaultDMSApplicationForEAC,
@@ -248,13 +248,13 @@ describe('OfferType', () => {
   })
 
   it('should display error message if trying to duplicate without template offer', async () => {
-    const notifyError = vi.fn()
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarError = vi.fn()
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
 
     renderOfferTypes()
@@ -275,7 +275,7 @@ describe('OfferType', () => {
       screen.getByRole('button', { name: 'Étape suivante' })
     )
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
     )
   })

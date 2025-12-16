@@ -13,7 +13,7 @@ import {
 import { offerInterventionOptions } from '@/commons/core/shared/interventionOptions'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -47,7 +47,7 @@ export const CollectiveDataForm = ({
   domains,
   venue,
 }: CollectiveDataFormProps): JSX.Element | null => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
 
@@ -91,7 +91,7 @@ export const CollectiveDataForm = ({
         `/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`
       )
     } catch {
-      notify.error(SENT_DATA_ERROR_MESSAGE)
+      snackBar.error(SENT_DATA_ERROR_MESSAGE)
     }
   }
 

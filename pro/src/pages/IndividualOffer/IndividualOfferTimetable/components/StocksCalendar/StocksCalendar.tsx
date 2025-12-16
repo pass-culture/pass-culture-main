@@ -16,7 +16,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
@@ -68,7 +68,7 @@ export function StocksCalendar({
   const [appliedSort, setAppliedSort] = useState<StocksTableSort>({
     sort: StocksOrderedBy.DATE,
   })
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
@@ -124,7 +124,7 @@ export function StocksCalendar({
       setPage((p) => p - 1)
     }
 
-    notify.success(
+    snackBar.success(
       ids.length === 1
         ? 'Une date a été supprimée'
         : `${ids.length} dates ont été supprimées`
@@ -149,18 +149,20 @@ export function StocksCalendar({
       )
 
       if (updatedStocks?.editedStockCount === 0) {
-        notify.error('Aucune date n’a pu être modifiée')
+        snackBar.error('Aucune date n’a pu être modifiée')
         return
       }
 
-      notify.success('Les modifications ont été enregistrées')
+      snackBar.success('Les modifications ont été enregistrées')
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
         // update offer status
         await mutate([GET_OFFER_QUERY_KEY, offer.id])
       }
     } catch {
-      notify.error('Une erreur est survenue lors de la modification des dates')
+      snackBar.error(
+        'Une erreur est survenue lors de la modification des dates'
+      )
     }
   }
 
@@ -175,7 +177,7 @@ export function StocksCalendar({
       venueId: offer.venue.id,
     })
 
-    await onSubmit(values, departmentCode, offer.id, notify, stockQueryKeys)
+    await onSubmit(values, departmentCode, offer.id, snackBar, stockQueryKeys)
 
     await mutate([GET_OFFER_QUERY_KEY, offer.id])
 

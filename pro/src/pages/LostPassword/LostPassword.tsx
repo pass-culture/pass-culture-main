@@ -10,7 +10,7 @@ import {
 } from '@/commons/core/shared/constants'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
@@ -34,7 +34,7 @@ export const LostPassword = (): JSX.Element => {
   useInitReCaptcha()
   const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const hookForm = useForm<UserEmailFormValues>({
     defaultValues: { email: '' },
@@ -54,9 +54,9 @@ export const LostPassword = (): JSX.Element => {
       setEmail(formValues.email)
     } catch (e) {
       if (e === RECAPTCHA_ERROR) {
-        notification.error(RECAPTCHA_ERROR_MESSAGE)
+        snackBar.error(RECAPTCHA_ERROR_MESSAGE)
       }
-      notification.error('Une erreur est survenue')
+      snackBar.error('Une erreur est survenue')
     }
   }
 

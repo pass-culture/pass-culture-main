@@ -1,4 +1,4 @@
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -12,15 +12,15 @@ export const ReSendEmailCallout = ({
   action?: () => Promise<void>
   hideLink?: boolean
 }) => {
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const onClick = () => {
     action?.()
       .then(() => {
-        notification.information('Email renvoyé !')
+        snackBar.success('Email envoyé.')
       })
       .catch(() => {
-        notification.error(
+        snackBar.error(
           `Une erreur est survenue, veuillez réessayer ultérieurement.`
         )
       })

@@ -9,6 +9,10 @@ import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import {
+  RECAPTCHA_ERROR,
+  RECAPTCHA_ERROR_MESSAGE,
+} from '@/commons/core/shared/constants'
 import * as initializeUserModule from '@/commons/store/user/dispatchers/initializeUser'
 import {
   defaultGetOffererResponseModel,
@@ -20,7 +24,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { SignIn } from './SignIn'
 
@@ -59,7 +63,7 @@ const renderSignIn = (options?: RenderWithProvidersOptions) => {
         />
         <Route path="/offres" element={<span>I’m the offer page</span>} />
       </Routes>
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       initialRouterEntries: ['/connexion'],
@@ -251,6 +255,41 @@ describe('SignIn', () => {
     })
   })
 
+  it('should handle API error with non-empty errors object', async () => {
+    renderSignIn()
+
+    const email = screen.getByLabelText('Adresse email')
+    await userEvent.type(email, 'test@example.com')
+    const password = screen.getByLabelText('Mot de passe')
+    await userEvent.type(password, 'password123')
+
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          url: '',
+          body: {
+            email: ['Email invalide'],
+            password: ['Mot de passe invalide'],
+          },
+          status: 400,
+        } as ApiResult,
+        ''
+      )
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Se connecter',
+      })
+    )
+
+    // Vérifie que Object.values(errors).length > 0 est bien couvert
+    expect(
+      screen.getAllByText('Identifiant ou mot de passe incorrect.')
+    ).toHaveLength(2)
+  })
+
   it('should display an error message when login rate limit exceeded', async () => {
     renderSignIn()
 
@@ -286,6 +325,69 @@ describe('SignIn', () => {
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
     ).toBeInTheDocument()
+  })
+
+  it('should display an error message when reCAPTCHA fails', async () => {
+    renderSignIn()
+
+    vi.spyOn(utils, 'getReCaptchaToken').mockRejectedValueOnce(RECAPTCHA_ERROR)
+
+    const email = screen.getByLabelText('Adresse email')
+    await userEvent.type(email, 'MonPetitEmail@example.com')
+    const password = screen.getByLabelText('Mot de passe')
+    await userEvent.type(password, 'fakePassword')
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Se connecter',
+      })
+    )
+
+    expect(await screen.findByText(RECAPTCHA_ERROR_MESSAGE)).toBeInTheDocument()
+  })
+
+  it('should clear errors when clicking after an API error', async () => {
+    renderSignIn()
+
+    const email = screen.getByLabelText('Adresse email')
+    await userEvent.type(email, 'MonPetitEmail@example.com')
+    const password = screen.getByLabelText('Mot de passe')
+    await userEvent.type(password, 'fakePassword')
+
+    vi.spyOn(api, 'signin').mockRejectedValueOnce(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          url: '',
+          body: { identifier: ['password is invalid'] },
+          status: 401,
+        } as ApiResult,
+        ''
+      )
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', {
+        name: 'Se connecter',
+      })
+    )
+
+    // Vérifier que les erreurs sont affichées
+    await waitFor(() => {
+      expect(
+        screen.getAllByText('Identifiant ou mot de passe incorrect.')
+      ).toHaveLength(2)
+    })
+
+    // Simuler un clic sur le document pour déclencher le reset
+    await userEvent.click(document.body)
+
+    // Attendre que les erreurs soient effacées
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Identifiant ou mot de passe incorrect.')
+      ).not.toBeInTheDocument()
+    })
   })
 
   describe('tracking', () => {

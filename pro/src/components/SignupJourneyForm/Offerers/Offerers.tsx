@@ -16,7 +16,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
@@ -35,7 +35,7 @@ import styles from './Offerers.module.scss'
 
 export const Offerers = (): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { currentUser } = useCurrentUser()
@@ -125,7 +125,7 @@ export const Offerers = (): JSX.Element => {
 
       navigate('/inscription/structure/rattachement/confirmation')
     } catch (e) {
-      notify.error(
+      snackBar.error(
         getHumanReadableApiError(
           e,
           'Impossible de lier votre compte à cette structure.'

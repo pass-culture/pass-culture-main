@@ -7,7 +7,7 @@ import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { updateUser } from '@/commons/store/user/reducer'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
@@ -29,7 +29,7 @@ export const UserPhoneForm = ({
 }: UserPhoneFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useAppDispatch()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const hookForm = useForm({
     defaultValues: initialValues,
@@ -63,7 +63,7 @@ export const UserPhoneForm = ({
       if (isErrorAPIError(error)) {
         // Handle server-side errors and set field errors
         for (const field of Object.keys(error.body)) {
-          notify.error(error.body[field])
+          snackBar.error(error.body[field])
         }
       }
     }

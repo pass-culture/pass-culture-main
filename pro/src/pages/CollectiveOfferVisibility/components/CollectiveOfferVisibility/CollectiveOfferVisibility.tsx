@@ -27,7 +27,7 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { searchPatternInOptions } from '@/commons/utils/searchPatternInOptions'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -92,7 +92,7 @@ export const CollectiveOfferVisibilityScreen = ({
   offer,
   requestId = '',
 }: CollectiveOfferVisibilityProps) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
 
@@ -188,7 +188,7 @@ export const CollectiveOfferVisibilityScreen = ({
           FORM_KEYS_MAPPING
         )
 
-        notify.error(POST_VISIBILITY_FORM_ERROR_MESSAGE)
+        snackBar.error(POST_VISIBILITY_FORM_ERROR_MESSAGE)
 
         Object.entries(serializedApiErrors).forEach(([field]) => {
           form.setError(field as keyof VisibilityFormValues, {
@@ -198,7 +198,7 @@ export const CollectiveOfferVisibilityScreen = ({
           })
         })
       } else {
-        notify.error(SENT_DATA_ERROR_MESSAGE)
+        snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
     }
   }
@@ -263,7 +263,7 @@ export const CollectiveOfferVisibilityScreen = ({
         if (isErrorAPIError(error) && error.status === 404) {
           console.warn('No redactors found')
         } else {
-          notify.error(GET_DATA_ERROR_MESSAGE)
+          snackBar.error(GET_DATA_ERROR_MESSAGE)
         }
       }
     }

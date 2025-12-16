@@ -10,7 +10,7 @@ import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultDMSApplicationForEAC,
   defaultGetVenue,
@@ -48,8 +48,8 @@ const renderCollectiveDataEdition = (
   )
 
 describe('CollectiveDataEdition', () => {
-  const notifyErrorMock = vi.fn()
-  const notifySuccessMock = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
 
   beforeEach(() => {
     vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
@@ -73,11 +73,9 @@ describe('CollectiveDataEdition', () => {
       ...defaultGetVenue,
     })
 
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      success: notifySuccessMock,
-      error: notifyErrorMock,
-      information: vi.fn(),
-      close: vi.fn(),
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      success: snackBarSuccess,
+      error: snackBarError,
     }))
   })
 
@@ -278,7 +276,7 @@ describe('CollectiveDataEdition', () => {
       await userEvent.click(submitButton)
 
       await waitFor(() =>
-        expect(notifyErrorMock).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
+        expect(snackBarError).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
       )
     })
   })

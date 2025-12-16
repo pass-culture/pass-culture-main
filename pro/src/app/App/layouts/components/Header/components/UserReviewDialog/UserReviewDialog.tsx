@@ -6,7 +6,7 @@ import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -39,7 +39,7 @@ export const UserReviewDialog = ({
 }: {
   dialogTrigger?: React.ReactNode
 }) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false)
   const onSubmitReview = async (formValues: UserReviewDialogFormValues) => {
     try {
@@ -53,7 +53,7 @@ export const UserReviewDialog = ({
       setDisplayConfirmation(true)
     } catch (e) {
       sendSentryCustomError(e)
-      notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
+      snackBar.error('Une erreur est survenue. Merci de réessayer plus tard.')
     }
   }
 

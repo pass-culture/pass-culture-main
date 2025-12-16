@@ -217,7 +217,7 @@ describe('ADAGE discovery', () => {
     cy.wait('@fav-offer', { responseTimeout: 30 * 1000 })
       .its('response.statusCode')
       .should('eq', 204)
-    cy.findByTestId('global-notification-success').should(
+    cy.findByTestId(`global-snack-bar-success-0`).should(
       'contain',
       'Ajouté à vos favoris'
     )
@@ -229,7 +229,7 @@ describe('ADAGE discovery', () => {
     cy.stepLog({ message: 'we can remove it from favorites' })
     cy.findByTestId('favorite-active').click()
     cy.wait('@delete_fav').its('response.statusCode').should('eq', 204)
-    cy.findByTestId('global-notification-success').should(
+    cy.findByTestId(`global-snack-bar-success-1`).should(
       'contain',
       'Supprimé de vos favoris'
     )

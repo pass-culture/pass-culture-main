@@ -9,8 +9,8 @@ import {
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
@@ -63,7 +63,7 @@ export const IndividualOfferLayout = ({
       offer.status
     )
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
 
   const onDeleteOfferWithAlreadyExistingEan = async () => {
@@ -73,12 +73,12 @@ export const IndividualOfferLayout = ({
     try {
       await api.deleteDraftOffers({ ids: [offer.id] })
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur s’est produite lors de la suppression de l’offre'
       )
       return
     }
-    notify.success('Votre brouillon a bien été supprimé')
+    snackBar.success('Votre brouillon a bien été supprimé')
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/offres')
   }

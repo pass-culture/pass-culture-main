@@ -6,7 +6,7 @@ import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { api } from '@/apiClient/api'
 import { StudentLevels } from '@/apiClient/v1'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultUseInfiniteHitsReturn,
   defaultUseStatsReturn,
@@ -15,7 +15,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { MAIN_INDEX_ID } from '../../OffersInstantSearch'
@@ -108,7 +108,7 @@ const renderOffersSearchComponent = (
       <AdageUserContextProvider adageUser={user}>
         <OffersSearch {...props} />
       </AdageUserContextProvider>
-      <Notification />
+      <SnackBarContainer />
     </>,
     options
   )
@@ -164,7 +164,7 @@ describe('offersSearch component', () => {
     lat: 10,
     lon: 10,
   }
-  const notifyError = vi.fn()
+  const snackBarError = vi.fn()
 
   beforeEach(async () => {
     props = {
@@ -173,12 +173,12 @@ describe('offersSearch component', () => {
       initialFilters: {},
     }
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
   })
 
@@ -425,7 +425,7 @@ describe('offersSearch component', () => {
 
     await waitFor(() => expect(api.listEducationalDomains).toHaveBeenCalled())
 
-    expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
+    expect(snackBarError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
   })
 
   it('should display suggestions if there are no search results', async () => {

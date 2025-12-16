@@ -7,7 +7,7 @@ import { apiAdage } from '@/apiClient/api'
 import { DEFAULT_MARSEILLE_STUDENTS } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { adageFilterSelector } from '@/commons/store/adageFilter/selectors'
 import {
   ALGOLIA_API_KEY,
@@ -71,7 +71,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
 
   const adageFilterFromSelector = useAppSelector(adageFilterSelector)
 
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const filterOnMarseilleStudents =
     isMarseilleEnabled && isUserInMarseilleProgram && programParam
@@ -121,7 +121,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
 
         setFilters({ ...ADAGE_FILTERS_DEFAULT_VALUES, venue: result })
       } catch {
-        notification.error('Lieu inconnu. Tous les résultats sont affichés.')
+        snackBar.error('Lieu inconnu. Tous les résultats sont affichés.')
       } finally {
         setIsLoadingVenue(false)
       }
@@ -131,7 +131,7 @@ export const OffersInstantSearch = (): JSX.Element | null => {
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setVenueFromUrl()
     }
-  }, [venueParam, siretParam, relativeOffersIncludedParam, notification])
+  }, [venueParam, siretParam, relativeOffersIncludedParam, snackBar])
 
   if (isLoadingVenue) {
     return <Spinner />

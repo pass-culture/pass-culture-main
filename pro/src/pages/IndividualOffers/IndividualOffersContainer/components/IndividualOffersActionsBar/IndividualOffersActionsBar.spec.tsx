@@ -13,7 +13,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import {
   IndividualOffersActionsBar,
@@ -28,7 +28,7 @@ const renderActionsBar = (
   renderWithProviders(
     <>
       <IndividualOffersActionsBar {...props} />
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       storeOverrides: {

@@ -6,7 +6,7 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 
 import type {
@@ -35,7 +35,7 @@ export const useSaveVenueSettings = ({
 }) => {
   const navigate = useNavigate()
   const location = useLocation()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
@@ -67,15 +67,15 @@ export const useSaveVenueSettings = ({
         isEdition: true,
       })
 
-      notify.success('Vos modifications ont été sauvegardées')
+      snackBar.success('Vos modifications ont été sauvegardées')
     } catch (error) {
       const formErrors = isErrorAPIError(error) ? error.body : {}
       const errorsKeys = Object.keys(formErrors)
 
       if (errorsKeys.length === 0 || errorsKeys.includes('global')) {
-        notify.error('Erreur lors de la sauvegarde de la structure.')
+        snackBar.error('Erreur lors de la sauvegarde de la structure.')
       } else {
-        notify.error(
+        snackBar.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
 

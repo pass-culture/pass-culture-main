@@ -1,8 +1,8 @@
 import { captureException, withScope } from '@sentry/browser'
-import { NOTIFICATION_SHOW_DURATION } from 'commons/core/Notification/constants'
-import { NotificationTypeEnum } from 'commons/hooks/useNotification'
-import { showNotification } from 'commons/store/notifications/reducer'
+import { addSnackBar } from 'commons/store/snackBar/reducer'
 import { rootStore } from 'commons/store/store'
+
+import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 
 import type { FrontendErrorOptions } from './types'
 
@@ -22,10 +22,9 @@ export function handleError(
   const { extras } = options
 
   rootStore.dispatch(
-    showNotification({
+    addSnackBar({
       text: userMessage,
-      type: NotificationTypeEnum.ERROR,
-      duration: NOTIFICATION_SHOW_DURATION,
+      variant: SnackBarVariant.ERROR,
     })
   )
 

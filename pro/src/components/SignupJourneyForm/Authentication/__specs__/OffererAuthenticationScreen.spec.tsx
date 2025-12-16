@@ -11,8 +11,8 @@ import {
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { OffererAuthentication } from '../OffererAuthentication'
 
@@ -93,7 +93,7 @@ const renderOffererAuthenticationScreen = (
           />
         </Routes>
       </SignupJourneyContext.Provider>
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       user: sharedCurrentUserFactory(),

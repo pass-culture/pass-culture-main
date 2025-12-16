@@ -5,7 +5,7 @@ import { apiAdage } from '@/apiClient/api'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import styles from './AdageDiscovery.module.scss'
 import { AdageDiscoveryBanner } from './AdageDiscoveryBanner/AdageDiscoveryBanner'
@@ -31,7 +31,7 @@ export const AdageDiscovery = () => {
   const footerSuggestion = createRef<HTMLDivElement>()
   const [isFooterSuggestionVisible] = useIsElementVisible(footerSuggestion)
 
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const adageAuthToken = params.get('token')
 
   const discoveryRef = useRef<HTMLDivElement>(null)
@@ -45,7 +45,7 @@ export const AdageDiscovery = () => {
     useEducationalDomains()
 
   if (educationalDomainsApiError) {
-    notification.error(GET_DATA_ERROR_MESSAGE)
+    snackBar.error(GET_DATA_ERROR_MESSAGE)
   }
 
   const domainsOptions = educationalDomains.map(({ id, name }) => ({

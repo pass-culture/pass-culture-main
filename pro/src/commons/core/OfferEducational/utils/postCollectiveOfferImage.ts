@@ -1,17 +1,17 @@
 import { api } from '@/apiClient/api'
-import type { useNotification } from '@/commons/hooks/useNotification'
+import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import type { OfferEducationalFormValues } from '../types'
 
 interface PostCollectiveOfferImageProps {
   initialValues: OfferEducationalFormValues
-  notify: ReturnType<typeof useNotification>
+  snackBar: ReturnType<typeof useSnackBar>
   id: number
 }
 
 export const postCollectiveOfferImage = async ({
   initialValues,
-  notify,
+  snackBar,
   id,
 }: PostCollectiveOfferImageProps) => {
   const { imageUrl, imageCredit } = initialValues
@@ -21,7 +21,7 @@ export const postCollectiveOfferImage = async ({
     try {
       const imageResponse = await fetch(imageUrl)
       if (!imageResponse.ok) {
-        return notify.error(imageErrorMessage)
+        return snackBar.error(imageErrorMessage)
       }
       const contentType = imageResponse.headers.get('content-type')
       const blob = await imageResponse.blob()
@@ -41,7 +41,7 @@ export const postCollectiveOfferImage = async ({
         croppingRectY: 0,
       })
     } catch {
-      notify.error('Impossible de récupérer votre image')
+      snackBar.error('Impossible de récupérer votre image')
     }
   }
 }

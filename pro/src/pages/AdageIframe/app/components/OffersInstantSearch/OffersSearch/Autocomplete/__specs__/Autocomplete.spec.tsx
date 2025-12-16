@@ -7,7 +7,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 import * as storageAvailable from '@/commons/utils/storageAvailable'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { AdageUserContext } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import { Autocomplete } from '../Autocomplete'
@@ -125,7 +125,7 @@ const renderAutocomplete = (
           <a href="#">Second element</a>
         </div>
       </AdageUserContext.Provider>
-      <Notification />
+      <SnackBarContainer />
     </>,
     options
   )

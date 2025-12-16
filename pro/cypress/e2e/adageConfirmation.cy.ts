@@ -227,7 +227,7 @@ describe('Adage confirmation', () => {
 
       cy.wait('@collectiveOffers').its('response.statusCode').should('eq', 200)
 
-      cy.findAllByTestId('global-notification-success').should(
+      cy.findAllByTestId(`global-snack-bar-success-0`).should(
         'contain',
         'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
       )

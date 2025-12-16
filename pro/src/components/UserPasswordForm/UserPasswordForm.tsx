@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from '@/ui-kit/Button/Button'
@@ -43,7 +43,7 @@ export const isUserPasswordError = (
 export const UserPasswordForm = ({
   closeForm,
 }: UserPasswordFormProps): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const onSubmit = async (values: UserPasswordFormValues) => {
     try {
       await api.postChangePassword(values)
@@ -62,7 +62,7 @@ export const UserPasswordForm = ({
         }
       } else {
         // In any other case, it's a generic error
-        notify.error(
+        snackBar.error(
           'Une erreur est survenue, veuillez réessayer ultérieurement.'
         )
       }

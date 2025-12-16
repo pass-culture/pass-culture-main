@@ -19,7 +19,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { BankInformations } from '@/pages/Reimbursements/BankInformations/BankInformations'
 
 const mockMutate = vi.fn()
@@ -51,7 +51,7 @@ const renderBankInformations = (offerer: GetOffererResponseModel | null) => {
           <Route index element={<BankInformations />} />
         </Route>
       </Routes>
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       initialRouterEntries: ['/remboursements/informations-bancaires'],

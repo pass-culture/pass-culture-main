@@ -10,7 +10,7 @@ import {
 import { serializeApiCollectiveFilters } from '@/commons/core/Offers/utils/serializeApiCollectiveFilters'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   ensureCurrentOfferer,
   selectCurrentOfferer,
@@ -34,7 +34,7 @@ export const OfferTypeScreen = () => {
   const selectedVenue = useAppSelector(ensureSelectedVenue)
   const queryVenueId = queryParams.get('lieu')
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const methods = useForm<OfferTypeFormValues>({
     defaultValues: {
@@ -95,7 +95,7 @@ export const OfferTypeScreen = () => {
         )
 
       if (templateOffersOnSelectedVenue.length === 0) {
-        return notify.error(
+        return snackBar.error(
           'Vous devez créer une offre vitrine avant de pouvoir utiliser cette fonctionnalité'
         )
       } else {

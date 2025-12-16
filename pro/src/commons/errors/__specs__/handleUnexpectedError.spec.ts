@@ -1,5 +1,8 @@
-import { closeNotification } from 'commons/store/notifications/reducer'
+import { clearList } from 'commons/store/snackBar/reducer'
+import { listSelector } from 'commons/store/snackBar/selectors'
 import { rootStore } from 'commons/store/store'
+
+import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 
 import { FrontendError } from '../FrontendError'
 import { handleUnexpectedError } from '../handleUnexpectedError'
@@ -21,7 +24,7 @@ describe('handleUnexpectedError', () => {
   const error = new FrontendError('An internal error message.')
 
   afterEach(() => {
-    rootStore.dispatch(closeNotification())
+    rootStore.dispatch(clearList())
     vi.clearAllMocks()
   })
 
@@ -34,11 +37,11 @@ describe('handleUnexpectedError', () => {
 
     handleUnexpectedError(err)
 
-    const state = rootStore.getState()
-    expect(state.notification.notification).toStrictEqual({
+    const snackBars = listSelector(rootStore.getState())
+    expect(snackBars).toHaveLength(1)
+    expect(snackBars[0]).toMatchObject({
       text: 'Une erreur est survenue de notre côté. Veuillez réessayer plus tard.',
-      type: 'error',
-      duration: expect.any(Number),
+      variant: SnackBarVariant.ERROR,
     })
 
     expect(mockedSentry.captureException).toHaveBeenCalledWith(err)
@@ -58,8 +61,8 @@ describe('handleUnexpectedError', () => {
 
     handleUnexpectedError(error, options)
 
-    const state = rootStore.getState()
-    expect(state.notification.notification).toBeNull()
+    const snackBars = listSelector(rootStore.getState())
+    expect(snackBars).toHaveLength(0)
 
     expect(mockedSentry.captureException).toHaveBeenCalledOnce()
 
@@ -90,11 +93,11 @@ describe('handleUnexpectedError', () => {
 
     handleUnexpectedError(error, options)
 
-    const state = rootStore.getState()
-    expect(state.notification.notification).toStrictEqual({
+    const snackBars = listSelector(rootStore.getState())
+    expect(snackBars).toHaveLength(1)
+    expect(snackBars[0]).toMatchObject({
       text: options.userMessage,
-      type: 'error',
-      duration: expect.any(Number),
+      variant: SnackBarVariant.ERROR,
     })
   })
 })

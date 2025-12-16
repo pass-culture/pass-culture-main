@@ -32,12 +32,14 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const mockNotify = {
-  success: vi.fn(),
-  error: vi.fn(),
-}
-vi.mock('@/commons/hooks/useNotification', () => ({
-  useNotification: () => mockNotify,
+const snackBarError = vi.fn()
+const snackBarSuccess = vi.fn()
+
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
+    success: snackBarSuccess,
+    error: snackBarError,
+  }),
 }))
 
 const mockedHighlights: HighlightResponseModel[] = [
@@ -206,7 +208,7 @@ describe('OfferHighlightForm', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(mockNotify.success).toHaveBeenCalledWith(
+      expect(snackBarSuccess).toHaveBeenCalledWith(
         'La sélection des temps forts a bien été prise en compte'
       )
     })
@@ -227,7 +229,7 @@ describe('OfferHighlightForm', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(mockNotify.success).toHaveBeenCalledWith(
+      expect(snackBarSuccess).toHaveBeenCalledWith(
         'Les temps forts ont été dissociés'
       )
     })
@@ -242,7 +244,7 @@ describe('OfferHighlightForm', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(mockNotify.success).not.toHaveBeenCalled()
+      expect(snackBarSuccess).not.toHaveBeenCalled()
     })
   })
 
@@ -259,7 +261,7 @@ describe('OfferHighlightForm', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(mockNotify.error).toHaveBeenCalledWith(
+      expect(snackBarError).toHaveBeenCalledWith(
         'Une erreur est survenue lors de la sélection des temps forts'
       )
     })

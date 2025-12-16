@@ -12,7 +12,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
@@ -34,7 +34,7 @@ export const StockSection = ({
 }: StockSectionProps): JSX.Element => {
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const departmentCode = getDepartmentCode(offer)
   const error =
@@ -44,14 +44,14 @@ export const StockSection = ({
     !offer.isEvent ? [GET_STOCKS_QUERY_KEY, offer.id] : null,
     () => api.getStocks(offer.id),
     {
-      onError: () => notification.error(error),
+      onError: () => snackBar.error(error),
     }
   )
   const getStocksEventStatsQuery = useSWR(
     offer.isEvent ? [GET_STOCKS_EVENT_STATS_QUERY_KEY, offer.id] : null,
     () => api.getStocksStats(offer.id),
     {
-      onError: () => notification.error(error),
+      onError: () => snackBar.error(error),
     }
   )
 

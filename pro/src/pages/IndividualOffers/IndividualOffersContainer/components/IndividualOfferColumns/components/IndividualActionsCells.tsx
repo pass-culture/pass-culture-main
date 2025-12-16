@@ -15,7 +15,7 @@ import { OFFER_STATUS_DRAFT } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
@@ -69,7 +69,7 @@ export const IndividualActionsCells = ({
     setIsDialogForHeadlineOfferWithoutImageOpen,
   ] = useState(false)
   const { logEvent } = useAnalytics()
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const closeDeleteDraftDialog = useCallback(() => {
     /* istanbul ignore next */
@@ -90,7 +90,7 @@ export const IndividualActionsCells = ({
       await api.deleteDraftOffers({
         ids: [offer.id],
       })
-      notification.success(computeDeletionSuccessMessage(1))
+      snackBar.success(computeDeletionSuccessMessage(1))
       logEvent(Events.DELETE_DRAFT_OFFER, {
         from: OFFER_FORM_NAVIGATION_IN.OFFERS,
         used: OFFER_FORM_NAVIGATION_MEDIUM.OFFERS_TRASH_ICON,
@@ -100,7 +100,7 @@ export const IndividualActionsCells = ({
       })
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
     } catch {
-      notification.error(computeDeletionErrorMessage(1))
+      snackBar.error(computeDeletionErrorMessage(1))
     }
 
     setIsConfirmDialogDeleteDraftOpen(false)

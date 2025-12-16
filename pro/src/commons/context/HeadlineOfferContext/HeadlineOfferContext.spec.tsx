@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { currentOffererFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
@@ -260,12 +260,10 @@ describe('HeadlineOfferContext', () => {
 
     describe('about notifications', () => {
       it('should notify success on successful upsert', async () => {
-        const notifySuccess = vi.fn()
-        vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-          success: notifySuccess,
+        const snackBarSuccess = vi.fn()
+        vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+          success: snackBarSuccess,
           error: vi.fn(),
-          information: vi.fn(),
-          close: vi.fn(),
         }))
 
         renderIndividualOffersContext()
@@ -275,16 +273,16 @@ describe('HeadlineOfferContext', () => {
         })
         await userEvent.click(upsertButton)
 
-        expect(notifySuccess).toHaveBeenCalledWith(LABELS.notify.upsert.success)
+        expect(snackBarSuccess).toHaveBeenCalledWith(
+          LABELS.notify.upsert.success
+        )
       })
 
       it('should notify error on failed upsert', async () => {
-        const notifyError = vi.fn()
-        vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+        const snackBarError = vi.fn()
+        vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
           success: vi.fn(),
-          error: notifyError,
-          information: vi.fn(),
-          close: vi.fn(),
+          error: snackBarError,
         }))
 
         // Api call rejects with an error and so does the mutation.
@@ -297,7 +295,7 @@ describe('HeadlineOfferContext', () => {
         })
         await userEvent.click(upsertButton)
 
-        expect(notifyError).toHaveBeenCalledWith(LABELS.notify.upsert.error)
+        expect(snackBarError).toHaveBeenCalledWith(LABELS.notify.upsert.error)
       })
     })
 
@@ -343,12 +341,10 @@ describe('HeadlineOfferContext', () => {
 
     describe('about notifications', () => {
       it('should notify success on successful removal', async () => {
-        const notifySuccess = vi.fn()
-        vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-          success: notifySuccess,
+        const snackBarSuccess = vi.fn()
+        vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+          success: snackBarSuccess,
           error: vi.fn(),
-          information: vi.fn(),
-          close: vi.fn(),
         }))
 
         renderIndividualOffersContext()
@@ -358,16 +354,16 @@ describe('HeadlineOfferContext', () => {
         })
         await userEvent.click(removeButton)
 
-        expect(notifySuccess).toHaveBeenCalledWith(LABELS.notify.delete.success)
+        expect(snackBarSuccess).toHaveBeenCalledWith(
+          LABELS.notify.delete.success
+        )
       })
 
       it('should notify error on failed removal', async () => {
-        const notifyError = vi.fn()
-        vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+        const snackBarError = vi.fn()
+        vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
           success: vi.fn(),
-          error: notifyError,
-          information: vi.fn(),
-          close: vi.fn(),
+          error: snackBarError,
         }))
 
         // Api call rejects with an error and so does the mutation.
@@ -380,7 +376,7 @@ describe('HeadlineOfferContext', () => {
         })
         await userEvent.click(removeButton)
 
-        expect(notifyError).toHaveBeenCalledWith(LABELS.notify.delete.error)
+        expect(snackBarError).toHaveBeenCalledWith(LABELS.notify.delete.error)
       })
     })
 

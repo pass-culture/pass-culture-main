@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -153,17 +153,17 @@ describe('ImageDragAndDropUploader', () => {
 
   it('should display a success toaster and call onImageUpload, as soon as a file is saved successfully', async () => {
     const mockUpload = vi.fn()
-    const mockNotifySuccess = vi.fn()
+    const snackBarSuccess = vi.fn()
     const mockFile = new File(['fake img'], 'fake_img.jpg', {
       type: 'image/jpeg',
     })
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: mockNotifySuccess,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      success: snackBarSuccess,
     }))
 
     renderImageUploader({
@@ -186,7 +186,7 @@ describe('ImageDragAndDropUploader', () => {
     await userEvent.click(screen.getByText('Importer'))
 
     expect(mockUpload).toHaveBeenCalled()
-    expect(mockNotifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       'Vos modifications ont bien été prises en compte'
     )
 
@@ -195,14 +195,14 @@ describe('ImageDragAndDropUploader', () => {
 
   it('should display a toaster and call onImageDelete, as soon as a file is delete successfully', async () => {
     const mockDelete = vi.fn()
-    const mockNotifySuccess = vi.fn()
+    const snackBarSuccess = vi.fn()
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: mockNotifySuccess,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      success: snackBarSuccess,
     }))
 
     renderImageUploader({
@@ -224,8 +224,6 @@ describe('ImageDragAndDropUploader', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
     expect(mockDelete).toHaveBeenCalled()
-    expect(mockNotifySuccess).toHaveBeenCalledWith(
-      'L’image a bien été supprimée'
-    )
+    expect(snackBarSuccess).toHaveBeenCalledWith('L’image a bien été supprimée')
   })
 })

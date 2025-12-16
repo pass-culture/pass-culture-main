@@ -4,7 +4,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { expect } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -79,13 +79,13 @@ describe('PricingPoint', () => {
     vi.spyOn(api, 'linkVenueToPricingPoint').mockRejectedValue({
       response: { data: { message: 'error' } },
     })
-    const mockNotifyError = vi.fn()
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: mockNotifyError,
+    const snackBarError = vi.fn()
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
 
     renderPricingPoints(defaultProps)
@@ -105,7 +105,7 @@ describe('PricingPoint', () => {
       })
     )
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
     )
   })

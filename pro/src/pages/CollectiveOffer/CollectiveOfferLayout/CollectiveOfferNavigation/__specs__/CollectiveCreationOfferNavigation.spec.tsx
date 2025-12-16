@@ -9,7 +9,7 @@ import {
   type GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultGetVenue,
   getCollectiveOfferFactory,
@@ -52,8 +52,8 @@ describe('CollectiveCreationOfferNavigation', () => {
   let props: CollectiveCreationOfferNavigationProps
   const offerId = 1
   const mockLogEvent = vi.fn()
-  const notifyError = vi.fn()
-  const notifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
   const defaultUseLocationValue = {
     state: {},
     hash: '',
@@ -86,13 +86,13 @@ describe('CollectiveCreationOfferNavigation', () => {
       {} as CollectiveOfferResponseIdModel
     )
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
-      success: notifySuccess,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+      success: snackBarSuccess,
     }))
 
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)

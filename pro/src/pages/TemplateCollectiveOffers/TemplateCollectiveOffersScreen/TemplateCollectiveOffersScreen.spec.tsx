@@ -8,7 +8,7 @@ import {
   UserRole,
 } from '@/apiClient/v1'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import {
@@ -71,20 +71,20 @@ const props = {
 describe('TemplateCollectiveOffersScreen', () => {
   let currentUser: SharedCurrentUserResponseModel
 
-  const mockNotifyError = vi.fn()
-  const mockNotifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
   beforeEach(async () => {
     currentUser = sharedCurrentUserFactory({
       roles: [UserRole.PRO],
     })
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: mockNotifyError,
-      success: mockNotifySuccess,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+      success: snackBarSuccess,
     }))
   })
 

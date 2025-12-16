@@ -26,13 +26,14 @@ vi.mock('react-router', async () => ({
   useNavigate: () => mockUseNavigate,
 }))
 
-const mockUseNotification = {
-  error: vi.fn(),
-  success: vi.fn(),
-}
-vi.mock('@/commons/hooks/useNotification', async () => ({
-  ...(await vi.importActual('@/commons/hooks/useNotification')),
-  useNotification: () => mockUseNotification,
+const snackBarError = vi.fn()
+const snackBarSuccess = vi.fn()
+vi.mock('@/commons/hooks/useSnackBar', async () => ({
+  ...(await vi.importActual('@/commons/hooks/useSnackBar')),
+  useSnackBar: () => ({
+    error: snackBarError,
+    success: snackBarSuccess,
+  }),
 }))
 
 const renderLostPassword = (url: string) => {
@@ -64,9 +65,7 @@ describe('ResetPassword', () => {
     )
     await userEvent.click(screen.getByText('Confirmer'))
 
-    expect(mockUseNotification.success).toHaveBeenCalledWith(
-      'Mot de passe modifié.'
-    )
+    expect(snackBarSuccess).toHaveBeenCalledWith('Mot de passe modifié.')
     expect(mockUseNavigate).toHaveBeenCalledWith('/connexion')
   })
 
@@ -80,7 +79,7 @@ describe('ResetPassword', () => {
     renderLostPassword(url)
 
     await vi.waitFor(() => {
-      expect(mockUseNotification.error).toHaveBeenCalledWith(
+      expect(snackBarError).toHaveBeenCalledWith(
         'Le lien est invalide ou a expiré. Veuillez recommencer.'
       )
       expect(mockUseNavigate).toHaveBeenCalledWith('/demande-mot-de-passe')
@@ -97,7 +96,7 @@ describe('ResetPassword', () => {
     renderLostPassword(url)
 
     await vi.waitFor(() => {
-      expect(mockUseNotification.error).toHaveBeenCalledWith(
+      expect(snackBarError).toHaveBeenCalledWith(
         'Le lien est invalide ou a expiré. Veuillez recommencer.'
       )
       expect(mockUseNavigate).toHaveBeenCalledWith('/demande-mot-de-passe')

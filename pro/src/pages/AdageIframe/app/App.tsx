@@ -9,7 +9,7 @@ import {
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { LOG_CATALOG_VIEW_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { LOGS_DATA } from '@/commons/utils/config'
 import { AppLayout } from '@/pages/AdageIframe/app/components/AppLayout/AppLayout'
 
@@ -21,7 +21,7 @@ export const App = (): JSX.Element => {
   const [user, setUser] = useState<AuthenticatedResponse | null>()
   const [isLoading, setIsLoading] = useState<boolean>(true)
 
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const params = new URLSearchParams(window.location.search)
   const siret = params.get('siret')
@@ -63,7 +63,7 @@ export const App = (): JSX.Element => {
         source: siret || venueId ? 'partnersMap' : 'homepage',
       })
     }
-  }, [notification, siret, venueId])
+  }, [snackBar, siret, venueId])
 
   if (isLoading) {
     return <LoaderPage />

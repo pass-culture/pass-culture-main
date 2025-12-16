@@ -8,7 +8,7 @@ import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
@@ -38,7 +38,7 @@ export const HeadlineOfferImageDialogs = ({
   const isReplacingHeadlineOffer = !!headlineOffer?.id
 
   const [isImageUploaderOpen, setIsImageUploaderOpen] = useState(false)
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { storedFilters } = getStoredFilterConfig('individual')
   const urlSearchFilters = useQuerySearchFilters()
   const finalSearchFilters = {
@@ -92,7 +92,7 @@ export const HeadlineOfferImageDialogs = ({
         },
       })
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur est survenue lors de la sauvegarde de votre image'
       )
     }

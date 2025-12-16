@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultBankAccount,
   defaultManagedVenue,
@@ -126,14 +126,14 @@ describe('LinkVenueDialog', () => {
 
   it('should display error message when attach pricing point fail', async () => {
     vi.spyOn(api, 'linkVenueToPricingPoint').mockRejectedValue({})
-    const mockNotifyError = vi.fn()
+    const snackBarError = vi.fn()
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: mockNotifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
     const managedVenues = [
       { ...defaultManagedVenue, id: 1, hasPricingPoint: true, name: 'raison' },
@@ -163,7 +163,7 @@ describe('LinkVenueDialog', () => {
       screen.getByRole('button', { name: 'Valider la sélection' })
     )
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue. Merci de réessayer plus tard'
     )
   })

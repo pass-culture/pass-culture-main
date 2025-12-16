@@ -18,8 +18,8 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
@@ -45,7 +45,7 @@ export const IndividualOfferPracticalInfosScreen = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const { subCategories } = useIndividualOfferContext()
 
@@ -138,7 +138,7 @@ export const IndividualOfferPracticalInfosScreen = ({
         })
       )
     } catch {
-      notify.error(SENT_DATA_ERROR_MESSAGE)
+      snackBar.error(SENT_DATA_ERROR_MESSAGE)
       return
     }
   }

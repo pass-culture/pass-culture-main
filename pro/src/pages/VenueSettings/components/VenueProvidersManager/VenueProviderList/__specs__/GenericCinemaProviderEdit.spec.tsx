@@ -11,8 +11,8 @@ import {
   type GenericCinemaProviderEditProps,
 } from '../GenericCinemaProviderEdit'
 
-vi.mock('@/commons/hooks/useNotification', () => ({
-  useNotification: () => ({
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
     success: vi.fn(),
     error: vi.fn(),
   }),

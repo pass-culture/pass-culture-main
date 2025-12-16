@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { AdageHeaderLink } from '@/apiClient/adage/models/AdageHeaderLink'
 import { apiAdage } from '@/apiClient/api'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultEducationalInstitution } from '@/commons/utils/factories/adageFactories'
 import {
   type RenderWithProvidersOptions,
@@ -39,7 +39,7 @@ vi.mock('@/apiClient/api', () => ({
 }))
 
 describe('AdageHeader', () => {
-  const notifyError = vi.fn()
+  const snackBarError = vi.fn()
   const user = {
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
@@ -49,12 +49,12 @@ describe('AdageHeader', () => {
   }
 
   beforeEach(async () => {
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
     vi.spyOn(apiAdage, 'getEducationalInstitutionWithBudget').mockResolvedValue(
       defaultEducationalInstitution

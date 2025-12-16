@@ -12,7 +12,7 @@ import {
 } from '@/commons/core/FirebaseEvents/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   Banner,
@@ -35,7 +35,7 @@ export const CancelledBanner = ({
   const { logEvent } = useAnalytics()
   const navigate = useNavigate()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const message = useMemo(() => {
     switch (reason) {
@@ -80,7 +80,7 @@ export const CancelledBanner = ({
               offerStatus: CollectiveOfferDisplayedStatus.CANCELLED,
               offerType: 'collective',
             })
-            await duplicateBookableOffer(navigate, notify, offerId)
+            await duplicateBookableOffer(navigate, snackBar, offerId)
           },
         },
       ]

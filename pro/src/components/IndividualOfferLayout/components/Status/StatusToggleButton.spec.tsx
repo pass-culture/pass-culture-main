@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import {
   type RenderWithProvidersOptions,
@@ -42,12 +42,10 @@ describe('StatusToggleButton', () => {
   it('should deactivate an offer and confirm', async () => {
     // given
     const toggle = vi.spyOn(api, 'patchOffersActiveStatus').mockResolvedValue()
-    const notifySuccess = vi.fn()
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      success: notifySuccess,
+    const snackBarSuccess = vi.fn()
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      success: snackBarSuccess,
       error: vi.fn(),
-      information: vi.fn(),
-      close: vi.fn(),
     }))
 
     // when
@@ -63,7 +61,7 @@ describe('StatusToggleButton', () => {
       ids: [offerId],
       isActive: false,
     })
-    expect(notifySuccess).toHaveBeenNthCalledWith(
+    expect(snackBarSuccess).toHaveBeenNthCalledWith(
       1,
       'L’offre a bien été mise en pause.'
     )
@@ -77,12 +75,10 @@ describe('StatusToggleButton', () => {
     const toggleFunction = vi
       .spyOn(api, 'patchOffersActiveStatus')
       .mockResolvedValue()
-    const notifySuccess = vi.fn()
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      success: notifySuccess,
+    const snackBarSuccess = vi.fn()
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      success: snackBarSuccess,
       error: vi.fn(),
-      information: vi.fn(),
-      close: vi.fn(),
     }))
 
     props.offer = getIndividualOfferFactory({
@@ -101,7 +97,7 @@ describe('StatusToggleButton', () => {
       ids: [offerId],
       isActive: true,
     })
-    expect(notifySuccess).toHaveBeenNthCalledWith(
+    expect(snackBarSuccess).toHaveBeenNthCalledWith(
       1,
       'L’offre a bien été publiée.'
     )
@@ -113,12 +109,10 @@ describe('StatusToggleButton', () => {
     const toggleFunction = vi
       .spyOn(api, 'patchOffersActiveStatus')
       .mockRejectedValue({})
-    const notifyError = vi.fn()
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      error: notifyError,
+    const snackBarError = vi.fn()
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      error: snackBarError,
       success: vi.fn(),
-      information: vi.fn(),
-      close: vi.fn(),
     }))
 
     // when
@@ -127,7 +121,7 @@ describe('StatusToggleButton', () => {
     // then
     await userEvent.click(screen.getByText(/Mettre en pause/))
     expect(toggleFunction).toHaveBeenCalledTimes(1)
-    expect(notifyError).toHaveBeenNthCalledWith(
+    expect(snackBarError).toHaveBeenNthCalledWith(
       1,
       'Une erreur est survenue, veuillez réessayer ultérieurement.'
     )

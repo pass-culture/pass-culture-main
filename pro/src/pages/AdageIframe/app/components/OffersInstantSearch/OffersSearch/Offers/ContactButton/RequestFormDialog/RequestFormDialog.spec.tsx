@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -150,13 +150,11 @@ describe('RequestFormDialog', () => {
   })
 
   it('should submit valid form and close modal on submit', async () => {
-    const notifySuccess = vi.fn()
+    const snackBarSuccess = vi.fn()
     const mockCloseModal = vi.fn()
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      success: notifySuccess,
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      success: snackBarSuccess,
       error: vi.fn(),
-      information: vi.fn(),
-      close: vi.fn(),
     }))
 
     renderRequestFormDialog({ onConfirmDialog: mockCloseModal })
@@ -181,20 +179,18 @@ describe('RequestFormDialog', () => {
       totalTeachers: 0,
       totalStudents: 0,
     })
-    expect(notifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre demande a bien été envoyée'
     )
     expect(mockCloseModal).toHaveBeenCalled()
   })
   it('should display error message when api reject call', async () => {
     vi.spyOn(apiAdage, 'createCollectiveRequest').mockRejectedValueOnce({})
-    const notifyError = vi.fn()
+    const snackBarError = vi.fn()
     const mockCloseModal = vi.fn()
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       success: vi.fn(),
-      error: notifyError,
-      information: vi.fn(),
-      close: vi.fn(),
+      error: snackBarError,
     }))
 
     renderRequestFormDialog({ onConfirmDialog: mockCloseModal })
@@ -209,7 +205,7 @@ describe('RequestFormDialog', () => {
     })
     await userEvent.click(submitButton)
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
     )
   })

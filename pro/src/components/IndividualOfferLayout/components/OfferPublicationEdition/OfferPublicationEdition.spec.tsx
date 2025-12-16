@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import { OfferStatus } from '@/apiClient/v1'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import {
   getPatchOfferPayloadFromFormValues,
@@ -25,7 +25,7 @@ function renderOfferPublicationEdition(props: OfferPublicationEditionProps) {
   return renderWithProviders(
     <>
       <OfferPublicationEdition {...props} />
-      <Notification />
+      <SnackBarContainer />
     </>
   )
 }

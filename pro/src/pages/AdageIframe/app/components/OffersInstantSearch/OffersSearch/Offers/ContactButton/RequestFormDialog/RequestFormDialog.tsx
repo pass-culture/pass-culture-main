@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form'
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { parseAndValidateFrenchPhoneNumber } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -48,7 +48,7 @@ export const RequestFormDialog = ({
   isPreview,
   onConfirmDialog,
 }: RequestFormDialogProps): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const initialValues = {
     teacherEmail: userEmail ?? '',
@@ -76,10 +76,10 @@ export const RequestFormDialog = ({
     const payload = createCollectiveRequestPayload(hookForm.getValues())
     try {
       await apiAdage.createCollectiveRequest(offerId, payload)
-      notify.success('Votre demande a bien été envoyée')
+      snackBar.success('Votre demande a bien été envoyée')
       reset()
     } catch {
-      notify.error(
+      snackBar.error(
         'Impossible de créer la demande.\nVeuillez contacter le support pass culture'
       )
       reset()

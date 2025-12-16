@@ -12,7 +12,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { getDateToFrenchText } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -25,7 +25,7 @@ import styles from './CollectiveOfferFromRequest.module.scss'
 
 export const CollectiveOfferFromRequest = (): JSX.Element => {
   const navigate = useNavigate()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
@@ -60,7 +60,7 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     createOfferFromTemplate(
       navigate,
-      notify,
+      snackBar,
       Number(offerId),
       requestId,
       isMarseilleActive

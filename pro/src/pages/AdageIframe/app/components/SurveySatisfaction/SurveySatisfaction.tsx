@@ -2,7 +2,7 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import { apiAdage } from '@/apiClient/api'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -22,7 +22,7 @@ export const SurveySatisfaction = ({
   const [shouldHideSurveySatisfaction, setShouldHideSurveySatisfaction] =
     useState(false)
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const onCloseSurvey = async () => {
     try {
@@ -31,7 +31,7 @@ export const SurveySatisfaction = ({
       })
       setShouldHideSurveySatisfaction(true)
     } catch {
-      notify.error('Une erreur est survenue. Merci de réessayer plus tard')
+      snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')
     }
   }
 

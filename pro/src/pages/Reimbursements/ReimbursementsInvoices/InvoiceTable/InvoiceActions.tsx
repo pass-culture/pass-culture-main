@@ -3,7 +3,7 @@ import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
@@ -17,7 +17,7 @@ type InvoiceActionsProps = {
 }
 
 export function InvoiceActions({ invoice }: InvoiceActionsProps) {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
 
   async function downloadPDFFile(url: string) {
@@ -32,7 +32,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
         'justificatif_comptable.pdf'
       )
     } catch {
-      notify.error(GET_DATA_ERROR_MESSAGE)
+      snackBar.error(GET_DATA_ERROR_MESSAGE)
     }
   }
 
@@ -48,7 +48,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
         'remboursements_pass_culture.csv'
       )
     } catch {
-      notify.error(GET_DATA_ERROR_MESSAGE)
+      snackBar.error(GET_DATA_ERROR_MESSAGE)
     }
   }
 

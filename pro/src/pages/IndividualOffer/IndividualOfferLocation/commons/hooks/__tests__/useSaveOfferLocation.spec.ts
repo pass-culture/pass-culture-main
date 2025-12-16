@@ -12,8 +12,8 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import { makeLocationFormValues } from '../../__mocks__/makeLocationFormValues'
@@ -34,8 +34,8 @@ vi.mock('@/apiClient/api', () => ({
 vi.mock('@/apiClient/helpers', () => ({
   isErrorAPIError: vi.fn(),
 }))
-vi.mock('@/commons/hooks/useNotification', () => ({
-  useNotification: vi.fn(),
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: vi.fn(),
 }))
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(),
@@ -53,7 +53,7 @@ describe('useSaveOfferLocation', () => {
 
   let navigateMock: ReturnType<typeof useNavigate>
   let mutateMock: ReturnType<typeof vi.fn>
-  let notificationMock: ReturnType<typeof useNotification>
+  let notificationMock: ReturnType<typeof useSnackBar>
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -69,9 +69,9 @@ describe('useSaveOfferLocation', () => {
     navigateMock = vi.fn() as unknown as ReturnType<typeof useNavigate>
     vi.mocked(useNavigate).mockReturnValue(navigateMock)
     notificationMock = { error: vi.fn() } as unknown as ReturnType<
-      typeof useNotification
+      typeof useSnackBar
     >
-    vi.mocked(useNotification).mockReturnValue(notificationMock)
+    vi.mocked(useSnackBar).mockReturnValue(notificationMock)
     vi.mocked(useOfferWizardMode).mockReturnValue(OFFER_WIZARD_MODE.EDITION)
     vi.mocked(toPatchOfferBodyModel).mockReturnValue({})
   })

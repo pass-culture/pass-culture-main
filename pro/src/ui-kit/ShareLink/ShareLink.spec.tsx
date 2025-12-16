@@ -4,7 +4,7 @@ import { beforeEach } from 'vitest'
 
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { ShareLink, type ShareLinkProps } from './ShareLink'
 
@@ -27,7 +27,7 @@ const renderShareLink = ({
         notifySuccessMessage={notifySuccessMessage}
         offerId={offerId}
       />
-      <Notification />
+      <SnackBarContainer />
     </>
   )
 }

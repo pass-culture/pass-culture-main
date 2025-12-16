@@ -4,7 +4,7 @@ import { mutate } from 'swr'
 import { api } from '@/apiClient/api'
 import type { GetIndividualOfferWithAddressResponseModel } from '@/apiClient/v1'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { serializeDateTimeToUTCFromLocalDepartment } from '@/commons/utils/timezone'
 import fullEditIcon from '@/icons/full-edit.svg'
@@ -58,7 +58,7 @@ export function getPatchOfferPayloadFromFormValues(
 export function OfferPublicationEdition({
   offer,
 }: Readonly<OfferPublicationEditionProps>) {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -75,7 +75,9 @@ export function OfferPublicationEdition({
 
       setIsDialogOpen(false)
     } catch {
-      notify.error('Une erreur est survenue lors de la modification de l’offre')
+      snackBar.error(
+        'Une erreur est survenue lors de la modification de l’offre'
+      )
     }
   }
 

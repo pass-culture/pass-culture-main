@@ -12,7 +12,7 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -35,7 +35,7 @@ export const Collaborators = (): JSX.Element | null => {
   const offererId = useAppSelector(selectCurrentOffererId)
 
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
 
   const [showInvitationForm, setShowInvitationForm] = useState(false)
@@ -78,12 +78,12 @@ export const Collaborators = (): JSX.Element | null => {
       logEvent(OffererLinkEvents.CLICKED_SEND_INVITATION, {
         offererId: offererId,
       })
-      notify.success(SUCCESS_MESSAGE)
+      snackBar.success(SUCCESS_MESSAGE)
     } catch (error) {
       if (isErrorAPIError(error) && error.status === 400 && error.body.email) {
         setError('email', { message: error.body.email })
       } else {
-        notify.error(ERROR_MESSAGE)
+        snackBar.error(ERROR_MESSAGE)
       }
     }
   }

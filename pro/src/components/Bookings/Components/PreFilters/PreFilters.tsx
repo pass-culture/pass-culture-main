@@ -6,7 +6,7 @@ import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from '@/components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
@@ -52,7 +52,7 @@ export const PreFilters = ({
   resetPreFilters,
   offererAddresses,
 }: PreFiltersProps): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
 
@@ -75,12 +75,12 @@ export const PreFilters = ({
           await downloadIndividualBookingsXLSFile(filters)
         }
       } catch {
-        notify.error(GET_DATA_ERROR_MESSAGE)
+        snackBar.error(GET_DATA_ERROR_MESSAGE)
       }
 
       setIsDownloadingCSV(false)
     },
-    [notify]
+    [snackBar]
   )
 
   return (

@@ -17,7 +17,6 @@ import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import {
   type CollectiveOffer,
   isCollectiveOfferBookable,
@@ -30,7 +29,7 @@ import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import {
   isActionAllowedOnCollectiveOffer,
@@ -68,7 +67,7 @@ export const OfferActionsCell = ({
   urlSearchFilters,
 }: OfferActionsCellProps) => {
   const navigate = useNavigate()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
   const isCollectiveOfferTemplateShareLinkEnabled = useActiveFeature(
@@ -118,7 +117,7 @@ export const OfferActionsCell = ({
     }
     await createOfferFromTemplate(
       navigate,
-      notify,
+      snackBar,
       offer.id,
       undefined,
       isMarseilleActive
@@ -137,7 +136,7 @@ export const OfferActionsCell = ({
         })
         await createOfferFromTemplate(
           navigate,
-          notify,
+          snackBar,
           offer.id,
           undefined,
           isMarseilleActive
@@ -152,7 +151,7 @@ export const OfferActionsCell = ({
         offerStatus: offer.displayedStatus,
         offerType: 'collective',
       })
-      await duplicateBookableOffer(navigate, notify, offer.id)
+      await duplicateBookableOffer(navigate, snackBar, offer.id)
     }
   }
 
@@ -164,7 +163,7 @@ export const OfferActionsCell = ({
 
   const cancelBooking = async () => {
     if (!offer.id) {
-      notify.error('L’identifiant de l’offre n’est pas valide.')
+      snackBar.error('L’identifiant de l’offre n’est pas valide.')
       return
     }
     try {
@@ -172,31 +171,25 @@ export const OfferActionsCell = ({
       await mutate(collectiveOffersQueryKeys)
       setIsCancelledBookingModalOpen(false)
 
-      notify.success(
-        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
+      snackBar.success(
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
       )
     } catch (error) {
       if (isErrorAPIError(error) && getErrorCode(error) === 'NO_BOOKING') {
-        notify.error(
+        snackBar.error(
           'Cette offre n’a aucune réservation en cours. Il est possible que la réservation que vous tentiez d’annuler ait déjà été utilisée.'
         )
         return
       }
-      notify.error(
-        'Une erreur est survenue lors de l’annulation de la réservation.',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
+      snackBar.error(
+        'Une erreur est survenue lors de l’annulation de la réservation.'
       )
     }
   }
 
   const archiveOffer = async () => {
     if (!offer.id) {
-      notify.error('L’identifiant de l’offre n’est pas valide.')
+      snackBar.error('L’identifiant de l’offre n’est pas valide.')
       return
     }
     try {
@@ -208,13 +201,9 @@ export const OfferActionsCell = ({
       await mutate(collectiveOffersQueryKeys)
 
       setIsArchivedModalOpen(false)
-      notify.success('Une offre a bien été archivée', {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      snackBar.success('Une offre a bien été archivée')
     } catch {
-      notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      snackBar.error('Une erreur est survenue lors de l’archivage de l’offre')
     }
   }
 
@@ -282,13 +271,13 @@ export const OfferActionsCell = ({
         isActive,
       })
 
-      notify.success(
+      snackBar.success(
         isActive
           ? 'Votre offre est maintenant active et visible dans ADAGE'
           : 'Votre offre est mise en pause et n’est plus visible sur ADAGE'
       )
     } catch {
-      return notify.error(
+      return snackBar.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : 'la désactivation'
         } de votre offre.`

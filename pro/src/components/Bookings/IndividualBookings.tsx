@@ -16,7 +16,7 @@ import {
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useOffererAddresses } from '@/commons/hooks/swr/useOffererAddresses'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isEqual } from '@/commons/utils/isEqual'
 import { ChoosePreFiltersMessage } from '@/components/Bookings/Components/ChoosePreFiltersMessage/ChoosePreFiltersMessage'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
@@ -50,7 +50,7 @@ export const IndividualBookingsComponent = <
   locationState,
   getFilteredBookingsAdapter,
 }: BookingsProps<T>): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -86,7 +86,7 @@ export const IndividualBookingsComponent = <
       )
 
       if (currentPage === MAX_LOADED_PAGES && currentPage < pages) {
-        notify.information(
+        snackBar.success(
           'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
         )
       }

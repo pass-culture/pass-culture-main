@@ -13,6 +13,7 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import {
@@ -493,6 +494,49 @@ describe('screens:SignupJourney::Offerers', () => {
         siren: '123456789',
       })
       expect(await screen.findByText('Confirmation screen')).toBeInTheDocument()
+    })
+
+    it('should display error message when createOfferer fails', async () => {
+      const snackBarError = vi.fn()
+      vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+        success: vi.fn(),
+        error: snackBarError,
+      }))
+
+      vi.spyOn(storageAvailable, 'storageAvailable').mockImplementation(
+        () => false
+      )
+      renderOfferersScreen(contextValue)
+
+      const apiError = new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 400,
+          body: {},
+        } as ApiResult,
+        ''
+      )
+      vi.spyOn(api, 'createOfferer').mockRejectedValueOnce(apiError)
+
+      await userEvent.click(await screen.findByText('Rejoindre cet espace'))
+
+      expect(
+        await screen.findByText(
+          'Êtes-vous sûr de vouloir rejoindre cet espace ?'
+        )
+      ).toBeInTheDocument()
+
+      await userEvent.click(
+        await screen.findByRole('button', { name: 'Rejoindre cet espace' })
+      )
+
+      await waitFor(() => {
+        expect(snackBarError).toHaveBeenCalledWith(
+          'Impossible de lier votre compte à cette structure.'
+        )
+      })
+
+      expect(screen.queryByText('Confirmation screen')).not.toBeInTheDocument()
     })
   })
 })

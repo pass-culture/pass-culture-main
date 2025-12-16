@@ -12,7 +12,7 @@ import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferVenueFactory,
@@ -51,19 +51,19 @@ const renderBookableOfferSummary = (
   })
 
 describe('BookableOfferSummary', () => {
-  const mockNotifyError = vi.fn()
-  const mockNotifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
   let props: BookableOfferSummaryProps
   const mockLogEvent = vi.fn()
 
   beforeEach(async () => {
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: mockNotifyError,
-      success: mockNotifySuccess,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+      success: snackBarSuccess,
     }))
 
     const offer = getCollectiveOfferFactory({
@@ -310,9 +310,8 @@ describe('BookableOfferSummary', () => {
     })
     await userEvent.click(confirmButton)
 
-    expect(mockNotifySuccess).toHaveBeenCalledWith(
-      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
-      { duration: 8000 }
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
     )
 
     await waitFor(() => {
@@ -341,9 +340,8 @@ describe('BookableOfferSummary', () => {
     })
     await userEvent.click(confirmButton)
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de l’annulation de la réservation.',
-      { duration: 8000 }
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’annulation de la réservation.'
     )
   })
 
@@ -363,7 +361,7 @@ describe('BookableOfferSummary', () => {
     })
     await userEvent.click(confirmButton)
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'L’identifiant de l’offre n’est pas valide.'
     )
   })

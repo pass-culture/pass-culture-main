@@ -2,7 +2,7 @@ import { api } from '@/apiClient/api'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -19,11 +19,11 @@ export const MAX_ITEMS_DOWNLOAD = 75
 export const InvoiceDownloadActionsButton = ({
   checkedInvoices,
 }: InvoiceDownloadActionsButtonProps) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   async function downloadCSVFiles(references: string[]) {
     if (references.length > MAX_ITEMS_DOWNLOAD) {
-      notify.error(
+      snackBar.error(
         `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
       )
       return
@@ -39,13 +39,13 @@ export const InvoiceDownloadActionsButton = ({
         'remboursements_pass_culture.csv'
       )
     } catch {
-      notify.error(GET_DATA_ERROR_MESSAGE)
+      snackBar.error(GET_DATA_ERROR_MESSAGE)
     }
   }
 
   async function downloadInvoices(references: string[]) {
     if (references.length > MAX_ITEMS_DOWNLOAD) {
-      notify.error(
+      snackBar.error(
         `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
       )
       return
@@ -61,7 +61,7 @@ export const InvoiceDownloadActionsButton = ({
         'justificatif_remboursement_pass_culture.pdf'
       )
     } catch {
-      notify.error(GET_DATA_ERROR_MESSAGE)
+      snackBar.error(GET_DATA_ERROR_MESSAGE)
     }
   }
 

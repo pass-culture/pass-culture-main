@@ -7,7 +7,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
@@ -34,7 +34,7 @@ export function StocksCalendarActionsBar({
   deleteStocks,
   mode,
 }: StocksCalendarActionsBarProps) {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -66,7 +66,7 @@ export function StocksCalendarActionsBar({
   async function handleNextStep() {
     // Check that there is at least one stock left
     if (!hasStocks) {
-      notify.error('Veuillez renseigner au moins une date')
+      snackBar.error('Veuillez renseigner au moins une date')
       return
     }
 
@@ -128,10 +128,6 @@ export function StocksCalendarActionsBar({
         <ActionBar
           onClickPrevious={handlePreviousStep}
           onClickNext={() => {
-            if (!hasStocks) {
-              notify.error('Veuillez renseigner au moins une date')
-              return
-            }
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             handleNextStep()
           }}

@@ -5,7 +5,7 @@ import { vi } from 'vitest'
 import * as apiModule from '@/apiClient/api'
 import type { InvoiceResponseV2Model } from '@/apiClient/v1'
 import * as analyticsHook from '@/app/App/analytics/firebase'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 
 import { MAX_ITEMS_DOWNLOAD } from './InvoiceDownloadActionsButton'
 import { InvoiceTable } from './InvoiceTable'
@@ -30,16 +30,14 @@ vi.mock('@/commons/utils/downloadFile', () => ({
   downloadFile: vi.fn(),
 }))
 
-const notifyError = vi.fn()
+const snackBarError = vi.fn()
 const mockLogEvent = vi.fn()
 
 beforeEach(() => {
   vi.clearAllMocks()
-  vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+  vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
     success: vi.fn(),
-    error: notifyError,
-    information: vi.fn(),
-    close: vi.fn(),
+    error: snackBarError,
   }))
 
   vi.spyOn(analyticsHook, 'useAnalytics').mockReturnValue({
@@ -159,7 +157,7 @@ describe('InvoiceTable', () => {
     await user.click(screen.getByLabelText('Tout sélectionner'))
     await user.click(screen.getByText('Télécharger les justificatifs'))
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       `Vous ne pouvez pas télécharger plus de ${MAX_ITEMS_DOWNLOAD} documents en une fois.`
     )
   })

@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
 import {
@@ -30,7 +30,7 @@ const renderPrebookingButton = (props: PrebookingButtonProps) => {
   renderWithProviders(
     <AdageUserContextProvider adageUser={defaultAdageUser}>
       <PrebookingButton {...props} />
-      <Notification />
+      <SnackBarContainer />
     </AdageUserContextProvider>
   )
 }

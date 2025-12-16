@@ -2,7 +2,7 @@ import classnames from 'classnames'
 import { useEffect } from 'react'
 
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { setIsStickyBarOpen } from '@/commons/store/notifications/reducer'
+import { setIsStickyBarOpen } from '@/commons/store/snackBar/reducer'
 
 import style from './ActionsBarSticky.module.scss'
 import { Left } from './ActionsBarStickyLeft'

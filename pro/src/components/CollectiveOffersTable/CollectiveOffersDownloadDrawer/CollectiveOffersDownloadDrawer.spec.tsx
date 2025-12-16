@@ -15,13 +15,13 @@ import { CollectiveOffersDownloadDrawer } from './CollectiveOffersDownloadDrawer
 
 vi.mock('@/commons/utils/downloadFile', () => ({ downloadFile: vi.fn() }))
 
-const mockNotifyError = vi.fn()
-const mockNotifySuccess = vi.fn()
+const snackBarError = vi.fn()
+const snackBarSuccess = vi.fn()
 
-vi.mock('@/commons/hooks/useNotification', () => ({
-  useNotification: () => ({
-    error: mockNotifyError,
-    success: mockNotifySuccess,
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
+    error: snackBarError,
+    success: snackBarSuccess,
   }),
 }))
 
@@ -147,7 +147,7 @@ describe('CollectiveOffersDownloadDrawer', () => {
     })
     await userEvent.click(csvButton)
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Nous avons rencontré un problème lors de la récupération des données.'
     )
   })

@@ -1,5 +1,8 @@
-import { closeNotification } from 'commons/store/notifications/reducer'
+import { clearList } from 'commons/store/snackBar/reducer'
+import { listSelector } from 'commons/store/snackBar/selectors'
 import { rootStore } from 'commons/store/store'
+
+import { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 
 import { handleError } from '../handleError'
 import type { FrontendErrorOptions } from '../types'
@@ -24,7 +27,7 @@ describe('handleError', () => {
   const userMessage = 'Oops, an error occurred.'
 
   afterEach(() => {
-    rootStore.dispatch(closeNotification())
+    rootStore.dispatch(clearList())
     vi.clearAllMocks()
   })
 
@@ -35,11 +38,11 @@ describe('handleError', () => {
 
     handleError(error, userMessage)
 
-    const state = rootStore.getState()
-    expect(state.notification.notification).toStrictEqual({
+    const snackBars = listSelector(rootStore.getState())
+    expect(snackBars).toHaveLength(1)
+    expect(snackBars[0]).toMatchObject({
       text: userMessage,
-      type: 'error',
-      duration: expect.any(Number),
+      variant: SnackBarVariant.ERROR,
     })
 
     expect(mockedSentry.captureException).toHaveBeenCalledWith(error)
@@ -69,8 +72,12 @@ describe('handleError', () => {
     // passing a string instead of an Error
     handleError('boom', userMessage)
 
-    const state = rootStore.getState()
-    expect(state.notification.notification?.text).toBe(userMessage)
+    const snackBars = listSelector(rootStore.getState())
+    expect(snackBars).toHaveLength(1)
+    expect(snackBars[0]).toMatchObject({
+      text: userMessage,
+      variant: SnackBarVariant.ERROR,
+    })
     expect(mockedSentry.captureException).toHaveBeenCalledWith('boom')
     expect(consoleErrorSpy).toHaveBeenCalledWith('boom')
   })

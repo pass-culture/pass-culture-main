@@ -16,7 +16,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { getOffererData } from '@/commons/utils/offererStoreHelper'
@@ -50,7 +50,7 @@ export const IndividualOfferSummaryScreen = ({
   offer,
 }: Readonly<IndividualOfferSummaryScreenProps>) => {
   const [displayRedirectDialog, setDisplayRedirectDialog] = useState(false)
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const navigate = useNavigate()
   const { pathname } = useLocation()
@@ -113,7 +113,7 @@ export const IndividualOfferSummaryScreen = ({
         navigate(offerConfirmationStepUrl)
       }
     } catch (error) {
-      notification.error(getHumanReadableApiError(error))
+      snackBar.error(getHumanReadableApiError(error))
     }
   }
   const methods = useForm<EventPublicationFormValues>({

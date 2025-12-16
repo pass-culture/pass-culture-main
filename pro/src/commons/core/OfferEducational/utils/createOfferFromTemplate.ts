@@ -3,7 +3,7 @@ import type { useNavigate } from 'react-router'
 import { api } from '@/apiClient/api'
 import { serializeEducationalOfferer } from '@/commons/core/OfferEducational/utils/serializeEducationalOfferer'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import type { useNotification } from '@/commons/hooks/useNotification'
+import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { createCollectiveOfferPayload } from './createOfferPayload'
@@ -12,7 +12,7 @@ import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 // TODO(ahello - 31/03/25) do not make direct api calls, use swr instead
 export const createOfferFromTemplate = async (
   navigate: ReturnType<typeof useNavigate>,
-  notify: ReturnType<typeof useNotification>,
+  snackBar: ReturnType<typeof useSnackBar>,
   templateOfferId: number,
   requestId?: string,
   isMarseilleActive?: boolean,
@@ -50,7 +50,7 @@ export const createOfferFromTemplate = async (
       const response = await api.createCollectiveOffer(payload)
       await postCollectiveOfferImage({
         initialValues,
-        notify,
+        snackBar,
         id: response.id,
       })
 
@@ -61,12 +61,12 @@ export const createOfferFromTemplate = async (
         }`
       )
     } catch {
-      notify.error(SENT_DATA_ERROR_MESSAGE)
+      snackBar.error(SENT_DATA_ERROR_MESSAGE)
       setIsCreatingNewOffer?.(false)
     }
   } catch {
     setIsCreatingNewOffer?.(false)
-    return notify.error(
+    return snackBar.error(
       'Une erreur est survenue lors de la récupération de votre offre'
     )
   }

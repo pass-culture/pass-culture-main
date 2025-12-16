@@ -5,7 +5,7 @@ import { type Params, useNavigate, useParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { SignUpLayout } from '@/app/App/layouts/logged-out/SignUpLayout/SignUpLayout'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ChangePasswordForm } from './ChangePasswordForm/ChangePasswordForm'
@@ -20,14 +20,14 @@ export type ResetPasswordValues = {
 export const ResetPassword = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState(true)
   const { token } = useParams<Params>()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
 
   const invalidTokenHandler = useCallback(() => {
-    notify.error('Le lien est invalide ou a expiré. Veuillez recommencer.')
+    snackBar.error('Le lien est invalide ou a expiré. Veuillez recommencer.')
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate('/demande-mot-de-passe')
-  }, [navigate, notify])
+  }, [navigate, snackBar])
 
   useEffect(() => {
     if (token) {
@@ -44,7 +44,7 @@ export const ResetPassword = (): JSX.Element => {
       // token is always defined as `submitChangePassword` is callable only in that case.
       await api.postNewPassword({ newPassword, token: token as string })
 
-      notify.success('Mot de passe modifié.')
+      snackBar.success('Mot de passe modifié.')
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/connexion')
     } catch {

@@ -7,8 +7,8 @@ import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { ApiError } from '@/apiClient/v1'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import * as useNotification from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { getIndividualOfferFactory } from '@/commons/utils/factories/individualApiFactories'
 
 import type { PriceTableFormValues } from '../../schemas'
@@ -80,19 +80,19 @@ describe('useSaveOfferPriceTable', () => {
     state: {},
   }
 
-  const notifyError = vi.fn()
-  const notifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
     vi.clearAllMocks()
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: notifySuccess,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      success: snackBarSuccess,
+      error: snackBarError,
     }))
 
     vi.mocked(useActiveFeature).mockReturnValueOnce(true)
@@ -119,7 +119,7 @@ describe('useSaveOfferPriceTable', () => {
     expect(useNavigateMock).toHaveBeenCalledWith(
       expect.stringMatching(`/offre/individuelle/${offer.id}/tarifs$`)
     )
-    expect(notifySuccess).toHaveBeenCalled()
+    expect(snackBarSuccess).toHaveBeenCalled()
   })
 
   it('should save non-event offer (creation) and navigate to summary', async () => {
@@ -207,7 +207,7 @@ describe('useSaveOfferPriceTable', () => {
       await result.current.saveAndContinue(result.current.form.getValues())
     })
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la mise à jour de votre offre'
     )
     expect(useNavigateMock).not.toHaveBeenCalled()

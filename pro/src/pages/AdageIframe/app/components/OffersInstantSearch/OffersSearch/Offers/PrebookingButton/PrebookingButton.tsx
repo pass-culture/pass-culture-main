@@ -5,7 +5,7 @@ import { useCallback, useRef, useState } from 'react'
 import type { OfferStockResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { hasErrorCode } from '@/apiClient/helpers'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { LOGS_DATA } from '@/commons/utils/config'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullStockIcon from '@/icons/full-stock.svg'
@@ -51,7 +51,7 @@ export const PrebookingButton = ({
   const [hasPrebookedOffer, setHasPrebookedOffer] = useState(false)
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const prebookButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -83,16 +83,16 @@ export const PrebookingButton = ({
     } catch (error) {
       if (hasErrorCode(error)) {
         if (error.body.code === 'WRONG_UAI_CODE') {
-          notification.error(
+          snackBar.error(
             'Cette offre n’est pas préréservable par votre établissement'
           )
         } else if (error.body.code === 'UNKNOWN_EDUCATIONAL_INSTITUTION') {
-          notification.error(
+          snackBar.error(
             'Votre établissement scolaire n’est pas recensé dans le dispositif pass Culture'
           )
         }
       } else {
-        notification.error(
+        snackBar.error(
           'Impossible de préréserver cette offre.\nVeuillez contacter le support'
         )
       }
@@ -109,7 +109,7 @@ export const PrebookingButton = ({
     }
     setOfferPrebooked?.(true)
     closeModal()
-    notification.success('Votre préréservation a été effectuée avec succès')
+    snackBar.success('Votre préréservation a été effectuée avec succès')
   }, [stock.id, offerId, queryId])
 
   return canPrebookOffers ? (

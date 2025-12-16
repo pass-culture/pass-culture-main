@@ -6,7 +6,7 @@ import type {
   GetCollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
 import type { OfferCollectiveImage } from '@/commons/core/Offers/types'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 
@@ -16,7 +16,7 @@ export const useCollectiveOfferImageUpload = (
     | GetCollectiveOfferTemplateResponseModel,
   isTemplate?: boolean
 ) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const [imageOffer, setImageOffer] = useState<OfferCollectiveImage | null>(
     offer !== undefined
       ? { url: offer.imageUrl, credit: offer.imageCredit }
@@ -52,7 +52,7 @@ export const useCollectiveOfferImageUpload = (
             await api.deleteOfferImage(offerId)
           }
         } catch {
-          notify.error(
+          snackBar.error(
             'Une erreur est survenue lors de la suppression de l’image de l’offre'
           )
         }
@@ -85,7 +85,7 @@ export const useCollectiveOfferImageUpload = (
       } catch (error) {
         sendSentryCustomError(error)
 
-        return notify.error(
+        return snackBar.error(
           'Une erreur est survenue lors de l’envoi de votre image'
         )
       }

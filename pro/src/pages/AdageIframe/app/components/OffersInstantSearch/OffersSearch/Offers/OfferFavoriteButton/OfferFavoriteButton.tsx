@@ -5,7 +5,7 @@ import type {
   CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import fullStarIcon from '@/icons/full-star.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
@@ -40,7 +40,7 @@ export const OfferFavoriteButton = ({
   const [isLoading, setIsLoading] = useState(false)
   const { setFavoriteCount } = useAdageUser()
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const removeFromFavorites = async () => {
     setIsFavorite(false)
@@ -49,7 +49,7 @@ export const OfferFavoriteButton = ({
       //  Decrease adage user favorite count for header
       setFavoriteCount?.((count) => count - 1)
 
-      notify.success('Supprimé de vos favoris')
+      snackBar.success('Supprimé de vos favoris')
 
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,
@@ -76,7 +76,7 @@ export const OfferFavoriteButton = ({
       //  Increase adage user favorite count for header
       setFavoriteCount?.((count) => count + 1)
 
-      notify.success('Ajouté à vos favoris')
+      snackBar.success('Ajouté à vos favoris')
 
       apiAdage.logFavOfferButtonClick({
         offerId: offer.id,

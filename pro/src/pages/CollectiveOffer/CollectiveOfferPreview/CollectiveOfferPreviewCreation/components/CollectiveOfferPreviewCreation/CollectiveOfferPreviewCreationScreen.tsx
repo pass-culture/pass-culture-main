@@ -19,7 +19,7 @@ import {
   isCollectiveOfferTemplate,
   Mode,
 } from '@/commons/core/OfferEducational/types'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { RedirectToBankAccountDialog } from '@/components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
 import { AdagePreviewLayout } from '@/pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
@@ -39,7 +39,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
   offer,
   offerer,
 }: CollectiveOfferSummaryCreationProps) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
@@ -83,7 +83,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
         (offer.collectiveStock?.startDatetime &&
           isBefore(new Date(offer.collectiveStock.startDatetime), new Date()))
       if (areOfferDatesInvalid) {
-        notify.error(
+        snackBar.error(
           'Les dates de limite de réservation ou d’évènement doivent être égales ou postérieures à la date actuelle.'
         )
         return
@@ -111,7 +111,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
         navigate(confirmationUrl)
       }
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur est survenue lors de la publication de votre offre.'
       )
       return
@@ -139,7 +139,7 @@ export const CollectiveOfferPreviewCreationScreen = ({
                 offerType: 'collective',
               })
 
-              notify.success('Brouillon sauvegardé dans la liste des offres')
+              snackBar.success('Brouillon sauvegardé dans la liste des offres')
             }}
           >
             Sauvegarder le brouillon et quitter

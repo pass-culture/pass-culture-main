@@ -4,7 +4,7 @@ import { withRouter } from 'storybook-addon-remix-react-router'
 import { ShareLink } from './ShareLink'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { Provider } from 'react-redux'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 export default {
   title: '@/ui-kit/ShareLink',
@@ -18,7 +18,7 @@ export const Default: StoryObj<typeof ShareLink> = {
       <div style={{ width: '100%' }}>
         <ShareLink {...args} />
       </div>
-      <Notification />
+      <SnackBarContainer />
     </Provider>
   ),
   args: {
