@@ -4,11 +4,17 @@
        data-toggle-id="table-container-download-reimbursement-details-btn-group"
        data-pc-table-multi-select-id="table-container-download-reimbursement-details"
        data-input-ids-name="object_ids">
-    <button disabled
-            type="button"
-            class="btn btn-outline-primary"
-            data-url="{{ url_for('backoffice_web.bank_account.download_reimbursement_details', bank_account_id=bank_account_id) }}"
-            data-use-confirmation-modal="false">Téléchargement des détails de remboursements</button>
+    <form method="post"
+          id="form-ids-table-container-download-reimbursement-details"
+          action="{{ url_for('backoffice_web.bank_account.download_reimbursement_details', bank_account_id=bank_account_id) }}">
+      <input type="hidden"
+             name="object_ids">
+      {{ csrf_token }}
+      <button disabled
+              type="submit"
+              class="btn btn-outline-primary"
+              data-use-confirmation-modal="false">Téléchargement des détails de remboursements</button>
+    </form>
   </div>
   <table class="table table-hover my-4"
          data-table-multi-select-id="table-container-download-reimbursement-details">
