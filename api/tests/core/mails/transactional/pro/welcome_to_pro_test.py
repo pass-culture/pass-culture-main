@@ -27,5 +27,5 @@ class SendWelcomeToProEmailTest:
         assert mails_testing.outbox[0]["To"] == user.email
         assert mails_testing.outbox[0]["template"] == asdict(TransactionalEmail.WELCOME_TO_PRO.value)
         assert mails_testing.outbox[0]["params"] == {
-            "PC_PRO_VENUE_LINK": f"{PRO_URL}/structures/{venue.managingOffererId}/lieux/{venue.id}",
+            "PC_PRO_VENUE_LINK": f"{PRO_URL}/structures/{venue.managingOffererId}/lieux/{venue.id}/page-partenaire",
         }

@@ -72,7 +72,7 @@ def build_pc_pro_collective_offers_for_offerer_path(offerer: offerers_models.Off
 def build_pc_pro_venue_path(venue: offerers_models.Venue) -> str:
     if venue.isVirtual:
         return f"/accueil?structure={venue.managingOfferer.id}"
-    return f"/structures/{venue.managingOffererId}/lieux/{venue.id}"
+    return f"/structures/{venue.managingOffererId}/lieux/{venue.id}/page-partenaire"
 
 
 def build_pc_pro_venue_parameters_path(venue: offerers_models.Venue) -> str:
