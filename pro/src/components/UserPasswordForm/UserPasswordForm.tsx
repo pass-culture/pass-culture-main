@@ -98,56 +98,59 @@ export const UserPasswordForm = ({
   const newPassword = watch('newPassword')
 
   return (
-    <>
-      <BoxFormLayout.RequiredMessage />
-      <BoxFormLayout.Fields>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormLayout>
-            <div className={styles['text-input']}>
-              <PasswordInput
-                {...register('oldPassword')}
-                error={errors.oldPassword?.message}
-                label="Mot de passe actuel"
-              />
-            </div>
-            <div className={styles['text-input']}>
-              <PasswordInput
-                {...register('newPassword', {
-                  onChange: () => trigger('newPassword'),
-                })}
-                error={
-                  // This is because we only want to display the field error if it's coming back from the API
-                  // In this case, API error responses don't have a ".type" property (which is specific to Yup)
-                  !errors.newPassword?.type
-                    ? errors.newPassword?.message
-                    : undefined
-                }
-                label="Nouveau mot de passe"
-              />
-              <ValidationMessageList
-                passwordValue={newPassword}
-                hasError={!!errors.newPassword}
-              />
-            </div>
-            <div className={styles['text-input']}>
-              <PasswordInput
-                {...register('newConfirmationPassword')}
-                error={errors.newConfirmationPassword?.message}
-                label="Confirmez votre nouveau mot de passe"
-              />
-            </div>
-          </FormLayout>
-
-          <div className={styles['buttons-field']}>
-            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-              Annuler
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              Enregistrer
-            </Button>
+    <BoxFormLayout.Fields>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormLayout>
+          <div className={styles['text-input']}>
+            <PasswordInput
+              {...register('oldPassword')}
+              error={errors.oldPassword?.message}
+              label="Mot de passe actuel"
+              required
+              requiredIndicator="explicit"
+            />
           </div>
-        </form>
-      </BoxFormLayout.Fields>
-    </>
+          <div className={styles['text-input']}>
+            <PasswordInput
+              {...register('newPassword', {
+                onChange: () => trigger('newPassword'),
+              })}
+              error={
+                // This is because we only want to display the field error if it's coming back from the API
+                // In this case, API error responses don't have a ".type" property (which is specific to Yup)
+                !errors.newPassword?.type
+                  ? errors.newPassword?.message
+                  : undefined
+              }
+              label="Nouveau mot de passe"
+              required
+              requiredIndicator="explicit"
+            />
+            <ValidationMessageList
+              passwordValue={newPassword}
+              hasError={!!errors.newPassword}
+            />
+          </div>
+          <div className={styles['text-input']}>
+            <PasswordInput
+              {...register('newConfirmationPassword')}
+              error={errors.newConfirmationPassword?.message}
+              label="Confirmez votre nouveau mot de passe"
+              required
+              requiredIndicator="explicit"
+            />
+          </div>
+        </FormLayout>
+
+        <div className={styles['buttons-field']}>
+          <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
+            Annuler
+          </Button>
+          <Button type="submit" isLoading={isSubmitting}>
+            Enregistrer
+          </Button>
+        </div>
+      </form>
+    </BoxFormLayout.Fields>
   )
 }

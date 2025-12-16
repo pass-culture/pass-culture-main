@@ -148,9 +148,14 @@ export const PhoneNumberInput = forwardRef<
           {label}
           {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
         </legend>
-        <p className={styles['phone-format']} id={formatId}>
-          Par exemple : {PHONE_EXAMPLE_MAP[prefix as PlusString]}
-        </p>
+        <div className={styles['phone-number-input-info']}>
+          <p className={styles['phone-format']} id={formatId}>
+            Par exemple : {PHONE_EXAMPLE_MAP[prefix as PlusString]}
+          </p>
+          {required && requiredIndicator === 'explicit' && (
+            <span className={styles['field-header-right']}>Obligatoire</span>
+          )}
+        </div>
         <div className={styles['phone-number-inpus']}>
           <label htmlFor="countryCode" className={styles['visually-hidden']}>
             Indicatif téléphonique
