@@ -74,7 +74,6 @@ on:
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY:
         required: true
         description: "Private key for the Github application used to clone other repos"
-
 jobs:
   deploy-api:
     name: "Deploy api"
@@ -284,8 +283,6 @@ jobs:
             fi
             exit $FAIL
 
-
-
   apply-algolia-config:
     name: "apply Algolia settings"
     needs: deploy-api
@@ -358,8 +355,6 @@ jobs:
             fi
             exit $FAIL
 
-
-
   # Image resizing cannot be deployed as python 3.9 is not supported by app engine.
   # deploy-image-resizing-ehp:
   #   name: "Deploy image-resizing EHP"
@@ -398,7 +393,13 @@ jobs:
   #     GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
 
   deploys-outcome:
-    needs: [deploy-api, deploy-api-doc-on-firebase, deploy-pro-on-firebase-testing, deploy-pro-on-firebase]
+    needs:
+      [
+        deploy-api,
+        deploy-api-doc-on-firebase,
+        deploy-pro-on-firebase-testing,
+        deploy-pro-on-firebase,
+      ]
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }} # GitHub will create a deployment for this environment
     if: always()
