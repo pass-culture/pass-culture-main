@@ -75,6 +75,10 @@
   &-large {
     @include fonts.body;
   }
+
+  .description * {
+    @include fonts.body-s;
+  }
 }
 
 .actions-list {
