@@ -111,8 +111,8 @@ class DmsMessagesTest:
             user_message=f"Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé{u_nbsp}: {expected_error_message} Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=datetime(2021, 1, 1),
@@ -140,8 +140,8 @@ class DmsMessagesTest:
             user_message=f"Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé{u_nbsp}: le format des date de naissance et prénom renseignés est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=datetime(2021, 1, 1),
@@ -165,8 +165,8 @@ class DmsMessagesTest:
             user_message=f"Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé{u_nbsp}: le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour plus d'informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=datetime(2021, 1, 1),
@@ -218,8 +218,8 @@ class DmsMessagesTest:
             user_message=f"{expected_error_message} Tu peux contacter le support pour plus d’informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"{messages.MAILTO_SUPPORT}{messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=datetime(2021, 1, 1),

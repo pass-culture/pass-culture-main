@@ -326,8 +326,8 @@ class HandleDmsApplicationTest:
             user_message="Il semblerait que ton numéro de pièce d'identité soit erroné. Tu peux contacter le support pour plus d’informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -365,8 +365,8 @@ class HandleDmsApplicationTest:
             user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -410,8 +410,8 @@ class HandleDmsApplicationTest:
             user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé : le format du numéro de pièce d'identité renseigné est invalide. Tu peux contacter le support pour mettre à jour ton dossier.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"{subscription_messages.MAILTO_SUPPORT}{subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)}",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -893,7 +893,7 @@ class DmsSubscriptionMessageTest:
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_pending_error_not_eligible_date(self, mock_send_user_message):
-        user = users_factories.UserFactory(email=self.user_email)
+        users_factories.UserFactory(email=self.user_email)
         not_eligible_application = make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
@@ -909,9 +909,8 @@ class DmsSubscriptionMessageTest:
             user_message="Ta date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans. Tu peux contacter le support pour plus d’informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=subscription_messages.MAILTO_SUPPORT
-                + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id),
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             updated_at=fraud_check.updatedAt,
         )
@@ -952,7 +951,7 @@ class DmsSubscriptionMessageTest:
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_refused_by_operator(self, mock_send_user_message):
-        user = users_factories.UserFactory(email=self.user_email)
+        users_factories.UserFactory(email=self.user_email)
         refused_application = make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
@@ -967,9 +966,8 @@ class DmsSubscriptionMessageTest:
             user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé. Tu peux contacter le support pour plus d’informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=subscription_messages.MAILTO_SUPPORT
-                + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id),
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=subscription_schemas.PopOverIcon.ERROR,
             updated_at=fraud_check.updatedAt,
@@ -984,7 +982,7 @@ class DmsSubscriptionMessageTest:
             firstName=first_name, lastName=last_name, dateOfBirth=birth_date, email="jean-michel@doublon.com"
         )
 
-        applicant = users_factories.UserFactory(email=self.user_email)
+        users_factories.UserFactory(email=self.user_email)
         duplicate_application = make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
@@ -1005,8 +1003,8 @@ class DmsSubscriptionMessageTest:
             ),
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
-                link=f"mailto:support@example.com?subject=%23{applicant.id}+-+Mon+inscription+sur+le+pass+Culture+est+bloqu%C3%A9e",
-                icon=subscription_schemas.CallToActionIcon.EMAIL,
+                link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
+                icon=subscription_schemas.CallToActionIcon.EXTERNAL,
             ),
             pop_over_icon=None,
             updated_at=fraud_check.updatedAt,
@@ -1571,7 +1569,7 @@ class RunIntegrationTest:
             "Connecte-toi avec l’adresse mail joh***@example.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
             "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
-        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EMAIL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EXTERNAL
 
         assert len(mails_testing.outbox) == 1
         assert mails_testing.outbox[0]["params"] == {"DUPLICATE_BENEFICIARY_EMAIL": "joh***@example.com"}

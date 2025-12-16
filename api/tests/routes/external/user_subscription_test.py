@@ -435,10 +435,8 @@ class DmsWebhookApplicationTest:
             message.user_message
             == "Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé. Tu peux contacter le support pour plus d’informations."
         )
-        assert (
-            message.call_to_action.link
-            == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
-        )
+        assert message.call_to_action.link == subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Contacter le support"
 
         assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.REFUSED_BY_OPERATOR]
@@ -1808,11 +1806,8 @@ class UbbleWebhookTest:
             "Connecte-toi avec l’adresse mail sho***@me.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
             "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
-        assert (
-            message.call_to_action.link
-            == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
-        )
-        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EMAIL
+        assert message.call_to_action.link == subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
@@ -1883,11 +1878,8 @@ class UbbleWebhookTest:
             "Connecte-toi avec l’adresse mail pre***@me.com ou contacte le support si tu penses qu’il s’agit d’une erreur. "
             "Si tu n’as plus ton mot de passe, tu peux effectuer une demande de réinitialisation."
         )
-        assert (
-            message.call_to_action.link
-            == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
-        )
-        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EMAIL
+        assert message.call_to_action.link == subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Contacter le support"
 
         assert len(mails_testing.outbox) == 1
@@ -1953,11 +1945,8 @@ class UbbleWebhookTest:
             message.user_message
             == "Ton dossier a été refusé : le prénom et le nom que tu as renseignés ne correspondent pas à ta pièce d'identité. Tu peux contacter le support si tu penses qu’il s’agit d’une erreur."
         )
-        assert (
-            message.call_to_action.link
-            == subscription_messages.MAILTO_SUPPORT + subscription_messages.MAILTO_SUPPORT_PARAMS.format(id=user.id)
-        )
-        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EMAIL
+        assert message.call_to_action.link == subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL
+        assert message.call_to_action.icon == subscription_schemas.CallToActionIcon.EXTERNAL
         assert message.call_to_action.title == "Contacter le support"
 
         self._assert_email_sent(user, 410)
