@@ -4,19 +4,17 @@ import decimal
 import typing
 from collections import namedtuple
 from io import StringIO
-from typing import Callable
 from typing import Iterable
 
+import pydantic as pydantic_v2
 import pytz
-from pydantic.v1 import ConstrainedList
-from pydantic.v1 import validator
-from pydantic.v1.main import BaseModel
 
 import pcapi.core.finance.api as finance_api
 import pcapi.core.finance.repository as finance_repository
 import pcapi.core.finance.utils as finance_utils
 from pcapi.core.bookings.repository import serialize_offer_type_educational_or_individual
-from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.serialization import HttpQueryParamsModel
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.utils.date import MONTHS_IN_FRENCH
 from pcapi.utils.date import utc_datetime_to_department_timezone
 from pcapi.utils.string import u_nbsp
@@ -259,7 +257,7 @@ def find_offerer_reimbursement_details(
 
 
 def find_reimbursement_details_by_invoices(
-    invoices_references: list[str],
+    invoices_references: set[str],
 ) -> list[ReimbursementDetails]:
     offerers_payments = finance_repository.find_offerer_payments(invoices_references=invoices_references)
     reimbursement_details = [ReimbursementDetails(offerer_payment) for offerer_payment in offerers_payments]
@@ -267,40 +265,15 @@ def find_reimbursement_details_by_invoices(
     return reimbursement_details
 
 
-def validate_reimbursement_period(
-    reimbursement_period_field_names: tuple[str, str], get_query_param: Callable
-) -> tuple[None, ...] | tuple[datetime.date, ...]:
-    api_errors = ApiErrors()
-    reimbursement_period_dates: tuple[datetime.date, ...] = tuple()
-    for field_name in reimbursement_period_field_names:
-        try:
-            reimbursement_period_dates += (datetime.date.fromisoformat(get_query_param(field_name)),)
-        except (TypeError, ValueError):
-            api_errors.add_error(field_name, "Vous devez renseigner une date au format ISO (ex. 2021-12-24)")
-    if len(api_errors.errors) > 0:
-        raise api_errors
-    return reimbursement_period_dates or (None, None)
+class ReimbursementCsvByInvoicesModel(HttpQueryParamsModel):
+    # `unique_items` has been deprecated in pydantic V2, that's why we have to use a set
+    # to implement unicity (https://github.com/pydantic/pydantic-core/issues/296)
+    invoicesReferences: typing.Annotated[set[str], pydantic_v2.Field(max_length=75)]
 
-
-class ReimbursementCsvQueryModel(BaseModel):
-    offererId: int
-    bankAccountId: int | None
-    reimbursementPeriodBeginningDate: str | None
-    reimbursementPeriodEndingDate: str | None
-
-
-class InvoiceList(ConstrainedList):
-    __args__ = (str,)  # required by pydantic
-    item_type = str
-    unique_items = True
-    max_items = 75
-
-
-class ReimbursementCsvByInvoicesModel(BaseModel):
-    invoicesReferences: InvoiceList
-
-    @validator("invoicesReferences", pre=True)
-    def ensure_invoices_references_is_list(cls, v: list[str] | str) -> list[str]:
+    @pydantic_v2.field_validator("invoicesReferences", mode="before")
+    def ensure_invoices_references_is_a_set(cls, v: typing.Any) -> set[str]:
         if isinstance(v, str):
-            return [v]
-        return v
+            return set([v])
+        if isinstance(v, list):
+            return set(v)
+        raise PydanticError("Invalid value")

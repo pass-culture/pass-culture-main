@@ -2279,36 +2279,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_reimbursements_csv <GET>
-   * @param offererId
-   * @param bankAccountId
-   * @param reimbursementPeriodBeginningDate
-   * @param reimbursementPeriodEndingDate
-   * @returns any OK
-   * @throws ApiError
-   */
-  public getReimbursementsCsv(
-    offererId: number,
-    bankAccountId?: number,
-    reimbursementPeriodBeginningDate?: string,
-    reimbursementPeriodEndingDate?: string,
-  ): CancelablePromise<any> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/reimbursements/csv',
-      query: {
-        'offererId': offererId,
-        'bankAccountId': bankAccountId,
-        'reimbursementPeriodBeginningDate': reimbursementPeriodBeginningDate,
-        'reimbursementPeriodEndingDate': reimbursementPeriodEndingDate,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * bulk_update_event_stocks <PATCH>
    * @param requestBody
    * @returns GetStocksResponseModel OK

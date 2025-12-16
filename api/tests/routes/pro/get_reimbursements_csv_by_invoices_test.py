@@ -270,7 +270,7 @@ def test_too_many_invoices_searched_returns_an_error(client):
     response = client.get(f"/v2/reimbursements/csv?{references}")
 
     assert response.status_code == 400
-    assert response.json == {"invoicesReferences": ["ensure this value has at most 75 items"]}
+    assert response.json == {"invoicesReferences": ["Set should have at most 75 items after validation, not more"]}
 
 
 def test_booking_with_empty_use_date_should_be_ok(client):

@@ -98,7 +98,7 @@ def find_offerer_payments(
     offerer_id: int | None = None,
     reimbursement_period: tuple[datetime.date, datetime.date] | None = None,
     bank_account_id: int | None = None,
-    invoices_references: list[str] | None = None,
+    invoices_references: set[str] | None = None,
 ) -> list[tuple]:
     results = []
 
@@ -134,7 +134,7 @@ def _get_sent_pricings_for_collective_bookings(
     offerer_id: int | None = None,
     reimbursement_period: tuple[datetime.date, datetime.date] | None = None,
     bank_account_id: int | None = None,
-    invoices_references: list[str] | None = None,
+    invoices_references: set[str] | None = None,
 ) -> list[tuple]:
     # Querying the Pricing information before joining the
     # CollectiveBooking makes the query much more efficient
@@ -242,7 +242,7 @@ def _get_sent_pricings_for_individual_bookings(
     offerer_id: int | None,
     reimbursement_period: tuple[datetime.date, datetime.date] | None = None,
     bank_account_id: int | None = None,
-    invoices_references: list[str] | None = None,
+    invoices_references: set[str] | None = None,
 ) -> list[tuple]:
     query = (
         db.session.query(models.Pricing)
