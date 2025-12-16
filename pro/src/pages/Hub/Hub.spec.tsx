@@ -74,7 +74,7 @@ describe('Hub', () => {
     vi.clearAllMocks()
   })
 
-  it('should render the main heading', async () => {
+  it('should render', async () => {
     const { container } = renderHub({ venues: venuesBase })
 
     expect(await axe(container)).toHaveNoViolations()
@@ -85,10 +85,6 @@ describe('Hub', () => {
         name: 'À quelle structure souhaitez-vous accéder ?',
       })
     ).toBeInTheDocument()
-  })
-
-  it('should render all venue buttons', () => {
-    renderHub({ venues: venuesBase })
 
     expect(screen.getByRole('button', { name: /Venue A/ })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Venue B/ })).toBeInTheDocument()
@@ -157,8 +153,7 @@ describe('Hub', () => {
 
     renderHub({ venues: venuesBase })
 
-    const venueBButton = screen.getByRole('button', { name: 'Venue B' })
-    await userEvent.click(venueBButton)
+    await userEvent.click(screen.getByRole('button', { name: 'Venue B' }))
 
     await waitFor(() => {
       expect(api.getVenue).toHaveBeenCalledWith(102)

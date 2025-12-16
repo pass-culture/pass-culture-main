@@ -6,20 +6,19 @@
   justify-content: center;
   background-color: var(--color-background-subtle);
   display: flex;
-  height: 100vh;
 }
 
-.venue-buttons-box {
+.venue-list {
   display: grid;
   flex-grow: 1;
   gap: 8px;
   grid-template-columns: repeat(1, 1fr);
   margin-top: var(--size-spacing-l);
   padding-right: var(--size-spacing-l);
-  overflow-y: auto;
 
   @media screen and (min-width: size.$tablet) {
     grid-template-columns: repeat(2, 1fr);
+    overflow-y: auto;
   }
 
   @media screen and (min-width: size.$laptop) {
@@ -27,7 +26,7 @@
   }
 }
 
-.venue-button {
+.venue-item-button {
   @include fonts.button;
 
   aspect-ratio: 3 / 2;
@@ -39,7 +38,7 @@
   width: 100%;
 }
 
-.venue-name {
+.venue-item-name {
   @include fonts.body;
 
   display: block;
@@ -51,4 +50,10 @@
   color: var(--color-text-subtle);
   display: block;
   margin-top: var(--size-spacing-xxs);
+}
+
+.venue-actions {
+  display: flex;
+  justify-content: center;
+  padding: var(--size-spacing-xl);
 }

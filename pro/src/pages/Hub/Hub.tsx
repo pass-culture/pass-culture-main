@@ -9,6 +9,10 @@ import { useNavigateByRouteId } from '@/commons/hooks/useNavigateByRouteId'
 import { setSelectedVenueById } from '@/commons/store/user/dispatchers/setSelectedVenueById'
 import { ensureVenues } from '@/commons/store/user/selectors'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
+import { Footer } from '@/components/Footer/Footer'
+import fullMoreIcon from '@/icons/full-more.svg'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './Hub.module.scss'
@@ -48,18 +52,21 @@ export const Hub = () => {
       mainHeading="À quelle structure souhaitez-vous accéder ?"
       withFlexContent
     >
-      <div className={styles['venue-buttons-box']}>
+      <div className={styles['venue-list']}>
         {venues.map((venue) => (
           <div key={venue.id}>
             <button
               aria-describedby={
                 venue.location ? `venue-${venue.id}-location` : undefined
               }
-              className={styles['venue-button']}
+              className={styles['venue-item-button']}
               onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
               type="button"
             >
-              <span className={styles['venue-name']} id={`venue-${venue.id}`}>
+              <span
+                className={styles['venue-item-name']}
+                id={`venue-${venue.id}`}
+              >
                 {venue.name}
               </span>
               {venue.location && (
@@ -74,6 +81,18 @@ export const Hub = () => {
           </div>
         ))}
       </div>
+
+      <div className={styles['venue-actions']}>
+        <ButtonLink
+          icon={fullMoreIcon}
+          to="/inscription/structure/recherche"
+          variant={ButtonVariant.SECONDARY}
+        >
+          Ajouter une structure
+        </ButtonLink>
+      </div>
+
+      <Footer layout={'basic'} />
     </FunnelLayout>
   )
 }

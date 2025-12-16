@@ -17,9 +17,9 @@ type FunnelLayoutTestProps = Partial<FunnelLayoutProps> & {
 }
 
 const renderLayout = ({
-  isImpersonated = false,
-  isConnected = true,
-  withFlexContent = false,
+  isImpersonated,
+  isConnected,
+  withFlexContent,
   ...props
 }: FunnelLayoutTestProps = {}) => {
   renderWithProviders(
@@ -27,7 +27,6 @@ const renderLayout = ({
       {...props}
       mainHeading="Votre structure"
       withFlexContent={withFlexContent}
-      withVerticalScroll
     />,
     isConnected
       ? {
@@ -51,7 +50,7 @@ describe('FunnelLayout', () => {
   })
 
   it('should always render a main landmark and a heading level 1', () => {
-    renderLayout()
+    renderLayout({ isConnected: true })
 
     expect(screen.getByRole('main')).toBeInTheDocument()
     expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
@@ -68,7 +67,7 @@ describe('FunnelLayout', () => {
   })
 
   it('should render connect as banner if user has isImpersonated value is true', () => {
-    renderLayout({ isImpersonated: true })
+    renderLayout({ isConnected: true, isImpersonated: true })
 
     expect(
       screen.getByText('Vous êtes connecté en tant que :')
@@ -77,21 +76,21 @@ describe('FunnelLayout', () => {
 
   describe('showFooter', () => {
     it('should not display footer by default', () => {
-      renderLayout({ isImpersonated: false })
+      renderLayout({ isConnected: true, isImpersonated: false })
 
       expect(screen.queryByTestId('app-footer')).not.toBeInTheDocument()
     })
   })
 
   it('should render main content with default class when withFlexContent is false', () => {
-    renderLayout({ withFlexContent: false })
+    renderLayout({ isConnected: true })
 
     const main = screen.getByRole('main')
     expect(main.className).toBe('content')
   })
 
   it('should render main content with flex class when withFlexContent is true', () => {
-    renderLayout({ withFlexContent: true })
+    renderLayout({ isConnected: true, withFlexContent: true })
 
     const main = screen.getByRole('main')
     expect(main.className).toBe('content-flex')

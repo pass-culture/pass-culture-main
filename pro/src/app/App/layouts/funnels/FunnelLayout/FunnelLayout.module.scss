@@ -32,10 +32,13 @@ $connect-as-header-height: rem.torem(52px);
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  overflow-y: auto;
   width: 100%;
 
-  &-with-vertical-scroll {
-    overflow-y: auto;
+  &-flex {
+    @media screen and (min-width: size.$tablet) {
+      overflow-y: hidden;
+    }
   }
 }
 
@@ -69,10 +72,13 @@ $connect-as-header-height: rem.torem(52px);
 .content-flex {
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
   margin: 0 auto;
   max-width: 100%;
   min-height: 0;
   padding: size.$main-content-padding size.$main-content-padding 0;
   width: size.$main-content-width;
+
+  @media screen and (min-width: size.$tablet) {
+    flex-grow: 1;
+  }
 }
