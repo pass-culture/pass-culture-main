@@ -373,6 +373,27 @@ def notify_pro_users_before_anonymization() -> None:
         transactional_mails.send_pre_anonymization_email_to_pro(user)
 
 
+def anonymize_pro_user(user: models.User) -> bool:
+    anonymized = anonymize_user(user)
+
+    if anonymized:
+        db.session.query(offerers_models.UserOfferer).filter(
+            offerers_models.UserOfferer.userId == user.id,
+            offerers_models.UserOfferer.isValidated,
+        ).update({"validationStatus": ValidationStatus.DELETED}, synchronize_session=False)
+
+        db.session.query(offerers_models.UserOfferer).filter(
+            offerers_models.UserOfferer.userId == user.id,
+            offerers_models.UserOfferer.isWaitingForValidation,
+        ).update({"validationStatus": ValidationStatus.REJECTED}, synchronize_session=False)
+
+        try:
+            delete_beamer_user(user.id)
+        except BeamerException as exc:
+            logger.error("Could not delete Beamer user", extra={"user_id": user.id, "exc": str(exc)})
+    return anonymized
+
+
 @transaction_manager.atomic()
 def anonymize_pro_users() -> None:
     """
@@ -389,15 +410,9 @@ def anonymize_pro_users() -> None:
 
     for user in users:
         with transaction_manager.atomic():
-            anonymized = anonymize_user(user)
+            anonymized = anonymize_pro_user(user)
             if not anonymized:
                 transaction_manager.mark_transaction_as_invalid()
-
-        if anonymized:
-            try:
-                delete_beamer_user(user.id)
-            except BeamerException:
-                pass
 
 
 @transaction_manager.atomic()
