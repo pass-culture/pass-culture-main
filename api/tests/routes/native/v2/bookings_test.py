@@ -134,8 +134,8 @@ class GetBookingsTest:
             "completedUrl": f"https://demo.pass/some/path?token={used2.token}&email=pascal.ture@example.com&offerId={humanize(used2.stock.offer.id)}",
             "dateCreated": used2.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "dateUsed": "2023-03-02T00:00:00Z",
+            "displayAsEnded": True,
             "expirationDate": None,
-            "isArchivable": True,
             "quantity": 1,
             "id": used2.id,
             "stock": {
@@ -895,10 +895,10 @@ class GetBookingTest:
             "confirmationDate": booking.cancellationLimitDate,
             "dateCreated": booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "dateUsed": booking.dateUsed,
+            "displayAsEnded": None,
             "enablePopUpReaction": False,
             "expirationDate": booking.expirationDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             "id": booking.id,
-            "isArchivable": None,
             "quantity": booking.quantity,
             "stock": {
                 "beginningDatetime": booking.stock.beginningDatetime,

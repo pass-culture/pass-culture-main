@@ -272,8 +272,8 @@ class BookingResponse(ConfiguredBaseModel):
     completed_url: str | None
     date_created: datetime
     date_used: datetime | None
+    display_as_ended: bool | None
     expiration_date: datetime | None
-    is_archivable: bool | None
     quantity: int
     stock: BookingStockResponseV2
     total_amount: int
