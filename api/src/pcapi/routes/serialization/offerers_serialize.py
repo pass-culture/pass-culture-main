@@ -39,7 +39,7 @@ class GetOffererVenueResponseModelGetterDict(GetterDict):
         if key == "activity":
             if not self._obj.activity or self._obj.activity == offerers_models.Activity.NOT_ASSIGNED:
                 return None
-            return offerers_models.DisplayedActivity[self._obj.activity.name]
+            return offerers_models.DisplayableActivity[self._obj.activity.name]
         return super().get(key, default)
 
 
@@ -53,7 +53,7 @@ class GetOffererVenueResponseModel(BaseModel):
     publicName: str | None
     siret: str | None
     venueTypeCode: offerers_models.VenueTypeCode | None
-    activity: offerers_models.DisplayedActivity | None
+    activity: offerers_models.DisplayableActivity | None
     withdrawalDetails: str | None
     collectiveDmsApplications: list[DMSApplicationForEAC]
     hasPartnerPage: bool
@@ -283,7 +283,7 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    activity: offerers_models.OnboardingActivity | None
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
     address: address_serialize.LocationBodyModel
     culturalDomains: list[str] | None = pydantic_v1.Field(min_items=1)
     createVenueWithoutSiret: bool = False

@@ -1,33 +1,35 @@
 // Back-End Model Enums
-import { DisplayedActivity } from '@/apiClient/v1/models/DisplayedActivity'
-import { OnboardingActivity } from '@/apiClient/v1/models/OnboardingActivity'
 
+import { ActivityOpenToPublic } from '@/apiClient/v1/models/ActivityOpenToPublic'
+import { DisplayableActivity } from '@/apiClient/v1/models/DisplayableActivity'
+
+import {
+  _ActivityOpenToPublicMappings,
+  type ActivityOpenToPublicType,
+} from './ActivityOpenToPublic'
 // Client Mappings
 import {
-  _DisplayedActivityMappings,
-  type DisplayedActivityType,
-} from './DisplayedActivity'
-import {
-  _OnboardingActivityMappings,
-  type OnboardingActivityType,
-} from './OnboardingActivity'
+  _DisplayableActivityMappings,
+  type DisplayableActivityType,
+} from './DisplayableActivity'
 import { buildFilteredMap } from './utils/buildFilteredMap'
 
 // Getter for all activities that can be CHOSEN on the new structure registration
 export const getActivities = (() => {
-  const OnboardingActivityMap = buildFilteredMap(
-    OnboardingActivity,
-    _OnboardingActivityMappings
+  const ActivityOpenToPublicMap = buildFilteredMap(
+    ActivityOpenToPublic,
+    _ActivityOpenToPublicMappings
   )
-  return (): Record<OnboardingActivityType, string> =>
-    OnboardingActivityMap as Record<OnboardingActivityType, string>
+  return (): Record<ActivityOpenToPublicType, string> =>
+    ActivityOpenToPublicMap as Record<ActivityOpenToPublicType, string>
 })()
 
 // Getter for all activities that can be DISPLAYED (including potential old ones)
 export const getActivityLabel = (() => {
-  const DisplayedActivityMap = buildFilteredMap(
-    DisplayedActivity,
-    _DisplayedActivityMappings
+  const DisplayableActivityMap = buildFilteredMap(
+    DisplayableActivity,
+    _DisplayableActivityMappings
   )
-  return (label: DisplayedActivityType): string => DisplayedActivityMap[label]
+  return (label: DisplayableActivityType): string =>
+    DisplayableActivityMap[label]
 })()

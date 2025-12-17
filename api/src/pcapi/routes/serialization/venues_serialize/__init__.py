@@ -279,13 +279,13 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         if key == "activity":
             if not venue.activity or venue.activity == offerers_models.Activity.NOT_ASSIGNED:
                 return None
-            return offerers_models.DisplayedActivity[venue.activity.name]
+            return offerers_models.DisplayableActivity[venue.activity.name]
 
         return super().get(key, default)
 
 
 class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
-    activity: offerers_models.DisplayedActivity | None
+    activity: offerers_models.DisplayableActivity | None
     dateCreated: datetime
     id: int
     bannerMeta: BannerMetaModel | None
@@ -367,7 +367,7 @@ class GetCollectiveVenueResponseModel(BaseModel):
 
 
 class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
-    activity: offerers_models.OnboardingActivity | None
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
     culturalDomains: list[str] | None
     name: offerers_schemas.VenueName | None
     street: offerers_schemas.VenueAddress | None

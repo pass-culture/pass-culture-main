@@ -5,7 +5,7 @@
 /**
  * An enumeration.
  */
-export enum DisplayedActivity {
+export enum ActivityNotOpenToPublic {
   ART_GALLERY = 'ART_GALLERY',
   ART_SCHOOL = 'ART_SCHOOL',
   ARTS_CENTRE = 'ARTS_CENTRE',
@@ -16,7 +16,6 @@ export enum DisplayedActivity {
   CULTURAL_CENTRE = 'CULTURAL_CENTRE',
   DISTRIBUTION_STORE = 'DISTRIBUTION_STORE',
   FESTIVAL = 'FESTIVAL',
-  GAMES_CENTRE = 'GAMES_CENTRE',
   HERITAGE_SITE = 'HERITAGE_SITE',
   LIBRARY = 'LIBRARY',
   MUSEUM = 'MUSEUM',

@@ -4,7 +4,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
-  type OnboardingActivity,
+  type ActivityOpenToPublic,
   type SaveNewOnboardingDataQueryModel,
   Target,
 } from '@/apiClient/v1'
@@ -95,7 +95,7 @@ export const Validation = (): JSX.Element | undefined => {
 
   const activityLabel =
     offerer?.isOpenToPublic === 'true'
-      ? getActivityLabel(activity.venueTypeCode as OnboardingActivity) // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
+      ? getActivityLabel(activity.venueTypeCode as ActivityOpenToPublic) // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
       : venueTypes.find(
           (venueType) => venueType.value === activity.venueTypeCode
         )?.label
@@ -114,7 +114,7 @@ export const Validation = (): JSX.Element | undefined => {
           ? {
               activity:
                 /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-                activity.venueTypeCode as OnboardingActivity, // TODO (jclery, 2025-11-27): Also TEMPORARY (see above)
+                activity.venueTypeCode as ActivityOpenToPublic, // TODO (jclery, 2025-11-27): Also TEMPORARY (see above)
             }
           : {
               venueTypeCode:
