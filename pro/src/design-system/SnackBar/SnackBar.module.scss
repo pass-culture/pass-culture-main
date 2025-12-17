@@ -112,40 +112,35 @@
   }
 }
 
-@media screen and (max-width: size.$tablet) {
-  .container {
-    max-width: 100%;
-    width: 100%;
+.container.mobile {
+  max-width: 100%;
+  width: 100%;
 
-    &.show {
-      animation: slide-in-top var(--snackbar-animation-duration) ease-out
-        forwards;
-    }
+  &.show {
+    animation: slide-in-top var(--snackbar-animation-duration) ease-out forwards;
+  }
 
-    &.hide {
-      animation: slide-out-top var(--snackbar-animation-duration) ease-in
-        forwards;
-    }
+  &.hide {
+    animation: slide-out-top var(--snackbar-animation-duration) ease-in forwards;
+  }
 
-    .wrapper {
-      border-radius: 0;
-      animation-name: none;
+  .wrapper {
+    border-radius: 0;
+    animation-name: none;
 
-      .content {
-        .content-text {
-          @include fonts.body-accent-s;
-        }
+    .content {
+      .content-text {
+        @include fonts.body-accent-s;
       }
     }
+  }
 
-    .progress-bar-container {
-      bottom: rem.torem(-4px);
-      top: unset;
+  .progress-bar-container {
+    bottom: rem.torem(-4px);
+    top: unset;
 
-      .progress-bar {
-        border-radius: 0 0 var(--size-border-radius-s)
-          var(--size-border-radius-s);
-      }
+    .progress-bar {
+      border-radius: 0 0 var(--size-border-radius-s) var(--size-border-radius-s);
     }
   }
 }

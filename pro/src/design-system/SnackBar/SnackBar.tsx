@@ -4,6 +4,7 @@ import fullCloseIcon from 'icons/full-close.svg'
 import fullValidateIcon from 'icons/full-validate.svg'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SnackBar.module.scss'
@@ -38,6 +39,10 @@ export type SnackBarProps = {
    * Whether the snack bar should automatically close or not
    */
   autoClose?: boolean
+  /**
+   * Force the mobile view mode.
+   */
+  forceMobile?: boolean
 }
 
 export const ANIMATION_DURATION = 300 // should have the same value as `&.show transition` in `SnackBar.module.scss`
@@ -75,10 +80,13 @@ export const SnackBar = ({
   onClose,
   autoClose = true,
   testId,
+  forceMobile = false,
 }: SnackBarProps): JSX.Element => {
   const [isClosing, setIsClosing] = useState(false)
   const hasClosedRef = useRef(false)
   const onCloseRef = useRef(onClose)
+  const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
+  const isMobile = forceMobile || isSmallScreen
 
   // Keep onClose ref up to date without triggering re-renders
   useEffect(() => {
@@ -124,7 +132,8 @@ export const SnackBar = ({
       className={cx(
         styles['container'],
         styles[variant],
-        isClosing ? styles['hide'] : styles['show']
+        isClosing ? styles['hide'] : styles['show'],
+        isMobile ? styles['mobile'] : ''
       )}
       style={
         {
