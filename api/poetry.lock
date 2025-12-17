@@ -4135,6 +4135,9 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
+[package.dependencies]
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
+
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6029,14 +6032,14 @@ files = [
 
 [[package]]
 name = "spectree"
-version = "1.5.7"
+version = "1.5.8"
 description = "Generate OpenAPI document and validate request & response with Python annotations."
 optional = false
 python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "spectree-1.5.7-py3-none-any.whl", hash = "sha256:15644c9b78701d54beeff4074a4f8deca2075af053cb6caa27f3136ea21d9550"},
-    {file = "spectree-1.5.7.tar.gz", hash = "sha256:85f01b52f1bc64891ed0a887b8fec19a202fc0e17edbb3ca1678ea31763a7077"},
+    {file = "spectree-1.5.8-py3-none-any.whl", hash = "sha256:5740547426556fe7964aecc9f9bede85e03fa8e3a78d85919387da57c0a54503"},
+    {file = "spectree-1.5.8.tar.gz", hash = "sha256:3c1e23dbb5bdd22a7eaf14879e7812483e88e0d2d6090b749ff985f053f73cdf"},
 ]
 
 [package.dependencies]
@@ -6639,7 +6642,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\""}
+markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
 name = "tzlocal"
@@ -7365,4 +7368,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "659afe6b24618db51278e2ebff261c0a74508b9a9be92c3830dc56cb9953a11c"
+content-hash = "347fe17efcdfe3fbc5e937e59619fdd4991de023d097a2920013af0eef2aa2e8"
