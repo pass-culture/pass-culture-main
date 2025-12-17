@@ -102,7 +102,7 @@ export function Table<
   getFullRowContent,
   isRowSelectable,
 }: TableProps<T>) {
-  const fullScope = allData ?? data
+  const fullScope = allData ?? data ?? []
 
   const { currentSortingColumn, currentSortingMode, onColumnHeaderClick } =
     useColumnSorting<unknown>()
