@@ -1,30 +1,32 @@
-from pcapi.core.educational import models as educational_models
-from pcapi.routes.serialization import BaseModel
+import typing
+
+from pydantic import RootModel
+
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import national_programs
 
 
-class EducationalDomainResponseModel(BaseModel):
+if typing.TYPE_CHECKING:
+    from pcapi.core.educational.models import EducationalDomain
+
+
+class EducationalDomainResponseModel(HttpBodyModel):
     id: int
     name: str
-    nationalPrograms: list[national_programs.NationalProgramModel]
+    nationalPrograms: list[national_programs.NationalProgramResponseModel]
 
     @classmethod
-    def from_orm(cls, domain: educational_models.EducationalDomain) -> "EducationalDomainResponseModel":
-        result = super().from_orm(domain)
-        result.nationalPrograms = [
-            national_programs.NationalProgramModel.from_orm(program)
-            for program in domain.nationalPrograms
-            if program.isActive
-        ]
-
-        return result
-
-    class Config:
-        orm_mode = True
+    def build(cls, domain: "EducationalDomain") -> "EducationalDomainResponseModel":
+        return cls(
+            id=domain.id,
+            name=domain.name,
+            nationalPrograms=[
+                national_programs.NationalProgramResponseModel.model_validate(program)
+                for program in domain.nationalPrograms
+                if program.isActive
+            ],
+        )
 
 
-class EducationalDomainsResponseModel(BaseModel):
-    __root__: list[EducationalDomainResponseModel]
-
-    class Config:
-        orm_mode = True
+class EducationalDomainsResponseModel(RootModel):
+    root: list[EducationalDomainResponseModel]

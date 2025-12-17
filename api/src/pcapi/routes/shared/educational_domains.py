@@ -13,9 +13,10 @@ from pcapi.serialization.decorator import spectree_serialize
 )
 def list_educational_domains() -> educational_domains_serialization.EducationalDomainsResponseModel:
     educational_domains = educational_repository.get_all_educational_domains_ordered_by_name()
+
     return educational_domains_serialization.EducationalDomainsResponseModel(
-        __root__=[
-            educational_domains_serialization.EducationalDomainResponseModel.from_orm(educational_domain)
+        [
+            educational_domains_serialization.EducationalDomainResponseModel.build(educational_domain)
             for educational_domain in educational_domains
         ]
     )

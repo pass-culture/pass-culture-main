@@ -2,10 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { NationalProgramModel } from './NationalProgramModel';
+import type { NationalProgramResponseModel } from './NationalProgramResponseModel';
 export type EducationalDomainResponseModel = {
   id: number;
   name: string;
-  nationalPrograms: Array<NationalProgramModel>;
+  nationalPrograms: Array<NationalProgramResponseModel>;
 };
 
