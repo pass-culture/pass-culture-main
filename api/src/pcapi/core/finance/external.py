@@ -97,8 +97,6 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
     app.redis_client.set(conf.REDIS_PUSH_INVOICE_LOCK, "1", ex=conf.REDIS_PUSH_INVOICE_LOCK_TIMEOUT)
 
     invoice_ids = [e[0] for e in invoices]
-    encountered_error = False
-    encountered_workhour = False
 
     try:
         for invoice_id in invoice_ids:
@@ -110,7 +108,6 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                         "Didn't push invoice due to work hours beginning soon",
                         extra={"invoice_id": invoice_id},
                     )
-                    encountered_workhour = True
                     break
                 finance_backend.push_invoice(invoice_id)
             except Exception as exc:
@@ -122,7 +119,6 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                     },
                 )
                 # Wait until next cron run to continue sync process
-                encountered_error = True
                 break
             else:
                 db.session.query(finance_models.Invoice).filter(finance_models.Invoice.id == invoice_id).update(
@@ -136,10 +132,8 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)
 
-    finally:
-        app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
-
-        if not encountered_error and not encountered_workhour:
+        # no break, all invoices processed without error
+        else:
             cashflow = (
                 db.session.query(finance_models.Cashflow)
                 .join(finance_models.Cashflow.invoices)
@@ -166,3 +160,6 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                     ],
                     icon_emoji=":large_green_circle:",
                 )
+
+    finally:
+        app.redis_client.delete(conf.REDIS_PUSH_INVOICE_LOCK)
