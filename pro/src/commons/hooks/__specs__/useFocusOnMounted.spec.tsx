@@ -1,5 +1,7 @@
 import { renderHook } from '@testing-library/react'
 
+import { FrontendError } from '@/commons/errors/FrontendError'
+
 import { useFocusOnMounted } from '../useFocusOnMounted'
 
 describe('useFocusOnMounted()', () => {
@@ -30,9 +32,15 @@ describe('useFocusOnMounted()', () => {
     mockElement.remove()
   })
 
-  it('should not throw when element is not found', () => {
-    expect(() => {
-      renderHook(() => useFocusOnMounted('#non-existent-element'))
-    }).not.toThrow()
+  it('should log a FrontendError when element is not found', () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+
+    renderHook(() => useFocusOnMounted('#non-existent-element'))
+
+    expect(consoleErrorSpy).toHaveBeenCalledExactlyOnceWith(
+      expect.any(FrontendError)
+    )
   })
 })
