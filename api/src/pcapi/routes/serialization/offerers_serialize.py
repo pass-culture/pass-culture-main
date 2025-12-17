@@ -283,7 +283,7 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    activity: offerers_models.OnboardingActivity | None
+    activity: offerers_models.OnboardingActivityOpenToPublic | None
     address: address_serialize.LocationBodyModel
     culturalDomains: list[str] | None = pydantic_v1.Field(min_items=1)
     createVenueWithoutSiret: bool = False

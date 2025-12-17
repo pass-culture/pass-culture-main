@@ -69,8 +69,8 @@ describe('buildFilteredMap', () => {
     }
 
     const expectedErrorMessage =
-      '[OnboardingActivity Mapper] Mismatch keys between back-end and front-end:\n' +
-      '- Following keys are present in OnboardingActivity model, but not in the mappings list:\n' +
+      '[OnboardingActivityOpenToPublic Mapper] Mismatch keys between back-end and front-end:\n' +
+      '- Following keys are present in OnboardingActivityOpenToPublic model, but not in the mappings list:\n' +
       '\tORANGE'
 
     expect(() => buildFilteredMap(ColorsEnum, Mappings)).toThrow(

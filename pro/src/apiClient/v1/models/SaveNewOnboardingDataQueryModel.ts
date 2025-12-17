@@ -3,10 +3,10 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { LocationBodyModel } from './LocationBodyModel';
-import type { OnboardingActivity } from './OnboardingActivity';
+import type { OnboardingActivityOpenToPublic } from './OnboardingActivityOpenToPublic';
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
-  activity?: OnboardingActivity | null;
+  activity?: OnboardingActivityOpenToPublic | null;
   address: LocationBodyModel;
   createVenueWithoutSiret?: boolean;
   culturalDomains?: Array<string> | null;
