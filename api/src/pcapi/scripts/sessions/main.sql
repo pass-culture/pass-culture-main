@@ -1,0 +1,1 @@
+DELETE FROM USER_SESSION WHERE "expirationDatetime" IS NULL
