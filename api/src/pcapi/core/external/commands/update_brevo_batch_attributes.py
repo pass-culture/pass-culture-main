@@ -19,6 +19,7 @@ from pcapi.core.users.models import User
 from pcapi.models import db
 from pcapi.notifications.push import update_users_attributes
 from pcapi.notifications.push.backends.batch import UserUpdateData
+from pcapi.utils.transaction_manager import atomic
 
 
 logger = logging.getLogger(__name__)
@@ -30,8 +31,26 @@ class CollectedAttributes:
     attributes: UserAttributes
 
 
-def _collect_users_attributes(users: list[User]) -> list[CollectedAttributes]:
+@atomic()
+def _collect_users_attributes(user_ids: list[int]) -> list[CollectedAttributes]:
     # Collect once for both Brevo and Batch
+    users = (
+        db.session.query(User)
+        .filter(User.id.in_(user_ids))
+        .filter(
+            User.isActive.is_(True),
+            sa.or_(
+                sa.and_(
+                    sa.not_(User.has_pro_role),
+                    sa.not_(User.has_non_attached_pro_role),
+                    sa.not_(User.has_admin_role),
+                ),
+                User.is_beneficiary,
+            ),
+        )
+        .all()
+    )
+
     results: list[CollectedAttributes] = []
     for user in users:
         try:
@@ -73,32 +92,15 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
         f"[{'Batch, ' if synchronize_batch else ''}{'Brevo' if synchronize_brevo else ''}] "
         f"with user ids in range {min_user_id}-{max_user_id}"
     )
+    logger.info("[update_brevo_and_batch_users] %s started", message)
 
     user_ids = list(range(min_user_id, max_user_id + 1))
-
-    logger.info("[update_brevo_and_batch_users] %s started", message)
-    chunk = (
-        db.session.query(User)
-        .filter(User.id.in_(user_ids))
-        .filter(
-            User.isActive.is_(True),
-            sa.or_(
-                sa.and_(
-                    sa.not_(User.has_pro_role),
-                    sa.not_(User.has_non_attached_pro_role),
-                    sa.not_(User.has_admin_role),
-                ),
-                User.is_beneficiary,
-            ),
-        )
-        .all()
-    )
+    user_attributes = _collect_users_attributes(user_ids)
 
     retries = 3
     while retries > 0:
         retries -= 1
         try:
-            user_attributes = _collect_users_attributes(chunk)
             if synchronize_batch:
                 batch_users_data = _format_batch_users(user_attributes)
                 update_users_attributes(batch_users_data)
@@ -114,7 +116,7 @@ def _run_iteration(min_user_id: int, max_user_id: int, synchronize_batch: bool, 
         else:
             break
 
-    logger.info("[update_brevo_and_batch_users] %d users updated", len(chunk))
+    logger.info("[update_brevo_and_batch_users] %d users updated", len(user_attributes))
 
 
 def update_brevo_and_batch_loop(chunk_size: int, min_id: int, max_id: int, sync_brevo: bool, sync_batch: bool) -> None:
@@ -127,7 +129,8 @@ def update_brevo_and_batch_loop(chunk_size: int, min_id: int, max_id: int, sync_
     # Process users in the order of ids so that we can resume easily in case the script is interrupted.
     # Start from the most recent users is almost an arbitrary choice (supposed to be most active users).
     if not max_id:
-        max_id = db.session.query(User.id).order_by(User.id.desc()).limit(1).scalar() or 0
+        with atomic():
+            max_id = db.session.query(User.id).order_by(User.id.desc()).limit(1).scalar() or 0
 
     try:
         for current_max_id in range(max_id, min_id, -chunk_size):
