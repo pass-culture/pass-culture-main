@@ -153,9 +153,10 @@ class GetEventsTest(PublicAPIVenueEndpointHelper):
         offer1 = offers_factories.EventOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_1)
         offers_factories.EventOfferFactory(venue=venue_provider.venue, offererAddress=offerer_address_2)
         offers_factories.EventOfferFactory(offererAddress=offerer_address_3)
+        address_id = offerer_address_1.addressId
 
         with testing.assert_num_queries(self.num_queries):
-            response = self.make_request(plain_api_key, query_params={"addressId": offerer_address_1.addressId})
+            response = self.make_request(plain_api_key, query_params={"addressId": address_id})
             assert response.status_code == 200
             assert len(response.json["events"]) == 1
 

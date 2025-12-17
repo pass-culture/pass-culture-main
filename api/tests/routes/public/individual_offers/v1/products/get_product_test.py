@@ -7,6 +7,7 @@ import time_machine
 from pcapi.core import testing
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import factories as offers_factories
 from pcapi.utils import human_ids
 
@@ -57,15 +58,33 @@ class GetProductTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(plain_api_key, path_params={"offer_id": offer_id})
             assert response.status_code == 404
 
+    @pytest.mark.parametrize(
+        "location_type",
+        (
+            None,
+            offerers_models.LocationType.VENUE_LOCATION,
+        ),
+    )
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_product_without_stock(self):
+    def test_product_without_stock(self, location_type):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         venue = venue_provider.venue
+        venue.offererAddress.type = location_type
+
+        offer_location = venue.offererAddress
+        if location_type:
+            offer_location = offerers_models.OffererAddress(
+                label=venue.publicName,
+                addressId=venue.offererAddress.addressId,
+                offererId=venue.offererAddress.offererId,
+                venueId=venue.offererAddress.venueId,
+            )
         offer = offers_factories.ThingOfferFactory(
             venue=venue,
             description="Un livre de contrepèterie",
             name="Vieux motard que jamais",
             idAtProvider="provider_id_at_provider",
+            offererAddress=offer_location,
         )
         offer_id = offer.id
 

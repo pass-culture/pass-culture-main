@@ -5,6 +5,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -56,6 +57,16 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
             sa_orm.selectinload(offers_models.Offer.priceCategories).joinedload(
                 offers_models.PriceCategory.priceCategoryLabel
             )
+        )
+        .options(
+            sa_orm.joinedload(offers_models.Offer.offererAddress).load_only(
+                offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label
+            )
+        )
+        .options(
+            sa_orm.joinedload(offers_models.Offer.venue)
+            .joinedload(offerers_models.Venue.offererAddress)
+            .load_only(offerers_models.OffererAddress.addressId, offerers_models.OffererAddress.label)
         )
     )
 
@@ -115,9 +126,16 @@ def get_filtered_offers_linked_to_provider(
         .filter(offers_models.Offer.id >= query_filters.firstIndex)
         .order_by(offers_models.Offer.id)
         .options(
-            sa_orm.joinedload(offers_models.Offer.venue).load_only(
-                offerers_models.Venue.id, offerers_models.Venue.offererAddressId
-            )
+            sa_orm.joinedload(offers_models.Offer.venue).options(
+                sa_orm.load_only(offerers_models.Venue.id, offerers_models.Venue.offererAddressId),
+                sa_orm.joinedload(offerers_models.Venue.offererAddress).load_only(
+                    offerers_models.OffererAddress.addressId
+                ),
+            ),
+            sa_orm.joinedload(offers_models.Offer.offererAddress).load_only(
+                offerers_models.OffererAddress.addressId,
+                offerers_models.OffererAddress.label,
+            ),
         )
     )
 
@@ -253,7 +271,10 @@ def extract_venue_and_offerer_address_from_location(
             address_id=address.id,
             label=location.address_label,
         )
+    else:
+        offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+            offerers_schemas.LocationOnlyOnVenueModel(),
+            venue,
+        )
 
-        return venue, offerer_address
-
-    return venue, venue.offererAddress
+    return venue, offerer_address
