@@ -6,6 +6,7 @@
        data-input-ids-name="object_ids">
     <form method="post"
           id="form-ids-table-container-download-reimbursement-details"
+          data-pc-form-opt-out="true"
           action="{{ url_for('backoffice_web.bank_account.download_reimbursement_details', bank_account_id=bank_account_id) }}">
       <input type="hidden"
              name="object_ids">
