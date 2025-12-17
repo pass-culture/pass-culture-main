@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react'
 
 import { RouteId } from '@/app/AppRouter/constants'
+import { FrontendError } from '@/commons/errors/FrontendError'
 
 import { useNavigateByRouteId } from '../useNavigateByRouteId'
 
@@ -20,21 +21,25 @@ describe('useNavigateByRouteId()', () => {
 
     result.current(RouteId.Homepage)
 
-    expect(navigateMock).toHaveBeenCalledTimes(1)
+    expect(navigateMock).toHaveBeenCalledExactlyOnceWith('/accueil')
   })
 
-  it('should call assertOrFrontendError when the route ID does not exist', async () => {
+  it('should call log a FrontendError and redirect to error page when the route ID does not exist', async () => {
     const { MemoryRouter } = await import('react-router')
 
-    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
 
     const { result } = renderHook(() => useNavigateByRouteId(), {
       wrapper: ({ children }) => <MemoryRouter>{children}</MemoryRouter>,
     })
-    const call = () => result.current('invalid-route-id' as RouteId)
 
-    expect(call).toThrow('route is undefined (routeId=invalid-route-id).')
+    result.current('invalid-route-id' as RouteId)
 
-    expect(navigateMock).not.toHaveBeenCalled()
+    expect(consoleErrorSpy).toHaveBeenCalledExactlyOnceWith(
+      expect.any(FrontendError)
+    )
+    expect(navigateMock).toHaveBeenCalledExactlyOnceWith('/error')
   })
 })
