@@ -1,4 +1,4 @@
-export const _OnboardingActivityMappings = {
+export const _OnboardingActivityOpenToPublicMappings = {
   ART_GALLERY: 'Galerie d’art',
   ART_SCHOOL: 'Conservatoire ou école d’arts',
   ARTS_CENTRE: 'Centre d’arts',
@@ -20,4 +20,5 @@ export const _OnboardingActivityMappings = {
   TOURIST_INFORMATION_CENTRE: 'Office de tourisme',
 }
 
-export type OnboardingActivityType = keyof typeof _OnboardingActivityMappings
+export type OnboardingActivityOpenToPublicType =
+  keyof typeof _OnboardingActivityOpenToPublicMappings
