@@ -3,7 +3,7 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BannerMetaModel } from './BannerMetaModel';
-import type { DisplayedActivity } from './DisplayedActivity';
+import type { DisplayableActivity } from './DisplayableActivity';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { ExternalAccessibilityDataModel } from './ExternalAccessibilityDataModel';
 import type { GetVenueDomainResponseModel } from './GetVenueDomainResponseModel';
@@ -17,7 +17,7 @@ import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeResponseModel } from './VenueTypeResponseModel';
 import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type GetVenueResponseModel = {
-  activity?: DisplayedActivity | null;
+  activity?: DisplayableActivity | null;
   adageInscriptionDate?: string | null;
   audioDisabilityCompliant?: boolean | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;

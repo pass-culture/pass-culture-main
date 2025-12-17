@@ -83,7 +83,7 @@ ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING = {
 
 
 def get_venue_type_code_from_activity(
-    activity: offerers_models.Activity | offerers_models.OnboardingActivity,
+    activity: offerers_models.Activity | offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic,
 ) -> offerers_schemas.VenueTypeCode:
     """
     Temporary utility function to compute a Venue's VenueTypeCode from the chosen Activity

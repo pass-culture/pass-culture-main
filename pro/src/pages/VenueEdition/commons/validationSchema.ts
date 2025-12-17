@@ -3,9 +3,9 @@ import * as yup from 'yup'
 
 import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
 import {
-  _OnboardingActivityMappings,
-  type OnboardingActivityType,
-} from '@/commons/mappings/OnboardingActivity'
+  _ActivityOpenToPublicMappings,
+  type ActivityOpenToPublicType,
+} from '@/commons/mappings/ActivityOpenToPublic'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 
 import type { VenueEditionFormValues } from './types'
@@ -71,9 +71,9 @@ export const getValidationSchema = ({
 }: {
   isCulturalDomainsEnabled: boolean
 }): ObjectSchema<VenueEditionFormValues> => {
-  const activityTypeValues: OnboardingActivityType[] = Object.keys(
-    _OnboardingActivityMappings
-  ).map((v) => v as OnboardingActivityType)
+  const activityTypeValues: ActivityOpenToPublicType[] = Object.keys(
+    _ActivityOpenToPublicMappings
+  ).map((v) => v as ActivityOpenToPublicType)
 
   return yup.object().shape({
     description: yup.string(),
@@ -126,7 +126,7 @@ export const getValidationSchema = ({
         then: (schema) => schema.shape(openingHoursSchemaShape),
       }),
     activity: yup
-      .mixed<OnboardingActivityType>()
+      .mixed<ActivityOpenToPublicType>()
       .oneOf(activityTypeValues)
       .when('isOpenToPublic', {
         is: (open: string) => open === 'true',
