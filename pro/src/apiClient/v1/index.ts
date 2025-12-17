@@ -181,6 +181,7 @@ export type { MentalDisabilityModel } from './models/MentalDisabilityModel';
 export type { MotorDisabilityModel } from './models/MotorDisabilityModel';
 export type { MusicTypeResponse } from './models/MusicTypeResponse';
 export type { NationalProgramModel } from './models/NationalProgramModel';
+export type { NationalProgramResponseModel } from './models/NationalProgramResponseModel';
 export type { NewPasswordBodyModel } from './models/NewPasswordBodyModel';
 export { OfferContactFormEnum } from './models/OfferContactFormEnum';
 export type { OfferDomain } from './models/OfferDomain';
