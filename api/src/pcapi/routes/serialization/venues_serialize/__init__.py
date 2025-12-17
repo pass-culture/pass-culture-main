@@ -602,23 +602,6 @@ class AdageCulturalPartnerResponseModel(BaseModel):
         orm_mode = True
 
 
-class CulturalPartner(BaseModel):
-    id: int
-    communeLibelle: str | None
-    libelle: str
-    regionLibelle: str | None
-
-    class Config:
-        orm_mode = True
-
-
-class AdageCulturalPartnersResponseModel(BaseModel):
-    partners: list[CulturalPartner]
-
-    class Config:
-        orm_mode = True
-
-
 class VenueOfOffererFromSiretResponseModel(BaseModel):
     id: int
     name: str

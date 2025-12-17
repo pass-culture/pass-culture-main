@@ -23,8 +23,7 @@ from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_history_serialize
-from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
-from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.serialization.educational_serialize import EducationalInstitutionResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.utils import to_camel
@@ -335,6 +334,11 @@ class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
             return False
 
         return super().get(key, default)
+
+
+class NationalProgramModel(BaseModel):
+    id: int
+    name: str
 
 
 class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixin):

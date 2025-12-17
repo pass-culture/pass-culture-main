@@ -35,9 +35,5 @@ class Returns200Test:
                 "name": "domain 2",
                 "nationalPrograms": [{"id": program_2.id, "name": "program 2"}],
             },
-            {
-                "id": domain_3.id,
-                "name": "domain 3",
-                "nationalPrograms": [],
-            },
+            {"id": domain_3.id, "name": "domain 3", "nationalPrograms": []},
         ]
