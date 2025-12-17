@@ -2,3 +2,4 @@
 ### ci-owners team is notified to maintain and improve
 
 /.github/workflows/ @pass-culture/sherif-ops @pass-culture/main-ci-owners
+/api/src/pcapi/alembic/ @pass-culture/database-reviewers
