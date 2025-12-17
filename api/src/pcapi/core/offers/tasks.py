@@ -10,6 +10,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -326,13 +327,16 @@ def _create_or_update_ean_offers(
     offers_to_index = []
 
     with repository.transaction():
-        offerer_address = venue.offererAddress  # default offerer_address
-
         if address_id:
             offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
                 address_id=address_id,
                 label=address_label,
+            )
+        else:
+            offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+                offerers_schemas.LocationOnlyOnVenueModel(),
+                venue,
             )
 
         if ean_list_to_create:

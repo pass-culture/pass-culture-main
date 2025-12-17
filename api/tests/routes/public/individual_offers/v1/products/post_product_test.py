@@ -8,6 +8,7 @@ import pytest
 import time_machine
 
 from pcapi import settings
+from pcapi.core import testing
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -96,14 +97,44 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
 
+    @pytest.mark.parametrize(
+        "location_type",
+        (
+            None,
+            offerers_models.LocationType.VENUE_LOCATION,
+        ),
+    )
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_physical_product_minimal_body(self, caplog):
+    def test_physical_product_minimal_body(self, location_type, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venue.id)
+        venue_provider.venue.offererAddress.type = location_type
+        db.session.flush()
+
+        num_queries = 1  # select the api_key
+        num_queries += 1  # select the provider
+        num_queries += 1  # select the venue
+        if location_type:
+            num_queries += 1  # select the offererAddress
+            num_queries += 1  # insert the offererAddress
+        num_queries += 1  # select existing offer on venue
+        num_queries += 1  # insert offer
+        num_queries += 1  # select existing offer on venue
+        num_queries += 4  # select validation / confidence rules
+        num_queries += 1  # select stocks
+        num_queries += 1  # select mediation
+        num_queries += 1  # select offerer/venue/bank account/...
+        num_queries += 1  # update offer
+        num_queries += 1  # select user
+        num_queries += 1  # select offerer/venue/bank account/...
+        num_queries += 2  # select existing collective offers (x2) on venue
+        num_queries += 1  # select existing active offers on venue
+        num_queries += 1  # select existing non cancelled bookings
 
         with caplog.at_level(logging.INFO):
-            response = self.make_request(plain_api_key, json_body=payload)
-            assert response.status_code == 200
+            with testing.assert_num_queries(num_queries):
+                response = self.make_request(plain_api_key, json_body=payload)
+                assert response.status_code == 200
 
         test_utils.assert_public_api_data_logs_have_been_recorded(
             caplog,
@@ -132,7 +163,17 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.bookingEmail is None
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
-        assert created_offer.offererAddress.id == venue_provider.venue.offererAddress.id
+
+        if location_type:
+            # New behaviour: offer and venue have different offererAddress
+            assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+            assert created_offer.offererAddressId != created_offer.venue.offererAddressId
+            assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
+            assert created_offer.offererAddress.label == created_offer.venue.publicName
+        else:
+            # Legacy: venue and offer share the same offererAddress
+            assert created_offer.offererAddress.type is None
+            assert created_offer.offererAddressId == created_offer.venue.offererAddressId
 
         assert response.json == {
             "bookingAllowedDatetime": None,

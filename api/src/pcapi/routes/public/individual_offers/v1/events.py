@@ -11,6 +11,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import repository as offerers_repository
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -88,14 +89,17 @@ def post_event_offer(body: events_serializers.EventOfferCreation) -> events_seri
     withdrawal_type = _deserialize_has_ticket(body.has_ticket, body.category_related_fields.subcategory_id)
 
     try:
-        offerer_address = venue.offererAddress  # default offerer_address
-
         if body.location.type == "address":
             address = public_utils.get_address_or_raise_404(body.location.address_id)
             offerer_address = offerers_api.get_or_create_offer_location(
                 offerer_id=venue.managingOffererId,
                 address_id=address.id,
                 label=body.location.address_label,
+            )
+        else:
+            offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+                offerers_schemas.LocationOnlyOnVenueModel(),
+                venue,
             )
 
         created_offer = offers_api.create_offer(

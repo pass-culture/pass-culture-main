@@ -12,6 +12,7 @@ import time_machine
 
 from pcapi import settings
 from pcapi.connectors import youtube
+from pcapi.core import testing
 from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
@@ -67,11 +68,41 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
 
+    @pytest.mark.parametrize(
+        "location_type",
+        (
+            None,
+            offerers_models.LocationType.VENUE_LOCATION,
+        ),
+    )
     @time_machine.travel(now_datetime_with_tz, tick=False)
-    def test_event_minimal_body(self):
+    def test_event_minimal_body(self, location_type):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue_provider.venue.offererAddress.type = location_type
 
-        response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_id=venue_provider.venue.id))
+        json_body = self._get_base_payload(venue_id=venue_provider.venue.id)
+        db.session.flush()
+
+        num_queries = 1  # select the api_key
+        num_queries += 1  # select the provider
+        num_queries += 1  # select the venue
+        num_queries += 1  # select the venue (bis ?)
+        if location_type:
+            num_queries += 1  # select the offererAddress
+            num_queries += 1  # insert the offererAddress
+        num_queries += 1  # insert offer
+        num_queries += 1  # update offer
+        num_queries += 1  # select mediation
+        num_queries += 1  # select price category
+        num_queries += 1  # select offer's meta data
+        num_queries += 1  # select user
+        num_queries += 1  # select offerer/venue/bank account/...
+        num_queries += 2  # select existing collective offers (x2) on venue
+        num_queries += 1  # select existing active offers on venue
+        num_queries += 1  # select existing non cancelled bookings
+
+        with testing.assert_num_queries(num_queries):
+            response = self.make_request(plain_api_key, json_body=json_body)
 
         assert response.status_code == 200
         created_offer = db.session.query(offers_models.Offer).one()
@@ -95,6 +126,17 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalDetails is None
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
+
+        if location_type:
+            # New behaviour: offer and venue have different offererAddress
+            assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+            assert created_offer.offererAddressId != created_offer.venue.offererAddressId
+            assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
+            assert created_offer.offererAddress.label == created_offer.venue.publicName
+        else:
+            # Legacy: venue and offer share the same offererAddress
+            assert created_offer.offererAddress.type is None
+            assert created_offer.offererAddressId == created_offer.venue.offererAddressId
 
     def test_event_with_deprecated_music_type_triggers_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
