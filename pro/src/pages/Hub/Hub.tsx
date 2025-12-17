@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router'
 
 import { FunnelLayout } from '@/app/App/layouts/funnels/FunnelLayout/FunnelLayout'
 import { RouteId } from '@/app/AppRouter/constants'
@@ -16,9 +15,7 @@ import styles from './Hub.module.scss'
 
 export const Hub = () => {
   const dispatch = useAppDispatch()
-  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
   const venues = useAppSelector(ensureVenues)
-  const navigate = useNavigate()
   const navigateByRouteId = useNavigateByRouteId()
 
   const [isLoading, setIsLoading] = useState(false)
@@ -26,12 +23,6 @@ export const Hub = () => {
   const setSelectedVenueByIdAndRedirect = async (
     nextSelectedVenueId: number
   ) => {
-    if (nextSelectedVenueId === selectedVenue?.id) {
-      navigate(-1)
-
-      return
-    }
-
     setIsLoading(true)
 
     const nextUserAccess = await dispatch(

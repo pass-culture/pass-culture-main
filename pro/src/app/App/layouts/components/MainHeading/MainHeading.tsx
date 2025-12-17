@@ -1,6 +1,6 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
-import type { ReactNode, RefObject } from 'react'
+import type { ReactNode } from 'react'
 
 import { BackToNavLink } from './BackToNavLink/BackToNavLink'
 import styles from './MainHeading.module.scss'
@@ -8,7 +8,6 @@ import styles from './MainHeading.module.scss'
 interface MainHeadingProps {
   className?: string
   mainHeading: ReactNode
-  mainHeadingRef?: RefObject<HTMLHeadingElement>
   mainSubHeading?: string
   /**
    * Whether to display a "Back to navigation" link under the heading.
@@ -21,7 +20,6 @@ interface MainHeadingProps {
 export const MainHeading = ({
   className,
   mainHeading,
-  mainHeadingRef,
   mainSubHeading,
   shouldDisplayBackToNavLink,
 }: MainHeadingProps): JSX.Element => {
@@ -31,7 +29,7 @@ export const MainHeading = ({
         [styles['main-heading-wrapper-with-subtitle']]: mainSubHeading,
       })}
     >
-      <h1 ref={mainHeadingRef} className={styles['main-heading-title']}>
+      <h1 className={styles['main-heading-title']}>
         {mainHeading}
         {mainSubHeading && (
           <span className={styles['main-heading-subtitle']}>

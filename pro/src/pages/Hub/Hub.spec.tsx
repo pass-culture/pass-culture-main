@@ -136,7 +136,7 @@ describe('Hub', () => {
     ).toHaveTextContent('Venue Without Location')
   })
 
-  it('should call setSelectedVenueById when clicking on a different venue', async () => {
+  it('should call setSelectedVenueById when clicking on any venue', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 102,
@@ -163,18 +163,5 @@ describe('Hub', () => {
     await waitFor(() => {
       expect(api.getVenue).toHaveBeenCalledWith(102)
     })
-  })
-
-  it('should navigate back when clicking on the currently selected venue', async () => {
-    const getVenueSpy = vi.spyOn(api, 'getVenue')
-    const getOffererSpy = vi.spyOn(api, 'getOfferer')
-
-    renderHub({ venues: venuesBase })
-
-    const venueAButton = screen.getByRole('button', { name: 'Venue A' })
-    await userEvent.click(venueAButton)
-
-    expect(getVenueSpy).not.toHaveBeenCalled()
-    expect(getOffererSpy).not.toHaveBeenCalled()
   })
 })
