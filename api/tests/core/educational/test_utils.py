@@ -112,7 +112,7 @@ year_end = datetime.fromisoformat("2021-08-31T21:59:59")  # 31/08 23:59:59 Paris
 
 
 @pytest.mark.usefixtures("db_session")
-class GetPerioBoundsTest:
+class GetPeriodBoundsTest:
     def test_get_educational_year_full_bounds(self):
         year = factories.EducationalYearFactory(beginningDate=year_start, expirationDate=year_end)
 
