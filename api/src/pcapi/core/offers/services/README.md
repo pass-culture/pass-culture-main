@@ -1,6 +1,5 @@
 # Offer creation
 
-
 ## create_offer: inputs
 
 ### Input parameters
@@ -85,7 +84,7 @@ subcategory a `SUPPORT_PHYSIQUE_MUSIQUE_CD`
     - in app withdrawal only available for venues linked to a provider
 * `subcategory_id`: must be known and selectable
 * `extra_data`:
-    - all mandatory fields must be set (`subcategory dependent`)
+    - all mandatory fields must be set (`subcategory` dependent)
     - if EAN
         - must be a 13-characters string
         - must not exist (yet)
@@ -99,3 +98,15 @@ subcategory a `SUPPORT_PHYSIQUE_MUSIQUE_CD`
     - can only be set if provider exists
     - venue cannot already have another offer with the same id at provider
 * `name`: cannot contain EAN
+
+## Main categories
+
+* things: physical goods (eg books, CDs...)
+* digital things and show: podcast, e-book, audio streaming, recorded show...
+* activity: festival, concert, online event...
+
+### Warning
+
+Digital shows does look like some activities... however, there subcategory's
+definition have a significant difference: the latter are events (more on that
+later) and the former not.
