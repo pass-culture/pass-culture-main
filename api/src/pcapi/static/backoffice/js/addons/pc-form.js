@@ -1,6 +1,8 @@
 /**
  * This adds PcAddOn forbit to do multiple validations on the same form.
  * To opt out of the behavior add the class "pc-multiple-submit" to your form.
+ * 
+ * A form can opt out of management by setting the attribute `data-pc-form-opt-out="true"`
  */
 class PcForm extends PcAddOn {
   static FORM_SELECTORS = 'form'
@@ -49,19 +51,25 @@ class PcForm extends PcAddOn {
   }
   
   #lock = ($target) => {
-    $target.classList.add(PcForm.FORM_ALREADY_VALIDATED)
-    const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
-    $submitButtons.forEach(($button) => {
-      $button.disabled = true
-    })
+    if($target.dataset.pcFormOptOut.toLowerCase() !== "true")
+    {
+      $target.classList.add(PcForm.FORM_ALREADY_VALIDATED)
+      const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
+      $submitButtons.forEach(($button) => {
+        $button.disabled = true
+      })
+    }
   }
 
   #unlock = ($target) => {
-    $target.classList.remove(PcForm.FORM_ALREADY_VALIDATED)
-    const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
-    $submitButtons.forEach(($button) => {
-      $button.disabled = false
-    })
+    if($target.dataset.pcFormOptOut.toLowerCase() !== "true")
+    {
+      $target.classList.remove(PcForm.FORM_ALREADY_VALIDATED)
+      const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
+      $submitButtons.forEach(($button) => {
+        $button.disabled = false
+      })
+    }
   }
 
   #unlockAll = () => {
