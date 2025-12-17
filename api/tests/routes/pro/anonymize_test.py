@@ -10,8 +10,9 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=True)
 class Returns204Test:
+    @mock.patch("pcapi.routes.pro.users.transactional_mails.send_anonymization_confirmation_email_to_pro")
     @mock.patch("pcapi.routes.pro.users.anonymize_pro_user", return_value=True)
-    def test_anonymize_user_success(self, mock_anonymize_pro_user, client):
+    def test_anonymize_user_success(self, mock_anonymize_pro_user, mock_send_mail, client):
         user = users_factories.ProFactory()
         client = client.with_session_auth(email=user.email)
 
@@ -19,12 +20,14 @@ class Returns204Test:
 
         assert response.status_code == 204
         mock_anonymize_pro_user.assert_called_once_with(user)
+        mock_send_mail.assert_called_once_with(user.email)
 
 
 @pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=True)
 class Returns400Test:
+    @mock.patch("pcapi.routes.pro.users.transactional_mails.send_anonymization_confirmation_email_to_pro")
     @mock.patch("pcapi.routes.pro.users.anonymize_pro_user", return_value=False)
-    def test_anonymize_user_not_anonymized(self, mock_anonymize_pro_user, client):
+    def test_anonymize_user_not_anonymized(self, mock_anonymize_pro_user, mock_send_mail, client):
         user = users_factories.ProFactory()
         client = client.with_session_auth(email=user.email)
 
@@ -33,6 +36,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"global": ["Une erreur est survenue lors de l'anonymisation du compte"]}
         mock_anonymize_pro_user.assert_called_once_with(user)
+        mock_send_mail.assert_not_called()
 
 
 @pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=False)

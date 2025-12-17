@@ -301,7 +301,9 @@ def anonymize() -> None:
 
     user = current_user._get_current_object()
     anonymized = anonymize_pro_user(user)
-    if not anonymized:
+    if anonymized:
+        transactional_mails.send_anonymization_confirmation_email_to_pro(user.email)
+    else:
         raise ApiErrors(errors={"global": ["Une erreur est survenue lors de l'anonymisation du compte"]})
 
 
