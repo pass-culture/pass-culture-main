@@ -268,7 +268,8 @@
           "a11y": "off",
           "correctness": {
             "noNodejsModules": "off",
-            "noUndeclaredVariables": "off"
+            "noUndeclaredVariables": "off",
+            "useUniqueElementIds": "off"
           },
           "style": {
             "noDefaultExport": "off",

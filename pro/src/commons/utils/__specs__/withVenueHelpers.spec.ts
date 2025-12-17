@@ -2,28 +2,29 @@ import { makeVenueListItem } from '../factories/individualApiFactories'
 import { withVenueHelpers } from '../withVenueHelpers'
 
 describe('withVenueHelpers', () => {
-  const baseAddress = {
+  const baseLocation = {
     id: 1,
     id_oa: 1,
     latitude: 1.23,
     longitude: 4.56,
     isManualEdition: false,
+    isVenueLocation: false,
   }
 
   describe('fullAddressAsString', () => {
-    it('should return null when address is nullish', () => {
-      const venue = makeVenueListItem({ id: 1, address: null })
+    it('should return null when location is nullish', () => {
+      const venue = makeVenueListItem({ id: 1, location: null })
 
       const venueWithHelpers = withVenueHelpers(venue)
 
       expect(venueWithHelpers.fullAddressAsString).toBeNull()
     })
 
-    it('should return full address with street when street is provided', () => {
+    it('should return full location with street when street is provided', () => {
       const venue = makeVenueListItem({
         id: 1,
-        address: {
-          ...baseAddress,
+        location: {
+          ...baseLocation,
           street: '123 Rue de Rivoli',
           postalCode: '75001',
           city: 'Paris',
@@ -37,11 +38,11 @@ describe('withVenueHelpers', () => {
       )
     })
 
-    it('should return address without street when street is nullish', () => {
+    it('should return location without street when street is nullish', () => {
       const venue = makeVenueListItem({
         id: 1,
-        address: {
-          ...baseAddress,
+        location: {
+          ...baseLocation,
           street: null,
           postalCode: '75001',
           city: 'Paris',

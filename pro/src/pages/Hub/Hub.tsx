@@ -62,7 +62,7 @@ export const Hub = () => {
           <div key={venue.id}>
             <button
               aria-describedby={
-                venue.address ? `venue-${venue.id}-address` : undefined
+                venue.location ? `venue-${venue.id}-location` : undefined
               }
               className={styles['venue-button']}
               onClick={() => setSelectedVenueByIdAndRedirect(venue.id)}
@@ -71,10 +71,10 @@ export const Hub = () => {
               <span className={styles['venue-name']} id={`venue-${venue.id}`}>
                 {venue.name}
               </span>
-              {venue.address && (
+              {venue.location && (
                 <span
-                  className={styles['venue-address']}
-                  id={`venue-${venue.id}-address`}
+                  className={styles['venue-location']}
+                  id={`venue-${venue.id}-location`}
                 >
                   {withVenueHelpers(venue).fullAddressAsString}
                 </span>

@@ -95,45 +95,45 @@ describe('Hub', () => {
     expect(screen.getByRole('button', { name: /Venue C/ })).toBeInTheDocument()
   })
 
-  it('should display venue address when address is available', () => {
-    const venuesWithAddress = [
+  it('should display venue address when location is available', () => {
+    const venuesWithLocation = [
       makeVenueListItem({
         id: 101,
-        name: 'Venue With Address',
+        name: 'Venue With Location',
         managingOffererId: 100,
-        address: {
+        location: {
           id: 1,
-          id_oa: 1,
           street: '123 Rue de Test',
           postalCode: '75001',
           city: 'Paris',
           latitude: 48.8566,
           longitude: 2.3522,
           isManualEdition: false,
+          isVenueLocation: false,
         },
       }),
     ]
 
-    renderHub({ venues: venuesWithAddress })
+    renderHub({ venues: venuesWithLocation })
 
     expect(screen.getByText('123 Rue de Test, 75001 Paris')).toBeInTheDocument()
   })
 
-  it('should not display address paragraph when address is unavailable', () => {
+  it('should not display venue address when location is unavailable', () => {
     const venuesWithoutAddress = [
       makeVenueListItem({
         id: 101,
-        name: 'Venue Without Address',
+        name: 'Venue Without Location',
         managingOffererId: 100,
-        address: undefined,
+        location: undefined,
       }),
     ]
 
     renderHub({ venues: venuesWithoutAddress })
 
     expect(
-      screen.getByRole('button', { name: 'Venue Without Address' })
-    ).toHaveTextContent('Venue Without Address')
+      screen.getByRole('button', { name: 'Venue Without Location' })
+    ).toHaveTextContent('Venue Without Location')
   })
 
   it('should call setSelectedVenueById when clicking on a different venue', async () => {

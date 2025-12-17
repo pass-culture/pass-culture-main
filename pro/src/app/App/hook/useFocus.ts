@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react'
-import { useLocation, useMatches } from 'react-router'
+import { useEffect } from 'react'
+import { useLocation } from 'react-router'
 
 import { RouteId } from '@/app/AppRouter/constants'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
@@ -8,27 +8,24 @@ import { selectCurrentUser } from '@/commons/store/user/selectors'
 
 const EXCLUDED_ROUTES: Set<string> = new Set([RouteId.Hub])
 
+/**
+ * @deprecated Replaced by `useFocusOnMounted`.
+ */
 export const useFocus = (): void => {
-  const previousLocationPathname = useRef<string | null>(null)
-
   const location = useLocation()
-  const matches = useMatches()
 
   const currentRoute = findCurrentRoute(location)
   const isErrorPage = currentRoute?.isErrorPage
 
+  const currentRouteId = currentRoute?.id
   const currentUser = useAppSelector(selectCurrentUser)
   const isConnected = !!currentUser
+  const isExcludedRoute = currentRouteId && EXCLUDED_ROUTES.has(currentRouteId)
 
   useEffect(() => {
-    if (
-      // This useEffect is a complex pattern to maintain,
-      // it will likely be replaced by a focus handling done within its page to clarify responsability.
-      // In the meantime, to prevent multiple useEffect deps warnings,
-      // we include all of them and prevent re-focus with this page-change check:
-      location.pathname === previousLocationPathname.current ||
-      matches.some((route) => EXCLUDED_ROUTES.has(route.id))
-    ) {
+    // TODO (igabriele, 2025-12-17): This useEffect is a complex pattern to maintain, it will likely be replaced by a focus handling done within each page to clarify responsability.
+    // In the meantime, we gradually exclude pages that migrated to `useFocusOnMounted`:
+    if (isExcludedRoute) {
       return
     }
 
@@ -78,5 +75,5 @@ export const useFocus = (): void => {
     }
 
     // If none of above is called, focus will be document.activeElement = body.
-  }, [isConnected, isErrorPage, location.pathname, matches])
+  }, [isConnected, isErrorPage, isExcludedRoute])
 }

@@ -18,7 +18,7 @@ const FocusTopPageOrBackToNavLink = (): null => {
   return null
 }
 
-const renderUseFocusRoutes = (url = '/accueil') => {
+const renderUseFocusRoutes = (url = '/accueil', isConnected = true) => {
   renderWithProviders(
     <Routes>
       <Route
@@ -84,6 +84,71 @@ const renderUseFocusRoutes = (url = '/accueil') => {
           </>
         }
       />
+      <Route
+        path="/simple-page"
+        element={
+          <>
+            <FocusTopPageOrBackToNavLink />
+            <SignUpLayout mainHeading="Simple Page">
+              <div>Content without stepper or tabs</div>
+            </SignUpLayout>
+          </>
+        }
+      />
+      <Route
+        path="/not-connected-page"
+        element={
+          <>
+            <FocusTopPageOrBackToNavLink />
+            <SignUpLayout mainHeading="Not Connected Page">
+              <div>Content for not connected user</div>
+            </SignUpLayout>
+          </>
+        }
+      />
+      <Route
+        path="/no-go-to-content"
+        element={
+          <>
+            <FocusTopPageOrBackToNavLink />
+            <div>
+              <h1>Page Without Go To Content</h1>
+            </div>
+          </>
+        }
+      />
+      <Route
+        path="/offre/stepper-no-active"
+        element={
+          <>
+            <FocusTopPageOrBackToNavLink />
+            <BasicLayout mainHeading="Créer une offre individuelle">
+              <div id="stepper">
+                <ul>
+                  <li>Step 1</li>
+                  <li>Step 2</li>
+                </ul>
+              </div>
+            </BasicLayout>
+          </>
+        }
+      />
+      <Route
+        path="/remboursements-no-active"
+        element={
+          <>
+            <FocusTopPageOrBackToNavLink />
+            <BasicLayout mainHeading="Remboursements">
+              <div id="tablist">
+                <ul>
+                  <li>Tab 1</li>
+                  <li>Tab 2</li>
+                </ul>
+              </div>
+            </BasicLayout>
+          </>
+        }
+      />
     </Routes>,
     {
       initialRouterEntries: [url],
@@ -92,7 +157,7 @@ const renderUseFocusRoutes = (url = '/accueil') => {
           offererNames: [{ id: 456, name: 'Offerer', allowedOnAdage: false }],
         },
         user: {
-          currentUser: { id: 123 },
+          currentUser: isConnected ? { id: 123 } : null,
         },
       },
     }
@@ -157,5 +222,84 @@ describe('useFocus', () => {
     expect(document.activeElement?.id).toEqual('go-to-content')
     await userEvent.tab()
     expect(document.activeElement?.id).not.toEqual('go-to-content')
+  })
+
+  it('should focus on go-to-content link when connected and no back-to-nav, stepper or tabs', () => {
+    renderUseFocusRoutes('/simple-page')
+
+    expect(
+      screen.getByRole('heading', { name: 'Simple Page' })
+    ).toBeInTheDocument()
+    expect(document.activeElement?.id).toEqual('go-to-content')
+  })
+
+  it('should focus on go-to-content when not connected and go-to-content element exists', () => {
+    renderUseFocusRoutes('/not-connected-page', false)
+
+    expect(
+      screen.getByRole('heading', { name: 'Not Connected Page' })
+    ).toBeInTheDocument()
+    expect(document.activeElement?.id).toEqual('go-to-content')
+  })
+
+  it('should focus on body when not connected and no go-to-content element', () => {
+    renderUseFocusRoutes('/no-go-to-content', false)
+
+    expect(screen.getByText('Page Without Go To Content')).toBeInTheDocument()
+    // Focus should remain on body as fallback
+    expect(document.activeElement?.tagName).toEqual('BODY')
+  })
+
+  it('should not focus on stepper when stepper exists but no active step', () => {
+    renderUseFocusRoutes('/offre/stepper-no-active')
+
+    expect(
+      screen.getByRole('heading', { name: 'Créer une offre individuelle' })
+    ).toBeInTheDocument()
+    // Focus should remain on body when stepper exists but no active step
+    expect(document.activeElement?.tagName).toEqual('BODY')
+  })
+
+  it('should not focus on tabs when tabs exist but no active tab', () => {
+    renderUseFocusRoutes('/remboursements-no-active')
+
+    expect(
+      screen.getByRole('heading', { name: 'Remboursements' })
+    ).toBeInTheDocument()
+    // Focus should remain on body when tabs exist but no active tab
+    expect(document.activeElement?.tagName).toEqual('BODY')
+  })
+
+  it('should not apply focus logic on excluded routes like /hub', () => {
+    // /hub is an actual route in routesMap with RouteId.Hub which is excluded
+    renderWithProviders(
+      <Routes>
+        <Route
+          path="/hub"
+          element={
+            <>
+              <FocusTopPageOrBackToNavLink />
+              <BasicLayout mainHeading="Changer de structure">
+                <div>Hub content</div>
+              </BasicLayout>
+            </>
+          }
+        />
+      </Routes>,
+      {
+        initialRouterEntries: ['/hub'],
+        storeOverrides: {
+          user: {
+            currentUser: { id: 123 },
+          },
+        },
+      }
+    )
+
+    expect(
+      screen.getByRole('heading', { name: 'Changer de structure' })
+    ).toBeInTheDocument()
+    // Focus should remain on body since the route is excluded from focus logic
+    expect(document.activeElement?.tagName).toEqual('BODY')
   })
 })
