@@ -1,16 +1,25 @@
 from typing import Type
 
+from pcapi import settings
 from pcapi.connectors.big_query.importer.base import AbstractImporter
 from pcapi.connectors.big_query.queries import artist as bq_artist_queries
 from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.utils import get_artist_type
 from pcapi.core.artist.utils import sanitize_author_html
+from pcapi.core.object_storage.backends.gcp import GCPBackend
+from pcapi.core.object_storage.backends.gcp import GCPData
+from pcapi.core.object_storage.backends.utils import copy_file_between_storage_backends
 from pcapi.models import db
 
 
 class ArtistImporter(
     AbstractImporter[bq_artist_queries.ArtistModel, bq_artist_queries.DeltaArtistModel, artist_models.Artist]
 ):
+    def __init__(self) -> None:
+        super().__init__()
+        self.gcp_data = GCPData()
+        self.gcp_backend = GCPBackend()
+
     def get_sqlalchemy_class(self) -> Type[artist_models.Artist]:
         return artist_models.Artist
 
@@ -26,6 +35,16 @@ class ArtistImporter(
         return db.session.query(artist_models.Artist).filter_by(id=model.id).first()
 
     def create(self, model: bq_artist_queries.ArtistModel | bq_artist_queries.DeltaArtistModel) -> artist_models.Artist:
+        mediation_uuid = None
+        if model.mediation_uuid:
+            mediation_uuid = copy_file_between_storage_backends(
+                source_storage=self.gcp_data,
+                destination_storage=self.gcp_backend,
+                source_folder=settings.DATA_ARTIST_THUMBS_FOLDER_NAME,
+                destination_folder=settings.ARTIST_THUMBS_FOLDER_NAME,
+                file_id=model.mediation_uuid,
+            )
+
         return artist_models.Artist(
             id=model.id,
             name=model.name,
@@ -37,6 +56,7 @@ class ArtistImporter(
             wikidata_id=model.wikidata_id,
             biography=model.biography,
             wikipedia_url=model.wikipedia_url,
+            mediation_uuid=mediation_uuid,
         )
 
     def update(self, sqlalchemy_obj: artist_models.Artist, delta_model: bq_artist_queries.DeltaArtistModel) -> None:
@@ -49,6 +69,14 @@ class ArtistImporter(
         sqlalchemy_obj.wikidata_id = delta_model.wikidata_id
         sqlalchemy_obj.biography = delta_model.biography
         sqlalchemy_obj.wikipedia_url = delta_model.wikipedia_url
+        if delta_model.mediation_uuid and delta_model.mediation_uuid != sqlalchemy_obj.mediation_uuid:
+            sqlalchemy_obj.mediation_uuid = copy_file_between_storage_backends(
+                source_storage=self.gcp_data,
+                destination_storage=self.gcp_backend,
+                source_folder=settings.DATA_ARTIST_THUMBS_FOLDER_NAME,
+                destination_folder=settings.ARTIST_THUMBS_FOLDER_NAME,
+                file_id=delta_model.mediation_uuid,
+            )
 
 
 class ArtistProductLinkImporter(

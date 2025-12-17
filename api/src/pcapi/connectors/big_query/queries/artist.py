@@ -16,6 +16,7 @@ class ArtistModel(BaseModelV2):
     wikidata_id: str | None = None
     biography: str | None = None
     wikipedia_url: str | None = None
+    mediation_uuid: str | None = None
 
 
 class ArtistProductLinkModel(BaseModelV2):
@@ -45,7 +46,8 @@ class ArtistQuery(BaseQuery):
             wikidata_image_license_url as license_url,
             wikidata_id,
             artist_biography as biography,
-            wikipedia_url
+            wikipedia_url,
+            artist_mediation_uuid as mediation_uuid
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist`
     """
@@ -108,6 +110,7 @@ class ArtistDeltaQuery(BaseQuery):
             wikidata_id,
             artist_biography as biography,
             wikipedia_url,
+            artist_mediation_uuid as mediation_uuid,
             action
         FROM
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist_delta`
