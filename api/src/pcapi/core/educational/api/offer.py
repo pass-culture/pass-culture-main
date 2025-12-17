@@ -73,6 +73,9 @@ def get_or_create_offerer_address_from_collective_offer_location(
     else:
         address_body = offerers_schemas.LocationModel(**location_body.location.dict())
 
+    if not address_body:
+        return None
+
     return offers_api.get_or_create_offerer_address_from_address_body(
         address_body=address_body,
         venue=venue,
