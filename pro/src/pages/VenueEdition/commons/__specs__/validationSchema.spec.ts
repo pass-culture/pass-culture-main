@@ -1,7 +1,7 @@
 import { getYupValidationSchemaErrors } from '@/commons/utils/yupValidationTestHelpers'
 
 import type { VenueEditionFormValues } from '../types'
-import { getValidationSchema } from '../validationSchema'
+import { validationSchema } from '../validationSchema'
 
 describe('VenueEditionForm validationSchema', () => {
   const defaultValues: VenueEditionFormValues = {
@@ -17,11 +17,11 @@ describe('VenueEditionForm validationSchema', () => {
     openingHours: null,
   }
 
-  const cases: {
+  const cases: Array<{
     description: string
     formValues: VenueEditionFormValues
     expectedErrors: string[]
-  }[] = [
+  }> = [
     {
       description: 'valid form for immediate booking and publication',
       formValues: defaultValues,
@@ -118,22 +118,29 @@ describe('VenueEditionForm validationSchema', () => {
     },
   ]
 
-  cases.forEach(({ description, formValues, expectedErrors }) => {
-    it(`should validate the form for case: ${description}`, async () => {
-      const errors = await getYupValidationSchemaErrors(
-        getValidationSchema({ isVenueActivityFeatureActive: false }),
-        formValues
-      )
-      expect(errors).toEqual(expectedErrors)
-    })
+  it.each(cases)('should validate the form for case: $description', async ({
+    formValues,
+    expectedErrors,
+  }) => {
+    const errors = await getYupValidationSchemaErrors(
+      validationSchema,
+      formValues,
+      {
+        isVenueActivityFeatureActive: false,
+      }
+    )
+    expect(errors).toEqual(expectedErrors)
   })
 
   it('should require activity when feature flag is enabled and venue is open to public', async () => {
     const errors = await getYupValidationSchemaErrors(
-      getValidationSchema({ isVenueActivityFeatureActive: true }),
+      validationSchema,
       {
         ...defaultValues,
         activity: null,
+      },
+      {
+        isVenueActivityFeatureActive: true,
       }
     )
 

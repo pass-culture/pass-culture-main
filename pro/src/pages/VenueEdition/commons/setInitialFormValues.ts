@@ -1,11 +1,12 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { AccessibilityEnum } from '@/commons/core/shared/types'
+import type { DisplayedActivityType } from '@/commons/mappings/DisplayedActivity'
 
-import type { VenueEditionFormValues } from './types'
+import type { VenueEditionFormValuesType } from './validationSchema'
 
 export const setInitialFormValues = (
   venue: GetVenueResponseModel
-): VenueEditionFormValues => {
+): VenueEditionFormValuesType => {
   return {
     accessibility: {
       [AccessibilityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
@@ -21,7 +22,7 @@ export const setInitialFormValues = (
     webSite: venue.contact?.website || '',
     isOpenToPublic: venue.isOpenToPublic.toString() || '',
     openingHours: venue.openingHours ?? null,
-    activity: venue.activity as VenueEditionFormValues['activity'], // Force is needed because of "GAMES_CENTRE" which is present in `DisplayedActivity`, but not in `OnboardingActivity`
+    activity: venue.activity as DisplayedActivityType, // Force is needed because of "GAMES_CENTRE" which is present in `DisplayedActivity`, but not in `OnboardingActivity`
   }
 }
 
