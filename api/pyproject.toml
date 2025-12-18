@@ -92,7 +92,7 @@ optional = true
 
 [tool.poetry.group.dev.dependencies]
 commitizen = "^4.10.0"
-debugpy = "^1.8.17"
+debugpy = "^1.8.18"
 djlint = "1.36.4"
 jsbeautifier = "1.15.4"  # djlint requires 1.15.1 which is broken
 fakeredis = "^2.32.1"
