@@ -34,6 +34,7 @@ import { resetAllStoredFilterConfig } from './utils/resetAllStoredFilterConfig'
 export const HeaderDropdown = () => {
   const { logEvent } = useAnalytics()
   const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
@@ -107,11 +108,13 @@ export const HeaderDropdown = () => {
           type="button"
         >
           <SvgIcon src={fullProfilIcon} alt="Profil" width="18" />
-          {selectedOffererName && offererOptions.length > 1 && (
-            <span className={styles['dropdown-button-name']}>
-              {selectedOffererName.name}
-            </span>
-          )}
+          {!withSwitchVenueFeature &&
+            selectedOffererName &&
+            offererOptions.length > 1 && (
+              <span className={styles['dropdown-button-name']}>
+                {selectedOffererName.name}
+              </span>
+            )}
         </button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>

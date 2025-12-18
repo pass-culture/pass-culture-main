@@ -43,6 +43,7 @@
 .nav-links {
   display: flex;
   flex-direction: column;
+  padding-top: var(--size-spacing-s);
   height: 100%;
   border-right: rem.torem(1px) solid var(--color-border-subtle);
 
@@ -150,6 +151,17 @@
     line-height: rem.torem(64px);
     margin: var(--size-spacing-l);
     padding: 0 var(--size-spacing-s);
+  }
+
+  &-header {
+    @include fonts.body-accent;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: rem.torem(64px);
+    border-bottom: rem.torem(1px) solid var(--color-border-subtle);
   }
 }
 
