@@ -1,4 +1,5 @@
 import logging
+from functools import partial
 
 import flask
 import sqlalchemy.orm as sa_orm
@@ -51,6 +52,7 @@ from pcapi.utils.login_manager import discard_session
 from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
+from pcapi.utils.transaction_manager import on_commit
 
 from . import blueprint
 
@@ -303,6 +305,14 @@ def anonymize() -> None:
     user = current_user._get_current_object()
     anonymized = anonymize_pro_user(user)
     if anonymized:
+        on_commit(
+            partial(
+                logger.info,
+                "User has been anonymized",
+                extra={"user_id": user.id},
+                technical_message_id="user.anonymized",
+            )
+        )
         transactional_mails.send_anonymization_confirmation_email_to_pro(user.email)
     else:
         raise ApiErrors(errors={"global": ["Une erreur est survenue lors de l'anonymisation du compte"]})
