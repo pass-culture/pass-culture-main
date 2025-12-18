@@ -89,20 +89,17 @@ export const SelectAutocomplete = forwardRef(
       null
     ) // Represents the index of the hovered option while using keyboard (for a11y), useful for the "aria-activedescendant" attribute
 
-    const optionsLabelById = useRef<Map<string, string>>() // Hashtables for the options (ex: "05" -> "Hautes-Alpes")
-    const optionsIdByLabel = useRef<Map<string, string>>() // Inverted hashtables for the labels (ex: "Hautes-Alpes" -> "05")
-    const hasComponentFirstRendered = useRef(false)
+    const optionsLabelByValue = useRef<Map<string, string>>() // Hashtables for the options (ex: "05" -> "Hautes-Alpes")
+    const optionsValueByLabel = useRef<Map<string, string>>() // Inverted hashtables for the labels (ex: "Hautes-Alpes" -> "05")
     const containerRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null) // Ref for "searchField"
     const listRef = useRef<HTMLUListElement>(null) // Ref for <ul> dropdown
 
-    // Hydrates the hashtables (computed at 1st render only)
     useEffect(() => {
-      // We need to cast "as string" because SelectOption[] type is "string | number", but here it'll be always treated as a string
-      optionsLabelById.current = new Map(
+      optionsLabelByValue.current = new Map(
         options.map(({ label, value }) => [value as string, label])
       )
-      optionsIdByLabel.current = new Map(
+      optionsValueByLabel.current = new Map(
         options.map(({ label, value }) => [label, value as string])
       )
     }, [options])
@@ -180,7 +177,7 @@ export const SelectAutocomplete = forwardRef(
           ) {
             event.preventDefault()
             if (filteredOptions[hoveredOptionIndex]) {
-              selectOption(String(filteredOptions[hoveredOptionIndex].value))
+              selectOption(filteredOptions[hoveredOptionIndex])
             }
           }
           break
@@ -202,13 +199,17 @@ export const SelectAutocomplete = forwardRef(
       }
     }
 
-    // When an option is chosen
-    const selectOption = (value: string) => {
-      setSearchField(optionsLabelById.current?.get(value) ?? '')
+    const selectOption = (option: SelectOption) => {
+      setSearchField(option.label)
 
-      // Notify changes up to the parent component
-      onChange({ type: 'change', target: { name, value } })
-      onBlur({ type: 'blur', target: { name, value } })
+      onChange({
+        type: 'change',
+        target: { name, value: option.value },
+      })
+      onBlur({
+        type: 'blur',
+        target: { name, value: option.value },
+      })
 
       setIsDropdownOpen(false)
       setHoveredOptionIndex(null)
@@ -309,11 +310,8 @@ export const SelectAutocomplete = forwardRef(
               onBlur={(e) => {
                 setSearchField(e.target.value)
 
-                // Check if value is part of the hashtable before notify the parent
-                // This is necessary because user can type anything in the "searchField" and then "blur" the field
-                // If the specified value isn't in the valid options hastable, we send an empty string instead and let the parent deal with it
                 const value =
-                  optionsIdByLabel.current?.get(e.target.value) ?? ''
+                  optionsValueByLabel.current?.get(e.target.value) ?? ''
 
                 onBlur({
                   type: 'blur',
