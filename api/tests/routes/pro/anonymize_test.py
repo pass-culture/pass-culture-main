@@ -1,3 +1,4 @@
+import logging
 from unittest import mock
 
 import pytest
@@ -7,18 +8,22 @@ import pcapi.core.users.factories as users_factories
 
 pytestmark = pytest.mark.usefixtures("db_session")
 
+logger = logging.getLogger(__name__)
+
 
 @pytest.mark.features(WIP_PRO_AUTONOMOUS_ANONYMIZATION=True)
 class Returns204Test:
     @mock.patch("pcapi.routes.pro.users.transactional_mails.send_anonymization_confirmation_email_to_pro")
     @mock.patch("pcapi.routes.pro.users.anonymize_pro_user", return_value=True)
-    def test_anonymize_user_success(self, mock_anonymize_pro_user, mock_send_mail, client):
+    def test_anonymize_user_success(self, mock_anonymize_pro_user, mock_send_mail, client, caplog):
         user = users_factories.ProFactory()
         client = client.with_session_auth(email=user.email)
 
-        response = client.post("/users/anonymize")
+        with caplog.at_level(logging.INFO):
+            response = client.post("/users/anonymize")
 
         assert response.status_code == 204
+        assert next(rec for rec in caplog.records if rec.msg == "User has been anonymized")
         mock_anonymize_pro_user.assert_called_once_with(user)
         mock_send_mail.assert_called_once_with(user.email)
 
