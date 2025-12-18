@@ -19,8 +19,12 @@ export const initializeUser = createAsyncThunk<
   void,
   SharedCurrentUserResponseModel,
   AppThunkApiConfig
->('user/initializeUser', async (user, { dispatch }) => {
+>('user/initializeUser', async (user, { dispatch, getState }) => {
   try {
+    const withSwitchVenueFeature = getState().features.list.some(
+      (feature) => feature.name === 'WIP_SWITCH_VENUE'
+    )
+
     const offererNamesResponse = await api.listOfferersNames()
     const venuesResponse = await api.getVenues(null, true) // only active venues
 
@@ -30,12 +34,16 @@ export const initializeUser = createAsyncThunk<
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNamesResponse.offerersNames,
-      venuesResponse.venues
+      venuesResponse.venues,
+      withSwitchVenueFeature
     )
 
     if (initialVenueId) {
       await dispatch(setSelectedVenueById(initialVenueId))
 
+      return
+    }
+    if (withSwitchVenueFeature) {
       return
     }
 

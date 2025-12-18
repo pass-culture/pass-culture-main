@@ -316,4 +316,91 @@ describe('initializeUser', () => {
     ).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)).toBeNull()
   })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    const configureStoreWithSwitchVenueFeature = () =>
+      configureTestStore({
+        features: {
+          list: [{ id: 1, isActive: true, name: 'WIP_SWITCH_VENUE' }],
+        },
+      })
+
+    it('should not select offerer when no saved venue id and return early', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [
+          getOffererNameFactory({ id: 100 }),
+          getOffererNameFactory({ id: 200 }),
+        ],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [
+          makeVenueListItem({ id: 101, managingOffererId: 100 }),
+          makeVenueListItem({ id: 201, managingOffererId: 200 }),
+        ],
+      })
+      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+      const store = configureStoreWithSwitchVenueFeature()
+
+      await store.dispatch(initializeUser(user)).unwrap()
+
+      expect(apiGetOffererSpy).not.toHaveBeenCalled()
+      expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
+      const state = store.getState()
+      expect(state.user.access).toBeNull()
+      expect(state.offerer.currentOfferer).toBeNull()
+      expect(state.offerer.currentOffererName).toBeNull()
+      expect(state.user.selectedVenue).toBeNull()
+    })
+
+    it('should not select offerer when saved venue id is not in venues list', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [getOffererNameFactory({ id: 100 })],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({
+        venues: [makeVenueListItem({ id: 101, managingOffererId: 100 })],
+      })
+      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '999')
+
+      const store = configureStoreWithSwitchVenueFeature()
+
+      await store.dispatch(initializeUser(user)).unwrap()
+
+      expect(apiGetOffererSpy).not.toHaveBeenCalled()
+      expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
+      const state = store.getState()
+      expect(state.user.access).toBeNull()
+      expect(state.offerer.currentOfferer).toBeNull()
+      expect(state.offerer.currentOffererName).toBeNull()
+      expect(state.user.selectedVenue).toBeNull()
+    })
+
+    it('should not select offerer when no offerers and no venues exist', async () => {
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+      const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
+
+      const store = configureStoreWithSwitchVenueFeature()
+
+      await store.dispatch(initializeUser(user)).unwrap()
+
+      expect(apiGetOffererSpy).not.toHaveBeenCalled()
+      expect(apiGetVenueSpy).not.toHaveBeenCalled()
+
+      const state = store.getState()
+      expect(state.user.access).toBeNull()
+      expect(state.offerer.currentOfferer).toBeNull()
+      expect(state.offerer.currentOffererName).toBeNull()
+      expect(state.user.selectedVenue).toBeNull()
+    })
+  })
 })
