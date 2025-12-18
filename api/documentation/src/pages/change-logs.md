@@ -4,10 +4,6 @@ title: Pass Culture API change logs
 
 # Change logs
 
-:::warning
-As of mid-december 2025, `eventDuration` parameter for creating and updating offers will be capped at 24 hours. To create or update events longer than 24 hours, you will need to leave this field empty.
-::: 
-
 :::info
 Soon, a `bookingAllowedDatetime` param will be available at offer creation and update. Thanks to this new param, you will be able to precise when your offer becomes bookable. 
 
@@ -16,6 +12,11 @@ You will have two dates at your disposal :
 - a `publicationDatetime` that indicates the date and time when the offer becomes visible in the beneficiary application
 - a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
 :::
+
+## December 2025
+
+- The `eventDuration` parameter for creating and updating event offers are now capped at 24 hours. To create or update events longer than 24 hours, you will need to leave this field empty.
+
 ## October 2025
 
 - You can now add a `videoUrl` that comes from Youtube on your offers (endpoints : [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer), [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent)
