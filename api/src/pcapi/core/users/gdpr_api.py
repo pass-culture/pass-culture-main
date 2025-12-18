@@ -22,6 +22,7 @@ import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
 import pcapi.core.permissions.models as permissions_models
 import pcapi.core.users.ds as users_ds
+import pcapi.core.users.models as users_models
 import pcapi.core.users.utils as users_utils
 from pcapi import settings
 from pcapi.connectors import api_adresse
@@ -262,14 +263,18 @@ def has_suspended_offerer(user: models.User) -> bool:
 def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
     inner_user_offerer = sa.orm.aliased(offerers_models.UserOfferer)
 
-    user_count_subquery = (
-        sa.select(func.count(inner_user_offerer.userId))
+    has_other_validated_user_offerer = (
+        sa.select(1)
+        .select_from(inner_user_offerer)
+        .join(inner_user_offerer.user)
         .where(
             inner_user_offerer.offererId == offerers_models.UserOfferer.offererId,
             inner_user_offerer.isValidated,
+            inner_user_offerer.userId != user.id,
+            users_models.User.isActive.is_(True),
         )
         .correlate(offerers_models.UserOfferer)
-        .scalar_subquery()
+        .exists()
     )
 
     has_active_offer = (
@@ -278,7 +283,13 @@ def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
         .join(offerers_models.Venue, offers_models.Offer.venueId == offerers_models.Venue.id)
         .where(
             offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId,
-            offers_models.Offer.status == OfferStatus.ACTIVE.name,
+            offers_models.Offer.status.in_(
+                [
+                    OfferStatus.SCHEDULED.name,
+                    OfferStatus.PUBLISHED.name,
+                    OfferStatus.ACTIVE.name,
+                ]
+            ),
         )
         .correlate(offerers_models.UserOfferer)
         .exists()
@@ -303,6 +314,23 @@ def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
         .where(
             educational_models.CollectiveOfferTemplate.isActive.is_(True),
             educational_models.CollectiveOfferTemplate.venueId == offerers_models.Venue.id,
+        )
+        .correlate(offerers_models.UserOfferer)
+        .exists()
+    )
+
+    has_ongoing_finance_incident = (
+        sa.select(1)
+        .select_from(finance_models.FinanceIncident)
+        .join(offerers_models.Venue, offerers_models.Venue.managingOffererId == offerers_models.UserOfferer.offererId)
+        .where(
+            finance_models.FinanceIncident.venueId == offerers_models.Venue.id,
+            finance_models.FinanceIncident.status.in_(
+                [
+                    finance_models.IncidentStatus.CREATED,
+                    finance_models.IncidentStatus.VALIDATED,
+                ]
+            ),
         )
         .correlate(offerers_models.UserOfferer)
         .exists()
@@ -348,13 +376,14 @@ def is_sole_user_with_ongoing_activities(user: models.User) -> bool:
             .where(
                 offerers_models.UserOfferer.userId == user.id,
                 offerers_models.UserOfferer.isValidated,
-                user_count_subquery == 1,
+                sa.not_(has_other_validated_user_offerer),
                 sa.or_(
                     has_active_offer,
                     has_active_collective_offer,
                     has_ongoing_booking,
                     has_ongoing_collective_booking,
                     has_active_collective_offer_template,
+                    has_ongoing_finance_incident,
                 ),
             )
         )

@@ -25,6 +25,7 @@ from pcapi.core.chronicles import factories as chronicles_factories
 from pcapi.core.chronicles import models as chronicles_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import api as geography_api
 from pcapi.core.geography import models as geography_models
@@ -555,10 +556,35 @@ class HasSuspendedOffererTest:
 class IsSoleUserWithOngoingActivitiesTest:
     def test_sole_user_with_active_offer(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
         offers_factories.StockFactory(
-            offer__venue=venue,
-            offer__validation=offers_models.OfferValidationStatus.APPROVED,
+            offer=offer,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_scheduled_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.OfferFactory(
+            publicationDatetime=datetime.datetime.now() + datetime.timedelta(days=1),
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        offers_factories.StockFactory(
+            offer=offer,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_published_offer(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.OfferFactory(
+            bookingAllowedDatetime=datetime.datetime.now() + datetime.timedelta(days=1),
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        offers_factories.StockFactory(
+            offer=offer,
         )
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
@@ -595,29 +621,27 @@ class IsSoleUserWithOngoingActivitiesTest:
 
     def test_sole_user_with_active_collective_offer(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        educational_factories.CollectiveOfferFactory(venue=venue, isActive=True)
+        educational_factories.CollectiveOfferFactory(venue__managingOfferer=user_offerer.offerer, isActive=True)
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
 
     def test_sole_user_with_inactive_collective_offer(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        educational_factories.CollectiveOfferFactory(venue=venue, isActive=False)
+        educational_factories.CollectiveOfferFactory(venue__managingOfferer=user_offerer.offerer, isActive=False)
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
 
     def test_sole_user_with_active_collective_offer_template(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        educational_factories.CollectiveOfferTemplateFactory(venue=venue, isActive=True)
+        educational_factories.CollectiveOfferTemplateFactory(venue__managingOfferer=user_offerer.offerer, isActive=True)
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
 
     def test_sole_user_with_inactive_collective_offer_template(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        educational_factories.CollectiveOfferTemplateFactory(venue=venue, isActive=False)
+        educational_factories.CollectiveOfferTemplateFactory(
+            venue__managingOfferer=user_offerer.offerer, isActive=False
+        )
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
 
@@ -648,13 +672,27 @@ class IsSoleUserWithOngoingActivitiesTest:
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
 
+    def test_two_users_with_one_inactive(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        second_user_offerer = offerers_factories.UserOffererFactory(offerer=user_offerer.offerer, user__isActive=False)
+        print(second_user_offerer.user.isActive)
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
+        offers_factories.StockFactory(
+            offer=offer,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
     def test_multiple_users_with_active_offer(self):
         user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(offerer=user_offerer.offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offer = offers_factories.OfferFactory(
+            venue__managingOfferer=user_offerer.offerer,
+        )
         offers_factories.StockFactory(
-            offer__venue=venue,
-            offer__validation=offers_models.OfferValidationStatus.APPROVED,
+            offer=offer,
         )
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
@@ -662,18 +700,50 @@ class IsSoleUserWithOngoingActivitiesTest:
     def test_multiple_users_with_active_collective_offer(self):
         user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(offerer=user_offerer.offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        educational_factories.CollectiveOfferFactory(venue=venue, isActive=True)
+        educational_factories.CollectiveOfferFactory(venue__managingOfferer=user_offerer.offerer, isActive=True)
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
 
     def test_multiple_users_with_active_collective_offer_template(self):
         user_offerer = offerers_factories.UserOffererFactory()
         offerers_factories.UserOffererFactory(offerer=user_offerer.offerer)
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
-        educational_factories.CollectiveOfferTemplateFactory(venue=venue, isActive=True)
+        educational_factories.CollectiveOfferTemplateFactory(venue__managingOfferer=user_offerer.offerer, isActive=True)
 
         assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is False
+
+    def test_user_with_multiple_offerers_one_with_activities(self):
+        user = users_factories.ProFactory()
+
+        first_user_offerer = offerers_factories.UserOffererFactory(user=user)
+        venue = offerers_factories.VenueFactory(managingOfferer=first_user_offerer.offerer)
+        offers_factories.StockFactory(
+            offer__venue=venue,
+            offer__validation=offers_models.OfferValidationStatus.APPROVED,
+        )
+
+        offerers_factories.UserOffererFactory(user=user)
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user) is True
+
+    def test_sole_user_with_created_finance_incident(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        finance_factories.FinanceIncidentFactory(
+            venue=venue,
+            status=finance_models.IncidentStatus.CREATED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
+
+    def test_sole_user_with_validated_finance_incident(self):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        finance_factories.FinanceIncidentFactory(
+            venue=venue,
+            status=finance_models.IncidentStatus.VALIDATED,
+        )
+
+        assert gdpr_api.is_sole_user_with_ongoing_activities(user_offerer.user) is True
 
 
 class AnonymizeProUsersTest:
