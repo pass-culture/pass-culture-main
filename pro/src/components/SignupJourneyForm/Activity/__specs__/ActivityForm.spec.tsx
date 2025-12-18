@@ -253,7 +253,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
     it('should render cultural domains input with context value', async () => {
       renderActivityForm(
-        { ...initialValues, culturalDomains: ['1'] },
+        { ...initialValues, culturalDomains: ['domaine 1'] },
         props,
         contextValue,
         ['WIP_VENUE_CULTURAL_DOMAINS']

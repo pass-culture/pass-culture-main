@@ -50,6 +50,9 @@ export const Validation = (): JSX.Element | undefined => {
   useInitReCaptcha()
 
   const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
+  const isVenueCulturalDomainsFeatureActive = useActiveFeature(
+    'WIP_VENUE_CULTURAL_DOMAINS'
+  )
 
   const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
     api.getVenueTypes()
@@ -119,6 +122,13 @@ export const Validation = (): JSX.Element | undefined => {
                 /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
                 activity.venueTypeCode,
             }),
+        ...(isVenueCulturalDomainsFeatureActive
+          ? {
+              culturalDomains:
+                /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
+                activity.culturalDomains,
+            }
+          : {}),
 
         webPresence: activity.socialUrls.join(', '),
         target:

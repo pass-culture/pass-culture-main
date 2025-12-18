@@ -73,11 +73,12 @@ export const ActivityForm = ({
       ? undefined
       : formState.defaultValues.culturalDomains.map((formDefault) => {
           const apiValue = data.find(
-            (educationalDomain) => String(educationalDomain.id) === formDefault
+            (educationalDomain) =>
+              String(educationalDomain.name) === formDefault
           )
           assertOrFrontendError(
             apiValue,
-            `CulturalDomain withId ${formDefault} not found`
+            `CulturalDomain with name ${formDefault} not found`
           )
           return { id: String(apiValue.id), label: apiValue.name }
         })
@@ -118,7 +119,7 @@ export const ActivityForm = ({
               setValue(
                 'culturalDomains',
                 selectedOptions.length > 0
-                  ? selectedOptions.map((opt) => opt.id)
+                  ? selectedOptions.map((opt) => opt.label)
                   : undefined
               )
             }}
