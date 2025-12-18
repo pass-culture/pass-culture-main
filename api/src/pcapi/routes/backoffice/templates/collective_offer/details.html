@@ -113,8 +113,15 @@
       {% call description_detail_horizontal("Téléphone") %}
         {% if collective_offer.contactPhone %}{{ collective_offer.contactPhone }}{% endif %}
       {% endcall %}
-      {% call description_detail_horizontal("email") %}
+      {% call description_detail_horizontal("Email") %}
         {% if collective_offer.contactEmail %}{{ collective_offer.contactEmail }}{% endif %}
+      {% endcall %}
+      {% call description_detail_horizontal("Email auquel envoyer les notifications") %}
+        {% for booking_email in collective_offer.bookingEmails %}
+          {{ booking_email | empty_string_if_null }}
+          {% if booking_email %}{{ clipboard.copy_to_clipboard(booking_email, "Copier") }}{% endif %}
+          <br />
+        {% endfor %}
       {% endcall %}
     {% endcall %}
   {% endcall %}
