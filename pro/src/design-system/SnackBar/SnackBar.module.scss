@@ -33,6 +33,7 @@
 
       .content-text {
         color: var(--color-text-default);
+        overflow-wrap: anywhere;
 
         @include fonts.body-accent;
       }
