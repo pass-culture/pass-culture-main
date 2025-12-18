@@ -10,11 +10,14 @@ import type { FrontendErrorOptions } from '../types'
 
 describe('handleUnexpectedError', () => {
   const mockedSentry = vi.hoisted(() => {
+    const setContextMock = vi.fn()
     const setExtrasMock = vi.fn()
     const captureException = vi.fn()
-    const withScopeMock = vi.fn((cb) => cb({ setExtras: setExtrasMock }))
+    const withScopeMock = vi.fn((cb) =>
+      cb({ setContext: setContextMock, setExtras: setExtrasMock })
+    )
 
-    return { setExtrasMock, captureException, withScopeMock }
+    return { setContextMock, setExtrasMock, captureException, withScopeMock }
   })
   vi.mock('@sentry/browser', () => ({
     withScope: mockedSentry.withScopeMock,
@@ -82,6 +85,25 @@ describe('handleUnexpectedError', () => {
     handleUnexpectedError(error, options)
 
     expect(mockedSentry.setExtrasMock).toHaveBeenCalledWith(options.extras)
+  })
+
+  it('forwards context to Sentry scope when provided', () => {
+    vi.spyOn(console, 'error').mockImplementation(vi.fn())
+
+    const options: FrontendErrorOptions = {
+      context: {
+        location: '/test-route',
+        userId: 123,
+      },
+      isSilent: true,
+    }
+
+    handleUnexpectedError(error, options)
+
+    expect(mockedSentry.setContextMock).toHaveBeenCalledWith(
+      'context',
+      options.context
+    )
   })
 
   it('honours a custom userMessage', () => {

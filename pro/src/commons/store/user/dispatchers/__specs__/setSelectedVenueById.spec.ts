@@ -135,13 +135,6 @@ describe('setSelectedVenueById', () => {
 
   it('should throw when offererNames is null', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    const windowLocationReloadSpy = vi.fn()
-    vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      reload: windowLocationReloadSpy,
-    })
-    const getVenueSpy = vi.spyOn(api, 'getVenue')
-    const getOffererSpy = vi.spyOn(api, 'getOfferer')
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
     const logoutSpy = vi.spyOn(logoutModule, 'logout')
 
@@ -161,10 +154,9 @@ describe('setSelectedVenueById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
     expect(logoutSpy).toHaveBeenCalledTimes(1)
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
-    expect(getVenueSpy).not.toHaveBeenCalled()
-    expect(getOffererSpy).not.toHaveBeenCalled()
+    expect(api.getVenue).not.toHaveBeenCalled()
+    expect(api.getOfferer).not.toHaveBeenCalled()
 
     expect(localStorage.getItem(SAVED_OFFERER_ID_KEY)).toBeNull()
     expect(localStorage.getItem(SAVED_VENUE_ID_KEY)).toBeNull()
@@ -172,11 +164,6 @@ describe('setSelectedVenueById', () => {
 
   it('should throw when nextSelectedOffererName is undefined', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    const windowLocationReloadSpy = vi.fn()
-    vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      reload: windowLocationReloadSpy,
-    })
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({ id: 101, managingOffererId: 999 })
     )
@@ -222,7 +209,6 @@ describe('setSelectedVenueById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
     expect(logoutSpy).toHaveBeenCalledTimes(1)
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
     expect(api.getOfferer).toHaveBeenCalledTimes(1)

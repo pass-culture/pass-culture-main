@@ -58,7 +58,7 @@ export const DraftOffers = ({ offers }: DraftOffersProps): JSX.Element => {
 
           return (
             <CardLink
-              to={`/onboarding/offre/individuelle/${offer.id}/creation/details`}
+              to={`/onboarding/offre/individuelle/${offer.id}/creation/description`}
               className={styles['offer']}
               key={offer.id}
               label={offer.name}

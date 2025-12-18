@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useEffect, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import { useSearchParams } from 'react-router'
+import { useRevalidator, useSearchParams } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { HTTP_STATUS, isErrorAPIError } from '@/apiClient/helpers'
@@ -10,6 +10,7 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -34,7 +35,10 @@ interface SigninApiErrorResponse {
 }
 
 export const SignIn = (): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const snackBar = useSnackBar()
+  const revalidator = useRevalidator()
   const [searchParams, setSearchParams] = useSearchParams()
   const [hasApiError, setHasApiError] = useState(false)
   const dispatch = useAppDispatch()
@@ -67,6 +71,9 @@ export const SignIn = (): JSX.Element => {
       })
 
       await dispatch(initializeUser(user)).unwrap()
+      if (withSwitchVenueFeature) {
+        revalidator.revalidate()
+      }
     } catch (error) {
       if (isErrorAPIError(error) || error === RECAPTCHA_ERROR) {
         if (isErrorAPIError(error)) {

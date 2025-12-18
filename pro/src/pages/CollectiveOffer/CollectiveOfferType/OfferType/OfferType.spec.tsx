@@ -55,7 +55,7 @@ const renderOfferTypes = (
         element={<div>Création vitrine collectif</div>}
       />
       <Route
-        path="/offre/individuelle/creation/details"
+        path="/offre/individuelle/creation/description"
         element={<div>Création individuel</div>}
       />
       <Route

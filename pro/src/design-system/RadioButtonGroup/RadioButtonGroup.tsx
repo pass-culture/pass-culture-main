@@ -1,6 +1,7 @@
 import { default as classNames, default as cn } from 'classnames'
 import { useId } from 'react'
 
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import {
   RadioButton,
   type RadioButtonProps,
@@ -62,9 +63,10 @@ export const RadioButtonGroup = ({
   // Ensure all options have distinct values, which is natural
   // for radio buttons but also a requirement since they are used as unique keys.
   const values = options.map((option) => option.value)
-  if (new Set(values).size !== values.length) {
-    throw new Error('RadioButtonGroup options must have unique values.')
-  }
+  assertOrFrontendError(
+    new Set(values).size === values.length,
+    'RadioButtonGroup options must have unique values.'
+  )
 
   return (
     <fieldset

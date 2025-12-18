@@ -40,7 +40,7 @@ const STEP_DEFINITIONS: StepDefinition[] = [
     buildCanGoBeyondStep: () => (offer) => Boolean(offer.name),
   },
   {
-    id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
+    id: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
     label: 'Localisation',
     buildCanGoBeyondStep: () => (offer) => Boolean(offer.location ?? offer.url),
   },

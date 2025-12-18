@@ -28,10 +28,8 @@ export enum OFFER_WIZARD_MODE {
 }
 
 export enum INDIVIDUAL_OFFER_WIZARD_STEP_IDS {
-  DETAILS = 'details',
   DESCRIPTION = 'description',
-  USEFUL_INFORMATIONS = 'pratiques',
-  LOCALISATION = 'localisation',
+  LOCATION = 'localisation',
   MEDIA = 'media',
   TARIFS = 'tarifs',
   TIMETABLE = 'horaires',

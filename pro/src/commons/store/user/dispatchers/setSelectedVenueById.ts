@@ -73,7 +73,7 @@ export const setSelectedVenueById = createAsyncThunk<
       )
 
       if (isErrorAPIError(err) || err instanceof FrontendError) {
-        dispatch(logout())
+        logout()
       }
 
       return null

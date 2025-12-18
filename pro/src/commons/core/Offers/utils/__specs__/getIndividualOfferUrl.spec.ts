@@ -13,18 +13,18 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: undefined,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       },
-      expectedUrl: '/offre/individuelle/creation/details',
+      expectedUrl: '/offre/individuelle/creation/description',
     },
     // when creation mode
     {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.CREATION,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       },
-      expectedUrl: '/offre/individuelle/42/creation/details',
+      expectedUrl: '/offre/individuelle/42/creation/description',
     },
     {
       props: {
@@ -55,9 +55,9 @@ describe('getIndividualOfferUrl', () => {
       props: {
         offerId: offerId,
         mode: OFFER_WIZARD_MODE.EDITION,
-        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       },
-      expectedUrl: '/offre/individuelle/42/edition/details',
+      expectedUrl: '/offre/individuelle/42/edition/description',
     },
     {
       props: {
@@ -112,20 +112,20 @@ describe('getIndividualOfferUrl', () => {
         props: {
           offerId: undefined,
           mode: OFFER_WIZARD_MODE.CREATION,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           isOnboarding: true,
         },
-        expectedUrl: '/onboarding/offre/individuelle/creation/details',
+        expectedUrl: '/onboarding/offre/individuelle/creation/description',
       },
       // when creation mode
       {
         props: {
           offerId: offerId,
           mode: OFFER_WIZARD_MODE.CREATION,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           isOnboarding: true,
         },
-        expectedUrl: '/onboarding/offre/individuelle/42/creation/details',
+        expectedUrl: '/onboarding/offre/individuelle/42/creation/description',
       },
       {
         props: {

@@ -5,16 +5,14 @@ import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
 import { LoggedOutLayout } from '@/app/App/layouts/logged-out/LoggedOutLayout/LoggedOutLayout'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { parse } from '@/commons/utils/query-string'
 
 import { EmailChangeValidationScreen } from './components/EmailChangeValidation/EmailChangeValidation'
 
-const EmailChangeValidation = (): JSX.Element => {
+const EmailChangeValidation = () => {
   const [isSuccess, setIsSuccess] = useState<boolean | undefined>(undefined)
   const location = useLocation()
-  const dispatch = useAppDispatch()
 
   useEffect(() => {
     const changeEmail = async () => {
@@ -29,7 +27,7 @@ const EmailChangeValidation = (): JSX.Element => {
       try {
         await api.patchValidateEmail({ token: token })
         setIsSuccess(true)
-        await dispatch(logout()).unwrap()
+        await logout()
       } catch {
         setIsSuccess(false)
       }
@@ -37,10 +35,10 @@ const EmailChangeValidation = (): JSX.Element => {
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     changeEmail()
-  }, [])
+  }, [location.search])
 
   if (isSuccess === undefined) {
-    return <></>
+    return null
   }
 
   return (

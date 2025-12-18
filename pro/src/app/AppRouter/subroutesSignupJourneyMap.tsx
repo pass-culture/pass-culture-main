@@ -1,6 +1,7 @@
 /* No need to test this file */
 /* istanbul ignore file */
 
+import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 import { Activity } from '@/components/SignupJourneyForm/Activity/Activity'
 import { OffererAuthentication } from '@/components/SignupJourneyForm/Authentication/OffererAuthentication'
 import { ConfirmedAttachment } from '@/components/SignupJourneyForm/ConfirmedAttachment/ConfirmedAttachment'
@@ -9,20 +10,24 @@ import { Offerers as SignupJourneyOfferers } from '@/components/SignupJourneyFor
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
 
 import type { CustomRouteObject } from './types'
+import { mustBeAuthenticated } from './utils'
 
 export const routesSignupJourney: CustomRouteObject[] = [
   {
     element: <Offerer />,
+    loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/recherche',
     title: 'Structure - Parcours d’inscription',
   },
   {
     element: <SignupJourneyOfferers />,
+    loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/rattachement',
     title: 'Rattachement à une structure - Parcours d’inscription',
   },
   {
     element: <ConfirmedAttachment />,
+    loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/rattachement/confirmation',
     title: 'Confirmation rattachement à une structure - Parcours d’inscription',
     meta: {
@@ -31,16 +36,19 @@ export const routesSignupJourney: CustomRouteObject[] = [
   },
   {
     element: <OffererAuthentication />,
+    loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/identification',
     title: 'Identification - Parcours d’inscription',
   },
   {
     element: <Activity />,
+    loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/activite',
     title: 'Activité - Parcours d’inscription',
   },
   {
     element: <Validation />,
+    loader: withUserPermissions(mustBeAuthenticated),
     path: '/inscription/structure/confirmation',
     title: 'Validation - Parcours d’inscription',
   },

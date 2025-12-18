@@ -2,11 +2,11 @@ import * as Sentry from '@sentry/react'
 import { createBrowserRouter, RouterProvider } from 'react-router'
 
 import { App } from '@/app/App/App'
-import { AppRouterGuard } from '@/app/AppRouter/AppRouterGuard'
 import { routes } from '@/app/AppRouter/routesMap'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectActiveFeatures } from '@/commons/store/features/selectors'
 
+import { AppRouterGuard } from './AppRouterGuard'
 import { ErrorBoundary } from './ErrorBoundary'
 import { redirectedRoutes } from './redirectedRoutes'
 
@@ -15,6 +15,7 @@ const sentryCreateBrowserRouter =
 
 export const AppRouter = (): JSX.Element => {
   const activeFeatures = useAppSelector(selectActiveFeatures)
+  const withSwitchVenueFeature = activeFeatures.includes('WIP_SWITCH_VENUE')
 
   const activeRoutes = routes.filter(
     (route) => !route.featureName || activeFeatures.includes(route.featureName)
@@ -27,7 +28,9 @@ export const AppRouter = (): JSX.Element => {
     [
       {
         path: '/',
-        element: (
+        element: withSwitchVenueFeature ? (
+          <App />
+        ) : (
           <AppRouterGuard>
             <App />
           </AppRouterGuard>

@@ -32,6 +32,8 @@ describe('Navigation', () => {
 
     cy.stepLog({ message: 'I want to update that venue' })
     cy.get('a[aria-label^="Gérer la page pour les enseignants"]').click()
+    // wait for path to be `/structures`
+    cy.url().should('include', '/structures/1/lieux/1/collectif')
 
     cy.stepLog({ message: 'I should be at the top of the page' })
     cy.get('[id=back-to-nav-link]').should('have.focus', { timeout: 1000 })

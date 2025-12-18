@@ -154,7 +154,7 @@ const renderDetailsScreen = ({
   mode = DEFAULTS.mode,
   options = {},
   path = getIndividualOfferPath({
-    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     mode,
   }),
 }: {
@@ -188,14 +188,14 @@ const renderDetailsScreen = ({
     <Routes>
       <Route
         path={getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode,
         })}
         element={element}
       />
       <Route
         path={`/onboarding${getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode,
         })}`}
         element={element}
@@ -722,7 +722,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
           },
           contextValue: context,
           path: getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
         })
@@ -748,7 +748,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
           },
           contextValue: context,
           path: getIndividualOfferPath({
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
         })
@@ -786,7 +786,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -836,7 +836,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -889,7 +889,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -925,7 +925,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
             },
             contextValue: context,
             path: getIndividualOfferPath({
-              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+              step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
               mode: OFFER_WIZARD_MODE.CREATION,
             }),
           })
@@ -1225,7 +1225,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
         options: {},
         mode: OFFER_WIZARD_MODE.CREATION,
         path: `/onboarding${getIndividualOfferPath({
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           mode: OFFER_WIZARD_MODE.CREATION,
         })}`,
       })

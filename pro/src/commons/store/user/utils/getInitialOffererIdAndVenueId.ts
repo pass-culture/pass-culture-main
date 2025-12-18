@@ -7,10 +7,10 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
+// TODO (igabriele, 2026-01-08): Delete this util once `WIP_SWITCH_VENUE` is enabled in production.
 export const getInitialOffererIdAndVenueId = (
   offerersNames: GetOffererNameResponseModel[],
-  venues: VenueListItemResponseModel[],
-  withSwitchVenueFeature: boolean
+  venues: VenueListItemResponseModel[]
 ): {
   initialOffererId: number | null
   initialVenueId: number | null
@@ -41,15 +41,6 @@ export const getInitialOffererIdAndVenueId = (
     return {
       initialOffererId: null,
       initialVenueId: selectedVenueIdFromLocalStorage,
-    }
-  }
-  // Under `WIP_SWITCH_VENUE` FF, we have to redirect the user to the Venue Selection Hub page
-  // when they don't have a selected venue persisted in their Local Storage
-  if (withSwitchVenueFeature) {
-    // which implies we can early return `null` for both `initialOffererId` and `initialVenueId` here
-    return {
-      initialOffererId: null,
-      initialVenueId: null,
     }
   }
 

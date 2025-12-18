@@ -256,11 +256,6 @@ describe('setSelectedOffererById', () => {
 
   it('should throw when no offerer name matches the selected offerer', async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    const windowLocationReloadSpy = vi.fn()
-    vi.spyOn(window, 'location', 'get').mockReturnValue({
-      ...window.location,
-      reload: windowLocationReloadSpy,
-    })
     const apiListOfferersNamesSpy = vi.spyOn(api, 'listOfferersNames')
     const apiGetVenuesSpy = vi.spyOn(api, 'getVenues')
     const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
@@ -297,7 +292,6 @@ describe('setSelectedOffererById', () => {
       'Une erreur est survenue lors du changement de la structure.'
     )
     expect(logoutSpy).toHaveBeenCalledTimes(1)
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
 
     expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
     expect(apiGetVenuesSpy).not.toHaveBeenCalled()

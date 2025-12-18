@@ -29,9 +29,7 @@ vi.mock('@/apiClient/api', () => ({
 const renderHub: RenderComponentFunction<
   void,
   void,
-  {
-    venues: VenueListItemResponseModel[] | null
-  }
+  { venues: VenueListItemResponseModel[] | null }
 > = ({ venues }) => {
   return renderWithProviders(<Hub />, {
     storeOverrides: {
@@ -46,16 +44,7 @@ const renderHub: RenderComponentFunction<
       user: {
         access: 'full',
         currentUser: sharedCurrentUserFactory(),
-        selectedVenue: makeGetVenueResponseModel({
-          id: 101,
-          managingOfferer: {
-            id: 100,
-            allowedOnAdage: true,
-            isValidated: true,
-            name: 'Test Offerer',
-            siren: '123456789',
-          },
-        }),
+        selectedVenue: null,
         venues,
       },
     },
@@ -157,6 +146,36 @@ describe('Hub', () => {
 
     await waitFor(() => {
       expect(api.getVenue).toHaveBeenCalledWith(102)
+    })
+  })
+
+  it('should show spinner after venue selection', async () => {
+    vi.spyOn(api, 'getVenue').mockResolvedValue(
+      makeGetVenueResponseModel({
+        id: 102,
+        managingOfferer: {
+          id: 100,
+          allowedOnAdage: true,
+          isValidated: true,
+          name: 'Test Offerer',
+          siren: '123456789',
+        },
+      })
+    )
+    vi.spyOn(api, 'getOfferer').mockResolvedValue({
+      ...defaultGetOffererResponseModel,
+      id: 100,
+      isOnboarded: true,
+    })
+
+    renderHub({ venues: venuesBase })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Venue B' }))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText('Chargement de la structure en cours…')
+      ).toBeInTheDocument()
     })
   })
 })
