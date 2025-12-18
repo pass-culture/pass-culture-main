@@ -7,11 +7,11 @@ import type { OnboardingActivityType } from '@/commons/mappings/OnboardingActivi
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import { diffObjects } from '../utils/helpers'
-import type { VenueEditionFormValues } from './types'
+import type { VenueEditionFormValuesType } from './validationSchema'
 
 export const serializeEditVenueBodyModel = (
-  formValues: VenueEditionFormValues,
-  initialValues: VenueEditionFormValues,
+  formValues: VenueEditionFormValuesType,
+  initialValues: VenueEditionFormValuesType,
   hideSiret: boolean,
   alreadyHasOpeningHours: boolean = false
 ): EditVenueBodyModel => {
@@ -38,17 +38,17 @@ export const serializeEditVenueBodyModel = (
 }
 
 function buildEditVenuePayload(
-  formValues: VenueEditionFormValues,
+  formValues: VenueEditionFormValuesType,
   alreadyHasOpeningHours: boolean
 ): EditVenueBodyModel {
   const normalizedActivity = normalizeActivity(formValues.activity)
 
   return {
-    audioDisabilityCompliant: formValues.accessibility.audio,
+    audioDisabilityCompliant: formValues.accessibility?.audio,
     description: formValues.description,
-    mentalDisabilityCompliant: formValues.accessibility.mental,
-    motorDisabilityCompliant: formValues.accessibility.motor,
-    visualDisabilityCompliant: formValues.accessibility.visual,
+    mentalDisabilityCompliant: formValues.accessibility?.mental,
+    motorDisabilityCompliant: formValues.accessibility?.motor,
+    visualDisabilityCompliant: formValues.accessibility?.visual,
     contact: {
       email: !formValues.email ? null : formValues.email,
       phoneNumber: !formValues.phoneNumber ? null : formValues.phoneNumber,
@@ -59,27 +59,26 @@ function buildEditVenuePayload(
       formValues.isAccessibilityAppliedOnAllOffers,
     openingHours: serializeOpeningHours(formValues, alreadyHasOpeningHours),
     isOpenToPublic: formValues.isOpenToPublic === 'true',
-    activity:
-      normalizedActivity === undefined || normalizedActivity === null
-        ? (normalizedActivity ?? undefined)
-        : (normalizedActivity as OnboardingActivity),
+    activity: normalizedActivity
+      ? (normalizedActivity as OnboardingActivity)
+      : undefined,
   }
 }
 
 function normalizeActivity(
-  activity: VenueEditionFormValues['activity']
-): OnboardingActivityType | null | undefined {
-  if ((activity as string | null) === 'GAMES_CENTRE') {
+  activity: VenueEditionFormValuesType['activity']
+): OnboardingActivityType | null {
+  if (activity === 'GAMES_CENTRE') {
     return null
   }
 
-  return activity ?? undefined
+  return activity as OnboardingActivity
 }
 
 function serializeOpeningHours(
-  formValues: VenueEditionFormValues,
+  formValues: VenueEditionFormValuesType,
   alreadyHasOpeningHours: boolean
-): EditVenueBodyModel['openingHours'] {
+): WeekdayOpeningHoursTimespans | null {
   if (
     !alreadyHasOpeningHours &&
     !OPENING_HOURS_DAYS.some(
@@ -96,7 +95,7 @@ function serializeOpeningHours(
 }
 
 export function cleanOpeningHours(
-  openingHours?: WeekdayOpeningHoursTimespans | null
+  openingHours?: VenueEditionFormValuesType['openingHours'] | null
 ) {
   //  React hook form creates empty arrays for each day of the week, while the api must receive null
   //  for week days without opening hours

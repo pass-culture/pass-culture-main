@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import type { ChangeEvent } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -30,8 +31,11 @@ import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
 import { serializeEditVenueBodyModel } from '../commons/serializers'
 import { setInitialFormValues } from '../commons/setInitialFormValues'
-import type { VenueEditionFormValues } from '../commons/types'
-import { getValidationSchema } from '../commons/validationSchema'
+import {
+  accessibilityValidationSchema,
+  type VenueEditionFormValuesType,
+  validationSchema,
+} from '../commons/validationSchema'
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
 import styles from './VenueEditionForm.module.scss'
@@ -53,37 +57,45 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const dispatch = useAppDispatch()
   const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
-  const initialValues = setInitialFormValues(venue)
+  const defaultValues = validationSchema.cast(setInitialFormValues(venue), {
+    assert: false,
+  })
 
-  const methods = useForm<VenueEditionFormValues>({
-    defaultValues: initialValues,
-    resolver: yupResolver(
-      getValidationSchema({
-        isVenueActivityFeatureActive,
-        // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation scheam
-      }) as any
-    ),
+  const methods = useForm({
+    context: {
+      isVenueActivityFeatureActive,
+    },
+    defaultValues,
+    resolver: yupResolver(validationSchema),
     mode: 'onBlur',
   })
 
-  const resetOpeningHoursAndAccessibility = () => {
-    const fieldsToReset: (keyof VenueEditionFormValues)[] = [
-      'accessibility',
-      'isAccessibilityAppliedOnAllOffers',
-    ]
+  const accessibility = methods.watch('accessibility')
 
-    for (const field of fieldsToReset) {
-      methods.setValue(field, initialValues[field])
+  const onToggleOpenToPublicToggle = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextIsOpenToPublic = event.target.value
+
+    if (nextIsOpenToPublic === 'false') {
+      methods.setValue('isOpenToPublic', 'false')
+      methods.setValue('accessibility', null, { shouldValidate: false })
+      methods.setValue('isAccessibilityAppliedOnAllOffers', true)
+    } else {
+      methods.setValue('isOpenToPublic', 'true')
+      methods.setValue(
+        'accessibility',
+        accessibilityValidationSchema.cast(accessibility, { assert: false })
+      )
+      methods.setValue('isAccessibilityAppliedOnAllOffers', false)
     }
   }
 
-  const onSubmit = async (values: VenueEditionFormValues) => {
+  const onSubmit = async (values: VenueEditionFormValuesType) => {
     try {
       const updatedVenue = await api.editVenue(
         venue.id,
         serializeEditVenueBodyModel(
           values,
-          initialValues,
+          defaultValues,
           !venue.siret,
           venue.openingHours !== null
         )
@@ -129,7 +141,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         )
 
         for (const field of errorsKeys) {
-          methods.setError(field as keyof VenueEditionFormValues, {
+          methods.setError(field as keyof VenueEditionFormValuesType, {
             type: field,
             message: formErrors[field].toString(),
           })
@@ -172,15 +184,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             <FormLayout.SubSection title="Accueil du public">
               <FormLayout.Row>
                 <OpenToPublicToggle
-                  onChange={(e) => {
-                    methods.setValue(
-                      'isOpenToPublic',
-                      e.target.value.toString()
-                    )
-                    if (e.target.value === 'false') {
-                      resetOpeningHoursAndAccessibility()
-                    }
-                  }}
+                  onChange={onToggleOpenToPublicToggle}
                   radioDescriptions={{
                     yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
                   }}
