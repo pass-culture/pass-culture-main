@@ -46,9 +46,7 @@ export type LinkProps = {
  */
 export type ButtonLinkProps = LinkProps &
   SharedButtonProps &
-  Omit<React.HTMLProps<HTMLAnchorElement>, 'title'> & {
-    isIconAriaHidden?: boolean
-  }
+  Omit<React.HTMLProps<HTMLAnchorElement>, 'title'>
 
 /**
  * The ButtonLink component provides a button-like anchor link that supports internal and external navigation.
@@ -78,7 +76,6 @@ export const ButtonLink = forwardRef(
       variant = ButtonVariant.TERNARY,
       iconPosition = IconPositionEnum.LEFT,
       iconAlt,
-      isIconAriaHidden = false,
       onBlur,
       isExternal = false,
       isSectionLink = false,
@@ -99,7 +96,6 @@ export const ButtonLink = forwardRef(
       <SvgIcon
         src={icon ?? fullLinkIcon}
         alt={iconAlt ?? 'Nouvelle fenêtre'}
-        aria-hidden={isIconAriaHidden}
         className={styles['button-icon']}
         width="22"
       />
@@ -107,7 +103,6 @@ export const ButtonLink = forwardRef(
       <SvgIcon
         src={icon}
         alt={iconAlt ?? ''}
-        aria-hidden={isIconAriaHidden}
         className={styles['button-icon']}
         width="22"
       />

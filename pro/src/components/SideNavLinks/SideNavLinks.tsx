@@ -144,7 +144,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               aria-label={`Changer de structure (actuellement sélectionnée : ${selectedVenue.name})`}
               className={styles['nav-links-switch-venue-button']}
               icon={fullLeftIcon}
-              isIconAriaHidden
               to="/hub"
             >
               <EllipsissedText>{selectedVenue.name}</EllipsissedText>
