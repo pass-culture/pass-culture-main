@@ -13,6 +13,7 @@ import { SignupConfirmation } from '@/pages/Signup/SignupConfirmation/SignupConf
 import { SignupContainer } from '@/pages/Signup/SignupContainer/SignupContainer'
 
 import type { CustomRouteObject } from './types'
+import { isPermissionless } from './utils'
 
 const NavigateWithParams = ({ to, ...props }: NavigateProps) => {
   const params = useParams()
@@ -25,18 +26,21 @@ export const routesSignup: CustomRouteObject[] = [
     path: '/inscription/compte/creation',
     title: 'Créer un compte',
     meta: { public: true },
+    requiredPermissions: isPermissionless,
   },
   {
     element: <SignupConfirmation />,
     path: '/inscription/compte/confirmation',
     title: 'Validez votre adresse email',
     meta: { public: true },
+    requiredPermissions: isPermissionless,
   },
   {
     element: <SignupValidation />,
     path: '/inscription/compte/confirmation/:token',
     title: 'Confirmation de création de compte',
     meta: { public: true },
+    requiredPermissions: isPermissionless,
   },
 
   // Redirects until pages are changed in organization website
@@ -47,17 +51,20 @@ export const routesSignup: CustomRouteObject[] = [
     path: '/inscription/validation/:token',
     title: 'Confirmation de création de compte',
     meta: { public: true },
+    requiredPermissions: isPermissionless,
   },
   {
     element: <Navigate to="/inscription/compte/confirmation" />,
     path: '/inscription/confirmation',
     title: 'Confirmation de création de compte',
     meta: { public: true },
+    requiredPermissions: isPermissionless,
   },
   {
     element: <Navigate to="/inscription/compte/creation" />,
     path: '/inscription',
     title: 'Créer un compte',
     meta: { public: true },
+    requiredPermissions: isPermissionless,
   },
 ]
