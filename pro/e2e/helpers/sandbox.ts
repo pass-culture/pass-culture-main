@@ -1,13 +1,11 @@
 import type { APIRequestContext } from '@playwright/test'
 
 const SANDBOX_TIMEOUT = 120000
-const RETRY_DELAY = 4000
 
 export async function sandboxCall<T = unknown>(
   request: APIRequestContext,
   method: 'GET' | 'POST',
-  url: string,
-  retry: boolean = true
+  url: string
 ): Promise<T> {
   const response = await request.fetch(url, {
     method,
@@ -17,11 +15,6 @@ export async function sandboxCall<T = unknown>(
 
   if (response.status() === 200) {
     return response.json() as Promise<T>
-  }
-
-  if (retry) {
-    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY))
-    return sandboxCall<T>(request, method, url, false)
   }
 
   const body = await response.text()

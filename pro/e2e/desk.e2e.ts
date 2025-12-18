@@ -2,7 +2,7 @@ import { addDays, format } from 'date-fns'
 
 import { expect, test } from './fixtures/test'
 
-test.describe('Desk (Guichet) feature', () => {
+test.describe('Desk (Guichet)', () => {
   test.describe.configure({ mode: 'serial' })
 
   test('should display help information on desk page', async ({
