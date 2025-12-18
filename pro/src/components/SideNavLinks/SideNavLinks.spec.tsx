@@ -426,5 +426,70 @@ describe('SideNavLinks', () => {
         `/structures/${offererId}/lieux/${selectedVenueId}/collectif`
       )
     })
+
+    it('should display switch venue button with selected venue name', () => {
+      const selectedVenueName = 'Ma Super Structure'
+
+      renderSideNavLinks({
+        storeOverrides: {
+          offerer: {
+            currentOfferer: {
+              ...defaultGetOffererResponseModel,
+            },
+          },
+          user: {
+            selectedVenue: { id: 123, name: selectedVenueName },
+          },
+        },
+        features,
+      })
+
+      const switchVenueButton = screen.getByRole('link', {
+        name: `Changer de structure (actuellement sélectionnée : ${selectedVenueName})`,
+      })
+      expect(switchVenueButton).toBeInTheDocument()
+      expect(switchVenueButton).toHaveAttribute('href', '/hub')
+      expect(screen.getByText(selectedVenueName)).toBeInTheDocument()
+    })
+
+    it('should not display switch venue button when no venue is selected', () => {
+      renderSideNavLinks({
+        storeOverrides: {
+          offerer: {
+            currentOfferer: {
+              ...defaultGetOffererResponseModel,
+            },
+          },
+          user: {
+            selectedVenue: null,
+          },
+        },
+        features,
+      })
+
+      expect(
+        screen.queryByRole('link', { name: /Changer de structure/ })
+      ).not.toBeInTheDocument()
+    })
+  })
+
+  it('should not display switch venue button when WIP_SWITCH_VENUE feature flag is disabled', () => {
+    renderSideNavLinks({
+      storeOverrides: {
+        offerer: {
+          currentOfferer: {
+            ...defaultGetOffererResponseModel,
+          },
+        },
+        user: {
+          selectedVenue: { id: 123, name: 'Test Venue' },
+        },
+      },
+      features: [],
+    })
+
+    expect(
+      screen.queryByRole('link', { name: /Changer de structure/ })
+    ).not.toBeInTheDocument()
   })
 })

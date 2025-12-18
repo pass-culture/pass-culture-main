@@ -19,10 +19,16 @@ type FunnelLayoutTestProps = Partial<FunnelLayoutProps> & {
 const renderLayout = ({
   isImpersonated = false,
   isConnected = true,
+  withFlexContent = false,
   ...props
 }: FunnelLayoutTestProps = {}) => {
   renderWithProviders(
-    <FunnelLayout {...props} mainHeading="Votre structure" />,
+    <FunnelLayout
+      {...props}
+      mainHeading="Votre structure"
+      withFlexContent={withFlexContent}
+      withVerticalScroll
+    />,
     isConnected
       ? {
           user: sharedCurrentUserFactory({
@@ -75,5 +81,19 @@ describe('FunnelLayout', () => {
 
       expect(screen.queryByTestId('app-footer')).not.toBeInTheDocument()
     })
+  })
+
+  it('should render main content with default class when withFlexContent is false', () => {
+    renderLayout({ withFlexContent: false })
+
+    const main = screen.getByRole('main')
+    expect(main.className).toBe('content')
+  })
+
+  it('should render main content with flex class when withFlexContent is true', () => {
+    renderLayout({ withFlexContent: true })
+
+    const main = screen.getByRole('main')
+    expect(main.className).toBe('content-flex')
   })
 })

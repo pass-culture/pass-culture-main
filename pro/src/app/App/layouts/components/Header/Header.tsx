@@ -14,7 +14,6 @@ import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
 import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
-import { HeaderVenuesDropdown } from './components/HeaderVenuesDropdown/HeaderVenuesDropdown'
 import { UserReviewDialog } from './components/UserReviewDialog/UserReviewDialog'
 import styles from './Header.module.scss'
 
@@ -35,10 +34,10 @@ export const Header = forwardRef(
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
+    const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
+
     const { logEvent } = useAnalytics()
     const location = useLocation()
-    const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-    const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
 
     return (
       <header className={styles['top-menu']}>
@@ -91,11 +90,6 @@ export const Header = forwardRef(
               <div className={styles['tablet-and-above']}>
                 {isProFeedbackEnabled && <UserReviewDialog />}
               </div>
-              {withSwitchVenueFeature && (
-                <div className={styles['tablet-and-above']}>
-                  <HeaderVenuesDropdown />
-                </div>
-              )}
               <div className={styles['tablet-and-above']}>
                 <HeaderHelpDropdown />
               </div>

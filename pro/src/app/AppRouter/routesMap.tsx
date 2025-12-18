@@ -5,6 +5,7 @@ import { Navigate, type NavigateProps, useLocation } from 'react-router'
 
 import { parse } from '@/commons/utils/query-string'
 
+import { RouteId } from './constants'
 import {
   routesIndividualOfferWizard,
   routesOnboardingIndividualOfferWizard,
@@ -25,6 +26,12 @@ export const routes: CustomRouteObject[] = [
     element: <Navigate to="/accueil" />,
     path: '/',
     title: 'Espace acteurs culturels',
+  },
+  {
+    id: RouteId.Hub,
+    lazy: () => import('@/pages/Hub/Hub'),
+    path: '/hub',
+    title: 'Changer de structure',
   },
   {
     path: '/adage-iframe/*',
@@ -63,6 +70,7 @@ export const routes: CustomRouteObject[] = [
     isErrorPage: true,
   },
   {
+    id: RouteId.Homepage,
     lazy: () => import('@/pages/Homepage/Homepage'),
     path: '/accueil',
     title: 'Espace acteurs culturels',

@@ -17,6 +17,7 @@ import {
   type UploadImageValues,
 } from '@/commons/utils/imageUploadTypes'
 import { noop } from '@/commons/utils/noop'
+import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Card } from '@/components/Card/Card'
 import { ImageUploader } from '@/components/ImageUploader/ImageUploader'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
@@ -111,8 +112,7 @@ export const PartnerPage = ({
               data-testid="venue-address"
               className={styles['venue-address']}
             >
-              {venue.location.street ? `${venue.location.street}, ` : ''}
-              {venue.location.postalCode} {venue.location.city}
+              {withVenueHelpers(venue).fullAddressAsString}
             </address>
           )}
           <ButtonLink

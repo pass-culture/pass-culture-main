@@ -1,0 +1,54 @@
+@use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_size.scss' as size;
+
+.spinner-container {
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-background-subtle);
+  display: flex;
+  height: 100vh;
+}
+
+.venue-buttons-box {
+  display: grid;
+  flex-grow: 1;
+  gap: 8px;
+  grid-template-columns: repeat(1, 1fr);
+  margin-top: var(--size-spacing-l);
+  padding-right: var(--size-spacing-l);
+  overflow-y: auto;
+
+  @media screen and (min-width: size.$tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (min-width: size.$laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.venue-button {
+  @include fonts.button;
+
+  aspect-ratio: 3 / 2;
+  background-color: var(--color-background-default);
+  border: solid 1px var(--color-border-subtle);
+  border-radius: var(--size-border-radius-m);
+  cursor: pointer;
+  padding: var(--size-spacing-l) var(--size-spacing-xl);
+  width: 100%;
+}
+
+.venue-name {
+  @include fonts.body;
+
+  display: block;
+}
+
+.venue-location {
+  @include fonts.body-xs;
+
+  color: var(--color-text-subtle);
+  display: block;
+  margin-top: var(--size-spacing-xxs);
+}

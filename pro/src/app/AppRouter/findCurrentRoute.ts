@@ -11,6 +11,7 @@ import { routesSignup } from '@/app/AppRouter/subroutesSignupMap'
 import { routesReimbursements } from './subroutesReimbursements'
 import type { CustomRouteObject } from './types'
 
+// TODO (igabriele, 2025-12-17): Replace this very custom implementation with react-router official `matchRoutes`.
 export const findCurrentRoute = (
   location: Location
 ): CustomRouteObject | undefined =>

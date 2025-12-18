@@ -23,6 +23,7 @@ import {
 } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from '@/icons/full-down.svg'
+import fullLeftIcon from '@/icons/full-left.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
@@ -35,6 +36,7 @@ import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { EllipsissedText } from '../EllipsissedText/EllipsissedText'
 import styles from './SideNavLinks.module.scss'
 
 const NAV_ITEM_ICON_SIZE = '20'
@@ -131,11 +133,23 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     <div
       className={classnames({
         [styles['nav-links']]: true,
+        [styles['nav-links-with-padding-top']]: !withSwitchVenueFeature,
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
       {selectedOfferer && (
         <div className={styles['nav-links-group']}>
+          {withSwitchVenueFeature && selectedVenue && (
+            <ButtonLink
+              aria-label={`Changer de structure (actuellement sélectionnée : ${selectedVenue.name})`}
+              className={styles['nav-links-switch-venue-button']}
+              icon={fullLeftIcon}
+              to="/hub"
+            >
+              <EllipsissedText>{selectedVenue.name}</EllipsissedText>
+            </ButtonLink>
+          )}
+
           <div className={styles['nav-links-create-offer-wrapper']}>
             <DropdownButton
               name="Créer une offre"

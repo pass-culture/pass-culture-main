@@ -120,7 +120,12 @@
         "useHookAtTopLevel": "error",
         "useIsNan": "error",
         "useJsxKeyInIterable": "error",
-        "useUniqueElementIds": "warn", // default: "error"
+        "useUniqueElementIds": {
+          "level": "warn", // default: "error"
+          "options": {
+            "excludedComponents": ["h1", "main"]
+          }
+        },
         "useValidForDirection": "error",
         "useValidTypeof": "error",
         "useYield": "error"
@@ -263,7 +268,8 @@
           "a11y": "off",
           "correctness": {
             "noNodejsModules": "off",
-            "noUndeclaredVariables": "off"
+            "noUndeclaredVariables": "off",
+            "useUniqueElementIds": "off"
           },
           "style": {
             "noDefaultExport": "off",

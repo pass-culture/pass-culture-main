@@ -1,12 +1,13 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: Layout is used once per page. There cannot be id duplications. */
 import cn from 'classnames'
+import type { ReactNode } from 'react'
 
 import { BackToNavLink } from './BackToNavLink/BackToNavLink'
 import styles from './MainHeading.module.scss'
 
 interface MainHeadingProps {
   className?: string
-  mainHeading: React.ReactNode
+  mainHeading: ReactNode
   mainSubHeading?: string
   /**
    * Whether to display a "Back to navigation" link under the heading.
