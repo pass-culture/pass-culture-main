@@ -6,10 +6,13 @@ import { NavLink, useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import fullBackIcon from '@/icons/full-back.svg'
 import fullBurgerIcon from '@/icons/full-burger.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
+import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
@@ -22,6 +25,7 @@ type HeaderProps = {
   setLateralPanelOpen?: (state: boolean) => void
   focusCloseButton?: () => void
   disableHomeLink?: boolean
+  backTo?: { to: string }
 }
 
 export const Header = forwardRef(
@@ -31,6 +35,7 @@ export const Header = forwardRef(
       setLateralPanelOpen = () => undefined,
       focusCloseButton = () => undefined,
       disableHomeLink = false,
+      backTo = { to: '/administration' },
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
@@ -85,17 +90,42 @@ export const Header = forwardRef(
               </NavLink>
             )}
           </div>
-          <div className={styles['top-right-menu']}>
-            <div className={styles['top-right-menu-links']}>
-              <div className={styles['tablet-and-above']}>
-                {isProFeedbackEnabled && <UserReviewDialog />}
-              </div>
-              <div className={styles['tablet-and-above']}>
-                <HeaderHelpDropdown />
-              </div>
+          {
+            <div className={styles['top-right-menu']}>
+              {!withSwitchVenueFeature && (
+                <div className={styles['top-right-menu-links']}>
+                  <div className={styles['tablet-and-above']}>
+                    {isProFeedbackEnabled && <UserReviewDialog />}
+                  </div>
+                  {withSwitchVenueFeature && (
+                    <div className={styles['tablet-and-above']}>
+                      <HeaderVenuesDropdown />
+                    </div>
+                  )}
+                  <div className={styles['tablet-and-above']}>
+                    <HeaderHelpDropdown />
+                  </div>
+                </div>
+              )}
+              {withSwitchVenueFeature && (
+                <ButtonLink
+                  variant={ButtonVariant.SECONDARY}
+                  to={backTo.to}
+                  iconPosition={IconPositionEnum.LEFT}
+                  icon={
+                    backTo.to === '/administration'
+                      ? strokeRepaymentIcon
+                      : fullBackIcon
+                  }
+                >
+                  {backTo.to === '/administration'
+                    ? 'Espace administration'
+                    : 'Revenir à l’Espace Partenaire'}
+                </ButtonLink>
+              )}
+              <HeaderDropdown />
             </div>
-            <HeaderDropdown />
-          </div>
+          }
         </div>
       </header>
     )

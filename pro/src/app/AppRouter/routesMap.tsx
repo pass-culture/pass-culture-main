@@ -542,4 +542,9 @@ export const routes: CustomRouteObject[] = [
       unattachedOnly: true,
     },
   },
+  {
+    lazy: () => import('@/pages/Administration/Administration'),
+    path: '/administration',
+    title: 'Administration',
+  },
 ]
