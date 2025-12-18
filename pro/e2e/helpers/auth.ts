@@ -11,7 +11,7 @@ export async function login(
 
   await page.context().addCookies([
     {
-      name: 'orejime',
+      name: 'pc-orejime',
       value: '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}',
       domain: 'localhost',
       path: '/',
