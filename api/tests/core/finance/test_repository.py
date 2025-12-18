@@ -24,6 +24,7 @@ class GetInvoicesQueryTest:
         invoice1 = factories.InvoiceFactory(bankAccount=bank_account1)
         bank_account2 = factories.BankAccountFactory(offerer=offerer)
         invoice2 = factories.InvoiceFactory(bankAccount=bank_account2)
+        _unpaid_invoice = factories.InvoiceFactory(bankAccount=bank_account1, status=models.InvoiceStatus.PENDING)
         other_bank_account = factories.BankAccountFactory()
         _other_invoice = factories.InvoiceFactory(bankAccount=other_bank_account)
 
@@ -32,7 +33,7 @@ class GetInvoicesQueryTest:
         offerer2 = bank_account3.offerer
         offerers_factories.NewUserOffererFactory(user=pro, offerer=offerer2)
 
-        invoices = repository.get_invoices_query(pro).order_by(models.Invoice.id)
+        invoices = repository.get_paid_invoices_query(pro).order_by(models.Invoice.id)
         assert list(invoices) == [invoice1, invoice2]
 
     def test_filter_on_date(self):
@@ -53,7 +54,7 @@ class GetInvoicesQueryTest:
             date=datetime.date(2021, 8, 1),
         )
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_paid_invoices_query(
             pro,
             date_from=datetime.date(2021, 7, 1),
             date_until=datetime.date(2021, 8, 1),
@@ -69,7 +70,7 @@ class GetInvoicesQueryTest:
         bank_account2 = factories.BankAccountFactory(offerer=offerer)
         _invoice2 = factories.InvoiceFactory(bankAccount=bank_account2)
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_paid_invoices_query(
             pro,
             bank_account_id=bank_account1.id,
         )
@@ -87,7 +88,7 @@ class GetInvoicesQueryTest:
         other_bank_account = factories.BankAccountFactory()
         _invoice2 = factories.InvoiceFactory(bankAccount=other_bank_account)
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_paid_invoices_query(
             pro1,
             bank_account_id=other_bank_account.id,
         )
@@ -101,7 +102,7 @@ class GetInvoicesQueryTest:
 
         admin = users_factories.AdminFactory()
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_paid_invoices_query(
             admin,
             bank_account_id=bank_account1.id,
         )
@@ -118,7 +119,7 @@ class GetInvoicesQueryTest:
         bank_account2 = factories.BankAccountFactory(offerer=offerer2)
         invoice2 = factories.InvoiceFactory(bankAccount=bank_account2)
 
-        invoices = repository.get_invoices_query(
+        invoices = repository.get_paid_invoices_query(
             pro,
             offerer_id=offerer2.id,
         )
@@ -128,7 +129,7 @@ class GetInvoicesQueryTest:
         factories.InvoiceFactory()
         admin = users_factories.AdminFactory()
 
-        invoices = repository.get_invoices_query(admin)
+        invoices = repository.get_paid_invoices_query(admin)
         assert invoices.count() == 0
 
     def test_has_invoice(self):
