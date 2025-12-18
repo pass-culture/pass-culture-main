@@ -137,7 +137,7 @@
           </div>
           <div class="row pt-3">
             <div class="col-4">
-              <h4 class="text-primary mb-2">Adresse{{ (offerer.cities or []) | length | pluralize }} :</h4>
+              <h4 class="mb-2">Adresse{{ (offerer.cities or []) | length | pluralize }} :</h4>
               <div class="fs-6">
                 {% if regions %}
                   <p class="mb-1">
@@ -166,7 +166,7 @@
               </div>
             </div>
             <div class="col-4">
-              <h4 class="text-primary mb-2">Informations générales :</h4>
+              <h4 class="mb-2">Informations générales :</h4>
               <div class="fs-6 d-grid gap-1">
                 <p class="mb-0">
                   <span class="fw-bold">Peut créer une offre EAC :</span> {{ offerer.allowedOnAdage | format_bool_badge }}
@@ -189,7 +189,7 @@
               </div>
             </div>
             <div class="col-4">
-              <h4 class="text-primary mb-2">Informations bancaires :</h4>
+              <h4 class="mb-2">Informations bancaires :</h4>
               <div clas="fs-6 d-grid gap-1">
                 <p class="mb-0">
                   <span class="fw-bold">Présence CB dans les partenaires culturels :</span>
