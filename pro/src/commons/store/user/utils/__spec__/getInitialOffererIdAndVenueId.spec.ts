@@ -33,7 +33,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBe(707)
@@ -52,7 +53,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBeNull()
@@ -70,7 +72,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBeNull()
@@ -85,7 +88,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBe(789)
@@ -106,7 +110,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBeNull()
@@ -122,7 +127,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBeNull()
@@ -138,7 +144,8 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBe(20)
@@ -151,10 +158,84 @@ describe('getInitialOffererIdAndVenueId', () => {
 
     const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
       offererNames,
-      venues
+      venues,
+      false
     )
 
     expect(initialOffererId).toBeNull()
     expect(initialVenueId).toBeNull()
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    it('should return venue id from local storage when present and valid', () => {
+      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')
+
+      const offererNames = [makeOffererName({ id: 1 })]
+      const venues = [
+        makeVenueListItem({ id: 123 }),
+        makeVenueListItem({ id: 2 }),
+      ]
+
+      const { initialOffererId, initialVenueId } =
+        getInitialOffererIdAndVenueId(offererNames, venues, true)
+
+      expect(initialOffererId).toBeNull()
+      expect(initialVenueId).toBe(123)
+    })
+
+    it('should return null ids when venue id from local storage is not found in venues list', () => {
+      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '999')
+
+      const offererNames = [makeOffererName({ id: 1 })]
+      const venues = [
+        makeVenueListItem({ id: 11 }),
+        makeVenueListItem({ id: 22 }),
+      ]
+
+      const { initialOffererId, initialVenueId } =
+        getInitialOffererIdAndVenueId(offererNames, venues, true)
+
+      expect(initialOffererId).toBeNull()
+      expect(initialVenueId).toBeNull()
+    })
+
+    it('should return null ids when no venue id is in local storage', () => {
+      const offererNames = [makeOffererName({ id: 1 })]
+      const venues = [
+        makeVenueListItem({ id: 11 }),
+        makeVenueListItem({ id: 22 }),
+      ]
+
+      const { initialOffererId, initialVenueId } =
+        getInitialOffererIdAndVenueId(offererNames, venues, true)
+
+      expect(initialOffererId).toBeNull()
+      expect(initialVenueId).toBeNull()
+    })
+
+    it('should return null ids when no offerers and no venues exist', () => {
+      const offererNames: GetOffererNameResponseModel[] = []
+      const venues: VenueListItemResponseModel[] = []
+
+      const { initialOffererId, initialVenueId } =
+        getInitialOffererIdAndVenueId(offererNames, venues, true)
+
+      expect(initialOffererId).toBeNull()
+      expect(initialVenueId).toBeNull()
+    })
+
+    it('should still prioritize URL param over local storage', () => {
+      window.history.pushState({}, '', '/?structure=707')
+      localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID, '123')
+
+      const offererNames = [makeOffererName({ id: 1 })]
+      const venues = [makeVenueListItem({ id: 123 })]
+
+      const { initialOffererId, initialVenueId } =
+        getInitialOffererIdAndVenueId(offererNames, venues, true)
+
+      expect(initialOffererId).toBe(707)
+      expect(initialVenueId).toBeNull()
+    })
   })
 })

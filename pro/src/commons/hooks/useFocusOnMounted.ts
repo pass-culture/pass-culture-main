@@ -3,8 +3,15 @@ import { useEffect } from 'react'
 import { FrontendError } from '../errors/FrontendError'
 import { handleUnexpectedError } from '../errors/handleUnexpectedError'
 
-export const useFocusOnMounted = (selectorOrRef: string | HTMLElement) => {
+export const useFocusOnMounted = (
+  selectorOrRef: string | HTMLElement,
+  isLoading = false
+) => {
   useEffect(() => {
+    if (isLoading) {
+      return
+    }
+
     const element =
       typeof selectorOrRef === 'string'
         ? document.querySelector<HTMLElement>(selectorOrRef)
@@ -18,5 +25,5 @@ export const useFocusOnMounted = (selectorOrRef: string | HTMLElement) => {
     }
 
     element.focus()
-  }, [selectorOrRef])
+  }, [isLoading, selectorOrRef])
 }

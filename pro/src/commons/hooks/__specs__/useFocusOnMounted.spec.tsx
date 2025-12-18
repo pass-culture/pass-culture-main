@@ -32,6 +32,41 @@ describe('useFocusOnMounted()', () => {
     mockElement.remove()
   })
 
+  it('should not focus element while loading', () => {
+    const mockElement = document.createElement('input')
+    mockElement.id = 'test-element'
+    document.body.appendChild(mockElement)
+
+    const focusSpy = vi.spyOn(mockElement, 'focus')
+
+    renderHook(() => useFocusOnMounted('#test-element', true))
+
+    expect(focusSpy).not.toHaveBeenCalled()
+
+    mockElement.remove()
+  })
+
+  it('should focus element when loading becomes false', () => {
+    const mockElement = document.createElement('input')
+    mockElement.id = 'test-element'
+    document.body.appendChild(mockElement)
+
+    const focusSpy = vi.spyOn(mockElement, 'focus')
+
+    const { rerender } = renderHook(
+      ({ isLoading }) => useFocusOnMounted('#test-element', isLoading),
+      { initialProps: { isLoading: true } }
+    )
+
+    expect(focusSpy).not.toHaveBeenCalled()
+
+    rerender({ isLoading: false })
+
+    expect(focusSpy).toHaveBeenCalledTimes(1)
+
+    mockElement.remove()
+  })
+
   it('should log a FrontendError when element is not found', () => {
     const consoleErrorSpy = vi
       .spyOn(console, 'error')

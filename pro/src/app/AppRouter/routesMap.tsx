@@ -86,6 +86,7 @@ export const routes: CustomRouteObject[] = [
     title: 'Réservations individuelles',
   },
   {
+    id: RouteId.Login,
     lazy: () => import('@/pages/SignIn/SignIn'),
     path: '/connexion',
     title: 'Connectez-vous',
