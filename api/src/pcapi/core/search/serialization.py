@@ -374,7 +374,7 @@ class AlgoliaSerializationMixin:
             "name": venue.common_name,
             "objectID": venue.id,
             "offerer_name": venue.managingOfferer.name,
-            "open_to_public": venue.isOpenToPublic,
+            "is_open_to_public": venue.isOpenToPublic,
             "phone_number": getattr(venue.contact, "phone_number", None),
             "postalCode": venue.offererAddress.address.postalCode,
             "snapchat": social_medias.get("snapchat"),

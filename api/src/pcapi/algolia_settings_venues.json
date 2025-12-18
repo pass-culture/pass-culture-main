@@ -25,7 +25,7 @@
         "filterOnly(activity)",
         "filterOnly(audio_disability)",
         "filterOnly(has_at_least_one_bookable_offer)",
-        "filterOnly(open_to_public)",
+        "filterOnly(is_open_to_public)",
         "filterOnly(mental_disability)",
         "filterOnly(motor_disability)",
         "filterOnly(tags)",
