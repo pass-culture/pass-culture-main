@@ -8,11 +8,12 @@ import {
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
-import { OffersForMyInstitution } from '../OffersForMyInstitution'
+import { OffersForMyInstitution } from './OffersForMyInstitution'
 
 vi.mock('@/apiClient/api', () => ({
   apiAdage: {
     getCollectiveOffersForMyInstitution: vi.fn(),
+    getEducationalInstitutionWithBudget: vi.fn(),
   },
 }))
 
@@ -24,8 +25,18 @@ const renderOffersForMyInstitution = (
     <AdageUserContextProvider adageUser={user}>
       <OffersForMyInstitution />
     </AdageUserContextProvider>,
-    { features: features }
+    { features }
   )
+}
+
+const budgetResponse = {
+  budget: 0,
+  city: 'Paris',
+  id: 1,
+  institutionType: '',
+  name: 'Lycée Jean Moulin',
+  phoneNumber: '0111111111',
+  postalCode: '75000',
 }
 
 describe('OffersInstitutionList', () => {
@@ -69,5 +80,40 @@ describe('OffersInstitutionList', () => {
     expect(
       screen.getByRole('link', { name: defaultCollectiveOffer.name })
     ).toBeInTheDocument()
+  })
+
+  describe('budget banner', () => {
+    it('should display budget exhaustion banner when institution has no budget to spend', async () => {
+      vi.spyOn(
+        apiAdage,
+        'getEducationalInstitutionWithBudget'
+      ).mockResolvedValueOnce(budgetResponse)
+      renderOffersForMyInstitution(defaultAdageUser)
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(
+        screen.getByText('Informations sur les crédits 2026')
+      ).toBeInTheDocument()
+      expect(
+        screen.getByText(
+          /Les crédits pass Culture de votre établissement pour la deuxième période de l'année scolaire 2025-2026 ne sont pas encore disponibles. Vous ne pouvez donc pas réserver d'actions payantes. Les réservations d'actions gratuites et les prises de contact avec des partenaires culturels sont toujours possibles./
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should not display budget exhaustion banner when institution has budget to spend', async () => {
+      vi.spyOn(
+        apiAdage,
+        'getEducationalInstitutionWithBudget'
+      ).mockResolvedValueOnce({ ...budgetResponse, budget: 1000 })
+      renderOffersForMyInstitution(defaultAdageUser)
+
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+
+      expect(
+        screen.queryByText('Informations sur les crédits 2026')
+      ).not.toBeInTheDocument()
+    })
   })
 })
