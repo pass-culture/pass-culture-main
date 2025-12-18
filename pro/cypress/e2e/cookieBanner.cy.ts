@@ -143,6 +143,13 @@ describe('Cookie banner', () => {
       cy.clearAllSessionStorage()
 
       cy.visit('/connexion')
+      cy.stepLog({
+        message:
+          'I check if the modal is displayed even after refreshing the page',
+      })
+      cy.findAllByText('Gestion des cookies').should('have.length', 2)
+      cy.visit('/connexion')
+      cy.findAllByText('Gestion des cookies').should('have.length', 2)
 
       cy.stepLog({ message: 'I open the cookie management option' })
       cy.findAllByText('Gestion des cookies').first().click()
