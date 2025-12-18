@@ -284,7 +284,7 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    activity: offerers_models.OnboardingActivity | None
+    activity: offerers_models.OnboardingActivityOpenToPublic | offerers_models.OnboardingActivityOpenToPublic | None
     address: address_serialize.LocationBodyModel
     createVenueWithoutSiret: bool = False
     isOpenToPublic: bool
