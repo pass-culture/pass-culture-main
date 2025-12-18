@@ -19,19 +19,14 @@
   }
 }
 
-.my-institution-callout {
-  white-space: pre-wrap;
-  margin-top: var(--size-spacing-l);
-  margin-bottom: var(--size-spacing-xxl);
-}
-
-.callout-text {
-  margin-bottom: var(--size-spacing-l);
-}
-
 .offers-list {
   padding-bottom: var(--size-spacing-xxl);
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-l);
+}
+
+.budget-banner-container {
+  margin-top: var(--size-spacing-l);
+  margin-bottom: var(--size-spacing-xl);
 }

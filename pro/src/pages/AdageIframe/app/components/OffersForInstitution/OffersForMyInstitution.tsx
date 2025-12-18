@@ -1,14 +1,18 @@
 import useSWR from 'swr'
 
+import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
-import { GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { Banner } from '@/design-system/Banner/Banner'
-import fullLinkIcon from '@/icons/full-link.svg'
+import {
+  GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY,
+  GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY,
+} from '@/commons/config/swrQueryKeys'
 import strokeMyInstitution from '@/icons/stroke-my-institution.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { useAdageUser } from '../../hooks/useAdageUser'
+import { AdageBudgetInformationBanner } from '../AdageBudgetInformationBanner/AdageBudgetInformationBanner'
 import { AdageOfferListCard } from '../OffersInstantSearch/OffersSearch/Offers/AdageOfferListCard/AdageOfferListCard'
 import { AdageSkeleton } from '../Skeleton/AdageSkeleton'
 import styles from './OffersForMyInstitution.module.scss'
@@ -16,12 +20,21 @@ import styles from './OffersForMyInstitution.module.scss'
 export const OffersForMyInstitution = () => {
   const params = new URLSearchParams(location.search)
   const adageAuthToken = params.get('token')
+  const { adageUser } = useAdageUser()
 
   const { data: offers, isLoading } = useSWR(
     [GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY],
     () => apiAdage.getCollectiveOffersForMyInstitution(),
     { fallbackData: { collectiveOffers: [] } }
   )
+
+  const educationalInstitutionBudget = useSWR(
+    adageUser.role !== AdageFrontRoles.READONLY
+      ? GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY
+      : null,
+    () => apiAdage.getEducationalInstitutionWithBudget()
+  )
+  const budget = educationalInstitutionBudget.data?.budget
 
   if (isLoading) {
     return (
@@ -36,35 +49,11 @@ export const OffersForMyInstitution = () => {
   return (
     <>
       <h1 className={styles['title']}>Pour mon établissement</h1>
-      <div className={styles['my-institution-callout']}>
-        <Banner
-          title="Processus de réservation"
-          actions={[
-            {
-              href: `${document.referrer}adage/passculture/index`,
-              isExternal: true,
-              label: 'Voir la page “Suivi pass Culture”',
-
-              icon: fullLinkIcon,
-              iconAlt: 'Nouvelle fenêtre',
-              type: 'link',
-            },
-          ]}
-          description={
-            <>
-              <p className={styles['callout-text']}>
-                Les offres de cette page sont destinées aux professeurs et
-                co-construites avec les partenaires culturels.
-              </p>
-              <p>
-                Pour réserver : 1) Préréservez l'offre, 2) Associez-la à un
-                projet pédagogique dans "Les projets", 3) Le chef
-                d'établissement validera dans "Suivi pass Culture".
-              </p>
-            </>
-          }
-        />
-      </div>
+      {!budget && (
+        <div className={styles['budget-banner-container']}>
+          <AdageBudgetInformationBanner />
+        </div>
+      )}
       {offers.collectiveOffers.length === 0 ? (
         <div className={styles['no-results']}>
           <SvgIcon
