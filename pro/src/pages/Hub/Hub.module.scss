@@ -1,4 +1,5 @@
 @use 'styles/mixins/_fonts.scss' as fonts;
+@use 'styles/mixins/_size.scss' as size;
 
 .spinner-container {
   align-items: center;
@@ -12,10 +13,18 @@
   display: grid;
   flex-grow: 1;
   gap: 8px;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(1, 1fr);
   margin-top: var(--size-spacing-l);
   padding-right: var(--size-spacing-l);
   overflow-y: auto;
+
+  @media screen and (min-width: size.$tablet) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media screen and (min-width: size.$laptop) {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 .venue-button {
@@ -26,7 +35,6 @@
   border: solid 1px var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
   cursor: pointer;
-  height: 100%;
   padding: var(--size-spacing-l) var(--size-spacing-xl);
   width: 100%;
 }
