@@ -1,12 +1,11 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
 
-import { RouteId } from '@/app/AppRouter/constants'
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 
-const EXCLUDED_ROUTES: Set<string> = new Set([RouteId.Hub])
+const EXCLUDED_ROUTES: Set<string> = new Set(['/hub'])
 
 /**
  * @deprecated Replaced by `useFocusOnMounted`.
@@ -16,11 +15,11 @@ export const useFocus = (): void => {
 
   const currentRoute = findCurrentRoute(location)
   const isErrorPage = currentRoute?.isErrorPage
+  const isExcludedRoute =
+    currentRoute?.path && EXCLUDED_ROUTES.has(currentRoute.path)
 
-  const currentRouteId = currentRoute?.id
   const currentUser = useAppSelector(selectCurrentUser)
   const isConnected = !!currentUser
-  const isExcludedRoute = currentRouteId && EXCLUDED_ROUTES.has(currentRouteId)
 
   useEffect(() => {
     // TODO (igabriele, 2025-12-17): This useEffect is a complex pattern to maintain, it will likely be replaced by a focus handling done within each page to clarify responsability.
@@ -75,5 +74,5 @@ export const useFocus = (): void => {
     }
 
     // If none of above is called, focus will be document.activeElement = body.
-  }, [isConnected, isErrorPage, isExcludedRoute])
+  }, [isConnected, isErrorPage, isExcludedRoute, location.pathname])
 }

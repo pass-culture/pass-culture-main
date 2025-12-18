@@ -2,14 +2,6 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import * as handleErrorModule from '@/commons/errors/handleError'
-import { configureTestStore } from '@/commons/store/testUtils'
-import {
-  defaultGetOffererResponseModel,
-  getOffererNameFactory,
-  makeVenueListItem,
-} from '@/commons/utils/factories/individualApiFactories'
-import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
-import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
 import { logout } from '../logout'
@@ -24,7 +16,7 @@ vi.mock('@/commons/errors/handleError', () => ({
 }))
 
 describe('logout', () => {
-  const windowLocationReloadSpy = vi.fn()
+  const windowLocationHrefMock = vi.fn()
 
   beforeEach(() => {
     vi.resetAllMocks()
@@ -32,7 +24,12 @@ describe('logout', () => {
 
     vi.spyOn(window, 'location', 'get').mockReturnValue({
       ...window.location,
-      reload: windowLocationReloadSpy,
+      get href() {
+        return windowLocationHrefMock()
+      },
+      set href(value: string) {
+        windowLocationHrefMock(value)
+      },
     })
 
     localStorage.setItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID, '1')
@@ -43,28 +40,14 @@ describe('logout', () => {
     const sucessfulFetchMock = vi.fn(() => Promise.resolve(new Response()))
     vi.spyOn(window, 'fetch').mockImplementation(sucessfulFetchMock)
 
-    const store = configureTestStore({
-      offerer: {
-        currentOfferer: { ...defaultGetOffererResponseModel, id: 1 },
-        currentOffererName: getOffererNameFactory({ id: 1 }),
-        offererNames: [getOffererNameFactory({ id: 1 })],
-      },
-      user: {
-        access: 'full',
-        currentUser: sharedCurrentUserFactory({ id: 3 }),
-        selectedVenue: makeGetVenueResponseModel({ id: 2 }),
-        venues: [makeVenueListItem({ id: 2 })],
-      },
-    })
-
-    await store.dispatch(logout()).unwrap()
+    await logout()
 
     expect(sucessfulFetchMock).toHaveBeenNthCalledWith(
       1,
       expect.stringMatching(/\/users\/signout$/),
       { credentials: 'include' }
     )
-    expect(windowLocationReloadSpy).toHaveBeenCalledTimes(1)
+    expect(windowLocationHrefMock).toHaveBeenCalledExactlyOnceWith('/connexion')
 
     expect(
       localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
@@ -78,24 +61,13 @@ describe('logout', () => {
     vi.spyOn(api, 'signout').mockRejectedValue(new Error())
     const handleErrorSpy = vi.spyOn(handleErrorModule, 'handleError')
 
-    const store = configureTestStore()
-
-    await store.dispatch(logout()).unwrap()
+    await logout()
 
     expect(handleErrorSpy).toHaveBeenCalledWith(
       expect.any(Error),
       'Une erreur est survenue lors de la déconnexion.'
     )
-    expect(windowLocationReloadSpy).not.toHaveBeenCalled()
-
-    const state = store.getState()
-    expect(state.offerer.offererNames).toBeNull()
-    expect(state.offerer.currentOfferer).toBeNull()
-    expect(state.offerer.currentOffererName).toBeNull()
-    expect(state.user.currentUser).toBeNull()
-    expect(state.user.access).toBeNull()
-    expect(state.user.selectedVenue).toBeNull()
-    expect(state.user.venues).toBeNull()
+    expect(windowLocationHrefMock).toHaveBeenCalledExactlyOnceWith('/connexion')
 
     expect(
       localStorage.getItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)

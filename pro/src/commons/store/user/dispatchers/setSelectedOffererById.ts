@@ -126,7 +126,7 @@ export const setSelectedOffererById = createAsyncThunk<
       )
 
       if (isErrorAPIError(err) || err instanceof FrontendError) {
-        dispatch(logout())
+        await logout()
       }
 
       return null

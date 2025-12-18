@@ -38,7 +38,7 @@ const renderIndividualOfferNavigation: RenderComponentFunction<
   const path =
     params.path ??
     getIndividualOfferPath({
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       mode: OFFER_WIZARD_MODE.CREATION,
     })
   const overrides: RenderWithProvidersOptions = {
@@ -94,7 +94,7 @@ describe('IndividualOfferNavigation', () => {
 
   describe('on creation mode', () => {
     const path = getIndividualOfferPath({
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       mode: OFFER_WIZARD_MODE.CREATION,
     })
 
@@ -148,7 +148,7 @@ describe('IndividualOfferNavigation', () => {
 
   describe('on edition mode', () => {
     const path = getIndividualOfferPath({
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       mode: OFFER_WIZARD_MODE.EDITION,
     })
 
@@ -181,7 +181,7 @@ describe('IndividualOfferNavigation', () => {
 
   describe('on read-only mode', () => {
     const path = getIndividualOfferPath({
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
     })
 

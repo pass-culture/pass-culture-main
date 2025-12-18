@@ -3,9 +3,10 @@
 
 .spinner-container {
   align-items: center;
-  justify-content: center;
   background-color: var(--color-background-subtle);
   display: flex;
+  height: 100vh;
+  justify-content: center;
 }
 
 .venue-list {

@@ -104,7 +104,7 @@ describe('useSaveOfferLocation', () => {
     )
     expect(getIndividualOfferUrl).toHaveBeenCalledWith({
       offerId: offerBase.id,
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
       mode: OFFER_WIZARD_MODE.READ_ONLY,
       isOnboarding: false,
     })

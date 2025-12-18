@@ -65,7 +65,7 @@ const renderDetailsSubForm = ({
   mode?: OFFER_WIZARD_MODE
 } = {}) => {
   const path = getIndividualOfferPath({
-    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS,
+    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
     mode,
   })
   const options = {

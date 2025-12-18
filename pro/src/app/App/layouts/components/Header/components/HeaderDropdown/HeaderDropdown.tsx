@@ -95,7 +95,7 @@ export const HeaderDropdown = () => {
       from: pathname,
     })
 
-    await dispatch(logout()).unwrap()
+    await logout()
   }
 
   return (

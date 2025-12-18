@@ -9,8 +9,10 @@ import {
   updateUserAccess,
 } from '@/commons/store/user/reducer'
 
+import { isFeatureActive } from '../../features/selectors'
 import type { AppThunkApiConfig } from '../../store'
 import { getInitialOffererIdAndVenueId } from '../utils/getInitialOffererIdAndVenueId'
+import { getInitialSelectedVenueId } from '../utils/getInitialSelectedVenueId'
 import { logout } from './logout'
 import { setSelectedOffererById } from './setSelectedOffererById'
 import { setSelectedVenueById } from './setSelectedVenueById'
@@ -21,8 +23,9 @@ export const initializeUser = createAsyncThunk<
   AppThunkApiConfig
 >('user/initializeUser', async (user, { dispatch, getState }) => {
   try {
-    const withSwitchVenueFeature = getState().features.list.some(
-      (feature) => feature.name === 'WIP_SWITCH_VENUE'
+    const withSwitchVenueFeature = isFeatureActive(
+      getState(),
+      'WIP_SWITCH_VENUE'
     )
 
     const offererNamesResponse = await api.listOfferersNames()
@@ -32,11 +35,16 @@ export const initializeUser = createAsyncThunk<
     dispatch(setVenues(venuesResponse.venues))
     dispatch(updateUser(user))
 
-    const { initialOffererId, initialVenueId } = getInitialOffererIdAndVenueId(
-      offererNamesResponse.offerersNames,
-      venuesResponse.venues,
-      withSwitchVenueFeature
-    )
+    const { initialOffererId, initialVenueId } = withSwitchVenueFeature
+      ? {
+          // TODO (igabriele, 2026-01-08): will be handled in another PR.
+          initialOffererId: null,
+          initialVenueId: getInitialSelectedVenueId(venuesResponse.venues),
+        }
+      : getInitialOffererIdAndVenueId(
+          offererNamesResponse.offerersNames,
+          venuesResponse.venues
+        )
 
     if (initialVenueId) {
       await dispatch(setSelectedVenueById(initialVenueId))
@@ -60,6 +68,6 @@ export const initializeUser = createAsyncThunk<
 
     dispatch(updateUserAccess('no-offerer'))
   } catch (_err: unknown) {
-    await dispatch(logout()).unwrap()
+    await logout()
   }
 })

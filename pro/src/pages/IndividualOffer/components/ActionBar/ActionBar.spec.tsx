@@ -30,14 +30,14 @@ describe('IndividualOffer::ActionBar', () => {
     props = {
       onClickPrevious: onClickPreviousMock,
       onClickNext: onClickNextMock,
-      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS,
+      step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
       isDisabled: false,
     }
   })
 
   describe('on creation', () => {
     it('should always display a "Retour" button', async () => {
-      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
       renderActionBar({ props })
 
       const previousStepButton = screen.getByText(/Retour/)
@@ -57,7 +57,7 @@ describe('IndividualOffer::ActionBar', () => {
     })
 
     it('should display "Enregistrer et continuer" button on other pages', () => {
-      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION
       renderActionBar({ props })
 
       const submitButton = screen.getByText(/Enregistrer et continuer/)
@@ -85,7 +85,7 @@ describe('IndividualOffer::ActionBar', () => {
 
   describe('on edition', () => {
     it('should render the component for details page', async () => {
-      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS
+      props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
 
       renderActionBar({ props, url: '/edition/url' })
 

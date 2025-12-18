@@ -35,7 +35,7 @@ export function IndividualOfferSummaryLocationScreen({
           title="Localisation"
           editLink={getIndividualOfferUrl({
             offerId: offer.id,
-            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
             mode: OFFER_WIZARD_MODE.EDITION,
           })}
           aria-label="Modifier la localisation de l’offre"

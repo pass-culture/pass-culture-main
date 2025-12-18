@@ -25,7 +25,7 @@ export function handleUnexpectedError(
   error: FrontendError,
   options: FrontendErrorOptions = {}
 ): void {
-  const { extras, isSilent, userMessage } = {
+  const { context, extras, isSilent, userMessage } = {
     ...DEFAULT_OPTIONS,
     ...options,
   }
@@ -40,6 +40,10 @@ export function handleUnexpectedError(
   }
 
   withScope((scope) => {
+    if (context) {
+      scope.setContext('context', context)
+    }
+
     if (extras) {
       scope.setExtras(extras)
     }

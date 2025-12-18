@@ -3,7 +3,6 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { logout } from '@/commons/store/user/dispatchers/logout'
@@ -20,7 +19,6 @@ interface UserAnonymizationFormValues {
 }
 
 export const UserAnonymizationForm = (): JSX.Element => {
-  const dispatch = useAppDispatch()
   const snackBar = useSnackBar()
   const { currentUser } = useCurrentUser()
 
@@ -37,7 +35,7 @@ export const UserAnonymizationForm = (): JSX.Element => {
   const onSubmit = async () => {
     try {
       await api.anonymize()
-      dispatch(logout())
+      await logout()
     } catch {
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard.')
     }

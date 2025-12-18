@@ -1,5 +1,6 @@
 import type { NonIndexRouteObject } from 'react-router'
 
+/** @deprecated Replaced by `loader: withUserPermissions(...)`. */
 interface CustomRouteMeta {
   public?: boolean
   canBeLoggedIn?: boolean
@@ -12,7 +13,9 @@ interface CustomRouteMeta {
 export interface CustomRouteObject extends NonIndexRouteObject {
   path: string
   title: string
+  loader: NonIndexRouteObject['loader']
   element?: JSX.Element
+  /** @deprecated Replaced by `loader: withUserPermissions(...)`. */
   meta?: CustomRouteMeta
   featureName?: string
   children?: CustomRouteObject[]

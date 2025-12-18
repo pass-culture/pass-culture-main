@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
 import {
@@ -139,22 +139,24 @@ describe('<RadioButtonGroup />', () => {
     expect(selectedRadio).toBeChecked()
   })
 
-  it('should render an error message when options have duplicate values', async () => {
-    vi.spyOn(console, 'error').mockImplementation(() => vi.fn())
-    await waitFor(() =>
-      expect(() =>
-        render(
-          <RadioButtonGroup
-            name="radio-button-group"
-            label="Radio Button Group with Duplicate Values"
-            options={[
-              { label: 'Option 1', value: '1' },
-              { label: 'Option 2', value: '1' }, // Duplicate value
-            ]}
-          />
-        )
-      ).toThrow('RadioButtonGroup options must have unique values.')
-    )
-    vi.restoreAllMocks()
+  it('should render an error message when options have duplicate values', () => {
+    // `invokeGuardedCallbackDev` writes to stderr. This prevent useless noise in test results.
+    const _stderrWriteSpy = vi
+      .spyOn(process.stderr, 'write')
+      .mockImplementation(vi.fn())
+    vi.spyOn(console, 'error').mockImplementation(vi.fn())
+
+    expect(() =>
+      render(
+        <RadioButtonGroup
+          name="radio-button-group"
+          label="Radio Button Group with Duplicate Values"
+          options={[
+            { label: 'Option 1', value: '1' },
+            { label: 'Option 2', value: '1' },
+          ]}
+        />
+      )
+    ).toThrow('RadioButtonGroup options must have unique values.')
   })
 })

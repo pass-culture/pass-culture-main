@@ -10,6 +10,7 @@ import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { IndividualOfferDetailsScreen } from './components/IndividualOfferDetailsScreen'
 
+// TODO (igabriele, 2026-01-05): Rename to `IndividualOfferDescription`.
 const IndividualOfferDetails = (): JSX.Element | null => {
   const { offer } = useIndividualOfferContext()
 

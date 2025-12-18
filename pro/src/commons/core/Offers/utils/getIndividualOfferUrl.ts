@@ -13,22 +13,12 @@ interface GetIndividualOfferPathArgs {
 }
 
 const routes = {
-  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS]: {
-    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/details`,
-    [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/details`,
-    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/recapitulatif/description`,
-  },
   [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/description`,
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/description`,
     [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/recapitulatif/description`,
   },
-  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.USEFUL_INFORMATIONS]: {
-    [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/pratiques`,
-    [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/pratiques`,
-    [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/pratiques`,
-  },
-  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION]: {
+  [INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION]: {
     [OFFER_WIZARD_MODE.CREATION]: `/offre/individuelle/:offerId/creation/localisation`,
     [OFFER_WIZARD_MODE.EDITION]: `/offre/individuelle/:offerId/edition/localisation`,
     [OFFER_WIZARD_MODE.READ_ONLY]: `/offre/individuelle/:offerId/localisation`,

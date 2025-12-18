@@ -153,7 +153,7 @@ export const IndividualOfferDetailsScreen = ({
       const nextStep =
         mode === OFFER_WIZARD_MODE.EDITION
           ? INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION
-          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION
+          : INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION
 
       logEvent(Events.CLICKED_OFFER_FORM_NAVIGATION, {
         from: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
@@ -293,7 +293,7 @@ export const IndividualOfferDetailsScreen = ({
               hasPublishedOfferWithSameEan
             }
             onClickPrevious={handlePreviousStepOrBackToReadOnly}
-            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DETAILS}
+            step={INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION}
           />
         </form>
       </FormProvider>

@@ -70,7 +70,7 @@ export const IndividualOfferMediaScreen = ({
       await navigate(
         getIndividualOfferUrl({
           offerId: offer.id,
-          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCALISATION,
+          step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION,
           mode: OFFER_WIZARD_MODE.CREATION,
           isOnboarding,
         })
