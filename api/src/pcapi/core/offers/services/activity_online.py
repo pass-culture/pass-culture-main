@@ -1,5 +1,7 @@
 from typing import Literal
 
+from pydantic import HttpUrl
+
 from pcapi.core.categories import subcategories
 
 from . import shared
@@ -7,6 +9,7 @@ from .activity import ActivityBaseModel
 
 
 class ActivityOnline(ActivityBaseModel):
+    url: HttpUrl
     extra_data: shared.ShowExtraData | None
 
 

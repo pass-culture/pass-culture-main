@@ -186,6 +186,8 @@ class Venue(pydantic_v2.BaseModel):
     id: int
     code: VenueTypeCode
 
+    model_config = pydantic_v2.ConfigDict(extra="forbid")
+
 
 def does_not_contain_ean(name: str) -> str:
     if re.search(r"\d{13}", name):
@@ -201,7 +203,6 @@ class Mandatory(pydantic_v2.BaseModel):
     visual_disability_compliant: bool
 
     model_config = pydantic_v2.ConfigDict(
-        use_enum_values=True,
         str_strip_whitespace=True,
         extra="ignore",
     )

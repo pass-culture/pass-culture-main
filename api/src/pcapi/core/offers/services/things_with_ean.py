@@ -5,15 +5,14 @@ from pydantic import AfterValidator
 from typing_extensions import Annotated
 
 from pcapi.core.categories import subcategories
-from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offerers import schemas as offerers_schemas
 
 from .shared import Venue
+from .shared import VenueTypeCode
 from .things import ThingsBaseModel
 
 
-def is_record_store(venue: offerers_models.Venue):
-    return venue.venueTypeCode != offerers_schemas.VenueTypeCode.RECORD_STORE
+def is_record_store(venue: Venue):
+    return venue.code != VenueTypeCode.RECORD_STORE
 
 
 class Product(pydantic_v2.BaseModel):
@@ -42,7 +41,7 @@ class LivrePapierModel(ThingsWithEan):
 
 
 class VinyleModel(ThingsWithEan):
-    subcategoryId: Literal[subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE]
+    subcategoryId: Literal[subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id]
 
 
 class CDModel(ThingsWithEan):
