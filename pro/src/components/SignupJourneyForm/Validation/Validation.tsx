@@ -232,6 +232,12 @@ export const Validation = (): JSX.Element | undefined => {
         </div>
         <div className={styles['data-displaying']}>
           <div className={styles['data-line']}>{activityLabel}</div>
+          {isVenueCulturalDomainsFeatureActive &&
+            (activity.culturalDomains ?? []).length > 0 && (
+              <div className={styles['data-line']}>
+                {activity.culturalDomains?.join(', ')}
+              </div>
+            )}
           {activity.socialUrls.map((url) => (
             <div className={styles['data-line']} key={url}>
               {url}
