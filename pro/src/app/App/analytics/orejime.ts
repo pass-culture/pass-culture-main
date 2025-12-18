@@ -61,7 +61,7 @@ export const useOrejime = () => {
             setConsentedToBeamer(
               orejime.manager.getConsent(Consents.BEAMER) || false
             )
-          } else if (!document.cookie.includes('orejime')) {
+          } else if (!document.cookie.includes('pc-orejime')) {
             // We force the banner to be displayed again if the cookie was deleted somehow
             orejime = window.loadOrejime(orejimeConfig)
             addListener(setConsentedToFirebase, setConsentedToBeamer)

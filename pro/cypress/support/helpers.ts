@@ -82,7 +82,7 @@ function doLogin(
   cy.visit('/connexion')
   if (setDefaultCookieOrejime) {
     cy.setCookie(
-      'orejime',
+      'pc-orejime',
       '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}'
     )
   }

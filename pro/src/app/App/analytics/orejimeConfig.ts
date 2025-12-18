@@ -60,7 +60,7 @@ export const orejimeConfig = {
       return JSON.parse(cookie)
     },
     sameSite: 'strict',
-    name: 'orejime',
+    name: 'pc-orejime',
   },
   orejimeElement: '#orejimeElement',
   translations: {
