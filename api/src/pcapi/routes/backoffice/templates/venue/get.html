@@ -31,6 +31,49 @@
                 {% set form_description = "Le partenaire culturel <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") sera définitivement supprimé de la base de données. Veuillez confirmer ce choix." %}
                 {{ build_modal_form("delete-venue", url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) , delete_form, "Supprimer le partenaire culturel", "Supprimer le partenaire culturel " + venue.common_name, "Confirmer", form_description, "bi-trash3-fill") }}
               {% endif %}
+              {% if zendesk_sell_synchronisation_form %}
+                <button class="btn  btn-outline-primary-subtle-bg mt-2"
+                        data-bs-toggle="modal"
+                        data-bs-target=".pc-sync-zsell-modal"
+                        type="button">
+                  <i class="bi bi-arrow-repeat me-2"></i>Sync Zendesk Sell
+                </button>
+                <div class="modal modal-lg fade pc-sync-zsell-modal"
+                     tabindex="-1"
+                     aria-describedby="{{ sync_zsell_aria_described_by_id }}"
+                     aria-hidden="true">
+                  <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                      <form action="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) }}"
+                            name="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) | action_to_name }}"
+                            method="post">
+                        {{ zendesk_sell_synchronisation_form.csrf_token }}
+                        <div class="modal-header"
+                             id="{{ sync_zsell_aria_described_by_id }}">
+                          <h5 class="modal-title">Synchroniser le partenaire culturel {{ venue.common_name }} sur Zendesk Sell</h5>
+                        </div>
+                        <div class="modal-body row">
+                          <div class="d-flex align-items-center">
+                            <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
+                               style="font-size: 3.1rem"></i>
+                            <div>
+                              N'oubliez pas de vérifier que l'ID <b>{{ venue.id }}</b> est bien renseigné dans «&thinsp;Produit Venue ID&thinsp;» sur Zendesk Sell.
+                            </div>
+                          </div>
+                          {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button"
+                                  class="btn btn-outline-primary-subtle-bg"
+                                  data-bs-dismiss="modal">Annuler</button>
+                          <button type="submit"
+                                  class="btn btn-primary">Confirmer</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
             </div>
           </div>
           <div class="mb-4">{{ build_venue_badges(venue, has_fraudulent_booking) }}</div>
@@ -58,49 +101,17 @@
             {% endif %}
           </p>
           <div>
-            {% if zendesk_sell_synchronisation_form %}
-              <button class="btn  btn-outline-primary-subtle-bg mt-2"
-                      data-bs-toggle="modal"
-                      data-bs-target=".pc-sync-zsell-modal"
-                      type="button">
-                <i class="bi bi-arrow-repeat me-2"></i>Sync Zendesk Sell
-              </button>
-              <div class="modal modal-lg fade pc-sync-zsell-modal"
-                   tabindex="-1"
-                   aria-describedby="{{ sync_zsell_aria_described_by_id }}"
-                   aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                  <div class="modal-content">
-                    <form action="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) }}"
-                          name="{{ url_for('backoffice_web.zendesk_sell.update_venue', venue_id=venue.id) | action_to_name }}"
-                          method="post">
-                      {{ zendesk_sell_synchronisation_form.csrf_token }}
-                      <div class="modal-header"
-                           id="{{ sync_zsell_aria_described_by_id }}">
-                        <h5 class="modal-title">Synchroniser le partenaire culturel {{ venue.common_name }} sur Zendesk Sell</h5>
-                      </div>
-                      <div class="modal-body row">
-                        <div class="d-flex align-items-center">
-                          <i class="bi bi-exclamation-diamond-fill text-warning align-middle me-3 ms-2"
-                             style="font-size: 3.1rem"></i>
-                          <div>
-                            N'oubliez pas de vérifier que l'ID <b>{{ venue.id }}</b> est bien renseigné dans «&thinsp;Produit Venue ID&thinsp;» sur Zendesk Sell.
-                          </div>
-                        </div>
-                        {{ build_form_fields_group(zendesk_sell_synchronisation_form) }}
-                      </div>
-                      <div class="modal-footer">
-                        <button type="button"
-                                class="btn btn-outline-primary-subtle-bg"
-                                data-bs-dismiss="modal">Annuler</button>
-                        <button type="submit"
-                                class="btn btn-primary">Confirmer</button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            {% endif %}
+            <p class="mb-1">
+              <a class="fw-bold link-primary"
+                 href="{{ venue | webapp_venue_link }}"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 data-bs-title="Visualiser le partenaire culturel sur l’app jeune"
+                 target="_blank">
+                Page partenaire sur l'application
+                <i class="bi bi-phone"></i>
+              </a>
+            </p>
           </div>
           <div class="row pt-3">
             <div class="col-4">
