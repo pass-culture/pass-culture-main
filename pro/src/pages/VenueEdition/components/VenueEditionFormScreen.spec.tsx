@@ -387,9 +387,9 @@ describe('VenueEditionFormScreen', () => {
       })
 
       const [morningOpen, afternoonOpen] =
-        await within(mondayGroup).findAllByLabelText('Ouvre à')
+        await within(mondayGroup).findAllByLabelText(/Ouvre à/)
       const [morningClose, afternoonClose] =
-        await within(mondayGroup).findAllByLabelText('Ferme à')
+        await within(mondayGroup).findAllByLabelText(/Ferme à/)
 
       await userEvent.clear(morningOpen)
       await userEvent.type(morningOpen, '08:00')
