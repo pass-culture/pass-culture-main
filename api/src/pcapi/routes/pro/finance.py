@@ -29,10 +29,10 @@ from . import blueprint
 @spectree_serialize(response_model=finance_serialize.InvoiceListV2ResponseModel, api=blueprint.pro_private_schema)
 def get_invoices_v2(query: finance_serialize.InvoiceListV2QueryModel) -> finance_serialize.InvoiceListV2ResponseModel:
     # Frontend sends a period with *inclusive* bounds, but
-    # `get_invoices_query` expects the upper bound to be *exclusive*.
+    # `get_paid_invoices_query` expects the upper bound to be *exclusive*.
     if query.period_ending_date:
         query.period_ending_date += datetime.timedelta(days=1)
-    invoices = finance_repository.get_invoices_query(
+    invoices = finance_repository.get_paid_invoices_query(
         current_user,
         bank_account_id=query.bank_account_id,
         date_from=query.period_beginning_date,
