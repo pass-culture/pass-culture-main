@@ -155,5 +155,45 @@ describe('AppRouterGuard', () => {
       expect(screen.queryByText('/connexion')).not.toBeInTheDocument()
       expect(screen.queryByText('/hub')).not.toBeInTheDocument()
     })
+
+    it('should redirect to PendingVenueAssociation when user has unattached access with selected venue', () => {
+      renderGuard({
+        user: sharedCurrentUserFactory(),
+        access: 'unattached',
+        features: ['WIP_SWITCH_VENUE'],
+        initialRoute: '/accueil',
+        selectedVenue: makeGetVenueResponseModel({ id: 1 }),
+      })
+
+      expect(screen.getByText('/rattachement-en-cours')).toBeInTheDocument()
+    })
+
+    it('should not redirect when logged in with full access and selected venue on private route', () => {
+      renderGuard({
+        user: sharedCurrentUserFactory(),
+        access: 'full',
+        features: ['WIP_SWITCH_VENUE'],
+        initialRoute: '/accueil',
+        selectedVenue: makeGetVenueResponseModel({ id: 1 }),
+      })
+
+      expect(screen.queryByText('/hub')).not.toBeInTheDocument()
+      expect(screen.queryByText('/connexion')).not.toBeInTheDocument()
+      expect(
+        screen.queryByText('/rattachement-en-cours')
+      ).not.toBeInTheDocument()
+    })
+
+    it('should redirect to Homepage when logged in with full access and tries to access login page', () => {
+      renderGuard({
+        user: sharedCurrentUserFactory(),
+        access: 'full',
+        features: ['WIP_SWITCH_VENUE'],
+        initialRoute: '/connexion',
+        selectedVenue: makeGetVenueResponseModel({ id: 1 }),
+      })
+
+      expect(screen.getByText('/accueil')).toBeInTheDocument()
+    })
   })
 })

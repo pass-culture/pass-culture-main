@@ -22,7 +22,7 @@ export const initializeUser = createAsyncThunk<
 >('user/initializeUser', async (user, { dispatch, getState }) => {
   try {
     const withSwitchVenueFeature = getState().features.list.some(
-      (feature) => feature.name === 'WIP_SWITCH_VENUE'
+      (feature) => feature.name === 'WIP_SWITCH_VENUE' && feature.isActive
     )
 
     const offererNamesResponse = await api.listOfferersNames()

@@ -2,11 +2,9 @@ import { memo, type ReactNode } from 'react'
 import { Navigate, useLocation, useSearchParams } from 'react-router'
 
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
+import { useRouterGuard } from '@/commons/auth/useRouterGuard'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-
-import { RouteId } from './constants'
-import { findRouteById } from './findRouteById'
 
 type AppRouterGuardProps = {
   children: ReactNode
@@ -22,22 +20,13 @@ export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
   const [searchParams] = useSearchParams()
   const currentRoute = findCurrentRoute(location)
   const userAccess = useAppSelector((store) => store.user.access)
-  const currentUser = useAppSelector((store) => store.user.currentUser)
-  const selectedVenue = useAppSelector((store) => store.user.selectedVenue)
+
+  const redirection = useRouterGuard()
+  if (withSwitchVenueFeature) {
+    return redirection ?? children
+  }
 
   if (currentRoute) {
-    if (withSwitchVenueFeature) {
-      if (currentUser) {
-        if (!selectedVenue && currentRoute.id !== RouteId.Hub) {
-          return <Navigate to={findRouteById(RouteId.Hub).path} replace />
-        }
-      } else if (!currentRoute?.meta?.public) {
-        return <Navigate to={findRouteById(RouteId.Login).path} replace />
-      }
-
-      return children
-    }
-
     if (!userAccess && !currentRoute?.meta?.public) {
       // The user is not logged in and tries to access a private page.
       const fromUrl = encodeURIComponent(
