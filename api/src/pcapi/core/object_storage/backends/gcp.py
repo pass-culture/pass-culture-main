@@ -4,7 +4,6 @@ import google.cloud.storage.retry
 from google.cloud.exceptions import NotFound
 from google.cloud.storage.bucket import Bucket
 from google.cloud.storage.client import Client
-from google.oauth2.service_account import Credentials
 
 from pcapi import settings
 
@@ -27,7 +26,6 @@ RETRY_STRATEGY = google.cloud.storage.retry.DEFAULT_RETRY.with_deadline(TIMEOUT)
 
 
 class GCPBackend(BaseBackend):
-    bucket_credentials = settings.GCP_BUCKET_CREDENTIALS
     default_bucket_name = settings.GCP_BUCKET_NAME
 
     def __init__(
@@ -35,12 +33,14 @@ class GCPBackend(BaseBackend):
         project_id: str | None = None,
         bucket_name: str = "",
     ) -> None:
-        self.project_id = project_id or self.bucket_credentials.get("project_id")
+        self.project_id = project_id or settings.GCP_PROJECT
         self.bucket_name = bucket_name or self.default_bucket_name
 
     def get_gcp_storage_client(self) -> Client:
-        credentials = Credentials.from_service_account_info(self.bucket_credentials)
-        return Client(credentials=credentials, project=self.project_id)
+        # We do not need to specify credentials here as this will use
+        # Application Default Credentials (ADC)
+        # https://docs.cloud.google.com/docs/authentication/application-default-credentials
+        return Client(project=self.project_id)
 
     def get_gcp_storage_client_bucket(self) -> Bucket:
         storage_client = self.get_gcp_storage_client()

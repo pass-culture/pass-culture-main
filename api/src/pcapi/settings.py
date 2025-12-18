@@ -1,7 +1,6 @@
 """config"""
 
 import base64
-import json
 import os
 from datetime import datetime
 from datetime import timedelta
@@ -389,7 +388,6 @@ THUMBS_FOLDER_NAME = os.environ.get("THUMBS_FOLDER_NAME", "thumbs")
 DATA_TITELIVE_THUMBS_FOLDER_NAME = os.environ.get("DATA_TITELIVE_THUMBS_FOLDER_NAME", "titelive/images")
 
 # GOOGLE
-GCP_BUCKET_CREDENTIALS = json.loads(base64.b64decode(secrets_utils.get("GCP_BUCKET_CREDENTIALS", "")) or "{}")
 GCP_BUCKET_NAME = os.environ.get("GCP_BUCKET_NAME", "")
 GCP_ALTERNATE_BUCKET_NAME = os.environ.get("GCP_ALTERNATE_BUCKET_NAME", "")
 GCP_DATA_BUCKET_NAME = secrets_utils.get("GCP_DATA_BUCKET_NAME", "")
