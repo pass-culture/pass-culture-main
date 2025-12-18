@@ -104,7 +104,6 @@ export const Activity = (): JSX.Element => {
           <h2 className={styles['subtitle']}>
             Et enfin, définissez l’activité de votre structure
           </h2>
-          <FormLayout.MandatoryInfo />
           <ActivityForm venueTypes={venueTypes} />
           <ActionBar
             onClickPrevious={handlePreviousStep}

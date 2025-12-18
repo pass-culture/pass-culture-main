@@ -72,6 +72,7 @@ export const ActivityForm = ({
           label="Activité principale"
           className={styles['venue-type-select']}
           required
+          requiredIndicator="explicit"
         />
       </FormLayout.Row>
 
@@ -81,6 +82,7 @@ export const ActivityForm = ({
           error={formState.errors.phoneNumber?.message}
           label={'Téléphone (utilisé uniquement par le pass Culture)'}
           required
+          requiredIndicator="explicit"
         />
       </FormLayout.Row>
 

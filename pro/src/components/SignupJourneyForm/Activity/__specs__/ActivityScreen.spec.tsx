@@ -78,9 +78,6 @@ describe('screens:SignupJourney::Activity', () => {
         name: 'Et enfin, définissez l’activité de votre structure',
       })
     ).toBeInTheDocument()
-    expect(
-      screen.getByText('Les champs suivis d’un * sont obligatoires.')
-    ).toBeInTheDocument()
     expect(screen.getByLabelText(/Activité principale/)).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     expect(

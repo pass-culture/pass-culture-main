@@ -208,6 +208,7 @@ export const Offerer = (): JSX.Element => {
                   label="Numéro de SIRET à 14 chiffres"
                   type="text"
                   required
+                  requiredIndicator="explicit"
                   error={errors.siret?.message}
                   onChange={(e) => {
                     if (

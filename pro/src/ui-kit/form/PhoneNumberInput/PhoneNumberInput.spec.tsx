@@ -172,4 +172,9 @@ describe('PhoneNumberInput', () => {
     expect(inputRef).toBeDefined()
     expect(inputRef.value).toBe('+33687451542')
   })
+
+  it('should display "Obligatoire" when required and requiredIndicator is explicit', () => {
+    renderPhoneNumberInput({ required: true, requiredIndicator: 'explicit' })
+    expect(screen.getByText('Obligatoire')).toBeInTheDocument()
+  })
 })

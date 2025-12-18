@@ -15,7 +15,6 @@ import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
-import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
 import { SIGNIN_FORM_DEFAULT_VALUES } from './constants'
 import { SigninForm } from './SigninForm'
@@ -119,7 +118,6 @@ export const SignIn = (): JSX.Element => {
 
   return (
     <SignUpLayout mainHeading="Connectez-vous">
-      <MandatoryInfo areAllFieldsMandatory={true} />
       <FormProvider {...hookForm}>
         <SigninForm onSubmit={hookForm.handleSubmit(onSubmit)} />
       </FormProvider>

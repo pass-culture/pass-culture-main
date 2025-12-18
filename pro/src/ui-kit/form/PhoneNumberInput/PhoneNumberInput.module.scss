@@ -73,3 +73,24 @@ $input-phone-number-padding-left: calc(
 .phone-number-inpus {
   position: relative;
 }
+
+.phone-number-input-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--size-spacing-xxs);
+}
+
+.field-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--size-spacing-s);
+  margin-bottom: var(--size-spacing-xs);
+
+  &-right {
+    @include fonts.body-accent-xs;
+
+    color: var(--color-text-subtle);
+  }
+}

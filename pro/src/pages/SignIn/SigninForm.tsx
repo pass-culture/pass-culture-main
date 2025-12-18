@@ -46,11 +46,11 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
               autoComplete="username"
               label="Adresse email"
               required
+              requiredIndicator="explicit"
               type="email"
               error={errors.email?.message}
               description="Format : email@exemple.com"
               {...register('email')}
-              requiredIndicator="hidden"
             />
           </div>
         </div>
@@ -59,9 +59,9 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             autoComplete="current-password"
             label="Mot de passe"
             required
+            requiredIndicator="explicit"
             error={errors.password?.message}
             {...register('password')}
-            requiredIndicator="hidden"
           />
         </div>
         <ButtonLink

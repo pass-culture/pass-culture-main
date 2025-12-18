@@ -164,6 +164,8 @@ describe('Offerer', () => {
       screen.getByText('Dites-nous pour quelle structure vous travaillez')
     ).toBeInTheDocument()
 
+    expect(await screen.findByText('Obligatoire')).toBeInTheDocument()
+
     await userEvent.type(
       screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
       '12345678999999'

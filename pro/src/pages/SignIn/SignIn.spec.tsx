@@ -108,6 +108,7 @@ describe('SignIn', () => {
     expect(screen.getByLabelText('Mot de passe')).toBeInTheDocument()
     expect(screen.getByText('Se connecter')).toBeInTheDocument()
     expect(screen.getByText('S’inscrire')).toBeInTheDocument()
+    expect(screen.getAllByText('Obligatoire')).toHaveLength(2)
     expect(
       screen.getByText('Réinitialisez votre mot de passe')
     ).toBeInTheDocument()
