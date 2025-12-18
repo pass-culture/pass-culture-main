@@ -118,20 +118,6 @@ export const SelectAutocomplete = forwardRef(
       }
     }, [containerRef])
 
-    // Handle "onSearch" prop for parent which may want to get the searchField information
-    useEffect(() => {
-      setHoveredOptionIndex(null)
-
-      // Necessary to not trigger "onSearch" at first render
-      if (!hasComponentFirstRendered.current) {
-        hasComponentFirstRendered.current = true
-        return
-      }
-
-      onSearch(searchField.trim())
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchField])
-
     // Compute options filter by search, using the default `searchInOptions` function (or a custom one, if provided via the props)
     const filteredOptions = searchInOptions(options, searchField)
 
@@ -220,6 +206,7 @@ export const SelectAutocomplete = forwardRef(
         setIsDropdownOpen(true)
         if (shouldResetOnOpen) {
           setSearchField('')
+          onSearch('')
         }
       }
     }
@@ -301,10 +288,8 @@ export const SelectAutocomplete = forwardRef(
                 setHoveredOptionIndex(null)
                 setSearchField(e.target.value)
 
-                onChange({
-                  type: 'change',
-                  target: { name, value: e.target.value },
-                })
+                onSearch(e.target.value)
+
                 openDropdown()
               }}
               onBlur={(e) => {
