@@ -42,7 +42,7 @@
     "@pass-culture/design-system": "0.5.2",
     "@radix-ui/react-dialog": "1.1.15",
     "@radix-ui/react-dropdown-menu": "2.1.16",
-    "@reduxjs/toolkit": "2.11.0",
+    "@reduxjs/toolkit": "2.11.1",
     "@sentry/browser": "10.30.0",
     "@sentry/react": "10.30.0",
     "@zootools/email-spell-checker": "1.12.0",
