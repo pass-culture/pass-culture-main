@@ -25,7 +25,7 @@ export type CustomEvent<T extends 'change' | 'blur'> = {
 /**
  * Base props for the SelectAutocomplete component
  */
-type CommonProps = {
+export type SelectAutocompleteProps = {
   /** Name of the field, used for form submission and accessibility */
   name: string
   /** Label displayed above the input */
@@ -55,30 +55,9 @@ type CommonProps = {
   onSearch?(pattern: string): void
   /** Custom function to filter options based on search pattern */
   searchInOptions?(options: SelectOption[], pattern: string): SelectOption[]
+  /** Called when the dropdown opens */
+  shouldResetOnOpen?: boolean
 }
-
-/**
- * Props for when resetOnOpen is true
- */
-type WithResetOnOpen = {
-  /** Resets the input value when dropdown opens. */
-  resetOnOpen?: true
-  /** Called when the input is reset. */
-  onReset?(): void
-}
-
-/**
- * Props for when resetOnOpen is false
- */
-type WithoutResetOnOpen = {
-  resetOnOpen?: false
-  /** (cannot be provided when `resetOnOpen` is `false`) */
-  onReset?: never
-}
-
-export type SelectAutocompleteProps =
-  | (CommonProps & WithResetOnOpen)
-  | (CommonProps & WithoutResetOnOpen)
 
 export const SelectAutocomplete = forwardRef(
   (
@@ -90,7 +69,6 @@ export const SelectAutocomplete = forwardRef(
       requiredIndicator = 'symbol',
       label,
       options,
-      resetOnOpen = true,
       description,
       error,
       onChange = () => noop,
@@ -101,7 +79,7 @@ export const SelectAutocomplete = forwardRef(
         options.filter((opt) =>
           opt.label.toLowerCase().includes(pattern.trim().toLowerCase())
         ),
-      onReset = () => noop,
+      shouldResetOnOpen = false,
     }: SelectAutocompleteProps,
     ref: ForwardedRef<HTMLInputElement>
   ): JSX.Element => {
@@ -129,16 +107,6 @@ export const SelectAutocomplete = forwardRef(
       )
     }, [options])
 
-    // Handles "resetOnOpen" behavior
-    useEffect(() => {
-      if (resetOnOpen && isDropdownOpen) {
-        setSearchField('')
-        onReset()
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isDropdownOpen, resetOnOpen])
-
-    // Clicking outside the container will close the dropdown
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent): void => {
         if (!containerRef.current?.contains(e.target as Node)) {
@@ -249,6 +217,9 @@ export const SelectAutocomplete = forwardRef(
     const openDropdown = () => {
       if (!isDropdownOpen) {
         setIsDropdownOpen(true)
+        if (shouldResetOnOpen) {
+          setSearchField('')
+        }
       }
     }
 

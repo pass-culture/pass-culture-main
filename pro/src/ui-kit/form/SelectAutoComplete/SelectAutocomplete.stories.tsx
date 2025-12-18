@@ -74,6 +74,7 @@ export const Default: StoryObj<typeof SelectAutocomplete> = {
     label: 'Département',
     options,
     required: false,
+    shouldResetOnOpen: true,
   },
 }
 
@@ -83,7 +84,7 @@ export const NoResetOnOpen: StoryObj<typeof SelectAutocomplete> = {
     label: 'Département',
     options,
     required: false,
-    resetOnOpen: false,
+    shouldResetOnOpen: false,
     value: '05',
   },
 }
