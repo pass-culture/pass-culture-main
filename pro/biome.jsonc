@@ -266,6 +266,9 @@
       "linter": {
         "rules": {
           "a11y": "off",
+          "complexity": {
+            "noUselessFragments": "off"
+          },
           "correctness": {
             "noNodejsModules": "off",
             "noUndeclaredVariables": "off",

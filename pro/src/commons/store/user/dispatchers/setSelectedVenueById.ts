@@ -32,7 +32,7 @@ export const setSelectedVenueById = createAsyncThunk<
       assertOrFrontendError(offererNames, '`offererNames` is null.')
       const previousSelectedVenue = state.user.selectedVenue
       if (nextSelectedVenueId === previousSelectedVenue?.id) {
-        return null
+        return state.user.access
       }
 
       const nextSelectedVenue = await api.getVenue(nextSelectedVenueId)

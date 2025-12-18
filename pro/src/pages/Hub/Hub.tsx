@@ -37,7 +37,7 @@ export const Hub = () => {
     }
   }
 
-  useFocusOnMounted('#content')
+  useFocusOnMounted('#content', isLoading)
 
   if (isLoading) {
     return (
