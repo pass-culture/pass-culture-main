@@ -91,10 +91,12 @@ export const Validation = (): JSX.Element | undefined => {
     return
   }
 
-  const activityLabel = isVenueActivityFeatureActive
-    ? getActivityLabel(activity.venueTypeCode as OnboardingActivity) // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
-    : venueTypes.find((venueType) => venueType.value === activity.venueTypeCode)
-        ?.label
+  const activityLabel =
+    isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
+      ? getActivityLabel(activity.venueTypeCode as OnboardingActivity) // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
+      : venueTypes.find(
+          (venueType) => venueType.value === activity.venueTypeCode
+        )?.label
 
   const onSubmit = async () => {
     setLoading(true)
