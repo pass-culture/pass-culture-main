@@ -104,7 +104,7 @@
     "cypress": "15.7.1",
     "cypress-axe": "1.7.0",
     "cypress-fail-fast": "7.1.1",
-    "jsdom": "27.2.0",
+    "jsdom": "27.3.0",
     "mustache": "4.2.0",
     "node-fetch": "3.3.2",
     "openapi-typescript-codegen": "0.29.0",
