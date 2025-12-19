@@ -1,0 +1,237 @@
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
+
+// =============================================================================
+// MIXINS RÉUTILISABLES
+// =============================================================================
+
+// Mixin pour les états hover/disabled standardisés
+@mixin hover-state {
+  &.btn-hovered,
+  &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
+    @content;
+  }
+}
+
+@mixin disabled-state {
+  &:disabled,
+  &.btn-disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    @content;
+  }
+}
+
+// =============================================================================
+// BASE BUTTON STYLES
+// =============================================================================
+.button {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  border-width: rem.torem(1px);
+  border-style: solid;
+  width: fit-content;
+
+  &.btn-default {
+    border-radius: var(--size-border-radius-m);
+    border-color: var(--color-border-brand-primary);
+    gap: var(--size-spacing-s);
+    padding: rem.torem(7px) var(--size-spacing-m);
+
+    @include fonts.body-accent;
+
+    &.btn-icon-only {
+      padding: var(--size-spacing-m);
+
+      &.btn-tertiary {
+        padding: var(--size-spacing-m);
+      }
+    }
+  }
+
+  &.btn-small {
+    border-radius: var(--size-border-radius-m);
+    gap: var(--size-spacing-xs);
+    padding: rem.torem(6px) var(--size-spacing-m);
+
+    @include fonts.body-accent-xs;
+
+    &.btn-icon-only {
+      padding: var(--size-spacing-s);
+
+      &.btn-tertiary {
+        padding: var(--size-spacing-s);
+      }
+    }
+  }
+
+  &.btn-full-width {
+    width: 100%;
+  }
+
+  // =============================================================================
+  // BRAND BUTTONS
+  // =============================================================================
+  &.btn-brand {
+    &.btn-primary {
+      background-color: var(--color-background-brand-primary);
+      border-color: var(--color-border-brand-primary);
+      color: var(--color-text-inverted);
+
+      @include hover-state {
+        background-color: var(--color-background-brand-primary-hover);
+      }
+
+      @include disabled-state {
+        opacity: 0.4;
+      }
+    }
+
+    &.btn-secondary {
+      background-color: var(--color-background-default);
+      border-color: var(--color-border-brand-primary);
+      color: var(--color-text-brand-primary);
+
+      &.btn-transparent {
+        background-color: transparent;
+      }
+
+      @include hover-state {
+        color: var(--color-text-brand-primary-hover);
+
+        .btn-icon {
+          color: var(--color-icon-brand-primary-hover);
+        }
+      }
+
+      @include disabled-state {
+        border-color: var(--color-border-disabled);
+        color: var(--color-text-disabled);
+
+        .btn-icon {
+          color: var(--color-icon-disabled);
+        }
+      }
+    }
+
+    &.btn-tertiary {
+      background-color: transparent;
+      border-color: transparent;
+      color: var(--color-text-brand-primary);
+      padding: 0;
+
+      @include hover-state {
+        color: var(--color-text-brand-primary-hover);
+        opacity: 0.4;
+      }
+
+      @include disabled-state {
+        color: var(--color-text-disabled);
+      }
+    }
+  }
+
+  // =============================================================================
+  // NEUTRAL BUTTONS
+  // =============================================================================
+  &.btn-neutral {
+    &.btn-primary {
+      background-color: var(--color-background-inverted);
+      border-color: var(--color-border-inverted);
+      color: var(--color-text-inverted);
+
+      @include hover-state {
+        // Add hover styles if needed
+      }
+
+      @include disabled-state {
+        opacity: 0.4;
+      }
+    }
+
+    &.btn-secondary {
+      background-color: var(--color-background-default);
+      color: var(--color-text-default);
+      border-color: var(--color-border-default);
+
+      &.btn-transparent {
+        background-color: transparent;
+      }
+
+      @include hover-state {
+        border-color: var(--color-border-brand-primary-hover);
+        color: var(--color-text-brand-primary-hover);
+
+        .btn-icon {
+          color: var(--color-text-brand-primary-hover);
+        }
+      }
+
+      @include disabled-state {
+        border-color: var(--color-border-disabled);
+        color: var(--color-text-disabled);
+      }
+    }
+
+    &.btn-tertiary {
+      background-color: transparent;
+      border-color: transparent;
+      color: var(--color-text-default);
+      padding: 0;
+
+      @include hover-state {
+        color: var(--color-text-default-hover);
+        opacity: 0.4;
+      }
+
+      @include disabled-state {
+        color: var(--color-text-disabled);
+      }
+    }
+  }
+}
+
+// =============================================================================
+// LOADING STATE
+// =============================================================================
+.spinner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: rem.torem(16px);
+  width: rem.torem(16px);
+}
+
+.spinner-svg {
+  transform-origin: center;
+}
+
+.btn-loading {
+  .spinner-svg {
+    animation: rotation 3s infinite linear;
+  }
+
+  @media screen and (prefers-reduced-motion: reduce) {
+    .spinner-svg {
+      animation: none;
+    }
+  }
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
