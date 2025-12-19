@@ -347,6 +347,43 @@ describe('ValidationScreen', () => {
       expect(await screen.findByText('first venue label')).toBeInTheDocument()
       expect(screen.getByText('nom')).toBeInTheDocument()
     })
+
+    it('should send cultural domains when WIP_VENUE_CULTURAL_DOMAINS is active', async () => {
+      if (contextValue.activity) {
+        contextValue.activity.culturalDomains = [
+          'Domaine 1',
+          'Domaine II',
+          'Domaine C',
+        ]
+      }
+      vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
+        offerersNames: [],
+      })
+      vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
+      const saveNewOnboardingDataMock = vi
+        .spyOn(api, 'saveNewOnboardingData')
+        .mockResolvedValue({} as PostOffererResponseModel)
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+
+      renderValidationScreen(contextValue, {
+        features: ['WIP_VENUE_CULTURAL_DOMAINS'],
+      })
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      expect(
+        screen.getByText('Domaine 1, Domaine II, Domaine C')
+      ).toBeInTheDocument()
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+      expect(saveNewOnboardingDataMock).toHaveBeenCalledTimes(1)
+      const [[payload]] = saveNewOnboardingDataMock.mock.calls
+      expect(payload.culturalDomains).toEqual([
+        'Domaine 1',
+        'Domaine II',
+        'Domaine C',
+      ])
+    })
   })
 
   describe('errors', () => {

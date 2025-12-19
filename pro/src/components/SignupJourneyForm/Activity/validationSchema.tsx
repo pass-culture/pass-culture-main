@@ -17,8 +17,10 @@ export const validationSchema = (
       .when([], (_, schema) => {
         if (shouldRequireCulturalDomains) {
           return schema
-            .required('Sélectionnez un ou plusieurs domaines d’activité')
-            .min(1, 'Sélectionnez un ou plusieurs domaines d’activité')
+            .required(
+              'Veuillez sélectionner un ou plusieurs domaines d’activité'
+            )
+            .min(1, 'Veuillez sélectionner un ou plusieurs domaines d’activité')
         }
         return schema
       }),

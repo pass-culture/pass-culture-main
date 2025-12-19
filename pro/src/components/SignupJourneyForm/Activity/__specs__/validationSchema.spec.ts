@@ -78,7 +78,9 @@ describe('Activity validationSchema', () => {
         ...validFormValues,
         culturalDomains: undefined,
       },
-      expectedErrors: ['Sélectionnez un ou plusieurs domaines d’activité'],
+      expectedErrors: [
+        'Veuillez sélectionner un ou plusieurs domaines d’activité',
+      ],
       withCulturalDomains: true,
     },
     {
@@ -87,7 +89,9 @@ describe('Activity validationSchema', () => {
         ...validFormValues,
         culturalDomains: [],
       },
-      expectedErrors: ['Sélectionnez un ou plusieurs domaines d’activité'],
+      expectedErrors: [
+        'Veuillez sélectionner un ou plusieurs domaines d’activité',
+      ],
       withCulturalDomains: true,
     },
   ]
