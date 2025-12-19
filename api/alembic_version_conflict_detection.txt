@@ -1,7 +1,2 @@
-<<<<<<< HEAD
 250129872250 (pre) (head)
 673c7c3583bd (post) (head)
-=======
-250129872250 (pre) (head)
-673c7c3583bd (post) (head)
->>>>>>> de32a8e3059 ((PC-39270)[API] feat: settlements tables and imports)
