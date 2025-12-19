@@ -13,7 +13,7 @@ authlib = "1.6.5"
 babel = "2.17.0"
 bcrypt = "5.0.0"
 beautifulsoup4 = "4.14.3"
-boto3 = "1.42.8"                    # For compatibility with Outscale do not upgrade to 1.36 until they solved the issue: https://status.outscale.com/incidents/hcq9vmjkl0k9
+boto3 = "1.42.8"
 boussole = "2.1.3"
 brevo-python = "1.2.0"
 celery = { version = "5.6.0", extras = ["redis"] }
