@@ -1,0 +1,1 @@
+DELETE FROM pricing_line WHERE "pricingId" is null;
