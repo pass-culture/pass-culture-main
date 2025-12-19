@@ -869,6 +869,8 @@ def format_dms_status(status: str) -> str:
             return "Refusé"
         case "sans_suite":
             return "Classé sans suite"
+        case "a_corriger":
+            return "À corriger"
         case _:
             return status
 
