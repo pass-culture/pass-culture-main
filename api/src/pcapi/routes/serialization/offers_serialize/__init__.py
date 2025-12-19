@@ -424,6 +424,8 @@ def _format_time(time_to_format: datetime.time) -> str:
 
 class IndividualOfferResponseGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
+        if key == "artistsOfferLinks":
+            pass
         if key == "videoData":
             meta_data = self._obj.metaData
             return VideoData.from_orm(meta_data)
@@ -498,12 +500,19 @@ class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     isNonFreeOffer: bool | None
     videoData: VideoData
     highlightRequests: list[highlight_serialize.ShortHighlightResponseModel]
+    artists: list[ArtistOfferLinkResponseModel]
 
     class Config:
         orm_mode = True
         json_encoders = {datetime.datetime: format_into_utc_date, datetime.time: _format_time}
         use_enum_values = True
         getter_dict = IndividualOfferResponseGetterDict
+
+
+class ArtistOfferLinkResponseModel(HttpResponseModel):
+    artist_id
+    artist_type
+    name
 
 
 class GetActiveEANOfferResponseModel(BaseModel, AccessibilityComplianceMixin):

@@ -43,6 +43,27 @@ class ArtistProductLink(PcObject, Model):
     )
 
 
+class ArtistOfferLink(PcObject, Model):
+    __tablename__ = "artist_offer_link"
+
+    artist_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
+        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False)
+    offer_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=True)
+    date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now()
+    )
+    date_modified: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(
+        sa.DateTime, nullable=True, onupdate=sa.func.now()
+    )
+
+    # Ajouter les contraintes d'unicité x2
+
+
 class Artist(Model):
     __tablename__ = "artist"
     aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship(
