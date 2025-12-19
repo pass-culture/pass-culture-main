@@ -13,7 +13,7 @@ This action encapsulates all the steps required to deploy the Pass Culture API, 
 - Helm chart updates
 - Manifest rendering and pushing
 - ArgoCD synchronization
-- Post-deployment migrations
+- ~~Post-deployment migrations~~
 
 ## Inputs
 

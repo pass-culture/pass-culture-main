@@ -1,0 +1,141 @@
+name: "3 [on_workflow] Run post-deploy migrations"
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: string
+        required: true
+      app_version:
+        type: string
+        required: true
+      cluster_scope:
+        type: string
+        required: false
+        default: metier
+      cluster_environment:
+        type: string
+        required: false
+        default: ehp
+      workload_identity_provider_secret_name:
+        type: string
+        required: true
+      apply_algolia_config:
+        type: boolean
+        required: false
+        default: false
+      deploy_api:
+        type: boolean
+        required: false
+        default: false
+      deploy_pro:
+        type: boolean
+        required: false
+        default: false
+      doc-api-entrypoint:
+        type: string
+        required: false
+        default: "api/documentation"
+      # Variables used for the new infra
+      environment_short_name: # Required for deploying to new infra
+        type: string
+        required: false
+      is_new_infra:
+        type: boolean
+        required: false
+        default: false
+      location:
+        type: string
+        required: false
+        default: europe-west9
+      workflow_cluster_name:
+        type: string
+        required: false
+      workflow_project_id:
+        type: string
+        required: false
+      app_project_id:
+        type: string
+        required: false
+      app_cluster_name:
+        type: string
+        required: false
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+      GCP_EHP_SERVICE_ACCOUNT:
+        required: true
+      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER:
+        required: false
+      NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT:
+        required: false
+      PASSCULTURE_GITHUB_ACTION_APP_ID:
+        required: true
+        description: "Github Application ID to use to clone other repos"
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY:
+        required: true
+        description: "Private key for the Github application used to clone other repos"
+
+jobs:
+  run-post-deploy-migrations:
+    name: "Run post-deploy migrations"
+    concurrency:
+      group: post-deploy-migrations-pcapi-${{ inputs.environment }}-${{ inputs.is_new_infra }}
+      cancel-in-progress: false
+    runs-on: ubuntu-22.04
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: "Run post-deploy migrations"
+        if: ${{ inputs.deploy_api && !inputs.is_new_infra }}
+        uses: ./.github/actions/run-post-deploy-migrations
+        with:
+          environment: ${{ inputs.environment }}
+          app_version: ${{ inputs.app_version }}
+          cluster_scope: ${{ inputs.cluster_scope }}
+          cluster_environment: ${{ inputs.cluster_environment }}
+          workload_identity_provider_secret_name: ${{ inputs.workload_identity_provider_secret_name }}
+          gcp_ehp_workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_ehp_service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+          passculture_github_action_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+          passculture_github_action_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+
+      - name: "Run post-deploy migrations in new Infra"
+        if: ${{ inputs.deploy_api && inputs.is_new_infra }}
+        uses: ./.github/actions/run-post-deploy-migrations-new-infra
+        with:
+          environment: ${{ inputs.environment_short_name }}
+          app_version: ${{ inputs.app_version }}
+          service_account: ${{ secrets.NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT }}
+          workload_identity_provider: ${{ secrets.NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER }}
+          app_cluster_name: ${{ inputs.app_cluster_name }}
+          app_project_id: ${{ inputs.app_project_id }}
+
+  end-slack-success-notification:
+    name: "Send workflow success notification"
+    needs: run-post-deploy-migrations
+    if: always() && !failure() && !cancelled()
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#28A745"  # green
+      message: ":github-success: Les migrations de DB post-déploiement de `${{ github.event.inputs.environment }}` ont réussi."
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
+  end-slack-failure-notification:
+    name: "Send workflow failure notification"
+    needs: run-post-deploy-migrations
+    if: always() && (failure() || cancelled())
+    uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
+    with:
+      channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
+      color: "#A30002"  # red
+      message: ":github-failure: Les migrations de DB post-déploiement de `${{ github.event.inputs.environment }}` ont <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|échoué>"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}

@@ -1,5 +1,5 @@
-name: "Deploy PCAPI To new Infra"
-description: "Deploy the Pass Culture API to Kubernetes"
+name: "Run post-deployment migrations for PCAPI (new infra)"
+description: "Run post migrations (new infra)"
 
 inputs:
   environment:
@@ -12,12 +12,6 @@ inputs:
     description: "GCP Region"
     required: true
     default: europe-west9
-  workflow_project_id:
-    description: "ID of the project that hosts our workflow engine"
-    required: true
-  workflow_cluster_name:
-    description: "Name of the cluster that hosts our workflow engine"
-    required: true
   service_account:
     description: "PCAPI deployment service account"
     required: true
@@ -28,10 +22,9 @@ inputs:
     description: "Name of the workflow template to run"
     required: false
     default: wfw-pcapi-full-deploy
-  argo_namespace:
-    description: "Namespace in which the workflow will run"
-    required: false
-    default: infra-cd-prd
+  app_project_id:
+    description: "ID of the project where the application is hosted"
+    required: true
   app_cluster_name:
     description: "Name of the cluster that hosts the application"
     required: true
@@ -48,39 +41,20 @@ runs:
         service_account: ${{ inputs.service_account }}
         workload_identity_provider: ${{ inputs.workload_identity_provider}}
 
-    # Trigger pre-migrations #
+    # Trigger post-migrations #
     - name: Authenticate to GKE cluster
       uses: google-github-actions/get-gke-credentials@v3
       with:
         cluster_name: ${{ inputs.app_cluster_name }}
-        project_id: ${{ inputs.project_id }}
+        project_id: ${{ inputs.app_project_id }}
         location: ${{ inputs.location }}
         use_dns_based_endpoint: true
 
-    - name: "Play pre-migrations"
+    - name: "Play post-migrations"
       uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.3.1
       with:
         environment: "pcapi-${{ inputs.environment }}"
         app_version: ${{ inputs.app_version }}
-        migration_type: pre
+        migration_type: post
         artifact_registry: europe-docker.pkg.dev/pc-infra-prd/pass-culture-artifact-registry
-    # End Trigger pre-migrations #
-
-    # Trigger WF #
-    - name: Authenticate to GKE cluster
-      uses: google-github-actions/get-gke-credentials@v3
-      with:
-        cluster_name: ${{ inputs.workflow_cluster_name }}
-        project_id: ${{ inputs.workflow_project_id }}
-        location: ${{ inputs.location }}
-        namespace: ${{ inputs.argo_namespace }}
-        use_dns_based_endpoint: true
-
-    - name: "🔀 Switch to ArgoCD namespace and Run Workflow 🚀"
-      shell: bash
-      run: |
-        argo submit --from wftmpl/${{ inputs.argo_template }} \
-          --log --wait \
-          -p environment=${{ inputs.environment }} \
-          -p pcapi_version=${{ inputs.app_version }}
-    # End Trigger WF #
+    # End Trigger post-migrations #
