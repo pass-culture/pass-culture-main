@@ -225,6 +225,7 @@ def recredit_users() -> None:
 def import_ds_bank_information_applications(ignore_previous: bool = False, since: str | None = None) -> None:
     procedures = [
         settings.DS_BANK_ACCOUNT_PROCEDURE_ID,
+        settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID,
     ]
     forced_since = datetime.datetime.fromisoformat(since) if since else None
     for procedure in procedures:

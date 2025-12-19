@@ -13,6 +13,7 @@ from pydantic.v1 import validator
 
 from pcapi import settings
 from pcapi.connectors.dms import models as dms_models
+from pcapi.core.finance import constants as finance_constants
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.api import mark_bank_account_without_continuation
 from pcapi.core.finance.utils import format_raw_iban
@@ -253,7 +254,10 @@ class ApplicationDetail(BaseModel):
             and obj["last_pending_correction_date"]
         ):
             to_representation["status"] = finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
-        if to_representation["procedure_version"] == 5:
+        if to_representation["procedure_version"] in (
+            finance_constants.DN_PROCEDURE_V5_VERSION,
+            finance_constants.DN_PROCEDURE_NC_VERSION,
+        ):
             to_representation["siret"] = obj["siret"]
             to_representation["siren"] = to_representation["siret"][:9]
             to_representation["label"] = obj["label"]
