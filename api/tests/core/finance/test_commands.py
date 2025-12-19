@@ -153,13 +153,22 @@ class ImportDsBankInformationApplicationsTest:
         latest_import_date = dms_factories.LatestDmsImportFactory(
             procedureId=settings.DS_BANK_ACCOUNT_PROCEDURE_ID
         ).latestImportDatetime
+        latest_nc_import_date = dms_factories.LatestDmsImportFactory(
+            procedureId=settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID
+        ).latestImportDatetime
 
         run_command("import_ds_bank_information_applications", raise_on_error=True)
 
-        mock_get_pro_bank_nodes_states.assert_called_once_with(
-            procedure_number=int(settings.DS_BANK_ACCOUNT_PROCEDURE_ID),
-            since=latest_import_date,
-        )
+        mock_get_pro_bank_nodes_states.assert_called()
+        assert mock_get_pro_bank_nodes_states.call_count == 2
+        assert mock_get_pro_bank_nodes_states.call_args_list[0].kwargs == {
+            "procedure_number": int(settings.DS_BANK_ACCOUNT_PROCEDURE_ID),
+            "since": latest_import_date,
+        }
+        assert mock_get_pro_bank_nodes_states.call_args_list[1].kwargs == {
+            "procedure_number": int(settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID),
+            "since": latest_nc_import_date,
+        }
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_pro_bank_nodes_states")
     def test_import_ds_bank_information_applications_ignore_previous(self, mock_get_pro_bank_nodes_states, run_command):
@@ -167,10 +176,16 @@ class ImportDsBankInformationApplicationsTest:
 
         run_command("import_ds_bank_information_applications", "--ignore_previous", raise_on_error=True)
 
-        mock_get_pro_bank_nodes_states.assert_called_once_with(
-            procedure_number=int(settings.DS_BANK_ACCOUNT_PROCEDURE_ID),
-            since=None,
-        )
+        mock_get_pro_bank_nodes_states.assert_called()
+        assert mock_get_pro_bank_nodes_states.call_count == 2
+        assert mock_get_pro_bank_nodes_states.call_args_list[0].kwargs == {
+            "procedure_number": int(settings.DS_BANK_ACCOUNT_PROCEDURE_ID),
+            "since": None,
+        }
+        assert mock_get_pro_bank_nodes_states.call_args_list[1].kwargs == {
+            "procedure_number": int(settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID),
+            "since": None,
+        }
 
     @patch("pcapi.connectors.dms.api.DMSGraphQLClient.get_pro_bank_nodes_states")
     def test_import_ds_bank_information_applications_since(self, mock_get_pro_bank_nodes_states, run_command):
@@ -178,7 +193,13 @@ class ImportDsBankInformationApplicationsTest:
 
         run_command("import_ds_bank_information_applications", "--since", "2024-01-01", raise_on_error=True)
 
-        mock_get_pro_bank_nodes_states.assert_called_once_with(
-            procedure_number=int(settings.DS_BANK_ACCOUNT_PROCEDURE_ID),
-            since=datetime.datetime(2024, 1, 1, 0, 0, 0),
-        )
+        mock_get_pro_bank_nodes_states.assert_called()
+        assert mock_get_pro_bank_nodes_states.call_count == 2
+        assert mock_get_pro_bank_nodes_states.call_args_list[0].kwargs == {
+            "procedure_number": int(settings.DS_BANK_ACCOUNT_PROCEDURE_ID),
+            "since": datetime.datetime(2024, 1, 1, 0, 0, 0),
+        }
+        assert mock_get_pro_bank_nodes_states.call_args_list[1].kwargs == {
+            "procedure_number": int(settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID),
+            "since": datetime.datetime(2024, 1, 1, 0, 0, 0),
+        }
