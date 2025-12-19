@@ -1,0 +1,119 @@
+import { Link } from 'react-router'
+
+import {
+  getAnchorProps,
+  getButtonProps,
+  getComponentProps,
+  getComponentType,
+  getLinkProps,
+} from './helpers'
+
+describe('getComponentType', () => {
+  it('should return "button" when as is "button"', () => {
+    expect(getComponentType('button', false, false)).toBe('button')
+  })
+
+  it('should return "a" when as is "a" and isExternal is true', () => {
+    expect(getComponentType('a', true, false)).toBe('a')
+  })
+
+  it('should return "a" when as is "a" and isSectionLink is true', () => {
+    expect(getComponentType('a', false, true)).toBe('a')
+  })
+
+  it('should return Link when as is "a" and neither isExternal nor isSectionLink', () => {
+    expect(getComponentType('a', false, false)).toBe(Link)
+  })
+})
+
+describe('getButtonProps', () => {
+  it('should return disabled true when disabled is true', () => {
+    expect(getButtonProps(true, false)).toEqual({ disabled: true })
+  })
+
+  it('should return disabled true when isLoading is true', () => {
+    expect(getButtonProps(false, true)).toEqual({ disabled: true })
+  })
+
+  it('should return disabled true when both disabled and isLoading are true', () => {
+    expect(getButtonProps(true, true)).toEqual({ disabled: true })
+  })
+
+  it('should return disabled false when both disabled and isLoading are false', () => {
+    expect(getButtonProps(false, false)).toEqual({ disabled: false })
+  })
+})
+
+describe('getAnchorProps', () => {
+  it('should return href undefined when disabled is true', () => {
+    const result = getAnchorProps('/test', true, false)
+    expect(result.href).toBeUndefined()
+    expect(result.rel).toBe('noopener noreferrer')
+    expect(result.target).toBeUndefined()
+    expect(result['aria-disabled']).toBe(true)
+  })
+
+  it('should return href when disabled is false', () => {
+    const result = getAnchorProps('/test', false, false)
+    expect(result.href).toBe('/test')
+    expect(result.rel).toBe('noopener noreferrer')
+    expect(result.target).toBeUndefined()
+    expect(result['aria-disabled']).toBeUndefined()
+  })
+
+  it('should return target _blank when opensInNewTab is true', () => {
+    const result = getAnchorProps('/test', false, true)
+    expect(result.href).toBe('/test')
+    expect(result.target).toBe('_blank')
+  })
+
+  it('should return target undefined when opensInNewTab is false', () => {
+    const result = getAnchorProps('/test', false, false)
+    expect(result.target).toBeUndefined()
+  })
+})
+
+describe('getLinkProps', () => {
+  it('should return to empty string when disabled is true', () => {
+    const result = getLinkProps('/test', true, false)
+    expect(result.to).toBe('')
+    expect(result.target).toBeUndefined()
+  })
+
+  it('should return to absoluteUrl when disabled is false', () => {
+    const result = getLinkProps('/test', false, false)
+    expect(result.to).toBe('/test')
+    expect(result.target).toBeUndefined()
+  })
+
+  it('should return target _blank when opensInNewTab is true', () => {
+    const result = getLinkProps('/test', false, true)
+    expect(result.to).toBe('/test')
+    expect(result.target).toBe('_blank')
+  })
+})
+
+describe('getComponentProps', () => {
+  it('should return button props when Component is "button"', () => {
+    const result = getComponentProps('button', '/test', true, false, false)
+    expect(result).toEqual({ disabled: true })
+  })
+
+  it('should return anchor props when Component is "a"', () => {
+    const result = getComponentProps('a', '/test', false, false, true)
+    expect(result).toEqual({
+      href: '/test',
+      rel: 'noopener noreferrer',
+      target: '_blank',
+      'aria-disabled': undefined,
+    })
+  })
+
+  it('should return link props when Component is Link', () => {
+    const result = getComponentProps(Link, '/test', false, false, true)
+    expect(result).toEqual({
+      to: '/test',
+      target: '_blank',
+    })
+  })
+})

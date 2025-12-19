@@ -1,0 +1,30 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.spinner-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: rem.torem(16px);
+  width: rem.torem(16px);
+}
+
+.spinner-svg {
+  animation: rotation 3s infinite linear;
+  transform-origin: center;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media screen and (prefers-reduced-motion: reduce) {
+  .spinner-svg {
+    animation: none;
+  }
+}
