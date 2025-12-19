@@ -22,6 +22,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import models as offers_models
 from pcapi.models import db
 from pcapi.utils import date as date_utils
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.db import make_timerange
 
 
@@ -36,6 +37,7 @@ MARK_WITHOUT_CONTINUATION_MOTIVATION = "Classé sans suite et archivé automatiq
 PROCEDURE_ID_VERSION_MAP = {
     settings.DMS_VENUE_PROCEDURE_ID_V4: 4,
     settings.DS_BANK_ACCOUNT_PROCEDURE_ID: 5,
+    settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID: 988,
 }
 FIELD_NAME_TO_INTERNAL_NAME_MAPPING = {
     ("Prénom", "prénom"): "firstname",
@@ -533,7 +535,9 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
     result["venue_url_annotation_id"] = None
     for annotation in data["annotations"]:
         match annotation["label"]:
-            case "Erreur traitement pass Culture" | "Annotation technique (réservée à pcapi)":
+            case (
+                "Erreur traitement pass Culture" | "Annotation technique (réservée à pcapi)" | "Remarques Tech/Produit"
+            ):
                 result["error_annotation_id"] = annotation["id"]
                 result["error_annotation_value"] = annotation["stringValue"]
             case "URL du lieu":
@@ -545,6 +549,8 @@ def parse_raw_bank_info_data(data: dict, procedure_version: int) -> dict:
             _parse_v4_content(data, result)
         case 5:
             _parse_v5_content(data, result)
+        case 988:
+            _parse_nc_content(data, result)
 
     return result
 
@@ -566,6 +572,20 @@ def _parse_v5_content(data: dict, result: dict) -> dict:
                 result[internal_field] = field["value"]
     result["siret"] = data["demandeur"]["siret"]
     result["siren"] = result["siret"][:9]
+
+    return result
+
+
+def _parse_nc_content(data: dict, result: dict) -> dict:
+    for field in data["champs"]:
+        for mapped_fields, internal_field in FIELD_NAME_TO_INTERNAL_NAME_MAPPING.items():
+            if field["label"] in mapped_fields:
+                result[internal_field] = field["value"]
+                break
+        else:
+            if field["label"] == "RIDET":
+                result["siret"] = siren_utils.ridet_to_siret(field["value"])
+                result["siren"] = result["siret"][:9]
 
     return result
 

@@ -32,6 +32,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
 from pcapi.utils import date as date_utils
+from pcapi.utils import siren as siren_utils
 
 import tests.connector_creators.demarches_simplifiees_creators as dms_creators
 from tests.connector_creators import demarches_simplifiees_creators as ds_creators
@@ -1112,3 +1113,34 @@ class BankAccountJourneyTest:
             annotation_id=self.error_annotation_id,
             message="L'IBAN n'est pas valide",
         )
+
+    def test_NC_is_handled(self, mock_archive_dossier, mock_update_text_annotation, mock_grapqhl_client):
+        ridet = "1234567001"
+        venue = offerers_factories.CaledonianVenueFactory(
+            pricing_point="self",
+            siret=siren_utils.ridet_to_siret(ridet),
+            managingOfferer__siren=siren_utils.rid7_to_siren(ridet[:7]),
+        )
+        offerer = venue.managingOfferer
+
+        mock_grapqhl_client.return_value = dms_creators.get_bank_info_response_procedure_nc(
+            state=GraphQLApplicationStates.accepted.value,
+        )
+        update_ds_applications_for_procedure(settings.DS_BANK_ACCOUNT_NC_PROCEDURE_ID, since=None)
+
+        bank_account = db.session.query(finance_models.BankAccount).one()
+        assert bank_account.iban == "NC2014889000000988000000100"
+        assert bank_account.offerer == offerer
+        assert bank_account.status == finance_models.BankAccountApplicationStatus.ACCEPTED
+        assert bank_account.label == "Compte bancaire calédonien"
+        assert bank_account.dsApplicationId == 988
+        bank_account_link = db.session.query(offerers_models.VenueBankAccountLink).one()
+        assert bank_account_link.venue == venue
+
+        mock_archive_dossier.assert_called_once_with("RG9zc2lldi0yOAMzNuAyMQ==")
+        mock_update_text_annotation.assert_not_called()
+
+        assert db.session.query(history_models.ActionHistory).count() == 1  # One link created
+        assert db.session.query(finance_models.BankAccountStatusHistory).count() == 1  # One status change recorded
+
+        assert len(mails_testing.outbox) == 0
