@@ -644,8 +644,6 @@ class SyncUserAccountUpdateRequestsTest:
         uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
 
         mocked_execute_query.assert_called()
-        print(mocked_execute_query.call_args_list[0].args)
-        print(mocked_execute_query.call_args_list[1].args)
         assert mocked_execute_query.call_count == 2
 
         mocked_execute_query.call_args_list[0].assert_called_once_with(

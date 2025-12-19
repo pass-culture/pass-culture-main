@@ -182,18 +182,6 @@ class CollectiveOfferTest:
         response = eac_client.get(f"/adage-iframe/collective/offers/{offer.id}")
         assert response.status_code == 404
 
-    def test_offer_venue_has_an_empty_string_venue_id(self, client):
-        # TODO(jeremieb): remove this test once there is no empty
-        # string stored as a venueId
-        redactor = educational_factories.EducationalRedactorFactory()
-        stock = educational_factories.CollectiveStockFactory(
-            collectiveOffer__locationType=models.CollectiveLocationType.TO_BE_DEFINED,
-        )
-
-        eac_client = client.with_adage_token(email=redactor.email, uai="1234UAI")
-        response = eac_client.get(f"/adage-iframe/collective/offers/{stock.collectiveOfferId}")
-        assert response.status_code == 200
-
     def test_non_redactor_is_ok(self, eac_client):
         """Ensure that an authenticated user that is a not an
         educational redactor can still fetch offers informations.
