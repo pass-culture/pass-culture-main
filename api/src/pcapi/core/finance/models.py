@@ -577,8 +577,8 @@ class Pricing(PcObject, Model):
 class PricingLine(PcObject, Model):
     __tablename__ = "pricing_line"
     pricingId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=True
-    )  # FIXME (vroullier-pass, 2025-09-24) set non nullable
+        sa.BigInteger, sa.ForeignKey("pricing.id"), index=True, nullable=False
+    )
     pricing: sa_orm.Mapped[Pricing | None] = sa_orm.relationship(
         "Pricing", foreign_keys=[pricingId], back_populates="lines"
     )
