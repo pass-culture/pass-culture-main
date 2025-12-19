@@ -1,6 +1,8 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
+import type { SWRResponse } from 'swr'
+import { vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
 import { Target } from '@/apiClient/v1'
@@ -9,10 +11,12 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { Notification } from '@/components/Notification/Notification'
+import { DEFAULT_ADDRESS_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 
 import { Activity } from '../Activity'
 
@@ -22,7 +26,10 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
+const renderActivityScreen = (
+  contextValue: SignupJourneyContextValues,
+  features: string[] = []
+) => {
   return renderWithProviders(
     <>
       <SignupJourneyContext.Provider value={contextValue}>
@@ -46,6 +53,7 @@ const renderActivityScreen = (contextValue: SignupJourneyContextValues) => {
     {
       user: sharedCurrentUserFactory(),
       initialRouterEntries: ['/inscription/structure/activite'],
+      features,
     }
   )
 }
@@ -210,5 +218,72 @@ describe('screens:SignupJourney::Activity', () => {
     )
 
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
+  })
+
+  describe('WITH WIP_VENUE_CULTURAL_DOMAINS FF', () => {
+    beforeEach(() => {
+      contextValue.offerer = {
+        name: 'test name',
+        siret: '1234567893333',
+        hasVenueWithSiret: false,
+        isDiffusible: true,
+        ...DEFAULT_ADDRESS_FORM_VALUES,
+      }
+      vi.spyOn(
+        useEducationalDomains,
+        'useEducationalDomains'
+      ).mockImplementation(() => {
+        return {
+          isLoading: false,
+          data: [
+            {
+              id: 1,
+              name: 'domaine 1',
+              nationalPrograms: [],
+            },
+            {
+              id: 2,
+              name: 'domaine b',
+              nationalPrograms: [],
+            },
+            {
+              id: 3,
+              name: 'domaine III',
+              nationalPrograms: [],
+            },
+          ],
+        } as SWRResponse
+      })
+    })
+
+    it('should render component with cultural domains required', async () => {
+      if (contextValue.offerer) {
+        contextValue.offerer.isOpenToPublic = 'false'
+      }
+      renderActivityScreen(contextValue, ['WIP_VENUE_CULTURAL_DOMAINS'])
+      expect(
+        await screen.findByRole('heading', {
+          level: 2,
+          name: 'Et enfin, définissez l’activité de votre structure',
+        })
+      ).toBeInTheDocument()
+      expect(screen.getByText(/Domaine\(s\) d’activité \*/)).toBeInTheDocument()
+    })
+
+    it('should render component with cultural domains NOT required', async () => {
+      if (contextValue.offerer) {
+        contextValue.offerer.isOpenToPublic = 'true'
+      }
+      renderActivityScreen(contextValue, ['WIP_VENUE_CULTURAL_DOMAINS'])
+      expect(
+        await screen.findByRole('heading', {
+          level: 2,
+          name: 'Et enfin, définissez l’activité de votre structure',
+        })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByText(/Domaine\(s\) d’activité \*/)
+      ).not.toBeInTheDocument()
+    })
   })
 })
