@@ -10,6 +10,10 @@ from pcapi.models import offer_mixin
 pytestmark = pytest.mark.usefixtures("db_session")
 
 
+def show_names(items):
+    return [i.name for i in items]
+
+
 def test_fetch_only_relevant_domains():
     music = EducationalDomainFactory(name="MUSIC")
     theater = EducationalDomainFactory(name="THEATER")
@@ -78,7 +82,7 @@ def test_fetch_only_relevant_domains():
 
     main(not_dry=True)
 
-    assert relevant_venue.collectiveDomains == [music, theater, circus]
-    assert non_relevant_venue.collectiveDomains == []
-    assert unfitoffers_venue.collectiveDomains == [crochet]
-    assert non_relevant_venue_bis.collectiveDomains == [music]
+    assert show_names(relevant_venue.collectiveDomains) == show_names([music, theater, circus])
+    assert show_names(non_relevant_venue.collectiveDomains) == show_names([])
+    assert show_names(unfitoffers_venue.collectiveDomains) == show_names([crochet])
+    assert show_names(non_relevant_venue_bis.collectiveDomains) == show_names([music])

@@ -13,10 +13,10 @@ gh workflow run on_dispatch_pcapi_console_job.yml \
 """
 
 import argparse
-import logging
 import itertools
+import logging
 
-import sqlalchemy.orm as sa_orm
+import sqlalchemy as sa
 
 from pcapi.app import app
 from pcapi.core.educational import models as educationnal_models
@@ -31,71 +31,66 @@ logger = logging.getLogger(__name__)
 
 
 @atomic()
-def _process_venues(venues: list[offerer_models.Venue], not_dry: bool) -> None:
-    for venue in venues:
-        domains = (
+def _process_venues(venue_ids: list[int], not_dry: bool) -> None:
+    for venue_id in venue_ids:
+        collective_offer_domains = set(
             db.session.query(educationnal_models.EducationalDomain)
-            .options(
-                sa_orm.joinedload(educationnal_models.EducationalDomain.collectiveOffers).load_only(
-                    educationnal_models.CollectiveOffer.venueId, educationnal_models.CollectiveOffer.validation
-                )
+            .join(educationnal_models.EducationalDomain.collectiveOffers)
+            .filter(
+                educationnal_models.CollectiveOffer.venueId == venue_id,
+                educationnal_models.CollectiveOffer.validation.not_in(
+                    [
+                        offer_mixin.OfferValidationStatus.REJECTED,
+                        offer_mixin.OfferValidationStatus.PENDING,
+                        offer_mixin.OfferValidationStatus.DRAFT,
+                    ]
+                ),
             )
-            .options(
-                sa_orm.joinedload(educationnal_models.EducationalDomain.collectiveOfferTemplates).load_only(
-                    educationnal_models.CollectiveOfferTemplate.venueId,
-                    educationnal_models.CollectiveOfferTemplate.validation,
-                )
-            )
-            .where(
-                (
-                    educationnal_models.EducationalDomain.collectiveOffers.any(
-                        educationnal_models.CollectiveOffer.venueId == venue.id
-                    ).where(
-                        (educationnal_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.REJECTED)
-                        & (educationnal_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.PENDING)
-                        & (educationnal_models.CollectiveOffer.validation != offer_mixin.OfferValidationStatus.DRAFT)
-                    )
-                )
-                | (
-                    educationnal_models.EducationalDomain.collectiveOfferTemplates.any(
-                        educationnal_models.CollectiveOfferTemplate.venueId == venue.id
-                    ).where(
-                        (
-                            educationnal_models.CollectiveOfferTemplate.validation
-                            != offer_mixin.OfferValidationStatus.REJECTED
-                        )
-                        & (
-                            educationnal_models.CollectiveOfferTemplate.validation
-                            != offer_mixin.OfferValidationStatus.PENDING
-                        )
-                        & (
-                            educationnal_models.CollectiveOfferTemplate.validation
-                            != offer_mixin.OfferValidationStatus.DRAFT
-                        )
-                    )
-                )
-            )
+            .distinct()
+            .all()
         )
-        if domains.count():
-            logger.warning("Setting venue id %s with domains %s", venue.id, [domain.name for domain in domains])
-            venue.collectiveDomains = domains.all()
+        collective_offer_template_domains = set(
+            db.session.query(educationnal_models.EducationalDomain)
+            .join(educationnal_models.EducationalDomain.collectiveOfferTemplates)
+            .filter(
+                educationnal_models.CollectiveOfferTemplate.venueId == venue_id,
+                educationnal_models.CollectiveOfferTemplate.validation.not_in(
+                    [
+                        offer_mixin.OfferValidationStatus.REJECTED,
+                        offer_mixin.OfferValidationStatus.PENDING,
+                        offer_mixin.OfferValidationStatus.DRAFT,
+                    ]
+                ),
+            )
+            .distinct()
+            .all()
+        )
+        domains = collective_offer_domains | collective_offer_template_domains
+        if len(domains):
+            logger.warning("Setting venue id %s with domains %s", venue_id, [domain.name for domain in domains])
+            db.session.execute(
+                sa.insert(educationnal_models.EducationalDomainVenue),
+                [{"educationalDomainId": domain.id, "venueId": venue_id} for domain in domains],
+            )
 
     if not not_dry:
         mark_transaction_as_invalid()
 
 
 def main(not_dry: bool) -> None:
-    venues = (
-        db.session.query(offerer_models.Venue)
+    venue_ids = [
+        venue_id
+        for (venue_id,) in db.session.query(offerer_models.Venue)
         .filter(
             offerer_models.Venue.isOpenToPublic.is_(False),
             offerer_models.Venue.collectiveDomains == None,
         )
-        .options(sa_orm.load_only(offerer_models.Venue.id))
-    ).all()
-    logger.info("Found %s venues to process", len(venues))
-    for batch in list(itertools.batched(venues, 100)):
-        _process_venues(batch, not_dry)
+        .with_entities(offerer_models.Venue.id)
+        .all()
+    ]
+    logger.info("Found %s venues to process", len(venue_ids))
+    for batched_venues_ids in list(itertools.batched(venue_ids, 100)):
+        _process_venues(batched_venues_ids, not_dry)
 
 
 if __name__ == "__main__":
