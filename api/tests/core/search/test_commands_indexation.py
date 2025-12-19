@@ -129,16 +129,16 @@ def test_partially_index_collective_offer_templates(app):
 def test_partially_index_venues(app):
     _not_indexable_venue = offerers_factories.VenueFactory(isPermanent=False)
     indexable_venue1 = offerers_factories.VenueFactory(isPermanent=True)
-    offers_factories.OfferFactory(venue=indexable_venue1)
+    offers_factories.EventStockFactory(offer__venue=indexable_venue1)
     _indexable_venue2 = offerers_factories.VenueFactory(isPermanent=True)
-    offers_factories.OfferFactory(venue=_indexable_venue2)
+    offers_factories.EventStockFactory(offer__venue=_indexable_venue2)
     _indexable_venue3 = offerers_factories.VenueFactory(isPermanent=True)
-    offers_factories.OfferFactory(venue=_indexable_venue3)
+    offers_factories.EventStockFactory(offer__venue=_indexable_venue3)
 
     expected_to_be_reindexed = {
         indexable_venue1.id,
         # `get_eligible_for_search_venues()` returns at most
-        # max-venues (here, 2), and only then filter ou non-eligible
+        # max-venues (here, 2), and only then filter on non-eligible
         # venues, which are _not_indexable_venue and indexable_venue1.
         # Only the latter is indexed.
     }
@@ -157,9 +157,9 @@ def test_partially_index_venues(app):
 @pytest.mark.usefixtures("clean_database")
 def test_partially_index_venues_removes_non_eligible_venues(app):
     future_not_indexable_venue = offerers_factories.VenueFactory(isOpenToPublic=True)
-    offers_factories.OfferFactory(venue=future_not_indexable_venue)
+    offers_factories.EventStockFactory(offer__venue=future_not_indexable_venue)
     indexable_venue1 = offerers_factories.VenueFactory(isOpenToPublic=True)
-    offers_factories.OfferFactory(venue=indexable_venue1)
+    offers_factories.EventStockFactory(offer__venue=indexable_venue1)
 
     expected_to_be_reindexed = {
         future_not_indexable_venue.id,

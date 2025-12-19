@@ -120,11 +120,11 @@ class VenueIsEligibleForSearchTest:
             isPermanent=permanent,
             venueTypeCode=venue_type_code,
         )
-        offers_factories.OfferFactory(venue=venue)
+        offers_factories.EventStockFactory(offer__venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
     @pytest.mark.parametrize(
-        "open_to_public,permanent,validation_status,active,venue_type_code,has_indiv_offer,is_eligible_for_search",
+        "open_to_public,permanent,validation_status,active,venue_type_code,has_bookable_offer,is_eligible_for_search",
         [
             (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, True, True),
             (True, True, ValidationStatus.VALIDATED, True, offerers_schemas.VenueTypeCode.BOOKSTORE, False, False),
@@ -144,7 +144,7 @@ class VenueIsEligibleForSearchTest:
         validation_status,
         active,
         venue_type_code,
-        has_indiv_offer,
+        has_bookable_offer,
         is_eligible_for_search,
     ):
         venue = factories.VenueFactory(
@@ -154,8 +154,8 @@ class VenueIsEligibleForSearchTest:
             isPermanent=permanent,
             venueTypeCode=venue_type_code,
         )
-        if has_indiv_offer:
-            offers_factories.OfferFactory(venue=venue)
+        if has_bookable_offer:
+            offers_factories.EventStockFactory(offer__venue=venue)
         assert venue.is_eligible_for_search == is_eligible_for_search
 
         def test_caledonian_venue_is_eligible_for_search(self):
@@ -177,6 +177,33 @@ class VenueHasActiveIndividualOffersTest:
         offers_factories.EventStockFactory(offer__venue=venue, offer__isActive=False)
 
         assert venue.hasActiveIndividualOffer == False
+
+
+class VenueHasAtLeastOneBookablOfferTest:
+    def test_has_at_least_one_bookable_offer(self):
+        venue = factories.VenueFactory()
+        offers_factories.ThingStockFactory(offer__venue=venue)
+        offers_factories.OfferFactory(venue=venue)
+
+        assert venue.hasAtLeastOneBookableOffer
+
+    def test_has_no_bookable_offer(self):
+        venue = factories.VenueFactory()
+
+        assert not venue.hasAtLeastOneBookableOffer
+
+    def test_has_one_expired_offer(self):
+        venue = factories.VenueFactory()
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        offers_factories.EventStockFactory(offer__venue=venue, bookingLimitDatetime=yesterday)
+
+        assert not venue.hasAtLeastOneBookableOffer
+
+    def test_has_offer_without_stock(self):
+        venue = factories.VenueFactory(isPermanent=True)
+        offers_factories.OfferFactory(venue=venue)
+
+        assert not venue.hasAtLeastOneBookableOffer
 
 
 class OffererIsTopActeurTest:

@@ -86,7 +86,7 @@ def test_artist_indexation_on_offer_cycle(app):
 
 def test_venue_indexation_cycle(app):
     venue = offerers_factories.VenueFactory(isPermanent=True)
-    offers_factories.OfferFactory(venue=venue)
+    offers_factories.EventStockFactory(offer__venue=venue)
     assert search_testing.search_store["venues"] == {}
 
     search.async_index_venue_ids([venue.id], IndexationReason.VENUE_CREATION)

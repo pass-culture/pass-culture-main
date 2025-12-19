@@ -556,12 +556,28 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         ).scalar()
 
     @property
+    def hasAtLeastOneBookableOffer(self) -> bool:
+        import pcapi.core.offers.models as offers_models
+
+        return db.session.query(
+            sa.select(1)
+            .select_from(offers_models.Offer)
+            .join(Venue, offers_models.Offer.venueId == Venue.id)
+            .join(offers_models.Stock, offers_models.Stock.offerId == offers_models.Offer.id)
+            .where(
+                Venue.id == self.id,
+                offers_models.Offer.is_released_and_bookable,
+            )
+            .exists()
+        ).scalar()
+
+    @property
     def is_eligible_for_search(self) -> bool:
         return (
             bool(self.isOpenToPublic)
             and self.managingOfferer.isActive
             and self.managingOfferer.isValidated
-            and self.hasOffers
+            and bool(self.hasAtLeastOneBookableOffer)
         )
 
     def store_departement_code(self) -> None:
