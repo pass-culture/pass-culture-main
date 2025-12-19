@@ -158,7 +158,6 @@ export const onlyMunicipality: StoryObj<typeof AddressSelect> = {
     name: 'cityName',
     label: 'Nom de la ville',
     onlyTypes: ['municipality'],
-    value: 'Noisy',
     suggestionLimit: 50,
   },
 }

@@ -1,10 +1,6 @@
 import type { SelectOption } from '@/commons/custom_types/form'
 
-export type SelectOptionNormalized = SelectOption & { normalizedLabel?: string }
-
-export const normalizeStrForAdressSearch = (str: string): string => {
-  return normalizeStrForSearch(str).replace(/[^\w ]/, '')
-}
+type SelectOptionNormalized = SelectOption & { normalizedLabel?: string }
 
 export const normalizeStrForSearch = (str: string): string => {
   return (

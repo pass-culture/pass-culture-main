@@ -12,7 +12,7 @@ export interface OptionsListProps {
   setHoveredOptionIndex: (value: number | null) => void
   listRef: Ref<HTMLUListElement>
   hoveredOptionIndex: number | null
-  selectOption: (value: string) => void
+  selectOption: (option: SelectOption) => void
 }
 
 export const OptionsList = ({
@@ -34,7 +34,7 @@ export const OptionsList = ({
     aria-label="options"
   >
     {filteredOptions.length > 0 ? (
-      filteredOptions.map(({ value, label }: SelectOption, index: number) => {
+      filteredOptions.map((option: SelectOption, index: number) => {
         const isSelected = hoveredOptionIndex === index
         return (
           // biome-ignore lint/a11y/useKeyWithClickEvents: the onKeyDown is handled in the parent component
@@ -45,20 +45,20 @@ export const OptionsList = ({
             className={
               hoveredOptionIndex === index ? styles['option-hovered'] : ''
             }
-            data-value={value}
+            data-value={option.value}
             data-selected={isSelected}
-            id={`option-display-${value}`}
-            key={`option-display-${value}`}
+            id={`option-${fieldName}-${index}`}
+            key={option.value}
             onMouseEnter={() => setHoveredOptionIndex(index)}
             onFocus={() => setHoveredOptionIndex(index)}
             onClick={() => {
-              selectOption(String(value))
+              selectOption(option)
             }}
             // biome-ignore lint/a11y/noNoninteractiveElementToInteractiveRole: Seems to be the only solution for combobox pattern
             role="option"
             tabIndex={-1}
           >
-            <span className={cx(styles['options-item'])}>{label}</span>
+            <span className={cx(styles['options-item'])}>{option.label}</span>
           </li>
         )
       })

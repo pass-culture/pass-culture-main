@@ -179,13 +179,6 @@ describe('CollectiveOfferVisibility', () => {
     expect(screen.getByText(/Enregistrer et continuer/)).toBeDisabled()
   })
 
-  it('should disable submit button if the user did not select an institution', () => {
-    renderVisibilityStep(props)
-    expect(
-      screen.getByRole('button', { name: /Enregistrer et continuer/ })
-    ).toBeDisabled()
-  })
-
   it('should display details on selected institution', async () => {
     renderVisibilityStep(props)
 
@@ -481,7 +474,7 @@ describe('CollectiveOfferVisibility', () => {
         /Nom de l’établissement scolaire ou code UAI/
       )
 
-      await userEvent.type(institutionInput, 'Invalid Teacher')
+      await userEvent.type(institutionInput, 'Invalid Institution')
 
       await userEvent.click(
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
@@ -491,7 +484,7 @@ describe('CollectiveOfferVisibility', () => {
       ).not.toHaveBeenCalled()
 
       expect(
-        screen.queryByText(INSTITUTION_GENERIC_ERROR_MESSAGE)
+        await screen.findByText(INSTITUTION_GENERIC_ERROR_MESSAGE)
       ).toBeInTheDocument()
     })
 
@@ -519,7 +512,7 @@ describe('CollectiveOfferVisibility', () => {
       ).not.toHaveBeenCalled()
 
       expect(
-        screen.queryByText(REDACTOR_GENERIC_ERROR_MESSAGE)
+        await screen.findByText(REDACTOR_GENERIC_ERROR_MESSAGE)
       ).toBeInTheDocument()
     })
 

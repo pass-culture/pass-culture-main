@@ -221,6 +221,18 @@ describe('SelectAutocomplete', () => {
     })
   })
 
+  it('should call "onSearch" when user types in the field', async () => {
+    const onSearch = vi.fn()
+
+    render(<SelectAutocomplete {...props} onSearch={onSearch} />)
+
+    const user = userEvent.setup()
+    const input = screen.getByRole('combobox')
+    await user.type(input, 'Paris')
+
+    expect(onSearch).toHaveBeenCalledWith('Paris')
+  })
+
   it('should call "onBlur" with an empty value when user types an invalid value', async () => {
     const onBlur = vi.fn()
     const onChange = vi.fn()
@@ -238,7 +250,6 @@ describe('SelectAutocomplete', () => {
       type: 'blur',
       target: { name: 'departement', value: '' },
     })
-    expect(onChange).toHaveBeenCalled()
   })
 
   it('should not clear the input on focus if "resetOnOpen" is false', async () => {

@@ -78,12 +78,15 @@ describe('<OptionsList />', () => {
     expect(DEFAULT_PROPS.setHoveredOptionIndex).toHaveBeenCalledWith(3)
   })
 
-  it('should call selectOption with string value on click', async () => {
+  it('should call selectOption with options on click', async () => {
     const user = userEvent.setup()
     renderOptionsList()
 
     const optionSpan = screen.getByText('Hautes-Alpes').closest('span')
     await user.click(optionSpan!)
-    expect(DEFAULT_PROPS.selectOption).toHaveBeenCalledWith('05')
+    expect(DEFAULT_PROPS.selectOption).toHaveBeenCalledWith({
+      value: '05',
+      label: 'Hautes-Alpes',
+    })
   })
 })
