@@ -1,9 +1,9 @@
 import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { unhumanizeRidet, unhumanizeSiret } from '@/commons/utils/siren'
+import type { PartialBy } from '@/commons/utils/types'
 
 import type {
-  PartialBy,
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../types'

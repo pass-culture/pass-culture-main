@@ -8,9 +8,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useNotification } from '@/commons/hooks/useNotification'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import type { PartialBy } from '@/commons/utils/types'
 
 import type {
-  PartialBy,
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../types'

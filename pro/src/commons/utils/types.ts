@@ -30,6 +30,11 @@ export type PartialExcept<T extends AnyObject, K extends keyof T> = Partial<
 > &
   Pick<T, K>
 
+export type PartialBy<T extends AnyObject, K extends keyof T> = Partial<
+  Pick<T, K>
+> &
+  Omit<T, K>
+
 export const hasProperty = <T extends string>(
   element: unknown,
   property: T
