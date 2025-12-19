@@ -157,3 +157,9 @@ class SubmitReviewRequestModel(HttpBodyModel):
     offerer_id: int
     location: str
     page_title: str
+
+
+class ProAnonymizationEligibilityResponseModel(HttpBodyModel):
+    is_only_pro: bool
+    has_suspended_offerer: bool
+    is_sole_user_with_ongoing_activities: bool
