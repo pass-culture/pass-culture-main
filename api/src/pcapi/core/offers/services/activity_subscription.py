@@ -7,5 +7,5 @@ from .activity import ActivityBaseModel
 
 
 class AboSpectacleModel(ActivityBaseModel):
-    subcategoryId: Literal[subcategories.ABO_SPECTACLE.id]
+    subcategory_id: Literal[subcategories.ABO_SPECTACLE.id]
     extra_data: shared.ShowExtraData

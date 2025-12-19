@@ -10,4 +10,4 @@ from .activity import ActivityBaseModel
 # NOTICE(jbaudet - 12/2025): can be an event
 class LivestreamEvenementModel(ActivityBaseModel):
     url: HttpUrl
-    subcategoryId: Literal[subcategories.LIVESTREAM_EVENEMENT.id]
+    subcategory_id: Literal[subcategories.LIVESTREAM_EVENEMENT.id]

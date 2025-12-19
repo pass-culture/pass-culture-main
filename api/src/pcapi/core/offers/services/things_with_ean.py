@@ -37,14 +37,14 @@ class ThingsWithEan(ThingsBaseModel):
 
 
 class LivrePapierModel(ThingsWithEan):
-    subcategoryId: Literal[subcategories.LIVRE_PAPIER.id]
+    subcategory_id: Literal[subcategories.LIVRE_PAPIER.id]
 
 
 class VinyleModel(ThingsWithEan):
-    subcategoryId: Literal[subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id]
+    subcategory_id: Literal[subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id]
 
 
 class CDModel(ThingsWithEan):
-    subcategoryId: Literal[subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id]
+    subcategory_id: Literal[subcategories.SUPPORT_PHYSIQUE_MUSIQUE_CD.id]
     product: Product
     venue: Annotated[Venue, AfterValidator(is_record_store)]

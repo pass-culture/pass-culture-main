@@ -1,7 +1,9 @@
-import pydantic as pydantic_v2
 
-from .shared import Base
+from pydantic import EmailStr
+
+from . import shared
 
 
-class ActivityBaseModel(Base):
-    model_config = pydantic_v2.ConfigDict(extra="forbid")
+class ActivityBaseModel(shared.Base):
+    # optional for most of subcategories, but not these
+    booking_email: EmailStr

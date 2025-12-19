@@ -14,8 +14,8 @@ class DigitalShowModel(DigitalBaseModel):
 
 
 class SpectacleEnregistreModel(DigitalShowModel):
-    subcategoryId: Literal[subcategories.SPECTACLE_ENREGISTRE.id]
+    subcategory_id: Literal[subcategories.SPECTACLE_ENREGISTRE.id]
 
 
 class SpectacleVenteDistanceModel(DigitalShowModel):
-    subcategoryId: Literal[subcategories.SPECTACLE_VENTE_DISTANCE.id]
+    subcategory_id: Literal[subcategories.SPECTACLE_VENTE_DISTANCE.id]

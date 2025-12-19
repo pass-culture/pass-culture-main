@@ -6,60 +6,60 @@ from .things import ThingsBaseModel
 
 
 class AboBibliothequeModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.ABO_BIBLIOTHEQUE.id]
+    subcategory_id: Literal[subcategories.ABO_BIBLIOTHEQUE.id]
 
 
 class AboConcertModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.ABO_CONCERT.id]
+    subcategory_id: Literal[subcategories.ABO_CONCERT.id]
 
 
 class AboMediathequeModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.ABO_MEDIATHEQUE.id]
+    subcategory_id: Literal[subcategories.ABO_MEDIATHEQUE.id]
 
 
 class AboPratiqueArtModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.ABO_PRATIQUE_ART.id]
+    subcategory_id: Literal[subcategories.ABO_PRATIQUE_ART.id]
 
 
 class AchatInstrumentModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.ACHAT_INSTRUMENT.id]
+    subcategory_id: Literal[subcategories.ACHAT_INSTRUMENT.id]
 
 
 class CarteCineIllimiteModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.CARTE_CINE_ILLIMITE.id]
+    subcategory_id: Literal[subcategories.CARTE_CINE_ILLIMITE.id]
 
 
 class CarteCineUultiseancesModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.CARTE_CINE_MULTISEANCES.id]
+    subcategory_id: Literal[subcategories.CARTE_CINE_MULTISEANCES.id]
 
 
 class CarteJeunesModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.CARTE_JEUNES.id]
+    subcategory_id: Literal[subcategories.CARTE_JEUNES.id]
 
 
 class CarteMuseeModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.CARTE_MUSEE.id]
+    subcategory_id: Literal[subcategories.CARTE_MUSEE.id]
 
 
 class EscapeGameModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.ESCAPE_GAME.id]
+    subcategory_id: Literal[subcategories.ESCAPE_GAME.id]
 
 
 class LivreAudioPhysiqueModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.LIVRE_AUDIO_PHYSIQUE.id]
+    subcategory_id: Literal[subcategories.LIVRE_AUDIO_PHYSIQUE.id]
 
 
 class LocationInstrumentModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.LOCATION_INSTRUMENT.id]
+    subcategory_id: Literal[subcategories.LOCATION_INSTRUMENT.id]
 
 
 class MaterielArtCreatifModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.MATERIEL_ART_CREATIF.id]
+    subcategory_id: Literal[subcategories.MATERIEL_ART_CREATIF.id]
 
 
 class PartitionModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.PARTITION.id]
+    subcategory_id: Literal[subcategories.PARTITION.id]
 
 
 class SupportPhysiqueFilmModel(ThingsBaseModel):
-    subcategoryId: Literal[subcategories.SUPPORT_PHYSIQUE_FILM.id]
+    subcategory_id: Literal[subcategories.SUPPORT_PHYSIQUE_FILM.id]
