@@ -94,7 +94,6 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
             response = self.make_request(
                 plain_api_key, query_params={"offerId": offer_id, "firstIndex": booking_id + 1}
             )
-            print(response.json)
             assert response.status_code == 200
 
         assert response.json == {"bookings": []}

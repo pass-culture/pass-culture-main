@@ -674,8 +674,7 @@ class IsSoleUserWithOngoingActivitiesTest:
 
     def test_two_users_with_one_inactive(self):
         user_offerer = offerers_factories.UserOffererFactory()
-        second_user_offerer = offerers_factories.UserOffererFactory(offerer=user_offerer.offerer, user__isActive=False)
-        print(second_user_offerer.user.isActive)
+        offerers_factories.UserOffererFactory(offerer=user_offerer.offerer, user__isActive=False)
         offer = offers_factories.OfferFactory(
             venue__managingOfferer=user_offerer.offerer,
         )
