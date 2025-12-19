@@ -462,7 +462,7 @@ def recover_pending_ubble_applications(dry_run: bool = True) -> None:
         started_fraud_checks = 0
         pending_fraud_checks = 0
 
-        page_size = ubble_tasks.UBBLE_TASK_RATE_LIMIT * 5
+        page_size = ubble_tasks.UBBLE_TASK_RATE_LIMIT * 3
         stale_ubble_fraud_check_ids = _get_stale_fraud_checks_id_and_status(page_size)
         for fraud_check_id, fraud_check_status in stale_ubble_fraud_check_ids:
             ubble_tasks.update_ubble_workflow_task.delay(
