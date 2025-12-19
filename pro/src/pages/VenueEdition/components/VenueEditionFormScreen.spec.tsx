@@ -52,7 +52,6 @@ vi.mock('@/apiClient/api', () => ({
     postCreateVenue: vi.fn(),
     getSiretInfo: vi.fn(),
     editVenue: vi.fn(),
-    getEducationalPartners: vi.fn(() => Promise.resolve({ partners: [] })),
     getAvailableReimbursementPoints: vi.fn(() => Promise.resolve([])),
     canOffererCreateEducationalOffer: vi.fn(),
   },
