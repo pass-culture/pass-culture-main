@@ -9,83 +9,8 @@ on:
 permissions: write-all
 
 jobs:
-    pcapi-init-job:
-        name: "pcapi init job"
-        runs-on: ubuntu-22.04
-        outputs:
-            api-changed: ${{ steps.check-api-changes.outputs.any_modified }}
-            api-documentation-changed: ${{ steps.check-api-documentation-changes.outputs.any_modified }}
-            pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
-            dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
-            algolia-config-changed: ${{ steps.check-algolia-config-changes.outputs.any_modified }}
-            push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
-            checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
-            checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
-            checksum-console-tag-exists: ${{ steps.check-console-checksum-tag.outputs.tag-exists }}
-        steps:
-            - uses: actions/checkout@v6
-              with:
-                fetch-depth: 0
-                fetch-tags: false
-            - name: "Check api folder changes"
-              id: check-api-changes
-              uses: tj-actions/changed-files@v47
-              with:
-              files: |
-                api/**
-                !api/documentation/**
-                !api/src/pcapi/scripts/**/main.py
-                !api/src/pcapi/scripts/**/main.sql
-            - name: "Check api documentation folder changes"
-              id: check-api-documentation-changes
-              uses: tj-actions/changed-files@v47
-              with:
-                files: api/documentation/**
-            - name: "Check pro folder changes"
-              id: check-pro-changes
-              uses: tj-actions/changed-files@v47
-              with:
-              files: |
-                    .github/workflows/dev_on_push_workflow.yml
-                    .github/workflows/dev_on_workflow_tests_pro.yml
-                    .github/workflows/dev_on_workflow_tests_pro_e2e.yml
-                    pro/**
-            - name: "Check changes in dependencies (frontend + backend)"
-              id: check-dependencies-changes
-              uses: tj-actions/changed-files@v47
-              with:
-              files: |
-                    api/poetry.lock
-                    pro/yarn.lock
-            - name: "Check changes in Algolia configuration"
-              id: check-algolia-config-changes
-              uses: tj-actions/changed-files@v47
-              with:
-                    files: |
-                        api/src/pcapi/algolia_settings_collective_offers.json
-                        api/src/pcapi/algolia_settings_offers.json
-                        api/src/pcapi/algolia_settings_venues.json
-            - name: "Define pcapi image tags."
-              id: pcapi-tags
-              run: |
-                    DOCKER_IMAGE="${{ env.docker_registry }}/pcapi"
-                    API_CHECKSUM=`tar --sort=name --owner=0 --group=0 --mtime='UTC 2019-01-01' -cf - api | sha1sum | awk '{ print $1 }'`
-                    PUSH_TAGS="push-tags=$DOCKER_IMAGE:${{ github.sha }},$DOCKER_IMAGE:$API_CHECKSUM,$DOCKER_IMAGE:latest"
-                    API_TAG="checksum-tag=$API_CHECKSUM"
-                    echo "PUSH_TAGS=$PUSH_TAGS"
-                    echo "API_TAG=$API_TAG"
-                    echo $PUSH_TAGS >> "$GITHUB_OUTPUT"
-                    echo $API_TAG >> "$GITHUB_OUTPUT"
-            - name: "Summary"
-              run: |
-                echo "[api] folder changed : ${{ steps.check-api-changes.outputs.any_modified }}"
-                echo "[algolia] folder changed : ${{ steps.check-algolia-config-changes.outputs.any_modified }}"
-                echo "[pcapi] push-tags : ${{ steps.pcapi-tags.outputs.push-tags }}"
-                echo "[pcapi] checksum-tag : ${{ steps.pcapi-tags.outputs.checksum-tag }}"
-
     test-pro:
         name: "Pro Unit Tests"
-        needs: [pcapi-init-job]
         uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
         with:
             CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
