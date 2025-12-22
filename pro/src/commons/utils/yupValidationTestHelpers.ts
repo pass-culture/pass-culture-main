@@ -6,11 +6,10 @@ import { hasProperty } from './types'
 
 export const getYupValidationSchemaErrors = async <T extends yup.AnyObject>(
   validationSchema: yup.ObjectSchema<T>,
-  testInput: unknown,
-  context?: Record<string, unknown>
+  testInput: unknown
 ): Promise<string[]> => {
   try {
-    await validationSchema.validate(testInput, { abortEarly: false, context })
+    await validationSchema.validate(testInput, { abortEarly: false })
   } catch (error) {
     /* istanbul ignore next this condition should never been evaluated to false */
     if (error instanceof yup.ValidationError) {
