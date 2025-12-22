@@ -7,7 +7,6 @@ import typing
 import flask.wrappers
 import prometheus_flask_exporter.multiprocess
 import redis
-import sentry_sdk
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 from authlib.integrations.flask_client import OAuth
@@ -28,7 +27,6 @@ from pcapi.celery_tasks.celery import celery_init_app
 from pcapi.celery_tasks.config import CELERY_BASE_SETTINGS
 from pcapi.core import monkeypatches
 from pcapi.core.finance import utils as finance_utils
-from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.core.logging import install_logging
 from pcapi.models import db
 from pcapi.models import install_models
@@ -36,6 +34,7 @@ from pcapi.scripts.install import install_commands
 from pcapi.utils import transaction_manager
 from pcapi.utils.json_encoder import EnumJSONEncoder
 from pcapi.utils.sentry import init_sentry_sdk
+from pcapi.utils.sentry import setup_user_and_correlation_id
 
 
 URL_PREFIX_VALUES = [
@@ -118,13 +117,10 @@ def setup_atomic() -> None:
 # called in reverse order of registration.
 @app.before_request
 def setup_sentry_before_request() -> None:
+    user_id: int | None = None
     if current_user and current_user.is_authenticated:
-        sentry_sdk.set_user(
-            {
-                "id": current_user.id,
-            }
-        )
-    sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
+        user_id = current_user.id
+    setup_user_and_correlation_id(user_id)
     g.request_start = time.perf_counter()
     g.public_api_log_request_details_extra = {}
 

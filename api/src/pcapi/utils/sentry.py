@@ -15,6 +15,7 @@ import pcapi.routes.backoffice.blueprint as backoffice_blueprint
 import pcapi.routes.pro.blueprint as pro_blueprint
 import pcapi.tasks.decorator as tasks_decorator
 from pcapi import settings
+from pcapi.core.logging import get_or_set_correlation_id
 from pcapi.routes import UrlPrefix
 from pcapi.utils.health_checker import read_version_from_file
 
@@ -191,3 +192,9 @@ def get_custom_fingerprint(hint: dict[str, typing.Any]) -> str | None:
 
 def _is_flask_shell_event() -> bool:
     return bool(len(sys.argv) >= 2 and "flask" in sys.argv[0] and sys.argv[1] == "shell")
+
+
+def setup_user_and_correlation_id(user_id: int | None) -> None:
+    if user_id:
+        sentry_sdk.set_user({"id": user_id})
+    sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
