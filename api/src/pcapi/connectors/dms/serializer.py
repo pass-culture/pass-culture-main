@@ -253,7 +253,7 @@ class ApplicationDetail(BaseModel):
             and obj["last_pending_correction_date"]
         ):
             to_representation["status"] = finance_models.BankAccountApplicationStatus.WITH_PENDING_CORRECTIONS
-        if to_representation["procedure_version"] == 5:
+        if to_representation["procedure_version"] in (5, 988):
             to_representation["siret"] = obj["siret"]
             to_representation["siren"] = to_representation["siret"][:9]
             to_representation["label"] = obj["label"]
