@@ -1,27 +1,17 @@
+import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
+import {
+  _OnboardingActivityMappings,
+  type OnboardingActivityType,
+} from '@/commons/mappings/OnboardingActivity'
 import { emailSchema } from '@/commons/utils/isValidEmail'
+
+import type { VenueEditionFormValues } from './types'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
-
-// biome-ignore lint/suspicious/noExplicitAny: Debt
-const accessibilityTestAndShape = (schema: any) => {
-  return schema
-    .test({
-      name: 'is-one-true',
-      message: 'Veuillez sélectionner au moins un critère d’accessibilité',
-      test: isOneTrue,
-    })
-    .shape({
-      mental: yup.boolean(),
-      audio: yup.boolean(),
-      visual: yup.boolean(),
-      motor: yup.boolean(),
-      none: yup.boolean(),
-    })
-}
 
 const openingHoursDaySchema = yup
   .array()
@@ -80,13 +70,33 @@ export const getValidationSchema = ({
   isVenueActivityFeatureActive,
 }: {
   isVenueActivityFeatureActive: boolean
-}) => {
+}): ObjectSchema<VenueEditionFormValues> => {
+  const activityTypeValues: OnboardingActivityType[] = Object.keys(
+    _OnboardingActivityMappings
+  ).map((v) => v as OnboardingActivityType)
+
   return yup.object().shape({
-    accessibility: yup.object().when('isOpenToPublic', {
-      is: 'true',
-      then: (schema) => accessibilityTestAndShape(schema),
-      otherwise: (schema) => schema,
-    }),
+    description: yup.string(),
+    isAccessibilityAppliedOnAllOffers: yup.boolean().default(true).defined(),
+    accessibility: yup
+      .object()
+      .when('isOpenToPublic', {
+        is: 'true',
+        then: (schema) =>
+          schema.test({
+            name: 'is-one-true',
+            message:
+              'Veuillez sélectionner au moins un critère d’accessibilité',
+            test: isOneTrue,
+          }),
+      })
+      .shape({
+        mental: yup.boolean().required(),
+        audio: yup.boolean().required(),
+        visual: yup.boolean().required(),
+        motor: yup.boolean().required(),
+        none: yup.boolean().required(),
+      }),
     email: yup.string().nullable().test(emailSchema),
     phoneNumber: yup
       .string()
@@ -115,16 +125,13 @@ export const getValidationSchema = ({
         is: 'true',
         then: (schema) => schema.shape(openingHoursSchemaShape),
       }),
-    ...(isVenueActivityFeatureActive
-      ? {
-          activity: yup
-            .string()
-            .nullable()
-            .when('isOpenToPublic', {
-              is: 'true',
-              then: (schema) => schema.required('Veuillez renseigner ce champ'),
-            }),
-        }
-      : {}),
+    activity: yup
+      .mixed<OnboardingActivityType>()
+      .oneOf(activityTypeValues)
+      .when('isOpenToPublic', {
+        is: (open: string) => open === 'true' && isVenueActivityFeatureActive,
+        then: (schema) => schema.required('Veuillez renseigner ce champ'),
+        otherwise: (schema) => schema.optional(),
+      }),
   })
 }

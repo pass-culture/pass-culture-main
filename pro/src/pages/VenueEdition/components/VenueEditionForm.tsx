@@ -61,7 +61,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       getValidationSchema({
         isVenueActivityFeatureActive,
         // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation scheam
-      }) as any
+      })
     ),
     mode: 'onBlur',
   })
