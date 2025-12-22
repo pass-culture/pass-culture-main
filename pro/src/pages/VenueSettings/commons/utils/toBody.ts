@@ -3,13 +3,11 @@ import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { unhumanizeRidet, unhumanizeSiret } from '@/commons/utils/siren'
 import type { PartialBy } from '@/commons/utils/types'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../types'
+import type { VenueSettingsFormContext } from '../types'
+import type { VenueSettingsFormValuesType } from '../validationSchema'
 
 export const toBody = (
-  formValues: PartialBy<VenueSettingsFormValues, 'venueType'>,
+  formValues: PartialBy<VenueSettingsFormValuesType, 'venueType'>,
   formContext: VenueSettingsFormContext
 ): EditVenueBodyModel => {
   const payload: EditVenueBodyModel = {

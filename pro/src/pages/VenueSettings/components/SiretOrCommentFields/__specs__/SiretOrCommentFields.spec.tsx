@@ -34,6 +34,7 @@ const defaultFormContext: SiretOrCommentFieldsProps['formContext'] = {
   withSiret: true,
   isVenueVirtual: false,
   siren: '123456789',
+  isVenueActivityFeatureActive: false,
 }
 
 const defaultInitialValues = {

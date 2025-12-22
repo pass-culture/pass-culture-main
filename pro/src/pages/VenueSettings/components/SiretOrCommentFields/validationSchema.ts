@@ -14,6 +14,7 @@ import type { VenueSettingsFormContext } from '../../commons/types'
 export const SiretOrCommentValidationSchema = yup.object().shape({
   siret: yup
     .string()
+    .defined()
     .when(['$isVenueVirtual', '$isCaledonian', '$siren'], (vals, schema) => {
       const [isVenueVirtual, isCaledonian, siren] = vals as [
         VenueSettingsFormContext['isVenueVirtual'],
@@ -57,13 +58,16 @@ export const SiretOrCommentValidationSchema = yup.object().shape({
           (siret) => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
         )
     }),
-  comment: yup.string().when(['$isVenueVirtual'], (vals, schema) => {
-    const [isVenueVirtual] = vals as [
-      VenueSettingsFormContext['isVenueVirtual'],
-    ]
-    if (isVenueVirtual) {
-      return schema.required('Veuillez renseigner un commentaire')
-    }
-    return schema
-  }),
+  comment: yup
+    .string()
+    .defined()
+    .when(['$isVenueVirtual'], (vals, schema) => {
+      const [isVenueVirtual] = vals as [
+        VenueSettingsFormContext['isVenueVirtual'],
+      ]
+      if (isVenueVirtual) {
+        return schema.required('Veuillez renseigner un commentaire')
+      }
+      return schema
+    }),
 })

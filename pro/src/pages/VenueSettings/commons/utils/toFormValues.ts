@@ -1,13 +1,13 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { humanizeSiret, unhumanizeRidet } from '@/commons/utils/siren'
 
-import type { VenueSettingsFormValues } from '../types'
+import type { VenueSettingsFormValuesType } from '../validationSchema'
 
 export const toFormValues = ({
   venue,
 }: {
   venue: GetVenueResponseModel
-}): VenueSettingsFormValues => {
+}): VenueSettingsFormValuesType => {
   const autoCompleteStreet = venue.location?.street
     ? `${venue.location.street} `
     : ''
@@ -23,7 +23,7 @@ export const toFormValues = ({
     latitude: String(venue.location?.latitude) || '',
     longitude: String(venue.location?.longitude) || '',
     banId: venue.location?.banId || null,
-    manuallySetAddress: venue.location?.isManualEdition,
+    manuallySetAddress: venue.location?.isManualEdition ?? false,
     comment: venue.comment || '',
     bookingEmail: venue.bookingEmail || '',
     name: venue.name,

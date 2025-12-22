@@ -1,13 +1,11 @@
 import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../../types'
+import type { VenueSettingsFormContext } from '../../types'
+import type { VenueSettingsFormValuesType } from '../../validationSchema'
 import { toBody } from '../toBody'
 
 describe('toBody', () => {
-  let formValues: VenueSettingsFormValues
+  let formValues: VenueSettingsFormValuesType
   let formContext: VenueSettingsFormContext
   let payload: EditVenueBodyModel
 
@@ -39,6 +37,7 @@ describe('toBody', () => {
       siren: '418166096',
       isVenueVirtual: false,
       withSiret: true,
+      isVenueActivityFeatureActive: false,
     }
 
     payload = {

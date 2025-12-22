@@ -12,10 +12,8 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../../commons/types'
+import type { VenueSettingsFormContext } from '../../commons/types'
+import type { VenueSettingsFormValuesType } from '../../commons/validationSchema'
 
 export type SiretOrCommentFieldsProps = {
   setIsFieldNameFrozen?: (isNameFrozen: boolean) => void
@@ -31,7 +29,7 @@ export const SiretOrCommentFields = ({
     setError,
     register,
     formState: { errors },
-  } = useFormContext<VenueSettingsFormValues>()
+  } = useFormContext<VenueSettingsFormValuesType>()
 
   const hasComment = !formContext.withSiret
   const hasRidet = formContext.isCaledonian

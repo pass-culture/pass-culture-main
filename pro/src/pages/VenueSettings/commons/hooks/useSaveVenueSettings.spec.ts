@@ -14,11 +14,9 @@ import * as useNotification from '@/commons/hooks/useNotification'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../types'
+import type { VenueSettingsFormContext } from '../types'
 import { saveVenueSettings } from '../utils/saveVenueSettings'
+import type { VenueSettingsFormValuesType } from '../validationSchema'
 import { useSaveVenueSettings } from './useSaveVenueSettings'
 
 vi.mock('react-router', async () => {
@@ -35,7 +33,7 @@ vi.mock('../utils/saveVenueSettings', () => ({
   saveVenueSettings: vi.fn(() => Promise.resolve()),
 }))
 
-const defaultFormValues: VenueSettingsFormValues = {
+const defaultFormValues: VenueSettingsFormValuesType = {
   bookingEmail: 'contact@lieuexemple.com',
   comment: '',
   name: '',
@@ -63,6 +61,7 @@ const defaultFormContext: VenueSettingsFormContext = {
   withSiret: true,
   isVenueVirtual: false,
   siren: '12345678901234',
+  isVenueActivityFeatureActive: false,
 }
 
 const renderUseSaveVenueSettings = (params: {
@@ -81,7 +80,7 @@ const renderUseSaveVenueSettings = (params: {
 
   return renderHook(
     ({ venue }) => {
-      const form = useForm<VenueSettingsFormValues>({
+      const form = useForm<VenueSettingsFormValuesType>({
         context: formContext,
         defaultValues: formValues,
       })

@@ -16,11 +16,11 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { useSaveVenueSettings } from '../commons/hooks/useSaveVenueSettings'
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../commons/types'
-import { getVenueSettingsValidationSchema } from '../commons/validationSchema'
+import type { VenueSettingsFormContext } from '../commons/types'
+import {
+  type VenueSettingsFormValuesType,
+  venueSettingsValidationSchema,
+} from '../commons/validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 
@@ -46,21 +46,19 @@ export const VenueSettingsScreen = ({
     isVenueVirtual: venue.isVirtual,
     siren: offerer.siren,
     withSiret: Boolean(venue.siret),
+    isVenueActivityFeatureActive,
   }
 
-  const form = useForm<VenueSettingsFormValues>({
+  const form = useForm({
     context: formContext,
-    defaultValues: toFormValues({ venue }),
-    resolver: yupResolver(
-      // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation schema
-      getVenueSettingsValidationSchema({ isVenueActivityFeatureActive }) as any
-    ),
+    defaultValues: venueSettingsValidationSchema.cast(toFormValues({ venue })),
+    resolver: yupResolver(venueSettingsValidationSchema),
     mode: 'onBlur',
   })
 
   const { saveAndContinue } = useSaveVenueSettings({ form, venue })
 
-  const onSubmit = (formValues: VenueSettingsFormValues) => {
+  const onSubmit = (formValues: VenueSettingsFormValuesType) => {
     saveAndContinue(formValues, formContext)
   }
 

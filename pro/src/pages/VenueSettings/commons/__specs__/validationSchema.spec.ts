@@ -1,11 +1,11 @@
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { yup } from '@/commons/utils/yup'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../types'
-import { getVenueSettingsValidationSchema } from '../validationSchema'
+import type { VenueSettingsFormContext } from '../types'
+import {
+  getVenueSettingsValidationSchema,
+  type VenueSettingsFormValuesType,
+} from '../validationSchema'
 
 describe('VenueSettingsValidationSchema', () => {
   const baseContext: VenueSettingsFormContext = {
@@ -13,9 +13,10 @@ describe('VenueSettingsValidationSchema', () => {
     withSiret: true,
     siren: '123456789',
     isVenueVirtual: false,
+    isVenueActivityFeatureActive: false,
   }
 
-  const baseFormValues: VenueSettingsFormValues = {
+  const baseFormValues: VenueSettingsFormValuesType = {
     bookingEmail: 'contact@lieuexemple.com',
     comment: 'comment',
     name: 'raison',
@@ -40,7 +41,7 @@ describe('VenueSettingsValidationSchema', () => {
 
   interface Case {
     description: string
-    formValues: VenueSettingsFormValues
+    formValues: VenueSettingsFormValuesType
     context: VenueSettingsFormContext
     expectedErrors: string[]
   }

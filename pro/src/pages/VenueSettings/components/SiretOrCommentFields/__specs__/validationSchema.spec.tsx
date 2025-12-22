@@ -1,14 +1,12 @@
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { yup } from '@/commons/utils/yup'
+import type { VenueSettingsFormValuesType } from '@/pages/VenueSettings/commons/validationSchema'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../../../commons/types'
+import type { VenueSettingsFormContext } from '../../../commons/types'
 import { SiretOrCommentValidationSchema } from '../validationSchema'
 
 type SiretOrCommentFormValues = Pick<
-  VenueSettingsFormValues,
+  VenueSettingsFormValuesType,
   'siret' | 'comment'
 >
 
@@ -18,6 +16,7 @@ describe('SiretOrCommentValidationSchema', () => {
     withSiret: true,
     siren: '123456789',
     isVenueVirtual: false,
+    isVenueActivityFeatureActive: false,
   }
 
   const baseFormValues: SiretOrCommentFormValues = {

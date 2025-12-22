@@ -81,7 +81,7 @@ describe('toFormValues', () => {
     expect(formValues.coords).toEqual('undefined, undefined')
     expect(formValues.latitude).toEqual('undefined')
     expect(formValues.longitude).toEqual('undefined')
-    expect(formValues.manuallySetAddress).toBeUndefined()
+    expect(formValues.manuallySetAddress).toBe(false)
   })
 
   it('should return empty inseeCode if inseeCode is missing in address', () => {

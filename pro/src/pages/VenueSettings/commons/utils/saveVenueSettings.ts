@@ -5,14 +5,12 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import type { PartialBy } from '@/commons/utils/types'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../types'
+import type { VenueSettingsFormContext } from '../types'
+import type { VenueSettingsFormValuesType } from '../validationSchema'
 import { toBody } from './toBody'
 
 export const saveVenueSettings = async (
-  formValues: PartialBy<VenueSettingsFormValues, 'venueType'>,
+  formValues: PartialBy<VenueSettingsFormValuesType, 'venueType'>,
   formContext: VenueSettingsFormContext,
   { venue }: { venue: GetVenueResponseModel }
 ) => {

@@ -10,15 +10,13 @@ import { useNotification } from '@/commons/hooks/useNotification'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import type { PartialBy } from '@/commons/utils/types'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../types'
+import type { VenueSettingsFormContext } from '../types'
 import { saveVenueSettings } from '../utils/saveVenueSettings'
+import type { VenueSettingsFormValuesType } from '../validationSchema'
 
 const removeVenueTypeFieldIf =
   (condition: boolean) =>
-  (formValues: PartialBy<VenueSettingsFormValues, 'venueType'>) => {
+  (formValues: PartialBy<VenueSettingsFormValuesType, 'venueType'>) => {
     const { venueType: _, ...props } = formValues
     if (condition) {
       return props
@@ -30,7 +28,7 @@ export const useSaveVenueSettings = ({
   form,
   venue,
 }: {
-  form: UseFormReturn<VenueSettingsFormValues>
+  form: UseFormReturn<VenueSettingsFormValuesType>
   venue: GetVenueResponseModel
 }) => {
   const navigate = useNavigate()
@@ -40,7 +38,7 @@ export const useSaveVenueSettings = ({
   const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const saveAndContinue = async (
-    formValues: PartialBy<VenueSettingsFormValues, 'venueType'>,
+    formValues: PartialBy<VenueSettingsFormValuesType, 'venueType'>,
     formContext: VenueSettingsFormContext
   ) => {
     try {
@@ -80,7 +78,7 @@ export const useSaveVenueSettings = ({
         )
 
         for (const field of errorsKeys) {
-          form.setError(field as keyof VenueSettingsFormValues, {
+          form.setError(field as keyof VenueSettingsFormValuesType, {
             type: field,
             message: formErrors[field]?.toString(),
           })

@@ -21,10 +21,8 @@ import {
 } from '@/commons/utils/renderWithProviders'
 import { toFormValues } from '@/pages/VenueSettings/commons/utils/toFormValues'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../../commons/types'
+import type { VenueSettingsFormContext } from '../../commons/types'
+import type { VenueSettingsFormValuesType } from '../../commons/validationSchema'
 import {
   VenueSettingsForm,
   type VenueSettingsFormProps,
@@ -61,6 +59,7 @@ const defaultFormContext: VenueSettingsFormContext = {
   withSiret: true,
   isVenueVirtual: false,
   siren: '123456789',
+  isVenueActivityFeatureActive: false,
 }
 
 const defaultOfferer = {
@@ -98,7 +97,9 @@ const fakeOnSubmit = vi.fn()
 
 const renderVenueSettingsForm = async (
   props?: Partial<VenueSettingsFormProps>,
-  options?: RenderWithProvidersOptions
+  options: RenderWithProvidersOptions = {
+    user: sharedCurrentUserFactory(),
+  }
 ) => {
   const Wrapper = () => {
     const formContext = {
@@ -117,8 +118,9 @@ const renderVenueSettingsForm = async (
     return (
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit((formValues: VenueSettingsFormValues) =>
-            fakeOnSubmit(formValues)
+          onSubmit={form.handleSubmit(
+            (formValues: VenueSettingsFormValuesType) =>
+              fakeOnSubmit(formValues)
           )}
           noValidate
         >
@@ -132,10 +134,6 @@ const renderVenueSettingsForm = async (
         </form>
       </FormProvider>
     )
-  }
-
-  options = {
-    user: sharedCurrentUserFactory(),
   }
 
   renderWithProviders(<Wrapper />, options)
@@ -253,5 +251,23 @@ describe('VenueSettingsForm', () => {
       "Les retraits sont autorisés jusqu'à 24 heures avant l'événement."
     )
     expect(emailField).toHaveValue('contact@lieuexemple.com')
+  })
+
+  it('should not display the field "Activité principale" if FF is active', async () => {
+    await renderVenueSettingsForm(
+      {
+        formContext: {
+          ...defaultFormContext,
+          isVenueActivityFeatureActive: true,
+        },
+      },
+      { user: sharedCurrentUserFactory(), features: ['WIP_VENUE_ACTIVITY'] }
+    )
+
+    const mainActivity = screen.queryByRole('combobox', {
+      name: 'Activité principale',
+    })
+
+    expect(mainActivity).not.toBeInTheDocument()
   })
 })

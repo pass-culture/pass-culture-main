@@ -25,10 +25,8 @@ import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../commons/types'
+import type { VenueSettingsFormContext } from '../commons/types'
+import type { VenueSettingsFormValuesType } from '../commons/validationSchema'
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization/OffersSynchronization'
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
@@ -54,7 +52,7 @@ export const VenueSettingsForm = ({
     watch,
     clearErrors,
     formState: { isDirty, isSubmitting, isSubmitted, errors },
-  } = useFormContext<VenueSettingsFormValues>()
+  } = useFormContext<VenueSettingsFormValuesType>()
 
   const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 

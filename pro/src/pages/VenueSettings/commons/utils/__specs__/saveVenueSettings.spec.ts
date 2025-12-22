@@ -10,12 +10,10 @@ vi.mock('@/apiClient/api', () => ({
 
 import { api } from '@/apiClient/api'
 
-import type {
-  VenueSettingsFormContext,
-  VenueSettingsFormValues,
-} from '../../types'
+import type { VenueSettingsFormContext } from '../../types'
+import type { VenueSettingsFormValuesType } from '../../validationSchema'
 
-const defaultFormValues: VenueSettingsFormValues = {
+const defaultFormValues: VenueSettingsFormValuesType = {
   bookingEmail: 'contact@lieuexemple.com',
   comment: '',
   name: '',
@@ -43,6 +41,7 @@ const defaultFormContext: VenueSettingsFormContext = {
   withSiret: true,
   isVenueVirtual: false,
   siren: '12345678901234',
+  isVenueActivityFeatureActive: false,
 }
 
 describe('saveVenueSettings', () => {
