@@ -9,6 +9,8 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -17,6 +19,7 @@ import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
@@ -24,6 +27,7 @@ import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublic
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -43,22 +47,48 @@ interface VenueFormProps {
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
+  const isCulturalDomainsEnabled = useActiveFeature(
+    'WIP_VENUE_CULTURAL_DOMAINS'
+  )
 
   const navigate = useNavigate()
   const location = useLocation()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
+  const { data, isLoading } = useEducationalDomains()
 
   const dispatch = useAppDispatch()
 
-  const initialValues = setInitialFormValues(venue)
+  const initialValues: VenueEditionFormValues = setInitialFormValues(venue)
 
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(getValidationSchema()),
+    resolver: yupResolver(
+      getValidationSchema({
+        isCulturalDomainsEnabled: isCulturalDomainsEnabled,
+      })
+    ),
     mode: 'onBlur',
   })
+
+  const defaultCulturalDomain: Option[] | undefined =
+    data.length === 0 ||
+    !methods.formState.defaultValues ||
+    !methods.formState.defaultValues?.culturalDomains
+      ? undefined
+      : methods.formState.defaultValues.culturalDomains.map((formDefault) => {
+          const apiValue = data.find(
+            (educationalDomain) =>
+              String(educationalDomain.name) === formDefault
+          )
+          assertOrFrontendError(
+            apiValue,
+            `CulturalDomain with name ${formDefault} not found`
+          )
+          return { id: String(apiValue.id), label: apiValue.name }
+        })
 
   const resetOpeningHoursAndAccessibility = () => {
     const fieldsToReset: (keyof VenueEditionFormValues)[] = [
@@ -67,17 +97,16 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     ]
 
     for (const field of fieldsToReset) {
-      methods.setValue(field, initialValues[field])
+      methods.setValue(field, initialValues[field], { shouldDirty: false })
     }
   }
 
-  const onSubmit = async (values: VenueEditionFormValues) => {
+  const onSubmit = async () => {
     try {
       const updatedVenue = await api.editVenue(
         venue.id,
         serializeEditVenueBodyModel(
-          values,
-          initialValues,
+          methods.getValues(undefined, { dirtyFields: true }),
           !venue.siret,
           venue.openingHours !== null
         )
@@ -169,7 +198,12 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   onChange={(e) => {
                     methods.setValue(
                       'isOpenToPublic',
-                      e.target.value.toString()
+                      e.target.value.toString(),
+                      {
+                        shouldDirty:
+                          e.target.value.toString() !==
+                          methods.watch('isOpenToPublic'),
+                      }
                     )
                     if (e.target.value === 'false') {
                       resetOpeningHoursAndAccessibility()
@@ -230,6 +264,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 </>
               )}
             </FormLayout.SubSection>
+
             {methods.watch('isOpenToPublic') === 'true' && (
               <FormLayout.Section title="Activité principale">
                 <FormLayout.Row>
@@ -253,6 +288,40 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   />
                 </FormLayout.Row>
               </FormLayout.Section>
+            )}
+            {isCulturalDomainsEnabled && !isLoading && (
+              <FormLayout.Row mdSpaceAfter>
+                <MultiSelect
+                  name="culturalDomains"
+                  options={data.map((educationalDomain) => ({
+                    id: String(educationalDomain.id),
+                    label: educationalDomain.name,
+                  }))}
+                  defaultOptions={defaultCulturalDomain}
+                  error={methods.formState.errors.culturalDomains?.message}
+                  label="Domaine(s) d’activité"
+                  className={styles['cultural-domains-select']}
+                  required={methods.watch('isOpenToPublic') === 'false'}
+                  onSelectedOptionsChanged={(selectedOptions, y, z) => {
+                    methods.setValue(
+                      'culturalDomains',
+                      selectedOptions.length > 0
+                        ? selectedOptions.map((opt) => opt.label)
+                        : [],
+                      { shouldDirty: defaultCulturalDomain !== selectedOptions }
+                    )
+                  }}
+                  buttonLabel={
+                    (methods.watch('culturalDomains') ?? []).length > 0
+                      ? pluralizeFr(
+                          (methods.watch('culturalDomains') ?? []).length,
+                          'domaine sélectionné',
+                          'domaines sélectionnés'
+                        )
+                      : 'Sélectionnez un ou plusieurs domaines d’activité'
+                  }
+                />
+              </FormLayout.Row>
             )}
             <FormLayout.SubSection
               title="Contact"

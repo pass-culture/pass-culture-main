@@ -123,7 +123,9 @@ describe('VenueEditionForm validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        getValidationSchema(),
+        getValidationSchema({
+          isCulturalDomainsEnabled: false,
+        }),
         formValues
       )
       expect(errors).toEqual(expectedErrors)
@@ -131,11 +133,83 @@ describe('VenueEditionForm validationSchema', () => {
   })
 
   it('should require activity when feature flag is enabled and venue is open to public', async () => {
-    const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
-      ...defaultValues,
-      activity: null,
-    })
+    const errors = await getYupValidationSchemaErrors(
+      getValidationSchema({
+        isCulturalDomainsEnabled: false,
+      }),
+      {
+        ...defaultValues,
+        activity: null,
+      }
+    )
 
     expect(errors).toEqual(['Veuillez renseigner ce champ'])
+  })
+
+  describe('when cultural domains are required', () => {
+    cases.forEach(({ description, formValues, expectedErrors }) => {
+      it(`should validate the form for case: ${description}`, async () => {
+        const errors = await getYupValidationSchemaErrors(
+          getValidationSchema({
+            isVenueActivityFeatureActive: false,
+            isCulturalDomainsEnabled: true,
+          }),
+          { ...formValues, culturalDomains: ['test'] }
+        )
+        expect(errors).toEqual(expectedErrors)
+      })
+    })
+
+    it('should require activity when feature flag is enabled and venue is open to public', async () => {
+      const errors = await getYupValidationSchemaErrors(
+        getValidationSchema({
+          isVenueActivityFeatureActive: true,
+          isCulturalDomainsEnabled: true,
+        }),
+        {
+          ...defaultValues,
+          activity: null,
+          culturalDomains: ['string'],
+        }
+      )
+
+      expect(errors).toEqual(['Veuillez renseigner ce champ'])
+    })
+
+    it('should require domains array', async () => {
+      const errors = await getYupValidationSchemaErrors(
+        getValidationSchema({
+          isVenueActivityFeatureActive: true,
+          isCulturalDomainsEnabled: true,
+        }),
+        {
+          ...defaultValues,
+          isOpenToPublic: 'false',
+          culturalDomains: null,
+        }
+      )
+
+      expect(errors).toEqual([
+        'Veuillez sélectionner un ou plusieurs domaines d’activité',
+      ])
+    })
+
+    it('should require domains values', async () => {
+      const errors = await getYupValidationSchemaErrors(
+        getValidationSchema({
+          isVenueActivityFeatureActive: true,
+          isCulturalDomainsEnabled: true,
+        }),
+        {
+          ...defaultValues,
+          isOpenToPublic: 'false',
+          culturalDomains: [],
+        }
+      )
+
+      expect(errors).toEqual([
+        'Veuillez sélectionner un ou plusieurs domaines d’activité',
+      ])
+    })
   })
 })

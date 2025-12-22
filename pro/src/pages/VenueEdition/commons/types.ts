@@ -12,4 +12,5 @@ export interface VenueEditionFormValues {
   isOpenToPublic: string
   openingHours?: WeekdayOpeningHoursTimespans | null
   activity?: OnboardingActivityType | null
+  culturalDomains?: string[]
 }

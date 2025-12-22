@@ -1,16 +1,12 @@
-import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
+import type { VenueEditionFormValues } from '@/pages/VenueEdition/commons/types'
 
 import { serializeEditVenueBodyModel } from '../serializers'
-import { setInitialFormValues } from '../setInitialFormValues'
 
 describe('Venue edition payload serializer', () => {
   it('should return an empty payload when nothing changed', () => {
-    const initialFormValues = setInitialFormValues(defaultGetVenue)
-
     expect(
       serializeEditVenueBodyModel(
-        initialFormValues,
-        initialFormValues,
+        {} as Partial<VenueEditionFormValues>,
         true,
         false
       )
@@ -18,24 +14,16 @@ describe('Venue edition payload serializer', () => {
   })
 
   it('should serialize newly added opening hours', () => {
-    const initialFormValues = setInitialFormValues({
-      ...defaultGetVenue,
-      openingHours: null,
-    })
-    const updatedFormValues = {
-      ...initialFormValues,
-      openingHours: {
-        MONDAY: [
-          ['01:00', '09:00'],
-          ['10:00', '11:00'],
-        ],
-      },
-    }
-
     expect(
       serializeEditVenueBodyModel(
-        updatedFormValues,
-        initialFormValues,
+        {
+          openingHours: {
+            MONDAY: [
+              ['01:00', '09:00'],
+              ['10:00', '11:00'],
+            ],
+          },
+        },
         true,
         false
       )
@@ -50,24 +38,8 @@ describe('Venue edition payload serializer', () => {
   })
 
   it('should serialize cleaned opening hours when hours are removed', () => {
-    const initialFormValues = setInitialFormValues({
-      ...defaultGetVenue,
-      openingHours: {
-        MONDAY: [['08:00', '12:00']],
-      },
-    })
-    const updatedFormValues = {
-      ...initialFormValues,
-      openingHours: null,
-    }
-
     expect(
-      serializeEditVenueBodyModel(
-        updatedFormValues,
-        initialFormValues,
-        true,
-        true
-      )
+      serializeEditVenueBodyModel({ openingHours: null }, true, true)
     ).toEqual({
       openingHours: {
         MONDAY: null,
@@ -77,6 +49,35 @@ describe('Venue edition payload serializer', () => {
         FRIDAY: null,
         SATURDAY: null,
         SUNDAY: null,
+      },
+    })
+  })
+
+  it('should not serialize opening hours if undefined', () => {
+    expect(
+      serializeEditVenueBodyModel({ openingHours: undefined }, true, true)
+    ).toEqual({})
+  })
+
+  it('should not serialize contact form if no contact is set', () => {
+    expect(
+      serializeEditVenueBodyModel(
+        { email: null, phoneNumber: null, webSite: null },
+        false,
+        false
+      )
+    ).toEqual({})
+  })
+
+  it('should serialize contact form if any contact is set', () => {
+    expect(
+      serializeEditVenueBodyModel({ email: 'email' }, false, false)
+    ).toEqual({
+      contact: {
+        email: 'email',
+        phoneNumber: null,
+        socialMedias: null,
+        website: null,
       },
     })
   })

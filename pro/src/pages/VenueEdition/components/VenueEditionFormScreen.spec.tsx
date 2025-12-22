@@ -2,7 +2,7 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 import useSWR, { type SWRResponse } from 'swr'
-import { expect } from 'vitest'
+import { expect, vi } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
@@ -10,6 +10,7 @@ import { api } from '@/apiClient/api'
 import { ApiError, type GetVenueResponseModel } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
+import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomains'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
@@ -135,6 +136,32 @@ const baseVenue: GetVenueResponseModel = {
 describe('VenueEditionFormScreen', () => {
   const useSWRMock = vi.mocked(useSWR)
 
+  beforeEach(() => {
+    vi.spyOn(useEducationalDomains, 'useEducationalDomains').mockImplementation(
+      () => {
+        return {
+          isLoading: false,
+          data: [
+            {
+              id: 1,
+              name: 'domaine 1',
+              nationalPrograms: [],
+            },
+            {
+              id: 2,
+              name: 'domaine b',
+              nationalPrograms: [],
+            },
+            {
+              id: 3,
+              name: 'domaine III',
+              nationalPrograms: [],
+            },
+          ],
+        } as SWRResponse
+      }
+    )
+  })
   it('should display access to partner page is impossible warning', async () => {
     const venue: GetVenueResponseModel = {
       ...defaultGetVenue,
@@ -796,6 +823,92 @@ describe('VenueEditionFormScreen', () => {
         }
       )
       expect(screen.getByText(/Non renseigné/)).toBeInTheDocument()
+    })
+
+    it('should render cultural domains input', async () => {
+      renderForm(
+        {
+          ...baseVenue,
+          description: 'TOTOTO',
+          contact: {
+            phoneNumber: '123',
+            email: 'e@mail.fr',
+            website: 'site.web',
+          },
+        },
+        {
+          initialRouterEntries: ['/edition'],
+          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
+        }
+      )
+      const multiSelect = screen.getByLabelText(
+        'Sélectionnez un ou plusieurs domaines d’activité'
+      )
+
+      expect(multiSelect).toBeInTheDocument()
+      await userEvent.click(multiSelect)
+      await waitFor(() => {
+        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+      })
+      expect(screen.getByText(/3 résultats trouvés/)).toBeInTheDocument()
+      expect(screen.getByText(/domaine III/)).toBeInTheDocument()
+    })
+
+    it('should render cultural domains input with context value', async () => {
+      renderForm(
+        {
+          ...baseVenue,
+          description: 'TOTOTO',
+          contact: {
+            phoneNumber: '123',
+            email: 'e@mail.fr',
+            website: 'site.web',
+          },
+          collectiveDomains: [{ name: 'domaine 1', id: 1 }],
+        },
+        {
+          initialRouterEntries: ['/edition'],
+          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
+        }
+      )
+
+      await userEvent.click(screen.getByLabelText('domaine sélectionné'))
+      await waitFor(() => {
+        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+      })
+      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
+    })
+
+    it('should select cultural domain', async () => {
+      renderForm(
+        {
+          ...baseVenue,
+          description: 'TOTOTO',
+          contact: {
+            phoneNumber: '123',
+            email: 'e@mail.fr',
+            website: 'site.web',
+          },
+        },
+        {
+          initialRouterEntries: ['/edition'],
+          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
+        }
+      )
+
+      await userEvent.click(
+        screen.getByLabelText(
+          'Sélectionnez un ou plusieurs domaines d’activité'
+        )
+      )
+      await waitFor(() => {
+        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+      })
+      expect(screen.getAllByText(/domaine 1/)).toHaveLength(1)
+      await userEvent.click(screen.getByText(/domaine 1/))
+      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
+      await userEvent.click(screen.getByText(/domaine III/))
+      expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
     })
   })
 })
