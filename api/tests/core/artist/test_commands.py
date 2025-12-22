@@ -1,6 +1,6 @@
 import logging
 import uuid
-from unittest import mock
+from unittest.mock import patch
 
 import pytest
 
@@ -34,7 +34,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class ImportAllArtistsTest:
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
     def test_import_all_artists_creates_artists(
         self,
         get_all_artists_mock,
@@ -47,7 +47,7 @@ class ImportAllArtistsTest:
         all_artists = db.session.query(Artist).all()
         assert len(all_artists) == 2
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
     def test_import_all_artists_creates_artists_is_idempotent(self, get_all_artists_mock):
         get_all_artists_mock.return_value = fixtures.big_query_artist_fixture
 
@@ -65,7 +65,7 @@ class ImportAllArtistsTest:
         all_artists = db.session.query(Artist).all()
         assert len(all_artists) == 2
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
     def test_import_all_artist_product_links_creates_product_links(self, get_all_artists_product_links_mock, caplog):
         albums_by_same_artist = ProductFactory.create_batch(
             size=4, subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id
@@ -100,8 +100,8 @@ class ImportAllArtistsTest:
 
         assert "Successfully imported 8 ArtistProductLink" in caplog.text
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistAliasQuery.execute")
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistAliasQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistQuery.execute")
     def test_import_all_artist_aliases_creates_artist_aliases_creates_artist_aliases(
         self,
         get_all_artists_mock,
@@ -117,8 +117,8 @@ class ImportAllArtistsTest:
         all_artist_aliases = db.session.query(ArtistAlias).all()
         assert len(all_artist_aliases) == 4
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
-    @mock.patch("pcapi.connectors.big_query.importer.base.BATCH_SIZE", 2)
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkQuery.execute")
+    @patch("pcapi.connectors.big_query.importer.base.BATCH_SIZE", 2)
     def test_import_all_artist_ignores_missing_products(self, get_all_artists_product_link_mock, caplog):
         artist = ArtistFactory()
         existing_product = ProductFactory()
@@ -139,23 +139,42 @@ class ImportAllArtistsTest:
 
 
 class UpdateArtistsFromDeltaTest:
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
-    def test_updates_and_creates_artists(self, mock_artist_delta_query):
+    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    def test_updates_and_creates_artists(self, mock_artist_delta_query, mock_copy_file):
         artist_to_delete_id = str(uuid.uuid4())
-        artist_to_delete = ArtistFactory(id=artist_to_delete_id)
+        artist_to_delete = ArtistFactory(id=artist_to_delete_id, mediation_uuid="old-uuid")
         new_artist_id = str(uuid.uuid4())
         mock_artist_delta_query.return_value = [
-            DeltaArtistModel(id=new_artist_id, action=DeltaAction.ADD, name="Nouvel Artiste"),
+            DeltaArtistModel(
+                id=new_artist_id,
+                name="Nouvel Artiste",
+                description="Description du nouvel artiste",
+                biography="Biographie du nouvel artiste",
+                wikipedia_url="Wikipedia du nouvel artiste",
+                wikidata_id="Q123456",
+                mediation_uuid="new-uuid",
+                action=DeltaAction.ADD,
+            ),
             DeltaArtistModel(id=artist_to_delete.id, action=DeltaAction.REMOVE, name="Artist to Delete"),
         ]
+        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
 
         ArtistImporter().run_delta_update()
 
-        assert db.session.query(Artist).filter_by(id=new_artist_id).first() is not None
+        new_artist = db.session.query(Artist).filter_by(id=new_artist_id).first()
         assert db.session.query(Artist).filter_by(id=artist_to_delete_id).first() is None
         assert db.session.query(Artist).count() == 1
+        assert new_artist is not None
+        assert new_artist.id == new_artist_id
+        assert new_artist.name == "Nouvel Artiste"
+        assert new_artist.description == "Description du nouvel artiste"
+        assert new_artist.biography == "Biographie du nouvel artiste"
+        assert new_artist.wikipedia_url == "Wikipedia du nouvel artiste"
+        assert new_artist.wikidata_id == "Q123456"
+        assert new_artist.mediation_uuid == "new-uuid"
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkDeltaQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistProductLinkDeltaQuery.execute")
     def test_updates_and_creates_artist_product_links(self, mock_link_delta_query):
         artist = ArtistFactory()
         product = ProductFactory()
@@ -196,7 +215,7 @@ class UpdateArtistsFromDeltaTest:
         assert db.session.query(ArtistProductLink).filter_by(id=link_to_delete_id).first() is None
         assert db.session.query(ArtistProductLink).count() == 2
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistAliasDeltaQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistAliasDeltaQuery.execute")
     def test_updates_and_creates_artist_aliases(self, mock_alias_delta_query):
         artist = ArtistFactory()
         alias_name_to_delete = "Alias a supprimer"
@@ -251,7 +270,7 @@ class UpdateArtistsFromDeltaTest:
         assert db.session.query(ArtistAlias).filter_by(id=alias_to_delete_id).first() is None
         assert db.session.query(ArtistAlias).count() == 2
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
     def test_update_action_modifies_existing_artist(self, mock_artist_delta_query):
         artist_to_update = ArtistFactory(name="Ancien Nom", description="Description initiale")
         initial_artist_count = db.session.query(Artist).count()
@@ -270,7 +289,7 @@ class UpdateArtistsFromDeltaTest:
         assert artist_to_update.description == "Description mise à jour"
         assert db.session.query(Artist).count() == initial_artist_count
 
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
     def test_update_action_does_nothing_for_non_existent_artist(self, mock_artist_delta_query):
         ArtistFactory()
         initial_artist_count = db.session.query(Artist).count()
@@ -286,7 +305,7 @@ class UpdateArtistsFromDeltaTest:
 
 
 class ComputeArtistsMostRelevantImageTest:
-    @mock.patch("pcapi.core.artist.commands.async_index_artist_ids")
+    @patch("pcapi.core.artist.commands.async_index_artist_ids")
     def test_compute_artists_most_relevant_image_if_no_image_set(self, mock_async_index_artist):
         artist = ArtistFactory(image=None, computed_image=None)
         product_mediation = offers_factories.ProductMediationFactory()
@@ -308,7 +327,7 @@ class ComputeArtistsMostRelevantImageTest:
         assert all(artist.computed_image == product_mediation.url for artist in artists)
         app.redis_client.smembers(redis_queues.REDIS_ARTIST_IDS_TO_INDEX) == {artist.id for artist in artists}
 
-    @mock.patch("pcapi.core.artist.commands.async_index_artist_ids")
+    @patch("pcapi.core.artist.commands.async_index_artist_ids")
     def test_update_artists_computed_image_only_if_changed(self, mock_async_index_artist):
         product_mediation = offers_factories.ProductMediationFactory()
         artist_with_update = ArtistFactory(image=None, computed_image="http://another.url.com")
@@ -324,7 +343,7 @@ class ComputeArtistsMostRelevantImageTest:
             [artist_with_update.id], reason=IndexationReason.ARTIST_IMAGE_UPDATE
         )
 
-    @mock.patch("pcapi.core.artist.commands.async_index_artist_ids")
+    @patch("pcapi.core.artist.commands.async_index_artist_ids")
     def test_does_nothing_if_image_set(self, mock_async_index_artist):
         artist = ArtistFactory(image="http://example.com")
         product_mediation = offers_factories.ProductMediationFactory()
@@ -338,9 +357,11 @@ class ComputeArtistsMostRelevantImageTest:
 
 
 class UpdateArtistFromDeltaTest:
-    @mock.patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
-    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query):
+    @patch("pcapi.connectors.big_query.importer.artist.copy_file_between_storage_backends")
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistDeltaQuery.execute")
+    def test_update_action_modifies_existing_artist(self, mock_artist_delta_query, mock_copy_file):
         artist_to_update = ArtistFactory(name="Richard Paul Astley", description="chanteur")
+        mediation_uuid = str(uuid.uuid4())
         mock_artist_delta_query.return_value = [
             DeltaArtistModel(
                 id=artist_to_update.id,
@@ -349,9 +370,11 @@ class UpdateArtistFromDeltaTest:
                 wikidata_id="Q219237",
                 wikipedia_url="https://fr.wikipedia.org/wiki/Rick_Astley",
                 biography="Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows...",
+                mediation_uuid=mediation_uuid,
                 action=DeltaAction.UPDATE,
             ),
         ]
+        mock_copy_file.side_effect = lambda file_id, **kwargs: file_id
 
         ArtistImporter().run_delta_update()
 
@@ -363,3 +386,4 @@ class UpdateArtistFromDeltaTest:
             artist_to_update.biography
             == "Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows..."
         )
+        assert artist_to_update.mediation_uuid == mediation_uuid

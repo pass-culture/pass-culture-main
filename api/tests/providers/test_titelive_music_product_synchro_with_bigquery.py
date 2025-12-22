@@ -1,5 +1,6 @@
 import copy
 import uuid
+from unittest.mock import ANY
 from unittest.mock import patch
 
 import pytest
@@ -57,8 +58,9 @@ class BigQueryTiteliveMusicProductSyncTest:
         mock_execute.return_value = iter(bq_products)
         offers_factories.ProductFactory(ean="3700187679323", lastProvider=titelive_epagine_provider)
 
-        with patch.object(
-            BigQueryTiteliveMusicProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        with patch(
+            "pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends",
+            side_effect=lambda file_id, **kwargs: file_id,
         ):
             BigQueryTiteliveMusicProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
@@ -172,8 +174,9 @@ class BigQueryTiteliveMusicProductSyncTest:
         bq_products = self._prepare_iterator_from_fixture(fixture)
         mock_execute.return_value = iter(bq_products)
 
-        with patch.object(
-            BigQueryTiteliveMusicProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+        with patch(
+            "pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends",
+            side_effect=lambda file_id, **kwargs: file_id,
         ):
             BigQueryTiteliveMusicProductSync().synchronize_products(batch_size=self.BATCH_SIZE)
 
@@ -184,12 +187,10 @@ class BigQueryTiteliveMusicProductSyncTest:
 
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
-    @patch(
-        "pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductSync._copy_image_from_data_bucket_to_backend_bucket"
-    )
+    @patch("pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends")
     @patch("pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductDeltaQuery.execute")
     def test_creates_images_for_new_product(self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend):
-        mock_copy_image.side_effect = lambda uuid: uuid
+        mock_copy_image.side_effect = lambda file_id, **kwargs: file_id
         providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         recto_uuid = str(uuid.uuid4())
         verso_uuid = str(uuid.uuid4())
@@ -210,17 +211,27 @@ class BigQueryTiteliveMusicProductSyncTest:
         mediation_map = {m.imageType: m.uuid for m in mediations}
         assert mediation_map[offers_models.ImageType.RECTO] == recto_uuid
         assert mediation_map[offers_models.ImageType.VERSO] == verso_uuid
-        mock_copy_image.assert_any_call(recto_uuid)
-        mock_copy_image.assert_any_call(verso_uuid)
+        mock_copy_image.assert_any_call(
+            file_id=recto_uuid,
+            source_storage=ANY,
+            destination_storage=ANY,
+            source_folder=ANY,
+            destination_folder=ANY,
+        )
+        mock_copy_image.assert_any_call(
+            file_id=verso_uuid,
+            source_storage=ANY,
+            destination_storage=ANY,
+            source_folder=ANY,
+            destination_folder=ANY,
+        )
 
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
-    @patch(
-        "pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductSync._copy_image_from_data_bucket_to_backend_bucket"
-    )
+    @patch("pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends")
     @patch("pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductDeltaQuery.execute")
     def test_replaces_all_images_on_full_update(self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend):
-        mock_copy_image.side_effect = lambda uuid: uuid
+        mock_copy_image.side_effect = lambda file_id, **kwargs: file_id
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         ean_test = "3700187679323"
         product = offers_factories.ProductFactory(ean=ean_test, lastProviderId=provider.id)
@@ -248,19 +259,29 @@ class BigQueryTiteliveMusicProductSyncTest:
         mediation_map = {m.imageType: m.uuid for m in mediations}
         assert mediation_map[offers_models.ImageType.RECTO] == new_recto_uuid
         assert mediation_map[offers_models.ImageType.VERSO] == new_verso_uuid
-        mock_copy_image.assert_any_call(new_recto_uuid)
-        mock_copy_image.assert_any_call(new_verso_uuid)
+        mock_copy_image.assert_any_call(
+            file_id=new_recto_uuid,
+            source_storage=ANY,
+            destination_storage=ANY,
+            source_folder=ANY,
+            destination_folder=ANY,
+        )
+        mock_copy_image.assert_any_call(
+            file_id=new_verso_uuid,
+            source_storage=ANY,
+            destination_storage=ANY,
+            source_folder=ANY,
+            destination_folder=ANY,
+        )
 
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
-    @patch(
-        "pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductSync._copy_image_from_data_bucket_to_backend_bucket"
-    )
+    @patch("pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends")
     @patch("pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductDeltaQuery.execute")
     def test_replaces_only_provided_images_on_partial_update(
         self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend
     ):
-        mock_copy_image.side_effect = lambda uuid: uuid
+        mock_copy_image.side_effect = lambda file_id, **kwargs: file_id
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         ean_test = "3700187679323"
         product = offers_factories.ProductFactory(ean=ean_test, lastProviderId=provider.id)
@@ -287,18 +308,22 @@ class BigQueryTiteliveMusicProductSyncTest:
         mediation_map = {m.imageType: m.uuid for m in mediations}
         assert mediation_map[offers_models.ImageType.RECTO] == new_recto_uuid
         assert mediation_map[offers_models.ImageType.VERSO] == "old-verso-uuid"
-        mock_copy_image.assert_called_once_with(new_recto_uuid)
+        mock_copy_image.assert_called_once_with(
+            file_id=new_recto_uuid,
+            source_storage=ANY,
+            destination_storage=ANY,
+            source_folder=ANY,
+            destination_folder=ANY,
+        )
 
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPBackend")
     @patch("pcapi.core.providers.titelive_bq_sync_base.GCPData")
-    @patch(
-        "pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductSync._copy_image_from_data_bucket_to_backend_bucket"
-    )
+    @patch("pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends")
     @patch("pcapi.core.providers.titelive_bq_music_search.BigQueryTiteliveMusicProductDeltaQuery.execute")
     def test_does_not_change_images_when_uuids_are_null(
         self, mock_execute, mock_copy_image, mock_gcp_data, mock_gcp_backend
     ):
-        mock_copy_image.side_effect = lambda uuid: uuid
+        mock_copy_image.side_effect = lambda file_id, **kwargs: file_id
         provider = providers_factories.ProviderFactory.create(name=providers_constants.TITELIVE_ENRICHED_BY_DATA)
         ean_test = "3700187679323"
         product = offers_factories.ProductFactory(ean=ean_test, lastProviderId=provider.id)
@@ -414,8 +439,9 @@ class BigQueryTiteliveMusicProductSyncTest:
                 None,  # individual commit for product 1
                 None,  # individual commit for product 2
             ]
-            with patch.object(
-                BigQueryTiteliveMusicProductSync, "_copy_image_from_data_bucket_to_backend_bucket", lambda s, uuid: uuid
+            with patch(
+                "pcapi.core.providers.titelive_bq_sync_base.copy_file_between_storage_backends",
+                side_effect=lambda file_id, **kwargs: file_id,
             ):
                 sync_manager = BigQueryTiteliveMusicProductSync()
                 sync_manager.run_synchronization(batch_size=self.BATCH_SIZE)

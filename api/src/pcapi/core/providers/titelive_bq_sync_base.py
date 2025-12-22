@@ -18,6 +18,7 @@ from pcapi.connectors.big_query.queries.product import BigQueryTiteliveMusicProd
 from pcapi.connectors.titelive import TiteliveBase
 from pcapi.core.object_storage.backends.gcp import GCPBackend
 from pcapi.core.object_storage.backends.gcp import GCPData
+from pcapi.core.object_storage.backends.utils import copy_file_between_storage_backends
 from pcapi.core.providers import constants
 from pcapi.core.providers.models import LocalProviderEventType
 from pcapi.core.providers.titelive_api import activate_newly_eligible_product_and_offers
@@ -82,57 +83,18 @@ class BigQuerySyncTemplate[
             type=event_type,
         )
 
-    def _copy_image_from_data_bucket_to_backend_bucket(self, source_uuid: str) -> str | None:
-        if not source_uuid:
-            return None
-        try:
-            if self.gcp_backend.object_exists(settings.THUMBS_FOLDER_NAME, source_uuid):
-                return source_uuid
-
-            if not self.gcp_data.object_exists(settings.DATA_TITELIVE_THUMBS_FOLDER_NAME, source_uuid):
-                logger.warning(
-                    "Image not found in source bucket. Cannot copy.",
-                    extra={
-                        "source_uuid": source_uuid,
-                        "bucket_name": self.gcp_data.bucket_name,
-                    },
-                )
-                return None
-
-            logger.info(
-                "Copying image from data bucket to backend bucket...",
-                extra={
-                    "source_uuid": source_uuid,
-                    "from_bucket": self.gcp_data.bucket_name,
-                    "to_bucket": self.gcp_backend.bucket_name,
-                },
-            )
-            self.gcp_data.copy_object_to(
-                source_folder=settings.DATA_TITELIVE_THUMBS_FOLDER_NAME,
-                source_object_id=source_uuid,
-                destination_backend=self.gcp_backend,
-                destination_folder=settings.THUMBS_FOLDER_NAME,
-                destination_object_id=source_uuid,
-            )
-            return source_uuid
-        except Exception as err:
-            logger.error(
-                "Failed to copy image from data bucket to backend bucket.",
-                extra={
-                    "source_uuid": source_uuid,
-                    "from_bucket": self.gcp_data.bucket_name,
-                    "to_bucket": self.gcp_backend.bucket_name,
-                    "error": err,
-                },
-            )
-            return None
-
     def _sync_image_mediations(
         self, product: offers_models.Product, image_type: offers_models.ImageType, target_uuid: str
     ) -> None:
         mediations_by_uuid = {m.uuid: m for m in product.productMediations if m.imageType == image_type}
         if target_uuid not in mediations_by_uuid:
-            source_uuid = self._copy_image_from_data_bucket_to_backend_bucket(target_uuid)
+            source_uuid = copy_file_between_storage_backends(
+                source_storage=self.gcp_data,
+                destination_storage=self.gcp_backend,
+                source_folder=settings.DATA_TITELIVE_THUMBS_FOLDER_NAME,
+                destination_folder=settings.THUMBS_FOLDER_NAME,
+                file_id=target_uuid,
+            )
             if not source_uuid:
                 logger.warning(
                     "Skipping mediation creation due to GCS copy failure",
