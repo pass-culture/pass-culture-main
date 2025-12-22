@@ -2,8 +2,9 @@ import { memo, type ReactNode } from 'react'
 import { Navigate, useLocation, useSearchParams } from 'react-router'
 
 import { findCurrentRoute } from '@/app/AppRouter/findCurrentRoute'
+import { useRouterGuard } from '@/commons/auth/useRouterGuard'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import type { UserAccess } from '@/commons/store/user/reducer'
 
 type AppRouterGuardProps = {
   children: ReactNode
@@ -11,13 +12,19 @@ type AppRouterGuardProps = {
   unattachedOnly?: boolean
   publicOnly?: boolean
 }
+// TODO (igabriele, 2025-12-18): Make the redirection part a hook to keep it functional?
 export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const location = useLocation()
   const [searchParams] = useSearchParams()
   const currentRoute = findCurrentRoute(location)
-  const userAccess: UserAccess = useAppSelector(
-    (store: any) => store.user.access
-  )
+  const userAccess = useAppSelector((store) => store.user.access)
+
+  const redirection = useRouterGuard()
+  if (withSwitchVenueFeature) {
+    return redirection ?? children
+  }
 
   if (currentRoute) {
     if (!userAccess && !currentRoute?.meta?.public) {

@@ -9,7 +9,8 @@ import {
 
 export const getInitialOffererIdAndVenueId = (
   offerersNames: GetOffererNameResponseModel[],
-  venues: VenueListItemResponseModel[]
+  venues: VenueListItemResponseModel[],
+  withSwitchVenueFeature: boolean
 ): {
   initialOffererId: number | null
   initialVenueId: number | null
@@ -40,6 +41,15 @@ export const getInitialOffererIdAndVenueId = (
     return {
       initialOffererId: null,
       initialVenueId: selectedVenueIdFromLocalStorage,
+    }
+  }
+  // Under `WIP_SWITCH_VENUE` FF, we have to redirect the user to the Venue Selection Hub page
+  // when they don't have a selected venue persisted in their Local Storage
+  if (withSwitchVenueFeature) {
+    // which implies we can early return `null` for both `initialOffererId` and `initialVenueId` here
+    return {
+      initialOffererId: null,
+      initialVenueId: null,
     }
   }
 
