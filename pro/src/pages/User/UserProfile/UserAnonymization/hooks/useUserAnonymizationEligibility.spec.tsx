@@ -21,7 +21,7 @@ describe('useUserAnonymizationEligibility', () => {
     vi.clearAllMocks()
   })
 
-  it('returns loading state when SWR is loading', () => {
+  it('should return false while loading eligibility', () => {
     useSWRMock.mockReturnValue({
       data: undefined,
       isLoading: true,
@@ -34,7 +34,7 @@ describe('useUserAnonymizationEligibility', () => {
     expect(result.current.isSoleUserWithOngoingActivities).toBe(undefined)
   })
 
-  it('returns eligible state and appropriate title when user is eligible', () => {
+  it('should return true when user is eligible', () => {
     useSWRMock.mockReturnValue({
       data: {
         hasSuspendedOfferer: false,
@@ -51,7 +51,7 @@ describe('useUserAnonymizationEligibility', () => {
     expect(result.current.isSoleUserWithOngoingActivities).toBe(false)
   })
 
-  it('handles user with suspended offerer', () => {
+  it('should return false when user has suspended offerer', () => {
     useSWRMock.mockReturnValue({
       data: {
         hasSuspendedOfferer: true,
@@ -67,7 +67,7 @@ describe('useUserAnonymizationEligibility', () => {
     expect(result.current.isSoleUserWithOngoingActivities).toBe(false)
   })
 
-  it('handles user that is not only pro', () => {
+  it('should return false when user has non pro account', () => {
     useSWRMock.mockReturnValue({
       data: {
         hasSuspendedOfferer: false,
@@ -83,7 +83,7 @@ describe('useUserAnonymizationEligibility', () => {
     expect(result.current.isSoleUserWithOngoingActivities).toBe(false)
   })
 
-  it('handles sole user with ongoing activities', () => {
+  it('should return false when user is sole user with ongoing activities', () => {
     useSWRMock.mockReturnValue({
       data: {
         hasSuspendedOfferer: false,

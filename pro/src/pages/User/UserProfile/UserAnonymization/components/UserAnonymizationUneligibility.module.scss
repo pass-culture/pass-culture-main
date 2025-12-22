@@ -1,0 +1,20 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+
+.dialog-content {
+  max-width: rem.torem(684px);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: var(--size-spacing-s);
+  padding-top: var(--size-spacing-xl);
+  padding-bottom: var(--size-spacing-xl);
+}
+
+.description {
+  @include fonts.body;
+}
+
+.dialog-footer {
+  padding-top: var(--size-spacing-l);
+}
