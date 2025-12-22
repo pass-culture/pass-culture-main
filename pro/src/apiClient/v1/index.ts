@@ -10,7 +10,6 @@ export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
-export type { AdageCulturalPartnersResponseModel } from './models/AdageCulturalPartnersResponseModel';
 export type { AggregatedRevenueModel } from './models/AggregatedRevenueModel';
 export type { ArtistQueryModel } from './models/ArtistQueryModel';
 export type { ArtistResponseModel } from './models/ArtistResponseModel';
@@ -63,7 +62,6 @@ export type { CreatePriceCategoryModel } from './models/CreatePriceCategoryModel
 export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel';
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
-export type { CulturalPartner } from './models/CulturalPartner';
 export type { DateRangeModel } from './models/DateRangeModel';
 export type { DateRangeOnCreateModel } from './models/DateRangeOnCreateModel';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';

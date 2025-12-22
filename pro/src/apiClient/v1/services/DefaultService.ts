@@ -2,7 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { AdageCulturalPartnersResponseModel } from '../models/AdageCulturalPartnersResponseModel';
 import type { ArtistsResponseModel } from '../models/ArtistsResponseModel';
 import type { AttachImageFormModel } from '../models/AttachImageFormModel';
 import type { AttachImageResponseModel } from '../models/AttachImageResponseModel';
@@ -1140,22 +1139,6 @@ export class DefaultService {
         401: `Unauthorized`,
         403: `Forbidden`,
         404: `Not Found`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_educational_partners <GET>
-   * @returns AdageCulturalPartnersResponseModel OK
-   * @throws ApiError
-   */
-  public getEducationalPartners(): CancelablePromise<AdageCulturalPartnersResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/cultural-partners',
-      errors: {
-        401: `Unauthorized`,
-        403: `Forbidden`,
         422: `Unprocessable Content`,
       },
     });

@@ -137,7 +137,6 @@ describe('VenueEdition', () => {
     vi.spyOn(api, 'getVenuesEducationalStatuses').mockResolvedValue({
       statuses: [],
     })
-    vi.spyOn(api, 'getEducationalPartners').mockResolvedValue({ partners: [] })
     selectCurrentOffererId.mockReturnValue(defaultGetOffererResponseModel.id)
     mockUseNavigate.mockClear()
     vi.mocked(setSavedPartnerPageVenueId).mockClear()

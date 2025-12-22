@@ -3,12 +3,10 @@ import math
 
 from flask_login import login_required
 
-from pcapi.core.educational.api import adage as educational_api_adage
 from pcapi.core.educational.api import institution as educational_api_institution
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import educational_institutions
-from pcapi.routes.serialization import venues_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.transaction_manager import atomic
 
@@ -49,17 +47,3 @@ def get_educational_institutions(
         pages=max(int(math.ceil(total / query.per_page_limit)), 1),
         total=total,
     )
-
-
-@private_api.route("/cultural-partners", methods=["GET"])
-@atomic()
-@login_required
-@spectree_serialize(
-    response_model=venues_serialize.AdageCulturalPartnersResponseModel,
-    on_success_status=200,
-    on_error_statuses=[401],
-    api=blueprint.pro_private_schema,
-)
-def get_educational_partners() -> venues_serialize.AdageCulturalPartnersResponseModel:
-    venues = educational_api_adage.get_cultural_partners()
-    return venues_serialize.AdageCulturalPartnersResponseModel.from_orm(venues)
