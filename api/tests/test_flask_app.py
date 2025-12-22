@@ -46,6 +46,7 @@ KNOWN_PUBLIC_ENDPOINTS = [
     "auth.discord_signin",  # → response.status_code = 200
     "auth.discord_success",  # → response.status_code = 303
     "native.native_v1.email_validation_remaining_resends",  # → response.status_code = 200
+    "native.native_v1.empty_email_validation_remaining_resends",  # → response.status_code = 200
     "native.native_v1.get_artist",  # → response.status_code = 404
     "native.native_v1.get_categories",  # → response.status_code = 200
     "native.native_v1.get_movie_screenings_by_venue",  # → response.status_code = 200

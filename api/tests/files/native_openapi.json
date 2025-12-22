@@ -7308,6 +7308,40 @@
                 "tags": []
             }
         },
+        "/native/v1/email_validation_remaining_resends": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v1_email_validation_remaining_resends",
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/EmailValidationRemainingResendsResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "empty_email_validation_remaining_resends <GET>",
+                "tags": []
+            }
+        },
         "/native/v1/email_validation_remaining_resends/{email}": {
             "get": {
                 "description": "",
