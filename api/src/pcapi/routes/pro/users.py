@@ -303,6 +303,10 @@ def anonymize() -> None:
         raise ResourceNotFoundError(errors={"global": "Cette fonctionnalité n'est pas disponible"})
 
     user = current_user._get_current_object()
+
+    if not gdpr_api.can_anonymise_pro_user(user):
+        raise ForbiddenError(errors={"global": ["Le compte ne peut pas être anonymisé de manière autonome"]})
+
     anonymized = anonymize_pro_user(user)
     if anonymized:
         on_commit(

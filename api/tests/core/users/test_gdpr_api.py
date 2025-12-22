@@ -495,6 +495,39 @@ class AnonymizeProUserFunctionTest:
         assert "Could not delete Beamer user" in caplog.text
 
 
+class CanAnonymiseProUserTest:
+    @pytest.mark.parametrize(
+        "is_only_pro_value,has_suspended_offerer_value,is_sole_user_with_ongoing_activities_value,expected_result",
+        [
+            (True, False, False, True),  # Eligible
+            (False, False, False, False),  # Has non pro account
+            (True, True, False, False),  # Has suspended offerer
+            (True, False, True, False),  # Has ongoing activities
+        ],
+    )
+    @mock.patch("pcapi.core.users.gdpr_api.is_sole_user_with_ongoing_activities")
+    @mock.patch("pcapi.core.users.gdpr_api.has_suspended_offerer")
+    @mock.patch("pcapi.core.users.gdpr_api.is_only_pro")
+    def test_can_anonymise_pro_user_all_combinations(
+        self,
+        mock_is_only_pro,
+        mock_has_suspended_offerer,
+        mock_is_sole_user_with_ongoing_activities,
+        is_only_pro_value,
+        has_suspended_offerer_value,
+        is_sole_user_with_ongoing_activities_value,
+        expected_result,
+    ):
+        user = users_factories.ProFactory()
+        mock_is_only_pro.return_value = is_only_pro_value
+        mock_has_suspended_offerer.return_value = has_suspended_offerer_value
+        mock_is_sole_user_with_ongoing_activities.return_value = is_sole_user_with_ongoing_activities_value
+
+        result = gdpr_api.can_anonymise_pro_user(user)
+
+        assert result is expected_result
+
+
 class IsOnlyProTest:
     def test_user_with_only_pro_role(self):
         user = users_factories.ProFactory()

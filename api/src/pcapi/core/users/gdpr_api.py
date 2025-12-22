@@ -238,6 +238,10 @@ def is_only_beneficiary(user: models.User) -> bool:
     return beneficiary_roles.issuperset(user.roles)
 
 
+def can_anonymise_pro_user(user: models.User) -> bool:
+    return is_only_pro(user) and not has_suspended_offerer(user) and not is_sole_user_with_ongoing_activities(user)
+
+
 def is_only_pro(user: models.User) -> bool:
     return {models.UserRole.PRO, models.UserRole.NON_ATTACHED_PRO}.issuperset(user.roles) and not db.session.query(
         sa.exists().where(subscription_models.BeneficiaryFraudCheck.userId == user.id)
