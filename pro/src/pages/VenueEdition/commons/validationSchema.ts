@@ -66,7 +66,11 @@ export const openingHoursSchemaShape = {
   SUNDAY: openingHoursDaySchema,
 }
 
-export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
+export const getValidationSchema = ({
+  isCulturalDomainsEnabled,
+}: {
+  isCulturalDomainsEnabled: boolean
+}): ObjectSchema<VenueEditionFormValues> => {
   const activityTypeValues: OnboardingActivityType[] = Object.keys(
     _OnboardingActivityMappings
   ).map((v) => v as OnboardingActivityType)
@@ -127,7 +131,23 @@ export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
       .when('isOpenToPublic', {
         is: (open: string) => open === 'true',
         then: (schema) => schema.required('Veuillez renseigner ce champ'),
-        otherwise: (schema) => schema.optional(),
+        otherwise: (schema) => schema.nullable(),
+      }),
+    culturalDomains: yup
+      .array()
+      .of(yup.string().required())
+      .when('isOpenToPublic', {
+        is: (open: string) => open === 'false' && isCulturalDomainsEnabled,
+        then: (schema) =>
+          schema
+            .required(
+              'Veuillez sélectionner un ou plusieurs domaines d’activité'
+            )
+            .min(
+              1,
+              'Veuillez sélectionner un ou plusieurs domaines d’activité'
+            ),
+        otherwise: (schema) => schema,
       }),
   })
 }

@@ -36,14 +36,14 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         ]
       : []),
   ]
-  if (isCulturalDomainsEnabled) {
+  if (isCulturalDomainsEnabled && data.length > 0) {
     const venueDomains = venue.collectiveDomains.map((domain) => {
       const apiValue = data.find(
         (educationalDomain) => educationalDomain.id === domain.id
       )
       assertOrFrontendError(
         apiValue,
-        `CulturalDomain withId ${domain.id} not found`
+        `CulturalDomain with name ${domain.name} not found`
       )
 
       return apiValue.name
