@@ -1,17 +1,9 @@
 name: '3 [on_workflow] Build docker image'
 
 on:
-  workflow_call:
-    inputs:
-      image:
-        description: "The docker image name"
-        required: true
-        type: string
-
-      tag:
-        description: "The docker image tag"
-        required: true
-        type: string
+  push:
+    branches:
+      - env-to-ci-vars
 
 
 jobs:
