@@ -15,6 +15,7 @@ describe('VenueEditionForm validationSchema', () => {
     isAccessibilityAppliedOnAllOffers: false,
     isOpenToPublic: 'true',
     openingHours: null,
+    description: 'description',
   }
 
   const cases: {
