@@ -19,7 +19,7 @@ jobs:
 
     test-pro-e2e-parallel:
         name: "Pro E2E Tests (Parallel)"
-        needs: [pcapi-init-job, build-pcapi-tests]
+        needs: [build-pcapi-tests]
         uses: ./.github/workflows/dev_on_workflow_tests_pro_e2e.yml
         with:
             ENV: "development"
