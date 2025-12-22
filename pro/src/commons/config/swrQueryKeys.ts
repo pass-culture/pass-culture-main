@@ -66,3 +66,5 @@ export const LOG_CATALOG_VIEW_QUERY_KEY = 'logCatalogView'
 export const LOG_TRACKING_FILTER_QUERY_KEY = 'logTrackingFilter'
 export const GET_STATISTICS_QUERY_KEY = 'getStatistics'
 export const GET_HIGHLIGHTS_QUERY_KEY = 'getHighlights'
+export const GET_PRO_ANONYMIZATION_ELIGIBILITY_QUERY_KEY =
+  'getProAnonymizationEligibility'
