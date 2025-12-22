@@ -36,7 +36,7 @@ vi.mock('@/commons/hooks/useSnackBar', () => ({
 
 const renderUserAnonymization = (options?: RenderWithProvidersOptions) => {
   return renderWithProviders(<UserAnonymization />, {
-    user: sharedCurrentUserFactory(),
+    user: sharedCurrentUserFactory({ email: 'user@example.com' }),
     ...options,
   })
 }
@@ -198,7 +198,7 @@ describe('UserAnonymization', () => {
       )
 
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
-      await userEvent.type(emailInput, 'test@example.com')
+      await userEvent.type(emailInput, 'user@example.com')
 
       const submitButton = screen.getByTestId('user-anonymization-submit')
 
@@ -224,7 +224,7 @@ describe('UserAnonymization', () => {
       )
 
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
-      await userEvent.type(emailInput, 'test@example.com')
+      await userEvent.type(emailInput, 'user@example.com')
 
       const submitButton = screen.getByTestId('user-anonymization-submit')
 
@@ -234,6 +234,94 @@ describe('UserAnonymization', () => {
         expect(snackBarError).toHaveBeenCalledWith(
           'Une erreur est survenue. Merci de réessayer plus tard.'
         )
+      })
+    })
+  })
+
+  describe('anonymization form validation', () => {
+    it('should display error when email is empty', async () => {
+      renderUserAnonymization({
+        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer mon compte' })
+      )
+
+      const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
+      await userEvent.click(emailInput)
+      await userEvent.tab()
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Veuillez renseigner votre email pour confirmer la suppression du compte'
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should display error when email format is invalid', async () => {
+      renderUserAnonymization({
+        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer mon compte' })
+      )
+
+      const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
+      await userEvent.type(emailInput, 'invalid-email')
+      await userEvent.tab()
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            'Veuillez renseigner un email valide, exemple : mail@exemple.com'
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should display error when email does not match user email', async () => {
+      renderUserAnonymization({
+        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer mon compte' })
+      )
+
+      const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
+      await userEvent.type(emailInput, 'different@example.com')
+      await userEvent.tab()
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            "L'adresse email ne correspond pas à celle de votre compte"
+          )
+        ).toBeInTheDocument()
+      })
+    })
+
+    it('should prevent form submission', async () => {
+      renderUserAnonymization({
+        features: ['WIP_PRO_AUTONOMOUS_ANONYMIZATION'],
+      })
+
+      await userEvent.click(
+        screen.getByRole('button', { name: 'Supprimer mon compte' })
+      )
+
+      const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
+      await userEvent.type(emailInput, 'invalid-email')
+
+      const submitButton = screen.getByTestId('user-anonymization-submit')
+      await userEvent.click(submitButton!)
+
+      await waitFor(() => {
+        expect(api.anonymize).not.toHaveBeenCalled()
       })
     })
   })
