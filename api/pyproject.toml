@@ -24,7 +24,7 @@ ecdsa = "0.19.1"                     # <0.20.0
 email-validator = "2.3.0"
 factory-boy = "3.3.3"
 flask = "3.1.2"
-flask-cors = "6.0.1"
+flask-cors = "6.0.2"
 flask-jwt-extended = "4.7.1"
 flask-login = "0.6.3"
 flask-shell-ipython = "^0.5.3"
@@ -75,7 +75,7 @@ sentry-sdk = { version = "2.47.0", extras = ["flask"] }
 shapely = "^2.1.2"      # Used for iris importation
 slack-sdk = "3.39.0"
 spectree = "1.5.8"
-sqlalchemy = { version = "2.0.44", extras = ["mypy"] }
+sqlalchemy = { version = "2.0.45", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
 time-machine = "3.1.0"
 transitions = "^0.9.3"
