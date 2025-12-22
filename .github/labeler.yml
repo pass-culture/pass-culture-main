@@ -1,7 +1,3 @@
-api:
-- changed-files:
-  - any-glob-to-any-file: api/**
-
 ci:
 - changed-files:
   - any-glob-to-any-file: .github/**
@@ -11,14 +7,11 @@ dependencies:
   - any-glob-to-any-file:
     - api/poetry.lock
     - pro/yarn.lock
+    - api/documentation/package-lock.json
 
 migration:
 - changed-files:
     - any-glob-to-any-file: api/src/pcapi/alembic/versions/**
-
-pro:
-- changed-files:
-    - any-glob-to-any-file: pro/**
 
 # Add 'ticket' label to any PR where the head branch name has a `PC` or 'pc' section in the name
 ticket:
