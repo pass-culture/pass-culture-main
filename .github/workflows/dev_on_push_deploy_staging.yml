@@ -115,7 +115,7 @@ jobs:
     with:
       environment: staging
       environment_short_name: stg
-      app_version: ${{ github.sha }}
+      app_version: "${{ needs.prepare-variables.outputs.releaseNumber }}"
       workflow_cluster_name: gke-infra-prd-eu9
       workflow_project_id: pc-infra-prd
       app_cluster_name: gke-backend-stg-eu9
