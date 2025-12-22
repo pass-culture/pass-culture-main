@@ -5,19 +5,12 @@ changelog:
   exclude:
     labels:
       - ignore-for-release
+    authors:
+      - dependabot[bot]
   categories:
     - title: Planned and delivered
       labels:
         - ticket
-    - title: Changes with database migrations
-      labels:
-        - migration
-    - title: Dependencies updates
-      labels:
-        - dependencies
-    - title: CI modifications
-      labels:
-        - ci
     - title: Other Changes
       labels:
         - "*"
