@@ -28,7 +28,14 @@ jobs:
       - uses: actions/checkout@v6
       - id: check-date-exclusion
         run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> $GITHUB_OUTPUT
-      - run: echo "Today is excluded – ${{ steps.check-date-exclusion.outputs.reason }}"
+
+      - if: needs.check-schedule.outputs.schedule_exclusion  == 'true'
+        run: echo "Today is excluded – ${{ steps.check-date-exclusion.outputs.reason }}"
+
+      # we allow the workflow_dispatch event
+      - if: ${{ github.event_name != 'schedule'}}
+        run: echo "schedule_exclusion=false" >> $GITHUB_OUTPUT
+
 
   pcapi-init-job:
     runs-on: ubuntu-latest
