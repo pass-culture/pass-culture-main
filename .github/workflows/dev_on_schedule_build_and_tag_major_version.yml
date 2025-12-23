@@ -14,6 +14,8 @@ permissions: write-all
 
 jobs:
   check-schedule:
+    # we allow the workflow_dispatch event
+    if: ${{ github.event_name == 'schedule'}}
     runs-on: ubuntu-latest
     outputs:
       schedule_exclusion: ${{steps.check-date-exclusion.outputs.schedule_exclusion}}
