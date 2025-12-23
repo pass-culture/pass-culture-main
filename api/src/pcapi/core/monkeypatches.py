@@ -43,5 +43,19 @@ def monkey_patch_sendinblue() -> None:
     RESTClientObject.request = custom_restclient_request
 
 
+def monkey_patch_urllib3() -> None:
+    """This allows us to bump urllib3 to 2.6.0 as we wait for Brevo to update its SDK"""
+    from urllib3._collections import HTTPHeaderDict
+    from urllib3.response import HTTPResponse
+
+    if not hasattr(HTTPResponse, "getheaders"):
+
+        def patched_getheaders(self: HTTPResponse) -> HTTPHeaderDict:
+            return self.headers
+
+        HTTPResponse.getheaders = patched_getheaders  # type: ignore[method-assign]
+
+
 def install_monkey_patches() -> None:
     monkey_patch_sendinblue()
+    monkey_patch_urllib3()
