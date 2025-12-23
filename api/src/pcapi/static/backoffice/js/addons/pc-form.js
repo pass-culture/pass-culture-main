@@ -51,7 +51,7 @@ class PcForm extends PcAddOn {
   }
   
   #lock = ($target) => {
-    if($target.dataset.pcFormOptOut.toLowerCase() !== "true")
+    if($target.dataset?.pcFormOptOut?.toLowerCase() !== "true")
     {
       $target.classList.add(PcForm.FORM_ALREADY_VALIDATED)
       const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
@@ -62,7 +62,7 @@ class PcForm extends PcAddOn {
   }
 
   #unlock = ($target) => {
-    if($target.dataset.pcFormOptOut.toLowerCase() !== "true")
+    if($target.dataset?.pcFormOptOut?.toLowerCase() !== "true")
     {
       $target.classList.remove(PcForm.FORM_ALREADY_VALIDATED)
       const $submitButtons = $target.querySelectorAll(PcForm.FORM_SUBMIT_BUTTON)
