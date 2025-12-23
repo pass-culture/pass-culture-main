@@ -1,38 +1,57 @@
-import { api } from '@/apiClient/api'
+import { useState } from 'react'
+
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { useNotification } from '@/commons/hooks/useNotification'
-import { logout } from '@/commons/store/user/dispatchers/logout'
+import { Dialog } from '@/components/Dialog/Dialog'
 import fullTrashIcon from '@/icons/full-trash.svg'
+import strokeWarningIcon from '@/icons/stroke-warning.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 
+import { UserAnonymizationForm } from './components/UserAnonymizationForm'
+import { UserAnonymizationUneligibility } from './components/UserAnonymizationUneligibility'
+import { useUserAnonymizationEligibility } from './hooks/useUserAnonymizationEligibility'
+
 export const UserAnonymization = (): JSX.Element | null => {
-  const dispatch = useAppDispatch()
-  const notify = useNotification()
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const canDisplayAnonymizeButton = useActiveFeature(
     'WIP_PRO_AUTONOMOUS_ANONYMIZATION'
   )
 
-  if (!canDisplayAnonymizeButton) {
+  const { isLoading, isEligible, isSoleUserWithOngoingActivities } =
+    useUserAnonymizationEligibility()
+
+  if (isLoading || !canDisplayAnonymizeButton) {
     return null
   }
 
   return (
-    <Button
-      variant={ButtonVariant.TERNARY}
-      icon={fullTrashIcon}
-      onClick={async () => {
-        try {
-          await api.anonymize()
-          dispatch(logout())
-        } catch {
-          notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
-        }
-      }}
+    <Dialog
+      onCancel={() => setIsDialogOpen(false)}
+      title={
+        isEligible
+          ? 'Vous êtes sur le point de supprimer votre compte'
+          : 'La suppression de compte n’est pas possible en l’état'
+      }
+      icon={strokeWarningIcon}
+      open={isDialogOpen}
+      trigger={
+        <Button
+          variant={ButtonVariant.TERNARY}
+          icon={fullTrashIcon}
+          onClick={() => setIsDialogOpen(true)}
+        >
+          Supprimer mon compte
+        </Button>
+      }
     >
-      Supprimer mon compte
-    </Button>
+      {isEligible ? (
+        <UserAnonymizationForm />
+      ) : (
+        <UserAnonymizationUneligibility
+          isSoleUserWithOngoingActivities={isSoleUserWithOngoingActivities}
+        />
+      )}
+    </Dialog>
   )
 }
