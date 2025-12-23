@@ -21,7 +21,6 @@ jobs:
       name: "Reset cache on master on dependency update"
       needs: [build-pcapi-tests]
       uses: ./.github/workflows/dev_on_workflow_update_api_client_template.yml
-      if: github.ref == 'refs/heads/master'
       with:
         PCAPI_DOCKER_TAG: ${{ github.sha }}
         TRIGGER_ONLY_ON_API_CHANGE: false
