@@ -139,6 +139,7 @@ def update_venue(
     contact_data: offerers_schemas.VenueContactModel | None = None,
     criteria: list[criteria_models.Criterion] | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
     external_accessibility_url: str | None | offerers_constants.T_UNCHANGED = offerers_constants.UNCHANGED,
+    cultural_domains: list[str] | None = None,
     is_manual_edition: bool = False,
 ) -> models.Venue:
     new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
@@ -194,6 +195,23 @@ def update_venue(
             for weekday, change in changes.items()
         }
         venue_snapshot.trace_update_raw(raw_trace_data)
+
+    if cultural_domains is not None:
+        educational_domains = set(educational_repository.get_educational_domains_from_names(cultural_domains))
+        if len(educational_domains) != len(cultural_domains):
+            missing_domains = set(cultural_domains) - {domain.name for domain in educational_domains}
+            if missing_domains:
+                raise ValueError(f"Unknown cultural domains: {', '.join(missing_domains)}")
+
+        # Link venue to educational domains
+        current_educational_domains = set(venue.collectiveDomains)
+        # Remove domains that are not in the sent data
+        for domain in current_educational_domains - educational_domains:
+            venue.collectiveDomains.remove(domain)
+        for domain in educational_domains - current_educational_domains:
+            venue.collectiveDomains.append(domain)
+
+        # TODO(activation): set venueType accordingly
 
     if external_accessibility_url is not offerers_constants.UNCHANGED:
         external_accessibility_id = external_accessibility_url.split("/")[-2] if external_accessibility_url else None

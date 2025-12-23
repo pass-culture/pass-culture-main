@@ -22,6 +22,7 @@ export const setInitialFormValues = (
     isOpenToPublic: venue.isOpenToPublic.toString() || '',
     openingHours: venue.openingHours ?? null,
     activity: venue.activity as VenueEditionFormValues['activity'], // Force is needed because of "GAMES_CENTRE" which is present in `DisplayedActivity`, but not in `OnboardingActivity`
+    culturalDomains: venue.collectiveDomains.map((domain) => domain.name),
   }
 }
 
