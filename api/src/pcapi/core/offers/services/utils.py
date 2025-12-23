@@ -1,5 +1,6 @@
 import os
 import typing
+from collections import defaultdict
 from importlib import import_module
 
 import pydantic as pydantic_v2
@@ -56,24 +57,81 @@ def partial_validation(model: pydantic_v2.BaseModel, **kwargs: typing.Any) -> No
 
 
 def map_subcategories_to_models() -> dict[str, typing.Any]:
+    """Build a detailed mapping of subcategories to models
+
+    This function builds a three-level mapping:
+        1. main category (digital, thing, activity)
+        2. (python) module (name only)
+        3. subcategory
+
+    And then each subcategory is mapped to its specific pydantic model.
+    For example:
+        {
+            "thing": {
+                "things_with_ean": {
+                    "SUPPORT_PHYSIQUE_FILM": <model instance>
+                    "LIVRE_PAPIER": <another model instance>
+                },
+                "things_random": {
+                    "ABO_CONCERT": <and another model instance>
+                }
+            }
+        }
+    
+    This function is meant to be called once in order to store its value
+    inside a global variable. There is no need to scan and parse many
+    python module many time.
+
+    Its multi-level mapping becomes useful inside tests and a python
+    shell to understand what is going on (check that a subcategory is
+    handled at the right place and is used inside the appropriate python
+    module, etc., print some static document that shows how things are
+    structured, etc.)
+    """
     def import_pkg(rel_path: str) -> typing.Any:
         return import_module("." + rel_path.replace(".py", ""), "pcapi.core.offers.services")
 
     def extract_subcategory(model: typing.Any) -> str:
         return model.model_fields["subcategory_id"].annotation.__args__[0]
 
-    # filter files inside current module that contains models definition
-    categories = ("digital", "thing", "activity")
     base_dir = os.path.dirname(__file__)
-    files = [path for path in os.listdir(base_dir) if any(x in path for x in categories)]
 
-    # from those files, load python modules and only keep pydantic
-    # models that matches a subcategory
-    modules = [import_pkg(path) for path in files]
-    objs = [getattr(module, item) for module in modules for item in dir(module)]
-    models = [obj for obj in objs if hasattr(obj, "model_fields") and "subcategory_id" in obj.model_fields]
+    base_mapping = defaultdict(list)
+    for path in os.listdir(base_dir):
+        if "digital" in path:
+            base_mapping["digital"].append(import_pkg(path))
+        elif "thing" in path:
+            base_mapping["thing"].append(import_pkg(path))
+        elif "activity" in path:
+            base_mapping["activity"].append(import_pkg(path))
 
-    return {extract_subcategory(model): model for model in models}
+    # map a global category (digital, thing, activity) to modules
+    # and map those modules to subcategories
+    # and map those subcategories to their pydantic model
+    mapping = {}
+    for category, modules in base_mapping.items():
+        mapping[category] = {}
+
+        for module in modules:
+            module_name = module.__name__.split('.')[-1]
+            mapping[category][module_name] = {}
+
+            for item in dir(module):
+                obj = getattr(module, item)
+                if getattr(obj, '__module__', None) != module.__name__:
+                    # either:
+                    #   * obj is not a model or
+                    #   * obj is a model but it is not defined inside
+                    #     this module, but imported by it
+                    continue
+
+                if hasattr(obj, "model_fields") and "subcategory_id" in obj.model_fields:
+                    mapping[category][module_name][extract_subcategory(obj)] = obj
+
+    return mapping
+
+
+SUBCATEGORY_TO_MODEL = map_subcategories_to_models()
 
 
 def get_validation_model(subcategory: subcategories.Subcategory) -> Mandatory:
@@ -94,7 +152,7 @@ def get_validation_model(subcategory: subcategories.Subcategory) -> Mandatory:
         raise CannotCreateOffer(subcategory_id)
 
     try:
-        return map_subcategories_to_models()[subcategory_id]
+        return SUBCATEGORY_TO_MODEL[subcategory_id]
     except KeyError:
         # should not be reachable!
         raise UnknownSubcategory(subcategory_id)
