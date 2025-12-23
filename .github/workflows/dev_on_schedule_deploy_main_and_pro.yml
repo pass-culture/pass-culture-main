@@ -163,29 +163,6 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: testing
-      app_version: ${{ github.sha }}
-      cluster_scope: metier
-      cluster_environment: ehp
-      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
-      apply_algolia_config: true
-      deploy_api: true
-      deploy_pro: true
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-
-  deploy-to-testing-new-infra:
-    name: Deploy to testing new infra
-    needs:
-      - pcapi-init-job
-      - push-pcapi
-      - push-pcapi-console
-    if: always() && !failure() && !cancelled()
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: testing
       environment_short_name: tst
       app_version: ${{ github.sha }}
       workflow_cluster_name: gke-infra-prd-eu9
@@ -213,7 +190,6 @@ jobs:
       - push-pcapi
       - push-pcapi-console
       - deploy-to-testing
-      - deploy-to-testing-new-infra
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
@@ -240,8 +216,6 @@ jobs:
     name: "Post failure notification on #alertes-deploiement"
     needs:
       - deploy-to-testing
-      # TODO : make a second PR to be notified when deploy-to-testing-new-infra fails
-      # for now we don't want to send false alarms
     if: ${{ always() && needs.deploy-to-testing.result == 'failure' }}
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
