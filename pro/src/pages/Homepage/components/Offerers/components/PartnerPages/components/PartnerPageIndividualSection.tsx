@@ -1,6 +1,6 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { copyTextToClipboard } from '@/commons/utils/copyTextToClipboard'
 import fullDuplicateIcon from '@/icons/full-duplicate.svg'
@@ -23,7 +23,7 @@ export function PartnerPageIndividualSection({
   venueName,
   offererId,
 }: PartnerPageIndividualSectionProps) {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const venuePreviewLink = `${WEBAPP_URL}/lieu/${venueId}`
   const logVenueLinkClick = () => {
@@ -34,7 +34,7 @@ export function PartnerPageIndividualSection({
 
   const copyVenueLink = async () => {
     await copyTextToClipboard(venuePreviewLink)
-    notify.success('Lien copié !')
+    snackBar.success('Lien copié !')
     logEvent(Events.CLICKED_PARTNER_BLOCK_COPY_VENUE_LINK, {
       venueId: venueId,
     })

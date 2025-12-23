@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import {
   OfferHighlightBanner,
@@ -24,7 +24,7 @@ function renderOfferHighlightBanner(props: OfferHighlightBannerProps) {
   return renderWithProviders(
     <>
       <OfferHighlightBanner {...props} />
-      <Notification />
+      <SnackBarContainer />
     </>
   )
 }

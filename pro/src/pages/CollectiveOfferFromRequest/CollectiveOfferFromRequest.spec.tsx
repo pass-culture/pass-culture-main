@@ -3,7 +3,7 @@ import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferTemplateFactory,
@@ -43,7 +43,7 @@ vi.mock('react-router', async () => {
 })
 
 describe('CollectiveOfferFromRequest', () => {
-  const mockNotifyError = vi.fn()
+  const snackBarError = vi.fn()
   const institution = {
     city: 'Paris',
     institutionId: '123456',
@@ -64,12 +64,12 @@ describe('CollectiveOfferFromRequest', () => {
       return { status: 404 }
     })
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: mockNotifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
 
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValue(

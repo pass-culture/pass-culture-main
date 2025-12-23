@@ -9,7 +9,7 @@ import { api } from '@/apiClient/api'
 import type { CollectiveOfferTemplateResponseModel } from '@/apiClient/v1'
 import { CollectiveOfferDisplayedStatus } from '@/apiClient/v1'
 import * as createFromTemplateUtils from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { collectiveOfferTemplateFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -51,14 +51,12 @@ const offers: CollectiveOfferTemplateResponseModel[] = [
 ]
 
 describe('CollectiveOfferConfirmation', () => {
-  const notifyError = vi.fn()
+  const snackBarError = vi.fn()
 
   beforeEach(() => {
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       success: vi.fn(),
-      error: notifyError,
-      information: vi.fn(),
-      close: vi.fn(),
+      error: snackBarError,
     }))
     vi.spyOn(api, 'getCollectiveOfferTemplates').mockResolvedValue(offers)
   })
@@ -180,7 +178,7 @@ describe('CollectiveOfferConfirmation', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Rechercher' }))
 
     await waitFor(() =>
-      expect(notifyError).toHaveBeenNthCalledWith(
+      expect(snackBarError).toHaveBeenNthCalledWith(
         1,
         'Nous avons rencontré un problème lors de la récupération des données.'
       )

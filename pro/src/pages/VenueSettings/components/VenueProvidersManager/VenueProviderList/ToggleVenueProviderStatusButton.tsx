@@ -7,7 +7,7 @@ import type {
   VenueProviderResponse,
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import fullPauseIcon from '@/icons/full-pause.svg'
 import fullPlayIcon from '@/icons/full-play.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -26,7 +26,7 @@ export const ToggleVenueProviderStatusButton = ({
 }: ToggleVenueProviderStatusButtonProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
 
   const updateVenueProviderStatus = async () => {
@@ -41,9 +41,7 @@ export const ToggleVenueProviderStatusButton = ({
       await api.updateVenueProvider(payload)
       await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
     } catch {
-      notification.error(
-        'Une erreur est survenue. Merci de réessayer plus tard'
-      )
+      snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')
     } finally {
       setIsModalOpen(false)
       setIsLoading(false)

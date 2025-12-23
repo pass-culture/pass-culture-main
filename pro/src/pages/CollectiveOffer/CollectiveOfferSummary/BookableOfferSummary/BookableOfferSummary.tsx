@@ -16,11 +16,10 @@ import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   selectCurrentOfferer,
   selectCurrentOffererId,
@@ -68,7 +67,7 @@ export type BookableOfferSummaryProps = {
 
 export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const offerer = useAppSelector(selectCurrentOfferer)
@@ -84,25 +83,19 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
   const cancelBooking = async () => {
     if (!offer.id) {
-      notify.error('L’identifiant de l’offre n’est pas valide.')
+      snackBar.error('L’identifiant de l’offre n’est pas valide.')
       return
     }
     try {
       await api.cancelCollectiveOfferBooking(offer.id)
       await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, offer.id])
       setIsCancelBookingModalOpen(false)
-      notify.success(
-        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
+      snackBar.success(
+        'Vous avez annulé la réservation de cette offre. Elle n’est donc plus visible sur ADAGE.'
       )
     } catch {
-      notify.error(
-        'Une erreur est survenue lors de l’annulation de la réservation.',
-        {
-          duration: NOTIFICATION_LONG_SHOW_DURATION,
-        }
+      snackBar.error(
+        'Une erreur est survenue lors de l’annulation de la réservation.'
       )
     }
   }
@@ -141,7 +134,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
   const archiveOffer = async () => {
     if (!offer.id) {
-      notify.error('L’identifiant de l’offre n’est pas valide.')
+      snackBar.error('L’identifiant de l’offre n’est pas valide.')
       return
     }
     try {
@@ -150,13 +143,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
       setIsArchiveModalOpen(false)
 
-      notify.success('L’offre a bien été archivée', {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      snackBar.success('L’offre a bien été archivée')
     } catch {
-      notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      snackBar.error('Une erreur est survenue lors de l’archivage de l’offre')
     }
   }
 
@@ -302,7 +291,7 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                         offerStatus: offer.displayedStatus,
                         offerType: 'collective',
                       })
-                      await duplicateBookableOffer(navigate, notify, offer.id)
+                      await duplicateBookableOffer(navigate, snackBar, offer.id)
                     }}
                     ref={duplicateButtonRef}
                   >

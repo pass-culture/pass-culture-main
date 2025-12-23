@@ -13,7 +13,7 @@ import {
   isOfferSynchronized,
 } from '@/commons/core/Offers/utils/typology'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
@@ -61,7 +61,7 @@ export function StocksCalendarTable({
 
   const openedStockTriggerRef = useRef<HTMLButtonElement | null>(null)
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   function handleStockCheckboxClicked(stockId: number) {
     const newChecked = new Set(Array.from(checkedStocks))
@@ -77,7 +77,7 @@ export function StocksCalendarTable({
     try {
       await onUpdateStock(stock)
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur est survenue pendant la modification de la date.'
       )
     } finally {

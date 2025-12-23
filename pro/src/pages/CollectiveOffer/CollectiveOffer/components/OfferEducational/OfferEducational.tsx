@@ -30,7 +30,7 @@ import {
 } from '@/commons/core/OfferEducational/utils/createOfferPayload'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
@@ -68,7 +68,7 @@ export const OfferEducational = ({
   isTemplate,
   venues,
 }: OfferEducationalProps): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const location = useLocation()
   const { imageOffer, onImageDelete, onImageUpload, handleImageOnSubmit } =
@@ -187,7 +187,7 @@ export const OfferEducational = ({
           })
         }
       } else {
-        notify.error(SENT_DATA_ERROR_MESSAGE)
+        snackBar.error(SENT_DATA_ERROR_MESSAGE)
       }
     }
   }

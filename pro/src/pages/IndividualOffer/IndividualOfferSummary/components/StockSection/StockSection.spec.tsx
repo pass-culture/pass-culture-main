@@ -13,6 +13,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   getIndividualOfferFactory,
   getOfferStockFactory,
@@ -267,6 +268,35 @@ describe('Summary stock section', () => {
 
       expect(await screen.findByText('Illimité')).toBeInTheDocument()
     })
+
+    it('should display error message when getStocks fails', async () => {
+      const snackBarError = vi.fn()
+      const snackBarsImport = (await vi.importActual(
+        '@/commons/hooks/useSnackBar'
+      )) as ReturnType<typeof useSnackBar.useSnackBar>
+      vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+        ...snackBarsImport,
+        error: snackBarError,
+      }))
+      vi.spyOn(api, 'getStocks').mockRejectedValueOnce(new Error('API Error'))
+
+      const props = {
+        offer: getIndividualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: false,
+        }),
+      }
+
+      renderStockSection(props)
+
+      await waitFor(() => {
+        expect(snackBarError).toHaveBeenCalledWith(
+          'Une erreur est survenue lors de la récupération des informations de votre stock'
+        )
+      })
+
+      vi.spyOn(useSnackBar, 'useSnackBar').mockRestore()
+    })
   })
 
   describe('for stock event', () => {
@@ -310,6 +340,48 @@ describe('Summary stock section', () => {
       expect(
         screen.getByText(/Offer creation: page horaires/)
       ).toBeInTheDocument()
+    })
+
+    it('should display error message when getStocksStats fails', async () => {
+      const snackBarError = vi.fn()
+      const snackBarsImport = (await vi.importActual(
+        '@/commons/hooks/useSnackBar'
+      )) as ReturnType<typeof useSnackBar.useSnackBar>
+      vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+        ...snackBarsImport,
+        error: snackBarError,
+      }))
+
+      vi.spyOn(api, 'getStocksStats').mockRejectedValueOnce(
+        new Error('API Error')
+      )
+
+      const props = {
+        offer: getIndividualOfferFactory({
+          status: OfferStatus.ACTIVE,
+          isEvent: true,
+          hasStocks: false,
+        }),
+      }
+
+      renderStockSection(
+        props,
+        generatePath(
+          getIndividualOfferPath({
+            step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY,
+            mode: OFFER_WIZARD_MODE.CREATION,
+          }),
+          { offerId: 'AA' }
+        )
+      )
+
+      await waitFor(() => {
+        expect(snackBarError).toHaveBeenCalledWith(
+          'Une erreur est survenue lors de la récupération des informations de votre stock'
+        )
+      })
+
+      vi.spyOn(useSnackBar, 'useSnackBar').mockRestore()
     })
   })
 })

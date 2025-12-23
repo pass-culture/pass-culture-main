@@ -9,7 +9,7 @@ import {
   isAllocineProvider,
   isCinemaProvider,
 } from '@/commons/core/Providers/utils/utils'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { GenericCinemaProviderForm } from './GenericCinemaProviderForm/GenericCinemaProviderForm'
@@ -30,18 +30,18 @@ export const VenueProviderForm = ({
   providerSelectRef,
   selectSoftwareButtonRef,
 }: VenueProviderFormProps) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const createVenueProvider = async (
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
       await api.createVenueProvider(payload)
 
-      notify.success('La synchronisation a bien été initiée.')
+      snackBar.success('La synchronisation a bien été initiée.')
       await afterSubmit()
       return true
     } catch (error) {
-      notify.error(getHumanReadableApiError(error))
+      snackBar.error(getHumanReadableApiError(error))
       await afterSubmit()
       return false
     } finally {

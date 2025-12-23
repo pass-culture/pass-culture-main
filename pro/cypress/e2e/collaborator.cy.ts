@@ -44,7 +44,7 @@ describe('Collaborator list feature', () => {
     cy.findByText('Inviter').click()
 
     cy.stepLog({ message: 'check notification about invitation sent' })
-    cy.findAllByTestId('global-notification-success').should(
+    cy.findAllByTestId(`global-snack-bar-success-0`).should(
       'contain',
       `L'invitation a bien été envoyée.`
     )

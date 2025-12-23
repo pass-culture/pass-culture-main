@@ -18,7 +18,7 @@ import {
   GET_DATA_ERROR_MESSAGE,
   SENT_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   type RenderWithProvidersOptions,
@@ -122,17 +122,17 @@ describe('CollectiveOfferVisibility', () => {
     id: offerId,
     allowedActions: [CollectiveOfferAllowedAction.CAN_EDIT_INSTITUTION],
   })
-  const notifyError = vi.fn()
-  const notifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: notifySuccess,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      success: snackBarSuccess,
+      error: snackBarError,
     }))
 
     props = {
@@ -284,7 +284,7 @@ describe('CollectiveOfferVisibility', () => {
       api.patchCollectiveOffersEducationalInstitution
     ).toHaveBeenCalledTimes(1)
     await waitFor(() =>
-      expect(notifyError).toHaveBeenNthCalledWith(1, SENT_DATA_ERROR_MESSAGE)
+      expect(snackBarError).toHaveBeenNthCalledWith(1, SENT_DATA_ERROR_MESSAGE)
     )
   })
 
@@ -549,7 +549,7 @@ describe('CollectiveOfferVisibility', () => {
       ).toBeInTheDocument()
 
       await waitFor(() =>
-        expect(notifyError).toHaveBeenNthCalledWith(
+        expect(snackBarError).toHaveBeenNthCalledWith(
           1,
           POST_VISIBILITY_FORM_ERROR_MESSAGE
         )
@@ -589,7 +589,7 @@ describe('CollectiveOfferVisibility', () => {
       ).toBeInTheDocument()
 
       await waitFor(() =>
-        expect(notifyError).toHaveBeenNthCalledWith(
+        expect(snackBarError).toHaveBeenNthCalledWith(
           1,
           POST_VISIBILITY_FORM_ERROR_MESSAGE
         )
@@ -789,7 +789,7 @@ describe('CollectiveOfferVisibility', () => {
       )
 
       await waitFor(() =>
-        expect(notifyError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
+        expect(snackBarError).toHaveBeenNthCalledWith(1, GET_DATA_ERROR_MESSAGE)
       )
 
       await waitFor(() => {

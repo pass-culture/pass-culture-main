@@ -11,7 +11,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { noopAsync } from '@/commons/utils/noop'
 
@@ -48,7 +48,7 @@ export function HeadlineOfferContextProvider({
 }: HeadlineOfferContextProviderProps) {
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -99,14 +99,14 @@ export function HeadlineOfferContextProvider({
         { populateCache: true, revalidate: false, throwOnError: true }
       )
 
-      notify.success('Votre offre a été mise à la une !')
+      snackBar.success('Votre offre a été mise à la une !')
       logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
         from: location.pathname,
         actionType: context.actionType,
         requiredImageUpload: !!context.requiredImageUpload,
       })
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur s’est produite lors de l’ajout de votre offre à la une'
       )
     }
@@ -125,13 +125,13 @@ export function HeadlineOfferContextProvider({
           }
         )
 
-        notify.success('Votre offre n’est plus à la une')
+        snackBar.success('Votre offre n’est plus à la une')
         logEvent(Events.CLICKED_CONFIRMED_ADD_HEADLINE_OFFER, {
           from: location.pathname,
           actionType: 'delete',
         })
       } catch {
-        notify.error(
+        snackBar.error(
           'Une erreur s’est produite lors du retrait de votre offre à la une'
         )
       }

@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import { CollectiveOfferTemplateAllowedAction } from '@/apiClient/v1'
 import { GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -56,19 +56,18 @@ describe('OfferEducationalActions', () => {
     offer: getCollectiveOfferFactory(),
     mode: Mode.EDITION,
   }
-  const notifyError = vi.fn()
-  const notifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
     vi.resetAllMocks()
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: notifySuccess,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+      success: snackBarSuccess,
     }))
   })
 
@@ -120,7 +119,117 @@ describe('OfferEducationalActions', () => {
     expect(api.patchCollectiveOffersTemplateActiveStatus).toHaveBeenCalledTimes(
       1
     )
-    await waitFor(() => expect(notifyError).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(snackBarError).toHaveBeenCalledTimes(1))
+  })
+
+  it('should show error notification with error message when activation fails with Error instance', async () => {
+    const errorMessage = 'Erreur réseau'
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValue(new Error(errorMessage))
+
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isActive: false,
+        isTemplate: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+      }),
+    })
+    const activateOffer = screen.getByRole('button', {
+      name: 'Publier',
+    })
+
+    await userEvent.click(activateOffer)
+
+    await waitFor(() => {
+      expect(snackBarError).toHaveBeenCalledWith(
+        `Une erreur est survenue lors de l’activation de votre offre. ${errorMessage}`
+      )
+    })
+  })
+
+  it('should show error notification with error message when deactivation fails with Error instance', async () => {
+    const errorMessage = 'Erreur serveur'
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValue(new Error(errorMessage))
+
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isActive: true,
+        isTemplate: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+      }),
+    })
+    const deactivateOffer = screen.getByRole('button', {
+      name: 'Mettre en pause',
+    })
+
+    await userEvent.click(deactivateOffer)
+
+    await waitFor(() => {
+      expect(snackBarError).toHaveBeenCalledWith(
+        `Une erreur est survenue lors de la désactivation de votre offre. ${errorMessage}`
+      )
+    })
+  })
+
+  it('should show error notification without error message when activation fails with non-Error instance', async () => {
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValue({ isOk: false, code: 500 })
+
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isActive: false,
+        isTemplate: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
+      }),
+    })
+    const activateOffer = screen.getByRole('button', {
+      name: 'Publier',
+    })
+
+    await userEvent.click(activateOffer)
+
+    await waitFor(() => {
+      expect(snackBarError).toHaveBeenCalledWith(
+        `Une  erreur est survenue lors de l’activation de votre offre.`
+      )
+    })
+  })
+
+  it('should show error notification without error message when deactivation fails with non-Error instance', async () => {
+    vi.spyOn(
+      api,
+      'patchCollectiveOffersTemplateActiveStatus'
+    ).mockRejectedValue({ isOk: false, code: 500 })
+
+    renderOfferEducationalActions({
+      ...defaultValues,
+      offer: getCollectiveOfferTemplateFactory({
+        isActive: true,
+        isTemplate: true,
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
+      }),
+    })
+    const deactivateOffer = screen.getByRole('button', {
+      name: 'Mettre en pause',
+    })
+
+    await userEvent.click(deactivateOffer)
+
+    await waitFor(() => {
+      expect(snackBarError).toHaveBeenCalledWith(
+        `Une  erreur est survenue lors de la désactivation de votre offre.`
+      )
+    })
   })
 
   it('should display actions button and status tag by default', () => {
@@ -183,7 +292,7 @@ describe('OfferEducationalActions', () => {
       })
     )
 
-    expect(notifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre offre est maintenant active et visible dans ADAGE'
     )
   })
@@ -203,7 +312,7 @@ describe('OfferEducationalActions', () => {
       })
     )
 
-    expect(notifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre offre est mise en pause et n’est plus visible sur ADAGE'
     )
   })

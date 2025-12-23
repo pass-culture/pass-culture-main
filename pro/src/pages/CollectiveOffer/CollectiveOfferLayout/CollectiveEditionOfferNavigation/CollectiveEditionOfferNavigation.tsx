@@ -19,14 +19,13 @@ import {
   COLLECTIVE_OFFER_DUPLICATION_ENTRIES,
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
-import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { createOfferFromTemplate } from '@/commons/core/OfferEducational/utils/createOfferFromTemplate'
 import { duplicateBookableOffer } from '@/commons/core/OfferEducational/utils/duplicateBookableOffer'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
@@ -62,7 +61,7 @@ export const CollectiveEditionOfferNavigation = ({
   offer,
 }: CollectiveEditionOfferNavigationProps): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
@@ -81,7 +80,7 @@ export const CollectiveEditionOfferNavigation = ({
 
   const archiveOffer = async () => {
     if (!offerId) {
-      notify.error('L’identifiant de l’offre n’est pas valide.')
+      snackBar.error('L’identifiant de l’offre n’est pas valide.')
       return
     }
     try {
@@ -95,13 +94,9 @@ export const CollectiveEditionOfferNavigation = ({
 
       setIsArchiveModalOpen(false)
 
-      notify.success('Une offre a bien été archivée', {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      snackBar.success('Une offre a bien été archivée')
     } catch {
-      notify.error('Une erreur est survenue lors de l’archivage de l’offre', {
-        duration: NOTIFICATION_LONG_SHOW_DURATION,
-      })
+      snackBar.error('Une erreur est survenue lors de l’archivage de l’offre')
     }
   }
 
@@ -213,7 +208,7 @@ export const CollectiveEditionOfferNavigation = ({
                 offerStatus: offer?.displayedStatus,
                 offerType: 'collective',
               })
-              await duplicateBookableOffer(navigate, notify, offerId)
+              await duplicateBookableOffer(navigate, snackBar, offerId)
             }}
           >
             Dupliquer
@@ -236,7 +231,7 @@ export const CollectiveEditionOfferNavigation = ({
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 createOfferFromTemplate(
                   navigate,
-                  notify,
+                  snackBar,
                   offerId,
                   undefined,
                   isMarseilleActive

@@ -13,6 +13,7 @@ import {
   SignupJourneyContext,
   type SignupJourneyContextValues,
 } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
+import { RECAPTCHA_ERROR } from '@/commons/core/shared/constants'
 import type { Address } from '@/commons/core/shared/types'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
@@ -21,8 +22,8 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
 import { Validation } from '@/components/SignupJourneyForm/Validation/Validation'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -38,6 +39,13 @@ const selectCurrentOffererId = vi.hoisted(() => vi.fn())
 vi.mock('@/commons/store/offerer/selectors', async (importOriginal) => ({
   ...(await importOriginal()),
   selectCurrentOffererId,
+}))
+
+const setSelectedOffererByIdMock = vi.hoisted(() => vi.fn())
+vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
+  setSelectedOffererById: (args: unknown) => {
+    return () => setSelectedOffererByIdMock(args)
+  },
 }))
 
 const addressInformations: Address = {
@@ -74,7 +82,7 @@ const renderValidationScreen = (
           <Route path="/onboarding" element={<div>onboarding</div>} />
         </Routes>
       </SignupJourneyContext.Provider>
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       user: sharedCurrentUserFactory(),
@@ -82,6 +90,16 @@ const renderValidationScreen = (
       ...options,
     }
   )
+}
+
+const createMockPromise = (value: string) => {
+  // biome-ignore lint/suspicious/noExplicitAny: Only way to mock unwrap
+  const p: any = Promise.resolve({
+    type: 'user/setSelectedOffererById/fulfilled',
+    payload: value,
+  })
+  p.unwrap = () => Promise.resolve(value)
+  return p
 }
 
 describe('ValidationScreen', () => {
@@ -99,6 +117,7 @@ describe('ValidationScreen', () => {
       { value: 'MUSEUM', label: 'first venue label' },
       { value: 'venue2', label: 'second venue label' },
     ])
+    setSelectedOffererByIdMock.mockReset()
   })
 
   it('should redirect to authentification if no offerer is selected', async () => {
@@ -230,6 +249,8 @@ describe('ValidationScreen', () => {
         initialAddress: null,
         setInitialAddress: noop,
       }
+      // Mock par défaut pour setSelectedOffererById
+      setSelectedOffererByIdMock.mockReturnValue(createMockPromise('full'))
     })
 
     it('should send data with public name', async () => {
@@ -448,6 +469,19 @@ describe('ValidationScreen', () => {
       expect(
         screen.queryByText('Informations structure')
       ).not.toBeInTheDocument()
+    })
+
+    it('should display recaptcha error message when recaptcha error occurs', async () => {
+      vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+        remove: vi.fn(),
+      } as unknown as HTMLScriptElement)
+      vi.spyOn(utils, 'getReCaptchaToken').mockRejectedValue(RECAPTCHA_ERROR)
+      renderValidationScreen(contextValue)
+      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      await userEvent.click(screen.getByText('Valider et créer ma structure'))
+      expect(
+        await screen.findByText('Une erreur technique est survenue')
+      ).toBeInTheDocument()
     })
   })
 })

@@ -8,6 +8,8 @@ import { App } from '@/app/App/App'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as orejime from '@/app/App/analytics/orejime'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import {
   type RenderWithProvidersOptions,
@@ -111,5 +113,46 @@ describe('App', () => {
     expect(await screen.findByText('broken page')).toBeInTheDocument()
 
     expect(await screen.findByText('404 page')).toBeInTheDocument()
+  })
+
+  it('should not redirect to page 404 when api has not found on adage-iframe', async () => {
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+      status: 404,
+      name: 'ApiError',
+      message: 'oh no',
+    })
+    const user = sharedCurrentUserFactory({ hasUserOfferer: true })
+
+    renderApp({
+      initialRouterEntries: ['/adage-iframe'],
+      user,
+    })
+
+    expect(await screen.findByText('ADAGE')).toBeInTheDocument()
+    expect(screen.queryByText('404 page')).not.toBeInTheDocument()
+  })
+
+  it('should display snackbar error when api error is not 404', async () => {
+    const snackBarError = vi.fn()
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      success: vi.fn(),
+      error: snackBarError,
+    }))
+
+    vi.spyOn(api, 'getOffer').mockRejectedValueOnce({
+      status: 500,
+      name: 'ApiError',
+      message: 'Internal server error',
+    })
+    const user = sharedCurrentUserFactory({ hasUserOfferer: true })
+
+    renderApp({
+      initialRouterEntries: ['/broken-page'],
+      user,
+    })
+
+    expect(await screen.findByText('broken page')).toBeInTheDocument()
+    expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
+    expect(screen.queryByText('404 page')).not.toBeInTheDocument()
   })
 })

@@ -3,7 +3,7 @@ import { mutate } from 'swr'
 
 import { api } from '@/apiClient/api'
 import { getHumanReadableApiError } from '@/apiClient/helpers'
-import type { useNotification } from '@/commons/hooks/useNotification'
+import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   FORMAT_ISO_DATE_ONLY,
   isDateValid,
@@ -29,7 +29,7 @@ export const onSubmit = async (
   values: RecurrenceFormValues,
   departmentCode: string,
   offerId: number,
-  notify: ReturnType<typeof useNotification>,
+  snackBar: ReturnType<typeof useSnackBar>,
   stockQueryKeys: stockQueryKeysType
 ): Promise<StocksEvent[] | void> => {
   const dates = getRecurrenceDates(values)
@@ -68,7 +68,7 @@ export const onSubmit = async (
       )
 
       const stockCount = data?.editedStockCount ?? 0
-      notify.success(
+      snackBar.success(
         stockCount > 1
           ? `${new Intl.NumberFormat('fr-FR').format(
               stockCount
@@ -76,7 +76,7 @@ export const onSubmit = async (
           : `${stockCount} nouvelle date a été ajoutée`
       )
     } catch (error) {
-      notify.error(
+      snackBar.error(
         getHumanReadableApiError(
           error,
           'Une erreur est survenue lors de l’enregistrement de vos stocks.'

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import {
   StocksCalendarActionsBar,
@@ -34,7 +34,7 @@ function renderStocksCalendarActionsBar(
         updateCheckedStocks={() => {}}
         {...props}
       />
-      <Notification />
+      <SnackBarContainer />
     </>
   )
 }
@@ -149,5 +149,23 @@ describe('StocksCalendarActionsBar', () => {
     )
 
     expect(screen.getByText('Veuillez renseigner au moins une date'))
+  })
+
+  it('should show an error message in handleNextStep when hasStocks is false', async () => {
+    renderStocksCalendarActionsBar({
+      hasStocks: false,
+    })
+
+    // Cliquer sur le bouton pour appeler handleNextStep avec hasStocks: false
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Enregistrer les modifications' })
+    )
+
+    // Vérifier que handleNextStep a été appelé et a affiché le message d'erreur (lignes 68-71)
+    expect(
+      screen.getByText('Veuillez renseigner au moins une date')
+    ).toBeInTheDocument()
+    // Vérifier que la navigation n'a pas été déclenchée
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 })

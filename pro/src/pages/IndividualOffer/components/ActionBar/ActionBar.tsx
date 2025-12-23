@@ -5,8 +5,8 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
-import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullRightIcon from '@/icons/full-right.svg'
@@ -41,7 +41,7 @@ export const ActionBar = ({
   const isOnboarding = pathname.indexOf('onboarding') !== -1
   const mode = useOfferWizardMode()
   const backOfferUrl = computeIndividualOffersUrl({})
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const Left = (): JSX.Element => {
     if (mode === OFFER_WIZARD_MODE.CREATION) {
@@ -107,7 +107,7 @@ export const ActionBar = ({
                   to={isOnboarding ? '/accueil' : '/offres'}
                   variant={ButtonVariant.SECONDARY}
                   onClick={() => {
-                    notify.success(
+                    snackBar.success(
                       'Brouillon sauvegardé dans la liste des offres'
                     )
                   }}

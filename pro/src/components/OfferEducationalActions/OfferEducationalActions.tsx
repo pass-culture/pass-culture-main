@@ -12,7 +12,7 @@ import {
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { Mode } from '@/commons/core/OfferEducational/types'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import fullHideIcon from '@/icons/full-hide.svg'
@@ -35,7 +35,7 @@ export const OfferEducationalActions = ({
   offer,
   mode,
 }: OfferEducationalActionsProps): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const { mutate } = useSWRConfig()
 
@@ -45,20 +45,20 @@ export const OfferEducationalActions = ({
         ids: [offer.id],
         isActive,
       })
-      notify.success(
+      snackBar.success(
         isActive
           ? 'Votre offre est maintenant active et visible dans ADAGE'
           : 'Votre offre est mise en pause et n’est plus visible sur ADAGE'
       )
     } catch (error) {
       if (error instanceof Error) {
-        return notify.error(
+        return snackBar.error(
           `Une erreur est survenue lors de ${
             isActive ? 'l’activation' : 'la désactivation'
           } de votre offre. ${error.message}`
         )
       } else {
-        notify.error(
+        snackBar.error(
           `Une  erreur est survenue lors de ${
             isActive ? 'l’activation' : 'la désactivation'
           } de votre offre.`

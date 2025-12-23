@@ -14,7 +14,7 @@ import {
 } from '@/commons/core/shared/constants'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
 import { useLogEventOnUnload } from '@/commons/hooks/useLogEventOnUnload'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 
@@ -26,7 +26,7 @@ import { validationSchema } from './validationSchema'
 
 export const SignupContainer = (): JSX.Element => {
   const navigate = useNavigate()
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
 
   useInitReCaptcha()
@@ -55,7 +55,7 @@ export const SignupContainer = (): JSX.Element => {
       onHandleSuccess()
     } catch (response) {
       if (response === RECAPTCHA_ERROR) {
-        notification.error(RECAPTCHA_ERROR_MESSAGE)
+        snackBar.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
         const body = isErrorAPIError(response) ? response.body : {}
         onHandleFail(body)
@@ -80,7 +80,7 @@ export const SignupContainer = (): JSX.Element => {
       })
     }
 
-    notification.error(
+    snackBar.error(
       'Une ou plusieurs erreurs sont présentes dans le formulaire.'
     )
   }

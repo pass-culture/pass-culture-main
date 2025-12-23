@@ -4,7 +4,7 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { serializeEducationalOfferer } from '@/commons/core/OfferEducational/utils/serializeEducationalOfferer'
-import type { useNotification } from '@/commons/hooks/useNotification'
+import type { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import { computeInitialValuesFromOffer } from './computeInitialValuesFromOffer'
 import { postCollectiveOfferImage } from './postCollectiveOfferImage'
@@ -12,7 +12,7 @@ import { postCollectiveOfferImage } from './postCollectiveOfferImage'
 // TODO(ahello - 31/03/25) do not make direct api calls, use swr instead
 export const duplicateBookableOffer = async (
   navigate: ReturnType<typeof useNavigate>,
-  notify: ReturnType<typeof useNotification>,
+  snackBar: ReturnType<typeof useSnackBar>,
   offerId: number
 ) => {
   let initialValues: OfferEducationalFormValues
@@ -37,14 +37,14 @@ export const duplicateBookableOffer = async (
       offerResponse
     )
   } catch {
-    return notify.error(
+    return snackBar.error(
       'Une erreur est survenue lors de la récupération de votre offre'
     )
   }
 
   try {
     const response = await api.duplicateCollectiveOffer(offerId)
-    await postCollectiveOfferImage({ initialValues, notify, id: response.id })
+    await postCollectiveOfferImage({ initialValues, snackBar, id: response.id })
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     navigate(`/offre/collectif/${response.id}/creation?structure=${offererId}`)
@@ -53,6 +53,6 @@ export const duplicateBookableOffer = async (
       isErrorAPIError(error) && error.status === 400
         ? 'Une ou plusieurs erreurs sont présentes dans le formulaire'
         : 'Une erreur est survenue lors de la création de votre offre'
-    notify.error(message)
+    snackBar.error(message)
   }
 }

@@ -8,7 +8,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { App } from '../App'
 import { DEFAULT_GEO_RADIUS } from '../components/OffersInstantSearch/OffersInstantSearch'
@@ -118,7 +118,7 @@ const renderApp = (options?: RenderWithProvidersOptions) => {
   renderWithProviders(
     <>
       <App />
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       initialRouterEntries:

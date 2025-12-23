@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { defaultCollectiveOffer } from '@/commons/utils/factories/adageFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
@@ -41,7 +41,7 @@ const renderClassroomPlaylist = () => {
 }
 
 describe('AdageDiscover classRoomPlaylist', () => {
-  const notifyError = vi.fn()
+  const snackBarError = vi.fn()
 
   beforeEach(async () => {
     vi.spyOn(apiAdage, 'logConsultPlaylistElement')
@@ -49,12 +49,12 @@ describe('AdageDiscover classRoomPlaylist', () => {
       collectiveOffers: [defaultCollectiveOffer],
     })
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
   })
 

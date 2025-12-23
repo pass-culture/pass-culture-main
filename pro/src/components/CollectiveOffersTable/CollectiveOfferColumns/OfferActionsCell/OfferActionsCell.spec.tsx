@@ -16,7 +16,7 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { DEFAULT_COLLECTIVE_SEARCH_FILTERS } from '@/commons/core/Offers/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   collectiveOfferFactory,
   collectiveOfferTemplateFactory,
@@ -89,17 +89,17 @@ vi.spyOn(storageAvailable, 'storageAvailable').mockImplementationOnce(
 )
 
 describe('OfferActionsCells', () => {
-  const notifyError = vi.fn()
-  const notifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: notifySuccess,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      success: snackBarSuccess,
+      error: snackBarError,
     }))
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
@@ -240,7 +240,7 @@ describe('OfferActionsCells', () => {
         screen.getByRole('button', { name: 'Voir les actions' })
       )
       await userEvent.click(screen.getByText('Dupliquer'))
-      expect(notifyError).toBeCalledWith(
+      expect(snackBarError).toBeCalledWith(
         'Une erreur est survenue lors de la récupération de votre offre'
       )
     })
@@ -476,7 +476,7 @@ describe('OfferActionsCells', () => {
       })
     )
 
-    expect(notifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre offre est mise en pause et n’est plus visible sur ADAGE'
     )
   })
@@ -499,7 +499,7 @@ describe('OfferActionsCells', () => {
       })
     )
 
-    expect(notifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       'Votre offre est maintenant active et visible dans ADAGE'
     )
   })
@@ -523,7 +523,7 @@ describe('OfferActionsCells', () => {
       screen.getByRole('button', { name: 'Mettre en pause' })
     )
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la désactivation de votre offre.'
     )
   })
@@ -545,7 +545,7 @@ describe('OfferActionsCells', () => {
     )
     await userEvent.click(screen.getByRole('button', { name: 'Publier' }))
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de l’activation de votre offre.'
     )
   })
@@ -569,9 +569,8 @@ describe('OfferActionsCells', () => {
       screen.getByRole('button', { name: 'Archiver l’offre' })
     )
 
-    expect(notifyError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de l’archivage de l’offre',
-      expect.any(Object)
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’archivage de l’offre'
     )
   })
 })

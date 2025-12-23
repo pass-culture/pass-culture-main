@@ -29,7 +29,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { IndividualBookings } from './IndividualBookings'
 
@@ -70,7 +70,7 @@ const renderBookingsRecap = (
   return renderWithProviders(
     <>
       <IndividualBookings />
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       initialRouterEntries: ['/reservations'],

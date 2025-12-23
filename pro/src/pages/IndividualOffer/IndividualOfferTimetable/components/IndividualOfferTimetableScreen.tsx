@@ -18,7 +18,7 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { StocksCalendar } from '@/pages/IndividualOffer/IndividualOfferTimetable/components/StocksCalendar/StocksCalendar'
 import { cleanOpeningHours } from '@/pages/VenueEdition/commons/serializers'
@@ -54,7 +54,7 @@ export function IndividualOfferTimetableScreen({
 }: IndividualOfferTimetableScreenProps) {
   const isOhoFFEnabled = useActiveFeature('WIP_ENABLE_OHO')
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -96,7 +96,7 @@ export function IndividualOfferTimetableScreen({
 
       handleNextStep()
     } catch {
-      notify.error(SENT_DATA_ERROR_MESSAGE)
+      snackBar.error(SENT_DATA_ERROR_MESSAGE)
     }
   }
 

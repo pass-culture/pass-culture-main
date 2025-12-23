@@ -9,13 +9,12 @@ import {
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { NOTIFICATION_LONG_SHOW_DURATION } from '@/commons/core/Notification/constants'
 import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -59,7 +58,7 @@ const toggleCollectiveOffersActiveInactiveStatus = async <
     | CollectiveOfferDisplayedStatus.HIDDEN,
   selectedOffers: T[],
   areTemplateOffers: boolean = false,
-  notify: ReturnType<typeof useNotification>
+  snackBar: ReturnType<typeof useSnackBar>
 ) => {
   //  Differenciate template and bookable selected offers so that there can be two separarate api status update calls
 
@@ -71,7 +70,7 @@ const toggleCollectiveOffersActiveInactiveStatus = async <
     )
   ) {
     const msg = `Une erreur est survenue lors de ${newStatus === CollectiveOfferDisplayedStatus.PUBLISHED ? 'la publication' : 'la désactivation'} des offres sélectionnées`
-    notify.error(msg)
+    snackBar.error(msg)
     throw new Error(msg)
   }
 
@@ -96,7 +95,7 @@ export function CollectiveOffersActionsBar<
 }: CollectiveOffersActionsBarProps<T>) {
   const urlSearchFilters = useQueryCollectiveSearchFilters()
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
     useState(false)
   const [isArchiveDialogOpen, setIsArchiveDialogOpen] = useState(false)
@@ -128,17 +127,17 @@ export function CollectiveOffersActionsBar<
               CollectiveOfferDisplayedStatus.PUBLISHED,
               selectedOffers,
               areTemplateOffers,
-              notify
+              snackBar
             )
             await mutate(collectiveOffersQueryKeys)
-            notify.success(
+            snackBar.success(
               computeActivationSuccessMessage(selectedOffers.length)
             )
           } catch {
-            notify.error('Une erreur est survenue')
+            snackBar.error('Une erreur est survenue')
           }
         } else {
-          notify.error(updateOfferStatusMessage)
+          snackBar.error(updateOfferStatusMessage)
           return
         }
         break
@@ -149,14 +148,14 @@ export function CollectiveOffersActionsBar<
             CollectiveOfferDisplayedStatus.HIDDEN,
             selectedOffers,
             areTemplateOffers,
-            notify
+            snackBar
           )
           await mutate(collectiveOffersQueryKeys)
-          notify.success(
+          snackBar.success(
             computeDeactivationSuccessMessage(selectedOffers.length)
           )
         } catch {
-          notify.error('Une erreur est survenue')
+          snackBar.error('Une erreur est survenue')
         }
         setIsDeactivationDialogOpen(false)
         break
@@ -165,20 +164,14 @@ export function CollectiveOffersActionsBar<
         try {
           await onArchiveOffers()
           await mutate(collectiveOffersQueryKeys)
-          notify.success(
+          snackBar.success(
             selectedOffers.length > 1
               ? `${selectedOffers.length} offres ont bien été archivées`
-              : 'Une offre a bien été archivée',
-            {
-              duration: NOTIFICATION_LONG_SHOW_DURATION,
-            }
+              : 'Une offre a bien été archivée'
           )
         } catch {
-          notify.error(
-            'Une erreur est survenue lors de l’archivage de l’offre',
-            {
-              duration: NOTIFICATION_LONG_SHOW_DURATION,
-            }
+          snackBar.error(
+            'Une erreur est survenue lors de l’archivage de l’offre'
           )
         }
         setIsArchiveDialogOpen(false)
@@ -199,7 +192,7 @@ export function CollectiveOffersActionsBar<
       )
     })
     if (archivableOffers.length < selectedOffers.length) {
-      notify.error(
+      snackBar.error(
         'Les offres déjà archivées ou liées à des réservations ne peuvent pas être archivées'
       )
       clearSelectedOfferIds()
@@ -216,7 +209,7 @@ export function CollectiveOffersActionsBar<
           CollectiveOfferTemplateAllowedAction.CAN_HIDE
         )
       ) {
-        notify.error(
+        snackBar.error(
           `Seules les offres vitrines au statut publié peuvent être mises en pause.`
         )
         clearSelectedOfferIds()
@@ -236,7 +229,7 @@ export function CollectiveOffersActionsBar<
     )
 
     if (offersWithCanPublishAction.length < 1) {
-      notify.error(
+      snackBar.error(
         `Seules les offres vitrines au statut en pause peuvent être publiées.`
       )
       clearSelectedOfferIds()
@@ -252,7 +245,7 @@ export function CollectiveOffersActionsBar<
 
     await mutate(collectiveOffersQueryKeys)
 
-    notify.success(
+    snackBar.success(
       computeActivationSuccessMessage(offersWithCanPublishAction.length)
     )
 
@@ -289,7 +282,7 @@ export function CollectiveOffersActionsBar<
           offer.displayedStatus === CollectiveOfferDisplayedStatus.ARCHIVED
       )
     ) {
-      notify.error(
+      snackBar.error(
         `Une erreur est survenue lors de la publication des offres sélectionnées`
       )
       return

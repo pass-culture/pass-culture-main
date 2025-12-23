@@ -14,14 +14,12 @@ import {
   type StocksEvent,
 } from '../types'
 
-const mockSuccessNotification = vi.fn()
-const mockErrorNotification = vi.fn()
+const snackBarSuccess = vi.fn()
+const snackBarError = vi.fn()
 
 const notify = {
-  success: mockSuccessNotification,
-  error: mockErrorNotification,
-  information: vi.fn(),
-  close: vi.fn(),
+  success: snackBarSuccess,
+  error: snackBarError,
 }
 
 describe('onSubmit', () => {
@@ -375,7 +373,7 @@ describe('onSubmit', () => {
             })
           ),
         })
-        expect(mockSuccessNotification).toBeCalledWith(expectedNotification)
+        expect(snackBarSuccess).toBeCalledWith(expectedNotification)
       })
     }
   )
@@ -482,7 +480,7 @@ describe('onSubmit', () => {
       {},
     ])
 
-    expect(mockErrorNotification).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       `Une erreur est survenue lors de l’enregistrement de vos stocks.`
     )
     expect(result).toEqual(undefined)

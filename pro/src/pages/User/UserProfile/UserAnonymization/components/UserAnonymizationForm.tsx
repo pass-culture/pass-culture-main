@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -18,7 +18,7 @@ interface UserAnonymizationFormValues {
 
 export const UserAnonymizationForm = (): JSX.Element => {
   const dispatch = useAppDispatch()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const {
     register,
@@ -34,7 +34,7 @@ export const UserAnonymizationForm = (): JSX.Element => {
       await api.anonymize()
       dispatch(logout())
     } catch {
-      notify.error('Une erreur est survenue. Merci de réessayer plus tard.')
+      snackBar.error('Une erreur est survenue. Merci de réessayer plus tard.')
     }
   }
 

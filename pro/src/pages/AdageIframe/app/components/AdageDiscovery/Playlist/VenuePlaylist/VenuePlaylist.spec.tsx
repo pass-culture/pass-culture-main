@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import type { LocalOfferersPlaylistOffer } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { VenuePlaylist } from './VenuePlaylist'
@@ -38,7 +38,7 @@ const renderVenuePlaylist = () => {
 }
 
 describe('VenuePlaylist', () => {
-  const notifyError = vi.fn()
+  const snackBarError = vi.fn()
 
   beforeEach(async () => {
     vi.resetAllMocks()
@@ -47,12 +47,12 @@ describe('VenuePlaylist', () => {
       venues: [mockLocalOfferersPlaylistOffer],
     })
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
   })
 

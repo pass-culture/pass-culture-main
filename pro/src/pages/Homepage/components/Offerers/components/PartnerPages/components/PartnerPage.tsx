@@ -10,7 +10,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   UploaderModeEnum,
@@ -44,7 +44,7 @@ export const PartnerPage = ({
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const [imageValues, setImageValues] =
@@ -71,9 +71,9 @@ export const PartnerPage = ({
 
       await mutate([GET_OFFERER_QUERY_KEY, String(offerer.id)])
 
-      notify.success('Vos modifications ont bien été enregistrées')
+      snackBar.success('Vos modifications ont bien été enregistrées')
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
       )
     }

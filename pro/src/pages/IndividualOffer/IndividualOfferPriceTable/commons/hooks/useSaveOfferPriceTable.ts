@@ -8,8 +8,8 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
-import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getSuccessMessage } from '@/pages/IndividualOffer/commons/getSuccessMessage'
 
 import { FAILED_PATCH_OFFER_USER_MESSAGE } from '../constants'
@@ -27,7 +27,7 @@ export const useSaveOfferPriceTable = ({
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const isOnboarding = pathname.indexOf('onboarding') !== -1
 
@@ -50,7 +50,7 @@ export const useSaveOfferPriceTable = ({
     if (!form.formState.isDirty && mode === OFFER_WIZARD_MODE.EDITION) {
       navigate(nextStepUrl)
 
-      notify.success(getSuccessMessage(mode))
+      snackBar.success(getSuccessMessage(mode))
 
       return
     }
@@ -67,7 +67,7 @@ export const useSaveOfferPriceTable = ({
       }
 
       if (mode === OFFER_WIZARD_MODE.EDITION) {
-        notify.success(getSuccessMessage(mode))
+        snackBar.success(getSuccessMessage(mode))
       }
 
       navigate(nextStepUrl)
@@ -90,7 +90,7 @@ export const useSaveOfferPriceTable = ({
         }
       }
 
-      return notify.error(FAILED_PATCH_OFFER_USER_MESSAGE)
+      return snackBar.error(FAILED_PATCH_OFFER_USER_MESSAGE)
     }
   }
 

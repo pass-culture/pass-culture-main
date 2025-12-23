@@ -7,8 +7,9 @@ import { userEvent } from '@testing-library/user-event'
 
 import { AdageFrontRoles, type AuthenticatedResponse } from '@/apiClient/adage'
 import { api, apiAdage } from '@/apiClient/api'
+import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import * as useIsElementVisible from '@/commons/hooks/useIsElementVisible'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { AdageUserContextProvider } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
@@ -47,7 +48,7 @@ const renderAdageDiscovery = (user: AuthenticatedResponse) => {
 }
 
 describe('AdageDiscovery', () => {
-  const notifyError = vi.fn()
+  const snackBarError = vi.fn()
   const user = {
     role: AdageFrontRoles.REDACTOR,
     uai: 'uai',
@@ -57,12 +58,12 @@ describe('AdageDiscovery', () => {
   }
 
   beforeEach(async () => {
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
 
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([
@@ -158,5 +159,17 @@ describe('AdageDiscovery', () => {
 
     //  Log called once for each playlist
     expect(apiAdage.logHasSeenWholePlaylist).toHaveBeenCalledTimes(4)
+  })
+
+  it('should display error message when educational domains API fails', async () => {
+    vi.spyOn(api, 'listEducationalDomains').mockRejectedValueOnce(
+      new Error('API Error')
+    )
+
+    renderAdageDiscovery(user)
+
+    await waitFor(() => {
+      expect(snackBarError).toHaveBeenCalledWith(GET_DATA_ERROR_MESSAGE)
+    })
   })
 })

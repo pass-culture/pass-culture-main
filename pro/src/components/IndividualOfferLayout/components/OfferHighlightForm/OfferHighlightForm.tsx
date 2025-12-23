@@ -11,7 +11,7 @@ import {
   GET_OFFER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
@@ -34,7 +34,7 @@ export function OfferHighlightForm({
   onSuccess,
   highlightRequests,
 }: OfferHighlightFormProps): JSX.Element {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
 
@@ -77,10 +77,10 @@ export function OfferHighlightForm({
           values.highlightIds.length > 0
             ? 'La sélection des temps forts a bien été prise en compte'
             : 'Les temps forts ont été dissociés'
-        notify.success(successMessage)
+        snackBar.success(successMessage)
       }
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur est survenue lors de la sélection des temps forts'
       )
     }

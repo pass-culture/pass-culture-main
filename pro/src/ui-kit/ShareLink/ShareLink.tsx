@@ -4,7 +4,7 @@ import { useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 
@@ -26,7 +26,7 @@ export const ShareLink = ({
   offerId,
 }: ShareLinkProps) => {
   const inputRef = useRef<HTMLInputElement>(null)
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
@@ -40,13 +40,13 @@ export const ShareLink = ({
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(link)
-      notify.success(notifySuccessMessage)
+      snackBar.success(notifySuccessMessage)
       logCopyEvent()
     } catch {
       if (inputRef.current) {
         inputRef.current.select()
         document.execCommand('copy')
-        notify.success(notifySuccessMessage)
+        snackBar.success(notifySuccessMessage)
         logCopyEvent()
       }
     }

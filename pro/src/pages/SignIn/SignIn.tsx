@@ -12,7 +12,7 @@ import {
 } from '@/commons/core/shared/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { initializeUser } from '@/commons/store/user/dispatchers/initializeUser'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -34,7 +34,7 @@ interface SigninApiErrorResponse {
 }
 
 export const SignIn = (): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const [searchParams, setSearchParams] = useSearchParams()
   const [hasApiError, setHasApiError] = useState(false)
   const dispatch = useAppDispatch()
@@ -43,7 +43,7 @@ export const SignIn = (): JSX.Element => {
 
   useEffect(() => {
     if (searchParams.get('accountValidation') === 'true') {
-      notify.success(
+      snackBar.success(
         'Votre compte a été créé. Vous pouvez vous connecter avec les identifiants que vous avez choisis.'
       )
       setSearchParams('')
@@ -51,7 +51,7 @@ export const SignIn = (): JSX.Element => {
       searchParams.get('accountValidation') === 'false' &&
       searchParams.get('message')
     ) {
-      notify.error(searchParams.get('message'))
+      snackBar.error(searchParams.get('message') ?? '')
       setSearchParams('')
     }
   }, [searchParams])
@@ -72,7 +72,7 @@ export const SignIn = (): JSX.Element => {
         if (isErrorAPIError(error)) {
           onHandleFail({ status: error.status, errors: error.body })
         } else {
-          notify.error(RECAPTCHA_ERROR_MESSAGE)
+          snackBar.error(RECAPTCHA_ERROR_MESSAGE)
         }
       }
     }
@@ -102,7 +102,7 @@ export const SignIn = (): JSX.Element => {
   const onHandleFail = (payload: SigninApiErrorResponse) => {
     const { errors, status } = payload
     if (status === HTTP_STATUS.TOO_MANY_REQUESTS) {
-      notify.error(
+      snackBar.error(
         'Nombre de tentatives de connexion dépassé. Veuillez réessayer dans 1 minute.'
       )
     } else if (Object.values(errors).length > 0) {

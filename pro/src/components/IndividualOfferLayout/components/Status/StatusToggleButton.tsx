@@ -9,7 +9,7 @@ import {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import fullHideIcon from '@/icons/full-hide.svg'
@@ -22,7 +22,7 @@ export interface StatusToggleButtonProps {
 }
 
 export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const { logEvent } = useAnalytics()
 
@@ -56,7 +56,7 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         isActive: !offer.isActive,
       })
       await mutate([GET_OFFER_QUERY_KEY, offer.id])
-      notification.success(
+      snackBar.success(
         `L’offre a bien été ${offer.isActive ? 'mise en pause' : 'publiée'}.`
       )
       if (isPublicationConfirmationModalOpen) {
@@ -66,7 +66,7 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
         })
       }
     } catch {
-      notification.error(
+      snackBar.error(
         'Une erreur est survenue, veuillez réessayer ultérieurement.'
       )
     } finally {

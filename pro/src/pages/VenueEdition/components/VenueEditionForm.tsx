@@ -11,7 +11,7 @@ import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivities } from '@/commons/mappings/mappings'
 import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
@@ -46,7 +46,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const navigate = useNavigate()
   const location = useLocation()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
 
@@ -108,7 +108,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         isEdition: true,
       })
 
-      notify.success('Vos modifications ont été sauvegardées')
+      snackBar.success('Vos modifications ont été sauvegardées')
     } catch (error) {
       let formErrors: Record<string, string> | undefined
       if (isErrorAPIError(error)) {
@@ -122,9 +122,9 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
         errorsKeys.length === 0 ||
         errorsKeys.includes('global')
       ) {
-        notify.error('Erreur inconnue lors de la sauvegarde de la structure.')
+        snackBar.error('Erreur inconnue lors de la sauvegarde de la structure.')
       } else {
-        notify.error(
+        snackBar.error(
           'Une ou plusieurs erreurs sont présentes dans le formulaire'
         )
 

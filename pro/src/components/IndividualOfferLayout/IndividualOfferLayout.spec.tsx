@@ -18,12 +18,12 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
 import {
   MOCKED_CATEGORIES,
   MOCKED_SUBCATEGORIES,
 } from '@/pages/IndividualOffer/commons/__mocks__/constants'
 
+import { SnackBarContainer } from '../SnackBarContainer/SnackBarContainer'
 import {
   IndividualOfferLayout,
   type IndividualOfferLayoutProps,
@@ -69,7 +69,7 @@ const renderIndividualOfferLayout: RenderComponentFunction<
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValues}>
-      <Notification />
+      <SnackBarContainer />
       <IndividualOfferLayout {...props} />
     </IndividualOfferContext.Provider>,
     options

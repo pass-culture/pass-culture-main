@@ -3,7 +3,7 @@ import { useState } from 'react'
 
 import type { CollectiveSearchFiltersParams } from '@/commons/core/Offers/types'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadBookableOffersFile } from '@/components/CollectiveOffersTable/utils/downloadBookableOffersFile'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/ui-kit/Button/Button'
@@ -21,7 +21,7 @@ export const CollectiveOffersDownloadDrawer = ({
   isDisabled,
   filters,
 }: CollectiveOffersDownloadDrawerProps) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const [isOpenDialog, setIsOpenDialog] = useState(false)
   const [isDownloading, setIsDownloading] = useState(false)
 
@@ -31,7 +31,7 @@ export const CollectiveOffersDownloadDrawer = ({
     try {
       await downloadBookableOffersFile(filters, type)
     } catch {
-      notify.error(GET_DATA_ERROR_MESSAGE)
+      snackBar.error(GET_DATA_ERROR_MESSAGE)
     }
 
     setIsDownloading(false)

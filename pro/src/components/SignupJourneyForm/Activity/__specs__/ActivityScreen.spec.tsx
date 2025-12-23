@@ -15,8 +15,8 @@ import * as useEducationalDomains from '@/commons/hooks/swr/useEducationalDomain
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
 import { DEFAULT_ADDRESS_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { Activity } from '../Activity'
 
@@ -48,7 +48,7 @@ const renderActivityScreen = (
           />
         </Routes>
       </SignupJourneyContext.Provider>
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       user: sharedCurrentUserFactory(),

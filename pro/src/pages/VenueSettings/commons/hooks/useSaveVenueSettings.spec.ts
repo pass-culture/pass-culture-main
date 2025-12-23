@@ -10,7 +10,7 @@ import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { ApiError } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { configureTestStore } from '@/commons/store/testUtils'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
@@ -106,19 +106,19 @@ describe('useSaveVenueSettings', () => {
 
   const logEvent = vi.fn()
 
-  const notifyError = vi.fn()
-  const notifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
     vi.clearAllMocks()
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      success: notifySuccess,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      success: snackBarSuccess,
+      error: snackBarError,
     }))
 
     const analyticsImport = (await vi.importActual(
@@ -156,7 +156,7 @@ describe('useSaveVenueSettings', () => {
         `/structures/${venue.managingOfferer.id}/lieux/${venue.id}$`
       )
     )
-    expect(notifySuccess).toHaveBeenCalled()
+    expect(snackBarSuccess).toHaveBeenCalled()
     expect(logEvent).toHaveBeenCalled()
   })
 
@@ -185,7 +185,7 @@ describe('useSaveVenueSettings', () => {
       )
     })
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Erreur lors de la sauvegarde de la structure.'
     )
     expect(useNavigateMock).not.toHaveBeenCalled()

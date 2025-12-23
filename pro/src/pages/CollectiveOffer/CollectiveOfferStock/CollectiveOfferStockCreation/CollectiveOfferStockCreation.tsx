@@ -25,7 +25,7 @@ import { extractInitialStockValues } from '@/commons/core/OfferEducational/utils
 import { hasStatusCodeAndErrorsCode } from '@/commons/core/OfferEducational/utils/hasStatusCode'
 import { FORM_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 
@@ -39,7 +39,7 @@ export const CollectiveOfferStockCreation = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps): JSX.Element | null => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const location = useLocation()
   const isCreation = !location.pathname.includes('edition')
@@ -132,7 +132,7 @@ export const CollectiveOfferStockCreation = ({
         e.status === 400 &&
         e.errors.code === 'EDUCATIONAL_STOCK_ALREADY_EXISTS'
       ) {
-        notify.error(
+        snackBar.error(
           'Une erreur s’est produite. Les informations dates et prix existent déjà pour cette offre.'
         )
       }
@@ -141,12 +141,14 @@ export const CollectiveOfferStockCreation = ({
         e.status === 400 &&
         e.errors.code === 'COLLECTIVE_OFFER_NOT_FOUND'
       ) {
-        notify.error('Une erreur s’est produite. L’offre n’a pas été trouvée.')
+        snackBar.error(
+          'Une erreur s’est produite. L’offre n’a pas été trouvée.'
+        )
       }
       if (isErrorAPIError(e) && e.status === 400) {
-        notify.error(FORM_ERROR_MESSAGE)
+        snackBar.error(FORM_ERROR_MESSAGE)
       } else {
-        notify.error(
+        snackBar.error(
           'Une erreur est survenue lors de la création de votre stock.'
         )
       }

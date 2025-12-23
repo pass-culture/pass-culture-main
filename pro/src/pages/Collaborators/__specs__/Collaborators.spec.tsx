@@ -11,7 +11,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { Collaborators } from '@/pages/Collaborators/Collaborators'
 
 vi.mock('@/apiClient/api', () => ({
@@ -27,7 +27,7 @@ const renderAttachmentInvitations = async () => {
   renderWithProviders(
     <>
       <Collaborators />
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       storeOverrides: {

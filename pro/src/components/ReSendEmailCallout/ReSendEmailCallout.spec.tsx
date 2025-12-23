@@ -3,8 +3,8 @@ import userEvent from '@testing-library/user-event'
 
 import { CancelablePromise } from '@/apiClient/v1'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 const renderComponent = (
   action: () => CancelablePromise<void> = () =>
@@ -12,7 +12,7 @@ const renderComponent = (
 ) =>
   renderWithProviders(
     <>
-      <Notification />
+      <SnackBarContainer />
       <ReSendEmailCallout action={action} />
     </>
   )
@@ -28,7 +28,7 @@ describe('ReSendEmailCallout', () => {
     renderComponent()
     await userEvent.click(screen.getByText('cliquez ici'))
 
-    expect(screen.getByText('Email renvoyé !')).toBeInTheDocument()
+    expect(screen.getByText('Email envoyé.')).toBeInTheDocument()
   })
 
   it('should display a notification on action success', async () => {

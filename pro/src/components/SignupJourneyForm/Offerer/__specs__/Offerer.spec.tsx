@@ -5,6 +5,7 @@ import { expect } from 'vitest'
 import createFetchMock from 'vitest-fetch-mock'
 
 import { api } from '@/apiClient/api'
+import type { StructureDataBodyModel } from '@/apiClient/v1'
 import { ApiError } from '@/apiClient/v1'
 import type { ApiRequestOptions } from '@/apiClient/v1/core/ApiRequestOptions'
 import type { ApiResult } from '@/apiClient/v1/core/ApiResult'
@@ -17,7 +18,7 @@ import * as getSiretData from '@/commons/core/Venue/getSiretData'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { DEFAULT_OFFERER_FORM_VALUES } from '../constants'
 import { Offerer } from '../Offerer'
@@ -70,7 +71,7 @@ const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
           />
         </Routes>
       </SignupJourneyContext.Provider>
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       user: sharedCurrentUserFactory(),
@@ -610,5 +611,246 @@ describe('Offerer', () => {
     expect(
       await screen.findByText('Le SIRET doit comporter 14 caractères')
     ).toBeInTheDocument()
+  })
+
+  it('should display error when offererSiretData is null', async () => {
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      null as unknown as StructureDataBodyModel
+    )
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
+    })
+  })
+
+  it('should handle error that is not an instance of Error', async () => {
+    vi.spyOn(getSiretData, 'getSiretData').mockRejectedValue('string error')
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    // When error is not an instance of Error, nothing happens in the catch block
+    // The form should remain visible and no error should be set
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Modifier la visibilité de mon SIRET')
+      ).not.toBeInTheDocument()
+      expect(
+        screen.getByText('Dites-nous pour quelle structure vous travaillez')
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should handle offererSiretData with null name', async () => {
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      structureDataBodyModelFactory({ name: null })
+    )
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      offererSiren: '123456789',
+      venues: [],
+    })
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    await waitFor(() => {
+      expect(mockSetOfferer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: '',
+        })
+      )
+    })
+  })
+
+  it('should handle offererSiretData with null apeCode', async () => {
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      structureDataBodyModelFactory({ apeCode: null })
+    )
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      offererSiren: '123456789',
+      venues: [],
+    })
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    await waitFor(() => {
+      expect(mockSetOfferer).toHaveBeenCalledWith(
+        expect.objectContaining({
+          apeCode: undefined,
+        })
+      )
+    })
+  })
+
+  it('should handle ApiError in second try catch block', async () => {
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      structureDataBodyModelFactory()
+    )
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 500,
+          body: { message: 'API Error message' },
+        } as ApiResult,
+        'API Error message'
+      )
+    )
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('API Error message')).toBeInTheDocument()
+    })
+  })
+
+  it('should handle ApiError with empty message in second try catch block', async () => {
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      structureDataBodyModelFactory()
+    )
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValue(
+      new ApiError(
+        {} as ApiRequestOptions,
+        {
+          status: 500,
+          body: {},
+        } as ApiResult,
+        ''
+      )
+    )
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('Une erreur est survenue')).toBeInTheDocument()
+    })
+  })
+
+  it('should handle non-ApiError in second try catch block', async () => {
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      structureDataBodyModelFactory()
+    )
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockRejectedValue(
+      'string error'
+    )
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Nous avons rencontré un problème lors de la récupération des données.'
+        )
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should reset dialog state when showIsAppUserDialog is true and form is submitted again', async () => {
+    vi.spyOn(api, 'getStructureData').mockResolvedValue(
+      structureDataBodyModelFactory({ apeCode: '8531Z' })
+    )
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      structureDataBodyModelFactory({ apeCode: '8531Z' })
+    )
+    vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
+      offererSiren: '123456789',
+      venues: [],
+    })
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    // Wait for dialog to appear
+    await waitFor(() => {
+      expect(
+        screen.getByText('Êtes-vous un professionnel de la culture ?')
+      ).toBeInTheDocument()
+    })
+
+    // Submit again (onCancel callback) - this should reset setIsHigherEducation and setShowIsAppUserDialog
+    await userEvent.click(screen.getByTestId('redirect-dialog-button-cancel'))
+
+    // Verify that the form submission continues and dialog state is reset
+    await waitFor(() => {
+      expect(mockSetOfferer).toHaveBeenCalled()
+    })
+  })
+
+  it('should close dialog and reset state when onClose is called', async () => {
+    vi.spyOn(api, 'getStructureData').mockResolvedValue(
+      structureDataBodyModelFactory({ apeCode: '8531Z' })
+    )
+    vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue(
+      structureDataBodyModelFactory({ apeCode: '8531Z' })
+    )
+
+    renderOffererScreen(contextValue)
+
+    await userEvent.type(
+      screen.getByLabelText(/Numéro de SIRET à 14 chiffres/),
+      '12345678933333'
+    )
+    await userEvent.click(screen.getByRole('button', { name: 'Continuer' }))
+
+    // Wait for dialog to appear
+    await waitFor(() => {
+      expect(
+        screen.getByText('Êtes-vous un professionnel de la culture ?')
+      ).toBeInTheDocument()
+    })
+
+    // Close dialog by pressing Escape (triggers onClose)
+    await userEvent.keyboard('{Escape}')
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText('Êtes-vous un professionnel de la culture ?')
+      ).not.toBeInTheDocument()
+    })
   })
 })

@@ -12,7 +12,7 @@ import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearc
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { serializeApiIndividualFilters } from '@/commons/core/Offers/utils/serializeApiIndividualFilters'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
@@ -40,10 +40,10 @@ export type IndividualOffersActionsBarProps = {
 }
 
 const computeAllActivationSuccessMessage = (nbSelectedOffers: number) =>
-  `${pluralizeFr(nbSelectedOffers, 'Une offre est', 'Les offres sont')} en cours d’activation, veuillez rafraichir dans quelques instants`
+  `${pluralizeFr(nbSelectedOffers, 'Une offre est', 'Les offres sont')} en cours d’activation, veuillez rafraichir dans quelques instants.`
 
 const computeAllDeactivationSuccessMessage = (nbSelectedOffers: number) =>
-  `${pluralizeFr(nbSelectedOffers, 'Une offre est', 'Les offres sont')} en cours de désactivation, veuillez rafraichir dans quelques instants`
+  `${pluralizeFr(nbSelectedOffers, 'Une offre est', 'Les offres sont')} en cours de désactivation, veuillez rafraichir dans quelques instants.`
 
 const computeDeactivationSuccessMessage = (nbSelectedOffers: number) =>
   `${nbSelectedOffers} ${pluralizeFr(nbSelectedOffers, 'offre a bien été mise', 'offres ont bien été mises')} en pause`
@@ -60,7 +60,7 @@ const updateIndividualOffersStatus = async (
   isActive: boolean,
   areAllOffersSelected: boolean,
   selectedOfferIds: number[],
-  notify: ReturnType<typeof useNotification>,
+  snackBar: ReturnType<typeof useSnackBar>,
   apiFilters: IndividualSearchFiltersParams
 ) => {
   const filters = serializeApiIndividualFilters(apiFilters)
@@ -84,13 +84,13 @@ const updateIndividualOffersStatus = async (
         ...payload,
         isActive,
       })
-      notify.information(
+      snackBar.success(
         isActive
           ? computeAllActivationSuccessMessage(selectedOfferIds.length)
           : computeAllDeactivationSuccessMessage(selectedOfferIds.length)
       )
     } catch {
-      notify.error(
+      snackBar.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : deactivationWording
         } des offres`
@@ -102,13 +102,13 @@ const updateIndividualOffersStatus = async (
         ids: selectedOfferIds.map((id) => Number(id)),
         isActive,
       })
-      notify.success(
+      snackBar.success(
         isActive
           ? computeActivationSuccessMessage(selectedOfferIds.length)
           : computeDeactivationSuccessMessage(selectedOfferIds.length)
       )
     } catch {
-      notify.error(
+      snackBar.error(
         `Une erreur est survenue lors de ${
           isActive ? 'l’activation' : deactivationWording
         } des offres`
@@ -140,7 +140,7 @@ export const IndividualOffersActionsBar = ({
   const deleteButtonRef = useRef<HTMLButtonElement>(null)
   const dactivateButtonRef = useRef<HTMLButtonElement>(null)
 
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const [isDeactivationDialogOpen, setIsDeactivationDialogOpen] =
     useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -167,7 +167,7 @@ export const IndividualOffersActionsBar = ({
               offer.status === OfferStatus.EXPIRED
         )
         .map((offer) => offer.id),
-      notify,
+      snackBar,
       apiFilters
     )
 
@@ -192,7 +192,7 @@ export const IndividualOffersActionsBar = ({
       await api.deleteDraftOffers({
         ids: selectedOffers.map((offer) => offer.id),
       })
-      notify.success(
+      snackBar.success(
         computeDeletionSuccessMessage(
           selectedOffers.filter((o) => o.status === OfferStatus.DRAFT).length
         )
@@ -200,7 +200,7 @@ export const IndividualOffersActionsBar = ({
       await mutate([GET_OFFERS_QUERY_KEY, apiFilters])
       clearSelectedOffers()
     } catch {
-      notify.error(computeDeletionErrorMessage(selectedOffers.length))
+      snackBar.error(computeDeletionErrorMessage(selectedOffers.length))
     }
     setIsDeleteDialogOpen(false)
 

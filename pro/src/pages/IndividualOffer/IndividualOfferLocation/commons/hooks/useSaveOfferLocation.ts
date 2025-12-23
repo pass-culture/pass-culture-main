@@ -12,8 +12,8 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 
 import type { LocationFormValues } from '../types'
 import { toPatchOfferBodyModel } from '../utils/toPatchOfferBodyModel'
@@ -28,7 +28,7 @@ export function useSaveOfferLocation({
   const { pathname } = useLocation()
   const mode = useOfferWizardMode()
   const navigate = useNavigate()
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
 
   const isOnboarding = pathname.indexOf('onboarding') !== -1
@@ -80,7 +80,7 @@ export function useSaveOfferLocation({
         })
       }
 
-      notification.error(SENT_DATA_ERROR_MESSAGE)
+      snackBar.error(SENT_DATA_ERROR_MESSAGE)
 
       return
     }

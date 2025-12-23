@@ -22,7 +22,7 @@ import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { updateUser } from '@/commons/store/user/reducer'
@@ -42,7 +42,7 @@ import styles from './Validation.module.scss'
 export const Validation = (): JSX.Element | undefined => {
   const [loading, setLoading] = useState(false)
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const userAccess = useAppSelector((store) => store.user.access)
 
@@ -166,9 +166,9 @@ export const Validation = (): JSX.Element | undefined => {
       }
     } catch (e: unknown) {
       if (e === RECAPTCHA_ERROR) {
-        notify.error(RECAPTCHA_ERROR_MESSAGE)
+        snackBar.error(RECAPTCHA_ERROR_MESSAGE)
       } else {
-        notify.error('Erreur lors de la création de votre structure')
+        snackBar.error('Erreur lors de la création de votre structure')
       }
       setLoading(false)
     }

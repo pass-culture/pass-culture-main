@@ -19,7 +19,7 @@ import {
   Events,
 } from '@/commons/core/FirebaseEvents/constants'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   getCollectiveOfferFactory,
   getCollectiveOfferTemplateFactory,
@@ -51,8 +51,8 @@ const props: CollectiveEditionOfferNavigationProps = {
 }
 
 const mockLogEvent = vi.fn()
-const notifyError = vi.fn()
-const notifySuccess = vi.fn()
+const snackBarError = vi.fn()
+const snackBarSuccess = vi.fn()
 const defaultUseLocationValue = {
   state: {},
   hash: '',
@@ -98,12 +98,12 @@ describe('CollectiveEditionOfferNavigation', () => {
     })
 
     const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
       ...notifsImport,
-      error: notifyError,
-      success: notifySuccess,
+      error: snackBarError,
+      success: snackBarSuccess,
     }))
 
     vi.spyOn(router, 'useLocation').mockReturnValue(defaultUseLocationValue)
@@ -249,7 +249,7 @@ describe('CollectiveEditionOfferNavigation', () => {
     })
     await userEvent.click(duplicateOfferButton)
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la récupération de votre offre'
     )
   })
@@ -279,7 +279,7 @@ describe('CollectiveEditionOfferNavigation', () => {
 
     await userEvent.click(duplicateOfferButton)
 
-    expect(notifyError).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
+    expect(snackBarError).toHaveBeenCalledWith(SENT_DATA_ERROR_MESSAGE)
   })
 
   it('should return an error when trying to get offerer image', async () => {
@@ -303,7 +303,9 @@ describe('CollectiveEditionOfferNavigation', () => {
 
     await userEvent.click(duplicateOfferButton)
 
-    expect(notifyError).toHaveBeenCalledWith('Impossible de dupliquer l’image')
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Impossible de dupliquer l’image'
+    )
   })
 
   it('should show a success notification when archiving a template offer succeeds', async () => {
@@ -324,11 +326,8 @@ describe('CollectiveEditionOfferNavigation', () => {
     const confirmArchivingButton = screen.getByText('Archiver l’offre')
     await userEvent.click(confirmArchivingButton)
 
-    expect(notifySuccess).toHaveBeenCalledWith(
-      'Une offre a bien été archivée',
-      {
-        duration: 8000,
-      }
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Une offre a bien été archivée'
     )
   })
 
@@ -368,7 +367,7 @@ describe('CollectiveEditionOfferNavigation', () => {
     const confirmArchivingButton = screen.getByText('Archiver l’offre')
     await userEvent.click(confirmArchivingButton)
 
-    expect(notifyError).toHaveBeenNthCalledWith(
+    expect(snackBarError).toHaveBeenNthCalledWith(
       1,
       'L’identifiant de l’offre n’est pas valide.'
     )
@@ -396,11 +395,8 @@ describe('CollectiveEditionOfferNavigation', () => {
     const confirmArchivingButton = screen.getByText('Archiver l’offre')
     await userEvent.click(confirmArchivingButton)
 
-    expect(notifyError).toHaveBeenCalledWith(
-      'Une erreur est survenue lors de l’archivage de l’offre',
-      {
-        duration: 8000,
-      }
+    expect(snackBarError).toHaveBeenCalledWith(
+      'Une erreur est survenue lors de l’archivage de l’offre'
     )
   })
 

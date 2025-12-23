@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import { useEffect, useRef, useState } from 'react'
 
-import { useNotification } from '@/commons/hooks/useNotification'
 import { usePrevious } from '@/commons/hooks/usePrevious'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   UploaderModeEnum,
   type UploadImageValues,
@@ -44,7 +44,7 @@ export const ImageDragAndDropUploader = ({
   hideActionButtons = false,
   disabled = false,
 }: ImageDragAndDropUploaderProps) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const updateImageRef = useRef<HTMLButtonElement>(null)
   const inputDragAndDropRef = useRef<HTMLInputElement>(null)
 
@@ -77,7 +77,7 @@ export const ImageDragAndDropUploader = ({
     setDraftCredit(undefined)
     setRefToFocusOnClose(inputDragAndDropRef)
     onImageDelete()
-    notify.success('L’image a bien été supprimée')
+    snackBar.success('L’image a bien été supprimée')
   }
 
   const onImageUploadHandler = (
@@ -90,7 +90,7 @@ export const ImageDragAndDropUploader = ({
     setRefToFocusOnClose(updateImageRef)
     onImageUpload(values)
 
-    notify.success(successMessage)
+    snackBar.success(successMessage)
   }
 
   return (

@@ -14,7 +14,7 @@ import {
   GET_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
@@ -42,7 +42,7 @@ interface OffererFormValues {
 
 export const Offerer = (): JSX.Element => {
   const { logEvent } = useAnalytics()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { offerer, setOfferer, setInitialAddress } = useSignupJourneyContext()
   const [showIsAppUserDialog, setShowIsAppUserDialog] = useState<boolean>(false)
@@ -70,7 +70,7 @@ export const Offerer = (): JSX.Element => {
 
   const handleNextStep = () => {
     if (Object.keys(errors).length !== 0) {
-      notify.error(FORM_ERROR_MESSAGE)
+      snackBar.error(FORM_ERROR_MESSAGE)
       return
     }
   }
@@ -103,7 +103,7 @@ export const Offerer = (): JSX.Element => {
         setShowIsAppUserDialog(false)
       }
       if (!offererSiretData) {
-        notify.error('Une erreur est survenue')
+        snackBar.error('Une erreur est survenue')
         return
       }
     } catch (error) {
@@ -173,7 +173,7 @@ export const Offerer = (): JSX.Element => {
         used: SignupJourneyAction.ActionBar,
       })
     } catch (error) {
-      notify.error(
+      snackBar.error(
         isError(error)
           ? error.message || 'Une erreur est survenue'
           : GET_DATA_ERROR_MESSAGE

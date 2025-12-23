@@ -4,8 +4,8 @@ import { SWRConfig } from 'swr'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useLogExtraProData } from '@/app/App/hook/useLogExtraProData'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
-import { Notification } from '@/components/Notification/Notification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { useBeamer } from './analytics/beamer'
 import { useFirebase } from './analytics/firebase'
@@ -20,7 +20,7 @@ window.beamer_config = { product_id: 'vjbiYuMS52566', lazy: true }
 
 export const App = (): JSX.Element | null => {
   const navigate = useNavigate()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const location = useLocation()
 
   // Main hooks
@@ -49,14 +49,14 @@ export const App = (): JSX.Element | null => {
               navigate('/404')
               return
             }
-            notify.error(GET_DATA_ERROR_MESSAGE)
+            snackBar.error(GET_DATA_ERROR_MESSAGE)
           },
           revalidateOnFocus: false,
         }}
       >
         <Outlet />
       </SWRConfig>
-      <Notification />
+      <SnackBarContainer />
     </>
   )
 }

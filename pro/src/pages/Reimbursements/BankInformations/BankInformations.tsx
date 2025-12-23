@@ -11,7 +11,7 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
 import fullMoreIcon from '@/icons/full-more.svg'
@@ -25,7 +25,7 @@ import styles from './BankInformations.module.scss'
 import { LinkVenuesDialog } from './LinkVenuesDialog/LinkVenuesDialog'
 
 export const BankInformations = (): JSX.Element => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
@@ -50,7 +50,7 @@ export const BankInformations = (): JSX.Element => {
       api.getOffererBankAccountsAndAttachedVenues(Number(offererId)),
     {
       onError: () =>
-        notify.error(
+        snackBar.error(
           'Impossible de récupérer les informations relatives à vos comptes bancaires.'
         ),
     }

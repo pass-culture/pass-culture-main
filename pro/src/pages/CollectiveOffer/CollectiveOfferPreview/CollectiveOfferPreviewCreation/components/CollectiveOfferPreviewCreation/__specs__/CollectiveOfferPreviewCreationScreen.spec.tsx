@@ -4,7 +4,7 @@ import { sub } from 'date-fns'
 
 import { api } from '@/apiClient/api'
 import { OfferContactFormEnum } from '@/apiClient/v1'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   defaultGetVenue,
   getCollectiveOfferCollectiveStockFactory,
@@ -45,17 +45,17 @@ const defaultProps = {
 }
 
 describe('CollectiveOfferConfirmation', () => {
-  const mockNotifyError = vi.fn()
-  const mockNotifySuccess = vi.fn()
+  const snackBarError = vi.fn()
+  const snackBarSuccess = vi.fn()
 
   beforeEach(async () => {
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: mockNotifyError,
-      success: mockNotifySuccess,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
+      success: snackBarSuccess,
     }))
 
     vi.spyOn(api, 'getVenue').mockResolvedValue(defaultGetVenue)
@@ -99,7 +99,7 @@ describe('CollectiveOfferConfirmation', () => {
 
     await userEvent.click(nextStep)
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue lors de la publication de votre offre.'
     )
   })
@@ -127,7 +127,7 @@ describe('CollectiveOfferConfirmation', () => {
 
     await userEvent.click(saveAndQuitButton)
 
-    expect(mockNotifySuccess).toHaveBeenCalledWith(
+    expect(snackBarSuccess).toHaveBeenCalledWith(
       'Brouillon sauvegardé dans la liste des offres'
     )
   })
@@ -146,7 +146,7 @@ describe('CollectiveOfferConfirmation', () => {
     const nextStep = screen.getByText('Publier l’offre')
     await userEvent.click(nextStep)
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Les dates de limite de réservation ou d’évènement doivent être égales ou postérieures à la date actuelle.'
     )
   })
@@ -165,7 +165,7 @@ describe('CollectiveOfferConfirmation', () => {
     const nextStep = screen.getByText('Publier l’offre')
     await userEvent.click(nextStep)
 
-    expect(mockNotifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Les dates de limite de réservation ou d’évènement doivent être égales ou postérieures à la date actuelle.'
     )
   })

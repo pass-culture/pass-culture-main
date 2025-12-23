@@ -155,7 +155,7 @@ type Notification = {
 const PlaygroundComponent = () => {
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [counter, setCounter] = useState(0)
-  const isMobileScreen = useMediaQuery('(max-width: 600px)')
+  const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
 
   const addNotification = (variant: SnackBarVariant, text: string) => {
     const id = counter
@@ -167,10 +167,10 @@ const PlaygroundComponent = () => {
     setNotifications((prev) => prev.filter((n) => n.id !== id))
   }
 
-  // Small (mobile/app): the last snackbar appears below the first one (ascending order)
-  // Large (desktop/tablet): the last snackbar appears above the first one (descending order)
+  // Small (mobile/tablet): the last snackbar appears below the first one (ascending order)
+  // Large (desktop): the last snackbar appears above the first one (descending order)
   const notificationsToDisplay = notifications.toSorted((a, b) => 
-    (isMobileScreen ? 1 : -1) * (a.date.getTime() - b.date.getTime())
+    (isSmallScreen ? 1 : -1) * (a.date.getTime() - b.date.getTime())
   );
 
   return (

@@ -8,7 +8,7 @@ import type {
   VenueProviderResponse,
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -33,7 +33,7 @@ export const GenericCinemaProviderEdit = ({
   offererId,
   showAdvancedFields = false,
 }: GenericCinemaProviderEditProps): JSX.Element => {
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const { mutate } = useSWRConfig()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
@@ -44,12 +44,12 @@ export const GenericCinemaProviderEdit = ({
       await api.updateVenueProvider(payload)
 
       await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
-      notification.success(
+      snackBar.success(
         "Les modifications ont bien été importées et s'appliqueront aux nouvelles séances créées."
       )
       return true
     } catch {
-      notification.error('Une erreur s’est produite, veuillez réessayer')
+      snackBar.error('Une erreur s’est produite, veuillez réessayer')
       return false
     }
   }

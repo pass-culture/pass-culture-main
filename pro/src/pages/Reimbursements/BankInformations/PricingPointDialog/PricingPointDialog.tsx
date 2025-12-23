@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import type { ManagedVenue } from '@/apiClient/v1'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -31,7 +31,7 @@ export const PricingPointDialog = ({
   closeDialog,
   updateVenuePricingPoint,
 }: PricingPointDialogProps) => {
-  const notification = useNotification()
+  const snackBar = useSnackBar()
 
   const methods = useForm<PricingPointFormValues>({
     defaultValues: {
@@ -51,11 +51,9 @@ export const PricingPointDialog = ({
       updateVenuePricingPoint(selectedVenue.id)
       closeDialog()
 
-      notification.success('Vos modifications ont bien été prises en compte.')
+      snackBar.success('Vos modifications ont bien été prises en compte.')
     } catch {
-      notification.error(
-        'Une erreur est survenue. Merci de réessayer plus tard'
-      )
+      snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')
     }
   }
 

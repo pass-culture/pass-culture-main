@@ -5,7 +5,7 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { updateUser } from '@/commons/store/user/reducer'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -27,7 +27,7 @@ export const UserIdentityForm = ({
 }: UserIdentityFormProps): JSX.Element => {
   const { currentUser } = useCurrentUser()
   const dispatch = useAppDispatch()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
 
   const {
     register,
@@ -54,7 +54,7 @@ export const UserIdentityForm = ({
       if (isErrorAPIError(error)) {
         // Handle server-side errors and set field errors
         for (const field of Object.keys(error.body)) {
-          notify.error(error.body[field])
+          snackBar.error(error.body[field])
         }
       }
     }

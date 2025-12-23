@@ -7,7 +7,7 @@ import type { ApiResult } from '@/apiClient/adage/core/ApiResult'
 import { api } from '@/apiClient/api'
 import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import {
   UserIdentityForm,
@@ -18,7 +18,7 @@ const renderUserIdentityForm = (props: UserIdentityFormProps) => {
   return renderWithProviders(
     <>
       <UserIdentityForm {...props} />
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       user: sharedCurrentUserFactory(),

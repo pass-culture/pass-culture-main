@@ -14,7 +14,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Notification } from '@/components/Notification/Notification'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 
 import { SignIn } from './SignIn'
 
@@ -55,7 +55,7 @@ const renderSignIn = (options?: RenderWithProvidersOptions) => {
         />
         <Route path="/offres" element={<span>I’m the offer page</span>} />
       </Routes>
-      <Notification />
+      <SnackBarContainer />
     </>,
     {
       initialRouterEntries: ['/connexion'],

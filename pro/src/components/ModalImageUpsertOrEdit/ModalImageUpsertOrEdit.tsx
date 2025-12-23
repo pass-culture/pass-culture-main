@@ -8,7 +8,7 @@ import { getFileFromURL } from '@/apiClient/helpers'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useGetImageBitmap } from '@/commons/hooks/useGetBitmap'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   UploaderModeEnum,
   type UploadImageValues,
@@ -93,7 +93,7 @@ export const ModalImageUpsertOrEdit = ({
       : defaultPositions.y
 
   const editorRef = useRef<AvatarEditor>(null)
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const [isLoadingImage, setIsLoadingImage] = useState(
     !!previouslyUploadedImageUrl
   )
@@ -130,7 +130,7 @@ export const ModalImageUpsertOrEdit = ({
       try {
         setImage(await getFileFromURL(url))
       } catch {
-        notification.error('Erreur lors de la récupération de votre image.')
+        snackBar.error('Erreur lors de la récupération de votre image.')
       }
 
       setIsLoadingImage(false)
@@ -142,7 +142,7 @@ export const ModalImageUpsertOrEdit = ({
       // eslint-disable-next-line @typescript-eslint/no-floating-promises
       setImageFromUrl(previouslyUploadedImageUrl)
     }
-  }, [dialogBuilderProps.open, previouslyUploadedImageUrl, notification])
+  }, [dialogBuilderProps.open, previouslyUploadedImageUrl, snackBar])
 
   useEffect(() => {
     setImage(draftImage)
@@ -221,7 +221,7 @@ export const ModalImageUpsertOrEdit = ({
 
   const onImageError = () => {
     setIsPaintingImage(false)
-    notification.error('Erreur lors de la récupération de votre image.')
+    snackBar.error('Erreur lors de la récupération de votre image.')
   }
 
   const handleImageChange = (
@@ -249,9 +249,7 @@ export const ModalImageUpsertOrEdit = ({
         }
       }
     } catch {
-      notification.error(
-        'Une erreur est survenue. Merci de réessayer plus tard'
-      )
+      snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')
     }
   }
 

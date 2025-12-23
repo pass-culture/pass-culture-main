@@ -13,7 +13,7 @@ import {
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
 import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isCollectiveInstitutionEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import {
   type MandatoryCollectiveOfferFromParamsProps,
@@ -29,7 +29,7 @@ export const CollectiveOfferEditionVisibility = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const navigate = useNavigate()
   const { mutate } = useSWRConfig()
 
@@ -59,7 +59,7 @@ export const CollectiveOfferEditionVisibility = ({
         false
       )}/collectif/recapitulatif`
     )
-    notify.success(message)
+    snackBar.success(message)
   }
 
   if (educationalInstitutionsQuery.isLoading) {

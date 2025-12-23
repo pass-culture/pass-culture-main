@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { api } from '@/apiClient/api'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -13,7 +13,7 @@ import { Button } from '@/ui-kit/Button/Button'
 
 import { UserReviewDialog } from './UserReviewDialog'
 
-const notifyError = vi.fn()
+const snackBarError = vi.fn()
 
 const renderUserReviewDialog = () => {
   const storeOverrides = {
@@ -106,12 +106,12 @@ describe('UserReviewDialog', () => {
   it('should show error message and close dialog on error', async () => {
     vi.spyOn(api, 'submitUserReview').mockRejectedValueOnce(new Error())
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
 
     renderUserReviewDialog()
@@ -124,7 +124,7 @@ describe('UserReviewDialog', () => {
     const submitButton = screen.getByRole('button', { name: 'Envoyer' })
     await userEvent.click(submitButton)
 
-    expect(notifyError).toHaveBeenCalledWith(
+    expect(snackBarError).toHaveBeenCalledWith(
       'Une erreur est survenue. Merci de réessayer plus tard.'
     )
   })

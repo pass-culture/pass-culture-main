@@ -7,6 +7,11 @@ import { HTTP_STATUS } from '@/apiClient/helpers'
 import { ApiError } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import {
+  RECAPTCHA_ERROR,
+  RECAPTCHA_ERROR_MESSAGE,
+} from '@/commons/core/shared/constants'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
 import * as utils from '@/commons/utils/recaptcha'
 import {
@@ -359,6 +364,109 @@ describe('Signup', () => {
 
         await userEvent.click(submitButton)
         expect(api.signupPro).toHaveBeenCalledTimes(1)
+      })
+
+      it('should display error message when RECAPTCHA_ERROR occurs', async () => {
+        // given
+        const snackBarError = vi.fn()
+        vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+          success: vi.fn(),
+          error: snackBarError,
+        }))
+        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+          remove: vi.fn(),
+        } as unknown as HTMLScriptElement)
+        vi.spyOn(utils, 'getReCaptchaToken').mockRejectedValue(RECAPTCHA_ERROR)
+
+        // when
+        renderSignUp()
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Adresse email */,
+          }),
+          'test@example.com'
+        )
+        await userEvent.type(
+          screen.getByLabelText(/Mot de passe/),
+          'user@AZERTY123'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Nom/,
+          }),
+          'Nom'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Prénom/,
+          }),
+          'Prénom'
+        )
+        await userEvent.tab()
+
+        const submitButton = screen.getByRole('button', {
+          name: /S’inscrire/,
+        })
+        await userEvent.click(submitButton)
+
+        // then
+        await waitFor(() => {
+          expect(snackBarError).toHaveBeenCalledWith(RECAPTCHA_ERROR_MESSAGE)
+        })
+        expect(api.signupPro).not.toHaveBeenCalled()
+      })
+
+      it('should handle non-ApiError errors', async () => {
+        // given
+        const snackBarError = vi.fn()
+        vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+          success: vi.fn(),
+          error: snackBarError,
+        }))
+        vi.spyOn(utils, 'initReCaptchaScript').mockReturnValue({
+          remove: vi.fn(),
+        } as unknown as HTMLScriptElement)
+        vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
+        vi.spyOn(api, 'signupPro').mockRejectedValue(new Error('Network error'))
+
+        // when
+        renderSignUp()
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Adresse email */,
+          }),
+          'test@example.com'
+        )
+        await userEvent.type(
+          screen.getByLabelText(/Mot de passe/),
+          'user@AZERTY123'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Nom/,
+          }),
+          'Nom'
+        )
+        await userEvent.type(
+          screen.getByRole('textbox', {
+            name: /Prénom/,
+          }),
+          'Prénom'
+        )
+        await userEvent.tab()
+
+        const submitButton = screen.getByRole('button', {
+          name: /S’inscrire/,
+        })
+        await userEvent.click(submitButton)
+
+        // then
+        await waitFor(() => {
+          expect(api.signupPro).toHaveBeenCalledTimes(1)
+        })
+        expect(snackBarError).toHaveBeenCalledWith(
+          'Une ou plusieurs erreurs sont présentes dans le formulaire.'
+        )
       })
     })
   })

@@ -10,7 +10,7 @@ import type {
 } from '@/apiClient/v1'
 import { SENT_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Banner } from '@/design-system/Banner/Banner'
 import fullLinkIcon from '@/icons/full-link.svg'
@@ -34,7 +34,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
     useState(false)
   const [isBannerVisible, setIsBannerVisible] = useState(true)
   const [isSubmitingPricingPoint, setIsSubmitingPricingPoint] = useState(false)
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const {
     register,
     watch,
@@ -54,7 +54,7 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
         setIsBannerVisible(false)
         setIsConfirmSiretDialogOpen(false)
       } catch (error) {
-        notify.error(SENT_DATA_ERROR_MESSAGE)
+        snackBar.error(SENT_DATA_ERROR_MESSAGE)
         Sentry.captureException(error)
       }
       setIsSubmitingPricingPoint(false)

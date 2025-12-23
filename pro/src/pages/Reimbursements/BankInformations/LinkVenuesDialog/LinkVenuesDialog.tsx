@@ -6,7 +6,7 @@ import { api } from '@/apiClient/api'
 import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isEqual } from '@/commons/utils/isEqual'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
@@ -43,7 +43,7 @@ export const LinkVenuesDialog = ({
   const availableManagedVenuesIds = managedVenues
     .filter((venue) => venue.hasPricingPoint)
     .map((venue) => venue.id)
-  const notification = useNotification()
+  const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
 
   const initialVenuesIds = selectedBankAccount.linkedVenues.map(
@@ -82,10 +82,10 @@ export const LinkVenuesDialog = ({
         HasUncheckedVenue: hasUnchecked,
       })
 
-      notification.success('Vos modifications ont bien été prises en compte.')
+      snackBar.success('Vos modifications ont bien été prises en compte.')
       closeDialog(true)
     } catch {
-      notification.error(
+      snackBar.error(
         'Une erreur est survenue. Vos modifications n’ont pas été prises en compte'
       )
     }

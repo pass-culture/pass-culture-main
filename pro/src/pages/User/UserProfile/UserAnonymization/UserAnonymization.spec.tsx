@@ -24,13 +24,14 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const mockNotify = {
-  success: vi.fn(),
-  error: vi.fn(),
-}
+const snackBarError = vi.fn()
+const snackBarSuccess = vi.fn()
 
-vi.mock('@/commons/hooks/useNotification', () => ({
-  useNotification: () => mockNotify,
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
+    success: snackBarSuccess,
+    error: snackBarError,
+  }),
 }))
 
 const renderUserAnonymization = (options?: RenderWithProvidersOptions) => {
@@ -230,7 +231,7 @@ describe('UserAnonymization', () => {
       await userEvent.click(submitButton!)
 
       await waitFor(() => {
-        expect(mockNotify.error).toHaveBeenCalledWith(
+        expect(snackBarError).toHaveBeenCalledWith(
           'Une erreur est survenue. Merci de réessayer plus tard.'
         )
       })

@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
 import { apiAdage } from '@/apiClient/api'
-import * as useNotification from '@/commons/hooks/useNotification'
+import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { SurveySatisfaction } from '../SurveySatisfaction'
@@ -37,14 +37,14 @@ describe('SurveySatisfaction', () => {
   })
 
   it('should fail close survey satisfaction', async () => {
-    const notifyError = vi.fn()
+    const snackBarError = vi.fn()
 
-    const notifsImport = (await vi.importActual(
-      '@/commons/hooks/useNotification'
-    )) as ReturnType<typeof useNotification.useNotification>
-    vi.spyOn(useNotification, 'useNotification').mockImplementation(() => ({
-      ...notifsImport,
-      error: notifyError,
+    const snackBarsImport = (await vi.importActual(
+      '@/commons/hooks/useSnackBar'
+    )) as ReturnType<typeof useSnackBar.useSnackBar>
+    vi.spyOn(useSnackBar, 'useSnackBar').mockImplementation(() => ({
+      ...snackBarsImport,
+      error: snackBarError,
     }))
 
     vi.spyOn(apiAdage, 'saveRedactorPreferences').mockRejectedValue({
@@ -61,7 +61,7 @@ describe('SurveySatisfaction', () => {
 
     await userEvent.click(closeButton)
 
-    await waitFor(() => expect(notifyError).toHaveBeenCalledTimes(1))
+    await waitFor(() => expect(snackBarError).toHaveBeenCalledTimes(1))
   })
 
   it('should log info when opening sastisfaction survey', async () => {

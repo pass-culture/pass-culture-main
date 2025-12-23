@@ -8,7 +8,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useNotification } from '@/commons/hooks/useNotification'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
@@ -68,7 +68,7 @@ export const VenueEditionHeader = ({
 }: VenueEditionHeaderProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const notify = useNotification()
+  const snackBar = useSnackBar()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
@@ -94,9 +94,9 @@ export const VenueEditionHeader = ({
         buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
       )
       await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
-      notify.success('Vos modifications ont bien été prises en compte')
+      snackBar.success('Vos modifications ont bien été prises en compte')
     } catch {
-      notify.error(
+      snackBar.error(
         'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
       )
     }
@@ -107,7 +107,7 @@ export const VenueEditionHeader = ({
 
     setImageValues(buildInitialValues(null, null))
     await mutate([GET_VENUE_QUERY_KEY, String(venue.id)])
-    notify.success('Votre image a bien été supprimée')
+    snackBar.success('Votre image a bien été supprimée')
   }
 
   const logButtonAddClick = () => {
