@@ -1,8 +1,10 @@
+import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
+import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -11,6 +13,7 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './UserAnonymizationForm.module.scss'
+import { getValidationSchema } from './validationSchema'
 
 interface UserAnonymizationFormValues {
   email: string
@@ -19,13 +22,15 @@ interface UserAnonymizationFormValues {
 export const UserAnonymizationForm = (): JSX.Element => {
   const dispatch = useAppDispatch()
   const snackBar = useSnackBar()
+  const { currentUser } = useCurrentUser()
 
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = useForm<UserAnonymizationFormValues>({
     defaultValues: { email: '' },
+    resolver: yupResolver(getValidationSchema(currentUser.email)),
     mode: 'onBlur',
   })
 
@@ -54,14 +59,13 @@ export const UserAnonymizationForm = (): JSX.Element => {
             </li>
           </ul>
         </div>
-
         <TextInput
           label="Confirmer votre adresse email"
           description="Format : email@exemple.com"
           required
+          error={errors.email?.message}
           {...register('email')}
         />
-
         <Banner
           variant={BannerVariants.WARNING}
           title="Attention, cette action est irréversible."
