@@ -42,9 +42,12 @@ runs:
 
     - name: Store artifact
       shell: bash
+      env:
+        IMAGE: ${{ inputs.image }}
+        TAG: ${{ inputs.tag }}
       run: |
         docker images
-        docker save ${{ inputs.image }}:${{ inputs.tag }} > ${{ inputs.image }}-${{ inputs.tag }}.tar
+        docker save "$IMAGE:$TAG" > "$IMAGE-$TAG.tar"
 
     - name: Upload built image to github artifact
       uses: actions/upload-artifact@v4
