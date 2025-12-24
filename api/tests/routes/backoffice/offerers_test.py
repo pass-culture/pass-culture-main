@@ -56,11 +56,11 @@ class GetOffererTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + current user (2 queries)
+    # - session + current user (1 queries)
     # - offerer with joined data except tags (1 query)
     # - get offerer tags (1 query)
     # - get all tags for edit form (1 query)
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_keep_search_parameters_on_top(self, authenticated_client, offerer):
         url = url_for(self.endpoint, offerer_id=offerer.id, q=offerer.name, departments=["75", "77"])
@@ -833,11 +833,10 @@ class GetOffererStatsTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get offerer (1 query)
     # get collective offer templates count (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     @pytest.mark.parametrize(
         "venue_factory,expected_revenue_text",
@@ -909,10 +908,9 @@ class GetOffererRevenueDetailsTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # session
-    # user
+    # session + user
     # offerer
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     @patch(
         "pcapi.connectors.clickhouse.testing_backend.TestingBackend.run_query",
@@ -974,9 +972,9 @@ class GetOffererHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 queries)
     # - full history with joined data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     class CommentButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PRO_ENTITY
@@ -1298,10 +1296,10 @@ class GetOffererUsersTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 queries)
     # - users with joined data (1 query)
     # - offerer_invitation data
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_pro_users(self, authenticated_client, offerer):
         uo1 = offerers_factories.UserOffererFactory(
@@ -1495,7 +1493,7 @@ class GetDeleteOffererAttachmentFormTest(GetEndpointHelper):
         user_offerer = offerers_factories.NewUserOffererFactory()
 
         url = url_for(self.endpoint, offerer_id=user_offerer.offerer.id, user_offerer_id=user_offerer.id)
-        with assert_num_queries(3):
+        with assert_num_queries(2):
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
             assert response.status_code == 200
@@ -1539,10 +1537,10 @@ class GetOffererVenuesTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 query)
     # - venues with joined data (1 query)
     # - venue providers (selectinload: 1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_managed_venues(self, authenticated_client, offerer):
         now = date_utils.get_naive_utc_now()
@@ -1636,9 +1634,9 @@ class GetOffererAddressesTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 query)
     # - addresses (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_offerer_addresses(self, authenticated_client, offerer):
         offerers_factories.OffererAddressFactory(
@@ -1701,9 +1699,9 @@ class GetOffererCollectiveDmsApplicationsTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 query)
     # - dms applications with joined data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_collective_dms_applications(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456789")
@@ -1804,9 +1802,9 @@ class GetOffererBankAccountTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 query)
     # - bank accounts (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_bank_accounts(self, authenticated_client, offerer):
         now = date_utils.get_naive_utc_now()
@@ -1915,10 +1913,10 @@ class ListOfferersToValidateTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
     class ListOfferersToBeValidatedTest:
-        # - session + authenticated user (2 queries)
+        # - session + authenticated user (1 query)
         # - validation status count (1 query)
         # - offerer tags filter (1 query)
-        expected_num_queries_when_no_query = 4
+        expected_num_queries_when_no_query = 3
         # - get results (1 query)
         # - get results count (1 query)
         expected_num_queries = expected_num_queries_when_no_query + 2
@@ -2615,8 +2613,8 @@ class GetValidateOrRejectOffererFormTestHelper(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    # session + current user + offerer + pending bank accounts + pending collective applications
-    expected_num_queries = 5
+    # session + offerer + pending bank accounts + pending collective applications
+    expected_num_queries = 4
 
     def test_get_form(self, legit_user, authenticated_client):
         offerer = offerers_factories.NewOffererFactory()
@@ -3008,10 +3006,10 @@ class GetOffererPendingFormTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    # session + current user (2 queries)
+    # session + current user (1 query)
     # get current tags set for this offerer (1 query)
     # get all tags to fill in form choices (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_offerer_pending_form(self, legit_user, authenticated_client):
         offerer = offerers_factories.NewOffererFactory()
@@ -3120,9 +3118,9 @@ class ListUserOffererToValidateTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.list_offerers_attachments_to_validate"
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 query)
     # - offerer tags filter (1 query)
-    expected_num_queries_when_no_query = 3
+    expected_num_queries_when_no_query = 2
     # - get results (1 query)
     # - get results count (1 query)
     expected_num_queries = expected_num_queries_when_no_query + 2
@@ -3567,8 +3565,8 @@ class GetRejectOffererAttachmentFormTest(GetEndpointHelper):
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    # session + current user + UserOfferer
-    expected_num_queries = 3
+    # session + UserOfferer
+    expected_num_queries = 2
 
     def test_get_reject_offerer_attachment_form(self, legit_user, authenticated_client):
         user_offerer = offerers_factories.NewUserOffererFactory()
@@ -3866,7 +3864,7 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
         offerers_factories.NewOffererFactory()
 
         url = url_for(self.endpoint)
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
             assert response.status_code == 200
@@ -3890,7 +3888,7 @@ class GetBatchValidateOrRejectOffererFormTestHelper(PostEndpointHelper):
         response = self.post_to_endpoint(
             authenticated_client,
             form={"object_ids": parameter_ids},
-            expected_num_queries=4,  # session + current user + pending bank accounts + pending collective applications
+            expected_num_queries=3,  # session + pending bank accounts + pending collective applications
         )
         assert response.status_code == 200
 
@@ -3960,9 +3958,9 @@ class GetBatchOffererPendingFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.validation.get_batch_offerer_pending_form"
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    # session + current user (2 queries)
+    # session + current user (1 query)
     # get all tags to fill in form choices (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_batch_offerer_pending_form(self, legit_user, authenticated_client):
         offerers_factories.NewOffererFactory()
@@ -4131,8 +4129,8 @@ class GetOffererAttachmentPendingFormTest(GetEndpointHelper):
     endpoint_kwargs = {"user_offerer_id": 1}
     needed_permission = perm_models.Permissions.VALIDATE_OFFERER
 
-    # session + current user + UserOfferer
-    expected_num_queries = 3
+    # session + UserOfferer
+    expected_num_queries = 2
 
     def test_get_offerer_attachment_pending_form(self, legit_user, authenticated_client):
         user_offerer = offerers_factories.NewUserOffererFactory()
@@ -4191,7 +4189,7 @@ class GetOffererAttachmentRejectFormTest(GetEndpointHelper):
         user_offerer = offerers_factories.NewUserOffererFactory()
 
         url = url_for(self.endpoint, user_offerer_id=user_offerer.id)
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url)
             # Rendering is not checked, but at least the fetched frame does not crash
             assert response.status_code == 200
@@ -4251,10 +4249,9 @@ class ListOffererTagsTest(GetEndpointHelper):
     endpoint = "backoffice_web.offerer_tag.list_offerer_tags"
     needed_permission = perm_models.Permissions.READ_TAGS
 
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch categories and tags (2 queries)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_list_offerer_tags(self, authenticated_client):
         category = offerers_factories.OffererTagCategoryFactory(label="indépendant")
@@ -4512,10 +4509,9 @@ class GetIndividualOffererSubscriptionTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = {perm_models.Permissions.VALIDATE_OFFERER, perm_models.Permissions.READ_PRO_AE_INFO}
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + USER (1 query)
     # get data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     icon_class_re = re.compile(r"^(bi-|text-).*")
 
@@ -4782,10 +4778,9 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get offerer (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_offerer_entreprise_info(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456782")
@@ -4855,10 +4850,9 @@ class GetEntrepriseInfoRcsTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTREPRISE_INFO
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get offerer (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_rcs_info_registered(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="010000008")
@@ -4916,11 +4910,10 @@ class GetEntrepriseInfoUrssafTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_SENSITIVE_INFO
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get offerer (1 query)
     # insert action (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_urssaf_info_ok(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456782")
@@ -4967,11 +4960,10 @@ class GetEntrepriseInfoDgfipTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_SENSITIVE_INFO
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get offerer (1 query)
     # insert action (1 query)
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_dgfip_info_ok(self, authenticated_client):
         offerer = offerers_factories.OffererFactory(siren="123456782")
@@ -5014,8 +5006,8 @@ class GetCloseOffererFormTest(GetEndpointHelper):
     endpoint_kwargs = {"offerer_id": 1}
     needed_permission = perm_models.Permissions.CLOSE_OFFERER
 
-    # session + current user + offerer + individual bookings + collective bookings
-    expected_num_queries = 5
+    # session + offerer + individual bookings + collective bookings
+    expected_num_queries = 4
 
     def test_get_close_offerer_form_with_no_ongoing_booking(self, legit_user, authenticated_client):
         offerer = offerers_factories.OffererFactory()

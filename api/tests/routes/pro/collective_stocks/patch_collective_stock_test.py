@@ -614,9 +614,8 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(9):
-            # query += 1 -> load session
-            # query += 1 -> load user
+        with assert_num_queries(8):
+            # query += 1 -> load session + user
             # query += 1 -> load existing stock
             # query += 1 -> ensure the offerer is VALIDATED
             # query += 1 -> check the number of existing stock for the offer id
@@ -662,9 +661,8 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(9):
-            # query += 1 -> load session
-            # query += 1 -> load user
+        with assert_num_queries(8):
+            # query += 1 -> load session + user
             # query += 1 -> load existing stock
             # query += 1 -> load existing offerer
             # query += 1 -> ensure the offerer is VALIDATED
@@ -712,9 +710,8 @@ class Return400Test:
 
         stock_id = stock.id
 
-        with assert_num_queries(10):
-            # query += 1 -> load session
-            # query += 1 -> load user
+        with assert_num_queries(9):
+            # query += 1 -> load session + user
             # query += 1 -> load existing stock
             # query += 1 -> load offerer
             # query += 1 -> ensure the offerer is VALIDATED

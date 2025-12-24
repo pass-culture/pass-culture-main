@@ -104,7 +104,7 @@ class UbbleV2EndToEndTest:
             json=fixtures.ID_VERIFICATION_ATTEMPT_RESPONSE,
         )
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/ubble_identification", json={"redirectUrl": "https://redirect.example.com"}
         )
 
@@ -160,7 +160,7 @@ class UbbleV2EndToEndTest:
             json=fixtures.ID_VERIFICATION_ATTEMPT_RESPONSE,
         )
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/ubble_identification", json={"redirectUrl": "https://redirect.example.com"}
         )
 
@@ -215,7 +215,7 @@ class UbbleV2EndToEndTest:
         assert ok_ubble_fraud_check.status == subscription_models.FraudCheckStatus.OK
 
     def _create_honor_statement_fraud_check(self, user, client) -> None:
-        response = client.with_token(user.email).post("/native/v1/subscription/honor_statement")
+        response = client.with_token(user).post("/native/v1/subscription/honor_statement")
 
         assert response.status_code == 204, response.json
 
@@ -256,7 +256,7 @@ class UbbleEndToEndTest:
         )
 
         ubble_client = TestClient(app.test_client())
-        client.with_token(user.email)
+        client.with_token(user)
 
         # Step 1: The user initializes a subscription with ubble
         subscription_factories.BeneficiaryFraudCheckFactory(

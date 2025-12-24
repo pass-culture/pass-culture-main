@@ -690,7 +690,7 @@ class Returns200Test:
         # update offer
         # select offer (again)
         # select price category
-        with assert_num_queries(8):
+        with assert_num_queries(7):
             response = http_client.patch(self.endpoint.format(offer_id=offer_id), json=data)
         get_address_mock.assert_not_called()
 

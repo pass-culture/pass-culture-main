@@ -37,7 +37,7 @@ class GetProfileTest:
             user=user, eligibilityType=users_models.EligibilityType.UNDERAGE
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/subscription/profile")
             assert response.status_code == 200
@@ -56,7 +56,7 @@ class GetProfileTest:
     def test_get_profile_with_no_fraud_check(self, client):
         user = users_factories.BeneficiaryGrant18Factory()
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/subscription/profile")
             assert response.status_code == 404
@@ -69,7 +69,7 @@ class GetProfileTest:
         )
         fraud_check.resultContent["activity"] = "NOT_AN_ACTIVITY"
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/subscription/profile")
             assert response.status_code == 200
@@ -83,7 +83,7 @@ class GetProfileTest:
         )
         fraud_check.resultContent["activity"] = "Chômeur"
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/subscription/profile")
             assert response.status_code == 200
@@ -105,7 +105,7 @@ class GetProfileTest:
         )
         fraud_check_2.resultContent["activity"] = "Lycéen"
 
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(self.expected_num_queries):
             response = client.get("/native/v1/subscription/profile")
             assert response.status_code == 200
@@ -127,10 +127,10 @@ class GetProfileTest:
         }
 
         with time_machine.travel(date_utils.get_naive_utc_now() - datetime.timedelta(days=365)):
-            client.with_token(user.email)
+            client.with_token(user)
             client.post("/native/v1/subscription/profile", profile_data)
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.get("/native/v1/subscription/profile")
 
         assert response.status_code == 200
@@ -174,7 +174,7 @@ class UpdateProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 204
@@ -232,7 +232,7 @@ class UpdateProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 400
@@ -261,7 +261,7 @@ class UpdateProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 400
@@ -289,7 +289,7 @@ class UpdateProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 400
@@ -299,7 +299,7 @@ class UpdateProfileTest:
     def test_fulfill_profile_ineligible_postal_code(self, client, postal_code):
         user = users_factories.UserFactory()
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/subscription/profile",
             {
                 "firstName": "John",
@@ -339,7 +339,7 @@ class UpdateProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 204
@@ -382,7 +382,7 @@ class UpdateProfileTest:
             "schoolTypeId": "PUBLIC_HIGH_SCHOOL",
         }
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/subscription/profile", profile_data)
 
         assert response.status_code == 204
@@ -403,7 +403,7 @@ class ActivityTypesTest:
     @pytest.mark.parametrize("age", (17, 18))
     def test_get_activity_types(self, client, age):
         user = users_factories.BaseUserFactory(age=age)
-        client.with_token(user.email)
+        client.with_token(user)
         with assert_num_queries(1):  # user
             response = client.get("/native/v1/subscription/activity_types")
             assert response.status_code == 200
@@ -456,7 +456,7 @@ class IdentificationSessionTest:
             json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
         db.session.rollback()  # ensure the call to the route commited its transaction
 
@@ -477,7 +477,7 @@ class IdentificationSessionTest:
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age, days=5)
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 400
@@ -489,7 +489,7 @@ class IdentificationSessionTest:
         user = users_factories.ProfileCompletedUserFactory(age=18)
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", exc=requests.exceptions.ConnectionError)
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 503
@@ -505,7 +505,7 @@ class IdentificationSessionTest:
         user = users_factories.ProfileCompletedUserFactory(age=18)
         requests_mock.post(f"{settings.UBBLE_API_URL}/v2/create-and-start-idv", status_code=404)
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 500
@@ -527,7 +527,7 @@ class IdentificationSessionTest:
     )
     def test_request_ubble_second_check_blocked(self, client, fraud_check_status, ubble_status):
         user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=18, days=5))
-        client.with_token(user.email)
+        client.with_token(user)
 
         # Perform phone validation
         user.phoneValidationStatus = users_models.PhoneValidationStatusType.VALIDATED
@@ -567,7 +567,7 @@ class IdentificationSessionTest:
 
         # Initiate second id check with Ubble
         # Accepted because the first one was canceled
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
@@ -611,7 +611,7 @@ class IdentificationSessionTest:
 
         len_fraud_checks_before = len(user.beneficiaryFraudChecks)
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == expected_status
@@ -647,7 +647,7 @@ class IdentificationSessionTest:
             ),
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 400
@@ -672,7 +672,7 @@ class IdentificationSessionTest:
             json=build_ubble_identification_v2_response(status="pending", response_codes=[], documents=[]),
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
         response = client.post("/native/v1/ubble_identification", json={"redirectUrl": "http://example.com/deeplink"})
 
         assert response.status_code == 200
@@ -715,7 +715,7 @@ class IdentificationSessionTest:
                 ),
             )
 
-            response = client.with_token(user.email).post(
+            response = client.with_token(user).post(
                 "/native/v1/ubble_identification", json={"redirectUrl": "https://redirect.example.com"}
             )
 
@@ -737,7 +737,7 @@ class HonorStatementTest:
             dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=age, days=10)
         )
 
-        client.with_token(user.email)
+        client.with_token(user)
 
         response = client.post("/native/v1/subscription/honor_statement")
 
@@ -759,7 +759,7 @@ class BonusTest:
     def test_create_bonus_fraud_check(self, mocked_task, client):
         user = users_factories.BeneficiaryFactory()
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/subscription/bonus/quotient_familial",
             json={
                 "lastName": "Lefebvre",
@@ -806,7 +806,7 @@ class BonusTest:
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BonusFraudCheckFactory(user=user, status=fraud_check_status)
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/subscription/bonus/quotient_familial",
             json={
                 "lastName": "Lefebvre",
@@ -827,7 +827,7 @@ class BonusTest:
             size=users_constants.MAX_QF_BONUS_RETRIES, user=user, status=subscription_models.FraudCheckStatus.KO
         )
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/subscription/bonus/quotient_familial",
             json={
                 "lastName": "Lefebvre",
@@ -847,7 +847,7 @@ class BonusTest:
         user = users_factories.BeneficiaryFactory()
         subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
 
-        response = client.with_token(user.email).post(
+        response = client.with_token(user).post(
             "/native/v1/subscription/bonus/quotient_familial",
             json={
                 "lastName": "Lefebvre",
