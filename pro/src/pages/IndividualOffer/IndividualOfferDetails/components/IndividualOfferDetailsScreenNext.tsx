@@ -42,6 +42,7 @@ import {
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { getValidationSchemaForNewOfferCreationFlow } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
+import { DEFAULT_DETAILS_FORM_VALUES } from '../commons/constants'
 import {
   serializeDetailsPatchData,
   serializeDetailsPostData,
@@ -223,6 +224,10 @@ export const IndividualOfferDetailsScreenNext = ({
       images,
     } = product
 
+    const normalizedAuthor = author
+      ? [{ artistId: '', name: author }]
+      : DEFAULT_DETAILS_FORM_VALUES.author
+
     const subcategory = subCategories.find((s) => s.id === subcategoryId)
     if (!subcategory) {
       return handleUnexpectedError(
@@ -250,7 +255,7 @@ export const IndividualOfferDetailsScreenNext = ({
     form.setValue('categoryId', categoryId)
     form.setValue('subcategoryId', subcategoryId)
     form.setValue('gtl_id', gtl_id)
-    form.setValue('author', author)
+    form.setValue('author', normalizedAuthor)
     form.setValue('performer', performer)
     form.setValue(
       'subcategoryConditionalFields',

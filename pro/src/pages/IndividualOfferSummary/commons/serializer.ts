@@ -6,6 +6,7 @@ import type {
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
 
 const getMusicData = (
   offer: GetIndividualOfferResponseModel,
@@ -32,7 +33,7 @@ const serializerOfferSubCategoryFields = (
   subCategory?: SubcategoryResponseModel,
   musicTypes?: GetMusicTypesResponse
 ): {
-  author: string
+  author: { artistId: string; name: string }[]
   stageDirector: string
   musicTypeName: string
   musicSubTypeName: string
@@ -47,7 +48,7 @@ const serializerOfferSubCategoryFields = (
 } => {
   if (subCategory === undefined) {
     return {
-      author: '',
+      author: [{ artistId: '', name: '' }],
       stageDirector: '',
       musicTypeName: '',
       musicSubTypeName: '',
@@ -77,7 +78,7 @@ const serializerOfferSubCategoryFields = (
   const defaultValue = (fieldName: string) =>
     subCategory.conditionalFields.includes(fieldName) ? ' - ' : ''
   return {
-    author: offer.extraData?.author || defaultValue('author'),
+    author: offer.extraData?.author || DEFAULT_DETAILS_FORM_VALUES.author,
     stageDirector:
       offer.extraData?.stageDirector || defaultValue('stageDirector'),
     musicTypeName: musicTypeName || defaultValue('musicType'),

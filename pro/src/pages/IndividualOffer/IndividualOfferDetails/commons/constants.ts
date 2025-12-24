@@ -9,7 +9,7 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   showType: '',
   showSubType: '',
   speaker: '',
-  author: '',
+  author: [{ artistId: '', name: '' }],
   visa: '',
   stageDirector: '',
   performer: '',

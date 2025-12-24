@@ -24,7 +24,12 @@ export const offerFormUrlRegex = new RegExp(
 const commonValidationShape = {
   name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
   description: yup.string(),
-  author: yup.string(),
+  author: yup.array().of(
+    yup.object().shape({
+      artistId: yup.string(),
+      name: yup.string(),
+    })
+  ),
   performer: yup.string(),
   ean: eanValidation,
   speaker: yup.string(),
