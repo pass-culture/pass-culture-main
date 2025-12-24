@@ -180,19 +180,13 @@ describe('VenueSettingsScreen', () => {
 
       await userEvent.type(
         screen.getByRole(field.ariaRole, { name: new RegExp(field.label) }),
-        'test'
+        '123' // Test value must be a number string so it doesn't breaks input types number validation (siret) in this test suite
       )
       await userEvent.click(screen.getByText('Annuler'))
 
       expect(
         screen.getByText('Les informations non enregistrées seront perdues')
       ).toBeInTheDocument()
-    })
-
-    it('should display the route leaving guard when leaving without saving field "RIDET de la structure"', async () => {
-      await renderForm({
-        venue: { ...defaultGetVenue, isCaledonian: true, siret: '1338847001' },
-      })
     })
 
     it.each([
