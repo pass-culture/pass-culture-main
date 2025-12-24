@@ -9,7 +9,7 @@
 {% block title %}Chroniques{% endblock %}
 {% block search_block %}{{ build_filters_form_ng(form, dst) }}{% endblock %}
 {% block before_table %}
-  <div>
+  <div class="mt-4">
     {{ build_modal_form("create-chronicle", url_for("backoffice_web.chronicles.create_chronicle") , create_chronicle_form, "Créer une chronique", "Créer une chronique", "Enregistrer") }}
   </div>
 {% endblock before_table %}
