@@ -105,17 +105,23 @@ export const SiretOrCommentFields = ({
         />
       ) : hasRidet ? (
         <TextInput
-          {...register('siret')}
+          {...register('siret', {
+            onChange(e) {
+              onRidetChange(e.target.value)
+            },
+          })}
           label={`RIDET de la structure`}
-          onChange={(e) => onRidetChange(e.target.value)}
           error={errors.siret?.message}
           required
         />
       ) : (
         <TextInput
-          {...register('siret')}
+          {...register('siret', {
+            onChange(e) {
+              onSiretChange(e.target.value)
+            },
+          })}
           label={`SIRET de la structure`}
-          onChange={(e) => onSiretChange(e.target.value)}
           error={errors.siret?.message}
           required
         />
