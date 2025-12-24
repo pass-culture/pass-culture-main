@@ -206,7 +206,14 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
         assert response.status_code == 200
         assert "Le produit est introuvable" in html_parser.content_as_text(response.data)
 
-    def test_search_by_allocine_id_existing_product(self, authenticated_client):
+    @pytest.mark.parametrize(
+        "search_query",
+        [
+            "123456",
+            "000123456",
+        ],
+    )
+    def test_search_by_allocine_id_existing_product(self, authenticated_client, search_query):
         product = offers_factories.ProductFactory.create(
             description="Une offre pour tester",
             extraData={"allocineId": 123456},
@@ -216,7 +223,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
-                    q="123456",
+                    q=search_query,
                     product_filter_type=ProductFilterTypeEnum.ALLOCINE_ID.name,
                 )
             )

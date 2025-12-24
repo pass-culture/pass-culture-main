@@ -542,6 +542,10 @@ def search_product() -> utils.BackofficeResponse:
         forms.ProductFilterTypeEnum.VISA: offers_models.Product.extraData["visa"].astext,
         forms.ProductFilterTypeEnum.ALLOCINE_ID: offers_models.Product.extraData["allocineId"],
     }
+
+    if result_type == forms.ProductFilterTypeEnum.ALLOCINE_ID:
+        search_query = str(int(search_query))  # remove leading zeros
+
     if result_type in FILTER_MAP:
         field_to_filter = FILTER_MAP[result_type]
         product = db.session.query(offers_models.Product).filter(field_to_filter == search_query).one_or_none()
