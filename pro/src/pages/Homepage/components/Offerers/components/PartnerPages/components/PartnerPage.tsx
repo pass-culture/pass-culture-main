@@ -10,7 +10,6 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_OFFERER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import {
   UploaderModeEnum,
@@ -44,7 +43,6 @@ export const PartnerPage = ({
 }: PartnerPageProps) => {
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const snackBar = useSnackBar()
   const initialValues = buildInitialValues(venue.bannerUrl, venue.bannerMeta)
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const [imageValues, setImageValues] =
@@ -55,28 +53,20 @@ export const PartnerPage = ({
     credit,
     cropParams,
   }: OnImageUploadArgs) => {
-    try {
-      const editedVenue = await postImageToVenue(
-        venue.id,
-        imageFile,
-        credit,
-        cropParams?.x,
-        cropParams?.y,
-        cropParams?.height,
-        cropParams?.width
-      )
-      setImageValues(
-        buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
-      )
+    const editedVenue = await postImageToVenue(
+      venue.id,
+      imageFile,
+      credit,
+      cropParams?.x,
+      cropParams?.y,
+      cropParams?.height,
+      cropParams?.width
+    )
+    setImageValues(
+      buildInitialValues(editedVenue.bannerUrl, editedVenue.bannerMeta)
+    )
 
-      await mutate([GET_OFFERER_QUERY_KEY, String(offerer.id)])
-
-      snackBar.success('Vos modifications ont bien été enregistrées')
-    } catch {
-      snackBar.error(
-        'Une erreur est survenue lors de la sauvegarde de vos modifications.\n Merci de réessayer plus tard'
-      )
-    }
+    await mutate([GET_OFFERER_QUERY_KEY, String(offerer.id)])
   }
 
   const logButtonAddClick = () => {

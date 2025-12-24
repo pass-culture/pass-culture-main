@@ -8,6 +8,14 @@ import {
   type ButtonImageDeleteProps,
 } from '../ButtonImageDelete'
 
+const snackBarSuccess = vi.fn()
+
+vi.mock('@/commons/hooks/useSnackBar', () => ({
+  useSnackBar: () => ({
+    success: snackBarSuccess,
+  }),
+}))
+
 interface RenderButtonImageDeleteProps {
   storeOverride?: Partial<RootState>
   props: ButtonImageDeleteProps
@@ -22,6 +30,7 @@ describe('ButtonImageDelete', () => {
   let props: ButtonImageDeleteProps
 
   beforeEach(() => {
+    vi.clearAllMocks()
     props = {
       onImageDelete: mockOnDelete,
     }
@@ -50,5 +59,18 @@ describe('ButtonImageDelete', () => {
     )
 
     expect(modalPreview).not.toBeInTheDocument()
+  })
+
+  it('should call onImageDelete and display success snackbar on confirm', async () => {
+    renderButtonImageDelete({ props })
+
+    await userEvent.click(screen.getByRole('button', { name: /Supprimer/i }))
+
+    await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
+
+    expect(mockOnDelete).toHaveBeenCalledTimes(1)
+    expect(snackBarSuccess).toHaveBeenCalledWith(
+      'Votre image a bien été supprimée'
+    )
   })
 })
