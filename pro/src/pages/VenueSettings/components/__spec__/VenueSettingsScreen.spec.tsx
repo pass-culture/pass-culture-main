@@ -164,15 +164,65 @@ describe('VenueSettingsScreen', () => {
     ])
   })
 
-  it('should display the route leaving guard when leaving without saving', async () => {
-    await renderForm()
+  describe('Route leaving guard', () => {
+    it.each([
+      { label: 'SIRET de la structure', ariaRole: 'textbox' },
+      { label: 'Nom public', ariaRole: 'textbox' },
+      { label: 'Informations de retrait', ariaRole: 'textbox' },
+      { label: 'Adresse email', ariaRole: 'textbox' },
+    ])('should display the route leaving guard when leaving without saving field "$label"', async (field: {
+      label: string
+      ariaRole: string
+    }) => {
+      await renderForm({
+        venue: { ...defaultGetVenue, siret: '53912345600026' },
+      })
 
-    await userEvent.type(screen.getByLabelText('Nom public'), 'test')
-    await userEvent.click(screen.getByText('Annuler'))
+      await userEvent.type(
+        screen.getByRole(field.ariaRole, { name: new RegExp(field.label) }),
+        'test'
+      )
+      await userEvent.click(screen.getByText('Annuler'))
 
-    expect(
-      screen.getByText('Les informations non enregistrées seront perdues')
-    ).toBeInTheDocument()
+      expect(
+        screen.getByText('Les informations non enregistrées seront perdues')
+      ).toBeInTheDocument()
+    })
+
+    it('should display the route leaving guard when leaving without saving field "RIDET de la structure"', async () => {
+      await renderForm({
+        venue: { ...defaultGetVenue, isCaledonian: true, siret: '1338847001' },
+      })
+    })
+
+    it.each([
+      { label: 'Adresse postale', ariaRole: 'textbox' },
+      { label: 'Code postal', ariaRole: 'textbox' },
+      { label: 'Ville', ariaRole: 'textbox' },
+      { label: 'Coordonnées GPS', ariaRole: 'textbox' },
+    ])('should display the route leaving guard when leaving without saving field "$label"', async (field: {
+      label: string
+      ariaRole: string
+    }) => {
+      await renderForm({
+        venue: { ...defaultGetVenue, siret: '53912345600026' },
+      })
+
+      // We need to trigger manual address edition to show address fields
+      await userEvent.click(
+        screen.getByText('Vous ne trouvez pas votre adresse ?')
+      )
+
+      await userEvent.type(
+        screen.getByRole(field.ariaRole, { name: new RegExp(field.label) }),
+        'test'
+      )
+      await userEvent.click(screen.getByText('Annuler'))
+
+      expect(
+        screen.getByText('Les informations non enregistrées seront perdues')
+      ).toBeInTheDocument()
+    })
   })
 
   it('should redirect back to the previous page when clicking on back button', async () => {
