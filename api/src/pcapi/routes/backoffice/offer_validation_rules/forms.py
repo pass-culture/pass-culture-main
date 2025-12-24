@@ -56,6 +56,8 @@ OFFER_VALIDATION_SUB_RULE_FORM_FIELD_CONFIGURATION = {
     "TEXT_COLLECTIVE_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
     "TEXT_COLLECTIVE_OFFER_TEMPLATE": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
     "DESCRIPTION_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "AUTHOR_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
+    "PUBLISHER_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
     "DESCRIPTION_COLLECTIVE_OFFER": {"field": "list_field", "operator": ["CONTAINS", "CONTAINS_EXACTLY"]},
     "DESCRIPTION_COLLECTIVE_OFFER_TEMPLATE": {
         "field": "list_field",
