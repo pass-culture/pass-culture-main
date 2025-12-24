@@ -337,6 +337,7 @@ def create_rule() -> utils.BackofficeResponse:
     try:
         new_rule = offers_models.OfferValidationRule(name=form.name.data)
         db.session.add(new_rule)
+        db.session.flush()
         sub_rules_info: dict[str, list] = {"sub_rules_created": []}
         for sub_rule_data in form.sub_rules.data:
             comparated = (
@@ -360,6 +361,7 @@ def create_rule() -> utils.BackofficeResponse:
             db.session.add(sub_rule)
             db.session.flush()
             _add_sub_rule_data_to_history(sub_rule, sub_rules_info["sub_rules_created"])
+
         history_api.add_action(
             history_models.ActionType.RULE_CREATED,
             author=current_user,

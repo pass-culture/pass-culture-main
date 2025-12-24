@@ -1550,6 +1550,21 @@ def reject_inappropriate_products(
     return True
 
 
+def _get_subrule_attribute(obj: object, attribute: str) -> typing.Any:
+    if isinstance(obj, dict):
+        return obj.get(attribute, None)
+    return getattr(obj, attribute, None)
+
+
+def _resolve_subrule_attribute(obj: object, attribute: str) -> typing.Any:
+    if "." not in attribute:
+        return _get_subrule_attribute(obj, attribute)
+
+    return _resolve_subrule_attribute(
+        _get_subrule_attribute(obj, attribute.split(".")[0]), ".".join(attribute.split(".")[1:])
+    )
+
+
 def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
     if sub_rule.model:
         if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
@@ -1563,7 +1578,7 @@ def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, o
         else:
             raise exceptions.UnapplicableModel()
 
-        target_attribute = getattr(object_to_compare, sub_rule.attribute.value)
+        target_attribute = _resolve_subrule_attribute(object_to_compare, sub_rule.attribute.value)
     else:
         target_attribute = type(offer).__name__
 

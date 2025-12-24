@@ -3226,6 +3226,36 @@ class ResolveOfferValidationRuleTest:
         assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag_too) == models.OfferValidationStatus.PENDING
         assert db.session.query(models.ValidationRuleOfferLink).count() == 2
 
+    def test_offer_validation_with_author_rule(self):
+        offer_to_flag = factories.OfferFactory()
+        offer_to_flag.extraData = {"author": "bad author"}
+        offer_author_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom de l'auteur")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_author_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.AUTHOR,
+            operator=models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["bad"]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
+
+    def test_offer_validation_with_editor_rule(self):
+        offer_to_flag = factories.OfferFactory()
+        offer_to_flag.extraData = {"editeur": "bad editor"}
+        offer_publisher_rule = factories.OfferValidationRuleFactory(name="Règle sur le nom de l'éditeur")
+        factories.OfferValidationSubRuleFactory(
+            validationRule=offer_publisher_rule,
+            model=models.OfferValidationModel.OFFER,
+            attribute=models.OfferValidationAttribute.PUBLISHER,
+            operator=models.OfferValidationRuleOperator.CONTAINS,
+            comparated={"comparated": ["bad"]},
+        )
+
+        assert api.set_offer_status_based_on_fraud_criteria(offer_to_flag) == models.OfferValidationStatus.PENDING
+        assert db.session.query(models.ValidationRuleOfferLink).count() == 1
+
     def test_offer_validation_rule_with_offer_type(self):
         offer = factories.OfferFactory()
         collective_offer = educational_factories.CollectiveOfferFactory()

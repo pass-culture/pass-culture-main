@@ -1471,6 +1471,10 @@ def format_offer_validation_sub_rule_field(sub_rule_field: offers_models.OfferVa
             return "Les formats de l'offre collective"
         case offers_models.OfferValidationSubRuleField.FORMATS_COLLECTIVE_OFFER_TEMPLATE:
             return "Les formats de l'offre collective vitrine"
+        case offers_models.OfferValidationSubRuleField.AUTHOR_OFFER:
+            return "L'auteur d'une offre individuelle"
+        case offers_models.OfferValidationSubRuleField.PUBLISHER_OFFER:
+            return "L'éditeur d'une offre individuelle"
         case _:
             return sub_rule_field.value
 
