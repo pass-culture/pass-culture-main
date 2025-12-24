@@ -196,7 +196,6 @@ export const ModalImageUpsertOrEdit = ({
         imageCreationStage: 'save',
       })
 
-      const onlyImageHasBeenUpdated = credit === initialCredit
       onImageUpload(
         {
           imageFile: image,
@@ -204,7 +203,7 @@ export const ModalImageUpsertOrEdit = ({
           cropParams: croppedRect,
           credit: credit,
         },
-        onlyImageHasBeenUpdated
+        !previouslyUploadedImageUrl
           ? 'Votre image a bien été importée'
           : 'Vos modifications ont bien été prises en compte'
       )

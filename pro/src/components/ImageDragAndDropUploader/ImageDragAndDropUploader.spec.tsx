@@ -187,7 +187,7 @@ describe('ImageDragAndDropUploader', () => {
 
     expect(mockUpload).toHaveBeenCalled()
     expect(snackBarSuccess).toHaveBeenCalledWith(
-      'Vos modifications ont bien été prises en compte'
+      'Votre image a bien été importée'
     )
 
     expect(screen.queryByText('Modifier une image')).not.toBeInTheDocument()

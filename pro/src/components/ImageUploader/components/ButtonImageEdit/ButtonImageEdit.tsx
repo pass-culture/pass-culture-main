@@ -1,6 +1,7 @@
 import cn from 'classnames'
 import { useState } from 'react'
 
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
   UploaderModeEnum,
   type UploadImageValues,
@@ -38,6 +39,7 @@ export const ButtonImageEdit = ({
 }: ButtonImageEditProps): JSX.Element => {
   const { croppedImageUrl, originalImageUrl } = initialValues
   const imageUrl = croppedImageUrl || originalImageUrl
+  const snackBar = useSnackBar()
 
   const [isModalImageOpen, setIsModalImageOpen] = useState(false)
 
@@ -49,11 +51,16 @@ export const ButtonImageEdit = ({
 
   const handleImageDelete = () => {
     onImageDelete()
+    snackBar.success('Votre image a bien été supprimée')
   }
 
-  function onImageUploadHandler(values: OnImageUploadArgs) {
+  function onImageUploadHandler(
+    values: OnImageUploadArgs,
+    successMessage: string
+  ) {
     onImageUpload(values)
     setIsModalImageOpen(false)
+    snackBar.success(successMessage)
   }
 
   return (

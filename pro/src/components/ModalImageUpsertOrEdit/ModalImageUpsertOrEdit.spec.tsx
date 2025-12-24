@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import React, { forwardRef } from 'react'
 
 import * as imageUtils from '@/commons/utils/image'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
@@ -12,6 +13,30 @@ import {
 
 const onImageUpload = vi.fn()
 const onImageDelete = vi.fn()
+
+vi.mock('react-avatar-editor', () => {
+  const MockAvatarEditor = forwardRef((_props, ref) => {
+    if (ref && typeof ref === 'object' && 'current' in ref) {
+      ref.current = {
+        getImage: vi.fn(() => ({ toDataURL: vi.fn(() => 'my img') })),
+        getCroppingRect: vi.fn(() => ({
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100,
+        })),
+      }
+    }
+    return React.createElement('div', { 'aria-label': "Editeur d'image" })
+  })
+
+  MockAvatarEditor.displayName = 'MockAvatarEditor'
+
+  return {
+    __esModule: true,
+    default: MockAvatarEditor,
+  }
+})
 
 const defaultProps: ModalImageUpsertOrEditProps = {
   open: true,
@@ -288,6 +313,58 @@ describe('ModalImageUpsertOrEdit', () => {
         await userEvent.click(deleteButton)
 
         expect(onImageDelete).toHaveBeenCalled()
+      })
+    })
+
+    describe('when saving an image', () => {
+      it('should call onImageUpload with sucess message : Votre image a bien été importée', async () => {
+        renderModalImageCrop()
+
+        await waitForRender()
+
+        const saveButton = screen.getByRole('button', { name: 'Importer' })
+        await userEvent.click(saveButton)
+
+        await waitFor(() => {
+          expect(onImageUpload).toHaveBeenCalled()
+        })
+
+        expect(onImageUpload).toHaveBeenCalledWith(
+          expect.objectContaining({
+            imageFile: expect.any(File),
+            imageCroppedDataUrl: expect.any(String),
+            cropParams: expect.any(Object),
+            credit: expect.any(String),
+          }),
+          'Votre image a bien été importée'
+        )
+      })
+
+      it('should call onImageUpload with success message : Vos modifications ont bien été prises en compte', async () => {
+        const mockImageUrl = 'http://example.com/image.jpg'
+        renderModalImageCrop({
+          initialValues: {
+            croppedImageUrl: mockImageUrl,
+            originalImageUrl: mockImageUrl,
+          },
+        })
+
+        await waitForRender()
+
+        const saveButton = screen.getByRole('button', { name: 'Importer' })
+        await userEvent.click(saveButton)
+
+        expect(onImageUpload).toHaveBeenCalledOnce()
+
+        expect(onImageUpload).toHaveBeenCalledWith(
+          expect.objectContaining({
+            imageFile: expect.any(File),
+            imageCroppedDataUrl: expect.any(String),
+            cropParams: expect.any(Object),
+            credit: expect.any(String),
+          }),
+          'Vos modifications ont bien été prises en compte'
+        )
       })
     })
 

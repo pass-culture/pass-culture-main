@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
@@ -17,10 +18,12 @@ export const ButtonImageDelete = ({
 }: ButtonImageDeleteProps): JSX.Element => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const snackBar = useSnackBar()
 
   const onConfirm = () => {
     setIsLoading(true)
     onImageDelete()
+    snackBar.success('Votre image a bien été supprimée')
   }
 
   return (
