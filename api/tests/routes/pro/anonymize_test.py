@@ -26,7 +26,9 @@ class Returns204Test:
         assert response.status_code == 204
         assert next(rec for rec in caplog.records if rec.msg == "User has been anonymized")
         mock_can_anonymise.assert_called_once_with(user)
-        mock_anonymize_pro_user.assert_called_once_with(user)
+        mock_anonymize_pro_user.assert_called_once_with(
+            user=user, author=user, action_history_comment="Demande d’anonymisation depuis l’espace partenaire"
+        )
         mock_send_mail.assert_called_once_with(user.email)
 
 
@@ -44,7 +46,9 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == {"global": ["Une erreur est survenue lors de l'anonymisation du compte"]}
         mock_can_anonymise.assert_called_once_with(user)
-        mock_anonymize_pro_user.assert_called_once_with(user)
+        mock_anonymize_pro_user.assert_called_once_with(
+            user=user, author=user, action_history_comment="Demande d’anonymisation depuis l’espace partenaire"
+        )
         mock_send_mail.assert_not_called()
 
 
