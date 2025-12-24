@@ -1480,6 +1480,8 @@ class OfferValidationAttribute(enum.Enum):
     SHOW_SUB_TYPE = "showSubType"
     TEXT = "visibleText"
     FORMATS = "formats"
+    AUTHOR = "extraData.author"
+    PUBLISHER = "extraData.editeur"
 
 
 class OfferValidationSubRuleField(enum.Enum):
@@ -1570,6 +1572,14 @@ class OfferValidationSubRuleField(enum.Enum):
     ID_OFFERER = {
         "model": OfferValidationModel.OFFERER,
         "attribute": OfferValidationAttribute.ID,
+    }
+    AUTHOR_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.AUTHOR,
+    }
+    PUBLISHER_OFFER = {
+        "model": OfferValidationModel.OFFER,
+        "attribute": OfferValidationAttribute.PUBLISHER,
     }
 
 
