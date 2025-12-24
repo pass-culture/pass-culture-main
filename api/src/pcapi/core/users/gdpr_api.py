@@ -80,7 +80,12 @@ def anonymize_user_by_id(user_id: int) -> bool:
     return anonymize_user(user=user)
 
 
-def anonymize_user(user: models.User, *, author: models.User | None = None) -> bool:
+def anonymize_user(
+    user: models.User,
+    *,
+    author: models.User | None = None,
+    action_history_comment: str | None = None,
+) -> bool:
     if has_unprocessed_extract(user):
         return False
 
@@ -176,6 +181,7 @@ def anonymize_user(user: models.User, *, author: models.User | None = None) -> b
                 actionType=history_models.ActionType.USER_ANONYMIZED,
                 authorUser=author,
                 userId=user.id,
+                comment=action_history_comment,
             )
         )
     return True
@@ -534,8 +540,10 @@ def notify_pro_users_before_anonymization() -> None:
         transactional_mails.send_pre_anonymization_email_to_pro(user)
 
 
-def anonymize_pro_user(user: models.User) -> bool:
-    anonymized = anonymize_user(user)
+def anonymize_pro_user(
+    user: models.User, author: models.User | None = None, action_history_comment: str | None = None
+) -> bool:
+    anonymized = anonymize_user(user=user, author=author, action_history_comment=action_history_comment)
 
     if anonymized:
         db.session.query(offerers_models.UserOfferer).filter(

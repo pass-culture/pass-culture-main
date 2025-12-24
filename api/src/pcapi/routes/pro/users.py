@@ -307,7 +307,9 @@ def anonymize() -> None:
     if not gdpr_api.can_anonymise_pro_user(user):
         raise ForbiddenError(errors={"global": ["Le compte ne peut pas être anonymisé de manière autonome"]})
 
-    anonymized = anonymize_pro_user(user)
+    anonymized = anonymize_pro_user(
+        user=user, author=user, action_history_comment="Demande d’anonymisation depuis l’espace partenaire"
+    )
     if anonymized:
         on_commit(
             partial(
