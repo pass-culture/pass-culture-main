@@ -1,11 +1,8 @@
-import re
 from enum import Enum
 from typing import Annotated
-from typing import Literal
 
 import pydantic as pydantic_v2
 from pydantic import AfterValidator
-from pydantic import EmailStr
 from pydantic import StringConstraints
 
 from pcapi.core.categories import subcategories
@@ -147,13 +144,6 @@ ACTIVITY_COULD_BE_AN_EVENT = {
 }
 
 
-NameString = StringConstraints(strip_whitespace=True, min_length=1, max_length=1024)
-GtlIdString = StringConstraints(strip_whitespace=True, min_length=1, max_length=128)
-
-# could probably be a little bit more strict, but let's be safe for now
-VisaString = StringConstraints(strip_whitespace=True, min_length=8, max_length=64)
-
-
 # needed because original VenueTypeCode uses pydantic v1... which
 # is not compatible with v2 model used here.
 VenueTypeCode = Enum("VenueTypeCode", dict(offerers_schemas.VenueTypeCode.__members__))
@@ -165,31 +155,11 @@ class Venue(pydantic_v2.BaseModel):
     has_ticketing: bool = False
 
 
-def does_not_contain_ean(name: str) -> str:
-    if re.search(r"\d{13}", name):
-        raise ValueError(name)
+NameString = StringConstraints(strip_whitespace=True, min_length=1, max_length=1024)
+GtlIdString = StringConstraints(strip_whitespace=True, min_length=1, max_length=128)
 
-
-class Mandatory(pydantic_v2.BaseModel):
-    subcategory_id: Literal[*[sub.value for sub in subcategories.SubcategoryIdEnum]]  # to override
-    name: Annotated[str, AfterValidator(does_not_contain_ean)]
-    venue: Venue
-    audio_disability_compliant: bool
-    mental_disability_compliant: bool
-    motor_disability_compliant: bool
-    visual_disability_compliant: bool
-
-    model_config = pydantic_v2.ConfigDict(
-        str_strip_whitespace=True,
-        extra="ignore",
-    )
-
-class Base(Mandatory):
-    description: str | None = None
-    booking_email: EmailStr | None = None
-
-    model_config = pydantic_v2.ConfigDict(extra="forbid")
-
+# could probably be a little bit more strict, but let's be safe for now
+VisaString = StringConstraints(strip_whitespace=True, min_length=8, max_length=64)
 
 MusicType = Annotated[int, AfterValidator(lambda t: t in music.MUSIC_SLUG_BY_GTL_ID)]
 MusicSubType = Annotated[int, AfterValidator(lambda t: t in music.MUSIC_SUB_TYPES_BY_SLUG)]
@@ -221,5 +191,4 @@ class GtlMusicModel(pydantic_v2.BaseModel):
     gtl_id: TiteLiveMusicGenres
 
 
-class ShowExtraData(pydantic_v2.BaseModel):
-    data: MusicTypeModel | ShowTypeModel | GtlMusicModel
+ShowExtraData = MusicTypeModel | ShowTypeModel | GtlMusicModel

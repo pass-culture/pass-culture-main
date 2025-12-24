@@ -1,6 +1,6 @@
 import pydantic as pydantic_v2
 
-from .shared import Base
+from .base import Base
 
 
 class ThingsBaseModel(Base):

@@ -1,9 +1,9 @@
 
 from pydantic import EmailStr
 
-from . import shared
+from .base import Base
 
 
-class ActivityBaseModel(shared.Base):
+class ActivityBaseModel(Base):
     # optional for most of subcategories, but not these
     booking_email: EmailStr
