@@ -80,7 +80,7 @@
     "@cypress/grep": "5.0.1",
     "@hookform/devtools": "4.4.0",
     "@playwright/test": "1.57.0",
-    "@storybook/addon-a11y": "9.1.16",
+    "@storybook/addon-a11y": "9.1.17",
     "@storybook/addon-docs": "9.1.17",
     "@storybook/react-vite": "9.1.17",
     "@testing-library/cypress": "10.1.0",
