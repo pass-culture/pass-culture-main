@@ -76,7 +76,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.0",
-    "@biomejs/biome": "2.3.8",
+    "@biomejs/biome": "2.3.10",
     "@cypress/grep": "5.0.1",
     "@hookform/devtools": "4.4.0",
     "@playwright/test": "1.57.0",
