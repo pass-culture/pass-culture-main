@@ -1968,15 +1968,15 @@
     "@storybook/global" "^5.0.0"
     axe-core "^4.2.0"
 
-"@storybook/addon-docs@9.1.16":
-  version "9.1.16"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-9.1.16.tgz#0127eff2ff1b223f46a00f70fd259975fec7028d"
-  integrity sha512-JfaUD6fC7ySLg5duRdaWZ0FUUXrgUvqbZe/agCbSyOaIHOtJdhGaPjOC3vuXTAcV8/8/wWmbu0iXFMD08iKvdw==
+"@storybook/addon-docs@9.1.17":
+  version "9.1.17"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-docs/-/addon-docs-9.1.17.tgz#727e594c6ff864a500c875537190f499b0f320c7"
+  integrity sha512-yc4hlgkrwNi045qk210dRuIMijkgbLmo3ft6F4lOdpPRn4IUnPDj7FfZR8syGzUzKidxRfNtLx5m0yHIz83xtA==
   dependencies:
     "@mdx-js/react" "^3.0.0"
-    "@storybook/csf-plugin" "9.1.16"
+    "@storybook/csf-plugin" "9.1.17"
     "@storybook/icons" "^1.4.0"
-    "@storybook/react-dom-shim" "9.1.16"
+    "@storybook/react-dom-shim" "9.1.17"
     react "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     react-dom "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     ts-dedent "^2.0.0"
@@ -1996,6 +1996,13 @@
   dependencies:
     unplugin "^1.3.1"
 
+"@storybook/csf-plugin@9.1.17":
+  version "9.1.17"
+  resolved "https://registry.yarnpkg.com/@storybook/csf-plugin/-/csf-plugin-9.1.17.tgz#83f877e7fd99a128f03267cd81364da2c21d7f14"
+  integrity sha512-o+ebQDdSfZHDRDhu2hNDGhCLIazEB4vEAqJcHgz1VsURq+l++bgZUcKojPMCAbeblptSEz2bwS0eYAOvG7aSXg==
+  dependencies:
+    unplugin "^1.3.1"
+
 "@storybook/global@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@storybook/global/-/global-5.0.0.tgz#b793d34b94f572c1d7d9e0f44fac4e0dbc9572ed"
@@ -2010,6 +2017,11 @@
   version "9.1.16"
   resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-9.1.16.tgz#c98298b1f08e699f1a06483c42fdfc4864cf4493"
   integrity sha512-MsI4qTxdT6lMXQmo3IXhw3EaCC+vsZboyEZBx4pOJ+K/5cDJ6ZoQ3f0d4yGpVhumDxaxlnNAg954+f8WWXE1rQ==
+
+"@storybook/react-dom-shim@9.1.17":
+  version "9.1.17"
+  resolved "https://registry.yarnpkg.com/@storybook/react-dom-shim/-/react-dom-shim-9.1.17.tgz#ef816c7fb62743e9017f4f3680d7f3625c7188d7"
+  integrity sha512-Ss/lNvAy0Ziynu+KniQIByiNuyPz3dq7tD62hqSC/pHw190X+M7TKU3zcZvXhx2AQx1BYyxtdSHIZapb+P5mxQ==
 
 "@storybook/react-vite@9.1.16":
   version "9.1.16"
