@@ -509,7 +509,7 @@ class HandleDmsApplicationTest:
             state=dms_models.GraphQLApplicationStates.draft,
             email="john.stiles@example.com",
             last_modification_date="2022-05-15T09:09:46.000+02:00",
-            birth_date=datetime.datetime(2007, 1, 1),
+            birth_date=date_utils.get_naive_utc_now() - relativedelta(years=ELIGIBILITY_AGE_18),
         )
 
         dms_subscription_api.handle_dms_application(dms_response)
