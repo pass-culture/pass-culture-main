@@ -2,7 +2,6 @@ import decimal
 import logging
 import typing
 
-import sqlalchemy as sqla
 import sqlalchemy.orm as sa_orm
 from flask import request
 from flask_login import current_user
@@ -771,108 +770,18 @@ def get_music_types() -> offers_serialize.GetMusicTypesResponse:
     )
 
 
-def _get_offer_for_price_categories_upsert(
-    offer_id: int, price_category_edition_payload: list[offers_serialize.EditPriceCategoryModel]
-) -> models.Offer | None:
-    return (
-        db.session.query(models.Offer)
-        .outerjoin(models.Offer.stocks.and_(sqla.not_(models.Stock.isEventExpired)))
-        .outerjoin(
-            models.Offer.priceCategories.and_(
-                models.PriceCategory.id.in_([price_category.id for price_category in price_category_edition_payload])
-            )
-        )
-        .outerjoin(models.PriceCategoryLabel, models.PriceCategory.priceCategoryLabel)
-        .options(sa_orm.contains_eager(models.Offer.stocks))
-        .options(
-            sa_orm.contains_eager(models.Offer.priceCategories).contains_eager(models.PriceCategory.priceCategoryLabel)
-        )
-        .options(sa_orm.joinedload(models.Offer.metaData))
-        .filter(models.Offer.id == offer_id)
-        .one_or_none()
-    )
-
-
-@private_api.route("/offers/<int:offer_id>/price_categories", methods=["POST"])
+@private_api.route("/offers/<int:offer_id>/price_categories", methods=["PUT"])
 @login_required
 @spectree_serialize(
     response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
     api=blueprint.pro_private_schema,
 )
 @atomic()
-def post_price_categories(
-    offer_id: int, body: offers_serialize.PriceCategoryBody
-) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
-    price_categories_to_create = [
-        price_category
-        for price_category in body.price_categories
-        if isinstance(price_category, offers_serialize.CreatePriceCategoryModel)
-    ]
-    price_categories_to_edit = [
-        price_category
-        for price_category in body.price_categories
-        if isinstance(price_category, offers_serialize.EditPriceCategoryModel)
-    ]
-
-    new_labels_and_prices = {(p.label, p.price) for p in price_categories_to_create}
-    validation.check_for_duplicated_price_categories(new_labels_and_prices, offer_id)
-
-    offer = _get_offer_for_price_categories_upsert(offer_id, price_categories_to_edit)
-    if not offer:
-        raise api_errors.ApiErrors({"offer_id": ["L'offre avec l'id %s n'existe pas" % offer_id]}, status_code=400)
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    existing_price_categories_by_id = {category.id: category for category in offer.priceCategories}
-
-    for price_category_to_create in price_categories_to_create:
-        offers_api.create_price_category(offer, price_category_to_create.label, price_category_to_create.price)
-
-    for price_category_to_edit in price_categories_to_edit:
-        if price_category_to_edit.id not in existing_price_categories_by_id:
-            raise api_errors.ApiErrors(
-                {"price_category_id": ["Le tarif avec l'id %s n'existe pas" % price_category_to_edit.id]}
-            )
-        data = price_category_to_edit.dict(exclude_unset=True)
-
-        offers_api.edit_price_category(
-            offer,
-            price_category=existing_price_categories_by_id[data["id"]],
-            label=data.get("label", offers_api.UNCHANGED),
-            price=data.get("price", offers_api.UNCHANGED),
-        )
-
-    # Since we modified the price categories, we need to push the changes to the database
-    # so that the response does include them
-    db.session.flush()
-    load_options: offers_repository.OFFER_LOAD_OPTIONS = [
-        "mediations",
-        "product",
-        "price_category",
-        "venue",
-        "bookings_count",
-        "offerer_address",
-        "future_offer",
-        "pending_bookings",
-        "headline_offer",
-        "meta_data",
-    ]
-    offer = offers_repository.get_offer_by_id(offer_id, load_options=load_options)
-
-    return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
-
-
-@private_api.route("/offers/<int:offer_id>/price_categories", methods=["PATCH"])
-@login_required
-@spectree_serialize(
-    response_model=offers_serialize.GetIndividualOfferWithAddressResponseModel,
-    api=blueprint.pro_private_schema,
-)
-@atomic()
-def upsert_offer_price_categories(
+def replace_offer_price_categories(
     offer_id: int, body: offers_serialize.PriceCategoryBody
 ) -> offers_serialize.GetIndividualOfferWithAddressResponseModel:
     """
-    Upsert all price categories of an offer.
+    Replace all price categories of an offer.
 
     - If a price category exists in the DB but not in `price_categories`, it is deleted.
     - Otherwise, price categories are updated or created as needed.
@@ -880,12 +789,7 @@ def upsert_offer_price_categories(
     try:
         offer = offers_repository.get_offer_by_id(offer_id)
     except exceptions.OfferNotFound:
-        raise api_errors.ApiErrors(
-            errors={
-                "global": "No offer found for this id",
-            },
-            status_code=404,
-        )
+        raise api_errors.ResourceNotFoundError(errors={"offer_id": "Offer not found"})
     rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
 
     price_category_inputs: list[offers_schemas.PriceCategoryInput] = []
@@ -893,7 +797,7 @@ def upsert_offer_price_categories(
         data = price_category.dict(by_alias=False, exclude={"offer_id"})
         price_category_inputs.append(typing.cast(offers_schemas.PriceCategoryInput, data))
 
-    offers_api.upsert_offer_price_categories(offer, price_category_inputs)
+    offers_api.replace_offer_price_categories(offer, price_category_inputs)
 
     load_options: offers_repository.OFFER_LOAD_OPTIONS = [
         "mediations",
@@ -910,18 +814,6 @@ def upsert_offer_price_categories(
     offer = offers_repository.get_offer_by_id(offer.id, load_options=load_options)
 
     return offers_serialize.GetIndividualOfferWithAddressResponseModel.from_orm(offer)
-
-
-@private_api.route("/offers/<int:offer_id>/price_categories/<int:price_category_id>", methods=["DELETE"])
-@login_required
-@spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
-@atomic()
-def delete_price_category(offer_id: int, price_category_id: int) -> None:
-    offer = get_or_404(models.Offer, offer_id)
-    rest.check_user_has_access_to_offerer(current_user, offer.venue.managingOffererId)
-
-    price_category = get_or_404(models.PriceCategory, price_category_id)
-    offers_api.delete_price_category(offer, price_category)
 
 
 @private_api.route("/offers/<int:venue_id>/ean/<string:ean>", methods=["GET"])

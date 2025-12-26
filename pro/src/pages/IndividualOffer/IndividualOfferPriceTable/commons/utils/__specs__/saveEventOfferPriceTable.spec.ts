@@ -9,7 +9,7 @@ import { saveEventOfferPriceTable } from '../saveEventOfferPriceTable'
 vi.mock('@/apiClient/api', () => ({
   api: {
     patchOffer: vi.fn(),
-    upsertOfferPriceCategories: vi.fn(),
+    replaceOfferPriceCategories: vi.fn(),
   },
 }))
 
@@ -50,7 +50,7 @@ describe('saveEventOfferPriceTable', () => {
     )
 
     expect(api.patchOffer).toHaveBeenCalledWith(offer.id, { isDuo: true })
-    expect(api.upsertOfferPriceCategories).toHaveBeenCalledWith(
+    expect(api.replaceOfferPriceCategories).toHaveBeenCalledWith(
       offer.id,
       expect.objectContaining({ priceCategories: expect.any(Array) })
     )
@@ -87,7 +87,7 @@ describe('saveEventOfferPriceTable', () => {
     )
 
     expect(api.patchOffer).not.toHaveBeenCalled()
-    expect(api.upsertOfferPriceCategories).toHaveBeenCalledWith(
+    expect(api.replaceOfferPriceCategories).toHaveBeenCalledWith(
       offer.id,
       expect.objectContaining({ priceCategories: expect.any(Array) })
     )

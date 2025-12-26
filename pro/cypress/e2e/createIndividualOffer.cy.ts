@@ -50,8 +50,8 @@ describe('Create individual offers new flow', () => {
     cy.intercept({ method: 'GET', url: '/offers/categories' }).as(
       'getCategories'
     )
-    cy.intercept({ method: 'PATCH', url: '/offers/*/price_categories' }).as(
-      'upsertOfferPriceCategories'
+    cy.intercept({ method: 'PUT', url: '/offers/*/price_categories' }).as(
+      'replaceOfferPriceCategories'
     )
     cy.intercept({ method: 'GET', url: '/venues?offererId=*' }).as(
       'getVenuesForOfferer'
@@ -156,7 +156,7 @@ describe('Create individual offers new flow', () => {
 
     cy.stepLog({ message: 'I validate the price categories step' })
     cy.findByText('Enregistrer et continuer').click()
-    cy.wait('@upsertOfferPriceCategories')
+    cy.wait('@replaceOfferPriceCategories')
 
     cy.findAllByText('Définir le calendrier').should('exist')
     // we go back to price categories step to delete a price category
@@ -172,7 +172,7 @@ describe('Create individual offers new flow', () => {
     })
     cy.findByText('Enregistrer et continuer').click()
     // we assert that only 3 priceCategories are present in the response
-    cy.wait(['@upsertOfferPriceCategories'])
+    cy.wait(['@replaceOfferPriceCategories'])
       .its('response.body.priceCategories')
       .should('have.length', 3)
 

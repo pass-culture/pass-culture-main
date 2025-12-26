@@ -853,7 +853,11 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     )
     name: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(140), nullable=False)
     priceCategories: sa_orm.Mapped[list["PriceCategory"]] = sa_orm.relationship(
-        "PriceCategory", foreign_keys="PriceCategory.offerId", back_populates="offer"
+        "PriceCategory",
+        foreign_keys="PriceCategory.offerId",
+        back_populates="offer",
+        cascade="all, delete-orphan",
+        single_parent=True,
     )
     productId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id"), index=True, nullable=True

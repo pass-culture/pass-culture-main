@@ -28,7 +28,10 @@ export const saveEventOfferPriceTable = async (
   if (dirtyFields) {
     await mutate(
       [GET_OFFER_QUERY_KEY, offer.id],
-      api.upsertOfferPriceCategories(offer.id, toPriceCategoryBody(formValues)),
+      api.replaceOfferPriceCategories(
+        offer.id,
+        toPriceCategoryBody(formValues)
+      ),
       { revalidate: false }
     )
   }
