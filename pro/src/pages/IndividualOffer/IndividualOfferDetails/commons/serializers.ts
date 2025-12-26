@@ -1,7 +1,6 @@
-import type {
-  PatchDraftOfferBodyModel,
-  PostDraftOfferBodyModel,
-} from '@/apiClient/v1'
+import type { PatchOfferBodyModel, PostOfferBodyModel } from '@/apiClient/v1'
+import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
 
 import type { DetailsFormValues } from './types'
@@ -31,7 +30,7 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
 }
 
 export const serializeExtraData = (formValues: DetailsFormValues) => {
-  return trimStringsInObject({
+  return normalizeRequestBodyProps({
     author: formValues.author,
     gtl_id: formValues.gtl_id,
     performer: formValues.performer,
@@ -45,9 +44,13 @@ export const serializeExtraData = (formValues: DetailsFormValues) => {
 }
 
 export function serializeDetailsPostData(
-  formValues: DetailsFormValues,
-  isNewOfferCreationFlowFeatureActive: boolean
-): PostDraftOfferBodyModel {
+  formValues: DetailsFormValues
+): PostOfferBodyModel {
+  assertOrFrontendError(
+    formValues.accessibility,
+    '`formValues.accessibility` is undefined'
+  )
+
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
@@ -56,38 +59,30 @@ export function serializeDetailsPostData(
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
-    url: formValues.url,
-
-    ...(isNewOfferCreationFlowFeatureActive
-      ? {
-          audioDisabilityCompliant: formValues.accessibility?.audio,
-          mentalDisabilityCompliant: formValues.accessibility?.mental,
-          motorDisabilityCompliant: formValues.accessibility?.motor,
-          visualDisabilityCompliant: formValues.accessibility?.visual,
-        }
-      : {}),
+    audioDisabilityCompliant: formValues.accessibility.audio,
+    mentalDisabilityCompliant: formValues.accessibility.mental,
+    motorDisabilityCompliant: formValues.accessibility.motor,
+    visualDisabilityCompliant: formValues.accessibility.visual,
   })
 }
 
 export function serializeDetailsPatchData(
-  formValues: DetailsFormValues,
-  isNewOfferCreationFlowFeatureActive: boolean
-): PatchDraftOfferBodyModel {
+  formValues: DetailsFormValues
+): PatchOfferBodyModel {
+  assertOrFrontendError(
+    formValues.accessibility,
+    '`formValues.accessibility` is undefined'
+  )
+
   return trimStringsInObject({
     name: formValues.name,
     subcategoryId: formValues.subcategoryId,
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
     extraData: serializeExtraData(formValues),
-    url: formValues.url,
-
-    ...(isNewOfferCreationFlowFeatureActive
-      ? {
-          audioDisabilityCompliant: formValues.accessibility?.audio,
-          mentalDisabilityCompliant: formValues.accessibility?.mental,
-          motorDisabilityCompliant: formValues.accessibility?.motor,
-          visualDisabilityCompliant: formValues.accessibility?.visual,
-        }
-      : {}),
+    audioDisabilityCompliant: formValues.accessibility.audio,
+    mentalDisabilityCompliant: formValues.accessibility.mental,
+    motorDisabilityCompliant: formValues.accessibility.motor,
+    visualDisabilityCompliant: formValues.accessibility.visual,
   })
 }

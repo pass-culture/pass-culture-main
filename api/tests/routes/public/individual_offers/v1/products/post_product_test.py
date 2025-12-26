@@ -627,11 +627,34 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
             ),
             # additional properties not allowed
             ({"tkilol": ""}, {"tkilol": ["extra fields not permitted"]}),
+            # Providing URL for a non-digital offer
+            (
+                {
+                    "categoryRelatedFields": {"category": "SUPPORT_PHYSIQUE_FILM", "ean": "1234567891234"},
+                    "location": {"type": "digital", "url": "https://example.com", "venueId": None},
+                },
+                {
+                    "url": [
+                        'Une offre de sous-catégorie "Support physique (DVD, Blu-ray...)" ne peut contenir un champ `url`'
+                    ]
+                },
+            ),
+            # Missing URL for a digital offer
+            (
+                {
+                    "categoryRelatedFields": {"category": "ABO_LIVRE_NUMERIQUE"},
+                },
+                {"url": ['Une offre de catégorie "Abonnement livres numériques" doit contenir un champ `url`']},
+            ),
         ],
     )
     def test_incorrect_payload_should_return_400(self, partial_request_json, expected_response_json):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         existing_offer = offers_factories.OfferFactory(venue=venue_provider.venue, idAtProvider="c'est déjà pris :'(")
+
+        if "location" in partial_request_json:
+            # ensure the venueId used in the test is the one of the venue_provider
+            partial_request_json["location"]["venueId"] = venue_provider.venueId
 
         payload = self._get_base_payload(venue_provider.venueId)
         payload.update(**partial_request_json)

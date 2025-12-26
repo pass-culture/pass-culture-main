@@ -21,12 +21,7 @@ from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
-from pcapi.models import offer_mixin
 from pcapi.utils.date import format_into_utc_date
-
-# TODO(jbaudet - 10/25) remove import once draft create/update routes
-# do not exists anymore and have been merged with the regular ones
-from tests.routes.pro import patch_draft_offer_test
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -1225,68 +1220,3 @@ def venue_fixture(user_offerer):
 @pytest.fixture(name="auth_client")
 def auth_client_fixture(user_offerer, client):
     return client.with_session_auth(user_offerer.user.email)
-
-
-# TODO(jbaudet - 10/25) remove this test class once the new
-# routes have been migrated (-> no more /v2/...)
-class UpdateOfferv2Test(Returns200Test):
-    endpoint = "/v2/offers/{offer_id}"
-
-    def test_newly_created_and_unfinished_offer_can_be_updated(self, auth_client, venue):
-        """Check that one can update an newly created and uncomplete offer
-
-        Ensure that a client can create an offer with the bare minimal
-        information (name, subcategory...) and still update it until it
-        is published (all usual update rules should then apply again).
-        """
-        offer = offers_factories.ThingOfferFactory(
-            venue=venue,
-            validation=offer_mixin.OfferValidationStatus.DRAFT,
-            offererAddress=None,
-            publicationDatetime=None,
-            bookingAllowedDatetime=None,
-        )
-
-        updated_name = offer.name + "_updated"
-        response = auth_client.patch(f"/offers/{offer.id}", json={"name": updated_name})
-
-        assert response.status_code == 200
-        assert response.json["name"] == updated_name
-
-        db.session.refresh(offer)
-        assert offer.name == updated_name
-
-
-# TODO(jbaudet - 10/25) remove this test class once the new
-# routes have been migrated (-> no more /v2/...)
-class UpdateOfferv2ErrorTest(Returns400Test, Returns403Test, Returns404Test):
-    endpoint = "/v2/offers/{offer_id}"
-
-
-# TODO(jbaudet - 10/25) remove this test class once the new
-# routes have been migrated (-> no more /v2/...)
-class UpdateOfferv2FromDraftTest(patch_draft_offer_test.Returns200Test):
-    endpoint = "/v2/offers/{offer_id}"
-
-    def test_patch_draft_offer_with_empty_extra_data(self, client):
-        # original test works but the action should not be permitted...
-        pass
-
-
-# TODO(jbaudet - 10/25) remove this test class once the new
-# routes have been migrated (-> no more /v2/...)
-class UpdateOfferv2FromDraftErrorTest(
-    patch_draft_offer_test.Returns400Test,
-    patch_draft_offer_test.Returns403Test,
-    patch_draft_offer_test.Returns404Test,
-):
-    endpoint = "/v2/offers/{offer_id}"
-
-    def test_fail_when_body_has_null_url_field(self, client):
-        # original test works but it should not because:
-        # 1. the digital offer should have been created with an URL from
-        #    the start (although no DB nor python constraint forbids it
-        #    unfortunately)
-        # 2. the update updates... nothing (from null URL to null URL).
-        #    So this is ok.
-        pass

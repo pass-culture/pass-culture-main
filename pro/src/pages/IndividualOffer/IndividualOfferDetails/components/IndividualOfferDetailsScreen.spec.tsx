@@ -42,15 +42,15 @@ import {
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
 
 import {
-  IndividualOfferDetailsScreenNext,
-  type IndividualOfferDetailsScreenNextProps,
-} from './IndividualOfferDetailsScreenNext'
+  IndividualOfferDetailsScreen,
+  type IndividualOfferDetailsScreenProps,
+} from './IndividualOfferDetailsScreen'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
     getMusicTypes: vi.fn(),
-    postDraftOffer: vi.fn(),
-    patchDraftOffer: vi.fn(),
+    postOffer: vi.fn(),
+    patchOffer: vi.fn(),
     getProductByEan: vi.fn(),
     getActiveVenueOfferByEan: vi.fn(),
   },
@@ -159,7 +159,7 @@ const renderDetailsScreen = ({
   }),
 }: {
   contextValue: IndividualOfferContextValues
-  props?: Partial<IndividualOfferDetailsScreenNextProps>
+  props?: Partial<IndividualOfferDetailsScreenProps>
   mode?: OFFER_WIZARD_MODE
   options?: RenderWithProvidersOptions
   path?: string
@@ -180,7 +180,7 @@ const renderDetailsScreen = ({
 
   const element = (
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferDetailsScreenNext {...controlledProps} />
+      <IndividualOfferDetailsScreen {...controlledProps} />
     </IndividualOfferContext.Provider>
   )
 
@@ -250,7 +250,7 @@ const userFillsEverything = async () => {
   )
 }
 
-describe('IndividualOfferDetailsScreenNext', () => {
+describe('<IndividualOfferDetailsScreen />', () => {
   let contextValue: IndividualOfferContextValues
 
   beforeEach(() => {
@@ -261,9 +261,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       subCategories: MOCK_DATA.subCategories,
       offer: null,
     })
-    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
-      getIndividualOfferFactory()
-    )
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(getIndividualOfferFactory())
   })
 
   it('should render banner when no venue available', async () => {
@@ -322,7 +320,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: mockLogEvent,
       }))
-      vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
+      vi.spyOn(api, 'postOffer').mockResolvedValue(
         getIndividualOfferFactory({
           id: 12,
         })
@@ -506,7 +504,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'postDraftOffer').mockRejectedValue({
+    vi.spyOn(api, 'postOffer').mockRejectedValue({
       message: 'oups',
       name: 'ApiError',
       body: { ean: 'broken ean from api' },
@@ -565,7 +563,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
       logEvent: mockLogEvent,
     }))
-    vi.spyOn(api, 'postDraftOffer').mockResolvedValue(
+    vi.spyOn(api, 'postOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -579,21 +577,21 @@ describe('IndividualOfferDetailsScreenNext', () => {
 
     await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
 
-    expect(api.postDraftOffer).toHaveBeenCalledOnce()
-    expect(api.postDraftOffer).toHaveBeenCalledWith({
+    expect(api.postOffer).toHaveBeenCalledOnce()
+    expect(api.postOffer).toHaveBeenCalledWith({
       audioDisabilityCompliant: true,
       description: 'My super description',
       durationMinutes: null,
       extraData: {
-        author: '',
+        author: null,
         ean: '1234567891234',
         gtl_id: 'pop',
         showSubType: '205',
         showType: '200',
-        performer: '',
-        speaker: '',
-        stageDirector: '',
-        visa: '',
+        performer: null,
+        speaker: null,
+        stageDirector: null,
+        visa: null,
       },
       mentalDisabilityCompliant: true,
       motorDisabilityCompliant: true,
@@ -620,7 +618,7 @@ describe('IndividualOfferDetailsScreenNext', () => {
   })
 
   it('should submit the form with correct payload in edition', async () => {
-    vi.spyOn(api, 'patchDraftOffer').mockResolvedValue(
+    vi.spyOn(api, 'patchOffer').mockResolvedValue(
       getIndividualOfferFactory({
         id: 12,
       })
@@ -647,14 +645,14 @@ describe('IndividualOfferDetailsScreenNext', () => {
 
     await userEvent.click(screen.getByText('Enregistrer et continuer'))
 
-    expect(api.patchDraftOffer).toHaveBeenCalledOnce()
-    expect(api.patchDraftOffer).toHaveBeenCalledWith(12, {
+    expect(api.patchOffer).toHaveBeenCalledOnce()
+    expect(api.patchOffer).toHaveBeenCalledWith(12, {
       audioDisabilityCompliant: true,
       description: 'My super description',
       durationMinutes: null,
       extraData: {
         author: 'Chuck Norris',
-        gtl_id: '',
+        gtl_id: null,
         ean: '1234567891234',
         performer: 'Le Poing de Chuck',
         showSubType: 'PEGI 18',

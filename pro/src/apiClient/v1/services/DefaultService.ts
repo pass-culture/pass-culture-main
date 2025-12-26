@@ -77,6 +77,7 @@ import type { ListOffersResponseModel } from '../models/ListOffersResponseModel'
 import type { ListProviderResponse } from '../models/ListProviderResponse';
 import type { ListVenueProviderResponse } from '../models/ListVenueProviderResponse';
 import type { LoginUserBodyModel } from '../models/LoginUserBodyModel';
+import type { MinimalPostOfferBodyModel } from '../models/MinimalPostOfferBodyModel';
 import type { NewPasswordBodyModel } from '../models/NewPasswordBodyModel';
 import type { OffererEligibilityResponseModel } from '../models/OffererEligibilityResponseModel';
 import type { OfferOpeningHoursSchema } from '../models/OfferOpeningHoursSchema';
@@ -87,13 +88,11 @@ import type { PatchCollectiveOfferArchiveBodyModel } from '../models/PatchCollec
 import type { PatchCollectiveOfferBodyModel } from '../models/PatchCollectiveOfferBodyModel';
 import type { PatchCollectiveOfferEducationalInstitution } from '../models/PatchCollectiveOfferEducationalInstitution';
 import type { PatchCollectiveOfferTemplateBodyModel } from '../models/PatchCollectiveOfferTemplateBodyModel';
-import type { PatchDraftOfferBodyModel } from '../models/PatchDraftOfferBodyModel';
 import type { PatchOfferActiveStatusBodyModel } from '../models/PatchOfferActiveStatusBodyModel';
 import type { PatchOfferBodyModel } from '../models/PatchOfferBodyModel';
 import type { PatchOfferPublishBodyModel } from '../models/PatchOfferPublishBodyModel';
 import type { PostCollectiveOfferBodyModel } from '../models/PostCollectiveOfferBodyModel';
 import type { PostCollectiveOfferTemplateBodyModel } from '../models/PostCollectiveOfferTemplateBodyModel';
-import type { PostDraftOfferBodyModel } from '../models/PostDraftOfferBodyModel';
 import type { PostOfferBodyModel } from '../models/PostOfferBodyModel';
 import type { PostOffererResponseModel } from '../models/PostOffererResponseModel';
 import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
@@ -1736,7 +1735,7 @@ export class DefaultService {
    * @throws ApiError
    */
   public postOffer(
-    requestBody: PostOfferBodyModel,
+    requestBody: MinimalPostOfferBodyModel,
   ): CancelablePromise<GetIndividualOfferResponseModel> {
     return this.httpRequest.request({
       method: 'POST',
@@ -1836,53 +1835,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/offers/delete_headline',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * @deprecated
-   * [DEPRECATED] Please migrate to new (generic/standard) offer creation route
-   * @param requestBody
-   * @returns GetIndividualOfferResponseModel Created
-   * @throws ApiError
-   */
-  public postDraftOffer(
-    requestBody: PostDraftOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferResponseModel> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/offers/draft',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * @deprecated
-   * patch_draft_offer <PATCH>
-   * @param offerId
-   * @param requestBody
-   * @returns GetIndividualOfferWithAddressResponseModel OK
-   * @throws ApiError
-   */
-  public patchDraftOffer(
-    offerId: number,
-    requestBody: PatchDraftOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/offers/draft/{offer_id}',
-      path: {
-        'offer_id': offerId,
-      },
       body: requestBody,
       mediaType: 'application/json',
       errors: {
@@ -2818,31 +2770,6 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/v2/offers',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * update_offer <PATCH>
-   * @param offerId
-   * @param requestBody
-   * @returns GetIndividualOfferWithAddressResponseModel OK
-   * @throws ApiError
-   */
-  public updateOffer(
-    offerId: number,
-    requestBody: PatchOfferBodyModel,
-  ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
-    return this.httpRequest.request({
-      method: 'PATCH',
-      url: '/v2/offers/{offer_id}',
-      path: {
-        'offer_id': offerId,
-      },
       body: requestBody,
       mediaType: 'application/json',
       errors: {
