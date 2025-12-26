@@ -53,7 +53,7 @@ export const VenueSettingsForm = ({
     setValue,
     watch,
     clearErrors,
-    formState: { isDirty, isSubmitting, errors },
+    formState: { isDirty, isSubmitting, isSubmitted, errors },
   } = useFormContext<VenueSettingsFormValues>()
 
   const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
@@ -187,7 +187,9 @@ export const VenueSettingsForm = ({
         />
       </FormLayout>
       <VenueFormActionBar venue={venue} isSubmitting={isSubmitting} />
-      <RouteLeavingGuardIndividualOffer when={isDirty && !isSubmitting} />
+      <RouteLeavingGuardIndividualOffer
+        when={isDirty && !isSubmitting && !isSubmitted}
+      />
     </>
   )
 }

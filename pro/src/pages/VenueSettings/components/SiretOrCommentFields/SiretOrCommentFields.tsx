@@ -3,6 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { isError } from '@/apiClient/helpers'
 import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import {
+  humanizeSiret,
   isSiretStartingWithSiren,
   unhumanizeRidet,
   unhumanizeSiret,
@@ -38,7 +39,9 @@ export const SiretOrCommentFields = ({
 
   const onSiretChange = async (siret: string) => {
     const cleanSiret = unhumanizeSiret(siret)
-    setValue('siret', cleanSiret)
+    setValue('siret', humanizeSiret(cleanSiret), {
+      shouldDirty: true,
+    })
 
     if (
       !validSiretLength(cleanSiret) ||
@@ -84,7 +87,9 @@ export const SiretOrCommentFields = ({
   }
 
   const onRidetChange = (ridet: string) => {
-    setValue('siret', unhumanizeRidet(ridet || '', false, false))
+    setValue('siret', unhumanizeRidet(ridet || '', false, false), {
+      shouldDirty: true,
+    })
 
     if (!errors.siret?.message) {
       setIsFieldNameFrozen?.(false)
@@ -115,7 +120,7 @@ export const SiretOrCommentFields = ({
         <TextInput
           {...register('siret')}
           label={`SIRET de la structure`}
-          onChange={(e) => onSiretChange(e.target.value)}
+          onChange={async (e) => await onSiretChange(e.target.value)}
           error={errors.siret?.message}
           required
         />
