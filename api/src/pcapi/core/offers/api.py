@@ -2863,3 +2863,58 @@ def upsert_highlight_requests(
     except sa_exc.IntegrityError:
         raise exceptions.HighlightRequestAlreadyExistsException()
     return highlight_requests
+
+
+def replace_offer_price_categories(
+    offer: models.Offer,
+    synced_price_category_inputs: list[offers_schemas.PriceCategoryInput],
+) -> models.Offer:
+    """
+    Replace all price categories of an offer.
+
+    For non-draft offers, deletion is not allowed.
+    """
+    validation.check_validation_status(offer)
+
+    existing_price_categories_by_id = {pc.id: pc for pc in offer.priceCategories}
+    existing_price_category_ids = set(existing_price_categories_by_id.keys())
+    synced_price_category_ids = {input["id"] for input in synced_price_category_inputs if input.get("id")}
+
+    for id in synced_price_category_ids:
+        if id not in existing_price_category_ids:
+            raise exceptions.OfferException({"price_category_id": [f"Le tarif avec l'id {id} n'existe pas"]})
+
+    has_removed_some = bool(existing_price_category_ids - synced_price_category_ids)
+    if has_removed_some and offer.validation != models.OfferValidationStatus.DRAFT:
+        raise exceptions.OfferException({"global": ["Cannot delete price categories on non-draft offers"]})
+
+    for input in synced_price_category_inputs:
+        validation.check_stock_price(input["price"], offer)
+
+    synced_price_categories = []
+    for input in synced_price_category_inputs:
+        price_category_id = input.get("id")
+        if price_category_id:
+            pc = existing_price_categories_by_id[price_category_id]
+            old_price = pc.price
+            pc.price = input["price"]
+            pc.priceCategoryLabel = get_or_create_label(input["label"], offer.venue)
+            synced_price_categories.append(pc)
+            if old_price != pc.price:
+                for stock in offer.stocks:
+                    if stock.priceCategoryId == pc.id and not stock.isEventExpired:
+                        stock.price = pc.price
+        else:
+            synced_price_categories.append(
+                models.PriceCategory(
+                    priceCategoryLabel=get_or_create_label(input["label"], offer.venue),
+                    price=input["price"],
+                )
+            )
+
+    offer.priceCategories = synced_price_categories
+
+    db.session.add(offer)
+    db.session.flush()
+
+    return offer
