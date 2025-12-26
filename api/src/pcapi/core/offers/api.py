@@ -2865,63 +2865,56 @@ def upsert_highlight_requests(
     return highlight_requests
 
 
-def upsert_offer_price_categories(
+def replace_offer_price_categories(
     offer: models.Offer,
-    inputs: list[offers_schemas.PriceCategoryInput],
+    synced_price_category_inputs: list[offers_schemas.PriceCategoryInput],
 ) -> models.Offer:
     """
-    Update all price categories of an offer.
+    Replace all price categories of an offer.
 
-    - If a price category exists in the DB but not in `inputs`, it is deleted.
-    - Otherwise, price categories are updated or created as needed.
+    For non-draft offers, deletion is not allowed.
     """
+    validation.check_validation_status(offer)
 
-    existing_price_categories = {pc.id: pc for pc in offer.priceCategories}
+    existing_price_categories_by_id = {pc.id: pc for pc in offer.priceCategories}
+    existing_price_category_ids = set(existing_price_categories_by_id.keys())
+    synced_price_category_ids = {input["id"] for input in synced_price_category_inputs if input.get("id")}
 
-    # creation
-    price_category_inputs_to_create = [
-        price_category_input for price_category_input in inputs if price_category_input.get("id") is None
-    ]
+    for id in synced_price_category_ids:
+        if id not in existing_price_category_ids:
+            raise exceptions.OfferException({"price_category_id": [f"Le tarif avec l'id {id} n'existe pas"]})
 
-    new_labels_and_prices = {
-        (p["label"], p["price"])
-        for p in price_category_inputs_to_create
-        if p["label"] is not None and p["price"] is not None
-    }
-    validation.check_for_duplicated_price_categories(new_labels_and_prices, offer.id)
+    has_removed_some = bool(existing_price_category_ids - synced_price_category_ids)
+    if has_removed_some and offer.validation != models.OfferValidationStatus.DRAFT:
+        raise exceptions.OfferException({"global": ["Cannot delete price categories on non-draft offers"]})
 
-    for price_category_input in price_category_inputs_to_create:
-        create_price_category(
-            offer,
-            label=price_category_input["label"],
-            price=price_category_input["price"],
-        )
+    for input in synced_price_category_inputs:
+        validation.check_stock_price(input["price"], offer)
 
-    # edition
-    price_category_inputs_to_update = [
-        price_category_input for price_category_input in inputs if price_category_input.get("id") is not None
-    ]
+    synced_price_categories = []
+    for input in synced_price_category_inputs:
+        price_category_id = input.get("id")
+        if price_category_id:
+            pc = existing_price_categories_by_id[price_category_id]
+            old_price = pc.price
+            pc.price = input["price"]
+            pc.priceCategoryLabel = get_or_create_label(input["label"], offer.venue)
+            synced_price_categories.append(pc)
+            if old_price != pc.price:
+                for stock in offer.stocks:
+                    if stock.priceCategoryId == pc.id and not stock.isEventExpired:
+                        stock.price = pc.price
+        else:
+            synced_price_categories.append(
+                models.PriceCategory(
+                    priceCategoryLabel=get_or_create_label(input["label"], offer.venue),
+                    price=input["price"],
+                )
+            )
 
-    for input in price_category_inputs_to_update:
-        if input["id"] not in existing_price_categories:
-            raise exceptions.OfferException({"price_category_id": ["Le tarif avec l'id %s n'existe pas" % input["id"]]})
-        edit_price_category(
-            offer,
-            price_category=existing_price_categories[input["id"]],
-            label=input["label"] if input["label"] is not None else UNCHANGED,
-            price=input["price"] if input["price"] is not None else UNCHANGED,
-        )
+    offer.priceCategories = synced_price_categories
 
-    # deletion
-    price_category_ids_to_delete = set(existing_price_categories) - {
-        price_category_input["id"] for price_category_input in price_category_inputs_to_update
-    }
-
-    for price_category_id in price_category_ids_to_delete:
-        price_category_to_delete = existing_price_categories[price_category_id]
-        delete_price_category(offer, price_category_to_delete)
-        if price_category_to_delete in offer.priceCategories:
-            offer.priceCategories.remove(price_category_to_delete)
-
+    db.session.add(offer)
     db.session.flush()
+
     return offer

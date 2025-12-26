@@ -171,5 +171,5 @@ class ThingStockUpsertInput(typing.TypedDict):
 
 class PriceCategoryInput(typing.TypedDict):
     id: int | None
-    label: str | None
-    price: decimal.Decimal | None
+    label: str
+    price: decimal.Decimal
