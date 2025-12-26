@@ -8,4 +8,4 @@ from .activity import ActivityBaseModel
 
 class AboSpectacleModel(ActivityBaseModel):
     subcategory_id: Literal[subcategories.ABO_SPECTACLE.id]
-    extra_data: shared.ShowExtraData
+    extra_data: shared.ShowTypeModel

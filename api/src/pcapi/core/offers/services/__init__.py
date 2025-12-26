@@ -79,7 +79,17 @@ def _map_subcategories_to_models() -> dict[str, dict[str, dict[str, pydantic_v2.
                     #     this module, but imported by it
                     continue
 
-                if hasattr(obj, "model_fields") and "subcategory_id" in obj.model_fields:
+                # 1. `obj` must be a pydantic model
+                # 2. this model must have a `subcategory_id` field defined
+                # 3. this field must be defined with only one allowed value
+                # (eg. a literal with one subcategory id, not an enum of
+                # allowed subcategory ids)
+                has_specific_subcategory_defined = (
+                    hasattr(obj, "model_fields")
+                    and "subcategory_id" in obj.model_fields
+                    and len(obj.model_fields["subcategory_id"].annotation.__args__) == 1
+                )
+                if has_specific_subcategory_defined:
                     mapping[category][module_name][extract_subcategory(obj)] = obj
 
     return mapping

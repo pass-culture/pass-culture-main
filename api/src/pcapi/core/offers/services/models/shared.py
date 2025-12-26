@@ -158,6 +158,11 @@ class Venue(pydantic_v2.BaseModel):
 NameString = StringConstraints(strip_whitespace=True, min_length=1, max_length=1024)
 GtlIdString = StringConstraints(strip_whitespace=True, min_length=1, max_length=128)
 
+# EanString8 = StringConstraints(strip_whitespace=True, min_length=8, max_length=8)
+# EanString13 = StringConstraints(strip_whitespace=True, min_length=13, max_length=13)
+# EanString128 = StringConstraints(strip_whitespace=True, min_length=128, max_length=128)
+EanString = Annotated[str, AfterValidator(lambda s: len(s) in (8, 13, 128))]
+
 # could probably be a little bit more strict, but let's be safe for now
 VisaString = StringConstraints(strip_whitespace=True, min_length=8, max_length=64)
 
@@ -192,3 +197,12 @@ class GtlMusicModel(pydantic_v2.BaseModel):
 
 
 ShowExtraData = MusicTypeModel | ShowTypeModel | GtlMusicModel
+
+
+class ConcertExtraData(pydantic_v2.BaseModel):
+    music_type: MusicType
+    gtl_id: TiteLiveMusicGenres
+
+
+class EanExtraData(pydantic_v2.BaseModel):
+    ean: EanString

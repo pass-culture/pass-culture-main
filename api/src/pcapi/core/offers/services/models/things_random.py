@@ -3,6 +3,7 @@ from typing import Literal
 from pcapi.core.categories import subcategories
 
 from .things import ThingsBaseModel
+from . import shared
 
 
 class AboBibliothequeModel(ThingsBaseModel):
@@ -11,6 +12,7 @@ class AboBibliothequeModel(ThingsBaseModel):
 
 class AboConcertModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.ABO_CONCERT.id]
+    extra_data: shared.ConcertExtraData
 
 
 class AboMediathequeModel(ThingsBaseModel):
@@ -23,6 +25,7 @@ class AboPratiqueArtModel(ThingsBaseModel):
 
 class AchatInstrumentModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.ACHAT_INSTRUMENT.id]
+    extra_data: shared.EanExtraData
 
 
 class CarteCineIllimiteModel(ThingsBaseModel):
