@@ -12,6 +12,7 @@ import {
   buildShowSubTypeOptions,
   hasMusicType,
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+import { ArtistFields } from '@/ui-kit/form/ArtistsFields/ArtistFields'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
@@ -158,13 +159,7 @@ export const DetailsSubForm = ({
                   />
                 )}
                 {subcategoryConditionalFields.includes('author') && (
-                  <TextInput
-                    label="Auteur"
-                    maxCharactersCount={1000}
-                    disabled={readOnlyFields.includes('author')}
-                    {...register('author')}
-                    error={errors.author?.message}
-                  />
+                  <ArtistFields readOnly={readOnlyFields.includes('author')} />
                 )}
                 {subcategoryConditionalFields.includes('visa') && (
                   <TextInput

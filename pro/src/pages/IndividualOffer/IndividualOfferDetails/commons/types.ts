@@ -14,7 +14,7 @@ export type DetailsFormValues = {
   showType?: string
   showSubType?: string
   gtl_id?: string
-  author?: string
+  author?: { artistId: string; name: string }[]
   performer?: string
   ean?: string
   eanSearch?: string
