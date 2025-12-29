@@ -144,6 +144,17 @@ describe('SiretOrCommentValidationSchema', () => {
       },
       expectedErrors: ['Veuillez renseigner un commentaire'],
     },
+    {
+      description: 'venue without siret',
+      formValues: {
+        ...baseFormValues,
+      },
+      context: {
+        ...baseContext,
+        withSiret: false,
+      },
+      expectedErrors: [],
+    },
   ]
 
   cases.forEach(({ description, formValues, context, expectedErrors }) => {

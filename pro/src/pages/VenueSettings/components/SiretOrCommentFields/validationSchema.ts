@@ -14,49 +14,53 @@ import type { VenueSettingsFormContext } from '../../commons/types'
 export const SiretOrCommentValidationSchema = yup.object().shape({
   siret: yup
     .string()
-    .when(['$isVenueVirtual', '$isCaledonian', '$siren'], (vals, schema) => {
-      const [isVenueVirtual, isCaledonian, siren] = vals as [
-        VenueSettingsFormContext['isVenueVirtual'],
-        VenueSettingsFormContext['isCaledonian'],
-        VenueSettingsFormContext['siren'],
-      ]
+    .when(
+      ['$isVenueVirtual', '$isCaledonian', '$siren', '$withSiret'],
+      (vals, schema) => {
+        const [isVenueVirtual, isCaledonian, siren, withSiret] = vals as [
+          VenueSettingsFormContext['isVenueVirtual'],
+          VenueSettingsFormContext['isCaledonian'],
+          VenueSettingsFormContext['siren'],
+          VenueSettingsFormContext['withSiret'],
+        ]
 
-      if (isVenueVirtual) {
-        return schema
-      }
+        if (isVenueVirtual || !withSiret) {
+          return schema
+        }
 
-      if (isCaledonian) {
+        if (isCaledonian) {
+          return schema
+            .required('Veuillez renseigner un RIDET')
+            .test(
+              'len',
+              `Le RIDET doit comporter ${RIDET_LENGTH} caractères`,
+              (ridetWithPrefix) =>
+                Boolean(ridetWithPrefix) &&
+                validRidetWithPrefixLength(ridetWithPrefix)
+            )
+            .test(
+              'correspondingToRid7',
+              'Le code RIDET doit correspondre à un établissement de votre structure',
+              (ridetWithPrefix) =>
+                Boolean(ridetWithPrefix) &&
+                isRidetStartingWithRid7(ridetWithPrefix, siren)
+            )
+        }
+
         return schema
-          .required('Veuillez renseigner un RIDET')
+          .required('Veuillez renseigner un SIRET')
           .test(
             'len',
-            `Le RIDET doit comporter ${RIDET_LENGTH} caractères`,
-            (ridetWithPrefix) =>
-              Boolean(ridetWithPrefix) &&
-              validRidetWithPrefixLength(ridetWithPrefix)
+            `Le SIRET doit comporter ${SIRET_LENGTH} caractères`,
+            (siret) => Boolean(siret) && validSiretLength(siret)
           )
           .test(
-            'correspondingToRid7',
-            'Le code RIDET doit correspondre à un établissement de votre structure',
-            (ridetWithPrefix) =>
-              Boolean(ridetWithPrefix) &&
-              isRidetStartingWithRid7(ridetWithPrefix, siren)
+            'correspondingToSiren',
+            'Le code SIRET doit correspondre à un établissement de votre structure',
+            (siret) => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
           )
       }
-
-      return schema
-        .required('Veuillez renseigner un SIRET')
-        .test(
-          'len',
-          `Le SIRET doit comporter ${SIRET_LENGTH} caractères`,
-          (siret) => Boolean(siret) && validSiretLength(siret)
-        )
-        .test(
-          'correspondingToSiren',
-          'Le code SIRET doit correspondre à un établissement de votre structure',
-          (siret) => Boolean(siret) && isSiretStartingWithSiren(siret, siren)
-        )
-    }),
+    ),
   comment: yup.string().when(['$isVenueVirtual'], (vals, schema) => {
     const [isVenueVirtual] = vals as [
       VenueSettingsFormContext['isVenueVirtual'],
