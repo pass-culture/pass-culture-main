@@ -34,8 +34,11 @@ $connect-as-header-height: rem.torem(52px);
   flex-grow: 1;
   overflow-y: auto;
   width: 100%;
+  margin-bottom: size.$action-bar-sticky-height;
 
   &-flex {
+    margin-bottom: initial;
+
     @media screen and (min-width: size.$tablet) {
       overflow-y: hidden;
     }
