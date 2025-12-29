@@ -4,7 +4,7 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import { expect, vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
+import { getSiretData } from '@/commons/core/Venue/getSiretData'
 import { structureDataBodyModelFactory } from '@/commons/utils/factories/userOfferersFactories'
 import {
   type RenderWithProvidersOptions,
@@ -20,11 +20,8 @@ import { SiretOrCommentValidationSchema } from '../validationSchema'
 
 vi.mock('@/commons/core/Venue/siretApiValidate')
 
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    getStructureData: vi.fn(),
-    getDataFromAddress: vi.fn(),
-  },
+vi.mock('@/commons/core/Venue/getSiretData', () => ({
+  getSiretData: vi.fn(),
 }))
 
 const onSubmit = vi.fn()
@@ -82,7 +79,7 @@ describe('SiretOrCommentFields', () => {
     const setIsFieldNameFrozen = vi.fn()
 
     props = {
-      setIsFieldNameFrozen: setIsFieldNameFrozen,
+      setIsFieldNameFrozen,
       formContext: defaultFormContext,
     }
   })
@@ -120,9 +117,11 @@ describe('SiretOrCommentFields', () => {
 
   describe('should validate SIRET on submit', () => {
     it('handles onSiretChange and calls APIs and form methods', async () => {
-      vi.spyOn(api, 'getStructureData').mockResolvedValue(
-        structureDataBodyModelFactory()
-      )
+      vi.mocked(getSiretData)
+        .mockResolvedValueOnce(structureDataBodyModelFactory())
+        .mockRejectedValueOnce(
+          new Error('Impossible de vérifier le SIRET saisi.')
+        )
 
       renderSiretOrComment(props)
 
@@ -131,15 +130,84 @@ describe('SiretOrCommentFields', () => {
 
       // Simulate input change with a valid siret starting with siren
       await userEvent.clear(siretInput)
-      await userEvent.type(siretInput, '12345678901234')
+      await userEvent.type(siretInput, '123 456 789 01234')
 
       await waitFor(() => {
-        expect(api.getStructureData).toHaveBeenCalledWith('12345678901234')
+        expect(getSiretData).toHaveBeenCalledWith('123 456 789 01234')
       })
+
+      await waitFor(() =>
+        expect(props.setIsFieldNameFrozen).toHaveBeenCalledWith(true)
+      )
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: 'Enregistrer',
+        })
+      )
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          name: 'ma super stucture',
+          addressAutocomplete: '4 rue Carnot 75001 Paris',
+          street: '4 rue Carnot',
+          postalCode: '75001',
+          city: 'Paris',
+          latitude: '48.869440910282734',
+          longitude: '2.3087717501609233',
+          inseeCode: '75056',
+        }),
+        expect.anything()
+      )
+
+      await userEvent.clear(siretInput)
+      await userEvent.type(siretInput, '123 456 789 01235')
+
+      await waitFor(() => {
+        expect(getSiretData).toHaveBeenCalledWith('123 456 789 01235')
+      })
+
+      expect(
+        await screen.findByText('Impossible de vérifier le SIRET saisi.')
+      ).toBeInTheDocument()
+    })
+
+    it('handles onRidetChange and unhumanize value', async () => {
+      renderSiretOrComment({
+        ...props,
+        formContext: {
+          ...defaultFormContext,
+          isCaledonian: true,
+          siren: '1234567',
+        },
+      })
+
+      const ridetInput: HTMLInputElement = screen.getByLabelText(
+        /RIDET de la structure/
+      )
+      await userEvent.clear(ridetInput)
+      await userEvent.type(ridetInput, '1234567890')
+
+      await userEvent.click(
+        screen.getByRole('button', {
+          name: 'Enregistrer',
+        })
+      )
+
+      await waitFor(() => expect(onSubmit).toHaveBeenCalled())
+      expect(props.setIsFieldNameFrozen).toHaveBeenCalledWith(false)
+      expect(onSubmit).toHaveBeenCalledWith(
+        expect.objectContaining({
+          siret: '1234567890',
+          comment: '',
+        }),
+        expect.anything()
+      )
     })
 
     it('should display error if siret is not diffusible', async () => {
-      vi.spyOn(api, 'getStructureData').mockResolvedValue({
+      vi.mocked(getSiretData).mockResolvedValue({
         ...structureDataBodyModelFactory(),
         name: 'Siret is not diffusible',
         isDiffusible: false,
@@ -152,11 +220,12 @@ describe('SiretOrCommentFields', () => {
 
       // Simulate input change with a valid siret starting with siren
       await userEvent.clear(siretInput)
-      await userEvent.type(siretInput, '12345678901235')
+      await userEvent.type(siretInput, '123 456 789 01235')
 
       await waitFor(() => {
-        expect(api.getStructureData).toHaveBeenCalledWith('12345678901235')
+        expect(getSiretData).toHaveBeenCalledWith('123 456 789 01235')
       })
+
       expect(
         await screen.findByText(
           'Certaines informations de votre structure ne sont pas diffusibles. Veuillez contacter le support.'
