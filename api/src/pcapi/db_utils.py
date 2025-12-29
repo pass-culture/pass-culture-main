@@ -75,6 +75,7 @@ tables_to_clean: list[type[Model]] = [
     artist_models.Artist,
     artist_models.ArtistAlias,
     artist_models.ArtistProductLink,
+    artist_models.ArtistOfferLink,
     chronicles_models.ProductChronicle,
     chronicles_models.OfferChronicle,
     chronicles_models.Chronicle,

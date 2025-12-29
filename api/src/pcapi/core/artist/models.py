@@ -6,6 +6,7 @@ from datetime import datetime
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+from pcapi.core.offers.models import Offer
 from pcapi.models import Model
 from pcapi.models.pc_object import PcObject
 from pcapi.utils.db import MagicEnum
@@ -23,6 +24,43 @@ class ArtistType(enum.Enum):
 
     AUTHOR = "author"
     PERFORMER = "performer"
+    STAGE_DIRECTOR = "stage_director"
+
+
+class ArtistOfferLink(PcObject, Model):
+    __tablename__ = "artist_offer_link"
+
+    offer_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship(
+        "Offer", foreign_keys=[offer_id], back_populates="artist_offer_links"
+    )
+    artist_type: sa_orm.Mapped[ArtistType] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=False)
+    custom_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+    artist_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(
+        sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    artist: sa_orm.Mapped["Artist"] = sa_orm.relationship("Artist", foreign_keys=[artist_id])
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "offer_id",
+            "artist_type",
+            "artist_id",
+            name="unique_offer_artist_constraint",
+        ),
+        sa.UniqueConstraint(
+            "offer_id",
+            "artist_type",
+            "custom_name",
+            name="unique_offer_custom_artist_constraint",
+        ),
+        sa.CheckConstraint(
+            "(artist_id IS NOT NULL) OR (custom_name IS NOT NULL)",
+            name="check_has_artist_or_custom_name",
+        ),
+    )
 
 
 class ArtistProductLink(PcObject, Model):
