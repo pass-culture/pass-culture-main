@@ -20,7 +20,7 @@ from pcapi.models import db
 from pcapi.utils import cron as cron_decorators
 from pcapi.utils import date as date_utils
 from pcapi.utils.blueprint import Blueprint
-from pcapi.utils.repository import transaction
+from pcapi.utils.transaction_manager import atomic
 
 
 blueprint = Blueprint(__name__, __name__)
@@ -156,28 +156,24 @@ def check_deposit_csv(path: str) -> None:
     help="Activate debugging (add logs)",
 )
 @click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def synchronize_venues_from_adage_cultural_partners(debug: bool = False, with_timestamp: bool = False) -> None:
-    # Change to use datetime arithmetic
-    since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2) if with_timestamp else None
-    adage_cultural_partners = adage_api.get_cultural_partners(force_update=True, since_date=since_date)
-    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners, debug=debug)
-    # This commit is very much needed at this time.
-    # log_cron_with_transaction will only commit IF the session is dirty
-    # Since synchronize_adage_ids_on_venues changes are wrapped inside an atomic
-    # all the changes are pushed to the DB and the session is cleaned which
-    # will NOT trigger the commit
-    db.session.commit()
+    since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
+    adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
+
+    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners)
 
 
 @blueprint.cli.command("synchronize_offerers_from_adage_cultural_partners")
 @click.option("--with-timestamp", is_flag=True, help="Add timestamp (couple days ago)")
-@cron_decorators.log_cron_with_transaction
+@cron_decorators.log_cron
 def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = False) -> None:
-    # Change to use datetime arithmetic
-    since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2) if with_timestamp else None
-    with transaction():
-        adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
+    # TODO (jcicurel): the Adage cultural partner endpoint has its dateModificationMin parameter required
+    # set a distant past date until the synchronize logic is updated
+    since_date = datetime.datetime(year=1970, month=1, day=1)
+    adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
+
+    with atomic():
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
 
 

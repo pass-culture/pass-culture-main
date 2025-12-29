@@ -575,34 +575,6 @@ class VenuesEducationalStatusesResponseModel(BaseModel):
     statuses: list[VenuesEducationalStatusResponseModel]
 
 
-class AdageCulturalPartnerResponseModel(BaseModel):
-    id: int
-    statutId: int | None
-    siteWeb: str | None
-    domaineIds: list[int]
-
-    @validator("domaineIds", pre=True)
-    @classmethod
-    def transform_domaine_ids(cls, domaine_ids: str | list[int] | None) -> list[int]:
-        if not domaine_ids:
-            return []
-
-        if isinstance(domaine_ids, list):
-            return domaine_ids
-
-        split_domaine_ids = domaine_ids.split(",")
-        ids = []
-        for domaine_id in split_domaine_ids:
-            if not domaine_id.isdigit():
-                raise ValueError("Domaine id must be an integer")
-            ids.append(int(domaine_id))
-
-        return ids
-
-    class Config:
-        orm_mode = True
-
-
 class VenueOfOffererFromSiretResponseModel(BaseModel):
     id: int
     name: str
