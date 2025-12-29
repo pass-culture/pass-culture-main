@@ -166,7 +166,7 @@ jobs:
       - pcapi-init-job
       - push-pcapi
       - push-pcapi-console
-    if: always() && !failure() && !cancelled()
+    if: always() && !failure() && !cancelled() && needs.pcapi-init-job.result == 'success'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: testing
@@ -197,7 +197,7 @@ jobs:
       - push-pcapi
       - push-pcapi-console
       - deploy-to-testing
-    if: always() && !failure() && !cancelled()
+    if: always() && !failure() && !cancelled() && needs.pcapi-init-job.result == 'success'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
       environment: opsv2
