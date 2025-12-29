@@ -123,9 +123,6 @@ updates:
         update-types:
           - "version-update:semver-patch"
 
-    # Disable automatic PR rebasing
-    rebase-strategy: 'disabled'
-
     groups:
       # Core Python frameworks
       # Open PRs for each major and minor versions
