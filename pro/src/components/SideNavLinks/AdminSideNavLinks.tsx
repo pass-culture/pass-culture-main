@@ -1,11 +1,22 @@
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import classnames from 'classnames'
 import { useId, useState } from 'react'
 import { NavLink, useLocation } from 'react-router'
 
+import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
+import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import fullBackIcon from '@/icons/full-back.svg'
 import fullDownIcon from '@/icons/full-down.svg'
+import fullHelpIcon from '@/icons/full-help.svg'
+import fullRightIcon from '@/icons/full-right.svg'
+import fullSmsIcon from '@/icons/full-sms.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
+import { Button } from '@/ui-kit/Button/Button'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SideNavLinks.module.scss'
@@ -27,6 +38,7 @@ export const AdminSideNavLinks = ({
   const location = useLocation()
   const dataId = useId()
   const dataSublistId = useId()
+  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
   const isIndividuelActive = location.pathname.startsWith(
     '/administration/individuel'
@@ -36,122 +48,183 @@ export const AdminSideNavLinks = ({
   )
 
   return (
-    <>
-      <div className={styles['nav-links-header']}>Espace Administration</div>
-      <nav
-        className={classnames({
-          [styles['nav-links']]: true,
-          [styles['nav-links-open']]: isLateralPanelOpen,
-        })}
+    <nav
+      className={classnames({
+        [styles['nav-links']]: true,
+        [styles['nav-links-open']]: isLateralPanelOpen,
+      })}
+    >
+      <ButtonLink
+        variant={ButtonVariant.SECONDARY}
+        to="/accueil"
+        iconPosition={IconPositionEnum.LEFT}
+        icon={fullBackIcon}
+        className={styles['back-to-partner-space-button']}
       >
-        <ul className={styles['nav-links-group']}>
-          <li>
-            <NavLink
-              to="/accueil"
-              className={({ isActive }) =>
-                classnames(styles['nav-links-item'], {
-                  [styles['nav-links-item-active']]: isActive,
-                })
-              }
-            >
-              <SvgIcon
-                src={strokeRepaymentIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
-                className={styles.icon}
-              />
-              <span className={styles['nav-links-item-title']}>
-                Gestion financière
-              </span>
-            </NavLink>
-          </li>
-          <li>
-            <button
-              type="button"
-              onClick={() =>
-                setOpenSection((prev) => ({ ...prev, data: !prev.data }))
-              }
-              className={classnames(
-                styles['nav-links-item'],
-                styles['nav-section-button']
-              )}
-              aria-expanded={openSection.data}
-              aria-controls={dataSublistId}
-              id={dataId}
-            >
-              <SvgIcon
-                src={strokeRepaymentIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
-                className={styles.icon}
-              />
-              <span className={styles['nav-section-title']}>
-                Données d’activité
-              </span>
-              <SvgIcon
-                src={openSection.data ? fullUpIcon : fullDownIcon}
-                alt=""
-                width="18"
-                className={styles['nav-section-icon']}
-              />
-            </button>
-            {openSection.data && (
-              <ul id={dataSublistId} aria-labelledby={dataId}>
-                <li>
-                  <NavLink
-                    to="#"
-                    end
-                    className={() =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isIndividuelActive,
-                      })
-                    }
-                  >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Individuel
-                    </span>
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink
-                    to="#"
-                    end
-                    className={() =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isCollectifActive,
-                      })
-                    }
-                  >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Collectif
-                    </span>
-                  </NavLink>
-                </li>
-              </ul>
+        Revenir à l’Espace Partenaire
+      </ButtonLink>
+
+      <div className={styles['separator-line-header']} />
+
+      <div className={styles['nav-links-header']}>Espace Administration</div>
+      <ul className={styles['nav-links-group']}>
+        <li>
+          <NavLink
+            to="/remboursements"
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
+          >
+            <SvgIcon
+              src={strokeRepaymentIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+              className={styles.icon}
+            />
+            <span className={styles['nav-links-item-title']}>
+              Gestion financière
+            </span>
+          </NavLink>
+        </li>
+        <li>
+          <button
+            type="button"
+            onClick={() =>
+              setOpenSection((prev) => ({ ...prev, data: !prev.data }))
+            }
+            className={classnames(
+              styles['nav-links-item'],
+              styles['nav-section-button']
             )}
+            aria-expanded={openSection.data}
+            aria-controls={dataSublistId}
+            id={dataId}
+          >
+            <SvgIcon
+              src={strokeRepaymentIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+              className={styles.icon}
+            />
+            <span className={styles['nav-section-title']}>
+              Données d’activité
+            </span>
+            <SvgIcon
+              src={openSection.data ? fullUpIcon : fullDownIcon}
+              alt=""
+              width="18"
+              className={styles['nav-section-icon']}
+            />
+          </button>
+          {openSection.data && (
+            <ul id={dataSublistId} aria-labelledby={dataId}>
+              <li>
+                <NavLink
+                  to="#"
+                  end
+                  className={() =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isIndividuelActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Individuel
+                  </span>
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="#"
+                  end
+                  className={() =>
+                    classnames(styles['nav-links-item'], {
+                      [styles['nav-links-item-active']]: isCollectifActive,
+                    })
+                  }
+                >
+                  <span className={styles['nav-links-item-without-icon']}>
+                    Collectif
+                  </span>
+                </NavLink>
+              </li>
+            </ul>
+          )}
+        </li>
+        <li>
+          <NavLink
+            to="/collaborateurs"
+            className={({ isActive }) =>
+              classnames(styles['nav-links-item'], {
+                [styles['nav-links-item-active']]: isActive,
+              })
+            }
+          >
+            <SvgIcon
+              src={strokeCollaboratorIcon}
+              alt=""
+              width={NAV_ITEM_ICON_SIZE}
+              className={styles.icon}
+            />
+            <span className={styles['nav-links-item-title']}>
+              Collaborateurs
+            </span>
+          </NavLink>
+        </li>
+      </ul>
+      <ul className={styles['nav-links-footer']}>
+        <div className={styles['nav-links-group']}>
+          <div
+            className={styles['nav-links-last-group-separator']}
+            aria-hidden="true"
+          >
+            <div className={styles['separator-line']} />
+          </div>
+          <li>
+            <UserReviewDialog
+              dialogTrigger={
+                <Button
+                  variant={ButtonVariant.TERNARY}
+                  icon={fullSmsIcon}
+                  className={classnames(
+                    styles['nav-links-item'],
+                    styles['nav-links-item-feedback']
+                  )}
+                >
+                  Donner mon avis
+                </Button>
+              }
+            />
           </li>
           <li>
-            <NavLink
-              to="/accueil"
-              className={({ isActive }) =>
-                classnames(styles['nav-links-item'], {
-                  [styles['nav-links-item-active']]: isActive,
-                })
-              }
-            >
-              <SvgIcon
-                src={strokeCollaboratorIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
-                className={styles.icon}
-              />
-              <span className={styles['nav-links-item-title']}>
-                Collaborateurs
-              </span>
-            </NavLink>
+            <div>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <Button
+                    variant={ButtonVariant.TERNARY}
+                    className={styles['nav-links-item']}
+                  >
+                    <SvgIcon src={fullHelpIcon} alt="" width="18" />
+                    <span className={styles['nav-section-title']}>
+                      Centre d’aide
+                    </span>
+                    <SvgIcon src={fullRightIcon} alt="" width="18" />
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content
+                  sideOffset={8}
+                  side={isMobileScreen ? 'top' : 'right'}
+                  className={styles['help-dropdown-content']}
+                >
+                  <HelpDropdownMenu />
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            </div>
           </li>
-        </ul>
-      </nav>
-    </>
+        </div>
+      </ul>
+    </nav>
   )
 }
