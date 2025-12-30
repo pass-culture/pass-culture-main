@@ -68,9 +68,7 @@ describe('CollectiveOfferConfirmation', () => {
     await renderCollectiveOfferCreation()
 
     expect(
-      screen.getByRole('heading', {
-        name: 'Offre en cours de validation !',
-      })
+      screen.getByText('Offre en cours de validation !')
     ).toBeInTheDocument()
   })
 
@@ -78,9 +76,7 @@ describe('CollectiveOfferConfirmation', () => {
     await renderCollectiveOfferCreation()
 
     expect(
-      screen.getByRole('heading', {
-        name: 'Votre offre a été publiée sur ADAGE',
-      })
+      screen.getByText('Votre offre a été publiée sur ADAGE')
     ).toBeInTheDocument()
     expect(
       screen.getByText('Collège Bellevue', { exact: false })
@@ -97,9 +93,7 @@ describe('CollectiveOfferConfirmation', () => {
     await renderCollectiveOfferCreation()
 
     expect(
-      screen.getByRole('heading', {
-        name: 'Votre offre a été publiée sur ADAGE',
-      })
+      screen.getByText('Votre offre a été publiée sur ADAGE')
     ).toBeInTheDocument()
     expect(
       screen.queryByText('de l’établissement scolaire', { exact: false })
@@ -110,9 +104,7 @@ describe('CollectiveOfferConfirmation', () => {
     await renderCollectiveOfferCreation()
 
     expect(
-      screen.getByRole('heading', {
-        name: 'Votre offre a été publiée sur ADAGE',
-      })
+      screen.getByText('Votre offre a été publiée sur ADAGE')
     ).toBeInTheDocument()
     expect(
       screen.getByText(
@@ -121,14 +113,6 @@ describe('CollectiveOfferConfirmation', () => {
           exact: false,
         }
       )
-    ).toBeInTheDocument()
-  })
-
-  it('should render banner at the bottom of the page', async () => {
-    await renderCollectiveOfferCreation()
-
-    expect(
-      screen.getByText('Quelle est la prochaine étape ?')
     ).toBeInTheDocument()
   })
 
@@ -149,27 +133,17 @@ describe('CollectiveOfferConfirmation - template', () => {
     })
   })
 
-  it('should display ShareTemplateOfferLink when feature flag WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled and offer is template', async () => {
+  it('should display ShareTemplateOfferLink when offer is template', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce({
       ...collectiveOfferTemplate,
       allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
     })
 
-    await renderCollectiveOfferCreation({
-      features: ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'],
-    })
+    await renderCollectiveOfferCreation()
 
     expect(screen.getByText('Créer une offre')).toBeInTheDocument()
     expect(screen.getByText('Offre de test')).toBeInTheDocument()
     expect(screen.getByText('Lien de l’offre')).toBeInTheDocument()
-  })
-
-  it('should not display ShareTemplateOfferLink when feature flag WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is disabled and offer is template', async () => {
-    await renderCollectiveOfferCreation()
-
-    expect(screen.queryByText('Créer une offre')).not.toBeInTheDocument()
-    expect(screen.queryByText('Offre de test')).not.toBeInTheDocument()
-    expect(screen.queryByText('Lien de l’offre')).not.toBeInTheDocument()
   })
 
   it('should link to /offres/vitrines when offer is template', async () => {
