@@ -110,10 +110,12 @@ def test_validation_erros_are_stamped_with_custom_fingerprint(mocked_before_send
 @patch("pcapi.utils.sentry.before_send")
 @patch("uuid.uuid4", return_value=uuid.uuid4())
 @patch("pcapi.core.mails.transactional.send_signup_email_confirmation_to_pro")
+@patch("pcapi.core.token.validate_passwordless_token")
 @pytest.mark.settings(IS_DEV=False)
 @pytest.mark.usefixtures("db_session")
 @pytest.mark.usefixtures("rsa_keys")
 def test_remove_token_from_sentry_event_in_before_send(
+    mocked_validate_passwordless_token,
     mocked_send_signup_email,
     mocked_uuid,
     mocked_before_send,
@@ -121,6 +123,7 @@ def test_remove_token_from_sentry_event_in_before_send(
     client,
     settings,
 ):
+    """the mocked_validate_passwordless_token does not function, so it raises an error log that goes to the before send"""
     mocked_before_send.side_effect = before_send_wrapper
     init_sentry_sdk()
 
@@ -143,7 +146,6 @@ def test_remove_token_from_sentry_event_in_before_send(
 
     client.patch(f"/users/validate_signup/{passwordless_login_token}")
 
-    client.patch(f"/users/validate_signup/{passwordless_login_token}")
     assert (
         mocked_before_send.mock_calls[0]
         .args[0]["request"]["url"]
