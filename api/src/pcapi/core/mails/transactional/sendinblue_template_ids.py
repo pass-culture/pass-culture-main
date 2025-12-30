@@ -10,6 +10,8 @@ class TransactionalEmail(Enum):
     ACCOUNT_UNSUSPENDED = models.Template(id_prod=644, id_not_prod=87, tags=["reactivation_compte_utilisateur"])
     BIRTHDAY_AGE_17_TO_NEWLY_ELIGIBLE_USER = models.Template(id_prod=1482, id_not_prod=178, send_to_ehp=True)
     BIRTHDAY_AGE_18_TO_NEWLY_ELIGIBLE_USER_V3 = models.Template(id_prod=1483, id_not_prod=179, send_to_ehp=True)
+    BONUS_GRANTED = models.Template(id_prod=1669, id_not_prod=207, send_to_ehp=True)
+    BONUS_DECLINED = models.Template(id_prod=1670, id_not_prod=210, send_to_ehp=True)
     BOOKING_CANCELLATION_BY_BENEFICIARY = models.Template(
         id_prod=223, id_not_prod=33, tags=["jeunes_offre_annulee_jeune"]
     )
