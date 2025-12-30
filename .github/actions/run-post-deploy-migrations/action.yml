@@ -1,0 +1,66 @@
+name: "Run post-deployment migrations for PCAPI"
+description: "Run post migrations"
+inputs:
+  environment:
+    description: "Target environment for migration"
+    required: true
+  app_version:
+    description: "Application version that has been deployed"
+    required: true
+  cluster_scope:
+    description: "Cluster scope"
+    required: false
+    default: "metier"
+  cluster_environment:
+    description: "Cluster environment"
+    required: false
+    default: "ehp"
+  workload_identity_provider_secret_name:
+    description: "Workload identity provider secret name"
+    required: true
+  gcp_ehp_workload_identity_provider:
+    description: "GCP EHP workload identity provider"
+    required: true
+  gcp_ehp_service_account:
+    description: "GCP EHP service account"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Authentification to Google"
+      uses: "google-github-actions/auth@v3"
+      with:
+        workload_identity_provider: ${{ inputs.gcp_ehp_workload_identity_provider }}
+        service_account: ${{ inputs.gcp_ehp_service_account }}
+
+    - name: "Get secrets (github)"
+      id: "secrets"
+      uses: "google-github-actions/get-secretmanager-secrets@v3"
+      with:
+        secrets: |-
+          DEPLOYMENT_SA:passculture-metier-ehp/pcapi-${{ inputs.environment }}_deploy-service-account
+          DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER:passculture-metier-ehp/${{ inputs.workload_identity_provider_secret_name }}
+
+    - name: "Authentification to Google"
+      uses: "google-github-actions/auth@v3"
+      id: "google-auth"
+      with:
+        create_credentials_file: true
+        token_format: "access_token"
+        service_account: ${{ steps.secrets.outputs.DEPLOYMENT_SA }}
+        workload_identity_provider: ${{ steps.secrets.outputs.DEPLOYMENT_WORKLOAD_IDENTITY_PROVIDER }}
+
+    - name: "Connect to cluster"
+      uses: pass-culture/common-workflows/actions/pc-k8s-connect@pc-k8s-connect/v0.2.0
+      with:
+        cluster_scope: ${{ inputs.cluster_scope }}
+        cluster_environment: ${{ inputs.cluster_environment }}
+        api_token_github: ${{ steps.github-token.outputs.token }}
+
+    - name: "Play post-migrations"
+      uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
+      with:
+        environment: ${{ inputs.environment }}
+        app_version: ${{ inputs.app_version }}
+        migration_type: post
