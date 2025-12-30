@@ -1,8 +1,12 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
+
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import classnames from 'classnames'
 import { useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router'
 
+import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
+import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
   OFFER_WIZARD_MODE,
@@ -23,7 +27,10 @@ import {
 } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import fullDownIcon from '@/icons/full-down.svg'
+import fullHelpIcon from '@/icons/full-help.svg'
 import fullLeftIcon from '@/icons/full-left.svg'
+import fullRightIcon from '@/icons/full-right.svg'
+import fullSmsIcon from '@/icons/full-sms.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
@@ -32,7 +39,9 @@ import strokeFrancIcon from '@/icons/stroke-franc.svg'
 import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
+import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -64,6 +73,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const location = useLocation()
+  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
   const dispatch = useAppDispatch()
   const navOpenSection = useAppSelector(openSection)
@@ -137,6 +147,15 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
+      <ButtonLink
+        variant={ButtonVariant.SECONDARY}
+        to="/remboursements"
+        iconPosition={IconPositionEnum.LEFT}
+        className={styles['back-to-partner-space-button']}
+      >
+        Espace Administration
+      </ButtonLink>
+      <div className={styles['separator-line-header']} />
       {selectedOfferer && (
         <div className={styles['nav-links-group']}>
           {withSwitchVenueFeature && selectedVenue && (
@@ -417,50 +436,104 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         </li>
       </ul>
 
-      <div className={styles['nav-links-group']}>
-        <div
-          className={styles['nav-links-last-group-separator']}
-          aria-hidden="true"
-        >
-          <div className={styles['separator-line']} />
-        </div>
-        <div>
-          <NavLink
-            to="/remboursements"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
-            }
+      {withSwitchVenueFeature ? (
+        <ul>
+          <div className={styles['nav-links-group']}>
+            <div
+              className={styles['nav-links-last-group-separator']}
+              aria-hidden="true"
+            >
+              <div className={styles['separator-line']} />
+            </div>
+            <li>
+              <UserReviewDialog
+                dialogTrigger={
+                  <Button
+                    variant={ButtonVariant.TERNARY}
+                    icon={fullSmsIcon}
+                    className={classnames(
+                      styles['nav-links-item'],
+                      styles['nav-links-item-feedback']
+                    )}
+                  >
+                    Donner mon avis
+                  </Button>
+                }
+              />
+            </li>
+            <li>
+              <div>
+                <DropdownMenu.Root>
+                  <DropdownMenu.Trigger asChild>
+                    <Button
+                      variant={ButtonVariant.TERNARY}
+                      className={styles['nav-links-item']}
+                    >
+                      <SvgIcon src={fullHelpIcon} alt="" width="18" />
+                      <span className={styles['nav-section-title']}>
+                        Centre d’aide
+                      </span>
+                      <SvgIcon src={fullRightIcon} alt="" width="18" />
+                    </Button>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Content
+                    sideOffset={8}
+                    side={isMobileScreen ? 'top' : 'right'}
+                    className={styles['help-dropdown-content']}
+                  >
+                    <HelpDropdownMenu />
+                  </DropdownMenu.Content>
+                </DropdownMenu.Root>
+              </div>
+            </li>
+          </div>
+        </ul>
+      ) : (
+        <div className={styles['nav-links-group']}>
+          <div
+            className={styles['nav-links-last-group-separator']}
+            aria-hidden="true"
           >
-            <SvgIcon
-              src={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
-              alt=""
-              width={NAV_ITEM_ICON_SIZE}
-              className={styles.icon}
-            />
-            Gestion financière
-          </NavLink>
+            <div className={styles['separator-line']} />
+          </div>
+          <div>
+            <NavLink
+              to="/remboursements"
+              className={({ isActive }) =>
+                classnames(styles['nav-links-item'], {
+                  [styles['nav-links-item-active']]: isActive,
+                })
+              }
+            >
+              <SvgIcon
+                src={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+                className={styles.icon}
+              />
+              Gestion financière
+            </NavLink>
+          </div>
+          <div>
+            <NavLink
+              to="/collaborateurs"
+              className={({ isActive }) =>
+                classnames(styles['nav-links-item'], {
+                  [styles['nav-links-item-active']]: isActive,
+                })
+              }
+            >
+              <SvgIcon
+                src={strokeCollaboratorIcon}
+                alt=""
+                width={NAV_ITEM_ICON_SIZE}
+                className={styles.icon}
+              />
+              Collaborateurs
+            </NavLink>
+          </div>
         </div>
-        <div>
-          <NavLink
-            to="/collaborateurs"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
-            }
-          >
-            <SvgIcon
-              src={strokeCollaboratorIcon}
-              alt=""
-              width={NAV_ITEM_ICON_SIZE}
-              className={styles.icon}
-            />
-            Collaborateurs
-          </NavLink>
-        </div>
-      </div>
+      )}
     </div>
   )
 }
