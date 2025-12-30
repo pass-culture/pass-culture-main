@@ -151,7 +151,6 @@ describe('VenueEditionForm validationSchema', () => {
       it(`should validate the form for case: ${description}`, async () => {
         const errors = await getYupValidationSchemaErrors(
           getValidationSchema({
-            isVenueActivityFeatureActive: false,
             isCulturalDomainsEnabled: true,
           }),
           { ...formValues, culturalDomains: ['test'] }
@@ -163,7 +162,6 @@ describe('VenueEditionForm validationSchema', () => {
     it('should require activity when feature flag is enabled and venue is open to public', async () => {
       const errors = await getYupValidationSchemaErrors(
         getValidationSchema({
-          isVenueActivityFeatureActive: true,
           isCulturalDomainsEnabled: true,
         }),
         {
@@ -179,7 +177,6 @@ describe('VenueEditionForm validationSchema', () => {
     it('should require domains array', async () => {
       const errors = await getYupValidationSchemaErrors(
         getValidationSchema({
-          isVenueActivityFeatureActive: true,
           isCulturalDomainsEnabled: true,
         }),
         {
@@ -197,7 +194,6 @@ describe('VenueEditionForm validationSchema', () => {
     it('should require domains values', async () => {
       const errors = await getYupValidationSchemaErrors(
         getValidationSchema({
-          isVenueActivityFeatureActive: true,
           isCulturalDomainsEnabled: true,
         }),
         {

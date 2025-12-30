@@ -3,7 +3,7 @@ import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import type { OnboardingActivityType } from '@/commons/mappings/OnboardingActivity'
 
 export interface VenueEditionFormValues {
-  accessibility: AccessibilityFormValues
+  accessibility: Partial<AccessibilityFormValues>
   description?: string
   email?: string | null
   isAccessibilityAppliedOnAllOffers: boolean

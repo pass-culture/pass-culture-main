@@ -24,7 +24,7 @@ const DEFAULT_VALUES: AccessibilityFormValues = {
 
 function updateAccessibilityField(
   setFieldValue: SetAccessibilityFieldValue,
-  accessibilityValues: AccessibilityFormValues | undefined
+  accessibilityValues: Partial<AccessibilityFormValues> | undefined
 ): CheckboxGroupProps['options'] {
   const onOptionChange = (
     event: React.ChangeEvent<HTMLInputElement>,

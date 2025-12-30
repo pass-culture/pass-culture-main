@@ -1,4 +1,5 @@
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useMemo } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -9,7 +10,6 @@ import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
@@ -47,7 +47,6 @@ interface VenueFormProps {
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
   const isCulturalDomainsEnabled = useActiveFeature(
     'WIP_VENUE_CULTURAL_DOMAINS'
   )
@@ -57,7 +56,8 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
-  const { data, isLoading } = useEducationalDomains()
+  const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
+    useEducationalDomains()
 
   const dispatch = useAppDispatch()
 
@@ -73,22 +73,21 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     mode: 'onBlur',
   })
 
-  const defaultCulturalDomain: Option[] | undefined =
-    data.length === 0 ||
-    !methods.formState.defaultValues ||
-    !methods.formState.defaultValues?.culturalDomains
+  const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
+    return educationalDomains.length === 0 ||
+      !methods.formState.defaultValues ||
+      !methods.formState.defaultValues?.culturalDomains
       ? undefined
-      : methods.formState.defaultValues.culturalDomains.map((formDefault) => {
-          const apiValue = data.find(
-            (educationalDomain) =>
-              String(educationalDomain.name) === formDefault
+      : educationalDomains
+          .filter((apiDomain) =>
+            methods.formState.defaultValues?.culturalDomains?.find(
+              (domain) => apiDomain.name === domain
+            )
           )
-          assertOrFrontendError(
-            apiValue,
-            `CulturalDomain with name ${formDefault} not found`
-          )
-          return { id: String(apiValue.id), label: apiValue.name }
-        })
+          .map((domain) => {
+            return { id: String(domain.id), label: domain.name }
+          })
+  }, [educationalDomains, methods.formState.defaultValues])
 
   const resetOpeningHoursAndAccessibility = () => {
     const fieldsToReset: (keyof VenueEditionFormValues)[] = [
@@ -101,12 +100,12 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: VenueEditionFormValues) => {
     try {
       const updatedVenue = await api.editVenue(
         venue.id,
         serializeEditVenueBodyModel(
-          methods.getValues(undefined, { dirtyFields: true }),
+          values,
           !venue.siret,
           venue.openingHours !== null
         )
@@ -264,7 +263,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 </>
               )}
             </FormLayout.SubSection>
-
             {methods.watch('isOpenToPublic') === 'true' && (
               <FormLayout.Section title="Activité principale">
                 <FormLayout.Row>
@@ -289,11 +287,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 </FormLayout.Row>
               </FormLayout.Section>
             )}
-            {isCulturalDomainsEnabled && !isLoading && (
+            {isCulturalDomainsEnabled && !isLoadingEducationalDomains && (
               <FormLayout.Row mdSpaceAfter>
                 <MultiSelect
                   name="culturalDomains"
-                  options={data.map((educationalDomain) => ({
+                  options={educationalDomains.map((educationalDomain) => ({
                     id: String(educationalDomain.id),
                     label: educationalDomain.name,
                   }))}

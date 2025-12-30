@@ -14,11 +14,11 @@ export enum AccessibilityEnum {
 }
 
 export interface AccessibilityFormValues {
-  visual?: boolean
-  audio?: boolean
-  motor?: boolean
-  mental?: boolean
-  none?: boolean
+  visual: boolean
+  audio: boolean
+  motor: boolean
+  mental: boolean
+  none: boolean
 }
 
 // TODO (igabriele, 2025-08-25): Only used by SignupJouneyForm, move it there.

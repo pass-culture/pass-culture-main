@@ -28,7 +28,8 @@ function buildEditVenuePayload(
 ): EditVenueBodyModel {
   const normalizedActivity = normalizeActivity(formValues.activity)
 
-  const fullObject = {
+  // TODO: this is a PATCH request. It should only contains changed values
+  return {
     audioDisabilityCompliant: formValues.accessibility?.audio,
     description: formValues.description,
     mentalDisabilityCompliant: formValues.accessibility?.mental,
@@ -57,15 +58,6 @@ function buildEditVenuePayload(
         : (normalizedActivity as OnboardingActivity),
     culturalDomains: formValues.culturalDomains,
   }
-  let result: Partial<EditVenueBodyModel> = {}
-  Object.keys(fullObject).forEach((key) => {
-    // @ts-expect-error
-    if (fullObject[key] !== undefined) {
-      // @ts-expect-error
-      result = { ...result, [key]: fullObject[key] }
-    }
-  })
-  return result
 }
 
 function normalizeActivity(
