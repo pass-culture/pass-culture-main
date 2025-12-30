@@ -2,6 +2,7 @@ import { Outlet } from 'react-router'
 
 import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
@@ -14,9 +15,13 @@ export type ReimbursementsContextProps = {
 
 export const Reimbursements = (): JSX.Element => {
   const selectedOfferer = useAppSelector(selectCurrentOfferer)
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   return (
-    <BasicLayout mainHeading="Gestion financière">
+    <BasicLayout
+      mainHeading="Gestion financière"
+      adminArea={withSwitchVenueFeature}
+    >
       <div className={styles['reimbursements-container']}>
         <div>
           <ReimbursementsTabs selectedOfferer={selectedOfferer} />
