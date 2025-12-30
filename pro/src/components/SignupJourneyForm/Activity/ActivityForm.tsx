@@ -1,8 +1,8 @@
+import { useMemo } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
-import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getActivities } from '@/commons/mappings/mappings'
@@ -43,7 +43,8 @@ export interface ActivityFormProps {
 export const ActivityForm = ({
   venueTypes,
 }: ActivityFormProps): JSX.Element => {
-  const { data, isLoading } = useEducationalDomains()
+  const { data: educationalDomains, isLoading: isLoadingEducationalDomains } =
+    useEducationalDomains()
   const { offerer } = useSignupJourneyContext()
 
   const { register, control, formState, watch, setValue, trigger, setFocus } =
@@ -65,22 +66,21 @@ export const ActivityForm = ({
       ? buildSelectOptions(getActivities())
       : venueTypes
 
-  const defaultCulturalDomain: Option[] | undefined =
-    data.length === 0 ||
-    !formState.defaultValues ||
-    !formState.defaultValues?.culturalDomains
+  const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
+    return educationalDomains.length === 0 ||
+      !formState.defaultValues ||
+      !formState.defaultValues?.culturalDomains
       ? undefined
-      : formState.defaultValues.culturalDomains.map((formDefault) => {
-          const apiValue = data.find(
-            (educationalDomain) =>
-              String(educationalDomain.name) === formDefault
+      : educationalDomains
+          .filter((apiDomain) =>
+            formState.defaultValues?.culturalDomains?.find(
+              (domain) => apiDomain.name === domain
+            )
           )
-          assertOrFrontendError(
-            apiValue,
-            `CulturalDomain with name ${formDefault} not found`
-          )
-          return { id: String(apiValue.id), label: apiValue.name }
-        })
+          .map((domain) => {
+            return { id: String(domain.id), label: domain.name }
+          })
+  }, [educationalDomains, formState.defaultValues])
 
   return (
     <FormLayout.Section>
@@ -101,11 +101,11 @@ export const ActivityForm = ({
         />
       </FormLayout.Row>
 
-      {isCulturalDomainsEnabled && !isLoading && (
+      {isCulturalDomainsEnabled && !isLoadingEducationalDomains && (
         <FormLayout.Row mdSpaceAfter>
           <MultiSelect
             name="culturalDomains"
-            options={data.map((educationalDomain) => ({
+            options={educationalDomains.map((educationalDomain) => ({
               id: String(educationalDomain.id),
               label: educationalDomain.name,
             }))}
