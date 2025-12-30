@@ -238,6 +238,7 @@ class CreateOfferBase:
     success_num_queries += 1  # fetch product
     success_num_queries += 1  # create offer
     success_num_queries += 1  # fetch mediation
+    success_num_queries += 1  # fetch artists
     success_num_queries += 1  # fetch stocks
     success_num_queries += 1  # fetch price categories
     success_num_queries += 1  # fetch offerer address

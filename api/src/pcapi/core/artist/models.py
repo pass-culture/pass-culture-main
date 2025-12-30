@@ -34,7 +34,7 @@ class ArtistOfferLink(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), nullable=False, index=True
     )
     offer: sa_orm.Mapped["Offer"] = sa_orm.relationship(
-        "Offer", foreign_keys=[offer_id], back_populates="artist_offer_links"
+        "Offer", foreign_keys=[offer_id], back_populates="artistOfferLinks"
     )
     artist_type: sa_orm.Mapped[ArtistType] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=False)
     custom_name: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)

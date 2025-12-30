@@ -11,9 +11,11 @@ export { OpenAPI } from './core/OpenAPI';
 export type { OpenAPIConfig } from './core/OpenAPI';
 
 export type { AggregatedRevenueModel } from './models/AggregatedRevenueModel';
+export type { ArtistOfferResponseModel } from './models/ArtistOfferResponseModel';
 export type { ArtistQueryModel } from './models/ArtistQueryModel';
 export type { ArtistResponseModel } from './models/ArtistResponseModel';
 export type { ArtistsResponseModel } from './models/ArtistsResponseModel';
+export { ArtistType } from './models/ArtistType';
 export type { AttachImageFormModel } from './models/AttachImageFormModel';
 export type { AttachImageResponseModel } from './models/AttachImageResponseModel';
 export type { AudioDisabilityModel } from './models/AudioDisabilityModel';
