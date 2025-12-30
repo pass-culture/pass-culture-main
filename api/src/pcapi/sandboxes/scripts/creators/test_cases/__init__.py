@@ -304,9 +304,12 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
+        )
+        offers_factories.ArtistOfferLinkFactory.create(
+            artist_id=artist_1.id, offer_id=offer.id, artist_type=ArtistType.AUTHOR
         )
     artist_factories.ArtistAliasFactory.create(
         artist_id=artist_1.id, artist_alias_name="Virginie Despentes", artist_wiki_data_id="Q295015"
@@ -325,9 +328,12 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
+        )
+        offers_factories.ArtistOfferLinkFactory.create(
+            artist_id=artist_2.id, offer_id=offer.id, artist_type=ArtistType.PERFORMER
         )
     for alias_index in range(20):
         artist_factories.ArtistAliasFactory.create(
@@ -440,6 +446,10 @@ def _create_library_with_writers() -> None:
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
             )
             offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+            offers_factories.ArtistOfferLinkFactory.create(
+                artist_id=artist.id, offer_id=offer.id, artist_type=ArtistType.AUTHOR
+            )
+
             offers_factories.StockFactory.create(offer=offer)
 
 

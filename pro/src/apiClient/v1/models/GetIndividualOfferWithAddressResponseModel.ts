@@ -2,6 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ArtistOfferResponseModel } from './ArtistOfferResponseModel';
 import type { GetOfferLastProviderResponseModel } from './GetOfferLastProviderResponseModel';
 import type { GetOfferMediationResponseModel } from './GetOfferMediationResponseModel';
 import type { GetOfferVenueResponseModel } from './GetOfferVenueResponseModel';
@@ -14,6 +15,7 @@ import type { VideoData } from './VideoData';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type GetIndividualOfferWithAddressResponseModel = {
   activeMediation?: GetOfferMediationResponseModel | null;
+  artistOfferLinks: Array<ArtistOfferResponseModel>;
   audioDisabilityCompliant?: boolean | null;
   bookingAllowedDatetime?: string | null;
   bookingContact?: string | null;
