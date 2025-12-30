@@ -15,6 +15,7 @@ class ActivityOnline(ActivityBaseModel):
 
 class LivestreamMusiqueModel(ActivityOnline):
     subcategory_id: Literal[subcategories.LIVESTREAM_MUSIQUE.id]
+    extra_data: shared.ExtraDataLiveMusic
 
 
 class RencontreEnLigneModel(ActivityOnline):

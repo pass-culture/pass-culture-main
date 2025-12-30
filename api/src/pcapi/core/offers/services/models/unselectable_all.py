@@ -3,6 +3,7 @@ from typing import Literal
 from pcapi.core.categories import subcategories
 
 from .unselectable import UnselectableBaseModel
+from . import shared
 
 
 class ActivationEventModel(UnselectableBaseModel):
@@ -11,6 +12,7 @@ class ActivationEventModel(UnselectableBaseModel):
 
 class CaptationMusiqueModel(UnselectableBaseModel):
     subcategory_id: Literal[subcategories.CAPTATION_MUSIQUE.id]
+    extra_data: shared.ExtraDataPerformedMusic | None = None
 
 
 class OeuvreArtModel(UnselectableBaseModel):
