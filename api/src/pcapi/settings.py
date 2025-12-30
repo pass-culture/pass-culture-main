@@ -478,6 +478,7 @@ ADAGE_BACKEND = os.environ.get("ADAGE_BACKEND", "pcapi.core.educational.adage_ba
 CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE = bool(int(os.environ.get("CAN_COLLECTIVE_OFFERER_IGNORE_ADAGE", "0")))
 # This flag is to create the data for Adage team - not the EAC one - in the testing sandbox
 CREATE_ADAGE_TESTING_DATA = bool(int(os.environ.get("CREATE_ADAGE_TESTING_DATA", "0")))
+ADAGE_REQUEST_TIMEOUT = int(os.environ.get("ADAGE_REQUEST_TIMEOUT", 2))
 
 EAC_OFFER_PRICE_LIMIT = int(os.environ.get("EAC_OFFER_PRICE_LIMIT", 60_000))
 EAC_NUMBER_OF_TICKETS_LIMIT = int(os.environ.get("EAC_NUMBER_OF_TICKETS_LIMIT", 3_000))
