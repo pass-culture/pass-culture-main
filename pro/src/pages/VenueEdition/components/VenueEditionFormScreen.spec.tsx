@@ -639,15 +639,12 @@ describe('VenueEditionFormScreen', () => {
         })
       })
 
-      it('should display the activity select when the feature flag is enabled', async () => {
-        renderForm(
-          {
-            ...baseVenue,
-            isOpenToPublic: true,
-            activity: null,
-          },
-          { features: ['WIP_VENUE_ACTIVITY'] }
-        )
+      it('should display the activity select', async () => {
+        renderForm({
+          ...baseVenue,
+          isOpenToPublic: true,
+          activity: null,
+        })
 
         const activitySelect =
           await screen.findByLabelText(/Activité principale/)

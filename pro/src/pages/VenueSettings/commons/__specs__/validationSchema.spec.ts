@@ -5,7 +5,7 @@ import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../types'
-import { getVenueSettingsValidationSchema } from '../validationSchema'
+import { venueSettingsValidationSchema } from '../validationSchema'
 
 describe('VenueSettingsValidationSchema', () => {
   const baseContext: VenueSettingsFormContext = {
@@ -121,9 +121,7 @@ describe('VenueSettingsValidationSchema', () => {
     it(`should validate the form for case: ${description}`, async () => {
       const collected: string[] = []
       try {
-        await getVenueSettingsValidationSchema({
-          isVenueActivityFeatureActive: false,
-        }).validate(formValues, {
+        await venueSettingsValidationSchema.validate(formValues, {
           abortEarly: false,
           context: {
             ...context,

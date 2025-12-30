@@ -51,18 +51,12 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const { mutate } = useSWRConfig()
 
   const dispatch = useAppDispatch()
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const initialValues = setInitialFormValues(venue)
 
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(
-      getValidationSchema({
-        isVenueActivityFeatureActive,
-        // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation scheam
-      })
-    ),
+    resolver: yupResolver(getValidationSchema()),
     mode: 'onBlur',
   })
 
@@ -236,31 +230,30 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 </>
               )}
             </FormLayout.SubSection>
-            {isVenueActivityFeatureActive &&
-              methods.watch('isOpenToPublic') === 'true' && (
-                <FormLayout.Section title="Activité principale">
-                  <FormLayout.Row>
-                    <Select
-                      {...methods.register('activity')}
-                      options={[
-                        ...(methods.watch('activity') === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
-                          ? [
-                              {
-                                value: '',
-                                label: 'Sélectionnez votre activité principale',
-                              },
-                            ]
-                          : []),
-                        ...buildSelectOptions(getActivities()),
-                      ]}
-                      label="Activité principale"
-                      disabled={venue.isVirtual}
-                      error={methods.formState.errors.activity?.message}
-                      required
-                    />
-                  </FormLayout.Row>
-                </FormLayout.Section>
-              )}
+            {methods.watch('isOpenToPublic') === 'true' && (
+              <FormLayout.Section title="Activité principale">
+                <FormLayout.Row>
+                  <Select
+                    {...methods.register('activity')}
+                    options={[
+                      ...(methods.watch('activity') === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
+                        ? [
+                            {
+                              value: '',
+                              label: 'Sélectionnez votre activité principale',
+                            },
+                          ]
+                        : []),
+                      ...buildSelectOptions(getActivities()),
+                    ]}
+                    label="Activité principale"
+                    disabled={venue.isVirtual}
+                    error={methods.formState.errors.activity?.message}
+                    required
+                  />
+                </FormLayout.Row>
+              </FormLayout.Section>
+            )}
             <FormLayout.SubSection
               title="Contact"
               description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."

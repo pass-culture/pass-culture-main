@@ -4,11 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
-import {
-  type GetVenueResponseModel,
-  VenueTypeCode,
-  type VenueTypeResponseModel,
-} from '@/apiClient/v1'
+import { type GetVenueResponseModel, VenueTypeCode } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -50,11 +46,6 @@ const secondVenueProvider = {
   isDuo: true,
   price: 0,
 }
-
-const venueTypes: VenueTypeResponseModel[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
-]
 
 const defaultFormContext: VenueSettingsFormContext = {
   isCaledonian: false,
@@ -124,7 +115,6 @@ const renderVenueSettingsForm = async (
         >
           <VenueSettingsForm
             offerer={defaultOfferer}
-            venueTypes={venueTypes}
             venueProviders={venueProviders}
             venue={defaultGetVenue}
             formContext={formContext}
@@ -189,7 +179,6 @@ describe('VenueSettingsForm', () => {
     renderVenueSettingsForm()
 
     expect(screen.getByText('Informations administratives')).toBeInTheDocument()
-    expect(screen.getByLabelText(/Activité principale/)).toBeInTheDocument()
     expect(
       screen.getByText(
         'Cette adresse s’appliquera par défaut à toutes vos offres, vous pourrez la modifier à l’échelle de chaque offre.'

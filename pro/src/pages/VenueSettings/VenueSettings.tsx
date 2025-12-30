@@ -6,7 +6,6 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import {
   GET_VENUE_PROVIDERS_QUERY_KEY,
   GET_VENUE_QUERY_KEY,
-  GET_VENUE_TYPES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
@@ -27,11 +26,6 @@ const VenueSettings = (): JSX.Element | null => {
   )
   const venue = venueQuery.data
 
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
-  )
-  const venueTypes = venueTypesQuery.data
-
   const venueProvidersQuery = useSWR(
     [GET_VENUE_PROVIDERS_QUERY_KEY, Number(venueId)],
     ([, venueIdParam]) => api.listVenueProviders(venueIdParam)
@@ -40,11 +34,9 @@ const VenueSettings = (): JSX.Element | null => {
 
   const isNotReady =
     venueQuery.isLoading ||
-    venueTypesQuery.isLoading ||
     venueProvidersQuery.isLoading ||
     !offerer ||
     !venue ||
-    !venueTypes ||
     !venueProviders
 
   return (
@@ -54,7 +46,6 @@ const VenueSettings = (): JSX.Element | null => {
       ) : (
         <VenueSettingsScreen
           offerer={offerer}
-          venueTypes={venueTypes}
           venue={venue}
           venueProviders={venueProviders}
         />

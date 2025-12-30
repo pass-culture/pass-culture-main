@@ -16,6 +16,7 @@ describe('VenueEditionForm validationSchema', () => {
     isOpenToPublic: 'true',
     openingHours: null,
     description: 'description',
+    activity: 'ART_GALLERY',
   }
 
   const cases: {
@@ -122,7 +123,7 @@ describe('VenueEditionForm validationSchema', () => {
   cases.forEach(({ description, formValues, expectedErrors }) => {
     it(`should validate the form for case: ${description}`, async () => {
       const errors = await getYupValidationSchemaErrors(
-        getValidationSchema({ isVenueActivityFeatureActive: false }),
+        getValidationSchema(),
         formValues
       )
       expect(errors).toEqual(expectedErrors)
@@ -130,13 +131,10 @@ describe('VenueEditionForm validationSchema', () => {
   })
 
   it('should require activity when feature flag is enabled and venue is open to public', async () => {
-    const errors = await getYupValidationSchemaErrors(
-      getValidationSchema({ isVenueActivityFeatureActive: true }),
-      {
-        ...defaultValues,
-        activity: null,
-      }
-    )
+    const errors = await getYupValidationSchemaErrors(getValidationSchema(), {
+      ...defaultValues,
+      activity: null,
+    })
 
     expect(errors).toEqual(['Veuillez renseigner ce champ'])
   })
