@@ -1,4 +1,5 @@
 import datetime
+import logging
 from dataclasses import asdict
 from decimal import Decimal
 from unittest.mock import patch
@@ -1136,7 +1137,7 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
     )
     @pytest.mark.usefixtures("clean_database")
     def test_validate_collective_offer_with_institution_invalid_email_validated(
-        self, legit_user, authenticated_client, requests_mock
+        self, legit_user, authenticated_client, requests_mock, caplog
     ):
         collective_offer_to_validate = educational_factories.UnderReviewCollectiveOfferFactory()
 
@@ -1148,7 +1149,8 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         }
         endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", status_code=450, json=adage_json)
 
-        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
+        with caplog.at_level(logging.ERROR):
+            response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
@@ -1166,13 +1168,18 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
         assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
 
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Error on Adage notify when validating collective offer"
+        assert caplog.records[0].extra["status_code"] == 450
+        assert caplog.records[0].extra["collective_offer_id"] == collective_offer_to_validate.id
+
     @pytest.mark.settings(
         ADAGE_API_URL="https://adage_base_url",
         ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
     )
     @pytest.mark.usefixtures("clean_database")
-    def test_validate_collective_offer_with_institution_500_not_validated(
-        self, legit_user, authenticated_client, requests_mock
+    def test_validate_collective_offer_with_institution_500_validated(
+        self, legit_user, authenticated_client, requests_mock, caplog
     ):
         collective_offer_to_validate = educational_factories.UnderReviewCollectiveOfferFactory()
 
@@ -1184,7 +1191,8 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         }
         endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", status_code=500, json=adage_json)
 
-        response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
+        with caplog.at_level(logging.ERROR):
+            response = self.post_to_endpoint(authenticated_client, collective_offer_id=collective_offer_to_validate.id)
         assert response.status_code == 303
 
         expected_url = url_for("backoffice_web.collective_offer.list_collective_offers")
@@ -1198,38 +1206,49 @@ class ValidateCollectiveOfferTest(PostEndpointHelper):
         assert response.status_code == 200
 
         assert endpoint.called
-        assert collective_offer_to_validate.isActive is False
-        assert collective_offer_to_validate.validation == OfferValidationStatus.PENDING
-        assert collective_offer_to_validate.lastValidationType == None
+        assert collective_offer_to_validate.isActive is True
+        assert collective_offer_to_validate.validation == OfferValidationStatus.APPROVED
+        assert collective_offer_to_validate.lastValidationType == OfferValidationType.MANUAL
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Error on Adage notify when validating collective offer"
+        assert caplog.records[0].extra["status_code"] == 500
+        assert caplog.records[0].extra["collective_offer_id"] == collective_offer_to_validate.id
 
     @pytest.mark.settings(
         ADAGE_API_URL="https://adage_base_url",
         ADAGE_BACKEND="pcapi.core.educational.adage_backends.adage.AdageHttpClient",
     )
     @pytest.mark.usefixtures("clean_database")
-    def test_validate_collective_offer_adage_timeout_not_validated(
-        self, legit_user, authenticated_client, requests_mock
+    def test_validate_collective_offer_adage_timeout_validated(
+        self, legit_user, authenticated_client, requests_mock, caplog
     ):
         collective_offer = educational_factories.UnderReviewCollectiveOfferFactory()
 
         endpoint = requests_mock.post("https://adage_base_url/v1/offre-assoc", exc=requests_exceptions.ReadTimeout)
 
-        response = self.post_to_endpoint(
-            authenticated_client, collective_offer_id=collective_offer.id, follow_redirects=True
-        )
+        with caplog.at_level(logging.ERROR):
+            response = self.post_to_endpoint(
+                authenticated_client, collective_offer_id=collective_offer.id, follow_redirects=True
+            )
         assert response.status_code == 200
 
         assert (
             html_parser.extract_alert(response.data)
-            == f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : Cannot establish connection to omogen api"
+            == f"Offre validée mais erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : Cannot establish connection to omogen api"
         )
 
         assert endpoint.called
 
         db.session.refresh(collective_offer)
-        assert collective_offer.isActive is False
-        assert collective_offer.validation == OfferValidationStatus.PENDING
-        assert collective_offer.lastValidationType is None
+        assert collective_offer.isActive is True
+        assert collective_offer.validation == OfferValidationStatus.APPROVED
+        assert collective_offer.lastValidationType is OfferValidationType.MANUAL
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Error on Adage notify when validating collective offer"
+        assert caplog.records[0].extra["status_code"] == 502
+        assert caplog.records[0].extra["collective_offer_id"] == collective_offer.id
 
     def test_cant_validate_non_pending_offer(self, legit_user, authenticated_client):
         collective_offer_to_validate = educational_factories.CollectiveOfferFactory(
@@ -1429,7 +1448,7 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
         )
         assert len(non_existing_collective_offers) == 0
 
-    def test_batch_validate_collective_offers_adage_exception(self, legit_user, authenticated_client):
+    def test_batch_validate_collective_offers_adage_exception(self, legit_user, authenticated_client, caplog):
         institution = educational_factories.EducationalInstitutionFactory()
         collective_stock = educational_factories.CollectiveStockFactory(
             collectiveOffer__validation=OfferValidationStatus.PENDING,
@@ -1444,18 +1463,24 @@ class BatchCollectiveOffersValidateTest(PostEndpointHelper):
         )
 
         with patch(patched_function, side_effect=adage_exception):
-            response = self.post_to_endpoint(
-                authenticated_client,
-                form={"object_ids": collective_offer.id},
-                headers={"hx-request": "true"},
-            )
+            with caplog.at_level(logging.ERROR):
+                response = self.post_to_endpoint(
+                    authenticated_client,
+                    form={"object_ids": collective_offer.id},
+                    headers={"hx-request": "true"},
+                )
 
         assert response.status_code == 200
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert (
-            f"Erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : An error occured on adage side"
+            f"Offre validée mais erreur lors de la notification à ADAGE pour l'offre {collective_offer.id} : An error occured on adage side"
             in alerts["warning"]
         )
+
+        assert len(caplog.records) == 1
+        assert caplog.records[0].message == "Error on Adage notify when validating collective offer"
+        assert caplog.records[0].extra["status_code"] == 400
+        assert caplog.records[0].extra["collective_offer_id"] == collective_offer.id
 
 
 class BatchCollectiveOffersRejectTest(PostEndpointHelper):
