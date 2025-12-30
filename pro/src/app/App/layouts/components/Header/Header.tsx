@@ -25,7 +25,7 @@ type HeaderProps = {
   setLateralPanelOpen?: (state: boolean) => void
   focusCloseButton?: () => void
   disableHomeLink?: boolean
-  backTo?: { to: string }
+  adminArea?: boolean
 }
 
 export const Header = forwardRef(
@@ -35,11 +35,12 @@ export const Header = forwardRef(
       setLateralPanelOpen = () => undefined,
       focusCloseButton = () => undefined,
       disableHomeLink = false,
-      backTo = { to: '/administration' },
+      adminArea = false,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
     const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
+    const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
     const { logEvent } = useAnalytics()
     const location = useLocation()
@@ -97,11 +98,6 @@ export const Header = forwardRef(
                   <div className={styles['tablet-and-above']}>
                     {isProFeedbackEnabled && <UserReviewDialog />}
                   </div>
-                  {withSwitchVenueFeature && (
-                    <div className={styles['tablet-and-above']}>
-                      <HeaderVenuesDropdown />
-                    </div>
-                  )}
                   <div className={styles['tablet-and-above']}>
                     <HeaderHelpDropdown />
                   </div>
@@ -110,17 +106,14 @@ export const Header = forwardRef(
               {withSwitchVenueFeature && (
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
-                  to={backTo.to}
+                  to={adminArea ? '/accueil' : '/remboursements'}
                   iconPosition={IconPositionEnum.LEFT}
-                  icon={
-                    backTo.to === '/administration'
-                      ? strokeRepaymentIcon
-                      : fullBackIcon
-                  }
+                  icon={adminArea ? fullBackIcon : strokeRepaymentIcon}
+                  className={styles['tablet-and-above']}
                 >
-                  {backTo.to === '/administration'
-                    ? 'Espace administration'
-                    : 'Revenir à l’Espace Partenaire'}
+                  {adminArea
+                    ? 'Revenir à l’Espace Partenaire'
+                    : 'Espace administration'}
                 </ButtonLink>
               )}
               <HeaderDropdown />

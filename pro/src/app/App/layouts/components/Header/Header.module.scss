@@ -92,6 +92,6 @@
   display: none;
 
   @media (min-width: size.$tablet) {
-    display: block;
+    display: flex;
   }
 }

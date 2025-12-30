@@ -10,3 +10,14 @@
     width: auto;
   }
 }
+
+.nav-section-title {
+  flex: 1;
+  text-align: left;
+}
+
+.help-dropdown-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--size-spacing-s);
+}
