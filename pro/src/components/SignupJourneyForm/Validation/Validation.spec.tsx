@@ -335,7 +335,7 @@ describe('ValidationScreen', () => {
       })
     })
 
-    it('should send activity when feature is active and offerer is open to public', async () => {
+    it('should send activity when offerer is open to public', async () => {
       if (contextValue.offerer) {
         contextValue.offerer.publicName = 'nom public'
         contextValue.offerer.isOpenToPublic = 'true'
@@ -352,7 +352,7 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
-      renderValidationScreen(contextValue, { features: ['WIP_VENUE_ACTIVITY'] })
+      renderValidationScreen(contextValue)
       await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       expect(screen.getByText('Musée')).toBeInTheDocument()
       await userEvent.click(screen.getByText('Valider et créer ma structure'))

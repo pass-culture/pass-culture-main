@@ -49,7 +49,6 @@ export const Validation = (): JSX.Element | undefined => {
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
 
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
   const isVenueCulturalDomainsFeatureActive = useActiveFeature(
     'WIP_VENUE_CULTURAL_DOMAINS'
   )
@@ -95,7 +94,7 @@ export const Validation = (): JSX.Element | undefined => {
   }
 
   const activityLabel =
-    isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
+    offerer?.isOpenToPublic === 'true'
       ? getActivityLabel(activity.venueTypeCode as OnboardingActivity) // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
       : venueTypes.find(
           (venueType) => venueType.value === activity.venueTypeCode
@@ -111,7 +110,7 @@ export const Validation = (): JSX.Element | undefined => {
         isOpenToPublic: offerer.isOpenToPublic === 'true',
         publicName: offerer.publicName || null,
         siret: offerer.siret.replaceAll(' ', ''),
-        ...(isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
+        ...(offerer?.isOpenToPublic === 'true'
           ? {
               activity:
                 /* istanbul ignore next: should not have empty or null venueTypeCode at this step */

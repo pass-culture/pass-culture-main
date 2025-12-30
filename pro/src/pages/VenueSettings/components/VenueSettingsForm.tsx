@@ -6,9 +6,7 @@ import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -22,7 +20,6 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
-import { Select } from '@/ui-kit/form/Select/Select'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import type {
@@ -35,7 +32,6 @@ import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
 
 export interface VenueSettingsFormProps {
   offerer: GetOffererResponseModel
-  venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
   formContext: VenueSettingsFormContext
@@ -43,7 +39,6 @@ export interface VenueSettingsFormProps {
 
 export const VenueSettingsForm = ({
   offerer,
-  venueTypes,
   venueProviders,
   venue,
   formContext,
@@ -55,8 +50,6 @@ export const VenueSettingsForm = ({
     clearErrors,
     formState: { isDirty, isSubmitting, isSubmitted, errors },
   } = useFormContext<VenueSettingsFormValues>()
-
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const location = useLocation()
   const manuallySetAddress = watch('manuallySetAddress')
@@ -140,20 +133,6 @@ export const VenueSettingsForm = ({
             </>
           )}
         </FormLayout.Section>
-
-        {!isVenueActivityFeatureActive && (
-          <FormLayout.Section title="Activité principale">
-            <FormLayout.Row>
-              <Select
-                {...register('venueType')}
-                options={venueTypes}
-                label="Activité principale"
-                disabled={venue.isVirtual}
-                error={errors.venueType?.message}
-              />
-            </FormLayout.Row>
-          </FormLayout.Section>
-        )}
 
         {!venue.isVirtual && <WithdrawalDetails />}
 

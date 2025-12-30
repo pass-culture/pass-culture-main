@@ -6,9 +6,7 @@ import type {
   GetOffererResponseModel,
   GetVenueResponseModel,
   VenueProviderResponse,
-  VenueTypeResponseModel,
 } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import fullBackIcon from '@/icons/full-back.svg'
 import { toFormValues } from '@/pages/VenueSettings/commons/utils/toFormValues'
@@ -20,26 +18,22 @@ import type {
   VenueSettingsFormContext,
   VenueSettingsFormValues,
 } from '../commons/types'
-import { getVenueSettingsValidationSchema } from '../commons/validationSchema'
+import { venueSettingsValidationSchema } from '../commons/validationSchema'
 import { VenueSettingsForm } from './VenueSettingsForm'
 import styles from './VenueSettingsScreen.module.scss'
 
 export interface VenueSettingsScreenProps {
   offerer: GetOffererResponseModel
-  venueTypes: VenueTypeResponseModel[]
   venueProviders: VenueProviderResponse[]
   venue: GetVenueResponseModel
 }
 
 export const VenueSettingsScreen = ({
   offerer,
-  venueTypes,
   venueProviders,
   venue,
 }: VenueSettingsScreenProps): JSX.Element => {
   const navigate = useNavigate()
-
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const formContext: VenueSettingsFormContext = {
     isCaledonian: venue.isCaledonian,
@@ -53,7 +47,7 @@ export const VenueSettingsScreen = ({
     defaultValues: toFormValues({ venue }),
     resolver: yupResolver(
       // biome-ignore lint/suspicious/noExplicitAny: TODO : review validation schema
-      getVenueSettingsValidationSchema({ isVenueActivityFeatureActive }) as any
+      venueSettingsValidationSchema as any
     ),
     mode: 'onBlur',
   })
@@ -78,7 +72,6 @@ export const VenueSettingsScreen = ({
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
           <VenueSettingsForm
-            venueTypes={venueTypes}
             venueProviders={venueProviders}
             venue={venue}
             offerer={offerer}

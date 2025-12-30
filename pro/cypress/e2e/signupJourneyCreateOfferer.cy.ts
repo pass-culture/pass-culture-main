@@ -69,7 +69,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
 
     cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/inscription/structure/activite')
-    cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
+    cy.findByLabelText(/Activité principale/).select('Galerie d’art')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Étape suivante').click()
     cy.findByText('Veuillez sélectionner au moins une option')
@@ -132,7 +132,7 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.findByText('Étape suivante').click()
 
     cy.url().should('contain', '/inscription/structure/activite')
-    cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
+    cy.findByLabelText(/Activité principale/).select('Galerie d’art')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Au grand public').click()
     cy.findByText('Étape suivante').click()
@@ -215,7 +215,7 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'I fill completely activity form' })
       cy.url().should('contain', '/inscription/structure/activite')
-      cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
+      cy.findByLabelText(/Activité principale/).select('Galerie d’art')
       cy.findByLabelText('Numéro de téléphone').type('612345678')
       cy.findByText('Au grand public').click()
       cy.findByText('Étape suivante').click()
@@ -302,7 +302,7 @@ describe('Signup journey with known offerer...', () => {
 
       cy.stepLog({ message: 'I fill in missing main activity' })
       cy.url().should('contain', '/inscription/structure/activite')
-      cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
+      cy.findByLabelText(/Activité principale/).select('Galerie d’art')
       cy.findByText('Étape suivante').click()
 
       cy.stepLog({ message: 'the next step is displayed' })

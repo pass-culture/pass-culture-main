@@ -1,5 +1,4 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
@@ -14,8 +13,6 @@ interface VenueEditionReadOnlyProps {
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
-
   return (
     <SummarySection
       title="Vos informations pour le grand public"
@@ -35,7 +32,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
               title: 'Description',
               text: venue.description ?? 'Non renseignée',
             },
-            ...(isVenueActivityFeatureActive && venue.activity
+            ...(venue.activity
               ? [
                   {
                     title: 'Activité',

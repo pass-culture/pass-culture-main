@@ -5,7 +5,6 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 
@@ -37,7 +36,6 @@ export const useSaveVenueSettings = ({
   const location = useLocation()
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
 
   const saveAndContinue = async (
     formValues: PartialBy<VenueSettingsFormValues, 'venueType'>,
@@ -49,13 +47,13 @@ export const useSaveVenueSettings = ({
         Condition is:
           If venue is `openToPublic`, then the "venueType" field isn't handled in this form anymore,
           so we need to EXPLICITLY ignore the value here.
-        
+
         (Else, We still update the "venueType" in this form)
       */
 
-      const filteredFormValues = removeVenueTypeFieldIf(
-        isVenueActivityFeatureActive && venue.isOpenToPublic
-      )(formValues)
+      const filteredFormValues = removeVenueTypeFieldIf(venue.isOpenToPublic)(
+        formValues
+      )
 
       await saveVenueSettings(filteredFormValues, formContext, { venue })
 

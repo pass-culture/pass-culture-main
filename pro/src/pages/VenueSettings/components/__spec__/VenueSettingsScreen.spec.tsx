@@ -4,11 +4,7 @@ import { expect } from 'vitest'
 
 import * as apiAdresse from '@/apiClient/adresse/apiAdresse'
 import { api } from '@/apiClient/api'
-import {
-  type GetVenueResponseModel,
-  VenueTypeCode,
-  type VenueTypeResponseModel,
-} from '@/apiClient/v1'
+import { type GetVenueResponseModel, VenueTypeCode } from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   defaultGetOffererResponseModel,
@@ -55,11 +51,6 @@ const secondVenueProvider = {
   isDuo: true,
   price: 0,
 }
-
-const venueTypes: VenueTypeResponseModel[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
-]
 
 const defaultOfferer = {
   ...defaultGetOffererResponseModel,
@@ -113,7 +104,6 @@ const renderForm = async (
         ...defaultOfferer,
         ...(props?.offerer || {}),
       }}
-      venueTypes={venueTypes}
       venueProviders={[firstVenueProvider, secondVenueProvider]}
       venue={{
         ...defaultVenue,
@@ -312,7 +302,6 @@ describe('VenueSettingsScreen', () => {
       inseeCode: '75111',
       publicName: 'Lieu Exemple Public Updated',
       street: '123 Rue Principale',
-      venueTypeCode: 'Centre culturel',
       siret: '12345678901234',
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
@@ -354,7 +343,6 @@ describe('VenueSettingsScreen', () => {
       inseeCode: '75111',
       publicName: 'Lieu Exemple Public Updated',
       street: '123 Rue Principale',
-      venueTypeCode: 'Centre culturel',
       siret: 'NC1234567890XX',
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
@@ -470,7 +458,6 @@ describe('VenueSettingsScreen', () => {
       name: 'Lieu de test',
       publicName: 'Lieu Exemple Public',
       siret: '12345678901234',
-      venueTypeCode: 'Centre culturel',
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
     })
@@ -523,7 +510,6 @@ describe('VenueSettingsScreen', () => {
       publicName: 'Lieu Exemple Public',
       siret: '12345678901234',
       comment: '',
-      venueTypeCode: 'Centre culturel',
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
     })

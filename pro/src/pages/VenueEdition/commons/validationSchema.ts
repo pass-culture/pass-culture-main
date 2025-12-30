@@ -66,11 +66,7 @@ export const openingHoursSchemaShape = {
   SUNDAY: openingHoursDaySchema,
 }
 
-export const getValidationSchema = ({
-  isVenueActivityFeatureActive,
-}: {
-  isVenueActivityFeatureActive: boolean
-}): ObjectSchema<VenueEditionFormValues> => {
+export const getValidationSchema = (): ObjectSchema<VenueEditionFormValues> => {
   const activityTypeValues: OnboardingActivityType[] = Object.keys(
     _OnboardingActivityMappings
   ).map((v) => v as OnboardingActivityType)
@@ -129,7 +125,7 @@ export const getValidationSchema = ({
       .mixed<OnboardingActivityType>()
       .oneOf(activityTypeValues)
       .when('isOpenToPublic', {
-        is: (open: string) => open === 'true' && isVenueActivityFeatureActive,
+        is: (open: string) => open === 'true',
         then: (schema) => schema.required('Veuillez renseigner ce champ'),
         otherwise: (schema) => schema.optional(),
       }),

@@ -49,7 +49,6 @@ export const ActivityForm = ({
   const { register, control, formState, watch, setValue, trigger, setFocus } =
     useFormContext<ActivityFormValues>()
 
-  const isVenueActivityFeatureActive = useActiveFeature('WIP_VENUE_ACTIVITY')
   const isCulturalDomainsEnabled = useActiveFeature(
     'WIP_VENUE_CULTURAL_DOMAINS'
   )
@@ -62,7 +61,7 @@ export const ActivityForm = ({
   const watchSocialUrls = watch('socialUrls')
 
   const mainActivityOptions =
-    isVenueActivityFeatureActive && offerer?.isOpenToPublic === 'true'
+    offerer?.isOpenToPublic === 'true'
       ? buildSelectOptions(getActivities())
       : venueTypes
 
@@ -115,7 +114,7 @@ export const ActivityForm = ({
             label="Domaine(s) d’activité"
             className={styles['cultural-domains-select']}
             required={offerer?.isOpenToPublic === 'false'}
-            onSelectedOptionsChanged={(selectedOptions, y, z) => {
+            onSelectedOptionsChanged={(selectedOptions, _y, _z) => {
               setValue(
                 'culturalDomains',
                 selectedOptions.length > 0

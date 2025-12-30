@@ -61,7 +61,7 @@ describe('Signup journey with not diffusible offerer siret', () => {
 
     cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/inscription/structure/activite')
-    cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
+    cy.findByLabelText(/Activité principale/).select('Autre')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Au grand public').click()
     cy.findByText('Étape suivante').click()
@@ -109,7 +109,7 @@ describe('Signup journey with not diffusible offerer siret', () => {
 
     cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/inscription/structure/activite')
-    cy.findByLabelText(/Activité principale/).select('Spectacle vivant')
+    cy.findByLabelText(/Activité principale/).select('Galerie d’art')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Au grand public').click()
     cy.findByText('Étape suivante').click()
