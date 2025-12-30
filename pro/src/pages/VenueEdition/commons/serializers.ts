@@ -6,63 +6,57 @@ import type {
 import type { OnboardingActivityType } from '@/commons/mappings/OnboardingActivity'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
-import { diffObjects } from '../utils/helpers'
 import type { VenueEditionFormValues } from './types'
 
 export const serializeEditVenueBodyModel = (
-  formValues: VenueEditionFormValues,
-  initialValues: VenueEditionFormValues,
+  formValues: Partial<VenueEditionFormValues>,
   hideSiret: boolean,
   alreadyHasOpeningHours: boolean = false
 ): EditVenueBodyModel => {
-  const currentPayload = buildEditVenuePayload(
-    formValues,
-    alreadyHasOpeningHours
-  )
-  const initialPayload = buildEditVenuePayload(
-    initialValues,
-    alreadyHasOpeningHours
-  )
+  const payload = buildEditVenuePayload(formValues, alreadyHasOpeningHours)
 
-  // Build the final payload by diffing the current and initial payloads (PATCH payload)
-  const diffPayload = diffObjects(
-    currentPayload as Record<string, unknown>,
-    initialPayload as Record<string, unknown>
-  )
-
-  if (hideSiret) {
-    delete diffPayload.siret
+  if (hideSiret && payload.siret) {
+    delete payload.siret
   }
 
-  return diffPayload
+  return payload
 }
 
 function buildEditVenuePayload(
-  formValues: VenueEditionFormValues,
+  formValues: Partial<VenueEditionFormValues>,
   alreadyHasOpeningHours: boolean
 ): EditVenueBodyModel {
   const normalizedActivity = normalizeActivity(formValues.activity)
 
+  // TODO: this is a PATCH request. It should only contains changed values
   return {
-    audioDisabilityCompliant: formValues.accessibility.audio,
+    audioDisabilityCompliant: formValues.accessibility?.audio,
     description: formValues.description,
-    mentalDisabilityCompliant: formValues.accessibility.mental,
-    motorDisabilityCompliant: formValues.accessibility.motor,
-    visualDisabilityCompliant: formValues.accessibility.visual,
-    contact: {
-      email: !formValues.email ? null : formValues.email,
-      phoneNumber: !formValues.phoneNumber ? null : formValues.phoneNumber,
-      website: !formValues.webSite ? null : formValues.webSite,
-      socialMedias: null,
-    },
+    mentalDisabilityCompliant: formValues.accessibility?.mental,
+    motorDisabilityCompliant: formValues.accessibility?.motor,
+    visualDisabilityCompliant: formValues.accessibility?.visual,
+    contact:
+      formValues.email || formValues.phoneNumber || formValues.webSite
+        ? {
+            email: !formValues.email ? null : formValues.email,
+            phoneNumber: !formValues.phoneNumber
+              ? null
+              : formValues.phoneNumber,
+            website: !formValues.webSite ? null : formValues.webSite,
+            socialMedias: null,
+          }
+        : undefined,
     isAccessibilityAppliedOnAllOffers:
       formValues.isAccessibilityAppliedOnAllOffers,
     openingHours: serializeOpeningHours(formValues, alreadyHasOpeningHours),
-    isOpenToPublic: formValues.isOpenToPublic === 'true',
+    isOpenToPublic: formValues.isOpenToPublic
+      ? formValues.isOpenToPublic === 'true'
+      : undefined,
     activity:
       normalizedActivity === undefined || normalizedActivity === null
         ? (normalizedActivity ?? undefined)
         : (normalizedActivity as OnboardingActivity),
+    culturalDomains: formValues.culturalDomains,
   }
 }
 
@@ -77,10 +71,12 @@ function normalizeActivity(
 }
 
 function serializeOpeningHours(
-  formValues: VenueEditionFormValues,
+  formValues: Partial<VenueEditionFormValues>,
   alreadyHasOpeningHours: boolean
 ): EditVenueBodyModel['openingHours'] {
-  if (
+  if (formValues.openingHours === undefined) {
+    return undefined
+  } else if (
     !alreadyHasOpeningHours &&
     !OPENING_HOURS_DAYS.some(
       (d) =>
