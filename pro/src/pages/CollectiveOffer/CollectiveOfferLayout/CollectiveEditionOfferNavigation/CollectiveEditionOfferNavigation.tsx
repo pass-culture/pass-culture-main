@@ -65,9 +65,6 @@ export const CollectiveEditionOfferNavigation = ({
   const navigate = useNavigate()
   const location = useLocation()
   const isMarseilleActive = useActiveFeature('ENABLE_MARSEILLE')
-  const isCollectiveOfferTemplateShareLinkEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'
-  )
 
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
 
@@ -242,9 +239,9 @@ export const CollectiveEditionOfferNavigation = ({
             Créer une offre réservable
           </Button>
         )}
-        {isCollectiveOfferTemplateShareLinkEnabled &&
-          isCollectiveOfferTemplate(offer) &&
-          canShareOffer && <ShareLinkDrawer offerId={offer.id} />}
+        {isCollectiveOfferTemplate(offer) && canShareOffer && (
+          <ShareLinkDrawer offerId={offer.id} />
+        )}
       </div>
       {canEditOffer && (
         <NavLinkItems

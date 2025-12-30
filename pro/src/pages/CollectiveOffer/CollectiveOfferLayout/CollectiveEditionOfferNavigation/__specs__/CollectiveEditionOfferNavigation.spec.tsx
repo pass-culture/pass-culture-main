@@ -439,18 +439,15 @@ describe('CollectiveEditionOfferNavigation', () => {
     expect(previewButton).not.toBeInTheDocument()
   })
 
-  it('should render share link drawer when the FF WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK is enabled', async () => {
-    renderCollectiveEditingOfferNavigation(
-      {
-        ...props,
+  it('should render share link drawer when pressing the share button', async () => {
+    renderCollectiveEditingOfferNavigation({
+      ...props,
+      isTemplate: true,
+      offer: getCollectiveOfferTemplateFactory({
         isTemplate: true,
-        offer: getCollectiveOfferTemplateFactory({
-          isTemplate: true,
-          allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
-        }),
-      },
-      ['WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK']
-    )
+        allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
+      }),
+    })
 
     const shareLinkButton = screen.getByRole('button', {
       name: 'Partager l’offreNouveau',
