@@ -6,6 +6,7 @@ from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.external import batch
 from pcapi.core.finance import deposit_api
+from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
@@ -32,36 +33,37 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         raise ValueError(f"QuotientFamilialBonusCreditContent was expected while {type(source_data)} was given")
 
     quotient_familial_response: api_particulier.QuotientFamilialResponse | None = None
+    status = subscription_models.FraudCheckStatus.KO
     try:
         quotient_familial_response = _get_user_quotient_familial_response(source_data.custodian, user)
     except api_particulier.ParticulierApiQuotientFamilialNotFound:
-        status = subscription_models.FraudCheckStatus.KO
         reason_codes = [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
     else:
         status, reason_codes = _get_credit_bonus_status(user, quotient_familial_response.data)
 
+    given_recredit = None
     with atomic():
         quotient_familial_fraud_check.status = status
         quotient_familial_fraud_check.reasonCodes = reason_codes
 
-        if not quotient_familial_response:
-            return
+        if quotient_familial_response:
+            _update_bonus_fraud_check_content(quotient_familial_fraud_check, quotient_familial_response.data)
+            if status == subscription_models.FraudCheckStatus.OK:
+                given_recredit = deposit_api.recredit_bonus_credit(user)
 
-        _update_bonus_fraud_check_content(quotient_familial_fraud_check, quotient_familial_response.data)
-
-        if status != subscription_models.FraudCheckStatus.OK:
-            return
-
-        given_recredit = deposit_api.recredit_bonus_credit(user)
-        if not given_recredit and deposit_api.can_receive_bonus_credit(user):
-            logger.error(
-                f"Failed to recredit user with bonus credit despite {status = } Quotient Familial fraud check",
-                extra={"user_id": user.id, "beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
-            )
-
+    if status == subscription_models.FraudCheckStatus.OK:
         if given_recredit:
             logger.info("Recredited user %s with bonus credit", user.id)
             batch.track_has_received_bonus(user.id)
+            transactional_mails.send_bonus_granted_email(user)
+        elif deposit_api.can_receive_bonus_credit(user):
+            logger.error(
+                "Failed to recredit user with bonus credit despite status = %s Quotient Familial fraud check",
+                status,
+                extra={"user_id": user.id, "beneficiary_fraud_check_id": quotient_familial_fraud_check.id},
+            )
+    elif status == subscription_models.FraudCheckStatus.KO:
+        transactional_mails.send_bonus_declined_email(user)
 
 
 def _get_user_quotient_familial_response(
