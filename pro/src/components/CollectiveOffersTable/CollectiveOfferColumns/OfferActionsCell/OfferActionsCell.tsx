@@ -70,9 +70,6 @@ export const OfferActionsCell = ({
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
-  const isCollectiveOfferTemplateShareLinkEnabled = useActiveFeature(
-    'WIP_ENABLE_COLLECTIVE_OFFER_TEMPLATE_SHARE_LINK'
-  )
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
@@ -338,17 +335,15 @@ export const OfferActionsCell = ({
               </Button>
             </DropdownMenu.Item>
           )}
-          {!isCollectiveOfferBookable(offer) &&
-            isCollectiveOfferTemplateShareLinkEnabled &&
-            canShareOffer && (
-              <DropdownMenu.Item
-                className={styles['menu-item']}
-                asChild
-                onSelect={(e) => e.preventDefault()}
-              >
-                <ShareLinkDrawer offerId={offer.id} />
-              </DropdownMenu.Item>
-            )}
+          {!isCollectiveOfferBookable(offer) && canShareOffer && (
+            <DropdownMenu.Item
+              className={styles['menu-item']}
+              asChild
+              onSelect={(e) => e.preventDefault()}
+            >
+              <ShareLinkDrawer offerId={offer.id} />
+            </DropdownMenu.Item>
+          )}
           {canHideOffer && (
             <DropdownMenu.Item
               className={styles['menu-item']}
