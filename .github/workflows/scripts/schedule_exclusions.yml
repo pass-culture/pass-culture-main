@@ -1,4 +1,4 @@
-# This file contains the dates on which we do not want to trigger scheduled deployments
+# This file contains the dates on which we do not want to trigger a workflow
 # Each element should include a date, a day_of_week (informative),
 # and a comment that will be displayed in the workflow run. For example:
 # - date: 2025-12-16
@@ -53,4 +53,6 @@
 - date: 2026-12-24
   day_of_week: Thursday
   comment: Veille de Noël
-- date: 2
+- date: 2026-12-31
+  day_of_week: Thursday
+  comment: St-Sylvestre

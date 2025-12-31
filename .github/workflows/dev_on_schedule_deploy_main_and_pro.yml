@@ -20,27 +20,8 @@ env:
   GIT_CONFIG_NAME: scheduled-testing-deployment
 
 jobs:
-  check-schedule:
-    runs-on: ubuntu-latest
-    outputs:
-      schedule_exclusion: ${{steps.check-date-exclusion.outputs.schedule_exclusion}}
-    steps:
-      - uses: actions/checkout@v6
-      - id: check-date-exclusion
-        run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> $GITHUB_OUTPUT
-
-      - if: needs.check-schedule.outputs.schedule_exclusion  == 'true'
-        run: echo "Today is excluded – ${{ steps.check-date-exclusion.outputs.reason }}"
-
-      # we allow the workflow_dispatch event
-      - if: ${{ github.event_name != 'schedule'}}
-        run: echo "schedule_exclusion=false" >> $GITHUB_OUTPUT
-
-
   pcapi-init-job:
     runs-on: ubuntu-latest
-    needs: check-schedule
-    if: needs.check-schedule.outputs.schedule_exclusion  == 'false'
     outputs:
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       pcapi-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
