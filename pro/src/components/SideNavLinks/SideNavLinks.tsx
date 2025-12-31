@@ -139,6 +139,27 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     stillRelevantSavedPartnerPageVenueId ||
     hasPartnerPageVenues.at(0)?.id
 
+  const isHubPage = location.pathname.includes('/hub')
+  if (isHubPage) {
+    return (
+      <div
+        className={classnames({
+          [styles['nav-links']]: true,
+          [styles['nav-links-open']]: isLateralPanelOpen,
+        })}
+      >
+        <ButtonLink
+          variant={ButtonVariant.SECONDARY}
+          to="/remboursements"
+          iconPosition={IconPositionEnum.LEFT}
+          className={styles['back-to-partner-space-button']}
+        >
+          Espace Administration
+        </ButtonLink>
+      </div>
+    )
+  }
+
   return (
     <div
       className={classnames({
@@ -155,7 +176,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       >
         Espace Administration
       </ButtonLink>
-      <div className={styles['separator-line-header']} />
       {selectedOfferer && (
         <div className={styles['nav-links-group']}>
           {withSwitchVenueFeature && selectedVenue && (
@@ -477,7 +497,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                     </Button>
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Content
-                    sideOffset={8}
                     side={isMobileScreen ? 'top' : 'right'}
                     className={styles['help-dropdown-content']}
                   >

@@ -1,6 +1,8 @@
 import cn from 'classnames'
 import type React from 'react'
+import { useRef, useState } from 'react'
 
+import { LateralPanel } from '@/app/App/layouts/BasicLayout/LateralPanel/LateralPanel'
 import { ConnectedAsAside } from '@/app/App/layouts/components/ConnectedAsAside/ConnectedAsAside'
 import { Header } from '@/app/App/layouts/components/Header/Header'
 import { MainHeading } from '@/app/App/layouts/components/MainHeading/MainHeading'
@@ -9,6 +11,7 @@ import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { SkipLinks } from '@/components/SkipLinks/SkipLinks'
 
 import styles from './FunnelLayout.module.scss'
+import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 
 export interface FunnelLayoutProps {
   children?: React.ReactNode
@@ -26,6 +29,11 @@ export const FunnelLayout = ({
   withFlexContent = false,
 }: FunnelLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
+  const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
+  const openButtonRef = useRef<HTMLButtonElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const navPanel = useRef<HTMLDivElement>(null)
+  const isMobile = useMediaQuery('(max-width: 64rem)')
 
   return (
     <div className={styles.layout}>
@@ -33,8 +41,26 @@ export const FunnelLayout = ({
       {currentUser?.isImpersonated && (
         <ConnectedAsAside currentUser={currentUser} />
       )}
-      <Header disableHomeLink={!currentUser?.hasUserOfferer} />
-
+      <Header
+        lateralPanelOpen={lateralPanelOpen}
+        setLateralPanelOpen={setLateralPanelOpen}
+        focusCloseButton={() => {
+          setTimeout(() => {
+            closeButtonRef.current?.focus()
+          })
+        }}
+        ref={openButtonRef}
+        disableHomeLink={!currentUser?.hasUserOfferer}
+      />
+      {isMobile && (
+        <LateralPanel
+          lateralPanelOpen={lateralPanelOpen}
+          setLateralPanelOpen={setLateralPanelOpen}
+          openButtonRef={openButtonRef}
+          closeButtonRef={closeButtonRef}
+          navPanel={navPanel}
+        />
+      )}
       <div
         className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,

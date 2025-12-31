@@ -168,7 +168,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: rem.torem(64px);
+    min-height: rem.torem(64px);
     border-bottom: rem.torem(1px) solid var(--color-border-subtle);
     margin-bottom: var(--size-spacing-s);
   }
@@ -200,6 +200,7 @@
   text-align: center;
   margin: var(--size-spacing-l);
   margin-bottom: 0;
+  padding: var(--size-spacing-s);
 
   @media (min-width: size.$tablet) {
     display: none;
