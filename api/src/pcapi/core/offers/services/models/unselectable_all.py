@@ -37,3 +37,4 @@ class JeuSupportPhysiqueModel(UnselectableBaseModel):
 
 class DecouverteMetiersModel(UnselectableBaseModel):
     subcategory_id: Literal[subcategories.DECOUVERTE_METIERS.id]
+    extra_data: shared.ExtraDataSpeaker

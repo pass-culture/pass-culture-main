@@ -10,7 +10,6 @@ from .activity import ActivityBaseModel
 
 class ActivityOnline(ActivityBaseModel):
     url: HttpUrl
-    extra_data: shared.ShowExtraData | None
 
 
 class LivestreamMusiqueModel(ActivityOnline):

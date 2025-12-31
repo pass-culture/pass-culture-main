@@ -25,7 +25,7 @@ class AboPratiqueArtModel(ThingsBaseModel):
 
 class AchatInstrumentModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.ACHAT_INSTRUMENT.id]
-    extra_data: shared.EanExtraData
+    extra_data: shared.ExtraDataEan
 
 
 class CarteCineIllimiteModel(ThingsBaseModel):

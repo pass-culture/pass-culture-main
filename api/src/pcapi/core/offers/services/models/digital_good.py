@@ -3,6 +3,7 @@ from typing import Literal
 from pcapi.core.categories import subcategories
 
 from .digital import DigitalBaseModel
+from . import shared
 
 
 class TelechargementMusiqueModel(DigitalBaseModel):
@@ -47,10 +48,12 @@ class AppCulturelleModel(DigitalBaseModel):
 
 class JeuEnLigneModel(DigitalBaseModel):
     subcategory_id: Literal[subcategories.JEU_EN_LIGNE.id]
+    extra_data: shared.ExtraDataEan
 
 
 class CineVenteDistanceModel(DigitalBaseModel):
     subcategory_id: Literal[subcategories.CINE_VENTE_DISTANCE.id]
+    extra_data: shared.ExtraDataCine
 
 
 class AboLivreNumeriqueModel(DigitalBaseModel):

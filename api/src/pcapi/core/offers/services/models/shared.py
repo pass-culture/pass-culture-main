@@ -204,10 +204,6 @@ class ConcertExtraData(pydantic_v2.BaseModel):
     gtl_id: TiteLiveMusicGenres | None = None
 
 
-class EanExtraData(pydantic_v2.BaseModel):
-    ean: EanString
-
-
 class ExtraDataPerformedMusic(pydantic_v2.BaseModel):
     performer: Annotated[str, NameString] | None = None
     author: Annotated[str, NameString] | None = None
@@ -217,4 +213,38 @@ class ExtraDataPerformedMusic(pydantic_v2.BaseModel):
 
 
 class ExtraDataLiveMusic(pydantic_v2.BaseModel):
-    pass
+    music_type: MusicType | None = None
+    music_sub_type: MusicSubType | None = None
+    gtl_id: TiteLiveMusicGenres | None = None
+    performer: Annotated[str, NameString] | None = None
+    author: Annotated[str, NameString] | None = None
+
+
+class ExtraDataEan(pydantic_v2.BaseModel):
+    ean: EanString | None
+
+
+class ExtraDataCine(pydantic_v2.BaseModel):
+    visa: Annotated[str, VisaString] | None = None
+    stage_director: Annotated[str, NameString] | None = None
+    author: Annotated[str, NameString] | None = None
+
+
+class ExtraDataSpeaker(pydantic_v2.BaseModel):
+    speaker: Annotated[str, NameString] | None = None
+
+
+class ExtraDataEvent(pydantic_v2.BaseModel):
+    show_type: ShowType
+    show_sub_type: ShowSubType
+    stage_director: Annotated[str, NameString] | None = None
+    performer: Annotated[str, NameString] | None = None
+    author: Annotated[str, NameString] | None = None
+
+
+class ExtraDataArtistic(pydantic_v2.BaseModel):
+    show_type: ShowType
+    show_sub_type: ShowSubType
+    music_type: MusicType
+    music_sub_type: MusicSubType
+    gtl_id: TiteLiveMusicGenres

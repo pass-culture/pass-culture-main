@@ -5,9 +5,11 @@ from pydantic import HttpUrl
 from pcapi.core.categories import subcategories
 
 from .activity import ActivityBaseModel
+from . import shared
 
 
 # NOTICE(jbaudet - 12/2025): can be an event
 class LivestreamEvenementModel(ActivityBaseModel):
     url: HttpUrl
     subcategory_id: Literal[subcategories.LIVESTREAM_EVENEMENT.id]
+    extra_data: shared.ExtraDataEvent
