@@ -1,4 +1,5 @@
 import pytest
+import time_machine
 
 import pcapi.core.finance.models as finance_models
 from pcapi.core.finance.deposit_api import recredit_users
@@ -108,6 +109,7 @@ class CreateTestCasesTest:
                 assert not user.deposit
 
     @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
+    @time_machine.travel("2025-03-03")
     def test_create_users_for_credit_v3_tests_with_underage_deposits(self):
         create_users_for_credit_v3_tests()
 

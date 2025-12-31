@@ -56,6 +56,7 @@ def recredit_users_thread_safely(
 
 @pytest.mark.usefixtures("clean_database")
 class EligibilityActivationRaceConditionTest:
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_18_eligibility(self, app):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         birth_date = before_decree - relativedelta(years=18)

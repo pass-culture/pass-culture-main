@@ -233,6 +233,7 @@ class DecideEligibilityTest:
         )
         assert result is None
 
+    @time_machine.travel("2025-03-03")
     def test_18yo_eligible(self):
         today = date.today()
         birth_date = today - relativedelta(years=19, days=1)

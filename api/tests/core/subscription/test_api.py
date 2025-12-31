@@ -1761,6 +1761,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert not subscription_api.requires_manual_review_before_activation(user, dms_fraud_check)
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_underage_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.HonorStatementValidatedUserFactory(
@@ -1775,6 +1776,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 30
         assert user.recreditAmountToShow == 30
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_at_17_when_registration_started_at_15(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         seventeen_years_ago = before_decree - relativedelta(years=17)
@@ -1792,6 +1794,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 20 + 0 + 50
         assert user.recreditAmountToShow == 70
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_at_17_when_registration_started_at_16(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         seventeen_years_ago = before_decree - relativedelta(years=17)
@@ -1809,6 +1812,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 30 + 50
         assert user.recreditAmountToShow == 80
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_at_16_when_registration_started_at_15(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         sixteen_years_ago = before_decree - relativedelta(years=16)
@@ -1826,6 +1830,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.amount == 20
         assert user.recreditAmountToShow == 20
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_18_eligibility(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         birth_date = before_decree - relativedelta(years=18)
@@ -1840,6 +1845,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_18
         assert user.recreditAmountToShow == 300
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_18_eligibility_at_19_year_old(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         birth_date = before_decree - relativedelta(years=18)
@@ -1855,6 +1861,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.is_beneficiary
         assert user.deposit.type == finance_models.DepositType.GRANT_18
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_underage_transition_to_18(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         eighteen_years_ago = before_decree - relativedelta(years=18)
@@ -1875,6 +1882,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_18
         assert user.recreditAmountToShow == 300
 
+    @time_machine.travel("2025-03-03")
     def test_pre_decree_underage_transition_to_18_ignores_false_age_18_fraud_checks(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         nineteen_years_ago = before_decree - relativedelta(years=19)
@@ -1904,6 +1912,7 @@ class ActivateBeneficiaryIfNoMissingStepTest:
         assert user.deposit.type == finance_models.DepositType.GRANT_18
         assert user.recreditAmountToShow == 300
 
+    @time_machine.travel("2025-03-03")
     def test_underage_transition_to_18_after_decree(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.Transition1718Factory(_phoneNumber="0123456789", dateCreated=before_decree)
@@ -2643,6 +2652,7 @@ class StepperTest:
             subtitle=f"Pour débloquer tes 150€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
+    @time_machine.travel("2025-03-03")
     def test_get_stepper_title_pre_decree_18_yo(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         birth_date = before_decree - relativedelta(years=18)
@@ -2668,6 +2678,7 @@ class StepperTest:
             subtitle=f"Pour débloquer tes 50€ tu dois suivre les étapes suivantes{u_nbsp}:",
         )
 
+    @time_machine.travel("2025-03-03")
     def test_get_stepper_title_pre_decree_17_yo(self):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         birth_date = before_decree - relativedelta(years=17)
