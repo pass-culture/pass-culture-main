@@ -2867,3 +2867,57 @@ def upsert_highlight_requests(
     except sa_exc.IntegrityError:
         raise exceptions.HighlightRequestAlreadyExistsException()
     return highlight_requests
+
+
+def replace_offer_price_categories(
+    offer: models.Offer,
+    synced_price_category_inputs: list[offers_schemas.PriceCategoryInput],
+) -> models.Offer:
+    """
+    Replace all price categories of an offer.
+
+    For non-draft offers, deletion is not allowed.
+    """
+    validation.check_validation_status(offer)
+
+    existing_price_categories_by_id = {pc.id: pc for pc in offer.priceCategories}
+
+    existing_price_category_ids = set(existing_price_categories_by_id.keys())
+    synced_price_category_ids = {input["id"] for input in synced_price_category_inputs if input.get("id")}
+    has_removed_some = bool(existing_price_category_ids - synced_price_category_ids)
+    if has_removed_some and offer.validation != models.OfferValidationStatus.DRAFT:
+        raise exceptions.OfferException({"global": ["Cannot delete price categories on non-draft offers"]})
+
+    synced_price_categories = []
+    for synced_price_category_input in synced_price_category_inputs:
+        validation.check_stock_price(synced_price_category_input["price"], offer)
+
+        price_category_id = synced_price_category_input.get("id")
+        if price_category_id:
+            if price_category_id not in existing_price_categories_by_id:
+                raise exceptions.OfferException(
+                    {"price_category_id": ["Le tarif avec l'id {} n'existe pas".format(price_category_id)]}
+                )
+            existing_price_category = existing_price_categories_by_id[price_category_id]
+            existing_price_category.priceCategoryLabel = get_or_create_label(
+                synced_price_category_input["label"], offer.venue
+            )
+            existing_price_category.price = synced_price_category_input["price"]
+            synced_price_categories.append(existing_price_category)
+            for stock in existing_price_category.stocks:
+                if not stock.isEventExpired:
+                    stock.price = synced_price_category_input["price"]
+        else:
+            synced_price_categories.append(
+                models.PriceCategory(
+                    priceCategoryLabel=get_or_create_label(synced_price_category_input["label"], offer.venue),
+                    price=synced_price_category_input["price"],
+                )
+            )
+
+    offer.priceCategories = synced_price_categories
+
+    db.session.add(offer)
+    db.session.flush()
+
+    return offer

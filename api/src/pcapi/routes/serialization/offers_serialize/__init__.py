@@ -601,10 +601,10 @@ class CreatePriceCategoryModel(BaseModel):
 class EditPriceCategoryModel(BaseModel):
     id: int
     if typing.TYPE_CHECKING:
-        label: str | None
+        label: str
     else:
-        label: constr(min_length=1, max_length=50) | None
-    price: decimal.Decimal | None
+        label: constr(min_length=1, max_length=50)
+    price: decimal.Decimal
 
     class Config:
         extra = "forbid"

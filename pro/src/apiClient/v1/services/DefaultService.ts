@@ -2048,48 +2048,25 @@ export class DefaultService {
     });
   }
   /**
-   * post_price_categories <POST>
+   * Replace all price categories of an offer.
+   * - If a price category exists in the DB but not in `price_categories`, it is deleted. - Otherwise, price categories are updated or created as needed.
    * @param offerId
    * @param requestBody
    * @returns GetIndividualOfferWithAddressResponseModel OK
    * @throws ApiError
    */
-  public postPriceCategories(
+  public replaceOfferPriceCategories(
     offerId: number,
     requestBody: PriceCategoryBody,
   ): CancelablePromise<GetIndividualOfferWithAddressResponseModel> {
     return this.httpRequest.request({
-      method: 'POST',
+      method: 'PUT',
       url: '/offers/{offer_id}/price_categories',
       path: {
         'offer_id': offerId,
       },
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * delete_price_category <DELETE>
-   * @param offerId
-   * @param priceCategoryId
-   * @returns void
-   * @throws ApiError
-   */
-  public deletePriceCategory(
-    offerId: number,
-    priceCategoryId: number,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/offers/{offer_id}/price_categories/{price_category_id}',
-      path: {
-        'offer_id': offerId,
-        'price_category_id': priceCategoryId,
-      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

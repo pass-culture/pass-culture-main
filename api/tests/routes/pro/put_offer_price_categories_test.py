@@ -23,7 +23,7 @@ class Returns200Test:
 
         data = {"priceCategories": [{"price": 20.34, "label": "Behind a post"}]}
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
         assert response.status_code == 200
         price_category = db.session.query(offers_models.PriceCategory).one()
         assert price_category.offerId == offer.id
@@ -45,7 +45,7 @@ class Returns200Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 200
         assert db.session.query(offers_models.PriceCategory).count() == 3
@@ -66,33 +66,10 @@ class Returns200Test:
             ],
         }
 
-        client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
         price_category = db.session.query(offers_models.PriceCategory).one()
         assert price_category.price == decimal.Decimal("200.54")
         assert price_category.label == "Behind a post"
-
-    def test_update_part_of_price_category(self, client):
-        offer = offers_factories.EventOfferFactory()
-        offerers_factories.UserOffererFactory(
-            user__email="user@example.com",
-            offerer=offer.venue.managingOfferer,
-        )
-        price_category = offers_factories.PriceCategoryFactory(
-            offer=offer,
-            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Already exists", venue=offer.venue),
-        )
-        data = {
-            "priceCategories": [
-                {"price": 25.12, "id": price_category.id},
-            ],
-        }
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
-
-        assert response.status_code == 200
-        price_category = db.session.query(offers_models.PriceCategory).one()
-        assert price_category.price == decimal.Decimal("25.12")
-        assert price_category.label == "Already exists"
-        assert db.session.query(offers_models.PriceCategoryLabel).count() == 1
 
     def test_create_and_update_multiple_price_categories(self, client):
         offer = offers_factories.EventOfferFactory()
@@ -113,7 +90,7 @@ class Returns200Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 200
         assert db.session.query(offers_models.PriceCategory).count() == 3
@@ -137,7 +114,7 @@ class Returns200Test:
             beginningDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=-2),
         )
 
-        response = client.with_session_auth("user@example.com").post(
+        response = client.with_session_auth("user@example.com").put(
             f"/offers/{offer.id}/price_categories",
             json={"priceCategories": [{"price": 25, "label": "Updated label", "id": price_category.id}]},
         )
@@ -145,6 +122,27 @@ class Returns200Test:
         assert response.status_code == 200
         assert all((stock.price == 25 for stock in offer.stocks if not stock.isEventExpired))
         assert expired_stock.price != 25
+
+    def test_delete_price_category(self, client):
+        offer = offers_factories.DraftOfferFactory()
+        offerers_factories.UserOffererFactory(
+            user__email="user@example.com",
+            offerer=offer.venue.managingOfferer,
+        )
+
+        offers_factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="To be deleted", venue=offer.venue),
+        )
+
+        data = {
+            "priceCategories": [],
+        }
+
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
+        assert response.status_code == 200
+        price_categories = db.session.query(offers_models.PriceCategory).all()
+        assert len(price_categories) == 0
 
 
 class Returns400Test:
@@ -161,14 +159,14 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
         assert db.session.query(offers_models.PriceCategory).count() == 0
         assert response.json == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
 
     def test_update_price_category_not_found(self, client):
-        offer = offers_factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
@@ -180,17 +178,17 @@ class Returns400Test:
 
         data = {
             "priceCategories": [
-                {"price": 350, "label": "Behind a post", "id": price_category.id + 1},
+                {"price": 100, "label": "Behind a post", "id": price_category.id + 1},
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
         assert response.json == {"price_category_id": [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]}
 
     def test_update_unreachable_price_category(self, client):
-        offer = offers_factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
         offers_factories.PriceCategoryFactory(
             offer=offer,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
@@ -211,10 +209,10 @@ class Returns400Test:
 
         data = {
             "priceCategories": [
-                {"price": 350, "label": "Behind a post", "id": unreachable_price_category.id},
+                {"price": 100, "label": "Behind a post", "id": unreachable_price_category.id},
             ],
         }
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
         assert response.status_code == 400
         assert response.json == {
             "price_category_id": [f"Le tarif avec l'id {unreachable_price_category.id} n'existe pas"]
@@ -236,12 +234,12 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
         assert response.json == {"priceCategories": ["Price categories must be unique"]}
 
-    def test_create_multiple_price_categories_with_already_existing_price_category(self, client):
+    def test_cannot_replace_price_categories_with_deletion_on_published_offer(self, client):
         offer = offers_factories.EventOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
         offers_factories.PriceCategoryFactory(
@@ -257,18 +255,18 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"priceCategories": ["The price category cat gold already exists"]}
+        assert response.json == {"global": ["Cannot delete price categories on non-draft offers"]}
 
     def test_should_raise_400_because_more_than_50_price_categories_count_sent(self, client):
         offer = offers_factories.EventOfferFactory()
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        response = client.with_session_auth("user@example.com").post(
+        response = client.with_session_auth("user@example.com").put(
             f"/offers/{offer.id}/price_categories",
-            json={"priceCategories": [{"price": i * 100, "label": f"Tarif {i}"} for i in range(51)]},
+            json={"priceCategories": [{"price": i, "label": f"Tarif {i}"} for i in range(51)]},
         )
 
         assert response.status_code == 400
@@ -288,7 +286,23 @@ class Returns400Test:
             ],
         }
 
-        response = client.with_session_auth("user@example.com").post(f"/offers/{offer.id}/price_categories", json=data)
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
 
         assert response.status_code == 400
         assert response.json == {"global": ["Les offres refusées ne sont pas modifiables"]}
+
+    def test_cant_delete_price_category_on_published_offer(self, client):
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.APPROVED)
+        price_category = offers_factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="To keep", venue=offer.venue),
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+
+        data = {"priceCategories": []}
+
+        response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {"global": ["Cannot delete price categories on non-draft offers"]}
+        assert db.session.query(offers_models.PriceCategory).filter_by(id=price_category.id).one()

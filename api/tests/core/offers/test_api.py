@@ -4499,6 +4499,223 @@ class EditPriceCategoryTest:
 
 
 @pytest.mark.usefixtures("db_session")
+class ReplacePriceCategoriesTest:
+    def test_create_new_price_categories(self):
+        offer = factories.EventOfferFactory()
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"label": "Category A", "price": Decimal("10.00")},
+            {"label": "Category B", "price": Decimal("20.00")},
+        ]
+
+        result = api.replace_offer_price_categories(offer, inputs)
+
+        assert len(result.priceCategories) == 2
+        labels = {pc.label for pc in result.priceCategories}
+        assert labels == {"Category A", "Category B"}
+
+    def test_edit_existing_price_categories(self):
+        offer = factories.EventOfferFactory()
+        price_category = factories.PriceCategoryFactory(
+            offer=offer,
+            price=Decimal("15.00"),
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Original", venue=offer.venue),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"id": price_category.id, "label": "Updated", "price": Decimal("25.00")},
+        ]
+
+        result = api.replace_offer_price_categories(offer, inputs)
+
+        assert len(result.priceCategories) == 1
+        updated_pc = result.priceCategories[0]
+        assert updated_pc.id == price_category.id
+        assert updated_pc.label == "Updated"
+        assert updated_pc.price == Decimal("25.00")
+
+    def test_mix_create_and_edit(self):
+        offer = factories.EventOfferFactory()
+        existing_pc = factories.PriceCategoryFactory(
+            offer=offer,
+            price=Decimal("10.00"),
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Existing", venue=offer.venue),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"id": existing_pc.id, "label": "Edited", "price": Decimal("15.00")},
+            {"label": "New Category", "price": Decimal("30.00")},
+        ]
+
+        result = api.replace_offer_price_categories(offer, inputs)
+
+        assert len(result.priceCategories) == 2
+        labels = {pc.label for pc in result.priceCategories}
+        assert labels == {"Edited", "New Category"}
+
+    def test_price_category_not_found(self):
+        offer = factories.EventOfferFactory()
+        non_existing_id = 999999
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"id": non_existing_id, "label": "Ghost", "price": Decimal("10.00")},
+        ]
+
+        with pytest.raises(exceptions.OfferException) as error:
+            api.replace_offer_price_categories(offer, inputs)
+
+        assert error.value.errors["price_category_id"] == [f"Le tarif avec l'id {non_existing_id} n'existe pas"]
+
+    def test_delete_price_category_on_draft_offer(self):
+        offer = factories.DraftOfferFactory()
+        factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="To delete", venue=offer.venue),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = []
+
+        result = api.replace_offer_price_categories(offer, inputs)
+
+        assert len(result.priceCategories) == 0
+
+    def test_cannot_delete_price_category_on_approved_offer(self):
+        offer = factories.EventOfferFactory(validation=OfferValidationStatus.APPROVED)
+        factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(
+                label="Approved Offer Price Category", venue=offer.venue
+            ),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = []
+
+        with pytest.raises(exceptions.OfferException) as error:
+            api.replace_offer_price_categories(offer, inputs)
+
+        assert error.value.errors["global"] == ["Cannot delete price categories on non-draft offers"]
+
+    def test_cannot_delete_price_category_on_pending_offer(self):
+        offer = factories.EventOfferFactory(validation=OfferValidationStatus.PENDING)
+        factories.PriceCategoryFactory(
+            offer=offer,
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(
+                label="Pending Offer Price Category", venue=offer.venue
+            ),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = []
+
+        with pytest.raises(exceptions.OfferException) as error:
+            api.replace_offer_price_categories(offer, inputs)
+
+        assert error.value.errors["global"] == ["Cannot delete price categories on non-draft offers"]
+
+    def test_cannot_modify_rejected_offer(self):
+        offer = factories.EventOfferFactory(validation=OfferValidationStatus.REJECTED)
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"label": "New", "price": Decimal("10.00")},
+        ]
+
+        with pytest.raises(exceptions.OfferException) as error:
+            api.replace_offer_price_categories(offer, inputs)
+
+        assert error.value.errors["global"] == ["Les offres refusées ne sont pas modifiables"]
+
+    def test_reuses_existing_label(self):
+        offer = factories.EventOfferFactory()
+        existing_label = factories.PriceCategoryLabelFactory(label="Shared Label", venue=offer.venue)
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"label": "Shared Label", "price": Decimal("10.00")},
+        ]
+
+        result = api.replace_offer_price_categories(offer, inputs)
+
+        assert len(result.priceCategories) == 1
+        assert result.priceCategories[0].priceCategoryLabel.id == existing_label.id
+
+    def test_stock_price_updated_when_price_category_price_changes(self):
+        offer = factories.EventOfferFactory()
+        price_category = factories.PriceCategoryFactory(
+            offer=offer,
+            price=Decimal("20.00"),
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Standard", venue=offer.venue),
+        )
+        stock = factories.EventStockFactory(
+            offer=offer,
+            priceCategory=price_category,
+            price=Decimal("20.00"),
+            beginningDatetime=datetime.now(timezone.utc) + timedelta(days=7),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"id": price_category.id, "label": "Standard", "price": Decimal("30.00")},
+        ]
+
+        api.replace_offer_price_categories(offer, inputs)
+
+        db.session.refresh(stock)
+        assert stock.price == Decimal("30.00")
+
+    def test_stock_price_not_updated_when_price_unchanged(self):
+        offer = factories.EventOfferFactory()
+        price_category = factories.PriceCategoryFactory(
+            offer=offer,
+            price=Decimal("20.00"),
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Standard", venue=offer.venue),
+        )
+        stock = factories.EventStockFactory(
+            offer=offer,
+            priceCategory=price_category,
+            price=Decimal("20.00"),
+            beginningDatetime=datetime.now(timezone.utc) + timedelta(days=7),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"id": price_category.id, "label": "Updated Label", "price": Decimal("20.00")},
+        ]
+
+        api.replace_offer_price_categories(offer, inputs)
+
+        db.session.refresh(stock)
+        db.session.refresh(price_category)
+        assert stock.price == Decimal("20.00")
+        assert price_category.label == "Updated Label"
+
+    def test_expired_stock_price_not_updated(self):
+        offer = factories.EventOfferFactory()
+        price_category = factories.PriceCategoryFactory(
+            offer=offer,
+            price=Decimal("20.00"),
+            priceCategoryLabel=factories.PriceCategoryLabelFactory(label="Standard", venue=offer.venue),
+        )
+        expired_stock = factories.EventStockFactory(
+            offer=offer,
+            priceCategory=price_category,
+            price=Decimal("20.00"),
+            beginningDatetime=datetime.now(timezone.utc) - timedelta(days=2),
+        )
+        future_stock = factories.EventStockFactory(
+            offer=offer,
+            priceCategory=price_category,
+            price=Decimal("20.00"),
+            beginningDatetime=datetime.now(timezone.utc) + timedelta(days=7),
+        )
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"id": price_category.id, "label": "Standard", "price": Decimal("35.00")},
+        ]
+
+        api.replace_offer_price_categories(offer, inputs)
+
+        db.session.refresh(expired_stock)
+        db.session.refresh(future_stock)
+        assert expired_stock.price == Decimal("20.00")
+        assert future_stock.price == Decimal("35.00")
+
+    def test_price_validation(self):
+        offer = factories.EventOfferFactory()
+        inputs: list[offers_schemas.PriceCategoryInput] = [
+            {"label": "Too expensive", "price": Decimal("350.00")},
+        ]
+
+        with pytest.raises(api_errors.ApiErrors) as error:
+            api.replace_offer_price_categories(offer, inputs)
+
+        assert "price300" in error.value.errors
+
+
+@pytest.mark.usefixtures("db_session")
 @pytest.mark.features(VENUE_REGULARIZATION=True)
 class MoveOfferTest:
     def test_move_physical_offer_without_pricing_point(self):
@@ -4954,21 +5171,6 @@ class DeleteOffersAndAllRelatedObjectsTest:
         assert other_stock.priceCategory == other_category
         assert stock_with_wrong_category.priceCategory == category_1
         assert category_1.offer == stock_with_wrong_category.offer
-
-    def test_do_not_delete_price_category_not_related_to_offer(self, client):
-        user_offerer = offerers_factories.UserOffererFactory()
-        offer = factories.ThingOfferFactory(
-            isActive=False, validation=models.OfferValidationStatus.DRAFT, venue__managingOfferer=user_offerer.offerer
-        )
-        factories.PriceCategoryFactory(offer=offer)
-        other_price_category = factories.PriceCategoryFactory()
-
-        response = client.with_session_auth(user_offerer.user.email).delete(
-            f"/offers/{offer.id}/price_categories/{other_price_category.id}"
-        )
-
-        assert response.status_code == 400
-        assert db.session.query(models.PriceCategory).count() == 2
 
 
 @pytest.mark.usefixtures("db_session")
