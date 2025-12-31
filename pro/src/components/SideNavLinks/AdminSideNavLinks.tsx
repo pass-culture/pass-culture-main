@@ -64,8 +64,6 @@ export const AdminSideNavLinks = ({
         Revenir à l’Espace Partenaire
       </ButtonLink>
 
-      <div className={styles['separator-line-header']} />
-
       <div className={styles['nav-links-header']}>Espace Administration</div>
       <ul className={styles['nav-links-group']}>
         <li>
@@ -214,7 +212,6 @@ export const AdminSideNavLinks = ({
                   </Button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
-                  sideOffset={8}
                   side={isMobileScreen ? 'top' : 'right'}
                   className={styles['help-dropdown-content']}
                 >
