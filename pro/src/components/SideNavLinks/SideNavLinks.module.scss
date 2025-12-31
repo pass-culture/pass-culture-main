@@ -145,10 +145,6 @@
     }
   }
 
-  &-scroll {
-    overflow-y: auto;
-  }
-
   &-switch-venue-button {
     align-items: center;
     background-color: var(--color-background-default);
@@ -168,7 +164,7 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: rem.torem(64px);
+    min-height: rem.torem(64px);
     border-bottom: rem.torem(1px) solid var(--color-border-subtle);
     margin-bottom: var(--size-spacing-s);
   }
@@ -200,8 +196,10 @@
   text-align: center;
   margin: var(--size-spacing-l);
   margin-bottom: 0;
+  padding: var(--size-spacing-l);
 
   @media (min-width: size.$tablet) {
     display: none;
+    padding: var(--size-spacing-s);
   }
 }
