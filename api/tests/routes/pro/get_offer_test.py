@@ -11,6 +11,8 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
+from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.utils import date as date_utils
@@ -146,6 +148,7 @@ class Returns200Test:
 
         assert response.json == {
             "activeMediation": None,
+            "artists": None,
             "bookingContact": None,
             "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",
@@ -465,3 +468,39 @@ class Returns200Test:
         data = response.json
         assert {"name": highlight_name, "id": highlight_id} in data["highlightRequests"]
         assert {"name": highlight2_name, "id": highlight2_id} in data["highlightRequests"]
+
+    def test_returns_artists_linked_to_offer(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        offer = offers_factories.EventOfferFactory(venue__managingOfferer=user_offerer.offerer)
+        offer_id = offer.id
+        artist = artist_factories.ArtistFactory()
+        another_artist = artist_factories.ArtistFactory()
+        offers_factories.ArtistOfferLinkFactory(
+            offer_id=offer_id,
+            artist_id=artist.id,
+        )
+        offers_factories.ArtistOfferLinkFactory(
+            offer_id=offer_id,
+            artist_id=another_artist.id,
+        )
+        custom_name = "Simone"
+        offers_factories.ArtistOfferLinkFactory(
+            offer_id=offer_id,
+            custom_name=custom_name,
+            artist_type=artist_models.ArtistType.AUTHOR,
+        )
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        with testing.assert_num_queries(self.num_queries):
+            response = client.get(f"/offers/{offer_id}")
+            assert response.status_code == 200
+        assert len(response.json["artistOfferLinks"]) == 3
+
+        # to avoid flakiness
+        assert {"artistId": artist.id, "artistType": "performer", "customName": None} in response.json[
+            "artistOfferLinks"
+        ]
+        assert {"artistId": another_artist.id, "artistType": "performer", "customName": None} in response.json[
+            "artistOfferLinks"
+        ]
+        assert {"artistId": None, "artistType": "author", "customName": "Simone"} in response.json["artistOfferLinks"]

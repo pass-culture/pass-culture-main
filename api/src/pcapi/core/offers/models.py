@@ -796,7 +796,7 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
 
     authorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", back_populates="offers", foreign_keys=[authorId])
-    artist_offer_links: sa_orm.Mapped[list["ArtistOfferLink"]] = sa_orm.relationship(
+    artistOfferLinks: sa_orm.Mapped[list["ArtistOfferLink"]] = sa_orm.relationship(
         "ArtistOfferLink", back_populates="offer", cascade="all, delete-orphan"
     )
     bookingContact: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True)
