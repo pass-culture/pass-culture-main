@@ -1945,7 +1945,7 @@ class ReviewPublicAccountTest(PostEndpointHelper):
 
     def test_set_beneficiary_on_underage(self, authenticated_client, legit_user, settings):
         before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
-        user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
+        user = users_factories.BeneficiaryFactory(age=16, dateCreated=before_decree)
 
         base_form = {
             "status": subscription_models.FraudReviewStatus.OK.name,

@@ -179,6 +179,7 @@ class UpsertDepositTest:
 
         assert db.session.query(models.Deposit).filter(models.Deposit.userId == beneficiary.id).count() == 1
 
+    @time_machine.travel("2025-03-03")
     def test_upsert_deposit_age_18_expires_underage_deposit(self):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
@@ -498,6 +499,7 @@ class UserRecreditTest:
         assert user.roles == [users_models.UserRole.BENEFICIARY]
 
     @pytest.mark.parametrize("age", [15, 16, 17, 18])
+    @time_machine.travel("2025-03-03")
     def test_user_already_recredited(self, age):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         users_factories.BeneficiaryFactory(age=age, dateCreated=before_decree)
@@ -711,6 +713,7 @@ class CanBeRecreditedTest:
         assert not api._can_be_recredited(user)
 
     @pytest.mark.parametrize("age", [17, 18])
+    @time_machine.travel("2025-03-03")
     def test_beneficiary_can_be_recredited_with_pre_decree_deposit(self, age):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         with time_machine.travel(before_decree):
@@ -773,6 +776,7 @@ class LastAgeRelatedRecreditTest:
 
         assert last_recredit.recreditType == models.RecreditType.RECREDIT_18
 
+    @time_machine.travel("2025-03-03")
     def test_last_recredit_15_17_deposit(self):
         before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(days=1)
         user = users_factories.BeneficiaryFactory(age=17, dateCreated=before_decree)
