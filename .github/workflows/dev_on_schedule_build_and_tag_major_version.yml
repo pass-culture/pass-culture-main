@@ -17,22 +17,32 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       schedule_exclusion: ${{steps.check-date-exclusion.outputs.schedule_exclusion}}
+      schedule_override: ${{steps.check-workflow-event.outputs.schedule_override}}
     steps:
       - uses: actions/checkout@v6
       - id: check-date-exclusion
         run: ./.github/workflows/scripts/check-schedule-exclusion.sh >> $GITHUB_OUTPUT
-
-      - if: needs.check-schedule.outputs.schedule_exclusion  == 'true'
+      - if: steps.check-date-exclusion.outputs.schedule_exclusion  == 'true'
         run: echo "Today is excluded – ${{ steps.check-date-exclusion.outputs.reason }}"
-
       # we allow the workflow_dispatch event
-      - if: ${{ github.event_name != 'schedule'}}
-        run: echo "schedule_exclusion=false" >> $GITHUB_OUTPUT
-
+      - id: check-workflow-event
+        if: ${{ github.event_name == 'workflow_dispatch'}}
+        run: |
+          echo "schedule_override=true" >> $GITHUB_OUTPUT
+          echo "The workflow has been triggered manually, we override the schedule exclusion"
+      - name: "Publish Summary"
+        run: |
+          {
+            echo "### :calendar: check-schedule summary"
+            echo "| Outputs             | Value                                                       |"
+            echo "| ------------------- | ----------------------------------------------------------- |"
+            echo "| schedule_exclusion  |  ${{steps.check-date-exclusion.outputs.schedule_exclusion}} |"
+            echo "| schedule_override   |  ${{steps.check-workflow-event.outputs.schedule_override}}  |"
+          } >> $GITHUB_STEP_SUMMARY
 
   prepare-variables:
     needs: check-schedule
-    if : needs.check-schedule.outputs.schedule_exclusion  == 'false'
+    if: needs.check-schedule.outputs.schedule_exclusion  == 'false' || needs.check-schedule.outputs.schedule_override  == 'true'
     runs-on: ubuntu-latest
     outputs:
       releaseNumber: ${{ steps.version.outputs.releaseNumber }}
