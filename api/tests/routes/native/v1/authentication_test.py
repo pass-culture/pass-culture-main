@@ -977,7 +977,7 @@ class ResetPasswordTest:
         new_password = "New_password1998!"
         user = users_factories.UserFactory()
 
-        access_token = create_access_token(identity=user.email)
+        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         response = client.post(
@@ -993,7 +993,7 @@ class ResetPasswordTest:
         new_password = "New_password1998!"
         user = users_factories.UserFactory()
 
-        access_token = create_access_token(identity=user.email)
+        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         response = client.post(
@@ -1017,7 +1017,7 @@ class ResetPasswordTest:
     def test_change_password_failure_when_user_has_no_password(self, client):
         user = users_factories.UserFactory(password=None)
 
-        access_token = create_access_token(identity=user.email)
+        access_token = create_access_token(user.email, additional_claims={"user_claims": {"user_id": user.id}})
         client.auth_header = {"Authorization": f"Bearer {access_token}"}
 
         response = client.post(

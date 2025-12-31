@@ -2,6 +2,7 @@ import logging
 import typing
 from functools import partial
 
+from flask_login import current_user
 from pydantic.v1 import ValidationError
 
 from pcapi.connectors.beneficiaries import ubble as ubble_connector
@@ -38,11 +39,13 @@ logger = logging.getLogger(__name__)
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
-def get_subscription_stepper(user: users_models.User) -> serializers.SubscriptionStepperResponseV2:
-    user_subscription_state = subscription_api.get_user_subscription_state(user)
+def get_subscription_stepper() -> serializers.SubscriptionStepperResponseV2:
+    user_subscription_state = subscription_api.get_user_subscription_state(current_user)
     subscription_message = user_subscription_state.subscription_message
-    stepper_header = subscription_api.get_stepper_title_and_subtitle(user, user_subscription_state)
-    subscription_steps_to_display = subscription_api.get_subscription_steps_to_display(user, user_subscription_state)
+    stepper_header = subscription_api.get_stepper_title_and_subtitle(current_user, user_subscription_state)
+    subscription_steps_to_display = subscription_api.get_subscription_steps_to_display(
+        current_user, user_subscription_state
+    )
 
     return serializers.SubscriptionStepperResponseV2(
         subscription_steps_to_display=[
@@ -54,9 +57,9 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
             )
             for step in subscription_steps_to_display
         ],
-        allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(user),
-        has_identity_check_pending=fraud_api.has_user_pending_identity_check(user),
-        maintenance_page_type=subscription_api.get_maintenance_page_type(user),
+        allowed_identity_check_methods=subscription_api.get_allowed_identity_check_methods(current_user),
+        has_identity_check_pending=fraud_api.has_user_pending_identity_check(current_user),
+        maintenance_page_type=subscription_api.get_maintenance_page_type(current_user),
         next_subscription_step=user_subscription_state.next_step,
         title=stepper_header.title,
         subtitle=stepper_header.subtitle,
@@ -69,12 +72,12 @@ def get_subscription_stepper(user: users_models.User) -> serializers.Subscriptio
 @blueprint.native_route("/subscription/profile", methods=["GET"])
 @spectree_serialize(on_success_status=200, on_error_statuses=[404], api=blueprint.api)
 @authenticated_and_active_user_required
-def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
-    if (profile_data := subscription_api.get_profile_data(user)) is not None:
+def get_profile() -> serializers.ProfileResponse | None:
+    if (profile_data := subscription_api.get_profile_data(current_user)) is not None:
         try:
             return serializers.ProfileResponse(profile=serializers.ProfileContent(**profile_data.dict()))
         except ValidationError as e:
-            logger.error("Invalid profile data for user %s: %s", user.id, e)
+            logger.error("Invalid profile data for user %s: %s", current_user.id, e)
             return serializers.ProfileResponse()
 
     raise api_errors.ResourceNotFoundError()
@@ -84,10 +87,10 @@ def get_profile(user: users_models.User) -> serializers.ProfileResponse | None:
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 @atomic()
-def complete_profile(user: users_models.User, body: serializers.ProfileUpdateRequest) -> None:
+def complete_profile(body: serializers.ProfileUpdateRequest) -> None:
     try:
         subscription_api.complete_profile(
-            user,
+            current_user,
             first_name=body.first_name,
             last_name=body.last_name,
             address=body.address,
@@ -101,9 +104,9 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
     except exceptions.IneligiblePostalCodeException:
         raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
 
-    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(current_user)
     if not is_activated:
-        external_attributes_api.update_external_user(user)
+        external_attributes_api.update_external_user(current_user)
 
 
 @blueprint.native_route("/subscription/activity_types", methods=["GET"])
@@ -113,10 +116,10 @@ def complete_profile(user: users_models.User, body: serializers.ProfileUpdateReq
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
-def get_activity_types(user: users_models.User) -> serializers.ActivityTypesResponse:
+def get_activity_types() -> serializers.ActivityTypesResponse:
     activities = [serializers.ActivityResponseModel.from_orm(activity) for activity in profile_options.ALL_ACTIVITIES]
     middle_school = serializers.ActivityResponseModel.from_orm(profile_options.MIDDLE_SCHOOL_STUDENT)
-    if user.is_18_or_above_eligible and middle_school in activities:
+    if current_user.is_18_or_above_eligible and middle_school in activities:
         activities.remove(middle_school)
 
     return serializers.ActivityTypesResponse(activities=activities)
@@ -126,13 +129,13 @@ def get_activity_types(user: users_models.User) -> serializers.ActivityTypesResp
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 @atomic()
-def create_honor_statement_fraud_check(user: users_models.User) -> None:
-    fraud_api.create_honor_statement_fraud_check(user, "statement from /subscription/honor_statement endpoint")
+def create_honor_statement_fraud_check() -> None:
+    fraud_api.create_honor_statement_fraud_check(current_user, "statement from /subscription/honor_statement endpoint")
 
-    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(current_user)
 
     if not is_activated:
-        external_attributes_api.update_external_user(user)
+        external_attributes_api.update_external_user(current_user)
 
 
 @blueprint.native_route("/ubble_identification", methods=["POST"])
@@ -140,16 +143,16 @@ def create_honor_statement_fraud_check(user: users_models.User) -> None:
 @authenticated_and_active_user_required
 @atomic()
 def start_identification_session(
-    user: users_models.User, body: serializers.IdentificationSessionRequest
+    body: serializers.IdentificationSessionRequest,
 ) -> serializers.IdentificationSessionResponse:
-    if user.eligibility is None:
+    if current_user.eligibility is None:
         raise api_errors.ApiErrors(
             {"code": "IDCHECK_NOT_ELIGIBLE", "message": "Non éligible à un crédit"},
             status_code=400,
         )
 
     if (
-        not subscription_api.get_user_subscription_state(user).next_step
+        not subscription_api.get_user_subscription_state(current_user).next_step
         == subscription_schemas.SubscriptionStep.IDENTITY_CHECK
     ):
         raise api_errors.ApiErrors(
@@ -157,21 +160,21 @@ def start_identification_session(
             status_code=400,
         )
 
-    fraud_check = ubble_fraud_api.get_restartable_identity_checks(user)
+    fraud_check = ubble_fraud_api.get_restartable_identity_checks(current_user)
     if fraud_check:
         source_data = typing.cast(ubble_schemas.UbbleContent, fraud_check.source_data())
         if source_data.identification_url:
             return serializers.IdentificationSessionResponse(identificationUrl=source_data.identification_url)
 
-    declared_names = subscription_api.get_declared_names(user)
+    declared_names = subscription_api.get_declared_names(current_user)
 
     if not declared_names:
-        logger.error("Ubble: no names found to start identification session", extra={"user_id": user.id})
+        logger.error("Ubble: no names found to start identification session", extra={"user_id": current_user.id})
         raise api_errors.ApiErrors({"code": "NO_FIRST_NAME_AND_LAST_NAME"})
 
     try:
         identification_url = ubble_subscription_api.start_ubble_workflow(
-            user, declared_names[0], declared_names[1], body.redirectUrl
+            current_user, declared_names[0], declared_names[1], body.redirectUrl
         )
         return serializers.IdentificationSessionResponse(identificationUrl=identification_url)  # type: ignore[arg-type]
 
@@ -191,16 +194,14 @@ def start_identification_session(
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
 @atomic()
-def create_quotient_familial_bonus_credit_fraud_check(
-    user: users_models.User, body: serializers.BonusCreditRequest
-) -> None:
-    if not users_api.get_user_is_eligible_for_bonification(user):
+def create_quotient_familial_bonus_credit_fraud_check(body: serializers.BonusCreditRequest) -> None:
+    if not users_api.get_user_is_eligible_for_bonification(current_user):
         raise api_errors.ApiErrors(
             {"code": "BONUS_NOT_ELIGIBLE", "message": "Non éligible à la bonification"},
             status_code=400,
         )
     fraud_check = bonus_fraud_api.create_bonus_credit_fraud_check(
-        user,
+        current_user,
         last_name=body.last_name,
         common_name=body.common_name,
         first_names=body.first_names,

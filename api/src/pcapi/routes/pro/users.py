@@ -47,9 +47,6 @@ from pcapi.routes.serialization.password_serialize import NewPasswordBodyModel
 from pcapi.routes.serialization.password_serialize import ResetPasswordBodyModel
 from pcapi.routes.shared.cookies_consent import CookieConsentRequest
 from pcapi.serialization.decorator import spectree_serialize
-from pcapi.utils import date as date_utils
-from pcapi.utils.login_manager import discard_session
-from pcapi.utils.login_manager import stamp_session
 from pcapi.utils.rest import check_user_has_access_to_offerer
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import on_commit
@@ -94,13 +91,8 @@ def validate_user(token: str) -> None:
         users_api.validate_pro_user_email(user)
     except (users_exceptions.InvalidToken, users_exceptions.ExpiredToken):
         raise ResourceNotFoundError(errors={"global": "Le lien est invalide ou a expiré. Veuillez recommencer."})
-    discard_session()
+    logout_user()
     login_user(user)
-    stamp_session(
-        user=user,
-        duration=settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS,
-    )
-    flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     users_api.update_last_connection_date(user)
 
 
@@ -274,13 +266,8 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
         errors.add_error("identifier", "Vous ne pouvez pas vous connecter avec un compte ADMIN.")
         raise errors
 
-    discard_session()
+    logout_user()
     login_user(user)
-    stamp_session(
-        user=user,
-        duration=settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS,
-    )
-    flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     users_api.update_last_connection_date(user)
 
     return users_serializers.SharedLoginUserResponseModel.model_validate(user)
@@ -290,7 +277,6 @@ def signin(body: users_serializers.LoginUserBodyModel) -> users_serializers.Shar
 @login_required
 @spectree_serialize(api=blueprint.pro_private_schema, on_success_status=204)
 def signout() -> None:
-    discard_session()
     logout_user()
 
 
@@ -402,17 +388,10 @@ def connect_as(token: str) -> Response:
         )
 
     history_api.add_action(history_models.ActionType.CONNECT_AS_USER, author=current_user, user=user)
-
-    discard_session()
     logout_user()
     login_user(user)
-    stamp_session(
-        user=user,
-        duration=settings.PRO_SESSION_FORCE_TIMEOUT_IN_DAYS,
-    )
     flask.session["internal_admin_email"] = token_data.internal_admin_email
     flask.session["internal_admin_id"] = token_data.internal_admin_id
-    flask.session["last_login"] = date_utils.get_naive_utc_now().timestamp()
     return flask.redirect(token_data.redirect_link, code=302)
 
 

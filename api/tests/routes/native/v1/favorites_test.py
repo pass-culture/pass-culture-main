@@ -35,7 +35,7 @@ class GetTest:
             expected_num_queries = 1  # user
             expected_num_queries += 1  # favorites
 
-            client = client.with_token(user.email)
+            client = client.with_token(user)
             with assert_num_queries(expected_num_queries):
                 response = client.get(FAVORITES_URL)
                 assert response.status_code == 200
@@ -99,7 +99,7 @@ class GetTest:
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
             offers_factories.EventStockFactory(offer=offer6, beginningDatetime=day_after_start, price=30)
 
-            client.with_token(user.email)
+            client.with_token(user)
 
             # When
             # 1: Fetch the user for auth
@@ -199,7 +199,7 @@ class GetTest:
             offer = offers_factories.EventOfferFactory(venue=venue)
             users_factories.FavoriteFactory(offer=offer, user=user)
 
-            response = client.with_token(user.email).get(FAVORITES_URL)
+            response = client.with_token(user).get(FAVORITES_URL)
             favorites = response.json["favorites"]
 
             assert favorites[0]["offer"]["venueName"] == "Ciné Pathé"
@@ -211,7 +211,7 @@ class GetTest:
             offer = offers_factories.DigitalOfferFactory(venue=venue)
             users_factories.FavoriteFactory(offer=offer, user=user)
 
-            client = client.with_token(user.email)
+            client = client.with_token(user)
 
             expected_num_queries = 1  # user
             expected_num_queries += 1  # favorites
@@ -276,7 +276,7 @@ class GetTest:
             stock8 = offers_factories.EventStockFactory(offer=offer8, beginningDatetime=tomorow, quantity=1, price=10)
             bookings_factories.BookingFactory(stock=stock8, user=user)
 
-            client.with_token(user.email)
+            client.with_token(user)
 
             # When
             # QUERY_COUNT:
@@ -339,7 +339,7 @@ class GetTest:
             user = users_factories.UserFactory()
             offerer_address = offerers_factories.OffererAddressFactory()
             offer = offers_factories.OfferFactory(offererAddress=offerer_address)
-            client.with_token(user.email)
+            client.with_token(user)
             # When
 
             client.post(FAVORITES_URL, json={"offerId": offer.id})
@@ -379,7 +379,7 @@ class PostTest:
         offers_factories.EventStockFactory(beginningDatetime=earliest_stock.beginningDatetime + timedelta(days=30))
 
         # When
-        response = client.with_token(user.email).post(FAVORITES_URL, json={"offerId": offer.id})
+        response = client.with_token(user).post(FAVORITES_URL, json={"offerId": offer.id})
 
         # Then
         assert response.status_code == 200, response.data
@@ -418,7 +418,7 @@ class PostTest:
         offer1 = offers_factories.EventOfferFactory(venue=venue)
         assert db.session.query(Favorite).count() == 0
 
-        client.with_token(user.email)
+        client.with_token(user)
 
         # When
         response = client.post(FAVORITES_URL, json={"offerId": offer1.id})
@@ -445,7 +445,7 @@ class PostTest:
         offer = offers_factories.EventOfferFactory()
         assert db.session.query(Favorite).count() == 0
 
-        client.with_token(user.email)
+        client.with_token(user)
 
         response = client.post(FAVORITES_URL, json={"offerId": offer.id})
 
@@ -471,7 +471,7 @@ class DeleteTest:
             assert db.session.query(Favorite).count() == 1
 
             # When
-            response = client.with_token(user.email).delete(f"{FAVORITES_URL}/{favorite.id}")
+            response = client.with_token(user).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 204
@@ -488,7 +488,7 @@ class DeleteTest:
             assert db.session.query(Favorite).count() == 1
 
             # When
-            response = client.with_token(user.email).delete(f"{FAVORITES_URL}/{favorite.id}")
+            response = client.with_token(user).delete(f"{FAVORITES_URL}/{favorite.id}")
 
             # Then
             assert response.status_code == 404
@@ -499,7 +499,7 @@ class DeleteTest:
             user = users_factories.UserFactory()
 
             # When
-            response = client.with_token(user.email).delete(f"{FAVORITES_URL}/1203481310")
+            response = client.with_token(user).delete(f"{FAVORITES_URL}/1203481310")
 
             # Then
             assert response.status_code == 404

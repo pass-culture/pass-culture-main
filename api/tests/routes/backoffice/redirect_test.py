@@ -18,8 +18,7 @@ pytestmark = [
 
 class SafeRedirectTest:
     # - session
-    # - authenticated user
-    expected_num_queries = 2
+    expected_num_queries = 1
 
     def test_redirect_as_anonymous(self, client):
         response = client.get(url_for("backoffice_web.safe_redirect", url="https://example.com"))
