@@ -2877,38 +2877,37 @@ def replace_offer_price_categories(
     validation.check_validation_status(offer)
 
     existing_price_categories_by_id = {pc.id: pc for pc in offer.priceCategories}
+
     existing_price_category_ids = set(existing_price_categories_by_id.keys())
     synced_price_category_ids = {input["id"] for input in synced_price_category_inputs if input.get("id")}
-
-    for id in synced_price_category_ids:
-        if id not in existing_price_category_ids:
-            raise exceptions.OfferException({"price_category_id": [f"Le tarif avec l'id {id} n'existe pas"]})
-
     has_removed_some = bool(existing_price_category_ids - synced_price_category_ids)
     if has_removed_some and offer.validation != models.OfferValidationStatus.DRAFT:
         raise exceptions.OfferException({"global": ["Cannot delete price categories on non-draft offers"]})
 
-    for input in synced_price_category_inputs:
-        validation.check_stock_price(input["price"], offer)
-
     synced_price_categories = []
-    for input in synced_price_category_inputs:
-        price_category_id = input.get("id")
+    for synced_price_category_input in synced_price_category_inputs:
+        validation.check_stock_price(synced_price_category_input["price"], offer)
+
+        price_category_id = synced_price_category_input.get("id")
         if price_category_id:
-            pc = existing_price_categories_by_id[price_category_id]
-            old_price = pc.price
-            pc.price = input["price"]
-            pc.priceCategoryLabel = get_or_create_label(input["label"], offer.venue)
-            synced_price_categories.append(pc)
-            if old_price != pc.price:
-                for stock in offer.stocks:
-                    if stock.priceCategoryId == pc.id and not stock.isEventExpired:
-                        stock.price = pc.price
+            if price_category_id not in existing_price_categories_by_id:
+                raise exceptions.OfferException(
+                    {"price_category_id": ["Le tarif avec l'id {} n'existe pas".format(price_category_id)]}
+                )
+            existing_price_category = existing_price_categories_by_id[price_category_id]
+            existing_price_category.priceCategoryLabel = get_or_create_label(
+                synced_price_category_input["label"], offer.venue
+            )
+            existing_price_category.price = synced_price_category_input["price"]
+            synced_price_categories.append(existing_price_category)
+            for stock in existing_price_category.stocks:
+                if not stock.isEventExpired:
+                    stock.price = synced_price_category_input["price"]
         else:
             synced_price_categories.append(
                 models.PriceCategory(
-                    priceCategoryLabel=get_or_create_label(input["label"], offer.venue),
-                    price=input["price"],
+                    priceCategoryLabel=get_or_create_label(synced_price_category_input["label"], offer.venue),
+                    price=synced_price_category_input["price"],
                 )
             )
 

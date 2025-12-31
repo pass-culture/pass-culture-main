@@ -166,7 +166,7 @@ class Returns400Test:
         assert response.json == {"price300": ["Le prix d’une offre ne peut excéder 300 euros."]}
 
     def test_update_price_category_not_found(self, client):
-        offer = offers_factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
         price_category = offers_factories.PriceCategoryFactory(
             offer=offer,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
@@ -178,7 +178,7 @@ class Returns400Test:
 
         data = {
             "priceCategories": [
-                {"price": 350, "label": "Behind a post", "id": price_category.id + 1},
+                {"price": 100, "label": "Behind a post", "id": price_category.id + 1},
             ],
         }
 
@@ -188,7 +188,7 @@ class Returns400Test:
         assert response.json == {"price_category_id": [f"Le tarif avec l'id {price_category.id + 1} n'existe pas"]}
 
     def test_update_unreachable_price_category(self, client):
-        offer = offers_factories.EventOfferFactory()
+        offer = offers_factories.EventOfferFactory(validation=offers_models.OfferValidationStatus.DRAFT)
         offers_factories.PriceCategoryFactory(
             offer=offer,
             priceCategoryLabel=offers_factories.PriceCategoryLabelFactory(label="Do not change", venue=offer.venue),
@@ -209,7 +209,7 @@ class Returns400Test:
 
         data = {
             "priceCategories": [
-                {"price": 350, "label": "Behind a post", "id": unreachable_price_category.id},
+                {"price": 100, "label": "Behind a post", "id": unreachable_price_category.id},
             ],
         }
         response = client.with_session_auth("user@example.com").put(f"/offers/{offer.id}/price_categories", json=data)
