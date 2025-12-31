@@ -265,17 +265,23 @@ export const HeaderDropdown = () => {
             <DropdownMenu.Separator
               className={cn(styles['separator'], styles['tablet-only'])}
             />
-            <DropdownMenu.Label
-              className={cn(styles['menu-title'], styles['tablet-only'])}
-            >
-              Centre d’aide
-            </DropdownMenu.Label>
-            <div className={styles['tablet-only']}>
-              <HelpDropdownMenu />
-            </div>
-            <DropdownMenu.Separator className={styles['separator']} />
+            {!withSwitchVenueFeature && (
+              <DropdownMenu.Label
+                className={cn(styles['menu-title'], styles['tablet-only'])}
+              >
+                Centre d’aide
+              </DropdownMenu.Label>
+            )}
+            {!withSwitchVenueFeature && (
+              <div className={styles['tablet-only']}>
+                <HelpDropdownMenu />
+              </div>
+            )}
+            {!withSwitchVenueFeature && (
+              <DropdownMenu.Separator className={styles['separator']} />
+            )}
 
-            {isProFeedbackEnabled && (
+            {!withSwitchVenueFeature && isProFeedbackEnabled && (
               <>
                 <div
                   className={cn(
