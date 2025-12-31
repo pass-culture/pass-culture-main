@@ -1,5 +1,5 @@
-from dataclasses import dataclass
 import typing
+from dataclasses import dataclass
 
 import pydantic as pydantic_v2
 
@@ -14,60 +14,75 @@ def all_subcategories_are_modeled() -> bool:
     return flatten_mappings == ALL_SUBCATEGORIES_DICT.keys()
 
 
-@dataclass
+@dataclass(frozen=True)
 class ExtraDataField:
     name: str
-    mandatory: bool
-    default: typing.Any
+    optional: bool
+
+    def format(self):
+        return type(self)(name=self.name.lower().replace('_', ''), optional=self.optional)
 
 
-def _parse_extra_data(model: pydantic_v2.BaseModel) -> dict:
+@dataclass(frozen=True)
+class ExtraDataFieldWithDefault:
+    name: str
+    optional: bool
+    default: typing.Any = None
+
+    def format(self):
+        return type(self)(name=self.name.lower().replace('_', ''), optional=self.optional, default=self.default)
+
+
+def _parse_property(name, data):
+    match data:
+        case {'anyOf': types, 'default': default}:
+            return ExtraDataFieldWithDefault(name=name, optional={'type': 'null'} in types, default=default)
+        case {'anyOf': types}:
+            return ExtraDataField(name=name, optional={'type': 'null'} in types)
+        case {'default': default}:
+            return ExtraDataFieldWithDefault(name=name, optional=False, default=default)
+        case _:
+            return ExtraDataField(name=name, optional=False)
+
+
+def _parse_extra_data(model: pydantic_v2.BaseModel) -> list:
     def _parse(defs, v):
         match v:
             case {"anyOf": choices}:
-                breakpoint()
                 yield from _parse(defs, choices)
             case [*options]:
-                breakpoint()
                 for opt in options:
                     yield from _parse(defs, opt)
             case {"$ref": ref}:
-                breakpoint()
                 yield from _parse(defs, defs[ref.replace("#/$defs/", "")])
             case {"properties": props}:
-                breakpoint()
-                yield from props
-            case x:
-                print(x)
-                breakpoint()
+                for name, data in props.items():
+                    yield _parse_property(name, data)
+            case _:
                 pass
-
-    # def _parse_properties(defs, v):
-        # match v:
-            # case {""}
 
     schema = model.model_json_schema()
     defs = schema["$defs"]
     extra_data_properties = schema["properties"].get("extra_data")
     if not extra_data_properties:
-        return set()
+        return []
 
-    return set(_parse(defs, extra_data_properties))
+    return list(_parse(defs, extra_data_properties))
 
 
 def _format_extra_data_fields(fields: typing.Collection[str]) -> dict[str, str]:
-    return {field.lower().replace("_", ""): field for field in fields}
+    return {field.format(): field for field in fields}
 
 
 class Fields:
     def __init__(self, mandatory: set, optional: set):
         self.mandatory = mandatory
         self.mandatory_mapper = _format_extra_data_fields(mandatory)
-        self.mandatory_formatted = set(self.mapper.keys()) if self.mapper else set()
+        self.mandatory_formatted = set(self.mandatory_mapper.keys()) if self.mandatory_mapper else set()
 
         self.optional = optional
         self.optional_mapper = _format_extra_data_fields(optional)
-        self.optional_formatted = set(self.mapper.keys()) if self.mapper else set()
+        self.optional_formatted = set(self.optional_mapper.keys()) if self.optional_mapper else set()
 
     def is_empty(self) -> bool:
         return (len(self.mandatory) == 0 + len(self.optional)) == 0
@@ -160,6 +175,7 @@ class BothHaveMissing(FieldsCompare):
     kind = "diff"
 
     def set_diff(self) -> None:
+        breakpoint()
         self.diff = {
             "fields": [self.fields[field] for field in (self.fields - self.extra_data)],
             "extra_data": [self.extra_data[field] for field in (self.extra_data - self.fields)],

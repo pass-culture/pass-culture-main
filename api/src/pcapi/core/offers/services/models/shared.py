@@ -202,8 +202,6 @@ ShowExtraData = MusicTypeModel | ShowTypeModel | GtlMusicModel
 class ConcertExtraData(pydantic_v2.BaseModel):
     music_type: MusicType | None
     gtl_id: TiteLiveMusicGenres | None = None
-    another: int | None = None
-    last: str
 
 
 class EanExtraData(pydantic_v2.BaseModel):
