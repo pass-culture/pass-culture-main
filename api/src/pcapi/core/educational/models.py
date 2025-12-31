@@ -478,6 +478,7 @@ class CollectiveOffer(
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship(
         "User", foreign_keys=[authorId], back_populates="collectiveOffers", uselist=False
     )
+
     # the venueId is the billing address.
     # To find where the offer takes place, check locationType / offererAddress
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
@@ -514,7 +515,10 @@ class CollectiveOffer(
     )
 
     collectiveStock: sa_orm.Mapped["CollectiveStock"] = sa_orm.relationship(
-        "CollectiveStock", back_populates="collectiveOffer", uselist=False
+        "CollectiveStock",
+        foreign_keys="CollectiveStock.collectiveOfferId",
+        back_populates="collectiveOffer",
+        uselist=False,
     )
 
     contactEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True)
@@ -551,6 +555,7 @@ class CollectiveOffer(
     )
     teacher: sa_orm.Mapped["EducationalRedactor | None"] = sa_orm.relationship(
         "EducationalRedactor",
+        foreign_keys=[teacherId],
         back_populates="collectiveOffers",
         uselist=False,
     )
@@ -937,13 +942,11 @@ class CollectiveOfferTemplate(
     )
 
     authorId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.BigInteger, sa.ForeignKey("user.id"), nullable=True)
-
     author: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[authorId], uselist=False)
 
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id"), nullable=False, index=True
     )
-
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveOfferTemplates"
     )
@@ -988,7 +991,7 @@ class CollectiveOfferTemplate(
     )
 
     collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
-        "CollectiveOffer", back_populates="template"
+        "CollectiveOffer", foreign_keys="CollectiveOffer.templateId", back_populates="template"
     )
 
     flaggingValidationRules: sa_orm.Mapped[list["OfferValidationRule"]] = sa_orm.relationship(
@@ -1004,9 +1007,8 @@ class CollectiveOfferTemplate(
         nullable=True,
         index=True,
     )
-
     nationalProgram: sa_orm.Mapped["NationalProgram | None"] = sa_orm.relationship(
-        "NationalProgram", foreign_keys=nationalProgramId
+        "NationalProgram", foreign_keys=[nationalProgramId]
     )
 
     educationalRedactorsFavorite: sa_orm.Mapped[list["EducationalRedactor"]] = sa_orm.relationship(
@@ -1022,7 +1024,9 @@ class CollectiveOfferTemplate(
     )
 
     collective_playlists: sa_orm.Mapped[list["CollectivePlaylist"]] = sa_orm.relationship(
-        "CollectivePlaylist", back_populates="collective_offer_template"
+        "CollectivePlaylist",
+        foreign_keys="CollectivePlaylist.collectiveOfferTemplateId",
+        back_populates="collective_offer_template",
     )
 
     contactEmail: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(120), nullable=True)
@@ -1239,7 +1243,7 @@ class CollectiveStock(PcObject, models.Model):
     )
 
     collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
-        "CollectiveBooking", back_populates="collectiveStock"
+        "CollectiveBooking", foreign_keys="CollectiveBooking.collectiveStockId", back_populates="collectiveStock"
     )
 
     price: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(
@@ -1351,11 +1355,13 @@ class EducationalInstitution(PcObject, models.Model):
     phoneNumber: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.String(30), nullable=False)
 
     collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
-        "CollectiveOffer", back_populates="institution"
+        "CollectiveOffer", foreign_keys="CollectiveOffer.institutionId", back_populates="institution"
     )
 
     collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
-        "CollectiveBooking", back_populates="educationalInstitution"
+        "CollectiveBooking",
+        foreign_keys="CollectiveBooking.educationalInstitutionId",
+        back_populates="educationalInstitution",
     )
 
     isActive: sa_orm.Mapped[bool] = sa_orm.mapped_column(
@@ -1363,7 +1369,9 @@ class EducationalInstitution(PcObject, models.Model):
     )
 
     programAssociations: sa_orm.Mapped[list["EducationalInstitutionProgramAssociation"]] = sa_orm.relationship(
-        "EducationalInstitutionProgramAssociation", back_populates="institution"
+        "EducationalInstitutionProgramAssociation",
+        foreign_keys="EducationalInstitutionProgramAssociation.institutionId",
+        back_populates="institution",
     )
 
     ruralLevel: sa_orm.Mapped[InstitutionRuralLevel | None] = sa_orm.mapped_column(
@@ -1371,7 +1379,7 @@ class EducationalInstitution(PcObject, models.Model):
     )
 
     collective_playlists: sa_orm.Mapped[list["CollectivePlaylist"]] = sa_orm.relationship(
-        "CollectivePlaylist", back_populates="institution"
+        "CollectivePlaylist", foreign_keys="CollectivePlaylist.institutionId", back_populates="institution"
     )
 
     deposits: sa_orm.Mapped[list["EducationalDeposit"]] = sa_orm.relationship(
@@ -1445,7 +1453,6 @@ class EducationalDeposit(PcObject, models.Model):
     educationalInstitutionId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
-
     educationalInstitution: sa_orm.Mapped[EducationalInstitution] = sa_orm.relationship(
         EducationalInstitution, foreign_keys=[educationalInstitutionId], back_populates="deposits"
     )
@@ -1453,7 +1460,6 @@ class EducationalDeposit(PcObject, models.Model):
     educationalYearId: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.String(30), sa.ForeignKey("educational_year.adageId"), index=True, nullable=False
     )
-
     educationalYear: sa_orm.Mapped["EducationalYear"] = sa_orm.relationship(
         EducationalYear, foreign_keys=[educationalYearId], back_populates="deposits"
     )
@@ -1474,7 +1480,9 @@ class EducationalDeposit(PcObject, models.Model):
     period: sa_orm.Mapped[DateTimeRange | None] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=True)
 
     collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
-        "CollectiveBooking", back_populates="educationalDeposit"
+        "CollectiveBooking",
+        foreign_keys="CollectiveBooking.educationalDepositId",
+        back_populates="educationalDeposit",
     )
 
     def check_has_enough_fund(self, total_amount_after_booking: decimal.Decimal) -> None:
@@ -1512,11 +1520,13 @@ class EducationalRedactor(PcObject, models.Model):
     )
 
     collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
-        "CollectiveBooking", back_populates="educationalRedactor"
+        "CollectiveBooking",
+        foreign_keys="CollectiveBooking.educationalRedactorId",
+        back_populates="educationalRedactor",
     )
 
     collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
-        "CollectiveOffer", back_populates="teacher"
+        "CollectiveOffer", foreign_keys="CollectiveOffer.teacherId", back_populates="teacher"
     )
 
     favoriteCollectiveOfferTemplates: sa_orm.Mapped[list["CollectiveOfferTemplate"]] = sa_orm.relationship(
@@ -1544,7 +1554,6 @@ class CollectiveBooking(PcObject, models.Model):
     collectiveStockId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_stock.id"), index=True, nullable=False
     )
-
     collectiveStock: sa_orm.Mapped["CollectiveStock"] = sa_orm.relationship(
         "CollectiveStock", foreign_keys=[collectiveStockId], back_populates="collectiveBookings"
     )
@@ -1552,7 +1561,6 @@ class CollectiveBooking(PcObject, models.Model):
     venueId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue.id"), index=True, nullable=False
     )
-
     venue: sa_orm.Mapped["Venue"] = sa_orm.relationship(
         "Venue", foreign_keys=[venueId], back_populates="collectiveBookings"
     )
@@ -1560,7 +1568,6 @@ class CollectiveBooking(PcObject, models.Model):
     offererId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("offerer.id"), index=True, nullable=False
     )
-
     offerer: sa_orm.Mapped["Offerer"] = sa_orm.relationship(
         "Offerer", foreign_keys=[offererId], back_populates="collectiveBookings"
     )
@@ -1570,7 +1577,6 @@ class CollectiveBooking(PcObject, models.Model):
     cancellationUserId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("user.id"), nullable=True
     )
-
     cancellationUser: sa_orm.Mapped["User | None"] = sa_orm.relationship("User", foreign_keys=[cancellationUserId])
 
     cancellationLimitDate: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False)
@@ -1615,6 +1621,7 @@ class CollectiveBooking(PcObject, models.Model):
     )
     educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
         EducationalRedactor,
+        foreign_keys=[educationalRedactorId],
         back_populates="collectiveBookings",
         uselist=False,
     )
@@ -1623,20 +1630,22 @@ class CollectiveBooking(PcObject, models.Model):
         sa.BigInteger, sa.ForeignKey("educational_deposit.id"), nullable=True, index=True
     )
     educationalDeposit: sa_orm.Mapped[EducationalDeposit | None] = sa_orm.relationship(
-        EducationalDeposit, back_populates="collectiveBookings", uselist=False
+        EducationalDeposit, foreign_keys=[educationalDepositId], back_populates="collectiveBookings", uselist=False
     )
 
     finance_events: sa_orm.Mapped[list["finance_models.FinanceEvent"]] = sa_orm.relationship(
-        "FinanceEvent", back_populates="collectiveBooking"
+        "FinanceEvent", foreign_keys="FinanceEvent.collectiveBookingId", back_populates="collectiveBooking"
     )
     pricings: sa_orm.Mapped[list["finance_models.Pricing"]] = sa_orm.relationship(
-        "Pricing", back_populates="collectiveBooking"
+        "Pricing", foreign_keys="Pricing.collectiveBookingId", back_populates="collectiveBooking"
     )
     incidents: sa_orm.Mapped[list["finance_models.BookingFinanceIncident"]] = sa_orm.relationship(
-        "BookingFinanceIncident", back_populates="collectiveBooking"
+        "BookingFinanceIncident",
+        foreign_keys="BookingFinanceIncident.collectiveBookingId",
+        back_populates="collectiveBooking",
     )
     payments: sa_orm.Mapped[list["finance_models.Payment"]] = sa_orm.relationship(
-        "Payment", back_populates="collectiveBooking"
+        "Payment", foreign_keys="Payment.collectiveBookingId", back_populates="collectiveBooking"
     )
 
     __table_args__ = (
@@ -1994,25 +2003,22 @@ class CollectiveOfferRequest(PcObject, models.Model):
     educationalRedactorId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_redactor.id"), nullable=False
     )
-
     educationalRedactor: sa_orm.Mapped["EducationalRedactor"] = sa_orm.relationship(
-        "EducationalRedactor", foreign_keys=educationalRedactorId
+        "EducationalRedactor", foreign_keys=[educationalRedactorId]
     )
 
     collectiveOfferTemplateId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("collective_offer_template.id"), index=True, nullable=False
     )
-
     collectiveOfferTemplate: sa_orm.Mapped["CollectiveOfferTemplate"] = sa_orm.relationship(
-        "CollectiveOfferTemplate", foreign_keys=collectiveOfferTemplateId
+        "CollectiveOfferTemplate", foreign_keys=[collectiveOfferTemplateId]
     )
 
     educationalInstitutionId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("educational_institution.id"), index=True, nullable=False
     )
-
     educationalInstitution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
-        "EducationalInstitution", foreign_keys=educationalInstitutionId
+        "EducationalInstitution", foreign_keys=[educationalInstitutionId]
     )
 
     @hybrid_property
@@ -2053,7 +2059,7 @@ class NationalProgram(PcObject, models.Model):
         sa.Boolean, nullable=False, server_default=sa.sql.expression.true(), default=True
     )
     collectiveOffers: sa_orm.Mapped[list["CollectiveOffer"]] = sa_orm.relationship(
-        "CollectiveOffer", back_populates="nationalProgram"
+        "CollectiveOffer", foreign_keys="CollectiveOffer.nationalProgramId", back_populates="nationalProgram"
     )
 
 
@@ -2081,6 +2087,7 @@ class EducationalInstitutionProgramAssociation(models.Model):
     institution: sa_orm.Mapped["EducationalInstitution"] = sa_orm.relationship(
         "EducationalInstitution", foreign_keys=[institutionId]
     )
+
     programId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger,
         sa.ForeignKey("educational_institution_program.id", ondelete="CASCADE"),
@@ -2090,6 +2097,7 @@ class EducationalInstitutionProgramAssociation(models.Model):
     program: sa_orm.Mapped["EducationalInstitutionProgram"] = sa_orm.relationship(
         "EducationalInstitutionProgram", foreign_keys=[programId]
     )
+
     timespan: sa_orm.Mapped[DateTimeRange] = sa_orm.mapped_column(
         # the date 2023-09-01 is the beginning of the MEG program. This will need to evolve if other programs are added
         "timespan",
