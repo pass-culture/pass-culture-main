@@ -36,7 +36,7 @@ export const AdminSideNavLinks = ({
   isLateralPanelOpen,
 }: AdminSideNavLinksProps) => {
   // State harmonisé avec SideNavLinks
-  const [openSection, setOpenSection] = useState<OpenSection>({ data: false })
+  const [openSection, setOpenSection] = useState<OpenSection>({ data: true })
   const location = useLocation()
   const dataId = useId()
   const dataSublistId = useId()
@@ -65,8 +65,6 @@ export const AdminSideNavLinks = ({
       >
         Revenir à l’Espace Partenaire
       </ButtonLink>
-
-      <div className={styles['separator-line-header']} />
 
       <div className={styles['nav-links-header']}>Espace Administration</div>
       <ul className={styles['nav-links-group']}>
@@ -216,7 +214,6 @@ export const AdminSideNavLinks = ({
                   </Button>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
-                  sideOffset={8}
                   side={isMobileScreen ? 'top' : 'right'}
                   className={styles['help-dropdown-content']}
                 >
