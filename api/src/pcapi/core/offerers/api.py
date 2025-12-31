@@ -3273,7 +3273,7 @@ def update_offerer_address(offerer_address_id: int, address_id: int, label: str 
 def synchronize_from_adage_and_check_registration(offerer_id: int) -> bool:
     since_date = date_utils.get_naive_utc_now() - timedelta(days=2)
     adage_cultural_partners = adage_api.get_cultural_partners(force_update=True, since_date=since_date)
-    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners, debug=True)
+    adage_api.synchronize_adage_ids_on_venues(adage_cultural_partners)
     return offerers_repository.offerer_has_venue_with_adage_id(offerer_id)
 
 

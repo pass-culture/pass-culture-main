@@ -133,7 +133,7 @@ def get_relative_venues_by_id(venue_id: int) -> venue_serialization.GetVenuesRes
 @adage_api_key_required
 def post_educational_partners(body: venue_serialization.PostAdageCulturalPartnerModel) -> None:
     partners = educational_schemas.AdageCulturalPartners(partners=[body])
-    educational_api_adage.synchronize_adage_ids_on_venues(partners, debug=True)
+    educational_api_adage.synchronize_adage_ids_on_venues(partners)
     # now deal with allowedOnAdage. The synchronize_adage_ids_on_offerers sync does not work with
     # a single venue so we have to process it here. Also only deal with the obvious addition and
     # leave more complex cases, the daily sync will deal with them.

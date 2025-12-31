@@ -18,9 +18,7 @@ from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional import send_eac_offerer_activation_email
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
-from pcapi.core.offerers.repository import get_emails_by_venue
 from pcapi.models import db
-from pcapi.routes.serialization import venues_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.cache import get_from_cache
 from pcapi.utils.clean_accents import clean_accents
@@ -33,6 +31,9 @@ logger = logging.getLogger(__name__)
 def get_cultural_partners(
     *, since_date: datetime | None = None, force_update: bool = False
 ) -> schemas.AdageCulturalPartners:
+    # TODO (jcicurel): once we have updated the adage ids sync logic, we do not need the cache anymore
+    # and we can move the parsing as AdageCulturalPartners in the adage client directly
+
     CULTURAL_PARTNERS_CACHE_KEY = "api:adage_cultural_partner:cache"
     CULTURAL_PARTNERS_CACHE_TIMEOUT = 24 * 60 * 60  # 24h in seconds
 
@@ -55,10 +56,6 @@ def get_cultural_partners(
     cultural_partners_json = typing.cast(str, cultural_partners_json)
     cultural_partners = json.loads(cultural_partners_json)
     return parse_obj_as(schemas.AdageCulturalPartners, {"partners": cultural_partners})
-
-
-def get_cultural_partner(siret: str) -> venues_serialize.AdageCulturalPartnerResponseModel:
-    return venues_serialize.AdageCulturalPartnerResponseModel.from_orm(adage_client.get_cultural_partner(siret))
 
 
 def get_venue_by_siret_for_adage_iframe(
@@ -136,7 +133,7 @@ def synchronize_adage_ids_on_offerers(partners_from_adage: list[schemas.AdageCul
 
     logger.info("SIRENs to add: %s", sirens_to_add)
     logger.info("SIRENs to delete: %s", sirens_to_delete)
-    logger.info("existing SIRENs from synchronized venues: %s", existing_sirens_from_synchronized_venues)
+    logger.info("existing SIRENs from synchronized venues", extra=existing_sirens_from_synchronized_venues)
 
     db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(list(sirens_to_add))).update(
         {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
@@ -154,13 +151,11 @@ class CulturalPartner:
     active: int | None
 
 
-def synchronize_adage_ids_on_venues(
-    adage_cultural_partners: schemas.AdageCulturalPartners, debug: bool = False
-) -> None:
+def synchronize_adage_ids_on_venues(adage_cultural_partners: schemas.AdageCulturalPartners) -> None:
     from pcapi.core.external.attributes.api import update_external_pro
 
-    adage_cps = []
-    venue_to_adage_id = {}
+    adage_cps: list[CulturalPartner] = []
+    venue_to_adage_id: dict[int, str] = {}
 
     for cultural_partner in adage_cultural_partners.partners:
         adage_id = str(cultural_partner.id)
@@ -193,16 +188,15 @@ def synchronize_adage_ids_on_venues(
 
     deactivated_venue_ids = {venue.id for venue in deactivated_venues}
 
-    if debug:
-        logger.info(
-            "%d deactivated venues",
-            len(deactivated_venue_ids),
-            extra={"deactivated_venues": deactivated_venue_ids},
-        )
+    logger.info(
+        "%d deactivated venues",
+        len(deactivated_venue_ids),
+        extra={"deactivated_venues": deactivated_venue_ids},
+    )
 
     searched_ids = {cp.venue_id for cp in adage_cps} - deactivated_venue_ids
     searched_adage_ids = {cp.adage_id for cp in adage_cps} - deactivated_adage_ids
-    venues: list[offerers_models.Venue] = (
+    venues = (
         db.session.query(offerers_models.Venue)
         .filter(
             sa.or_(
@@ -215,14 +209,13 @@ def synchronize_adage_ids_on_venues(
 
     to_update_venue_ids = {venue.id for venue in venues}
 
-    if debug:
-        logger.info(
-            "%d venues to update",
-            len(to_update_venue_ids),
-            extra={"to_update_venues": to_update_venue_ids},
-        )
+    logger.info(
+        "%d venues to update",
+        len(to_update_venue_ids),
+        extra={"to_update_venues": to_update_venue_ids},
+    )
 
-    adage_id_updates = {}
+    adage_id_updates: dict[int, str] = {}
 
     with atomic():
         for venue in deactivated_venues:
@@ -233,7 +226,7 @@ def synchronize_adage_ids_on_venues(
             # Update the users in SiB in case of previous adageId being none
             # This is because we track if the user has an adageId, not the value of the adageId
             if not venue.adageId:
-                emails = get_emails_by_venue(venue)
+                emails = offerers_repository.get_emails_by_venue(venue)
                 for email in emails:
                     update_external_pro(email)
                 if venue.managingOfferer.isValidated:
@@ -262,8 +255,8 @@ def synchronize_adage_ids_on_venues(
                     extra={"venue.id": venue.id, "adageId": venue.adageId},
                 )
 
-    if debug:
-        logger.info("%d adage ids updates", len(adage_id_updates), extra=adage_id_updates)  # type: ignore
+    log_extra = {str(venue_id): adage_id for venue_id, adage_id in adage_id_updates.items()}
+    logger.info("%d adage ids updates", len(adage_id_updates), extra=log_extra)
 
 
 def _remove_venue_from_eac(venue: offerers_models.Venue) -> None:
