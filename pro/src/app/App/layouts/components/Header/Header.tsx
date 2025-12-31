@@ -6,10 +6,13 @@ import { NavLink, useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import fullBackIcon from '@/icons/full-back.svg'
 import fullBurgerIcon from '@/icons/full-burger.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
+import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
+import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
@@ -22,6 +25,7 @@ type HeaderProps = {
   setLateralPanelOpen?: (state: boolean) => void
   focusCloseButton?: () => void
   disableHomeLink?: boolean
+  adminArea?: boolean
 }
 
 export const Header = forwardRef(
@@ -31,10 +35,12 @@ export const Header = forwardRef(
       setLateralPanelOpen = () => undefined,
       focusCloseButton = () => undefined,
       disableHomeLink = false,
+      adminArea = false,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
     const isProFeedbackEnabled = useActiveFeature('ENABLE_PRO_FEEDBACK')
+    const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
     const { logEvent } = useAnalytics()
     const location = useLocation()
@@ -85,17 +91,34 @@ export const Header = forwardRef(
               </NavLink>
             )}
           </div>
-          <div className={styles['top-right-menu']}>
-            <div className={styles['top-right-menu-links']}>
-              <div className={styles['tablet-and-above']}>
-                {isProFeedbackEnabled && <UserReviewDialog />}
-              </div>
-              <div className={styles['tablet-and-above']}>
-                <HeaderHelpDropdown />
-              </div>
+          {
+            <div className={styles['top-right-menu']}>
+              {!withSwitchVenueFeature && (
+                <div className={styles['top-right-menu-links']}>
+                  <div className={styles['tablet-and-above']}>
+                    {isProFeedbackEnabled && <UserReviewDialog />}
+                  </div>
+                  <div className={styles['tablet-and-above']}>
+                    <HeaderHelpDropdown />
+                  </div>
+                </div>
+              )}
+              {withSwitchVenueFeature && (
+                <ButtonLink
+                  variant={ButtonVariant.SECONDARY}
+                  to={adminArea ? '/accueil' : '/remboursements'}
+                  iconPosition={IconPositionEnum.LEFT}
+                  icon={adminArea ? fullBackIcon : strokeRepaymentIcon}
+                  className={styles['tablet-and-above']}
+                >
+                  {adminArea
+                    ? 'Revenir à l’Espace Partenaire'
+                    : 'Espace administration'}
+                </ButtonLink>
+              )}
+              <HeaderDropdown />
             </div>
-            <HeaderDropdown />
-          </div>
+          }
         </div>
       </header>
     )
