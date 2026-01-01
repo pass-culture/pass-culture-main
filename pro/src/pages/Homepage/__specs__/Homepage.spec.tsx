@@ -191,6 +191,7 @@ describe('Homepage', () => {
       ).not.toBeInTheDocument()
     })
   })
+
   describe('render highlights', () => {
     it('should display highlights when selected offerer can display highlights', async () => {
       renderHomePage({ features: ['WIP_HIGHLIGHT'] })

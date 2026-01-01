@@ -26,6 +26,7 @@ import { isCollectiveOfferSelectable } from '@/commons/utils/isActionAllowedOnCo
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { sortCollectiveOffers } from '@/commons/utils/sortCollectiveOffers'
 import { AccessibleScrollContainer } from '@/components/AccessibleScrollContainer/AccessibleScrollContainer'
+import { CollectiveBudgetBanner } from '@/components/CollectiveBudgetInformation/CollectiveBudgetBanner'
 import { getCollectiveOfferColumns } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/CollectiveOfferColumns'
 import { ExpirationCell } from '@/components/CollectiveOffersTable/CollectiveOfferColumns/ExpirationCell/ExpirationCell'
 import { CollectiveOffersActionsBar } from '@/components/CollectiveOffersTable/CollectiveOffersActionsBar/CollectiveOffersActionsBar'
@@ -161,6 +162,9 @@ export const CollectiveOffersScreen = ({
 
   return (
     <div>
+      <div className={styles['collective-budget-banner-container']}>
+        <CollectiveBudgetBanner />
+      </div>
       <CollectiveOffersSearchFilters
         hasFilters={hasFilters}
         applyFilters={applyFilters}

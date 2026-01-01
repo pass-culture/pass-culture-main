@@ -16,7 +16,9 @@
 .reimbursements-banners {
   display: flex;
   flex-direction: column;
-  gap: var(--size-spacing-l);
+}
+
+.reimbursements-banner {
   margin-top: var(--size-spacing-l);
 }
 
