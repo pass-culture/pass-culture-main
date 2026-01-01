@@ -3,6 +3,7 @@ import logging
 
 from pcapi.core.bookings.factories import BookingFactory
 from pcapi.core.categories import subcategories
+from pcapi.core.educational.factories import CollectiveOfferTemplateFactory
 from pcapi.core.offerers.factories import UserOffererFactory
 from pcapi.core.offerers.factories import VenueFactory
 from pcapi.core.offers.factories import EventOfferFactory
@@ -36,4 +37,8 @@ def create_tiny_venue() -> None:
         beginningDatetime=date_utils.get_naive_utc_now().replace(second=0, microsecond=0) + datetime.timedelta(days=20),
     )
     BookingFactory.create(quantity=1, stock=stock)
+    CollectiveOfferTemplateFactory.create(
+        name="Conférence gesticulée",
+        venue=venue,
+    )
     logger.info("end create tiny venue with 1 booked offers")
