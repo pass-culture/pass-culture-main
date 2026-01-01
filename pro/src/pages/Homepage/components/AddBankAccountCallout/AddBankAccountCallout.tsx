@@ -6,6 +6,8 @@ import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Callout } from '@/ui-kit/Callout/Callout'
 import { CalloutVariant } from '@/ui-kit/Callout/types'
 
+import styles from '../../Homepage.module.scss'
+
 interface AddBankAccountCalloutProps {
   offerer?: GetOffererResponseModel | null
 }
@@ -27,22 +29,24 @@ export const AddBankAccountCallout = ({
   }
 
   return (
-    <Callout
-      links={[
-        {
-          href: '/remboursements/informations-bancaires',
-          label: 'Ajouter un compte bancaire',
-          onClick: () => {
-            logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-              from: location.pathname,
-              offererId: offerer.id,
-            })
+    <div className={styles['reimbursements-banner']}>
+      <Callout
+        links={[
+          {
+            href: '/remboursements/informations-bancaires',
+            label: 'Ajouter un compte bancaire',
+            onClick: () => {
+              logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+                from: location.pathname,
+                offererId: offerer.id,
+              })
+            },
           },
-        },
-      ]}
-      variant={CalloutVariant.ERROR}
-    >
-      Aucun compte bancaire configuré pour percevoir vos remboursements
-    </Callout>
+        ]}
+        variant={CalloutVariant.ERROR}
+      >
+        Aucun compte bancaire configuré pour percevoir vos remboursements
+      </Callout>
+    </div>
   )
 }

@@ -16,6 +16,7 @@ import {
   selectCurrentOfferer,
 } from '@/commons/store/offerer/selectors'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
+import { CollectiveBudgetBanner } from '@/components/CollectiveBudgetInformation/CollectiveBudgetBanner'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 
 import { ActionsBar } from '../ActionsBar/ActionsBar'
@@ -112,16 +113,19 @@ export const OfferTypeScreen = () => {
   }
 
   return (
-    <div className={styles['offer-type-container']}>
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormLayout>
-            <CollectiveOfferType offerer={offerer} />
+    <>
+      <CollectiveBudgetBanner />
+      <div className={styles['offer-type-container']}>
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <FormLayout>
+              <CollectiveOfferType offerer={offerer} />
 
-            <ActionsBar disableNextButton={!offerer?.allowedOnAdage} />
-          </FormLayout>
-        </form>
-      </FormProvider>
-    </div>
+              <ActionsBar disableNextButton={!offerer?.allowedOnAdage} />
+            </FormLayout>
+          </form>
+        </FormProvider>
+      </div>
+    </>
   )
 }
