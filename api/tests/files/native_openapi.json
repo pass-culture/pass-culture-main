@@ -195,12 +195,15 @@
                 "enum": [
                     "ART_GALLERY",
                     "ART_SCHOOL",
+                    "ARTISTIC_COMPANY",
                     "ARTS_CENTRE",
+                    "ARTS_EDUCATION",
                     "BOOKSTORE",
                     "CINEMA",
                     "COMMUNITY_CENTRE",
                     "CREATIVE_ARTS_STORE",
                     "CULTURAL_CENTRE",
+                    "CULTURAL_MEDIATION",
                     "DISTRIBUTION_STORE",
                     "FESTIVAL",
                     "GAMES_CENTRE",
@@ -211,9 +214,13 @@
                     "NOT_ASSIGNED",
                     "OTHER",
                     "PERFORMANCE_HALL",
+                    "PRESS",
+                    "PRODUCTION_OR_PROMOTION_COMPANY",
                     "RECORD_STORE",
                     "SCIENCE_CENTRE",
-                    "TOURIST_INFORMATION_CENTRE"
+                    "STREAMING_PLATFORM",
+                    "TOURIST_INFORMATION_CENTRE",
+                    "TRAVELLING_CINEMA"
                 ],
                 "title": "Activity",
                 "type": "string"
