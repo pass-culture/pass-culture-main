@@ -1,8 +1,13 @@
 // Back-End Model Enums
 
+import { ActivityNotOpenToPublic } from '@/apiClient/v1/models/ActivityNotOpenToPublic'
 import { ActivityOpenToPublic } from '@/apiClient/v1/models/ActivityOpenToPublic'
 import { DisplayableActivity } from '@/apiClient/v1/models/DisplayableActivity'
 
+import {
+  _ActivityNotOpenToPublicMappings,
+  type ActivityNotOpenToPublicType,
+} from './ActivityNotOpenToPublic'
 import {
   _ActivityOpenToPublicMappings,
   type ActivityOpenToPublicType,
@@ -14,7 +19,7 @@ import {
 } from './DisplayableActivity'
 import { buildFilteredMap } from './utils/buildFilteredMap'
 
-// Getter for all activities that can be CHOSEN on the new structure registration
+// Getter for all activities that can be CHOSEN during structure registration or edition if the structure is open to public
 export const getActivities = (() => {
   const ActivityOpenToPublicMap = buildFilteredMap(
     ActivityOpenToPublic,
@@ -22,6 +27,16 @@ export const getActivities = (() => {
   )
   return (): Record<ActivityOpenToPublicType, string> =>
     ActivityOpenToPublicMap as Record<ActivityOpenToPublicType, string>
+})()
+
+// Getter for all activities that can be CHOSEN during structure registration or edition if the structure is not open to public
+export const getActivitiesNotOpenToPublic = (() => {
+  const ActivityNotOpenToPublicMap = buildFilteredMap(
+    ActivityNotOpenToPublic,
+    _ActivityNotOpenToPublicMappings
+  )
+  return (): Record<ActivityNotOpenToPublicType, string> =>
+    ActivityNotOpenToPublicMap as Record<ActivityNotOpenToPublicType, string>
 })()
 
 // Getter for all activities that can be DISPLAYED (including potential old ones)

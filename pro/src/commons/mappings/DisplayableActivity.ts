@@ -1,12 +1,15 @@
 export const _DisplayableActivityMappings = {
   ART_GALLERY: 'Galerie d’art',
   ART_SCHOOL: 'Conservatoire ou école d’arts',
+  ARTISTIC_COMPANY: 'Compagnie artistique',
   ARTS_CENTRE: 'Centre d’arts',
+  ARTS_EDUCATION: 'Formation ou enseignement artistique',
   BOOKSTORE: 'Librairie',
   CINEMA: 'Cinéma',
   COMMUNITY_CENTRE: 'Centre socio-culturel',
   CREATIVE_ARTS_STORE: 'Magasin d’arts créatifs',
   CULTURAL_CENTRE: 'Centre culturel pluridisciplinaire',
+  CULTURAL_MEDIATION: 'Médiation culturelle',
   DISTRIBUTION_STORE: 'Magasin de distribution de produits culturels',
   FESTIVAL: 'Festival',
   GAMES_CENTRE: 'Espace ludique',
@@ -16,9 +19,13 @@ export const _DisplayableActivityMappings = {
   MUSIC_INSTRUMENT_STORE: 'Magasin d’instruments de musique',
   OTHER: 'Autre',
   PERFORMANCE_HALL: 'Salle de spectacles',
+  PRESS: 'Presse',
+  PRODUCTION_OR_PROMOTION_COMPANY: 'Société de production, tourneur ou label',
   RECORD_STORE: 'Disquaire',
   SCIENCE_CENTRE: 'Centre de culture scientifique, technique et industrielle',
+  STREAMING_PLATFORM: 'Plateforme de streaming musique ou vidéo',
   TOURIST_INFORMATION_CENTRE: 'Office de tourisme',
+  TRAVELLING_CINEMA: 'Cinéma itinérant',
 }
 
 export type DisplayableActivityType = keyof typeof _DisplayableActivityMappings

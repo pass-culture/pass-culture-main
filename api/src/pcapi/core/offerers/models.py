@@ -192,12 +192,15 @@ class Activity(enum.Enum):
 
     ART_GALLERY = "ART_GALLERY"
     ART_SCHOOL = "ART_SCHOOL"
+    ARTISTIC_COMPANY = "ARTISTIC_COMPANY"
     ARTS_CENTRE = "ARTS_CENTRE"
+    ARTS_EDUCATION = "ARTS_EDUCATION"
     BOOKSTORE = "BOOKSTORE"
     CINEMA = "CINEMA"
     COMMUNITY_CENTRE = "COMMUNITY_CENTRE"
     CREATIVE_ARTS_STORE = "CREATIVE_ARTS_STORE"
     CULTURAL_CENTRE = "CULTURAL_CENTRE"
+    CULTURAL_MEDIATION = "CULTURAL_MEDIATION"
     DISTRIBUTION_STORE = "DISTRIBUTION_STORE"
     FESTIVAL = "FESTIVAL"
     # 'GAMES_CENTRE' is used for archived structures and should not be available for cultural partners during onboarding
@@ -206,25 +209,69 @@ class Activity(enum.Enum):
     LIBRARY = "LIBRARY"
     MUSEUM = "MUSEUM"
     MUSIC_INSTRUMENT_STORE = "MUSIC_INSTRUMENT_STORE"
-    # 'NOT_ASSIGNED' is used for non-ERP structures (is_open_to_public=False) which have no main activity
+    # TODO: (lmaubert 2026-01): Remove 'NOT_ASSIGNED' that was used for non-ERP structures (is_open_to_public=False) in a previous version
     NOT_ASSIGNED = "NOT_ASSIGNED"
     # TODO (lmaubert 2025-10): Remove 'OTHER' when not necessary anymore (temporary value to measure the adequacy of the new list of main activities)
     OTHER = "OTHER"
     PERFORMANCE_HALL = "PERFORMANCE_HALL"
+    PRESS = "PRESS"
+    PRODUCTION_OR_PROMOTION_COMPANY = "PRODUCTION_OR_PROMOTION_COMPANY"
     RECORD_STORE = "RECORD_STORE"
     SCIENCE_CENTRE = "SCIENCE_CENTRE"
+    STREAMING_PLATFORM = "STREAMING_PLATFORM"
     TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
+    TRAVELLING_CINEMA = "TRAVELLING_CINEMA"
 
 
 ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
     "ActivityOpenToPublic",
-    {x.name: x.value for x in Activity if x.name not in ("NOT_ASSIGNED", "GAMES_CENTRE")},
+    {
+        x.name: x.value
+        for x in Activity
+        if x.name
+        in (
+            "ART_GALLERY",
+            "ART_SCHOOL",
+            "ARTS_CENTRE",
+            "BOOKSTORE",
+            "CINEMA",
+            "COMMUNITY_CENTRE",
+            "CREATIVE_ARTS_STORE",
+            "CULTURAL_CENTRE",
+            "DISTRIBUTION_STORE",
+            "FESTIVAL",
+            "HERITAGE_SITE",
+            "LIBRARY",
+            "MUSEUM",
+            "MUSIC_INSTRUMENT_STORE",
+            "OTHER",
+            "PERFORMANCE_HALL",
+            "RECORD_STORE",
+            "SCIENCE_CENTRE",
+            "TOURIST_INFORMATION_CENTRE",
+        )
+    },
 )
 
 
 ActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
     "ActivityNotOpenToPublic",
-    {x.name: x.value for x in Activity if x.name not in ("NOT_ASSIGNED", "GAMES_CENTRE")},
+    {
+        x.name: x.value
+        for x in Activity
+        if x.name
+        in (
+            "ARTISTIC_COMPANY",
+            "ARTS_EDUCATION",
+            "CULTURAL_MEDIATION",
+            "FESTIVAL",
+            "OTHER",
+            "PRESS",
+            "PRODUCTION_OR_PROMOTION_COMPANY",
+            "STREAMING_PLATFORM",
+            "TRAVELLING_CINEMA",
+        )
+    },
 )
 
 
