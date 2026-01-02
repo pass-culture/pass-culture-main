@@ -45,6 +45,7 @@ def scrub_token_from_url_in_event(event: "Event") -> "Event":
     return event
 
 
+# bdalbianco (02/01/26) If you add to this function create a test since the original one was obsolete and got deleted
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     if _is_flask_shell_event():
         return None
