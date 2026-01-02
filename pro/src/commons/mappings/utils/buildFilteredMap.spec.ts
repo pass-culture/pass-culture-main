@@ -16,7 +16,7 @@ describe('buildFilteredMap', () => {
       BLUE: 'Bleu',
     }
 
-    const map = buildFilteredMap(ColorsEnum, Mappings)
+    const map = buildFilteredMap(ColorsEnum, Mappings, 'ColorsEnum')
 
     const expected = {
       BLUE: 'Bleu',
@@ -42,7 +42,7 @@ describe('buildFilteredMap', () => {
       BLUE: 'Bleu',
     }
 
-    const map = buildFilteredMap(ColorsEnum, Mappings)
+    const map = buildFilteredMap(ColorsEnum, Mappings, 'ColorsEnum')
 
     const expected = {
       BLUE: 'Bleu',
@@ -69,11 +69,11 @@ describe('buildFilteredMap', () => {
     }
 
     const expectedErrorMessage =
-      '[ActivityOpenToPublic Mapper] Mismatch keys between back-end and front-end:\n' +
-      '- Following keys are present in ActivityOpenToPublic model, but not in the mappings list:\n' +
+      '[ColorsEnum Mapper] Mismatch keys between back-end and front-end:\n' +
+      '- Following keys are present in ColorsEnum model, but not in the mappings list:\n' +
       '\tORANGE'
 
-    expect(() => buildFilteredMap(ColorsEnum, Mappings)).toThrow(
+    expect(() => buildFilteredMap(ColorsEnum, Mappings, 'ColorsEnum')).toThrow(
       expectedErrorMessage
     )
   })

@@ -2,11 +2,12 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ActivityNotOpenToPublic } from './ActivityNotOpenToPublic';
 import type { ActivityOpenToPublic } from './ActivityOpenToPublic';
 import type { LocationBodyModel } from './LocationBodyModel';
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
-  activity?: ActivityOpenToPublic | null;
+  activity?: (ActivityOpenToPublic | ActivityNotOpenToPublic) | null;
   address: LocationBodyModel;
   createVenueWithoutSiret?: boolean;
   culturalDomains?: Array<string> | null;
