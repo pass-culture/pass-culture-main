@@ -216,20 +216,20 @@ class Activity(enum.Enum):
     TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
 
 
-OnboardingActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
-    "OnboardingActivityOpenToPublic",
+ActivityOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
+    "ActivityOpenToPublic",
     {x.name: x.value for x in Activity if x.name not in ("NOT_ASSIGNED", "GAMES_CENTRE")},
 )
 
 
-OnboardingActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
-    "OnboardingActivityNotOpenToPublic",
+ActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
+    "ActivityNotOpenToPublic",
     {x.name: x.value for x in Activity if x.name not in ("NOT_ASSIGNED", "GAMES_CENTRE")},
 )
 
 
-DisplayedActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
-    "DisplayedActivity", {x.name: x.value for x in Activity if x.name != "NOT_ASSIGNED"}
+DisplayableActivity: enum.EnumType = enum.Enum(  # type: ignore[misc]
+    "DisplayableActivity", {x.name: x.value for x in Activity if x.name != "NOT_ASSIGNED"}
 )
 
 

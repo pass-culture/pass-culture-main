@@ -5,7 +5,7 @@
 /**
  * An enumeration.
  */
-export enum OnboardingActivityNotOpenToPublic {
+export enum ActivityNotOpenToPublic {
   ART_GALLERY = 'ART_GALLERY',
   ART_SCHOOL = 'ART_SCHOOL',
   ARTS_CENTRE = 'ARTS_CENTRE',

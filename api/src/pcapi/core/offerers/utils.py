@@ -82,11 +82,9 @@ ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING = {
 }
 
 
-# TODO(xordoquy): remove offerers_models.OnboardingActivityOpenToPublic | offerers_models.OnboardingActivityOpenToPublic
+# TODO(xordoquy): remove offerers_models.ActivityOpenToPublic | offerers_models.ActivityOpenToPublic
 def get_venue_type_code_from_activity(
-    activity: offerers_models.Activity
-    | offerers_models.OnboardingActivityOpenToPublic
-    | offerers_models.OnboardingActivityOpenToPublic,
+    activity: offerers_models.Activity | offerers_models.ActivityOpenToPublic | offerers_models.ActivityOpenToPublic,
 ) -> offerers_schemas.VenueTypeCode:
     """
     Temporary utility function to compute a Venue's VenueTypeCode from the chosen Activity

@@ -1,4 +1,4 @@
-export const _OnboardingActivityOpenToPublicMappings = {
+export const _DisplayableActivityMappings = {
   ART_GALLERY: 'Galerie d’art',
   ART_SCHOOL: 'Conservatoire ou école d’arts',
   ARTS_CENTRE: 'Centre d’arts',
@@ -9,6 +9,7 @@ export const _OnboardingActivityOpenToPublicMappings = {
   CULTURAL_CENTRE: 'Centre culturel pluridisciplinaire',
   DISTRIBUTION_STORE: 'Magasin de distribution de produits culturels',
   FESTIVAL: 'Festival',
+  GAMES_CENTRE: 'Espace ludique',
   HERITAGE_SITE: 'Site patrimonial, historique ou touristique',
   LIBRARY: 'Bibliothèque ou médiathèque',
   MUSEUM: 'Musée',
@@ -20,5 +21,4 @@ export const _OnboardingActivityOpenToPublicMappings = {
   TOURIST_INFORMATION_CENTRE: 'Office de tourisme',
 }
 
-export type OnboardingActivityOpenToPublicType =
-  keyof typeof _OnboardingActivityOpenToPublicMappings
+export type DisplayableActivityType = keyof typeof _DisplayableActivityMappings

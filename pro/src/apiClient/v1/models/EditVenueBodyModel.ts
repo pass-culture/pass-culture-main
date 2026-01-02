@@ -2,13 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { OnboardingActivityNotOpenToPublic } from './OnboardingActivityNotOpenToPublic';
-import type { OnboardingActivityOpenToPublic } from './OnboardingActivityOpenToPublic';
+import type { ActivityNotOpenToPublic } from './ActivityNotOpenToPublic';
+import type { ActivityOpenToPublic } from './ActivityOpenToPublic';
 import type { VenueContactModel } from './VenueContactModel';
 import type { VenueTypeCode } from './VenueTypeCode';
 import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type EditVenueBodyModel = {
-  activity?: (OnboardingActivityOpenToPublic | OnboardingActivityNotOpenToPublic) | null;
+  activity?: (ActivityOpenToPublic | ActivityNotOpenToPublic) | null;
   audioDisabilityCompliant?: boolean | null;
   banId?: string | null;
   bookingEmail?: string | null;

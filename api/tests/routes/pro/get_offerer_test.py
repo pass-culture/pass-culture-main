@@ -83,7 +83,7 @@ class GetOffererTest:
             "isValidated": offerer.isValidated,
             "managedVenues": [
                 {
-                    "activity": offerers_models.DisplayedActivity.FESTIVAL.name if venue == venue_3 else None,
+                    "activity": offerers_models.DisplayableActivity.FESTIVAL.name if venue == venue_3 else None,
                     "bannerMeta": venue.bannerMeta,
                     "bannerUrl": venue.bannerUrl,
                     "bookingEmail": venue.bookingEmail,

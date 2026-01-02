@@ -3,11 +3,11 @@
 /* tslint:disable */
 /* eslint-disable */
 import type { BannerMetaModel } from './BannerMetaModel';
-import type { DisplayedActivity } from './DisplayedActivity';
+import type { DisplayableActivity } from './DisplayableActivity';
 import type { DMSApplicationForEAC } from './DMSApplicationForEAC';
 import type { VenueTypeCode } from './VenueTypeCode';
 export type GetOffererVenueResponseModel = {
-  activity?: DisplayedActivity | null;
+  activity?: DisplayableActivity | null;
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
   bookingEmail?: string | null;
