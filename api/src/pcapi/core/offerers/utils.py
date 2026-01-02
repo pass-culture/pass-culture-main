@@ -79,11 +79,19 @@ ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING = {
     offerers_models.Activity.HERITAGE_SITE.name: offerers_schemas.VenueTypeCode.PATRIMONY_TOURISM,
     offerers_models.Activity.TOURIST_INFORMATION_CENTRE.name: offerers_schemas.VenueTypeCode.PATRIMONY_TOURISM,
     offerers_models.Activity.OTHER.name: offerers_schemas.VenueTypeCode.OTHER,
+    offerers_models.Activity.TRAVELLING_CINEMA.name: offerers_schemas.VenueTypeCode.TRAVELING_CINEMA,
+    offerers_models.Activity.ARTS_EDUCATION.name: offerers_schemas.VenueTypeCode.ARTISTIC_COURSE,
+    offerers_models.Activity.CULTURAL_MEDIATION.name: offerers_schemas.VenueTypeCode.OTHER,
+    offerers_models.Activity.ARTISTIC_COMPANY.name: offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
+    offerers_models.Activity.PRODUCTION_OR_PROMOTION_COMPANY.name: offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
+    offerers_models.Activity.PRESS.name: offerers_schemas.VenueTypeCode.OTHER,
+    offerers_models.Activity.STREAMING_PLATFORM.name: offerers_schemas.VenueTypeCode.DIGITAL,
 }
 
 
+# TODO(xordoquy): remove offerers_models.ActivityOpenToPublic | offerers_models.ActivityOpenToPublic
 def get_venue_type_code_from_activity(
-    activity: offerers_models.Activity | offerers_models.OnboardingActivity,
+    activity: offerers_models.Activity | offerers_models.ActivityOpenToPublic | offerers_models.ActivityOpenToPublic,
 ) -> offerers_schemas.VenueTypeCode:
     """
     Temporary utility function to compute a Venue's VenueTypeCode from the chosen Activity

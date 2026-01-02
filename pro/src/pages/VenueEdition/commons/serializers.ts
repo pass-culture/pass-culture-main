@@ -1,9 +1,9 @@
 import type {
+  ActivityOpenToPublic,
   EditVenueBodyModel,
-  OnboardingActivity,
   WeekdayOpeningHoursTimespans,
 } from '@/apiClient/v1'
-import type { OnboardingActivityType } from '@/commons/mappings/OnboardingActivity'
+import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
 import { diffObjects } from '../utils/helpers'
@@ -62,13 +62,13 @@ function buildEditVenuePayload(
     activity:
       normalizedActivity === undefined || normalizedActivity === null
         ? (normalizedActivity ?? undefined)
-        : (normalizedActivity as OnboardingActivity),
+        : (normalizedActivity as ActivityOpenToPublic),
   }
 }
 
 function normalizeActivity(
   activity: VenueEditionFormValues['activity']
-): OnboardingActivityType | null | undefined {
+): ActivityOpenToPublicType | null | undefined {
   if ((activity as string | null) === 'GAMES_CENTRE') {
     return null
   }

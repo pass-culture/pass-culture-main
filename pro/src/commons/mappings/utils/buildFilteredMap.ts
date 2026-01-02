@@ -29,12 +29,12 @@ function ensureMappingsMatch(
 
   if (diff.size > 0) {
     throw new Error(
-      `[OnboardingActivity Mapper] Mismatch keys between back-end and front-end:\n` +
+      `[ActivityOpenToPublic Mapper] Mismatch keys between back-end and front-end:\n` +
         (backEndExtraKeys.size > 0
-          ? `- Following keys are present in OnboardingActivity model, but not in the mappings list:\n\t${Array.from(backEndExtraKeys.keys()).join(',')}\n`
+          ? `- Following keys are present in ActivityOpenToPublic model, but not in the mappings list:\n\t${Array.from(backEndExtraKeys.keys()).join(',')}\n`
           : '') +
         (frontEndExtraKeys.size > 0
-          ? `- Following keys are present in the mappings list, but not in the OnboardingActivity model:\n\t${Array.from(frontEndExtraKeys.keys()).join(',')}\n`
+          ? `- Following keys are present in the mappings list, but not in the ActivityOpenToPublic model:\n\t${Array.from(frontEndExtraKeys.keys()).join(',')}\n`
           : '')
     )
   }
