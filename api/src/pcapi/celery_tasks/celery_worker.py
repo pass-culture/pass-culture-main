@@ -1,3 +1,8 @@
+import logging
+import typing
+
+from celery import signals
+
 import pcapi.celery_tasks.sendinblue  # noqa: F401
 import pcapi.core.educational.tasks  # noqa: F401
 import pcapi.core.offers.tasks  # noqa: F401
@@ -5,6 +10,7 @@ import pcapi.core.subscription.bonus.tasks  # noqa: F401
 import pcapi.core.subscription.ubble.tasks  # noqa: F401
 from pcapi import settings
 from pcapi.celery_tasks import metrics
+from pcapi.core.logging import JsonFormatter
 from pcapi.flask_app import app as flask_app
 
 
@@ -18,3 +24,14 @@ registered_tasks = sorted(task for task in celery_app.tasks.keys() if not task.s
 for task in registered_tasks:
     for metric in metrics.metrics_list:
         metric.labels(task=task)
+
+
+@signals.after_setup_logger.connect
+def setup_logger(logger: logging.Logger, *args: typing.Any, **kwargs: typing.Any) -> None:
+    """
+    This function runs when the Celery worker initializes its logging.
+    We replace the default handler with a JSON-formatted one.
+    """
+    formatter = JsonFormatter()
+    for handler in logger.handlers:
+        handler.setFormatter(formatter)
