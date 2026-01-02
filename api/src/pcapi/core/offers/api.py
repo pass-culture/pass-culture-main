@@ -396,12 +396,9 @@ def create_offer(
 
 
 def get_or_create_offerer_address_from_address_body(
-    address_body: offerers_schemas.LocationModel | offerers_schemas.LocationOnlyOnVenueModel | None,
+    address_body: offerers_schemas.LocationModel | offerers_schemas.LocationOnlyOnVenueModel,
     venue: offerers_models.Venue,
-) -> offerers_models.OffererAddress | None:
-    if not address_body:
-        return None
-
+) -> offerers_models.OffererAddress:
     if isinstance(address_body, offerers_schemas.LocationOnlyOnVenueModel):
         # TODO (prouzet, 2025-11-20) CLEAN_OA The following condition should not happen after step 4.5
         # but must be kept to avoid duplication before venues have their exclusive location.

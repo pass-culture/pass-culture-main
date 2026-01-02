@@ -5,6 +5,7 @@ import sqlalchemy.orm as sa_orm
 
 from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import api as offers_api
 from pcapi.core.offers import exceptions as offers_exceptions
 from pcapi.core.offers import models as offers_models
@@ -253,7 +254,10 @@ def extract_venue_and_offerer_address_from_location(
             address_id=address.id,
             label=location.address_label,
         )
+    else:
+        offerer_address = offers_api.get_or_create_offerer_address_from_address_body(
+            offerers_schemas.LocationOnlyOnVenueModel(),
+            venue,
+        )
 
-        return venue, offerer_address
-
-    return venue, venue.offererAddress
+    return venue, offerer_address

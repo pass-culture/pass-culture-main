@@ -67,9 +67,17 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
 
+    @pytest.mark.parametrize(
+        "location_type",
+        (
+            None,
+            offerers_models.LocationType.VENUE_LOCATION,
+        ),
+    )
     @time_machine.travel(now_datetime_with_tz, tick=False)
-    def test_event_minimal_body(self):
+    def test_event_minimal_body(self, location_type):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
+        venue_provider.venue.offererAddress.type = location_type
 
         response = self.make_request(plain_api_key, json_body=self._get_base_payload(venue_id=venue_provider.venue.id))
 
@@ -95,6 +103,17 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalDetails is None
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
+
+        if location_type:
+            # New behaviour: offer and venue have different offererAddress
+            assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+            assert created_offer.offererAddressId != created_offer.venue.offererAddressId
+            assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
+            assert created_offer.offererAddress.label == created_offer.venue.publicName
+        else:
+            # Legacy: venue and offer share the same offererAddress
+            assert created_offer.offererAddress.type is None
+            assert created_offer.offererAddressId == created_offer.venue.offererAddressId
 
     def test_event_with_deprecated_music_type_triggers_warning_log(self, caplog):
         # TODO(jbaudet-pass): remove test once the deprecated enum
