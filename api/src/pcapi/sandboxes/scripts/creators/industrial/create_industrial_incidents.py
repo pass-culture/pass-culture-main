@@ -164,7 +164,15 @@ def _create_one_individual_incident(
 
     # Mark incident bookings as `REIMBURSED`
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
-    finance_api.generate_invoices_and_debit_notes_legacy(batch)
+    finance_api.generate_invoices_and_debit_notes(batch)
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
+        .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
+        .filter(finance_models.Cashflow.batchId == batch.id)
+    )
+    for invoice in invoices:
+        finance_api.validate_invoice(invoice)
 
     assert {b.status for b in bookings} == {bookings_models.BookingStatus.REIMBURSED}, [
         (b.id, b.status) for b in bookings
@@ -210,7 +218,15 @@ def _create_one_individual_incident(
             finance_api.price_event(finance_event)
 
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
-    finance_api.generate_invoices_and_debit_notes_legacy(batch)
+    finance_api.generate_invoices_and_debit_notes(batch)
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
+        .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
+        .filter(finance_models.Cashflow.batchId == batch.id)
+    )
+    for invoice in invoices:
+        finance_api.validate_invoice(invoice)
 
 
 def _create_one_collective_incident(
@@ -286,7 +302,15 @@ def _create_one_collective_incident(
 
     # Mark incident bookings as `REIMBURSED`
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
-    finance_api.generate_invoices_and_debit_notes_legacy(batch)
+    finance_api.generate_invoices_and_debit_notes(batch)
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
+        .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
+        .filter(finance_models.Cashflow.batchId == batch.id)
+    )
+    for invoice in invoices:
+        finance_api.validate_invoice(invoice)
 
     assert {booking.status for booking in bookings} == {educational_models.CollectiveBookingStatus.REIMBURSED}, [
         (booking.id, booking.status) for booking in bookings
@@ -325,7 +349,15 @@ def _create_one_collective_incident(
                 finance_api.price_event(finance_event)
 
     batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
-    finance_api.generate_invoices_and_debit_notes_legacy(batch)
+    finance_api.generate_invoices_and_debit_notes(batch)
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
+        .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
+        .filter(finance_models.Cashflow.batchId == batch.id)
+    )
+    for invoice in invoices:
+        finance_api.validate_invoice(invoice)
 
 
 @log_func_duration

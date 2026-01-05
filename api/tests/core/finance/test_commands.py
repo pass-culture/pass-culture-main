@@ -1,5 +1,4 @@
 import datetime
-import logging
 from decimal import Decimal
 from unittest.mock import patch
 
@@ -19,11 +18,6 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.users import factories as users_factories
 from pcapi.models import db
 from pcapi.utils import date as date_utils
-
-
-pytestmark = [
-    pytest.mark.features(WIP_ENABLE_NEW_FINANCE_WORKFLOW=True),
-]
 
 
 class AddCustomOfferReimbursementRuleTest:
@@ -88,31 +82,6 @@ class AddCustomOfferReimbursementRuleTest:
         rule = db.session.query(finance_models.CustomReimbursementRule).one()
         assert rule.offer.id == offer_id
         assert rule.amount == 1234
-
-
-def test_generate_invoices_warning(run_command, caplog):
-    caplog.at_level(logging.WARNING, logger="pcapi.core.finance.commands")
-    offerer = offerers_factories.OffererFactory()
-    bank_account = finance_factories.BankAccountFactory(offerer=offerer)
-    batch = finance_factories.CashflowBatchFactory()
-    finance_factories.CashflowFactory.create_batch(
-        size=3,
-        batch=batch,
-        bankAccount=bank_account,
-        status=finance_models.CashflowStatus.UNDER_REVIEW,
-    )
-
-    run_command(
-        "generate_invoices",
-        "--batch-id",
-        str(batch.id),
-    )
-    assert len(caplog.records) == 1
-    log_record = caplog.records[0]
-    assert log_record.message == (
-        "Standalone `generate_invoices` command is deprecated. "
-        "It's integrated in `generate_cashflows_and_payment_files` command."
-    )
 
 
 @pytest.mark.usefixtures("css_font_http_request_mock")
