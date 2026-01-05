@@ -192,12 +192,14 @@ class UpsertDepositTest:
         assert underage_deposit.expirationDate < date_utils.get_naive_utc_now()
 
     def test_compute_deposit_expiration_date(self):
-        user = users_models.User(validatedBirthDate=datetime.date(2007, 1, 1))
-        assert user.age == 18
+        now = datetime.date.today()
+        eighteen_years_ago = datetime.date(now.year - 18, 1, 1)
+        user = users_models.User(validatedBirthDate=eighteen_years_ago)
 
         expiration_date = api.compute_deposit_expiration_date(user)
 
-        assert expiration_date.date() == datetime.date(2028, 1, 1)
+        date_when_user_is_21 = eighteen_years_ago + relativedelta(years=21)
+        assert expiration_date.date() == date_when_user_is_21
 
 
 class UserRecreditTest:
@@ -586,13 +588,14 @@ class UserRecreditTest:
             )
             user_2 = users_factories.BeneficiaryFactory(age=17, deposit__expirationDate=next_week)
 
-        # finish steps for user 2
-        subscription_factories.ProfileCompletionFraudCheckFactory(user=user_2)
-        subscription_factories.PhoneValidationFraudCheckFactory(user=user_2)
-        user_2.phoneNumber = "+33610000000"
-        subscription_factories.HonorStatementFraudCheckFactory(user=user_2)
+        with time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME):
+            # finish steps for user 2
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user_2)
+            subscription_factories.PhoneValidationFraudCheckFactory(user=user_2)
+            user_2.phoneNumber = "+33610000000"
+            subscription_factories.HonorStatementFraudCheckFactory(user=user_2)
 
-        api.recredit_users()
+            api.recredit_users()
 
         # User 1 is 17, and was recredited with RECREDIT_17 on its new deposit
         assert len(user_1.deposits) == 2
@@ -622,7 +625,8 @@ class UserRecreditTest:
             bookings_factories.CancelledBookingFactory(deposit=user.deposit, amount=12)
             bookings_factories.ReimbursedBookingFactory(deposit=user.deposit, amount=13)
 
-        api.recredit_users()
+        with time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME):
+            api.recredit_users()
 
         # User is 17, and was recredited with RECREDIT_17 on its new deposit
         assert len(user.deposits) == 2

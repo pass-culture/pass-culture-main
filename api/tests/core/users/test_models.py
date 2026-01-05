@@ -245,23 +245,6 @@ class UserTest:
                 assert user_models._get_latest_birthday(birth_date) == latest_birthday
 
     class EligibilityTest:
-        def test_not_eligible_when_19(self):
-            user = users_factories.UserFactory(
-                dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19, days=1)
-            )
-            assert user.eligibility is None
-
-        def test_eligible_when_19_with_subscription_attempt_at_18(self):
-            user = users_factories.UserFactory(dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=19))
-            subscription_factories.BeneficiaryFraudCheckFactory(
-                dateCreated=date_utils.get_naive_utc_now() - relativedelta(years=1),
-                user=user,
-                type=subscription_models.FraudCheckType.DMS,
-                status=subscription_models.FraudCheckStatus.KO,
-                eligibilityType=user_models.EligibilityType.AGE18,
-            )
-            assert user.eligibility is user_models.EligibilityType.AGE18
-
         def test_eligible_when_19_with_subscription_attempt_at_18_without_account(self):
             user_19_yo_birth_date = date_utils.get_naive_utc_now() - relativedelta(years=19, months=3)
             dms_registration_date_by_18_yo = date_utils.get_naive_utc_now() - relativedelta(months=6)

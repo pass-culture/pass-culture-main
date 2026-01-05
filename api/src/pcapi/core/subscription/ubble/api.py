@@ -136,8 +136,8 @@ def update_ubble_workflow(fraud_check: subscription_models.BeneficiaryFraudCheck
 
     try:
         is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user=user)
-    except Exception:
-        logger.exception("Failure after ubble successful result", extra={"user_id": user.id})
+    except Exception as e:
+        logger.exception("Failure after ubble successful result", extra={"user_id": user.id, "exc": str(e)})
         return
 
     if not is_activated:

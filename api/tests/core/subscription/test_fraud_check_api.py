@@ -294,7 +294,8 @@ class FindDuplicateUserTest:
 
         assert fraud_api.find_duplicate_id_piece_number_user(new_id_piece_number, new_user.id) == existing_user
 
-    def test_send_email_to_fraud_if_duplicated_beneficiary(self):
+    @time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME)
+    def test_send_email_to_fraud_if_duplicated_underage_pre_decree_beneficiary(self):
         # 2 years ago
         with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, days=2)):
             user1 = users_factories.BeneficiaryFactory(
