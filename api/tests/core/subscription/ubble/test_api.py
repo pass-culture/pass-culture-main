@@ -409,6 +409,7 @@ class UbbleWorkflowV2Test:
     @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
     @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, store_id_pictures_task_mock, requests_mock):
+        # TODO bulle a fixer car pb janvier
         last_year = date_utils.get_naive_utc_now() - relativedelta(years=1)
         with time_machine.travel(last_year):
             user = users_factories.BeneficiaryFactory(
@@ -499,6 +500,7 @@ class UbbleWorkflowV2Test:
     def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(
         self, store_id_pictures_task_mock, requests_mock
     ):
+        # TODO bulle a fixer car pb janvier
         nineteen_years_ago = datetime.date.today() - relativedelta(years=19, months=1)
         user = users_factories.UserFactory(dateOfBirth=nineteen_years_ago)
         year_when_user_was_eighteen = date_utils.get_naive_utc_now() - relativedelta(years=1)
