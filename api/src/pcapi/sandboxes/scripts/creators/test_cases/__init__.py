@@ -352,6 +352,40 @@ def create_artists() -> None:
         artist_id=artist_3.id, artist_alias_name="Rollman Marina", artist_wiki_data_id="Q47393836"
     )
 
+    # Artist 4: with AI biography and Wikipedia source
+    artist_4 = artist_factories.ArtistFactory.create(
+        name="Aya Nakamura",
+        description="chanteuse franco-malienne",
+        biography="Aya Danioko, dite Aya Nakamura, née le 10 mai 1995 à Bamako au Mali, est une auteure-compositrice-interprète franco-malienne. Elle est l'artiste française la plus écoutée dans le monde sur les plateformes de streaming.",
+        wikipedia_url="https://fr.wikipedia.org/wiki/Aya_Nakamura",
+        image="https://upload.wikimedia.org/wikipedia/commons/d/d3/Aya_Nakamura-2.jpg?uselang=fr",
+        image_license="CC BY 2.0",
+        image_license_url="https://creativecommons.org/licenses/by/2.0",
+    )
+    for _ in range(2):
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.ArtistProductLinkFactory.create(
+            artist_id=artist_4.id, product_id=product.id, artist_type=ArtistType.PERFORMER
+        )
+
+    # Artist 5: with AI biography but no Wikipedia source (edge case)
+    artist_5 = artist_factories.ArtistFactory.create(
+        name="Clara Luciani",
+        description="chanteuse française",
+        biography="Clara Luciani, née le 10 juillet 1992 à Martigues, est une auteure-compositrice-interprète française. Elle se fait connaître du grand public en 2018 avec son premier album Sainte-Victoire.",
+        wikipedia_url=None,
+        image="https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Clara_Luciani%2C_Singer_Songwriter%2C_at_82nd_Venice_International_Film_Festival_in_Venice%2C_Italy.-1.jpg/500px-Clara_Luciani%2C_Singer_Songwriter%2C_at_82nd_Venice_International_Film_Festival_in_Venice%2C_Italy.-1.jpg",
+        image_license="CC BY-SA 4.0",
+        image_license_url="https://creativecommons.org/licenses/by-sa/4.0",
+    )
+    for _ in range(2):
+        product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
+        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.ArtistProductLinkFactory.create(
+            artist_id=artist_5.id, product_id=product.id, artist_type=ArtistType.PERFORMER
+        )
+
     _create_library_with_writers()
 
 

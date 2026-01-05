@@ -283,6 +283,11 @@
                         "title": "Descriptioncredit",
                         "type": "string"
                     },
+                    "descriptionSource": {
+                        "nullable": true,
+                        "title": "Descriptionsource",
+                        "type": "string"
+                    },
                     "id": {
                         "title": "Id",
                         "type": "string"
