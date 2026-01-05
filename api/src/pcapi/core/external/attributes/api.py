@@ -193,6 +193,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
                     offerers_models.Venue.venueTypeCode,
                     offerers_models.Venue.venueLabelId,
                     offerers_models.Venue.adageId,
+                    offerers_models.Venue.isSoftDeleted,
                 )
                 .options(
                     joinedload(offerers_models.Venue.venueLabel).load_only(offerers_models.VenueLabel.label),
@@ -225,7 +226,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
         if offerers:
             for offerer in offerers:
-                all_venues += offerer.managedVenues
+                all_venues += [venue for venue in offerer.managedVenues if not venue.isSoftDeleted]
                 offerers_names.add(offerer.name)
                 offerers_tags.update(tag.name for tag in offerer.tags)
 
@@ -251,7 +252,10 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
     venues = (
         db.session.query(offerers_models.Venue)
-        .filter_by(bookingEmail=email)
+        .filter(
+            offerers_models.Venue.bookingEmail == email,
+            offerers_models.Venue.isSoftDeleted.is_(False),
+        )
         .join(
             offerers_models.Offerer,
             sa.and_(
