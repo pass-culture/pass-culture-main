@@ -192,12 +192,15 @@ class UpsertDepositTest:
         assert underage_deposit.expirationDate < date_utils.get_naive_utc_now()
 
     def test_compute_deposit_expiration_date(self):
-        user = users_models.User(validatedBirthDate=datetime.date(2007, 1, 1))
+        year = datetime.date.today().year
+        _18y_ago = year - 18
+        user = users_models.User(validatedBirthDate=datetime.date(_18y_ago, 1, 1))
         assert user.age == 18
 
         expiration_date = api.compute_deposit_expiration_date(user)
 
-        assert expiration_date.date() == datetime.date(2028, 1, 1)
+        credit_time_limit = year + 3
+        assert expiration_date.date() == datetime.date(credit_time_limit, 1, 1)
 
 
 class UserRecreditTest:
@@ -578,6 +581,7 @@ class UserRecreditTest:
         assert len(user.deposit.recredits) == 2
 
     def test_create_new_deposit_when_recrediting_underage_deposit(self):
+        # TODO bulle check lundi + metier?
         one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
         next_week = date_utils.get_naive_utc_now() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
@@ -609,6 +613,7 @@ class UserRecreditTest:
         assert user_2.deposit.amount == 30 + 150  #  30 (credit 17 before decree) + 150 (for 18 year old after decree)
 
     def test_booking_transfer_when_recrediting_underage_deposit(self):
+        # TODO bulle check lundi + metier?
         one_year_before_decree = pcapi_settings.CREDIT_V3_DECREE_DATETIME - relativedelta(years=1)
         next_week = date_utils.get_naive_utc_now() + relativedelta(weeks=1)
         with time_machine.travel(one_year_before_decree):
