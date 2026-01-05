@@ -119,7 +119,7 @@ def get_error_not_updatable_message(
                 application_content.field_errors or [],
             )
         if subscription_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:
-            user_message += "Ta date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans. "
+            user_message += "Ta date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 17 et 18 ans. "
 
     user_message += "Tu peux contacter le support pour plus d’informations."
 
@@ -158,7 +158,7 @@ def get_error_processed_message(
 
     elif subscription_models.FraudReasonCode.NOT_ELIGIBLE in reason_codes or birth_date_error:
         user_message += (
-            f"{u_nbsp}: la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans."
+            f"{u_nbsp}: la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 17 et 18 ans."
         )
         call_to_action = None
 

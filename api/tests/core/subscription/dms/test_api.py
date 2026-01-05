@@ -742,13 +742,13 @@ class HandleDmsAnnotationsTest:
             (
                 [],
                 dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
-                "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans). ",
+                "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 17 et 18 ans). ",
             ),
             (
                 [dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.first_name, value="/taylor")],
                 dms_schemas.DmsFieldErrorDetails(key=dms_schemas.DmsFieldErrorKeyEnum.birth_date, value="2000-01-01"),
                 (
-                    "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 15 et 18 ans). "
+                    "La date de naissance (2000-01-01) indique que le demandeur n'est pas éligible au pass Culture (doit avoir entre 17 et 18 ans). "
                     "Champs invalides: Le prénom (/taylor)"
                 ),
             ),
@@ -906,7 +906,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Ta date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans. Tu peux contacter le support pour plus d’informations.",
+            user_message="Ta date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 17 et 18 ans. Tu peux contacter le support pour plus d’informations.",
             call_to_action=subscription_schemas.CallToActionMessage(
                 title="Contacter le support",
                 link=subscription_messages.SUBSCRIPTION_SUPPORT_FORM_URL,
@@ -930,7 +930,7 @@ class DmsSubscriptionMessageTest:
         message = dms_subscription_api.get_dms_subscription_message(fraud_check)
 
         assert message == subscription_schemas.SubscriptionMessage(
-            user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 15 et 18 ans.",
+            user_message="Ton dossier déposé sur le site demarche.numerique.gouv.fr a été refusé : la date de naissance indique que tu n'es pas éligible. Tu dois avoir entre 17 et 18 ans.",
             call_to_action=None,
             pop_over_icon=subscription_schemas.PopOverIcon.ERROR,
             updated_at=fraud_check.updatedAt,
