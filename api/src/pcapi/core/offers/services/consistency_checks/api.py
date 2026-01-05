@@ -29,9 +29,9 @@ def subcategory_full_status(subcategory: Subcategory) -> types.SubcategoryDiffSt
 
     subcategory_fields = parse.subcategory_fields(subcategory)
     new_model_fields = parse.new_model_fields(model)
-    diff = build_diff_status(subcategory.id, subcategory_fields, new_model_fields)
+    diff = build_fields_diff(subcategory_fields, new_model_fields)
 
-    return types.SubcategoryDiffStatus(
+    return types.SubcategoryDiffStatus.build(
         subcategory_id=subcategory.id,
         subcategory_fields=subcategory_fields,
         new_model_fields=new_model_fields,
@@ -40,48 +40,29 @@ def subcategory_full_status(subcategory: Subcategory) -> types.SubcategoryDiffSt
 
 
 def build_fields_diff(
-    subcategory_fields: set[types.ExtraDataField], extra_data: set[types.ExtraDataField]
-) -> types.DiffSummary:
-    """Compute a difference summary between `subcategory_fields` and `extra_data`"""
+    subcategory_fields: set[types.ExtraDataField], new_model_fields: set[types.ExtraDataField]
+    ) -> typing.Collection[types.Diff]:
+    """Compute a difference summary between `subcategory_fields` and `new_model_fields`"""
     diff = []
 
     subcategory_fields_mapping = {f.id: f for f in subcategory_fields}
-    extra_data_mapping = {f.id: f for f in extra_data}
+    new_model_fields_mapping = {f.id: f for f in new_model_fields}
 
     for field_id, f in subcategory_fields_mapping.items():
-        extra_data_field = extra_data_mapping.get(field_id)
+        new_model_field = new_model_fields_mapping.get(field_id)
 
-        if not extra_data_field:
+        if not new_model_field:
             diff.append(types.ShouldBePresent(f.name))
-        elif extra_data_field == f:
+        elif new_model_field == f:
             diff.append(types.Same(f.name))
-        elif (extra_data_field.id == f.id) and f.optional:
+        elif (new_model_field.id == f.id) and f.optional:
             diff.append(types.ShouldBeOptional(f.name))
-        elif (extra_data_field.id == f.id) and not f.optional:
+        elif (new_model_field.id == f.id) and not f.optional:
             diff.append(types.ShouldBeMandatory(f.name))
 
-    for field_id, f in extra_data_mapping.items():
+    for field_id, f in new_model_fields_mapping.items():
         subcategory_field = subcategory_fields_mapping.get(field_id)
         if not subcategory_field:
             diff.append(types.ShouldBeMissing(f.name))
 
     return diff
-
-
-def build_diff_status(
-    subcategory_id: str, subcategory_fields: set[types.ExtraDataField], extra_data: set[types.ExtraDataField]
-) -> types.DiffSummary:
-    """Build the full difference status between `subcategory_fields` and `extra_data`"""
-
-    def compute_diff_class(diff):
-        cls = types.NoDiff
-        for diff_item in diff:
-            if type(diff_item) in (types.ShouldBeMissing, types.ShouldBePresent):
-                return types.DiffSummary
-
-            if type(diff_item) in (types.ShouldBeOptional, types.ShouldBeMandatory):
-                cls = types.OptionalDiff
-        return cls
-
-    diff = build_fields_diff(subcategory_fields, extra_data)
-    return compute_diff_class(diff)(subcategory_id, diff)

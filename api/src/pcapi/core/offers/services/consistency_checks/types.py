@@ -4,6 +4,13 @@ from dataclasses import field
 
 
 @dataclass(frozen=True)
+class Field:
+    name: str
+    optional: bool = True
+    components: typing.Collection[typing.Self] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
 class ExtraDataField:
     """Store an extra data field's whole context
 
@@ -15,25 +22,14 @@ class ExtraDataField:
     identified as optional are not and is also used when comparing
     two objects.
     """
-    id: str
-    name: str = field(hash=False, compare=False)
-    optional: bool
-    default: typing.Any = field(hash=False, compare=False)
 
-    @property
-    def shortened(self) -> str:
-        if self.optional:
-            return f"{self.name}[opt]"
-        return f"{self.name}"
+    id: str
+    name: str = field(compare=False)
+    optional: bool
 
     @classmethod
-    def build(cls, name, optional=False, default="<missing>") -> typing.Self:
-        return cls(
-            id=name.lower().replace('_', ''),
-            name=name,
-            optional=optional,
-            default=default
-        )
+    def build(cls, name, optional=False) -> typing.Self:
+        return cls(id=name.lower().replace("_", ""), name=name, optional=optional)
 
 
 @dataclass(frozen=True)
@@ -44,6 +40,7 @@ class Diff:
     class: this is a thin wrapper whose goal is merely to be match
     against or be printed.
     """
+
     field: str
 
     def __repr__(self) -> str:
@@ -70,34 +67,49 @@ class ShouldBeMissing(Diff):
     pass
 
 
-class DiffSummary:
-    """Wrap a collection of `Diff` with a subcategory id
+DiffKind = typing.Literal["no_diff", "minor", "major"]
 
-    This container class sets together a subcategory id and all of its
-    fields computed differences.
+
+def compute_diff_kind(diff) -> DiffKind:
+    """Compute difference kind
+
+    There can be no difference at all, minor ones at most (meaning
+    the exact same fields but some are optional/mandatory only
+    on one side), or major ones (missing or extra fields).
     """
-    kind = "diff"
-
-    def __init__(self, subcategory_id: str, raw: typing.Collection[Diff]):
-        self.subcategory_id = subcategory_id
-        self.raw = raw
-
-    def __repr__(self) -> str:
-        return f"{type(self).__name__}({self.subcategory_id}, {self.raw})"
-
-
-class NoDiff(DiffSummary):
     kind = "no_diff"
 
+    for diff_item in diff:
+        if type(diff_item) in (ShouldBeOptional, ShouldBeMandatory):
+            kind = "minor"
+        elif type(diff_item) in (ShouldBePresent, ShouldBeMandatory):
+            return "major"
 
-class OptionalDiff(DiffSummary):
-    kind = "optional_diff"
+    return kind
 
 
 @dataclass(frozen=True)
 class SubcategoryDiffStatus:
     """Bring together all of the known fields and diff info"""
+
     subcategory_id: str
     subcategory_fields: set[ExtraDataField]
     new_model_fields: set[ExtraDataField]
-    diff: DiffSummary
+    diff: typing.Collection[Diff]
+    kind: DiffKind
+
+    @classmethod
+    def build(
+        cls,
+        subcategory_id: str,
+        subcategory_fields: set[ExtraDataField],
+        new_model_fields: set[ExtraDataField],
+        diff: typing.Collection[Diff],
+    ) -> typing.Self:
+        return cls(
+            subcategory_id=subcategory_id,
+            subcategory_fields=subcategory_fields,
+            new_model_fields=new_model_fields,
+            diff=diff,
+            kind=compute_diff_kind(diff),
+        )

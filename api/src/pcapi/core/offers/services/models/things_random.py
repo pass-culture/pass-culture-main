@@ -50,19 +50,24 @@ class EscapeGameModel(ThingsBaseModel):
 
 class LivreAudioPhysiqueModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.LIVRE_AUDIO_PHYSIQUE.id]
+    extra_data: shared.ExtraDataBook
 
 
 class LocationInstrumentModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.LOCATION_INSTRUMENT.id]
+    extra_data: shared.ExtraDataEan
 
 
 class MaterielArtCreatifModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.MATERIEL_ART_CREATIF.id]
+    extra_data: shared.ExtraDataEan
 
 
 class PartitionModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.PARTITION.id]
+    extra_data: shared.ExtraDataEan
 
 
 class SupportPhysiqueFilmModel(ThingsBaseModel):
     subcategory_id: Literal[subcategories.SUPPORT_PHYSIQUE_FILM.id]
+    extra_data: shared.ExtraDataEan

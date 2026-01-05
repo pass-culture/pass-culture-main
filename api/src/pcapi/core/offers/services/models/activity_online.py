@@ -14,11 +14,12 @@ class ActivityOnline(ActivityBaseModel):
 
 class LivestreamMusiqueModel(ActivityOnline):
     subcategory_id: Literal[subcategories.LIVESTREAM_MUSIQUE.id]
-    extra_data: shared.ExtraDataLiveMusic
+    extra_data: shared.ExtraDataMusic
 
 
 class RencontreEnLigneModel(ActivityOnline):
     subcategory_id: Literal[subcategories.RENCONTRE_EN_LIGNE.id]
+    extra_data: shared.ExtraDataSpeaker
 
 
 class LivestreamPratiqueArtistiqueModel(ActivityOnline):

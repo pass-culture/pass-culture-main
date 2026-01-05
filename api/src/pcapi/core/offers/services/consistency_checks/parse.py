@@ -1,8 +1,40 @@
+import typing
+
 import pydantic as pydantic_v2
 
 from pcapi.core.categories import subcategories
+from pcapi.core.offers.services import models
 
 from . import types
+
+
+def build_components(defs: dict, ref: str, data: dict) -> types.Field:
+    props = defs[ref.replace("#/$defs/", "")].get("properties")
+    return list(parse_properties(defs, props))
+
+
+def parse_properties(defs: dict, properties: dict) -> typing.Generator[types.Field, None, None]:
+    for name, data in (properties.items() if properties else []):
+        match data:
+            case {"$ref": ref}:
+                yield types.Field(name=name, components=build_components(defs, ref, data))
+            case {"anyOf": [{"$ref": ref}, {"type": "null"}]}:
+                yield types.Field(name=name, optional=True, components=build_components(defs, ref, data))
+            case {"anyOf": choices}:
+                yield types.Field(name=name, optional={"type": "null"} in choices)
+            case _:
+                yield types.Field(name=name)
+
+
+def model_full(model: models.base.Base) -> typing.Collection[types.Field]:
+    schema = model.schema()
+    defs = schema["$defs"]
+    properties = schema["properties"]
+    if not properties:
+        return []
+
+    return list(parse_properties(defs, properties))
+
 
 
 def new_model_fields(model: pydantic_v2.BaseModel) -> set[types.ExtraDataField]:
@@ -34,12 +66,8 @@ def new_model_fields(model: pydantic_v2.BaseModel) -> set[types.ExtraDataField]:
     def _parse_property(name, data):
         # same as above
         match data:
-            case {"anyOf": choices, "default": default}:
-                return types.ExtraDataField.build(name=name, default=default, optional={"type": "null"} in choices)
             case {"anyOf": choices}:
                 return types.ExtraDataField.build(name=name, optional={"type": "null"} in choices)
-            case {"default": default}:
-                return types.ExtraDataField.build(name=name, default=default, optional=False)
             case _:
                 return types.ExtraDataField.build(name=name, optional=False)
 

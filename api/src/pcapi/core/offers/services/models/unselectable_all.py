@@ -12,7 +12,7 @@ class ActivationEventModel(UnselectableBaseModel):
 
 class CaptationMusiqueModel(UnselectableBaseModel):
     subcategory_id: Literal[subcategories.CAPTATION_MUSIQUE.id]
-    extra_data: shared.ExtraDataPerformedMusic | None = None
+    extra_data: shared.ExtraDataMusic
 
 
 class OeuvreArtModel(UnselectableBaseModel):

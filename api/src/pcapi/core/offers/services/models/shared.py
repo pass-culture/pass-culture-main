@@ -3,6 +3,7 @@ from typing import Annotated
 
 import pydantic as pydantic_v2
 from pydantic import AfterValidator
+from pydantic import BeforeValidator
 from pydantic import StringConstraints
 
 from pcapi.core.categories import subcategories
@@ -149,22 +150,25 @@ ACTIVITY_COULD_BE_AN_EVENT = {
 VenueTypeCode = Enum("VenueTypeCode", dict(offerers_schemas.VenueTypeCode.__members__))
 
 
+def parse_venue_type_code(code: str | VenueTypeCode) -> VenueTypeCode:
+    if isinstance(code, VenueTypeCode):
+        return code
+    return VenueTypeCode[code]
+
+
 class Venue(pydantic_v2.BaseModel):
     id: int
-    code: VenueTypeCode
+    code: Annotated[VenueTypeCode, BeforeValidator(parse_venue_type_code)]
     has_ticketing: bool = False
 
 
-NameString = StringConstraints(strip_whitespace=True, min_length=1, max_length=1024)
-GtlIdString = StringConstraints(strip_whitespace=True, min_length=1, max_length=128)
-
-# EanString8 = StringConstraints(strip_whitespace=True, min_length=8, max_length=8)
-# EanString13 = StringConstraints(strip_whitespace=True, min_length=13, max_length=13)
-# EanString128 = StringConstraints(strip_whitespace=True, min_length=128, max_length=128)
-EanString = Annotated[str, AfterValidator(lambda s: len(s) in (8, 13, 128))]
+NameString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=1024)]
+GtlIdString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=128)]
 
 # could probably be a little bit more strict, but let's be safe for now
-VisaString = StringConstraints(strip_whitespace=True, min_length=8, max_length=64)
+VisaString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=8, max_length=64)]
+
+EanString = Annotated[str, AfterValidator(lambda s: len(s) in (8, 13, 128))]
 
 MusicType = Annotated[int, AfterValidator(lambda t: t in music.MUSIC_SLUG_BY_GTL_ID)]
 MusicSubType = Annotated[int, AfterValidator(lambda t: t in music.MUSIC_SUB_TYPES_BY_SLUG)]
@@ -176,73 +180,102 @@ TiteLiveMusicGenres = Annotated[str, AfterValidator(lambda g: g in constants.TIT
 
 
 # TODO(jbaudet - 12/2025): warning: fields should be transformed
-# -> from MUSIC_SLUG_BY_GTL_ID to MUSIC_TYPES_BY_CODE etc.
-# it is... well... complicated...
-class MusicTypeModel(pydantic_v2.BaseModel):
-    music_type: MusicType
-    music_sub_type: MusicSubType
-
-
-# TODO(jbaudet - 12/2025): warning: fields should be transformed
 # -> same as above
 class ShowTypeModel(pydantic_v2.BaseModel):
     show_type: ShowType
     show_sub_type: ShowSubType
 
 
-# TODO(jbaudet - 12/2025): does this one also need some transformation?
-# from I-am-not-sure-where to I-guess-it-is-there perhaps
-class GtlMusicModel(pydantic_v2.BaseModel):
-    gtl_id: TiteLiveMusicGenres
+class ExtraData(pydantic_v2.BaseModel):
+    model_config = pydantic_v2.ConfigDict(extra="forbid")
 
 
-ShowExtraData = MusicTypeModel | ShowTypeModel | GtlMusicModel
+class ExtraDataEan(ExtraData):
+    ean: EanString | None = None
 
 
-class ConcertExtraData(pydantic_v2.BaseModel):
+class ExtraDataShow(ExtraData):
+    show_sub_type: ShowSubType
+    show_type: ShowType
+    author: NameString | None = None
+    performer: NameString | None = None
+    stage_director: NameString | None = None
+
+
+class ConcertExtraData(ExtraData):
     music_type: MusicType | None
     gtl_id: TiteLiveMusicGenres | None = None
 
 
-class ExtraDataPerformedMusic(pydantic_v2.BaseModel):
-    performer: Annotated[str, NameString] | None = None
-    author: Annotated[str, NameString] | None = None
+class ExtraDataMusic(ExtraData):
+    performer: NameString | None = None
+    author: NameString | None = None
     music_type: MusicType | None = None
     music_sub_type: MusicSubType | None = None
     gtl_id: TiteLiveMusicGenres | None = None
 
 
-class ExtraDataLiveMusic(pydantic_v2.BaseModel):
-    music_type: MusicType | None = None
-    music_sub_type: MusicSubType | None = None
-    gtl_id: TiteLiveMusicGenres | None = None
-    performer: Annotated[str, NameString] | None = None
-    author: Annotated[str, NameString] | None = None
+class ExtraDataMusicWithEan(ExtraDataMusic, ExtraDataEan):
+    pass
 
 
-class ExtraDataEan(pydantic_v2.BaseModel):
-    ean: EanString | None
+class ExtraDataCine(ExtraData):
+    visa: VisaString | None = None
+    stage_director: NameString | None = None
+    author: NameString | None = None
 
 
-class ExtraDataCine(pydantic_v2.BaseModel):
-    visa: Annotated[str, VisaString] | None = None
-    stage_director: Annotated[str, NameString] | None = None
-    author: Annotated[str, NameString] | None = None
+class ExtraDataSpeaker(ExtraData):
+    speaker: NameString | None = None
 
 
-class ExtraDataSpeaker(pydantic_v2.BaseModel):
-    speaker: Annotated[str, NameString] | None = None
-
-
-class ExtraDataEvent(pydantic_v2.BaseModel):
+class ExtraDataEvent(ExtraData):
     show_type: ShowType
     show_sub_type: ShowSubType
-    stage_director: Annotated[str, NameString] | None = None
-    performer: Annotated[str, NameString] | None = None
-    author: Annotated[str, NameString] | None = None
+    stage_director: NameString | None = None
+    performer: NameString | None = None
+    author: NameString | None = None
 
 
-class ExtraDataArtistic(pydantic_v2.BaseModel):
+class ExtraDataArtistic(ExtraData):
+    show_type: ShowType
+    show_sub_type: ShowSubType
+    music_type: MusicType
+    music_sub_type: MusicSubType
+    gtl_id: TiteLiveMusicGenres
+
+
+class ExtraDataAuthor(ExtraData):
+    author: NameString | None = None
+
+
+class ExtraDataBook(ExtraDataEan, ExtraDataAuthor):
+    pass
+
+
+class ExtraDataBookWithGtl(ExtraDataBook):
+    gtl_id: GtlIdString | None = None
+
+
+class ExtraDataCine(ExtraData):
+    visa: VisaString | None = None
+    stage_director: NameString | None = None
+    author: NameString | None = None
+
+
+class ExtraDataSpeaker(ExtraData):
+    speaker: NameString | None = None
+
+
+class ExtraDataEvent(ExtraData):
+    show_type: ShowType
+    show_sub_type: ShowSubType
+    stage_director: NameString | None = None
+    performer: NameString | None = None
+    author: NameString | None = None
+
+
+class ExtraDataArtistic(ExtraData):
     show_type: ShowType
     show_sub_type: ShowSubType
     music_type: MusicType

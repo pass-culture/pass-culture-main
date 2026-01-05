@@ -8,10 +8,12 @@ from . import shared
 
 class TelechargementMusiqueModel(DigitalBaseModel):
     subcategory_id: Literal[subcategories.TELECHARGEMENT_MUSIQUE.id]
+    extra_data: shared.ExtraDataMusicWithEan
 
 
 class LivreNumeriqueModel(DigitalBaseModel):
     subcategory_id: Literal[subcategories.LIVRE_NUMERIQUE.id]
+    extra_data: shared.ExtraDataBook
 
 
 class PlateformePratiqueArtistiqueModel(DigitalBaseModel):
@@ -32,6 +34,7 @@ class VisiteVirtuelleModel(DigitalBaseModel):
 
 class PratiqueArtVenteDistanceModel(DigitalBaseModel):
     subcategory_id: Literal[subcategories.PRATIQUE_ART_VENTE_DISTANCE.id]
+    extra_data: shared.ExtraDataSpeaker
 
 
 class AboPlateformeVideoModel(DigitalBaseModel):
@@ -70,6 +73,7 @@ class PodcastModel(DigitalBaseModel):
 
 class TelechargementLivreAudioModel(DigitalBaseModel):
     subcategory_id: Literal[subcategories.TELECHARGEMENT_LIVRE_AUDIO.id]
+    extra_data: shared.ExtraDataAuthor
 
 
 class AboPlateformeMusiqueModel(DigitalBaseModel):

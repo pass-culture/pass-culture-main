@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width" />
+		<title>Modèles d'offres</title>
+	</head>
+
+	<body>
+		<h1>Modèles d'offres</h1>
+
+		{% for schema in schemas %}
+			<h2>{{ schema.subcategory.pro_label }}<h2>
+
+			<h3>Informations obligatoires</h3>
+			<ul>
+				{% for field in schema.properties.required %}
+					<li>{{ field }}</li>
+				{% endfor %}
+			</ul>
+
+			<h3>Informations optionnelles</h3>
+			<ul>
+				{% for field in schema.properties.optional %}
+					<li>{{ field }}</li>
+				{% endfor %}
+			</ul>
+		{% endfor %}
+	</body>
+</html>

@@ -9,8 +9,7 @@ from .digital import DigitalBaseModel
 
 
 class DigitalShowModel(DigitalBaseModel):
-    extra_data: shared.ShowExtraData | None
-    model_config = pydantic_v2.ConfigDict(extra="forbid")
+    extra_data: shared.ExtraDataShow | None
 
 
 class SpectacleEnregistreModel(DigitalShowModel):
