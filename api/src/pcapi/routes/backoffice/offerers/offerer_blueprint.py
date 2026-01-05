@@ -1164,7 +1164,7 @@ def get_bank_accounts(offerer_id: int) -> utils.BackofficeResponse:
                 finance_models.BankAccount.offererId,
             ),
         )
-        .order_by(sa.func.lower(finance_models.BankAccountStatusHistory.timespan).desc().nulls_last())
+        .order_by(finance_models.BankAccount.id.desc())
         .all()
     )
     connect_as = {}

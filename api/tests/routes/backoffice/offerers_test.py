@@ -1857,24 +1857,24 @@ class GetOffererBankAccountTest(GetEndpointHelper):
         rows = html_parser.extract_table_rows(response.data)
         assert len(rows) == 3
 
-        assert rows[0]["ID"] == str(bank2.id)
-        assert rows[0]["Intitulé du compte bancaire"] == bank2.label
-        assert rows[0]["Statut du dossier DN CB"] == "En instruction"
-        assert rows[0]["Date de dernière mise à jour"].startswith(
+        assert rows[0]["ID"] == str(bank_with_no_history.id)
+        assert rows[0]["Intitulé du compte bancaire"] == bank_with_no_history.label
+        assert rows[0]["Statut du dossier DN CB"] == "Accepté"
+        assert rows[0]["Date de dernière mise à jour"] == ""
+
+        assert rows[1]["ID"] == str(bank2.id)
+        assert rows[1]["Intitulé du compte bancaire"] == bank2.label
+        assert rows[1]["Statut du dossier DN CB"] == "En instruction"
+        assert rows[1]["Date de dernière mise à jour"].startswith(
             (now - datetime.timedelta(days=2)).strftime("%d/%m/%Y à")
         )
 
-        assert rows[1]["ID"] == str(bank1.id)
-        assert rows[1]["Intitulé du compte bancaire"] == bank1.label
-        assert rows[1]["Statut du dossier DN CB"] == "Accepté"
-        assert rows[1]["Date de dernière mise à jour"].startswith(
+        assert rows[2]["ID"] == str(bank1.id)
+        assert rows[2]["Intitulé du compte bancaire"] == bank1.label
+        assert rows[2]["Statut du dossier DN CB"] == "Accepté"
+        assert rows[2]["Date de dernière mise à jour"].startswith(
             (now - datetime.timedelta(days=3)).strftime("%d/%m/%Y à")
         )
-
-        assert rows[2]["ID"] == str(bank_with_no_history.id)
-        assert rows[2]["Intitulé du compte bancaire"] == bank_with_no_history.label
-        assert rows[2]["Statut du dossier DN CB"] == "Accepté"
-        assert rows[2]["Date de dernière mise à jour"] == ""
 
 
 class CommentOffererTest(PostEndpointHelper):
