@@ -175,6 +175,7 @@ class DecideEligibilityTest:
 
         assert eligibility is None
 
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     def test_19yo_is_eligible_if_application_at_18_yo(self):
         today = date.today()
         birth_date = today - relativedelta(years=19, days=1)

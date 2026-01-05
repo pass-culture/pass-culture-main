@@ -1314,7 +1314,7 @@ class RunIntegrationTest:
 
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     def test_import_ex_underage_beneficiary(self, get_applications_with_details):
-        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, month=1)):
+        with time_machine.travel(date_utils.get_naive_utc_now() - relativedelta(years=2, months=1)):
             user = users_factories.UnderageBeneficiaryFactory(
                 email="john.doe@example.com",
                 firstName="john",

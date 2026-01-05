@@ -406,6 +406,7 @@ class UbbleWorkflowV2Test:
         assert user.dateOfBirth == sixteen_years_ago
         assert user.validatedBirthDate == seventeen_years_ago
 
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
     @pytest.mark.features(ENABLE_PHONE_VALIDATION=False)
     def test_ubble_workflow_updates_birth_date_on_eligibility_upgrade(self, store_id_pictures_task_mock, requests_mock):
@@ -495,6 +496,7 @@ class UbbleWorkflowV2Test:
         assert ko_fraud_check.eligibilityType == users_models.EligibilityType.AGE18
         assert fraud_check.reasonCodes == [subscription_models.FraudReasonCode.AGE_TOO_OLD]
 
+    @time_machine.travel(settings.CREDIT_V3_DECREE_DATETIME)
     @patch("pcapi.core.subscription.ubble.tasks.store_id_pictures_task.delay")
     def test_ubble_workflow_with_eligibility_change_with_first_attempt_at_18(
         self, store_id_pictures_task_mock, requests_mock
