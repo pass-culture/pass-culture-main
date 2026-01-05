@@ -85,6 +85,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         )
         .filter(
             offerers_models.Venue.managingOffererId == offerer_id,
+            offerers_models.Venue.isSoftDeleted.is_(False),
         )
         .group_by(sa.text("status"))
         .subquery()
@@ -101,6 +102,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         .select_from(offerers_models.Venue)
         .filter(
             offerers_models.Venue.managingOffererId == offerers_models.Offerer.id,
+            offerers_models.Venue.isSoftDeleted.is_(False),
             offerers_models.Venue.isVirtual.is_(False),
         )
         .correlate(offerers_models.Offerer)
@@ -120,6 +122,7 @@ def _load_offerer_data(offerer_id: int) -> sa.engine.Row:
         sa.exists()
         .where(offerers_models.Venue.managingOffererId == offerers_models.Offerer.id)
         .where(sa.not_(offerers_models.Venue.isVirtual))
+        .where(offerers_models.Venue.isSoftDeleted.is_(False))
     )
 
     has_offerer_address_query = (
