@@ -14,6 +14,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users.factories import ProFactory
 from pcapi.core.users.models import NotificationSubscriptions
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.utils import date as date_utils
 
@@ -224,6 +225,14 @@ def test_update_external_pro_user_attributes(
     offerers_factories.VenueFactory(
         managingOfferer=offerers_factories.UserNotValidatedOffererFactory(user=pro_user).offerer, bookingEmail=email
     )
+
+    # Venues should be ignored when building attributes: soft deleted
+    soft_deleted_venue_1 = offerers_factories.VenueFactory(name="soft deleted 1", managingOfferer=offerer1)
+    soft_deleted_venue_1.isSoftDeleted = True
+    soft_deleted_venue_2 = offerers_factories.VenueFactory(name="soft deleted 2", bookingEmail=email)
+    soft_deleted_venue_2.isSoftDeleted = True
+    db.session.add_all((soft_deleted_venue_1, soft_deleted_venue_2))
+    db.session.flush()
 
     if create_dms_accepted:
         offerers_factories.VenueBankAccountLinkFactory(

@@ -12,6 +12,7 @@ from pcapi.core.users import constants as user_constants
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as users_testing
 from pcapi.core.users.models import PhoneValidationStatusType
+from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils import postal_code as postal_code_utils
 
@@ -188,9 +189,12 @@ class ZendeskWebhookTest:
     @pytest.mark.parametrize("pro_factory", [users_factories.ProFactory, users_factories.NonAttachedProFactory])
     def test_webhook_update_pro_by_user_email(self, client, pro_factory):
         pro_user = pro_factory(email="pro@example.com")
-        venue = offerers_factories.VenueFactory(
-            bookingEmail=pro_user.email, offererAddress__address__postalCode="75018"
-        )
+        offerer = offerers_factories.UserOffererFactory(user=pro_user).offerer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__postalCode="75018")
+        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
 
         response = client.post(
             "/webhooks/zendesk/ticket_notification",
