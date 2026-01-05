@@ -165,6 +165,11 @@ class GetOffererTest(GetEndpointHelper):
             bankAccount=finance_factories.BankAccountFactory(label="Ancien compte", offererId=offerer.id),
         )
 
+        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
+
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url)
@@ -176,6 +181,10 @@ class GetOffererTest(GetEndpointHelper):
         offerer = offerers_factories.OffererFactory(allowedOnAdage=True)
         offerers_factories.VenueFactory(managingOfferer=offerer, adageId="1234")
         offerers_factories.VenueFactory(managingOfferer=offerer, adageId=None)
+        soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        soft_deleted_venue.isSoftDeleted = True
+        db.session.add(soft_deleted_venue)
+        db.session.flush()
 
         url = url_for(self.endpoint, offerer_id=offerer.id)
         with assert_num_queries(self.expected_num_queries):
