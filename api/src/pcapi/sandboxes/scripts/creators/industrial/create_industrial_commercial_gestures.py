@@ -420,7 +420,15 @@ def create_industrial_commercial_gestures() -> None:
         )
 
     cashflow_batch = finance_api.generate_cashflows_and_payment_files(cutoff=date_utils.get_naive_utc_now())
-    finance_api.generate_invoices_and_debit_notes_legacy(cashflow_batch)
+    finance_api.generate_invoices_and_debit_notes(cashflow_batch)
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
+        .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
+        .filter(finance_models.Cashflow.batchId == cashflow_batch.id)
+    )
+    for invoice in invoices:
+        finance_api.validate_invoice(invoice)
     db.session.flush()
 
     for i in range(2):

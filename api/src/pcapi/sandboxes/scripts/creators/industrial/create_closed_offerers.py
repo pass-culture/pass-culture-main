@@ -147,4 +147,4 @@ def _create_closed_offerer(
         finance_api.generate_cashflows_and_payment_files(cutoff=now)
         cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
         cashflow_ids = [c.id for c in cashflows]
-        finance_api.generate_and_store_invoice_legacy(bank_account_id=bank_account.id, cashflow_ids=cashflow_ids)
+        finance_api.generate_and_store_invoice(bank_account_id=bank_account.id, cashflow_ids=cashflow_ids)

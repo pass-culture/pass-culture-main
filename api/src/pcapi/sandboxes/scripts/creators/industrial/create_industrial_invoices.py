@@ -42,7 +42,15 @@ def create_industrial_invoices() -> None:
     cashflows_created = db.session.query(finance_models.Cashflow).count()
     logger.info("Created %s Cashflows", cashflows_created)
 
-    finance_api.generate_invoices_and_debit_notes_legacy(batch)
+    finance_api.generate_invoices_and_debit_notes(batch)
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
+        .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
+        .filter(finance_models.Cashflow.batchId == batch.id)
+    )
+    for invoice in invoices:
+        finance_api.validate_invoice(invoice)
     logger.info("Created %s Invoices", db.session.query(finance_models.Invoice).count())
 
 
@@ -89,7 +97,7 @@ def create_free_invoice() -> None:
     cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
-    finance_api.generate_and_store_invoice_legacy(
+    finance_api.generate_and_store_invoice(
         bank_account_id=bank_account.id,
         cashflow_ids=cashflow_ids,
     )
@@ -223,7 +231,7 @@ def create_specific_invoice() -> None:
     cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
     cashflow_ids = [c.id for c in cashflows]
 
-    finance_api.generate_and_store_invoice_legacy(
+    finance_api.generate_and_store_invoice(
         bank_account_id=bank_account.id,
         cashflow_ids=cashflow_ids,
     )
@@ -287,7 +295,7 @@ def build_many_extra_invoices(count: int = 2) -> None:
 
         max_invoice_id_before = db.session.query(sa.func.max(finance_models.Invoice.id)).scalar()
 
-        finance_api.generate_and_store_invoice_legacy(
+        finance_api.generate_and_store_invoice(
             bank_account_id=bank_account.id,
             cashflow_ids=cashflow_ids,
         )

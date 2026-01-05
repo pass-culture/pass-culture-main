@@ -11,8 +11,6 @@ import sqlalchemy.orm as sa_orm
 from flask import current_app as app
 
 import pcapi.core.finance.api as finance_api
-import pcapi.core.finance.exceptions as finance_exceptions
-import pcapi.core.finance.models as finance_models
 import pcapi.core.finance.utils as finance_utils
 import pcapi.core.offers.models as offers_models
 import pcapi.utils.cron as cron_decorators
@@ -25,8 +23,6 @@ from pcapi.core.finance import ds
 from pcapi.core.finance import external as finance_external
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.notifications.internal import send_internal_message
-from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import export_csv_and_send_notification_emails
 from pcapi.utils.blueprint import Blueprint
 
 
@@ -59,71 +55,7 @@ def generate_cashflows_and_payment_files(
         last_day = datetime.date.today() - datetime.timedelta(days=1)
         cutoff = finance_utils.get_cutoff_as_datetime(last_day)
     batch = finance_api.generate_cashflows_and_payment_files(cutoff)
-    if FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW:
-        finance_api.generate_invoices_and_debit_notes(batch)
-    elif not without_invoices:
-        try:
-            finance_api.generate_invoices_and_debit_notes_legacy(batch)
-        except finance_exceptions.NoInvoiceToGenerate:
-            logger.info("Neither invoice nor debit note to generate")
-
-        if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
-            send_internal_message(
-                channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,
-                blocks=[
-                    {
-                        "type": "section",
-                        "text": {
-                            "type": "mrkdwn",
-                            "text": f"La Génération de factures ({batch.label}) est terminée avec succès",
-                        },
-                    }
-                ],
-                icon_emoji=":large_green_circle:",
-            )
-        if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
-            export_csv_and_send_notification_emails(batch.id, batch.label)
-
-
-@blueprint.cli.command("generate_invoices")
-@click.option("--batch-id", type=int, required=True)
-def generate_invoices(batch_id: int) -> None:
-    """Generate (and store) all invoices of a CashflowBatch.
-
-    This command can be run multiple times.
-    """
-    batch = db.session.get(finance_models.CashflowBatch, batch_id)
-    if not batch:
-        print(f"Could not generate invoices for this batch, as it doesn't exist :{batch_id}")
-        return
-
-    if FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW:
-        logger.warning(
-            "Standalone `generate_invoices` command is deprecated. "
-            "It's integrated in `generate_cashflows_and_payment_files` command."
-        )
-
-    try:
-        finance_api.generate_invoices_and_debit_notes_legacy(batch)
-    except finance_exceptions.NoInvoiceToGenerate:
-        logger.info("Neither invoice nor debit note to generate")
-
-    if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
-        send_internal_message(
-            channel=settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL,
-            blocks=[
-                {
-                    "type": "section",
-                    "text": {
-                        "type": "mrkdwn",
-                        "text": f"La Génération de factures ({batch.label}) est terminée avec succès",
-                    },
-                }
-            ],
-            icon_emoji=":large_green_circle:",
-        )
-    if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
-        export_csv_and_send_notification_emails(batch_id, batch.label)
+    finance_api.generate_invoices_and_debit_notes(batch)
 
 
 @blueprint.cli.command("add_custom_offer_reimbursement_rule")
@@ -281,11 +213,8 @@ def push_bank_accounts(count: int) -> None:
 )
 @cron_decorators.log_cron_with_transaction
 def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
-    if not FeatureToggle.WIP_ENABLE_NEW_FINANCE_WORKFLOW or not FeatureToggle.ENABLE_INVOICE_SYNC:
-        logger.info(
-            "Sync invoice cronjob with not run. "
-            "Both WIP_ENABLE_NEW_FINANCE_WORKFLOW and ENABLE_INVOICE_SYNC feature must be activated"
-        )
+    if not FeatureToggle.ENABLE_INVOICE_SYNC:
+        logger.info("Sync invoice cronjob with not run. ENABLE_INVOICE_SYNC feature must be activated")
         return
 
     # in case of a pod fail unrelated to the script, we delete the lock so the restart works

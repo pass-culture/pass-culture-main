@@ -62,10 +62,11 @@ class EducationalWorkflowTest:
             cashflow_ids = [c.id for c in db.session.query(finance_models.Cashflow)]
 
             bank_account_id = bank_account.id
-            finance_api._generate_invoice_legacy(
+            invoice = finance_api._generate_invoice(
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
             )
+            finance_api.validate_invoice(invoice.id)
 
             assert collective_offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.REIMBURSED
             assert collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED

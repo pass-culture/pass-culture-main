@@ -20,7 +20,6 @@ from pcapi.utils import date as date_utils
 pytestmark = [
     pytest.mark.usefixtures("db_session", "clean_dummy_backend_data"),
     pytest.mark.features(
-        WIP_ENABLE_NEW_FINANCE_WORKFLOW=True,
         ENABLE_BANK_ACCOUNT_SYNC=True,
         ENABLE_INVOICE_SYNC=True,
     ),
