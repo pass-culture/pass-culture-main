@@ -4,9 +4,8 @@
 /* eslint-disable */
 import type { ArtistType } from './ArtistType';
 export type ArtistOfferResponseModel = {
-  artistId?: string | null;
-  artistName: string;
+  artistId: string | null;
   artistType: ArtistType;
-  customName?: string | null;
+  customName: string | null;
 };
 

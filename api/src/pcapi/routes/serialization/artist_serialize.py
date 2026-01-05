@@ -1,4 +1,5 @@
 from pydantic import RootModel
+from pydantic.v1 import Field
 
 from pcapi.core.artist import models as artist_models
 from pcapi.routes.serialization import ConfiguredBaseModel
@@ -21,6 +22,6 @@ class ArtistQueryModel(HttpQueryParamsModel):
 
 
 class ArtistOfferResponseModel(ConfiguredBaseModel):
-    artist_id: str | None
+    artist_id: str | None = Field(...)
     artist_type: artist_models.ArtistType
-    custom_name: str | None
+    custom_name: str | None = Field(...)

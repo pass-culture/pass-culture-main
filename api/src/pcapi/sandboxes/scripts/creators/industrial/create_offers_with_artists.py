@@ -29,12 +29,12 @@ def create_offers_with_artists() -> None:
         book_offer = offers_factories.OfferFactory(
             venue=venue,
             subcategoryId=subcategories.LIVRE_PAPIER.id,
-            name="Un chouette livre 🦉",
+            name="Un chouette livre avec artiste 🦉",
         )
         offers_factories.StockFactory(offer=book_offer)
 
         theater_offer = offers_factories.OfferFactory(
-            venue=venue, subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, name="Une pièce sympa 🪙"
+            venue=venue, subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id, name="Une pièce sympa avec artiste 🪙"
         )
         offers_factories.StockFactory(offer=theater_offer)
 

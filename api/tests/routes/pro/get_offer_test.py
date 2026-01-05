@@ -148,7 +148,7 @@ class Returns200Test:
 
         assert response.json == {
             "activeMediation": None,
-            "artists": None,
+            "artistOfferLinks": [],
             "bookingContact": None,
             "bookingsCount": 0,
             "bookingEmail": "offer.booking.email@example.com",

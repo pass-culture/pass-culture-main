@@ -304,12 +304,14 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.LIVRE_PAPIER.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
         )
+
+        offer_without_product = offers_factories.OfferFactory.create(venue=venue)
         offers_factories.ArtistOfferLinkFactory.create(
-            artist_id=artist_1.id, offer_id=offer.id, artist_type=ArtistType.AUTHOR
+            artist_id=artist_1.id, offer_id=offer_without_product.id, artist_type=ArtistType.AUTHOR
         )
     artist_factories.ArtistAliasFactory.create(
         artist_id=artist_1.id, artist_alias_name="Virginie Despentes", artist_wiki_data_id="Q295015"
@@ -328,12 +330,14 @@ def create_artists() -> None:
     )
     for _ in range(10):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
+        offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
+
+        offer_without_product = offers_factories.OfferFactory.create(venue=venue)
         offers_factories.ArtistOfferLinkFactory.create(
-            artist_id=artist_2.id, offer_id=offer.id, artist_type=ArtistType.PERFORMER
+            artist_id=artist_2.id, offer_id=offer_without_product.id, artist_type=ArtistType.PERFORMER
         )
     for alias_index in range(20):
         artist_factories.ArtistAliasFactory.create(
