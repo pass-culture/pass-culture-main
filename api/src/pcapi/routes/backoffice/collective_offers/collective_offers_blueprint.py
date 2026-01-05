@@ -651,21 +651,25 @@ def _batch_validate_or_reject_collective_offers(
             if validation is offer_mixin.OfferValidationStatus.APPROVED and collective_offer.institutionId is not None:
                 try:
                     adage_client.notify_institution_association(serialize_collective_offer(collective_offer))
-                except educational_exceptions.AdageException as exp:
+                except educational_exceptions.AdageException as exc:
                     # when the call to Adage fails, we log an error and warn the user but we still validate the offer
                     logger.exception(
                         "Error on Adage notify when validating collective offer",
-                        extra={"collective_offer_id": collective_offer_id, "status_code": exp.status_code, "exp": exp},
+                        extra={
+                            "collective_offer_id": collective_offer_id,
+                            "status_code": exc.status_code,
+                            "exception": exc,
+                        },
                     )
 
-                    if isinstance(exp, educational_exceptions.AdageInvalidEmailException):
+                    if isinstance(exc, educational_exceptions.AdageInvalidEmailException):
                         markup = Markup(
                             "Offre validée mais email invalide pour l'offre <b>{offer_id}</b>, ADAGE n'a pas été notifié"
                         ).format(offer_id=collective_offer.id)
                     else:
                         markup = Markup(
                             "Offre validée mais erreur lors de la notification à ADAGE pour l'offre <b>{offer_id}</b> : {message}"
-                        ).format(offer_id=collective_offer.id, message=exp.message)
+                        ).format(offer_id=collective_offer.id, message=exc.message)
 
                     flash(markup, "warning")
 
