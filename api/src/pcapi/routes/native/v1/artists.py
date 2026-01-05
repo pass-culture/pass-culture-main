@@ -25,5 +25,6 @@ def get_artist(artist_id: str) -> serializers.ArtistResponse:
         name=artist.name,
         description=artist.biography or artist.description,
         description_credit="© Contenu généré par IA \u2728" if artist.biography else None,
+        description_source=artist.wikipedia_url if artist.biography else None,
         image=artist.thumbUrl,
     )

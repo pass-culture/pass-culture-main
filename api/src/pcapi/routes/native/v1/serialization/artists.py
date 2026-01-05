@@ -6,4 +6,5 @@ class ArtistResponse(ConfiguredBaseModel):
     name: str
     description: str | None
     description_credit: str | None
+    description_source: str | None
     image: str | None
