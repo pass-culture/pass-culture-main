@@ -38,6 +38,8 @@ assert not (IS_PROD and IS_PERFORMANCE_TESTS)
 
 RUNS_ON_KUBERNETES = IS_TESTING or IS_STAGING or IS_PROD or IS_INTEGRATION or IS_OPS
 
+IS_NEW_INFRA = bool(int(os.environ.get("IS_NEW_INFRA", "0")))
+
 # Load configuration files
 env_path = Path(f"./.env.{ENV}")
 load_dotenv(dotenv_path=env_path)
