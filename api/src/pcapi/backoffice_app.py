@@ -101,4 +101,5 @@ if __name__ == "__main__":
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
     set_tag("pcapi.app_type", "app")
+    set_tag("pcapi.is_new_infra", settings.IS_NEW_INFRA)
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
