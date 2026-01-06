@@ -263,7 +263,9 @@ export const HeaderDropdown = () => {
               </DropdownMenu.Item>
             )}
             <DropdownMenu.Separator
-              className={cn(styles['separator'], styles['tablet-only'])}
+              className={cn(styles['separator'], {
+                [styles['tablet-only']]: !withSwitchVenueFeature,
+              })}
             />
             {!withSwitchVenueFeature && (
               <DropdownMenu.Label
