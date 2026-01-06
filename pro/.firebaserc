@@ -9,39 +9,30 @@
   "targets": {
     "passculture-pro": {
       "hosting": {
-        "passculture-pro": [
-          "passculture-pro"
-        ]
+        "passculture-pro": ["passculture-pro"]
       }
     },
     "pc-pro-testing": {
       "hosting": {
-        "pc-pro-testing": [
-          "pc-pro-testing"
-        ]
+        "pc-pro-testing": ["pc-pro-testing"],
+        "pc-pro-storybook": ["pc-pro-storybook"]
       }
     },
     "pc-pro-staging": {
       "hosting": {
-        "pc-pro-staging": [
-          "pc-pro-staging"
-        ]
+        "pc-pro-staging": ["pc-pro-staging"]
       }
     },
     "pc-pro-integration": {
       "hosting": {
-        "pc-pro-integration": [
-          "pc-pro-integration"
-        ]
+        "pc-pro-integration": ["pc-pro-integration"]
       }
     },
     "pc-pro-production": {
-        "hosting": {
-          "pc-pro-production": [
-            "pc-pro-production"
-          ]
-        }
+      "hosting": {
+        "pc-pro-production": ["pc-pro-production"]
       }
+    }
   },
   "etags": {}
 }
