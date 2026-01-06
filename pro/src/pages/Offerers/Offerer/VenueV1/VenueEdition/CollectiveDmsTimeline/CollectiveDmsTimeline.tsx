@@ -99,7 +99,7 @@ export const CollectiveDmsTimeline = ({
           to={collectiveDmsContactSupport}
           isExternal
         >
-          Contacter les services des Ministères de l’Education Nationale et de
+          Contacter les services des ministères de l’Éducation nationale et de
           la Culture
         </ButtonLink>
       </>
@@ -119,7 +119,7 @@ export const CollectiveDmsTimeline = ({
           <div className={styles['timeline-step-description']}>
             Votre dossier est en cours d’instruction par la commission de
             référencement de votre territoire. Si votre dossier concerne un
-            établissement public, il est traité par le Ministère de la Culture.
+            établissement public, il est traité par le ministère de la Culture.
           </div>
         </div>
         <ButtonLink
@@ -158,7 +158,7 @@ export const CollectiveDmsTimeline = ({
           <br />
           <div className={styles['timeline-step-description']}>
             Votre structure doit encore être référencée dans ADAGE par les
-            équipes du Ministère de l’Éducation nationale. Vous recevrez un mail
+            équipes du ministère de l’Éducation nationale. Vous recevrez un mail
             lorsque votre référencement sera effectif.
           </div>
         </div>
@@ -199,8 +199,8 @@ export const CollectiveDmsTimeline = ({
           Votre structure est en cours d’ajout dans ADAGE
         </div>
         <div className={styles['timeline-step-description']}>
-          Une fois votre structure ajoutée dans ADAGE par le Ministère de
-          l’Education Nationale, vous pourrez renseigner vos informations à
+          Une fois votre structure ajoutée dans ADAGE par le ministère de
+          l’Éducation nationale, vous pourrez renseigner vos informations à
           destination des enseignants et créer des offres à destination des
           scolaires.
         </div>
@@ -214,7 +214,7 @@ export const CollectiveDmsTimeline = ({
       <>
         <div className={styles['timeline-step-title-disabled']}>
           Votre structure a été référencée dans ADAGE par les équipes du
-          Ministère de l’Education Nationale
+          ministère de l’Éducation nationale
         </div>
         <div>{adageDate}</div>
         <div className={styles['timeline-infobox']}>
@@ -284,7 +284,7 @@ export const CollectiveDmsTimeline = ({
         {
           href: collectiveDmsContactSupport,
           label:
-            'Contacter les services des Ministères de l’Education Nationale et de la Culture',
+            'Contacter les services des ministères de l’Éducation nationale et de la Culture',
           isExternal: true,
           icon: fullLinkIcon,
           iconAlt: 'Nouvelle fenêtre',

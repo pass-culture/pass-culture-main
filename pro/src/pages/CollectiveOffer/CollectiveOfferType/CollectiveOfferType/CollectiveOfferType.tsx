@@ -172,7 +172,7 @@ export const CollectiveOfferType = ({ offerer }: CollectiveOfferTypeProps) => {
                 },
               ]}
               variant={BannerVariants.ERROR}
-              description="Les offres collectives nécessitent un référencement auprès des ministères de l'Éducation Nationale et de la Culture."
+              description="Les offres collectives nécessitent un référencement auprès des ministères de l'Éducation nationale et de la Culture."
             />
           </div>
         ))}
