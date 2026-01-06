@@ -152,6 +152,7 @@ def _get_sent_pricings_for_collective_bookings(
         .outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
+            models.Invoice.status == models.InvoiceStatus.PAID,
             (
                 (
                     sa.cast(models.Cashflow.creationDate, sa.Date).between(
@@ -273,6 +274,7 @@ def _get_sent_pricings_for_individual_bookings(
         query.outerjoin(models.Pricing.customRule)
         .filter(
             models.Pricing.status == models.PricingStatus.INVOICED,
+            models.Invoice.status == models.InvoiceStatus.PAID,
             (
                 (
                     sa.cast(models.Cashflow.creationDate, sa.Date).between(
@@ -348,6 +350,7 @@ def _get_reimbursement_details_from_invoices_base_query(invoice_ids: list[int]) 
             # complement. We don't want these bookings to be listed
             # twice.
             models.Invoice.reference.not_like("%.2"),
+            models.Invoice.status == models.InvoiceStatus.PAID,
         )
         .join(models.InvoiceCashflow, models.InvoiceCashflow.invoiceId == models.Invoice.id)
         .join(models.Cashflow, models.Cashflow.id == models.InvoiceCashflow.cashflowId)
