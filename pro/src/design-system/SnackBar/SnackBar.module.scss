@@ -18,6 +18,14 @@
     padding: var(--size-spacing-l);
     gap: var(--size-spacing-s);
 
+    /*
+      Necessary to make it clickable when a Radix dialog is open !
+
+      This is because Radix explicitely sets `pointer-events: none` on the body when the dialog is open, and this wrapper will inherits this value.
+      So we set here to `auto` to make it clickable.
+    */
+    pointer-events: auto;
+
     .content {
       align-items: center;
       display: flex;
