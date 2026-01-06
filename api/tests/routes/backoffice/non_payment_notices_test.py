@@ -346,8 +346,11 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert action.venueId is None
         assert action.extraData == {"non_payment_notice_id": notice.id}
 
-    def test_create_non_payment_notice_with_venue_only(self, authenticated_client, legit_user):
-        venue = offerers_factories.VenueFactory()
+    @pytest.mark.parametrize(
+        "venue_factory", [offerers_factories.VenueFactory, offerers_factories.VenueWithoutSiretFactory]
+    )
+    def test_create_non_payment_notice_with_venue_only(self, authenticated_client, legit_user, venue_factory):
+        venue = venue_factory()
         response = self.post_to_endpoint(
             authenticated_client,
             form={
@@ -389,9 +392,12 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert action.venueId == venue.id
         assert action.extraData == {"non_payment_notice_id": notice.id}
 
-    def test_create_non_payment_notice_with_offerer_and_venue(self, authenticated_client, legit_user):
+    @pytest.mark.parametrize(
+        "venue_factory", [offerers_factories.VenueFactory, offerers_factories.VenueWithoutSiretFactory]
+    )
+    def test_create_non_payment_notice_with_offerer_and_venue(self, authenticated_client, legit_user, venue_factory):
         offerer = offerers_factories.OffererFactory()
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
+        venue = venue_factory(managingOfferer=offerer)
         response = self.post_to_endpoint(
             authenticated_client,
             form={

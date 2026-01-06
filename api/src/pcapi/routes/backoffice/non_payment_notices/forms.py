@@ -121,11 +121,11 @@ class CreateNonPaymentNoticeForm(FlaskForm):
         endpoint="backoffice_web.autocomplete_offerers",
     )
     venue = fields.PCTomSelectField(
-        "Partenaire culturel (avec SIRET)",
+        "Partenaire culturel",
         multiple=False,
         choices=[],
         validate_choice=False,
-        endpoint="backoffice_web.autocomplete_pricing_points",
+        endpoint="backoffice_web.autocomplete_venues",
     )
 
     def validate(self, extra_validators: dict | None = None) -> bool:
