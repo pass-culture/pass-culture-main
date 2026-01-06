@@ -5,6 +5,9 @@ import logging
 import re
 
 import pydantic.v1 as pydantic_v1
+from pydantic import BaseModel as BaseModelV2
+from pydantic import Field
+from pydantic import HttpUrl
 
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
@@ -146,6 +149,59 @@ class UbbleV2AttemptResponse(pydantic_v1.BaseModel):
     # https://docs.ubble.ai/#tag/Identity-verifications/operation/create_attempt
     id: str
     links: UbbleLinks = pydantic_v1.Field(alias="_links")
+
+
+class AttemptStatus(enum.StrEnum):
+    PENDING_REDIRECTION = enum.auto()
+    CAPTURE_IN_PROGRESS = enum.auto()
+    CHECKS_IN_PROGRESS = enum.auto()
+    COMPLETED = enum.auto()
+    EXPIRED = enum.auto()
+    CAPTURE_ABORTED = enum.auto()
+    CAPTURE_REFUSED = enum.auto()
+    CHECKS_INCONCLUSIVE = enum.auto()
+    TERMINATED = enum.auto()
+
+
+class AttemptData(BaseModelV2):
+    id: str
+    status: AttemptStatus
+
+
+class GetAttemptsResponse(BaseModelV2):
+    data: list[AttemptData]
+
+
+class UbbleLinkV2(BaseModelV2):
+    href: HttpUrl
+
+
+class AssetType(enum.StrEnum):
+    FACE_IMAGE = enum.auto()
+    FACE_VIDEO = enum.auto()
+    DOCUMENT_FRONT_IMAGE = enum.auto()
+    DOCUMENT_BACK_IMAGE = enum.auto()
+    DOCUMENT_FRONT_VIDEO = enum.auto()
+    DOCUMENT_SIGNATURE_IMAGE = enum.auto()
+    DOCUMENT_BACK_VIDEO = enum.auto()
+    SECONDARY_DOCUMENT_FRONT_VIDEO = enum.auto()
+    SECONDARY_DOCUMENT_FRONT_IMAGE = enum.auto()
+    SECONDARY_DOCUMENT_BACK_IMAGE = enum.auto()
+    SECONDARY_DOCUMENT_SIGNATURE_IMAGE = enum.auto()
+    SECONDARY_DOCUMENT_BACK_VIDEO = enum.auto()
+
+
+class AssetLink(BaseModelV2):
+    asset_url: UbbleLinkV2
+
+
+class AttemptAssetData(BaseModelV2):
+    type: AssetType
+    links: AssetLink = Field(validation_alias="_links")
+
+
+class GetAttemptAssetsResponse(BaseModelV2):
+    data: list[AttemptAssetData]
 
 
 class WebhookBodyData(pydantic_v1.BaseModel):

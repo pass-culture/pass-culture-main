@@ -1,3 +1,9 @@
+"""
+Implementation of the Ubble API.
+
+See the documentation at https://docs.ubble.ai/
+"""
+
 import functools
 import logging
 import typing
@@ -30,6 +36,10 @@ class UbbleConflictError(UbbleHttpError):
 
 
 class UbbleRateLimitedError(UbbleHttpError):
+    pass
+
+
+class UbbleAssetExpiredError(UbbleHttpError):
     pass
 
 
@@ -219,6 +229,34 @@ def get_identity_verification(identification_id: str) -> ubble_schemas.UbbleCont
     return ubble_serializers.convert_identification_to_ubble_content(ubble_identification)
 
 
+@log_and_handle_ubble_response("get-attempts")
+@ubble_rate_limit
+def get_attempts(identification_id: str) -> list[ubble_serializers.AttemptData]:
+    response = requests.get(
+        build_url(f"/v2/identity-verifications/{identification_id}/attempts"),
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+        timeout=60,
+    )
+    response.raise_for_status()
+
+    deserialized_response = ubble_serializers.GetAttemptsResponse.model_validate(response.json())
+    return deserialized_response.data
+
+
+@log_and_handle_ubble_response("get-attempt-assets")
+@ubble_rate_limit
+def get_attempt_assets(identification_id: str, attempt_id: str) -> dict[ubble_serializers.AssetType, str]:
+    response = requests.get(
+        build_url(f"/v2/identity-verifications/{identification_id}/attempts/{attempt_id}/assets"),
+        cert=(settings.UBBLE_CLIENT_CERTIFICATE_PATH, settings.UBBLE_CLIENT_KEY_PATH),
+        timeout=60,
+    )
+    response.raise_for_status()
+
+    deserialized_response = ubble_serializers.GetAttemptAssetsResponse.model_validate(response.json())
+    return {asset.type: str(asset.links.asset_url.href) for asset in deserialized_response.data}
+
+
 def request_webhook_notification(identification_id: str, webhook_url: str) -> None:
     """
     Request Ubble to call the webhook url with the given identification id data.
@@ -256,6 +294,8 @@ def download_ubble_picture(http_url: pydantic_networks.HttpUrl) -> tuple[str | N
             "Ubble picture-download: request has expired",
             extra={"url": str(http_url), "status_code": response.status_code},
         )
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_UBBLE.is_active():
+            raise UbbleAssetExpiredError("Asset has expired. It needs to be refetched before archiving.")
         raise requests.ExternalAPIException(is_retryable=False)
 
     if response.status_code != 200:

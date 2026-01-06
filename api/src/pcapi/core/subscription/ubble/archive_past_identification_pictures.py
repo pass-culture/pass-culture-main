@@ -10,7 +10,6 @@ from pcapi.utils.requests import ExternalAPIException
 
 
 DEFAULT_LIMIT = 1000
-DEFAULT_ID_PICTURE_STORE_STATUS: bool | None = None
 
 logger = logging.getLogger()
 
@@ -46,7 +45,7 @@ class UbbleIdentificationPicturesArchiveResult:
 def archive_past_identification_pictures(
     start_date: datetime,
     end_date: datetime,
-    status: bool | None = DEFAULT_ID_PICTURE_STORE_STATUS,
+    picture_storage_status: bool | None = None,
     limit: int = DEFAULT_LIMIT,
 ) -> UbbleIdentificationPicturesArchiveResult:
     if start_date > end_date:
@@ -56,14 +55,14 @@ def archive_past_identification_pictures(
     offset = 0
 
     while True:
-        fraud_checks = get_fraud_check_to_archive(start_date, end_date, status, limit, offset)
+        fraud_checks = get_fraud_check_to_archive(start_date, end_date, picture_storage_status, limit, offset)
 
         if not fraud_checks:
             break
 
         for fraud_check in fraud_checks:
             try:
-                ubble_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+                ubble_api.archive_id_pictures_with_recovery(fraud_check)
                 result.add_result(True)
             except (UbbleDownloadedFileEmpty, ExternalAPIException):
                 result.add_result(False)
@@ -80,14 +79,18 @@ def archive_past_identification_pictures(
 
 
 def get_fraud_check_to_archive(
-    start_date: datetime, end_date: datetime, status: bool | None, limit: int = DEFAULT_LIMIT, offset: int = 0
+    start_date: datetime,
+    end_date: datetime,
+    picture_storage_status: bool | None,
+    limit: int = DEFAULT_LIMIT,
+    offset: int = 0,
 ) -> list[subscription_models.BeneficiaryFraudCheck]:
     query = (
         db.session.query(subscription_models.BeneficiaryFraudCheck)
         .filter(
             subscription_models.BeneficiaryFraudCheck.status == subscription_models.FraudCheckStatus.OK,
             subscription_models.BeneficiaryFraudCheck.dateCreated.between(start_date, end_date),
-            subscription_models.BeneficiaryFraudCheck.idPicturesStored.is_(status),
+            subscription_models.BeneficiaryFraudCheck.idPicturesStored.is_(picture_storage_status),
             subscription_models.BeneficiaryFraudCheck.type == subscription_models.FraudCheckType.UBBLE,
             subscription_models.BeneficiaryFraudCheck.thirdPartyId.not_like(
                 f"{subscription_api.DEPRECATED_UBBLE_PREFIX}%"

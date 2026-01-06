@@ -19,6 +19,7 @@ import pcapi.core.mails.transactional as transactional_mails
 import pcapi.core.subscription.ubble.constants as ubble_fraud_constants
 from pcapi.connectors.beneficiaries import outscale
 from pcapi.connectors.beneficiaries import ubble
+from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.batch import track_ubble_ko_event
 from pcapi.core.finance import models as finance_models
@@ -353,6 +354,45 @@ def handle_validation_errors(
         transactional_mails.send_duplicate_beneficiary_email(
             user, source_data, subscription_models.FraudReasonCode.DUPLICATE_ID_PIECE_NUMBER
         )
+
+
+def archive_id_pictures_with_recovery(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    try:
+        archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+    except ubble.UbbleAssetExpiredError:
+        recover_id_pictures_asset(fraud_check)
+        archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
+
+
+def recover_id_pictures_asset(fraud_check: subscription_models.BeneficiaryFraudCheck) -> None:
+    identification_id = fraud_check.thirdPartyId
+    logger.warning("Recovering the archiving of Ubble identification %s", identification_id)
+
+    attempts = ubble.get_attempts(identification_id)
+    succesful_attempts = [
+        attempt for attempt in attempts if attempt.status == ubble_serializers.AttemptStatus.COMPLETED
+    ]
+    if not succesful_attempts:
+        logger.error(
+            "Succesful attempt of Ubble identification %s is not in the first page. Pagination must be implemented.",
+            identification_id,
+        )
+        return
+
+    succesful_attempt = succesful_attempts[0]
+    assets = ubble.get_attempt_assets(identification_id, succesful_attempt.id)
+
+    with atomic():
+        if not fraud_check.resultContent:
+            fraud_check.resultContent = {}
+
+        front_image_url = assets.get(ubble_serializers.AssetType.DOCUMENT_FRONT_IMAGE)
+        if front_image_url:
+            fraud_check.resultContent["signed_image_front_url"] = front_image_url
+
+        back_image_url = assets.get(ubble_serializers.AssetType.DOCUMENT_BACK_IMAGE)
+        if back_image_url:
+            fraud_check.resultContent["signed_image_back_url"] = back_image_url
 
 
 def archive_ubble_user_id_pictures(identification_id: str) -> None:
