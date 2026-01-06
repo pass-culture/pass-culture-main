@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from flask_jwt_extended import JWTManager
 from flask_wtf.csrf import CSRFProtect
-from sentry_sdk import set_tag
+from sentry_sdk import set_tags
 
 from pcapi import settings
 from pcapi.flask_app import app
@@ -55,6 +55,10 @@ if __name__ == "__main__":
             debugpy.wait_for_client()
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
-    set_tag("pcapi.app_type", "app")
-    set_tag("pcapi.is_new_infra", settings.IS_NEW_INFRA)
+    set_tags(
+        {
+            "pcapi.app_type": "app",
+            "pcapi.is_new_infra": str(settings.IS_NEW_INFRA),
+        }
+    )
     app.run(host=ip, port=port, debug=True, use_reloader=use_reloader)
