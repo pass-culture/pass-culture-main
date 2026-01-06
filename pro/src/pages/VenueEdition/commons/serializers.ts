@@ -76,7 +76,9 @@ function serializeOpeningHours(
 ): EditVenueBodyModel['openingHours'] {
   if (formValues.openingHours === undefined) {
     return undefined
-  } else if (
+  }
+
+  if (
     !alreadyHasOpeningHours &&
     !OPENING_HOURS_DAYS.some(
       (d) =>

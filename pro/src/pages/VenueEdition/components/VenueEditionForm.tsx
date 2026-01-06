@@ -96,7 +96,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     ]
 
     for (const field of fieldsToReset) {
-      methods.setValue(field, initialValues[field], { shouldDirty: false })
+      methods.setValue(field, initialValues[field])
     }
   }
 
@@ -197,12 +197,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   onChange={(e) => {
                     methods.setValue(
                       'isOpenToPublic',
-                      e.target.value.toString(),
-                      {
-                        shouldDirty:
-                          e.target.value.toString() !==
-                          methods.watch('isOpenToPublic'),
-                      }
+                      e.target.value.toString()
                     )
                     if (e.target.value === 'false') {
                       resetOpeningHoursAndAccessibility()
@@ -303,10 +298,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   onSelectedOptionsChanged={(selectedOptions, y, z) => {
                     methods.setValue(
                       'culturalDomains',
-                      selectedOptions.length > 0
-                        ? selectedOptions.map((opt) => opt.label)
-                        : [],
-                      { shouldDirty: defaultCulturalDomain !== selectedOptions }
+                      selectedOptions.map((opt) => opt.label)
                     )
                   }}
                   buttonLabel={
