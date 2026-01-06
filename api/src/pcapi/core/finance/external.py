@@ -11,6 +11,7 @@ from pcapi.core.finance import conf
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.notifications.internal import send_internal_message
 from pcapi.utils import date as date_utils
 
@@ -126,9 +127,8 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
                     {"status": finance_models.InvoiceStatus.PENDING_PAYMENT},
                     synchronize_session=False,
                 )
-                # TODO We validate whether cegid succeeds in doing the payment or not for now.
-                # Later, validate_invoice will only be called in case of success
-                finance_api.validate_invoice(invoice_id)
+                if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
+                    finance_api.validate_invoices([invoice_id])
                 db.session.commit()
                 time_to_sleep = finance_backend.get_time_to_sleep_between_two_sync_requests()
                 time.sleep(time_to_sleep)
@@ -318,6 +318,9 @@ def sync_settlements(from_date: datetime.date, to_date: datetime.date) -> None:
                 settlement.dateRejected = date_utils.get_naive_utc_now()
                 db.session.flush()
 
+    # Validate all created settlement dependent objects : invoices, etc, even rejected
+    # send mails
+
     db.session.commit()
 
 
@@ -331,3 +334,11 @@ def get_or_create_settlement_batch(batch_name: str, batch_label: str) -> finance
         settlement_batch = finance_models.SettlementBatch(name=batch_name, label=batch_label)
         db.session.add(settlement_batch)
     return settlement_batch
+
+
+def validate_settlements(settlements: list[finance_models.Settlement]) -> None:
+    invoice_ids = set()
+    for settlement in settlements:
+        invoice_ids.update(set(invoice.id for invoice in settlement.invoices))
+        db.session.add(settlement)
+    finance_api.validate_invoices(list(invoice_ids))
