@@ -235,3 +235,13 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
 def sync_settlements() -> None:
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     finance_external.sync_settlements(from_date=yesterday, to_date=yesterday)
+
+
+@blueprint.cli.command("sync_settlements")
+@cron_decorators.log_cron
+def validate_settlements() -> None:
+    if not FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS:
+        logger.info("WIP_ENABLE_FINANCE_SETTLEMENTS feature must be activated to validate settlements")
+        return
+
+    finance_external.validate_settlements()
