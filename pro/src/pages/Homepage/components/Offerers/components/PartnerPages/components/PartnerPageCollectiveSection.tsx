@@ -68,7 +68,7 @@ export function PartnerPageCollectiveSection({
         tagText="Non référencé dans ADAGE"
         variant={TagVariant.DEFAULT}
         isDisplayedInHomepage={isDisplayedInHomepage}
-        description="Pour pouvoir adresser des offres aux enseignants, vous devez être référencé dans ADAGE, l’application du ministère de l’Education nationale et de la Jeunesse dédiée à l’EAC."
+        description="Pour pouvoir adresser des offres aux enseignants, vous devez être référencé dans ADAGE, l’application du ministère de l’Éducation nationale dédiée à l’EAC."
         offererId={offererId}
         venueId={venueId}
         venueName={venueName}
@@ -108,8 +108,8 @@ export function PartnerPageCollectiveSection({
         variant={TagVariant.ERROR}
         isDisplayedInHomepage={isDisplayedInHomepage}
         description="Pour pouvoir adresser des offres aux enseignants, vous devez être
-        référencé dans ADAGE, l’application du ministère de l’Education
-        nationale et de la Jeunesse dédiée à l’EAC."
+        référencé dans ADAGE, l’application du ministère de l’Éducation
+        nationale dédiée à l’EAC."
         offererId={offererId}
         venueId={venueId}
         venueName={venueName}

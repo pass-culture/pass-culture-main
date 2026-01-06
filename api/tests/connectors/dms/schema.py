@@ -161,7 +161,7 @@ typed_de_champ_enum = gql.GraphQLEnumType(
         ),
         "mesri": gql.GraphQLEnumValue(
             "mesri",
-            description="Données du Ministère de l’Enseignement Supérieur, de la Recherche et de l’Innovation",
+            description="Données du ministère de l’Enseignement supérieur, de la Recherche et de l’Espace",
         ),
     },
     description="Type de champ",

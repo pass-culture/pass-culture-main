@@ -86,7 +86,7 @@ describe('CollectiveDmsTimeline', () => {
       },
       hasAdageId: true,
       expectedLabel:
-        'Votre structure a été référencée dans ADAGE par les équipes du Ministère de l’Education Nationale',
+        'Votre structure a été référencée dans ADAGE par les équipes du ministère de l’Éducation nationale',
     },
     {
       collectiveDmsApplication: {

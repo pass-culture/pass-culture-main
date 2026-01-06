@@ -12,7 +12,7 @@ export const CollectiveBudgetBanner = () => {
     <Banner
       title={'Part collective du pass Culture 2026'}
       description={
-        "Les collèges et lycées du ministère de l'Education nationale ne connaissent pas encore leurs crédits de dépense pass Culture pour la deuxième période de l'année scolaire 2025-2026. Ils ne peuvent donc pas réserver d'offres payantes actuellement. Les réservations d'offres gratuites sont toujours possibles."
+        "Les collèges et lycées du ministère de l'Éducation nationale ne connaissent pas encore leurs crédits de dépense pass Culture pour la deuxième période de l'année scolaire 2025-2026. Ils ne peuvent donc pas réserver d'offres payantes actuellement. Les réservations d'offres gratuites sont toujours possibles."
       }
       variant={BannerVariants.WARNING}
     />
