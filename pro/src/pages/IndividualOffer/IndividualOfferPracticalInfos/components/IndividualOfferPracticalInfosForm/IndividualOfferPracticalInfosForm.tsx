@@ -9,6 +9,7 @@ import {
 import { REIMBURSEMENT_RULES } from '@/commons/core/Finances/constants'
 import { CATEGORY_STATUS } from '@/commons/core/Offers/constants'
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
+import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -41,7 +42,7 @@ export function IndividualOfferPracticalInfosForm({
   const receiveNotificationEmails = form.watch('receiveNotificationEmails')
   const bookingEmail = form.watch('bookingEmail')
 
-  const isFormDisabled = isOfferDisabled(offer)
+  const isFormDisabled = isOfferDisabled(offer) || isOfferSynchronized(offer)
 
   const hasNonFreeStock = stocks.some((s) => Boolean(s.price))
 

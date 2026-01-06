@@ -64,8 +64,6 @@ EDITABLE_FIELDS_FOR_INDIVIDUAL_OFFERS_API_PROVIDER = {
     "extraData",
     "withdrawalDetails",
     "durationMinutes",
-    "withdrawalDelay",
-    "withdrawalType",
     "idAtProvider",
     "bookingAllowedDatetime",
     "publicationDatetime",
