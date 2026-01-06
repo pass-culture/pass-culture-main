@@ -92,9 +92,9 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
 
 class CollectiveStockResponseModel(HttpBodyModel):
     id: int
-    startDatetime: datetime | None
-    endDatetime: datetime | None
-    bookingLimitDatetime: datetime | None
+    startDatetime: datetime
+    endDatetime: datetime
+    bookingLimitDatetime: datetime
     price: float
-    numberOfTickets: int | None
+    numberOfTickets: int
     priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
