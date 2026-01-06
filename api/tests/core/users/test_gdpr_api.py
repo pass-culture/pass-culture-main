@@ -13,6 +13,7 @@ from dateutil.relativedelta import relativedelta
 from flask import current_app
 
 import pcapi.core.mails.testing as mails_testing
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 from pcapi import settings
@@ -528,6 +529,21 @@ class AnonymizeProUserFunctionTest:
         assert result is True
         mock_anonymize_user.assert_called_once_with(user=user, author=author, action_history_comment=None)
         mock_delete_beamer_user.assert_called_once_with(user.id)
+
+    @mock.patch("pcapi.core.users.gdpr_api.delete_beamer_user")
+    def test_delete_offerer_invitation_on_anonymize_pro_user(self, mock_delete_beamer_user):
+        user_offerer = offerers_factories.UserOffererFactory()
+        user = user_offerer.user
+
+        offerers_factories.OffererInvitationFactory(
+            email=user.email,
+        )
+        remaining_invitation = offerers_factories.OffererInvitationFactory(offerer=user_offerer.offerer)
+
+        result = gdpr_api.anonymize_pro_user(user)
+
+        assert result is True
+        assert db.session.query(offerers_models.OffererInvitation).all() == [remaining_invitation]
 
 
 class CanAnonymiseProUserTest:

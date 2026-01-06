@@ -167,6 +167,9 @@ def anonymize_user(
         history_models.ActionHistory.userId == user.id,
         history_models.ActionHistory.offererId.is_(None),
     ).delete()
+    db.session.query(offerers_models.OffererInvitation).filter(
+        offerers_models.OffererInvitation.email == user.email
+    ).delete()
     was_bo_user = bool(
         db.session.query(permissions_models.BackOfficeUserProfile)
         .filter(permissions_models.BackOfficeUserProfile.userId == user.id)
