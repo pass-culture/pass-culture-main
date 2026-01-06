@@ -21,7 +21,7 @@ from pcapi.utils.transaction_manager import on_commit
 logger = logging.getLogger(__name__)
 
 
-def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> models.CollectiveStock | None:
+def create_collective_stock(stock_data: CollectiveStockCreationBodyModel) -> models.CollectiveStock:
     offer_id = stock_data.offerId
     start = stock_data.startDatetime
     end = stock_data.endDatetime
