@@ -1142,6 +1142,22 @@ class Returns400Test:
         assert response.status_code == 400
         assert response.json == expected_response_json
 
+    def when_trying_to_change_the_withdrawalType_of_a_synchronized_offer(self, client):
+        provider = providers_factories.PublicApiProviderFactory()
+        providers_factories.OffererProviderFactory(provider=provider)
+        offer = offers_factories.EventOfferFactory(
+            lastProviderId=provider.id,
+            withdrawalType=offers_models.WithdrawalTypeEnum.IN_APP,
+        )
+        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
+        response = client.with_session_auth("user@example.com").patch(
+            f"offers/{offer.id}",
+            json={"withdrawalType": "no_ticket"},
+        )
+
+        assert response.status_code == 400
+        assert response.json == {"withdrawalType": ["Vous ne pouvez pas modifier ce champ"]}
+
     def should_fail_when_trying_to_update_offer_with_product_with_new_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
