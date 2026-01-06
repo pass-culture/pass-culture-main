@@ -53,7 +53,6 @@ def get_offerer_closed_email_data(
     return models.TransactionalEmailData(
         template=template.value,
         params={
-            "IS_ESCAPE_GAME": False,
             "OFFERER_NAME": offerer.name,
             "SIREN": offerer.siren,
             "END_DATE": get_date_formatted_for_email(closure_date) if closure_date else "",
