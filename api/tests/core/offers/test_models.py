@@ -1090,7 +1090,6 @@ class ArtistOfferLinkTest:
         )
         db.session.add_all([artist_performer, artist_author])
         db.session.flush()
-        assert True
 
     def test_offer_can_have_same_artist_when_custom_name(self):
         offer = factories.OfferFactory()
@@ -1109,7 +1108,6 @@ class ArtistOfferLinkTest:
         )
         db.session.add_all([artist_performer, custom_performer])
         db.session.flush()
-        assert True
 
     def test_offer_can_not_have_same_artist_id_twice(self):
         offer = factories.OfferFactory()
@@ -1131,16 +1129,15 @@ class ArtistOfferLinkTest:
 
     def test_offer_can_not_have_same_custom_name_twice(self):
         offer = factories.OfferFactory()
-        artist = artist_factories.ArtistFactory()
 
         artist_performer = artist_models.ArtistOfferLink(
             offer_id=offer.id,
-            artist_id=artist.id,
+            custom_name="custom_name",
             artist_type=artist_models.ArtistType.PERFORMER,
         )
         artist_performer_again = artist_models.ArtistOfferLink(
             offer_id=offer.id,
-            artist_id=artist.id,
+            custom_name="custom_name",
             artist_type=artist_models.ArtistType.PERFORMER,
         )
         db.session.add_all([artist_performer_again, artist_performer])
