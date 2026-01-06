@@ -81,7 +81,10 @@ export const PricingPointDialog = ({
         />
       </div>
       <form
-        onSubmit={methods.handleSubmit(onSubmit)}
+        onSubmit={(event) => {
+          event.stopPropagation()
+          methods.handleSubmit(onSubmit)(event)
+        }}
         className={styles['dialog-form']}
       >
         <Select
