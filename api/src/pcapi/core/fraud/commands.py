@@ -92,5 +92,5 @@ def ubble_archive_past_identifications_automation() -> None:
     # and "False" (the archive process has executed but failed)
     end_date = date_utils.get_naive_utc_now() + datetime.timedelta(days=1)
     start_date = end_date - datetime.timedelta(days=186)
-    archive_past_identification_pictures(start_date, end_date, None)
-    archive_past_identification_pictures(start_date, end_date, False)
+    archive_past_identification_pictures(start_date, end_date, picture_storage_status=None)
+    archive_past_identification_pictures(start_date, end_date, picture_storage_status=False)
