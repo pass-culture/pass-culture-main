@@ -3630,9 +3630,9 @@ class GenerateInvoicesTest:
         assert free_pricing.status == models.PricingStatus.INVOICED
 
 
-class GenerateInvoiceTest:
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=False)
+class GenerateInvoiceLegacyTest:
     EXPECTED_NUM_QUERIES = (
-        # 1   # feature flags are already cached by BeneficiaryGrant18Factory.beneficiaryImports
         1  # lock reimbursement point
         + 1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
         + 1  # select and lock ReferenceScheme
@@ -4103,6 +4103,491 @@ class GenerateInvoiceTest:
         assert indiv_booking2.reimbursementDate is None  # not updated
         assert booking_finance_incident.incident.status != models.IncidentStatus.INVOICED  # not updated
         assert collective_booking1.status == educational_models.CollectiveBookingStatus.USED  # not updated
+        assert collective_booking1.reimbursementDate is None  # not updated
+        assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated
+        assert collective_booking2.reimbursementDate is None  # not updated
+
+
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+class GenerateInvoiceTest:
+    EXPECTED_NUM_QUERIES = (
+        1  # lock reimbursement point
+        + 1  # select cashflows, pricings, pricing_lines, and custom_reimbursement_rules
+        + 1  # select and lock ReferenceScheme
+        + 1  # update ReferenceScheme
+        + 1  # insert invoice
+        + 1  # insert invoice lines
+        + 1  # insert invoice_cashflows
+        + 1  # update Cashflow.status
+        + 1  # update Pricing.status
+        + 1  # insert PricingLog
+        + 1  # update Booking.status
+        + 1  # update CollectiveBooking.status
+    )
+
+    @time_machine.travel(datetime.datetime(2022, 1, 15))
+    def test_reference_scheme_increments(self):
+        venue = offerers_factories.VenueFactory()
+        bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+        cashflow1 = factories.CashflowFactory(
+            bankAccount=bank_account,
+            status=models.CashflowStatus.UNDER_REVIEW,
+        )
+        invoice1 = api._generate_invoice(
+            bank_account_id=bank_account.id,
+            cashflow_ids=[cashflow1.id],
+        )
+        cashflow2 = factories.CashflowFactory(
+            bankAccount=bank_account,
+            status=models.CashflowStatus.UNDER_REVIEW,
+        )
+        invoice2 = api._generate_invoice(
+            bank_account_id=bank_account.id,
+            cashflow_ids=[cashflow2.id],
+        )
+
+        assert invoice1.reference == "F220000001"
+        assert invoice2.reference == "F220000002"
+
+    def test_one_regular_rule_one_rate(self):
+        venue1 = offerers_factories.VenueFactory()
+        bank_account = factories.BankAccountFactory()
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue1, bankAccount=bank_account)
+        venue2 = offerers_factories.VenueFactory(
+            managingOfferer=venue1.managingOfferer,
+            pricing_point="self",
+        )
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue2)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=20)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+
+        with transaction():
+            current_year = datetime.date.today().year
+            scheme = reference_models.ReferenceScheme.get_and_lock("invoice.reference", current_year)
+            scheme.reset_next_number()
+
+        bank_account_id = bank_account.id
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                bank_account_id=bank_account_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        year = invoice.date.year % 100
+        assert invoice.reference == f"F{year}0000001"
+        assert invoice.bankAccount == bank_account
+        assert invoice.amount == -40 * 100
+        assert len(invoice.lines) == 1
+        line = invoice.lines[0]
+        assert line.group == {"label": "Barème général", "position": 1}
+        assert line.contributionAmount == 0
+        assert line.reimbursedAmount == -40 * 100
+        assert line.rate == 1
+        assert line.label == "Réservations"
+
+    def test_two_regular_rules_two_rates(self):
+        venue1 = offerers_factories.VenueFactory()
+        bank_account = factories.BankAccountFactory(offerer=venue1.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue1, bankAccount=bank_account)
+        venue2 = offerers_factories.VenueFactory(
+            managingOfferer=venue1.managingOfferer,
+            pricing_point="self",
+        )
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue2)
+        stock1 = offers_factories.ThingStockFactory(offer=offer, price=19_850)
+        stock2 = offers_factories.ThingStockFactory(offer=offer, price=160)
+        user_1 = users_factories.RichBeneficiaryFactory()
+        user_2 = users_factories.RichBeneficiaryFactory()
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock1, booking__user=user_1)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2, booking__user=user_2)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+
+        bank_account_id = bank_account.id
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                bank_account_id=bank_account_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        assert invoice.bankAccount == bank_account
+        # 100% of 19_850*100 + 95% of 160*100 aka 152*100
+        assert invoice.amount == -20_002 * 100
+        assert len(invoice.lines) == 2
+        invoice_lines = sorted(invoice.lines, key=lambda x: x.rate, reverse=True)
+
+        line_rate_1 = invoice_lines[0]
+        assert line_rate_1.group == {"label": "Barème général", "position": 1}
+        assert line_rate_1.contributionAmount == 0
+        assert line_rate_1.reimbursedAmount == -19_850 * 100
+        assert line_rate_1.rate == 1
+        assert line_rate_1.label == "Réservations"
+        line_rate_0_95 = invoice_lines[1]
+        assert line_rate_0_95.group == {"label": "Barème général", "position": 1}
+        assert line_rate_0_95.contributionAmount == 8 * 100
+        assert line_rate_0_95.reimbursedAmount == -152 * 100
+        assert line_rate_0_95.rate == Decimal("0.95")
+        assert line_rate_0_95.label == "Réservations"
+
+    def test_one_custom_rule(self):
+        venue1 = offerers_factories.VenueFactory()
+        bank_account = factories.BankAccountFactory(offerer=venue1.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue1, bankAccount=bank_account)
+        venue2 = offerers_factories.VenueFactory(
+            managingOfferer=venue1.managingOfferer,
+            pricing_point="self",
+        )
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue2)
+        stock = offers_factories.ThingStockFactory(offer=offer, price=23)
+        factories.CustomReimbursementRuleFactory(amount=2200, offer=offer)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+
+        bank_account_id = bank_account.id
+
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                bank_account_id=bank_account_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        assert invoice.bankAccount == bank_account
+        assert invoice.amount == -4400
+        assert len(invoice.lines) == 1
+        line = invoice.lines[0]
+        assert line.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line.contributionAmount == 200
+        assert line.reimbursedAmount == -4400
+        assert line.rate == Decimal("0.9565")
+        assert line.label == "Réservations"
+
+    def test_full_offerer_contribution(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+
+        bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        factories.CustomReimbursementRuleFactory(rate=0, offer=offer)
+
+        stock = offers_factories.EventStockFactory(
+            offer=offer,
+            beginningDatetime=date_utils.get_naive_utc_now(),
+            price=23,
+        )
+        booking = bookings_factories.UsedBookingFactory(stock=stock)
+        finance_event = factories.FinanceEventFactory(
+            booking=booking,
+            pricingOrderingDate=stock.beginningDatetime,
+            status=models.FinanceEventStatus.READY,
+            venue=venue,
+        )
+
+        api.price_event(finance_event)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+
+        bank_account_id = bank_account.id
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                bank_account_id=bank_account_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        assert invoice.bankAccount == bank_account
+        assert invoice.amount == 0
+
+        assert len(invoice.lines) == 1
+        line = invoice.lines[0]
+        assert line.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line.reimbursedAmount == 0
+        assert line.contributionAmount == 2300
+        assert line.rate == Decimal("0")
+        assert line.label == "Réservations"
+
+    def test_100_per_cent_offerer_contribution_mixed(self):
+        venue1 = offerers_factories.VenueFactory(pricing_point="self")
+        bank_account = factories.BankAccountFactory(offerer=venue1.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue1, bankAccount=bank_account)
+        venue2 = offerers_factories.VenueFactory(managingOfferer=venue1.managingOfferer, pricing_point="self")
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account)
+
+        offer1 = offers_factories.DigitalOfferFactory(venue=venue1)
+        stock1 = offers_factories.EventStockFactory(
+            offer=offer1, beginningDatetime=date_utils.get_naive_utc_now(), price=10
+        )
+        offer2 = offers_factories.ThingOfferFactory(venue=venue2)
+        stock2 = offers_factories.ThingStockFactory(offer=offer2, price=50)
+        factories.CustomReimbursementRuleFactory(amount=600, offer=offer2)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock1)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+
+        bank_account_id = bank_account.id
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                bank_account_id=bank_account_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        assert invoice.bankAccount == bank_account
+        assert invoice.amount == -600
+
+        assert len(invoice.lines) == 2
+        assert {line.reimbursedAmount for line in invoice.lines} == {0, -600}
+        line1 = [line for line in invoice.lines if line.reimbursedAmount == 0][0]
+        line2 = [line for line in invoice.lines if line.reimbursedAmount == -600][0]
+
+        assert line1.group == {"label": "Barème non remboursé", "position": 3}
+        assert line1.contributionAmount == 1000
+        assert line1.rate == Decimal("0")
+        assert line1.label == "Réservations"
+
+        assert line2.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line2.contributionAmount == 4400
+        assert line2.rate == Decimal("0.12")
+        assert line2.label == "Réservations"
+
+    def test_many_rules_and_rates_two_cashflows(self, invoice_data):
+        bank_account, stocks, _venue = invoice_data
+        finance_events = []
+        user = users_factories.RichBeneficiaryFactory()
+        for stock in stocks:
+            finance_event = factories.UsedBookingFinanceEventFactory(
+                booking__stock=stock,
+                booking__user=user,
+            )
+            finance_events.append(finance_event)
+        for finance_event in finance_events[:3]:
+            api.price_event(finance_event)
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+        for finance_event in finance_events[3:]:
+            api.price_event(finance_event)
+        batch = api.generate_cashflows(cutoff=date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+
+        bank_account_id = bank_account.id
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                bank_account_id=bank_account_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        assert len(invoice.cashflows) == 2
+        assert invoice.bankAccount == bank_account
+        assert invoice.amount == -20_156_04
+        # général 100%, général 95%, livre 100%, livre 95%, pas remboursé, custom 1, custom 2
+        assert len(invoice.lines) == 7
+
+        # sort by group position asc then rate desc, as displayed in the PDF
+        invoice_lines = sorted(invoice.lines, key=lambda k: (k.group["position"], -k.rate))
+
+        line0 = invoice_lines[0]
+        assert line0.group == {"label": "Barème général", "position": 1}
+        assert line0.contributionAmount == 0
+        assert line0.reimbursedAmount == -19_980 * 100  # 19_950 + 30
+        assert line0.rate == Decimal("1.0000")
+        assert line0.label == "Réservations"
+
+        line1 = invoice_lines[1]
+        assert line1.group == {"label": "Barème général", "position": 1}
+        assert line1.contributionAmount == 406
+        assert line1.reimbursedAmount == -7724
+        assert line1.rate == Decimal("0.9500")
+        assert line1.label == "Réservations"
+
+        line2 = invoice_lines[2]
+        assert line2.group == {"label": "Barème livres", "position": 2}
+        assert line2.contributionAmount == 0
+        assert line2.reimbursedAmount == -20 * 100
+        assert line2.rate == Decimal("1.0000")
+        assert line2.label == "Réservations"
+
+        line3 = invoice_lines[3]
+        assert line3.group == {"label": "Barème livres", "position": 2}
+        assert line3.contributionAmount == 2 * 100
+        assert line3.reimbursedAmount == -38 * 100
+        assert line3.rate == Decimal("0.9500")
+        assert line3.label == "Réservations"
+
+        line4 = invoice_lines[4]
+        assert line4.group == {"label": "Barème non remboursé", "position": 3}
+        assert line4.contributionAmount == 58 * 100
+        assert line4.reimbursedAmount == 0
+        assert line4.rate == Decimal("0.0000")
+        assert line4.label == "Réservations"
+
+        line5 = invoice_lines[5]
+        assert line5.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line5.contributionAmount == 100
+        assert line5.reimbursedAmount == -22 * 100
+        assert line5.rate == Decimal("0.9565")
+        assert line5.label == "Réservations"
+
+        line6 = invoice_lines[6]
+        assert line6.group == {"label": "Barème dérogatoire", "position": 4}
+        assert line6.contributionAmount == 120
+        assert line6.reimbursedAmount == -1880
+        assert line6.rate == Decimal("0.9400")
+        assert line6.label == "Réservations"
+
+    def test_with_free_offer(self):
+        venue1 = offerers_factories.VenueFactory()
+        bank_account = factories.BankAccountFactory(offerer=venue1.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue1, bankAccount=bank_account)
+        venue2 = offerers_factories.VenueFactory(
+            managingOfferer=venue1.managingOfferer,
+            pricing_point="self",
+        )
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue2, bankAccount=bank_account)
+
+        # 2 offers that have a distinct reimbursement rate rule.
+        offer1 = offers_factories.ThingOfferFactory(
+            venue=venue2,
+            subcategoryId=subcategories.SUPPORT_PHYSIQUE_FILM.id,
+        )
+        stock1 = offers_factories.StockFactory(offer=offer1, price=20)
+        finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock1)
+        offer2 = offers_factories.ThingOfferFactory(
+            venue=venue2,
+            subcategoryId=subcategories.TELECHARGEMENT_MUSIQUE.id,
+        )
+        stock2 = offers_factories.StockFactory(offer=offer2, price=0)
+        finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock2)
+        api.price_event(finance_event1)
+        api.price_event(finance_event2)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflows as UNDER_REVIEW
+        cashflow_ids = [c.id for c in db.session.query(models.Cashflow).all()]
+
+        bank_account_id = bank_account.id
+        with assert_num_queries(self.EXPECTED_NUM_QUERIES):
+            invoice = api._generate_invoice(
+                bank_account_id=bank_account_id,
+                cashflow_ids=cashflow_ids,
+            )
+
+        assert invoice.amount == -20 * 100
+        assert len(invoice.lines) == 1
+        line = invoice.lines[0]
+        assert line.group == {"label": "Barème général", "position": 1}
+        assert line.contributionAmount == 0
+        assert line.reimbursedAmount == -20 * 100
+        assert line.rate == 1
+        assert line.label == "Réservations"
+
+    @pytest.mark.usefixtures("css_font_http_request_mock")
+    def test_update_statuses(self):
+        venue = offerers_factories.VenueFactory(pricing_point="self")
+        bank_account = factories.BankAccountFactory(offerer=venue.managingOfferer)
+        offerers_factories.VenueBankAccountLinkFactory(venue=venue, bankAccount=bank_account)
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer)
+        indiv_finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking1 = indiv_finance_event1.booking
+        indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking2 = indiv_finance_event2.booking
+
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+
+        # Create booking for overpayment finance incident
+        incident_booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue, dateUsed=past)
+        used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+        factories.PricingFactory(
+            booking=incident_booking, event=used_event, status=models.PricingStatus.INVOICED, valueDate=past
+        )
+
+        booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(booking=incident_booking)
+        finance_incident_events = api._create_finance_events_from_incident(
+            booking_finance_incident=booking_finance_incident,
+            incident_validation_date=date_utils.get_naive_utc_now(),
+        )
+
+        collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking1 = collective_finance_event1.collectiveBooking
+        collective_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking2 = collective_finance_event2.collectiveBooking
+
+        for e in (
+            collective_finance_event1,
+            collective_finance_event2,
+            indiv_finance_event1,
+            indiv_finance_event2,
+            *finance_incident_events,
+        ):
+            api.price_event(e)
+
+        batch = api.generate_cashflows_and_payment_files(date_utils.get_naive_utc_now())
+        cashflows = db.session.query(models.Cashflow).all()
+        assert len(cashflows) == 1
+        cashflow = cashflows[0]
+        assert len(batch.cashflows) == 1
+        assert batch.cashflows[0] == cashflow
+        assert len(db.session.query(models.Cashflow).all())
+        pricings = db.session.query(models.Pricing).filter(models.Pricing.valueDate > past).all()
+        assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
+        indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
+        collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
+        db.session.flush()
+
+        api.generate_invoices_and_debit_notes(batch)
+        invoices = db.session.query(models.Invoice).all()
+        assert len(invoices) == 1
+        invoice = invoices[0]
+        assert invoice.status == models.InvoiceStatus.PENDING
+        assert len(cashflow.invoices) == 1
+        assert cashflow.invoices[0] == invoice
+
+        assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
+        for pricing in pricings:
+            assert pricing.status == models.PricingStatus.INVOICED
+            assert pricing.logs[0].statusBefore == models.PricingStatus.VALIDATED
+            assert pricing.logs[0].statusAfter == models.PricingStatus.PROCESSED
+            assert pricing.logs[0].reason == models.PricingLogReason.GENERATE_CASHFLOW
+            assert pricing.logs[1].statusBefore == models.PricingStatus.PROCESSED
+            assert pricing.logs[1].statusAfter == models.PricingStatus.INVOICED
+            assert pricing.logs[1].reason == models.PricingLogReason.GENERATE_INVOICE
+
+        assert indiv_booking1.status == bookings_models.BookingStatus.PENDING_REIMBURSEMENT
+        assert indiv_booking1.reimbursementDate is None  # not updated
+        assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
+        assert indiv_booking2.reimbursementDate is None  # not updated
+        assert booking_finance_incident.incident.status != models.IncidentStatus.INVOICED  # not updated
+        assert collective_booking1.status == educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
         assert collective_booking1.reimbursementDate is None  # not updated
         assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated
         assert collective_booking2.reimbursementDate is None  # not updated
@@ -4750,7 +5235,8 @@ def test_get_drive_folder_name():
     assert name == "2022-04 - jusqu'au 30 avril"
 
 
-class ValidateInvoicesTest:
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=False)
+class ValidateInvoicesLegacyTest:
     def test_validate_invoices_and_dependent_objects(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = factories.BankAccountFactory(offerer=offerer)
@@ -4831,6 +5317,180 @@ class ValidateInvoicesTest:
         assert collective_booking1.reimbursementDate == invoice.date  # updated
         assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated
         assert collective_booking2.reimbursementDate == invoice.date  # updated
+
+
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+class ValidateInvoicesTest:
+    def test_validate_invoices_and_dependent_objects(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=offerer, bank_account=bank_account
+        )
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer)
+        indiv_finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking1 = indiv_finance_event1.booking
+        indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking2 = indiv_finance_event2.booking
+
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        # Create booking for overpayment finance incident
+        incident_booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue, dateUsed=past)
+        used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+        factories.PricingFactory(
+            booking=incident_booking, event=used_event, status=models.PricingStatus.INVOICED, valueDate=past
+        )
+
+        booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(booking=incident_booking)
+        finance_incident_events = api._create_finance_events_from_incident(
+            booking_finance_incident=booking_finance_incident,
+            incident_validation_date=date_utils.get_naive_utc_now(),
+        )
+
+        collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking1 = collective_finance_event1.collectiveBooking
+        collective_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking2 = collective_finance_event2.collectiveBooking
+        for e in (
+            collective_finance_event1,
+            collective_finance_event2,
+            indiv_finance_event1,
+            indiv_finance_event2,
+            *finance_incident_events,
+        ):
+            api.price_event(e)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflow as UNDER_REVIEW
+        cashflow = db.session.query(models.Cashflow).one()
+        pricings = db.session.query(models.Pricing).filter(models.Pricing.valueDate > past).all()
+        assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
+        indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
+        collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
+        db.session.flush()
+
+        invoice = api._generate_invoice(
+            bank_account_id=bank_account.id,
+            cashflow_ids=[cashflow.id],
+        )
+        assert invoice.status == models.InvoiceStatus.PENDING
+        assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
+
+        # mock push_invoices
+        invoice.status = models.InvoiceStatus.PENDING_PAYMENT
+        db.session.add(invoice)
+        db.session.commit()
+
+        api.validate_invoices([invoice.id])
+        db.session.commit()
+
+        assert invoice.status == models.InvoiceStatus.PAID
+        assert cashflow.status == models.CashflowStatus.ACCEPTED
+        for pricing in pricings:
+            assert pricing.status == models.PricingStatus.INVOICED  # not updated
+        assert indiv_booking1.status == bookings_models.BookingStatus.REIMBURSED  # updated
+        assert indiv_booking1.reimbursementDate == invoice.date  # updated
+        assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED  # not updated
+        assert indiv_booking2.reimbursementDate == invoice.date  # updated
+        assert booking_finance_incident.incident.status == models.IncidentStatus.INVOICED  # updated
+        assert collective_booking1.status == educational_models.CollectiveBookingStatus.REIMBURSED  # updated
+        assert collective_booking1.reimbursementDate == invoice.date  # updated
+        assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED  # not updated
+        assert collective_booking2.reimbursementDate == invoice.date  # updated
+
+
+@pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
+class RevertInvoicesTest:
+    def test_revert_invoices_and_dependent_objects(self):
+        offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+        venue = offerers_factories.VenueFactory(
+            pricing_point="self", managingOfferer=offerer, bank_account=bank_account
+        )
+        offer = offers_factories.ThingOfferFactory(venue=venue)
+        stock = offers_factories.ThingStockFactory(offer=offer)
+        indiv_finance_event1 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking1 = indiv_finance_event1.booking
+        indiv_finance_event2 = factories.UsedBookingFinanceEventFactory(booking__stock=stock)
+        indiv_booking2 = indiv_finance_event2.booking
+
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        # Create booking for overpayment finance incident
+        incident_booking = bookings_factories.ReimbursedBookingFactory(stock__offer__venue=venue, dateUsed=past)
+        used_event = factories.UsedBookingFinanceEventFactory(booking=incident_booking)
+        factories.PricingFactory(
+            booking=incident_booking, event=used_event, status=models.PricingStatus.INVOICED, valueDate=past
+        )
+
+        booking_finance_incident = factories.IndividualBookingFinanceIncidentFactory(booking=incident_booking)
+        finance_incident_events = api._create_finance_events_from_incident(
+            booking_finance_incident=booking_finance_incident,
+            incident_validation_date=date_utils.get_naive_utc_now(),
+        )
+
+        collective_finance_event1 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking1 = collective_finance_event1.collectiveBooking
+        collective_finance_event2 = factories.UsedCollectiveBookingFinanceEventFactory(
+            collectiveBooking__collectiveStock__startDatetime=past,
+            collectiveBooking__collectiveStock__collectiveOffer__venue=venue,
+        )
+        collective_booking2 = collective_finance_event2.collectiveBooking
+        for e in (
+            collective_finance_event1,
+            collective_finance_event2,
+            indiv_finance_event1,
+            indiv_finance_event2,
+            *finance_incident_events,
+        ):
+            api.price_event(e)
+        batch = api.generate_cashflows(date_utils.get_naive_utc_now())
+        api.generate_payment_files(batch)  # mark cashflow as UNDER_REVIEW
+        cashflow = db.session.query(models.Cashflow).one()
+        pricings = db.session.query(models.Pricing).filter(models.Pricing.valueDate > past).all()
+        assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
+        indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
+        collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
+        db.session.flush()
+
+        invoice = api._generate_invoice(
+            bank_account_id=bank_account.id,
+            cashflow_ids=[cashflow.id],
+        )
+        assert invoice.status == models.InvoiceStatus.PENDING
+        assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
+
+        # mock push_invoices
+        invoice.status = models.InvoiceStatus.PENDING_PAYMENT
+        db.session.add(invoice)
+        db.session.commit()
+
+        api.validate_invoices([invoice.id])
+        db.session.commit()
+        api.revert_invoices_validation([invoice.id])
+        db.session.commit()
+
+        assert invoice.status == models.InvoiceStatus.PENDING_PAYMENT
+        assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
+        for pricing in pricings:
+            assert pricing.status == models.PricingStatus.INVOICED
+        assert indiv_booking1.status == bookings_models.BookingStatus.PENDING_REIMBURSEMENT
+        assert indiv_booking1.reimbursementDate == None
+        assert indiv_booking2.status == bookings_models.BookingStatus.CANCELLED
+        assert indiv_booking2.reimbursementDate == invoice.date
+        assert booking_finance_incident.incident.status == models.IncidentStatus.VALIDATED
+        assert collective_booking1.status == educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
+        assert collective_booking1.reimbursementDate == None
+        assert collective_booking2.status == educational_models.CollectiveBookingStatus.CANCELLED
+        assert collective_booking2.reimbursementDate == invoice.date
 
 
 class CreateOffererReimbursementRuleTest:

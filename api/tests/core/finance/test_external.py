@@ -115,27 +115,37 @@ class ExternalFinanceTest:
         first_bank_account = finance_factories.BankAccountFactory()
         second_bank_account = finance_factories.BankAccountFactory()
         other_bank_account = finance_factories.BankAccountFactory()
-        invoice = finance_factories.InvoiceFactory(bankAccount=first_bank_account)
-        other_invoice = finance_factories.InvoiceFactory(bankAccount=other_bank_account)
-        another_invoice = finance_factories.InvoiceFactory(bankAccount=other_bank_account)
+        invoice = finance_factories.InvoiceFactory(
+            bankAccount=first_bank_account,
+            cashflows=[finance_factories.CashflowFactory()],
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
+        )
+        other_invoice = finance_factories.InvoiceFactory(
+            bankAccount=other_bank_account,
+            cashflows=[finance_factories.CashflowFactory()],
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
+        )
+        another_invoice = finance_factories.InvoiceFactory(
+            bankAccount=other_bank_account,
+            cashflows=[finance_factories.CashflowFactory()],
+            status=finance_models.InvoiceStatus.PENDING_PAYMENT,
+        )
         additional_bank_account = finance_factories.BankAccountFactory()
-        additional_invoice = finance_factories.InvoiceFactory(bankAccount=additional_bank_account)
-        existing_settlement = finance_factories.SettlementFactory(bankAccount=additional_bank_account, amount=10000)
+        additional_invoice = finance_factories.InvoiceFactory(
+            bankAccount=additional_bank_account,
+            cashflows=[finance_factories.CashflowFactory()],
+            status=finance_models.InvoiceStatus.PAID,
+        )
+        existing_settlement = finance_factories.SettlementFactory(
+            bankAccount=additional_bank_account,
+            amount=30000,
+            settlementDate=datetime.date.today() - datetime.timedelta(days=5),
+            invoices=[additional_invoice],
+        )
 
         now = date_utils.get_naive_utc_now()
 
         mock_get_settlements_payload = [
-            SettlementPayload(
-                bank_account_id=first_bank_account.id,
-                external_settlement_id="0032596",
-                invoice_external_reference=invoice.reference,
-                settlement_type=SettlementType.VOIDED_PAYMENT,
-                settlement_batch_name=existing_settlement.batch.name,
-                settlement_batch_label=existing_settlement.batch.label,
-                settlement_date=date_utils.get_naive_utc_now().date(),
-                settlement_creation_date=date_utils.get_naive_utc_now(),
-                amount=-98280,
-            ),
             SettlementPayload(
                 bank_account_id=first_bank_account.id,
                 external_settlement_id="0032596",
@@ -146,6 +156,17 @@ class ExternalFinanceTest:
                 settlement_date=date_utils.get_naive_utc_now().date(),
                 settlement_creation_date=date_utils.get_naive_utc_now(),
                 amount=98280,
+            ),
+            SettlementPayload(
+                bank_account_id=first_bank_account.id,
+                external_settlement_id="0032596",
+                invoice_external_reference=invoice.reference,
+                settlement_type=SettlementType.VOIDED_PAYMENT,
+                settlement_batch_name=existing_settlement.batch.name,
+                settlement_batch_label=existing_settlement.batch.label,
+                settlement_date=date_utils.get_naive_utc_now().date(),
+                settlement_creation_date=date_utils.get_naive_utc_now(),
+                amount=-98280,
             ),
             SettlementPayload(
                 bank_account_id=second_bank_account.id,
@@ -235,8 +256,9 @@ class ExternalFinanceTest:
         assert second_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert second_settlement.dateRejected == None
         assert second_settlement.amount == 98280
-        assert second_settlement.status == finance_models.SettlementStatus.PENDING
+        assert second_settlement.status == finance_models.SettlementStatus.ISSUED
         assert second_settlement.batch == settlement_batch
+        assert invoice.status == finance_models.InvoiceStatus.PAID
 
         other_settlement = (
             db.session.query(finance_models.Settlement)
@@ -252,11 +274,14 @@ class ExternalFinanceTest:
         assert other_settlement.dateImported.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert other_settlement.dateRejected == None
         assert other_settlement.amount == 45000
-        assert other_settlement.status == finance_models.SettlementStatus.PENDING
+        assert other_settlement.status == finance_models.SettlementStatus.ISSUED
         assert other_settlement.batch == settlement_batch
+        assert other_invoice.status == finance_models.InvoiceStatus.PAID
+        assert another_invoice.status == finance_models.InvoiceStatus.PAID
 
         assert existing_settlement.dateRejected.timestamp() == pytest.approx(now.timestamp(), rel=1)
         assert existing_settlement.status == finance_models.SettlementStatus.REJECTED
+        assert additional_invoice.status == finance_models.InvoiceStatus.PENDING_PAYMENT
 
     def test_get_settlements_ignore_when_no_bank_account_found(self, caplog):
         invoice = finance_factories.InvoiceFactory()
@@ -402,6 +427,12 @@ class ExternalFinanceCommandTest:
 
         assert push_bank_accounts_mock.call_count == 0
 
+    def test_push_invoices_command(self, run_command, mocker):
+        push_invoices_mock = mocker.patch("pcapi.core.finance.external.push_invoices")
+        run_command("push_invoices", raise_on_error=True)
+
+        assert push_invoices_mock.call_count == 1
+
     @pytest.mark.features(ENABLE_INVOICE_SYNC=False)
     def test_push_invoices_command_feature_toggle(self, run_command, mocker):
         push_invoices_mock = mocker.patch("pcapi.core.finance.external.push_invoices")
@@ -409,14 +440,16 @@ class ExternalFinanceCommandTest:
 
         assert push_invoices_mock.call_count == 0
 
-    def test_push_invoices_command(self, run_command, mocker):
-        push_invoices_mock = mocker.patch("pcapi.core.finance.external.push_invoices")
-        run_command("push_invoices", raise_on_error=True)
-
-        assert push_invoices_mock.call_count == 1
-
+    @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=True)
     def test_sync_settlements_command(self, run_command, mocker):
         sync_settlements_mock = mocker.patch("pcapi.core.finance.external.sync_settlements")
         run_command("sync_settlements", raise_on_error=True)
 
         assert sync_settlements_mock.call_count == 1
+
+    @pytest.mark.features(WIP_ENABLE_FINANCE_SETTLEMENTS=False)
+    def test_sync_settlements_command_feature_toggle(self, run_command, mocker):
+        sync_settlements_mock = mocker.patch("pcapi.core.finance.external.sync_settlements")
+        run_command("sync_settlements", raise_on_error=True)
+
+        assert sync_settlements_mock.call_count == 0

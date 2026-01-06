@@ -1008,10 +1008,9 @@ class Invoice(PcObject, Model):
 
 
 class SettlementStatus(enum.Enum):
-    """A settlement is considered validated if it hasn't been rejected at least 2 days after its creation"""
+    """A settlement is considered issued if it has never rejected"""
 
-    VALIDATED = "validated"
-    PENDING = "pending"
+    ISSUED = "issued"
     REJECTED = "rejected"
 
 
@@ -1039,7 +1038,7 @@ class Settlement(PcObject, Model):
         "Invoice", secondary=InvoiceSettlement.__table__, back_populates="settlements"
     )
     status: sa_orm.Mapped[SettlementStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(SettlementStatus), nullable=False, default=SettlementStatus.PENDING
+        db_utils.MagicEnum(SettlementStatus), nullable=False, default=SettlementStatus.ISSUED
     )
     batchId: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("settlement_batch.id"), index=True, nullable=False
