@@ -1,5 +1,5 @@
-import itertools
 import enum
+import itertools
 import os
 import typing
 from dataclasses import dataclass
@@ -74,14 +74,29 @@ class ModelSchema:
     properties: Properties
 
 
-def to_html(schemas) -> str:
+def extract_defs_from_schemas(schemas: typing.Collection[ModelSchema]) -> typing.Collection[ModelSchema]:
+    def _extract(schemas: typing.Collection[ModelSchema]) -> typing.Generator[types.OrField]:
+        seen = set()
+
+        for schema in schemas:
+            for required_field in schema.properties.required:
+                for component in required_field.components:
+                    if isinstance(component, types.OrField):
+                        if component.name not in seen:
+                            seen.add(component.name)
+                            yield component
+
+    return list(_extract(schemas))
+
+
+def to_html(schemas, defs) -> str:
     template = env.get_template("index.tmpl.html")
 
     base_dir = os.path.dirname(__file__)
     out_path = Path(base_dir) / "templates" / "index.html"
 
     with open(out_path, mode="w") as f:
-        content = template.render(schemas=schemas)
+        content = template.render(schemas=schemas, defs=defs)
         f.write(content)
 
     return content

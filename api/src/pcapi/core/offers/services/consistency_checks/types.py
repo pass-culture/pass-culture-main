@@ -4,10 +4,19 @@ from dataclasses import field
 
 
 @dataclass(frozen=True, order=True)
-class Field:
+class BaseField:
     name: str
     optional: bool = False
-    components: typing.Collection[typing.Self] = field(default_factory=tuple, compare=False)
+
+
+@dataclass(frozen=True, order=True)
+class Field(BaseField):
+    components: typing.Collection[BaseField] = field(default_factory=tuple, compare=False)
+
+
+@dataclass(frozen=True, order=True)
+class OrField(Field):
+    pass
 
 
 @dataclass(frozen=True)

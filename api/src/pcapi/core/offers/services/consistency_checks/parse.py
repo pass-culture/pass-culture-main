@@ -8,20 +8,41 @@ from pcapi.core.offers.services import models
 from . import types
 
 
-def build_components(defs: dict, ref: str, data: dict) -> types.Field:
+def build_components(defs: dict, ref: str) -> tuple[types.Field]:
     props = defs[ref.replace("#/$defs/", "")].get("properties")
     return tuple(parse_properties(defs, props))
+
+
+def parse_refs(defs: dict, refs: list[dict]) -> tuple[types.Field]:
+    match refs:
+        case [{"$ref": ref}]:
+            definition = defs[ref.replace("#/$defs/", "")]
+            props = definition.get("properties")
+            name = definition.get("title")
+            return tuple([types.OrField(name=name, components=tuple(parse_properties(defs, props)))])
+        case [{"$ref": ref}, *rest]:
+            definition = defs[ref.replace("#/$defs/", "")]
+            props = definition.get("properties")
+            name = definition.get("title")
+            return tuple([types.OrField(name=name, components=tuple(parse_properties(defs, props)))]) + parse_refs(defs, rest)
+        case _:
+            return tuple()
 
 
 def parse_properties(defs: dict, properties: dict) -> typing.Generator[types.Field, None, None]:
     for name, data in (properties.items() if properties else []):
         match data:
             case {"$ref": ref}:
-                yield types.Field(name=name, components=build_components(defs, ref, data))
+                yield types.Field(name=name, components=build_components(defs, ref))
             case {"anyOf": [{"$ref": ref}, {"type": "null"}]}:
-                yield types.Field(name=name, optional=True, components=build_components(defs, ref, data))
+                yield types.Field(name=name, optional=True, components=build_components(defs, ref))
             case {"anyOf": choices}:
-                yield types.Field(name=name, optional={"type": "null"} in choices)
+                match choices:
+                    case [_, {"type": "null"}]:
+                        components=tuple()
+                    case _:
+                        components = parse_refs(defs, choices)
+                yield types.Field(name=name, optional={"type": "null"} in choices, components=components)
             case _:
                 yield types.Field(name=name)
 
