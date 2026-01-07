@@ -8,7 +8,6 @@ from flask import render_template
 from flask import request
 from flask_wtf.csrf import CSRFError
 from flask_wtf.csrf import CSRFProtect
-from sentry_sdk import set_tags
 
 from pcapi import settings
 from pcapi.flask_app import app
@@ -83,7 +82,8 @@ with app.app_context():
 
     setup_metrics(app)
 
-
+# This is only called when running pcapi locally
+# Deployments use ENTRYPOINT exec ./entrypoint.sh
 if __name__ == "__main__":
     port = settings.FLASK_BACKOFFICE_PORT
     is_debugger_enabled = settings.IS_DEV and settings.DEBUG_ACTIVATED
@@ -100,10 +100,4 @@ if __name__ == "__main__":
             debugpy.wait_for_client()
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
-    set_tags(
-        {
-            "pcapi.app_type": "app",
-            "pcapi.is_new_infra": str(settings.IS_NEW_INFRA),
-        }
-    )
     app.run(host="0.0.0.0", port=port, debug=True, use_reloader=not is_debugger_enabled)
