@@ -303,6 +303,7 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
             priceDetail="Some detail aubout the price",
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             offererAddress=offerers_factories.OffererAddressFactory(),
+            bookingEmails=["booking1@example.com", "booking2@example.com"],
         )
         url = url_for(self.endpoint, collective_offer_template_id=collectiveOfferTemplate.id)
         with assert_num_queries(self.expected_num_queries):
@@ -330,7 +331,8 @@ class GetCollectiveOfferTemplateDetailTest(GetEndpointHelper):
         assert "Accessibilité" in descriptions
         # contact
         assert descriptions["Téléphone"] == "+33199006328"
-        assert descriptions["Email"] == "collectiveofferfactory+contact@example.com"
+        assert descriptions["Email de contact"] == "collectiveofferfactory+contact@example.com"
+        assert descriptions["Email auquel envoyer les notifications"] == "booking1@example.com booking2@example.com"
         # column
         # section 1
         assert descriptions["CollectiveOfferTemplate ID"] == str(collectiveOfferTemplate.id)

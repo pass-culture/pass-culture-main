@@ -1883,7 +1883,7 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         assert "Accessibilité" in descriptions
         # contact
         assert descriptions["Téléphone"] == "+33199006328"
-        assert descriptions["Email"] == "collectiveofferfactory+contact@example.com"
+        assert descriptions["Email de contact"] == "collectiveofferfactory+contact@example.com"
         assert (
             descriptions["Email auquel envoyer les notifications"]
             == "collectiveofferfactory+booking@example.com collectiveofferfactory+booking@example2.com"
