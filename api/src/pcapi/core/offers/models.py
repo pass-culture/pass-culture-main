@@ -1093,7 +1093,8 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     def _releasedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(
             cls.validation == OfferValidationStatus.APPROVED,
-            sa.or_(cls.publicationDatetime != None, cls.publicationDatetime <= sa.func.now()),
+            cls.publicationDatetime != None,
+            cls.publicationDatetime <= sa.func.now(),
         )
 
     @hybrid_property
