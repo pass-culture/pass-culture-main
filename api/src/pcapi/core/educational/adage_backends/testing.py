@@ -2,7 +2,6 @@ import datetime
 import decimal
 
 import pcapi.core.educational.schemas as educational_schemas
-from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends.base import AdageClient
 from pcapi.core.educational.adage_backends.serialize import AdageCollectiveOffer
@@ -19,7 +18,7 @@ class AdageSpyClient(AdageClient):
     def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingResponse) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/prereservation-edit", "sent_data": data})
 
-    def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
+    def get_adage_offerer(self, siren: str) -> list[educational_schemas.AdageCulturalPartner]:
         raise RuntimeError("Do not use the spy for this method, mock the get request instead")
 
     def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:

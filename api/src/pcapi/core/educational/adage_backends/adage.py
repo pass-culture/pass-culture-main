@@ -6,7 +6,6 @@ import typing
 from pydantic.v1 import parse_obj_as
 
 from pcapi import settings
-from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize
@@ -113,7 +112,7 @@ class AdageHttpClient(AdageClient):
         if api_response.status_code != 201:
             raise self._get_api_adage_exception(api_response, "Error posting booking edition notification to Adage API")
 
-    def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
+    def get_adage_offerer(self, siren: str) -> list[educational_schemas.AdageCulturalPartner]:
         api_response = self._make_get_request(url=f"{self.base_url}/v1/partenaire-culturel/{siren}")
 
         if api_response.status_code == 404:
@@ -123,7 +122,7 @@ class AdageHttpClient(AdageClient):
         if api_response.status_code != 200:
             raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-        return parse_obj_as(list[AdageVenue], api_response.json())
+        return parse_obj_as(list[educational_schemas.AdageCulturalPartner], api_response.json())
 
     def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:
         api_response = self._make_post_request(url=f"{self.base_url}/v1/prereservation-annule", data=data.json())

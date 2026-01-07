@@ -2,7 +2,6 @@ import datetime
 import typing
 
 from pcapi import settings
-from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import schemas as educational_schemas
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.utils.module_loading import import_string
@@ -25,7 +24,7 @@ def notify_offer_or_stock_edition(data: educational_schemas.EducationalBookingEd
     _get_backend().notify_offer_or_stock_edition(data=data)
 
 
-def get_adage_offerer(siren: str) -> list[AdageVenue]:
+def get_adage_offerer(siren: str) -> list[educational_schemas.AdageCulturalPartner]:
     result = _get_backend().get_adage_offerer(siren=siren)
     return result
 
