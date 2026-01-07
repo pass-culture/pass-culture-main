@@ -2,7 +2,7 @@ import datetime
 import typing
 
 from pcapi import settings
-from pcapi.core.educational import schemas as educational_schemas
+from pcapi.core.educational import schemas
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.utils.module_loading import import_string
 
@@ -16,20 +16,20 @@ def _get_backend() -> "AdageClient":
     return backend_class()
 
 
-def notify_prebooking(data: educational_schemas.EducationalBookingResponse) -> None:
+def notify_prebooking(data: schemas.EducationalBookingResponse) -> None:
     _get_backend().notify_prebooking(data=data)
 
 
-def notify_offer_or_stock_edition(data: educational_schemas.EducationalBookingEdition) -> None:
+def notify_offer_or_stock_edition(data: schemas.EducationalBookingEdition) -> None:
     _get_backend().notify_offer_or_stock_edition(data=data)
 
 
-def get_adage_offerer(siren: str) -> list[educational_schemas.AdageCulturalPartner]:
+def get_adage_offerer(siren: str) -> list[schemas.AdageCulturalPartner]:
     result = _get_backend().get_adage_offerer(siren=siren)
     return result
 
 
-def notify_booking_cancellation_by_offerer(data: educational_schemas.EducationalBookingResponse) -> None:
+def notify_booking_cancellation_by_offerer(data: schemas.EducationalBookingResponse) -> None:
     _get_backend().notify_booking_cancellation_by_offerer(data=data)
 
 
@@ -42,7 +42,7 @@ def notify_institution_association(data: serialize.AdageCollectiveOffer) -> None
     _get_backend().notify_institution_association(data=data)
 
 
-def get_cultural_partner(siret: str) -> educational_schemas.AdageCulturalPartner:
+def get_cultural_partner(siret: str) -> schemas.AdageCulturalPartner:
     result = _get_backend().get_cultural_partner(siret)
     return result
 
@@ -57,7 +57,7 @@ def get_adage_educational_redactor_from_uai(uai: str) -> list[dict[str, str]]:
     return result
 
 
-def notify_reimburse_collective_booking(data: educational_schemas.AdageReimbursementNotification) -> None:
+def notify_reimburse_collective_booking(data: schemas.AdageReimbursementNotification) -> None:
     _get_backend().notify_reimburse_collective_booking(data)
 
 
