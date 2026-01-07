@@ -3,26 +3,26 @@ from datetime import date
 from datetime import datetime
 
 from pcapi.core.educational import models
-from pcapi.core.educational import schemas as educational_schemas
+from pcapi.core.educational import schemas
 
 
 class CollectiveOfferNotAssociatedToInstitution(Exception):
     pass
 
 
-class AdageCollectiveOfferContact(educational_schemas.AdageBaseResponseModel):
+class AdageCollectiveOfferContact(schemas.AdageBaseResponseModel):
     email: str | None
     phone: str | None
 
 
-class AdageRedactor(educational_schemas.AdageBaseResponseModel):
+class AdageRedactor(schemas.AdageBaseResponseModel):
     email: str | None
     redactorCivility: str | None
     redactorFirstName: str | None
     redactorLastName: str | None
 
 
-class AdageCollectiveOffer(educational_schemas.AdageBaseResponseModel):
+class AdageCollectiveOffer(schemas.AdageBaseResponseModel):
     UAICode: str
     address: str
     startDatetime: datetime
@@ -98,7 +98,7 @@ def get_collective_offer_address(offer: models.CollectiveOffer) -> str:
             return offer.locationComment or ""
 
 
-class AdageEducationalInstitution(educational_schemas.AdageBaseResponseModel):
+class AdageEducationalInstitution(schemas.AdageBaseResponseModel):
     uai: str
     sigle: str
     libelle: str
@@ -110,7 +110,7 @@ class AdageEducationalInstitution(educational_schemas.AdageBaseResponseModel):
     longitude: decimal.Decimal | None
 
 
-class AdageCollectiveRequest(educational_schemas.AdageBaseResponseModel):
+class AdageCollectiveRequest(schemas.AdageBaseResponseModel):
     redactorEmail: str
     requestPhoneNumber: str | None
     requestedDate: date | None
