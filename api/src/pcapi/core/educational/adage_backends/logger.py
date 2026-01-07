@@ -3,13 +3,42 @@ import decimal
 import logging
 
 import pcapi.core.educational.schemas as educational_schemas
-from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational import exceptions
 from pcapi.core.educational.adage_backends import serialize
 from pcapi.core.educational.adage_backends.base import AdageClient
 
 
 logger = logging.getLogger(__name__)
+
+base_partner: dict[str, str | int | float | None] = {
+    "id": 1,
+    "venueId": 12,
+    "siret": 51234567900017,
+    "regionId": 2,
+    "academieId": "ac-versaille",
+    "statutId": 2,
+    "labelId": 3,
+    "typeId": 1,
+    "communeId": "Paris",
+    "libelle": "a cultural partner",
+    "adresse": "10 rue de la ville d'à coté",
+    "siteWeb": 0,
+    "latitude": 0,
+    "longitude": 0,
+    "statutLibelle": "Association",
+    "labelLibelle": "pouet",
+    "typeIcone": "image",
+    "typeLibelle": "a type",
+    "communeLibelle": "Paris",
+    "communeDepartement": "Paris",
+    "academieLibelle": "versaille",
+    "regionLibelle": "ile de france",
+    "domaines": "des domaines",
+    "domaineIds": "1",
+    "actif": 0,
+    "dateModification": "2022-06-27T08:52:27.597Z",
+    "synchroPass": 1,
+}
 
 
 class AdageLoggerClient(AdageClient):
@@ -19,11 +48,11 @@ class AdageLoggerClient(AdageClient):
     def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingEdition) -> None:
         logger.info("Adage has been notified at %s, with payload: %s", f"{self.base_url}/v1/prereservation-edit", data)
 
-    def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
+    def get_adage_offerer(self, siren: str) -> list[educational_schemas.AdageCulturalPartner]:
         logger.info("Adage has been called at %s, with siren: %s", f"{self.base_url}/v1/partenaire-culturel", siren)
 
         if siren in ["123456782", "881457238", "851924100", "832321053"]:
-            return [AdageVenue.parse_obj({"siret": "12345678200010"})]
+            return [educational_schemas.AdageCulturalPartner.parse_obj({**base_partner, "siret": "12345678200010"})]
 
         raise exceptions.CulturalPartnerNotFoundException("Requested siren is not a known cultural partner for Adage")
 
@@ -37,35 +66,7 @@ class AdageLoggerClient(AdageClient):
     ) -> list[dict[str, str | int | float | None]]:
         logger.info("Adage has been called at %s", f"{self.base_url}/v1/partenaire-culturel")
         return [
-            {
-                "id": 1,
-                "venueId": 12,
-                "siret": 51234567900017,
-                "regionId": 2,
-                "academieId": "ac-versaille",
-                "statutId": 2,
-                "labelId": 3,
-                "typeId": 1,
-                "communeId": "Paris",
-                "libelle": "a cultural partner",
-                "adresse": "10 rue de la ville d'à coté",
-                "siteWeb": 0,
-                "latitude": 0,
-                "longitude": 0,
-                "statutLibelle": "Association",
-                "labelLibelle": "pouet",
-                "typeIcone": "image",
-                "typeLibelle": "a type",
-                "communeLibelle": "Paris",
-                "communeDepartement": "Paris",
-                "academieLibelle": "versaille",
-                "regionLibelle": "ile de france",
-                "domaines": "des domaines",
-                "domaineIds": "1",
-                "actif": 0,
-                "dateModification": "2022-06-27T08:52:27.597Z",
-                "synchroPass": 1,
-            },
+            {**base_partner},
             {
                 "id": 2,
                 "venueId": 13,

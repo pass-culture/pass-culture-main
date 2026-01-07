@@ -2,7 +2,6 @@ import datetime
 
 import pcapi.core.educational.schemas as educational_schemas
 from pcapi import settings
-from pcapi.connectors.serialization.api_adage_serializers import AdageVenue
 from pcapi.core.educational.adage_backends import serialize
 
 
@@ -16,7 +15,7 @@ class AdageClient:
     def notify_offer_or_stock_edition(self, data: educational_schemas.EducationalBookingEdition) -> None:
         raise NotImplementedError()
 
-    def get_adage_offerer(self, siren: str) -> list[AdageVenue]:
+    def get_adage_offerer(self, siren: str) -> list[educational_schemas.AdageCulturalPartner]:
         raise NotImplementedError()
 
     def notify_booking_cancellation_by_offerer(self, data: educational_schemas.EducationalBookingResponse) -> None:
