@@ -88,7 +88,6 @@ tables_to_clean: list[type[Model]] = [
     finance_models.Payment,
     finance_models.PaymentMessage,
     finance_models.CashflowPricing,
-    finance_models.CashflowLog,
     finance_models.InvoiceCashflow,
     finance_models.Cashflow,
     finance_models.CashflowBatch,

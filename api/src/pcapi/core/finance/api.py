@@ -1261,15 +1261,9 @@ def generate_payment_files(batch: models.CashflowBatch) -> None:
     db.session.execute(
         sa.text(
             """
-        WITH updated AS (
-          UPDATE cashflow
-          SET status = :under_review
-          WHERE "batchId" = :batch_id AND status = :pending
-          RETURNING id AS cashflow_id
-        )
-        INSERT INTO cashflow_log
-            ("cashflowId", "statusBefore", "statusAfter")
-            SELECT updated.cashflow_id, 'pending', 'under review' FROM updated
+        UPDATE cashflow
+        SET status = :under_review
+        WHERE "batchId" = :batch_id AND status = :pending
     """
         ),
         params={
@@ -2195,21 +2189,14 @@ def _generate_invoice(
         db.session.execute(
             sa.text(
                 """
-                WITH updated AS (
-                  UPDATE cashflow
-                  SET status = :pending_acceptance
-                  WHERE id IN :cashflow_ids
-                  RETURNING id AS cashflow_id
-                )
-                INSERT INTO cashflow_log
-                ("cashflowId", "statusBefore", "statusAfter")
-                SELECT updated.cashflow_id, :under_review, :pending_acceptance FROM updated
+                UPDATE cashflow
+                SET status = :pending_acceptance
+                WHERE id IN :cashflow_ids
                 """
             ),
             params={
                 "cashflow_ids": tuple(cashflow_ids),
                 "pending_acceptance": models.CashflowStatus.PENDING_ACCEPTANCE.value,
-                "under_review": models.CashflowStatus.UNDER_REVIEW.value,
             },
         )
 
@@ -2496,21 +2483,14 @@ def validate_invoice(invoice_id: int) -> None:
         db.session.execute(
             sa.text(
                 """
-                WITH updated AS (
-                  UPDATE cashflow
-                  SET status = :accepted
-                  WHERE id = :cashflow_id
-                  RETURNING id AS cashflow_id
-                )
-                INSERT INTO cashflow_log
-                ("cashflowId", "statusBefore", "statusAfter")
-                SELECT updated.cashflow_id, :pending_acceptance, :accepted FROM updated
+                UPDATE cashflow
+                SET status = :accepted
+                WHERE id = :cashflow_id
                 """
             ),
             params={
                 "cashflow_id": cashflow_id,
                 "accepted": models.CashflowStatus.ACCEPTED.value,
-                "pending_acceptance": models.CashflowStatus.PENDING_ACCEPTANCE.value,
             },
         )
 
@@ -2632,108 +2612,6 @@ def validate_invoice(invoice_id: int) -> None:
                 "cashflow_id": cashflow_id,
             },
         )
-
-
-def merge_cashflow_batches(
-    batches_to_remove: list[models.CashflowBatch],
-    target_batch: models.CashflowBatch,
-) -> None:
-    """Merge multiple cashflow batches into a single (existing) one.
-
-    This function is to be used in a script if multiple batches have
-    been wrongly generated (for example because the cutoff of the
-    first batch was wrong). The target batch must hence be the one
-    with the right cutoff.
-    """
-    assert len(batches_to_remove) >= 1
-    assert target_batch not in batches_to_remove
-
-    batch_ids_to_remove = [batch.id for batch in batches_to_remove]
-    bank_account_ids = [
-        id_
-        for (id_,) in db.session.query(models.Cashflow)
-        .filter(models.Cashflow.batchId.in_(batch_ids_to_remove))
-        .with_entities(models.Cashflow.bankAccountId)
-        .distinct()
-    ]
-
-    with transaction():
-        initial_sum = (
-            db.session.query(models.Cashflow)
-            .filter(
-                models.Cashflow.batchId.in_([b.id for b in batches_to_remove + [target_batch]]),
-            )
-            .with_entities(sa_func.sum(models.Cashflow.amount))
-            .scalar()
-        )
-        for bank_account_id in bank_account_ids:
-            cashflows = (
-                db.session.query(models.Cashflow)
-                .filter(
-                    models.Cashflow.bankAccountId == bank_account_id,
-                    models.Cashflow.batchId.in_(
-                        batch_ids_to_remove + [target_batch.id],
-                    ),
-                )
-                .all()
-            )
-            # One cashflow, wrong batch. Just change the batchId.
-            if len(cashflows) == 1:
-                db.session.query(models.Cashflow).filter_by(id=cashflows[0].id).update(
-                    {
-                        "batchId": target_batch.id,
-                        "creationDate": target_batch.creationDate,
-                    },
-                    synchronize_session=False,
-                )
-                continue
-
-            # Multiple cashflows, possibly including the target batch.
-            # Update "right" cashflow amount if there is one (or any
-            # cashflow otherwise), delete other cashflows.
-            try:
-                cashflow_to_keep = [cf for cf in cashflows if cf.batchId == target_batch.id][0]
-            except IndexError:
-                cashflow_to_keep = cashflows[0]
-            cashflow_ids_to_remove = [cf.id for cf in cashflows if cf != cashflow_to_keep]
-            sum_to_add = (
-                db.session.query(models.Cashflow)
-                .filter(models.Cashflow.id.in_(cashflow_ids_to_remove))
-                .with_entities(sa_func.sum(models.Cashflow.amount))
-                .scalar()
-            )
-            db.session.query(models.CashflowPricing).filter(
-                models.CashflowPricing.cashflowId.in_(cashflow_ids_to_remove)
-            ).update(
-                {"cashflowId": cashflow_to_keep.id},
-                synchronize_session=False,
-            )
-            db.session.query(models.Cashflow).filter_by(id=cashflow_to_keep.id).update(
-                {
-                    "batchId": target_batch.id,
-                    "amount": cashflow_to_keep.amount + sum_to_add,
-                },
-                synchronize_session=False,
-            )
-            db.session.query(models.CashflowLog).filter(
-                models.CashflowLog.cashflowId.in_(cashflow_ids_to_remove),
-            ).delete(synchronize_session=False)
-            db.session.query(models.Cashflow).filter(
-                models.Cashflow.id.in_(cashflow_ids_to_remove),
-            ).delete(synchronize_session=False)
-        db.session.query(models.CashflowBatch).filter(models.CashflowBatch.id.in_(batch_ids_to_remove)).delete(
-            synchronize_session=False,
-        )
-        final_sum = (
-            db.session.query(models.Cashflow)
-            .filter(
-                models.Cashflow.batchId.in_(batch_ids_to_remove + [target_batch.id]),
-            )
-            .with_entities(sa_func.sum(models.Cashflow.amount))
-            .scalar()
-        )
-        assert final_sum == initial_sum
-        db.session.commit()
 
 
 def create_offerer_reimbursement_rule(
