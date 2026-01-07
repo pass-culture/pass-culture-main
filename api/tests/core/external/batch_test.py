@@ -25,6 +25,7 @@ class FormatUserAttributesTest:
             "date(u.last_booking_date)": "2021-05-06T00:00:00",
             "date(u.product_brut_x_use)": "2021-05-06T00:00:00",
             "u.credit": 48000,
+            "u.bonification_status": "eligible",
             "u.booked_offer_categories_count": 2,
             "u.booking_count": 4,
             "u.booking_venues_count": 3,

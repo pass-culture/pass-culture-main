@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.external import batch
+from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import deposit_api
 from pcapi.core.mails import transactional as transactional_mails
 from pcapi.core.subscription import models as subscription_models
@@ -64,6 +65,8 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
             )
     elif status == subscription_models.FraudCheckStatus.KO:
         transactional_mails.send_bonus_declined_email(user)
+
+    external_attributes_api.update_external_user(user)
 
 
 def _get_user_quotient_familial_response(

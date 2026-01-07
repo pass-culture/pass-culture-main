@@ -1,6 +1,7 @@
 import copy
 import datetime
 import decimal
+from unittest.mock import patch
 
 import pytest
 import requests_mock
@@ -23,7 +24,8 @@ import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 
 @pytest.mark.usefixtures("db_session")
 class GetQuotientFamilialTest:
-    def test_apply_for_quotient_familial_bonus(self):
+    @patch("pcapi.core.external.attributes.api.update_external_user")
+    def test_apply_for_quotient_familial_bonus(self, update_external_user_mock):
         user = _build_user_from_fixture(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
@@ -75,12 +77,15 @@ class GetQuotientFamilialTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
         # Ensure that a Batch notification is triggered
-        assert push_testing.requests[0] == {
-            "can_be_asynchronously_retried": True,
-            "user_id": user.id,
-            "event_name": trigger_events.BatchEvent.HAS_RECEIVED_BONUS.value,
-            "event_payload": {"has_received_bonus": True},
-        }
+        assert push_testing.requests == [
+            {
+                "can_be_asynchronously_retried": True,
+                "user_id": user.id,
+                "event_name": trigger_events.BatchEvent.HAS_RECEIVED_BONUS.value,
+                "event_payload": {"has_received_bonus": True},
+            }
+        ]
+        update_external_user_mock.assert_called_once_with(user)
 
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
@@ -138,7 +143,11 @@ class GetQuotientFamilialTest:
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
-        assert len(push_testing.requests) == 0
+        assert len(push_testing.requests) == 2
+        push_request1, push_request2 = push_testing.requests
+        assert {push_request1["batch_api"], push_request2["batch_api"]} == {"ANDROID", "IOS"}
+        assert push_request1["attribute_values"]["u.bonification_status"] == "ko"
+        assert push_request2["attribute_values"]["u.bonification_status"] == "ko"
 
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
