@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from flask_jwt_extended import JWTManager
 from flask_wtf.csrf import CSRFProtect
-from sentry_sdk import set_tags
 
 from pcapi import settings
 from pcapi.flask_app import app
@@ -35,7 +34,8 @@ with app.app_context():
 
     setup_metrics(app)
 
-
+# This is only called when running pcapi locally
+# Deployments use ENTRYPOINT exec ./entrypoint.sh
 if __name__ == "__main__":
     ip = settings.FLASK_IP
     port = settings.FLASK_PORT
@@ -55,10 +55,4 @@ if __name__ == "__main__":
             debugpy.wait_for_client()
             print("🎉 Code debugger attached, enjoy debugging 🎉", flush=True)
 
-    set_tags(
-        {
-            "pcapi.app_type": "app",
-            "pcapi.is_new_infra": str(settings.IS_NEW_INFRA),
-        }
-    )
     app.run(host=ip, port=port, debug=True, use_reloader=use_reloader)

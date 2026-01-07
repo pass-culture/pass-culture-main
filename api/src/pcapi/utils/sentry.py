@@ -176,6 +176,8 @@ def init_sentry_sdk() -> None:
         traces_sampler=custom_traces_sampler if settings.SENTRY_FINE_SAMPLING else None,
         before_send_transaction=before_send_transaction,
     )
+    # TODO(fseguin-pass, 2025-01-07) drop when all envs are moved
+    sentry_sdk.set_tag(key="pcapi.is_new_infra", value=str(settings.IS_NEW_INFRA))
 
 
 def get_custom_fingerprint(hint: dict[str, typing.Any]) -> str | None:
