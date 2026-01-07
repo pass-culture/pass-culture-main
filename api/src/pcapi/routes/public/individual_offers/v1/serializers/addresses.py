@@ -1,12 +1,9 @@
-import typing
-
 import pydantic as pydantic_v2
-from pydantic_core import InitErrorDetails
-from pydantic_core import ValidationError
 from typing_extensions import Annotated
 
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants.fields_v2 import fields_v2
+from pcapi.routes.serialization.utils import raise_error_from_location
 
 
 Street = Annotated[str, pydantic_v2.Field(max_length=200, min_length=1)]
@@ -23,22 +20,6 @@ class AddressModel(serialization.HttpBodyModel):
     latitude: Latitude | None = fields_v2.LATITUDE_NOT_REQUIRED
     longitude: Longitude | None = fields_v2.LONGITUDE_NOT_REQUIRED
 
-    def _raise(self, invalid_value: typing.Any, loc: str, msg: str) -> None:
-        # We must use this hack to be able to locate the error
-        # raised by the `model_validator` decorator
-        # see https://github.com/pydantic/pydantic/issues/9686#issuecomment-2301754693
-        raise ValidationError.from_exception_data(
-            f"{loc.capitalize()}Error",
-            [
-                InitErrorDetails(
-                    type="value_error",
-                    loc=(loc,),
-                    input=invalid_value,
-                    ctx={loc: invalid_value, "error": msg},
-                )
-            ],
-        )
-
     @pydantic_v2.model_validator(mode="after")
     def check_lat_long_and_banId_are_correctly_set(self) -> "AddressModel":
         latitude = self.latitude
@@ -46,10 +27,10 @@ class AddressModel(serialization.HttpBodyModel):
 
         # Ensure both latitude and longitude are either both set or both null
         if latitude is not None and longitude is None:
-            self._raise(self.longitude, "longitude", "`longitude` must be set if `latitude` is provided")
+            raise_error_from_location(self.longitude, "longitude", "`longitude` must be set if `latitude` is provided")
 
         if latitude is None and longitude is not None:
-            self._raise(self.latitude, "latitude", "`latitude` must be set if `longitude` is provided")
+            raise_error_from_location(self.latitude, "latitude", "`latitude` must be set if `longitude` is provided")
 
         return self
 
