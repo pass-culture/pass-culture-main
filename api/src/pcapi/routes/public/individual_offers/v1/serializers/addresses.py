@@ -1,8 +1,4 @@
-import typing
-
 import pydantic as pydantic_v2
-from pydantic_core import InitErrorDetails
-from pydantic_core import ValidationError
 from typing_extensions import Annotated
 
 from pcapi.routes import serialization
@@ -22,22 +18,6 @@ class AddressModel(serialization.HttpBodyModel):
     postalCode: PostalCode = fields_v2.POSTAL_CODE
     latitude: Latitude | None = fields_v2.LATITUDE_NOT_REQUIRED
     longitude: Longitude | None = fields_v2.LONGITUDE_NOT_REQUIRED
-
-    def _raise(self, invalid_value: typing.Any, loc: str, msg: str) -> None:
-        # We must use this hack to be able to locate the error
-        # raised by the `model_validator` decorator
-        # see https://github.com/pydantic/pydantic/issues/9686#issuecomment-2301754693
-        raise ValidationError.from_exception_data(
-            f"{loc.capitalize()}Error",
-            [
-                InitErrorDetails(
-                    type="value_error",
-                    loc=(loc,),
-                    input=invalid_value,
-                    ctx={loc: invalid_value, "error": msg},
-                )
-            ],
-        )
 
     @pydantic_v2.model_validator(mode="after")
     def check_lat_long_and_banId_are_correctly_set(self) -> "AddressModel":

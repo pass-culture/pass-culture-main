@@ -1,9 +1,12 @@
 import datetime
+import typing
 from math import isfinite
 
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic import alias_generators
+from pydantic_core import InitErrorDetails
+from pydantic_core import ValidationError
 
 from pcapi.serialization import utils as serialization_utils
 from pcapi.utils.date import format_into_utc_date
@@ -44,7 +47,25 @@ class ConfiguredBaseModel(BaseModel):
 
 # See here -> https://docs.pydantic.dev/latest/migration/
 # for a migration guide from v1 to v2
-class HttpBodyModel(pydantic_v2.BaseModel):
+class _HttpModel(pydantic_v2.BaseModel):
+    def _raise(self, invalid_value: typing.Any, loc: str, msg: str) -> None:
+        # We must use this hack to be able to locate the error
+        # raised by the `model_validator` decorator
+        # see https://github.com/pydantic/pydantic/issues/9686#issuecomment-2301754693
+        raise ValidationError.from_exception_data(
+            f"{loc.capitalize()}Error",
+            [
+                InitErrorDetails(
+                    type="value_error",
+                    loc=(loc,),
+                    input=invalid_value,
+                    ctx={loc: invalid_value, "error": msg},
+                )
+            ],
+        )
+
+
+class HttpBodyModel(_HttpModel):
     model_config = pydantic_v2.ConfigDict(
         alias_generator=alias_generators.to_camel,
         from_attributes=True,
@@ -57,7 +78,7 @@ class HttpBodyModel(pydantic_v2.BaseModel):
     )
 
 
-class HttpQueryParamsModel(pydantic_v2.BaseModel):
+class HttpQueryParamsModel(_HttpModel):
     model_config = pydantic_v2.ConfigDict(
         alias_generator=alias_generators.to_camel,
         validate_by_name=True,
