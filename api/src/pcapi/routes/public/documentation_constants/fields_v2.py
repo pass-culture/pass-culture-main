@@ -63,6 +63,11 @@ class _FIELDS_V2:
         example=535,
         description=f"Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**]({GET_OFFERER_VENUES_ANCHOR})",
     )
+    VENUE_ID_NOT_REQUIRED = Field(
+        example=535,
+        default=None,
+        description=f"Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**]({GET_OFFERER_VENUES_ANCHOR})",
+    )
     DURATION_MINUTES = Field(
         description="Event duration in minutes",
         example=60,
@@ -159,6 +164,7 @@ class _FIELDS_V2:
 
     # Offer fields
     OFFER_ID = Field(description="Offer id", example=12345)
+    OFFER_ID_NOT_REQUIRED = Field(description="Offer id", example=12345, default=None)
     OFFER_STATUS = Field(description=descriptions.OFFER_STATUS_FIELD_DESCRIPTION, example="ACTIVE")
     OFFER_NAME = Field(description="Offer title", example="Le Petit Prince")
     OFFER_DESCRIPTION = Field(

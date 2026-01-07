@@ -13,6 +13,10 @@ You will have two dates at your disposal :
 - a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
 :::
 
+## January 2026
+
+- You can now filter bookings either by `offerId` or `venueId` (endpoint: [**Get Bookings**](/rest-api#tag/Bookings/operation/GetBookings))
+
 ## December 2025
 
 - The `eventDuration` parameter for creating and updating event offers are now capped at 24 hours. To create or update events longer than 24 hours, you will need to leave this field empty.
@@ -46,7 +50,7 @@ You will have two dates at your disposal :
 - The number of price categories per offer is now limited to 50 (endpoints: [**Create Price Categories**](/rest-api#tag/Event-Offer-Price-Categories/operation/PostEventPriceCategories), [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer))
 - The response of the following endpoints now includes 2 new fields, `offerAddress` and `offerDepartmentCode`, that replace respectively `venueAddress` and `venueDepartementCode`. These new fields are based on the offer location, whereas the previous fields displayed informations pertaining to the offer's venue location:
   - [**Get Booking endpoint**](/rest-api#tag/Bookings/operation/GetBookingByToken)
-  - [**Get Offer Bookings endpoint**](/rest-api#tag/Bookings/operation/GetBookingsByOffer)
+  - [**Get Bookings endpoint**](/rest-api#tag/Bookings/operation/GetBookings)
 
 ## May 2025
 

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 import sqlalchemy.orm as sa_orm
 
 from pcapi.core.achievements import models as achievements_models
@@ -26,7 +24,7 @@ from pcapi.utils.transaction_manager import atomic
 from .serializers import bookings as serialization
 
 
-def _get_base_booking_query() -> sa_orm.Query:
+def _get_base_booking_query() -> sa_orm.Query[booking_models.Booking]:
     return (
         db.session.query(booking_models.Booking)
         .join(offerers_models.Venue)
@@ -68,33 +66,34 @@ def _get_base_booking_query() -> sa_orm.Query:
 
 
 def _get_paginated_and_filtered_bookings(
-    offer_id: int,
-    *,
-    price_category_id: int | None,
-    stock_id: int | None,
-    status: booking_models.BookingStatus | None,
-    beginning_datetime: datetime | None,
-    firstIndex: int,
-    limit: int,
-) -> sa_orm.Query:
-    bookings_query = _get_base_booking_query().filter(offers_models.Offer.id == offer_id)
+    query_params: serialization.GetBookingsQueryParams,
+) -> sa_orm.Query[booking_models.Booking]:
+    bookings_query = _get_base_booking_query()
 
-    if price_category_id:
+    if query_params.offer_id:
+        bookings_query = bookings_query.filter(offers_models.Offer.id == query_params.offer_id)
+
+    if query_params.venue_id:
+        bookings_query = bookings_query.filter(offerers_models.Venue.id == query_params.venue_id)
+
+    if query_params.price_category_id:
         bookings_query = bookings_query.join(offers_models.PriceCategory).filter(
-            offers_models.PriceCategory.id == price_category_id
+            offers_models.PriceCategory.id == query_params.price_category_id
         )
 
-    if stock_id:
-        bookings_query = bookings_query.filter(booking_models.Booking.stockId == stock_id)
+    if query_params.stock_id:
+        bookings_query = bookings_query.filter(booking_models.Booking.stockId == query_params.stock_id)
 
-    if status:
-        bookings_query = bookings_query.filter(booking_models.Booking.status == status)
+    if query_params.status:
+        bookings_query = bookings_query.filter(booking_models.Booking.status == query_params.status)
 
-    if beginning_datetime:
-        bookings_query = bookings_query.filter(offers_models.Stock.beginningDatetime == beginning_datetime)
+    if query_params.beginning_datetime:
+        bookings_query = bookings_query.filter(offers_models.Stock.beginningDatetime == query_params.beginning_datetime)
 
     return (
-        bookings_query.filter(booking_models.Booking.id >= firstIndex).order_by(booking_models.Booking.id).limit(limit)
+        bookings_query.filter(booking_models.Booking.id >= query_params.first_index)
+        .order_by(booking_models.Booking.id)
+        .limit(query_params.limit)
     )
 
 
@@ -114,36 +113,44 @@ def _get_paginated_and_filtered_bookings(
         ),
     ),
 )
-def get_bookings_by_offer(
-    query: serialization.GetFilteredBookingsRequest,
+def get_bookings(
+    query: serialization.GetBookingsQueryParams,
 ) -> serialization.GetFilteredBookingsResponse:
     """
-    Get Offer Bookings
+    Get Bookings
 
-    Return all the bookings for a given offer. Results are paginated (by default, there are `50` bookings per page)
+    Return all the bookings for given offer and/or given venue.
+
+    Results are paginated (by default, there are `50` bookings per page).
     """
-    offer = (
-        db.session.query(offers_models.Offer)
-        .filter(offers_models.Offer.id == query.offer_id)
-        .join(offerers_models.Venue)
-        .join(providers_models.VenueProvider)
-        .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
-        .filter(providers_models.VenueProvider.isActive == True)
-        .one_or_none()
-    )
+    if query.venue_id is not None:
+        venue = (
+            db.session.query(offerers_models.Venue)
+            .filter(offerers_models.Venue.id == query.venue_id)
+            .join(providers_models.VenueProvider)
+            .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
+            .filter(providers_models.VenueProvider.isActive == True)
+            .one_or_none()
+        )
 
-    if offer is None:
-        raise api_errors.ResourceNotFoundError({"offer": "we could not find this offer id"})
+        if venue is None:
+            raise api_errors.ResourceNotFoundError({"venueId": "we could not find this venue"})
 
-    bookings = _get_paginated_and_filtered_bookings(
-        query.offer_id,
-        price_category_id=query.price_category_id,
-        stock_id=query.stock_id,
-        status=query.status,
-        beginning_datetime=query.beginning_datetime,
-        firstIndex=query.first_index,
-        limit=query.limit,
-    )
+    if query.offer_id is not None:
+        offer = (
+            db.session.query(offers_models.Offer)
+            .filter(offers_models.Offer.id == query.offer_id)
+            .join(offerers_models.Venue)
+            .join(providers_models.VenueProvider)
+            .filter(providers_models.VenueProvider.providerId == current_api_key.providerId)
+            .filter(providers_models.VenueProvider.isActive == True)
+            .one_or_none()
+        )
+
+        if offer is None:
+            raise api_errors.ResourceNotFoundError({"offerId": "we could not find this offer"})
+
+    bookings = _get_paginated_and_filtered_bookings(query)
 
     return serialization.GetFilteredBookingsResponse(
         bookings=[serialization.GetBookingResponse.build_booking(booking) for booking in bookings]
