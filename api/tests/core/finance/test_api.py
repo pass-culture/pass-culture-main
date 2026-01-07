@@ -2010,9 +2010,6 @@ def test_generate_payment_files(mocked_gdrive_create_file, clean_temp_files):
 
     cashflow = db.session.query(models.Cashflow).one()
     assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
-    assert len(cashflow.logs) == 1
-    assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
-    assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
 
     current_year = date_utils.get_naive_utc_now().year
     gdrive_file_names = {call.args[1] for call in mocked_gdrive_create_file.call_args_list}
@@ -3599,7 +3596,7 @@ class GenerateInvoiceTest:
         + 1  # insert invoice
         + 1  # insert invoice lines
         + 1  # insert invoice_cashflows
-        + 1  # update Cashflow.status and add CashflowLog
+        + 1  # update Cashflow.status
     )
 
     @time_machine.travel(datetime.datetime(2022, 1, 15))
@@ -4037,8 +4034,6 @@ class GenerateInvoiceTest:
         assert len(db.session.query(models.Cashflow).all())
         pricings = db.session.query(models.Pricing).filter(models.Pricing.valueDate > past).all()
         assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
-        assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
-        assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
         indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
         collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
         db.session.flush()
@@ -4052,15 +4047,11 @@ class GenerateInvoiceTest:
         assert cashflow.invoices[0] == invoice
 
         assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
-        assert cashflow.logs[1].statusBefore == models.CashflowStatus.UNDER_REVIEW
-        assert cashflow.logs[1].statusAfter == models.CashflowStatus.PENDING_ACCEPTANCE
         for pricing in pricings:
             assert pricing.status == models.PricingStatus.PROCESSED
             assert pricing.logs[0].statusBefore == models.PricingStatus.VALIDATED
             assert pricing.logs[0].statusAfter == models.PricingStatus.PROCESSED
             assert pricing.logs[0].reason == models.PricingLogReason.GENERATE_CASHFLOW
-
-        assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
 
         assert indiv_booking1.status == bookings_models.BookingStatus.USED  # not updated
         assert indiv_booking1.reimbursementDate is None  # not updated
@@ -4478,77 +4469,6 @@ class StoreInvoicePdfTest:
         assert (self.INVOICES_DIR / f"{invoice.storage_object_id}.type").exists()
 
 
-def test_merge_cashflow_batches():
-    venue = offerers_factories.VenueFactory()
-
-    (
-        bank_account1,
-        bank_account2,
-        bank_account3,
-        bank_account4,
-        bank_account5,
-    ) = factories.BankAccountFactory.create_batch(size=5, offerer=venue.managingOfferer)
-
-    batch1 = factories.CashflowBatchFactory(id=1)
-    batch2 = factories.CashflowBatchFactory(id=2)
-    batch3 = factories.CashflowBatchFactory(id=3)
-    batch4 = factories.CashflowBatchFactory(id=4)
-    batch5 = factories.CashflowBatchFactory(id=5)
-
-    # Cashflow of batches 1 and 2: should not be changed.
-    factories.CashflowFactory(batch=batch1, bankAccount=bank_account1, amount=10)
-    factories.CashflowFactory(batch=batch2, bankAccount=bank_account1, amount=20)
-    # Reimbursement point 1: batches 3, 4 and 5.
-    factories.CashflowFactory(batch=batch3, bankAccount=bank_account1, amount=40)
-    factories.CashflowFactory(batch=batch4, bankAccount=bank_account1, amount=80)
-    factories.CashflowFactory(batch=batch5, bankAccount=bank_account1, amount=160)
-    # Reimbursement point 2: batches 3 and 4.
-    cf_3_2 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account2, amount=320)
-    factories.PricingFactory(cashflows=[cf_3_2])
-    cf_4_2 = factories.CashflowFactory(batch=batch4, bankAccount=bank_account2, amount=640)
-    factories.PricingFactory(cashflows=[cf_4_2])
-    # Reimbursement point 3: batches 3 and 5.
-    cf_3_3 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account3, amount=1280)
-    factories.PricingFactory(cashflows=[cf_3_3])
-    cf_5_3 = factories.CashflowFactory(batch=batch5, bankAccount=bank_account3, amount=2560)
-    factories.PricingFactory(cashflows=[cf_5_3])
-    # Reimbursement point 4: batch 3 only
-    cf_3_4 = factories.CashflowFactory(batch=batch3, bankAccount=bank_account4, amount=5120)
-    factories.PricingFactory(cashflows=[cf_3_4])
-    # Reimbursement point 5: batch 5 (nothing to do)
-    cf_5_5 = factories.CashflowFactory(batch=batch5, bankAccount=bank_account5, amount=10240)
-    factories.PricingFactory(cashflows=[cf_5_5])
-
-    def get_cashflows(batch_id, bank_account=None):
-        query = db.session.query(models.Cashflow).filter_by(batchId=batch_id)
-        if bank_account:
-            query = query.filter_by(bankAccount=bank_account)
-        return query.all()
-
-    api.merge_cashflow_batches(batches_to_remove=[batch3, batch4], target_batch=batch5)
-
-    # No changes on batches 1 and 2.
-    cashflows = get_cashflows(batch_id=1)
-    assert len(cashflows) == 1
-    assert cashflows[0].bankAccount == bank_account1
-    assert cashflows[0].amount == 10
-    cashflows = get_cashflows(batch_id=2)
-    assert len(cashflows) == 1
-    assert cashflows[0].bankAccount == bank_account1
-    assert cashflows[0].amount == 20
-
-    # Batches 3 and 4 have been deleted.
-    assert not db.session.query(models.CashflowBatch).filter(models.CashflowBatch.id.in_((3, 4))).all()
-
-    # Batch 5 now has all cashflows.
-    assert len(get_cashflows(batch_id=5)) == 5
-    assert get_cashflows(batch_id=5, bank_account=bank_account1)[0].amount == 40 + 80 + 160
-    assert get_cashflows(batch_id=5, bank_account=bank_account2)[0].amount == 320 + 640
-    assert get_cashflows(batch_id=5, bank_account=bank_account3)[0].amount == 1280 + 2560
-    assert get_cashflows(batch_id=5, bank_account=bank_account4)[0].amount == 5120
-    assert get_cashflows(batch_id=5, bank_account=bank_account5)[0].amount == 10240
-
-
 def test_get_drive_folder_name():
     cutoff = datetime.datetime(2022, 4, 30, 22, 0)
     batch = factories.CashflowBatchFactory(cutoff=cutoff)
@@ -4607,8 +4527,6 @@ class ValidateInvoiceTest:
         cashflow = db.session.query(models.Cashflow).one()
         pricings = db.session.query(models.Pricing).filter(models.Pricing.valueDate > past).all()
         assert cashflow.status == models.CashflowStatus.UNDER_REVIEW
-        assert cashflow.logs[0].statusBefore == models.CashflowStatus.PENDING
-        assert cashflow.logs[0].statusAfter == models.CashflowStatus.UNDER_REVIEW
         indiv_booking2.status = bookings_models.BookingStatus.CANCELLED
         collective_booking2.status = educational_models.CollectiveBookingStatus.CANCELLED
         db.session.flush()
@@ -4619,16 +4537,12 @@ class ValidateInvoiceTest:
         )
         assert invoice.status == models.InvoiceStatus.PENDING
         assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
-        assert cashflow.logs[1].statusBefore == models.CashflowStatus.UNDER_REVIEW
-        assert cashflow.logs[1].statusAfter == models.CashflowStatus.PENDING_ACCEPTANCE
 
         api.validate_invoice(invoice.id)
         db.session.commit()
 
         assert invoice.status == models.InvoiceStatus.PAID
         assert cashflow.status == models.CashflowStatus.ACCEPTED
-        assert cashflow.logs[2].statusBefore == models.CashflowStatus.PENDING_ACCEPTANCE
-        assert cashflow.logs[2].statusAfter == models.CashflowStatus.ACCEPTED
         for pricing in pricings:
             assert pricing.status == models.PricingStatus.INVOICED
             assert pricing.logs[1].statusBefore == models.PricingStatus.PROCESSED

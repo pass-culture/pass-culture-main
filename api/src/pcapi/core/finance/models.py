@@ -872,43 +872,11 @@ class Cashflow(PcObject, Model):
     # generated. Positive (incoming) cashflows are manually created.
     amount: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.Integer, nullable=False)
 
-    logs: sa_orm.Mapped[list["CashflowLog"]] = sa_orm.relationship(
-        "CashflowLog",
-        foreign_keys="CashflowLog.cashflowId",
-        back_populates="cashflow",
-        order_by="CashflowLog.timestamp",
-    )
     pricings: sa_orm.Mapped[list[Pricing]] = sa_orm.relationship(
         "Pricing", secondary=CashflowPricing.__table__, back_populates="cashflows"
     )
     invoices: sa_orm.Mapped[list["Invoice"]] = sa_orm.relationship(
         "Invoice", secondary=InvoiceCashflow.__table__, back_populates="cashflows"
-    )
-
-
-class CashflowLog(PcObject, Model):
-    """A cashflow log is created whenever the status of a cashflow
-    changes.
-    """
-
-    __tablename__ = "cashflow_log"
-    cashflowId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("cashflow.id"), index=True, nullable=False
-    )
-    cashflow: sa_orm.Mapped[Cashflow] = sa_orm.relationship(
-        "Cashflow", foreign_keys=[cashflowId], back_populates="logs"
-    )
-    timestamp: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, server_default=sa.func.now()
-    )
-    statusBefore: sa_orm.Mapped[CashflowStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CashflowStatus), nullable=False
-    )
-    statusAfter: sa_orm.Mapped[CashflowStatus] = sa_orm.mapped_column(
-        db_utils.MagicEnum(CashflowStatus), nullable=False
-    )
-    details: sa_orm.Mapped[dict | None] = sa_orm.mapped_column(
-        sa_mutable.MutableDict.as_mutable(sa_psql.JSONB), default={}, server_default="{}", nullable=True
     )
 
 
