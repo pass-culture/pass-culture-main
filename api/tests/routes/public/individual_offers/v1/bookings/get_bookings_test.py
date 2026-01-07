@@ -70,7 +70,20 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key=plain_api_key, query_params={"offerId": product_offer_id + 1})
             assert response.status_code == 404
-        assert response.json == {"offer": "we could not find this offer id"}
+        assert response.json == {"offerId": "we could not find this offer"}
+
+    def test_should_raise_404_because_venue_not_found(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        product_offer = offers_factories.ThingOfferFactory(
+            venue=venue_provider.venue,
+            description="Un livre de contrepèterie",
+            name="Vieux motard que jamais",
+            ean="1234567890123",
+        )
+
+        response = self.make_request(plain_api_key=plain_api_key, query_params={"venueId": product_offer.venueId + 1})
+        assert response.status_code == 404
+        assert response.json == {"venueId": "we could not find this venue"}
 
     def test_request_not_existing_page(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
@@ -150,6 +163,124 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
                     "userPhoneNumber": booking.user.phoneNumber,
                     "userPostalCode": booking.user.postalCode,
                 }
+            ]
+        }
+
+    def test_venue_bookings(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        event_offer = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            description="De la musique de moustachus!",
+            name="Vieux motards rockers",
+        )
+        event_offer_2 = offers_factories.EventOfferFactory(
+            venue=venue_provider.venue,
+            description="Du gros SONNNNNN!",
+            name="On fait la java",
+        )
+        past = date_utils.get_naive_utc_now() - datetime.timedelta(weeks=2)
+        event_stock = offers_factories.EventStockFactory(offer=event_offer, beginningDatetime=past)
+        event_stock_2 = offers_factories.EventStockFactory(offer=event_offer_2, beginningDatetime=past)
+        booking = bookings_factories.BookingFactory(
+            dateCreated=past - datetime.timedelta(days=2),
+            user__email="beneficiary@example.com",
+            user__phoneNumber="0101010101",
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(months=2),
+            stock=event_stock,
+        )
+        booking_2 = bookings_factories.BookingFactory(
+            dateCreated=past - datetime.timedelta(days=1),
+            user__email="beneficiary-2@example.com",
+            user__phoneNumber="0698271625",
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=1),
+            stock=event_stock,
+        )
+
+        booking_3 = bookings_factories.BookingFactory(
+            dateCreated=past - datetime.timedelta(hours=1),
+            user__email="beneficiary-3@example.com",
+            user__phoneNumber="0698271625",
+            user__dateOfBirth=date_utils.get_naive_utc_now() - relativedelta(years=1),
+            stock=event_stock_2,
+        )
+
+        response = self.make_request(plain_api_key, query_params={"venueId": venue_provider.venueId})
+        assert response.status_code == 200
+
+        assert response.json == {
+            "bookings": [
+                {
+                    "confirmationDate": booking.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "creationDate": booking.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "id": booking.id,
+                    "offerEan": None,
+                    "offerId": event_offer.id,
+                    "offerName": "Vieux motards rockers",
+                    "price": 1010,
+                    "status": "CONFIRMED",
+                    "priceCategoryId": event_stock.priceCategory.id,
+                    "priceCategoryLabel": event_stock.priceCategory.label,
+                    "quantity": 1,
+                    "stockId": event_stock.id,
+                    "userBirthDate": booking.user.birth_date.strftime("%Y-%m-%d"),
+                    "userEmail": "beneficiary@example.com",
+                    "offerAddress": booking.stock.offer.offererAddress.address.street,
+                    "offerDepartmentCode": booking.stock.offer.offererAddress.address.departmentCode,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
+                    "userFirstName": booking.user.firstName,
+                    "userLastName": booking.user.lastName,
+                    "userPhoneNumber": booking.user.phoneNumber,
+                    "userPostalCode": booking.user.postalCode,
+                },
+                {
+                    "confirmationDate": booking_2.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "creationDate": booking_2.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "id": booking_2.id,
+                    "offerEan": None,
+                    "offerId": event_offer.id,
+                    "offerName": "Vieux motards rockers",
+                    "price": 1010,
+                    "status": "CONFIRMED",
+                    "priceCategoryId": event_stock.priceCategory.id,
+                    "priceCategoryLabel": event_stock.priceCategory.label,
+                    "quantity": 1,
+                    "stockId": event_stock.id,
+                    "userBirthDate": booking_2.user.birth_date.strftime("%Y-%m-%d"),
+                    "userEmail": "beneficiary-2@example.com",
+                    "offerAddress": booking.stock.offer.offererAddress.address.street,
+                    "offerDepartmentCode": booking.stock.offer.offererAddress.address.departmentCode,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
+                    "userFirstName": booking_2.user.firstName,
+                    "userLastName": booking_2.user.lastName,
+                    "userPhoneNumber": booking_2.user.phoneNumber,
+                    "userPostalCode": booking_2.user.postalCode,
+                },
+                {
+                    "confirmationDate": booking_3.cancellationLimitDate.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "creationDate": booking_3.dateCreated.strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "id": booking_3.id,
+                    "offerEan": None,
+                    "offerId": event_offer_2.id,
+                    "offerName": "On fait la java",
+                    "price": 1010,
+                    "status": "CONFIRMED",
+                    "priceCategoryId": event_stock_2.priceCategory.id,
+                    "priceCategoryLabel": event_stock_2.priceCategory.label,
+                    "quantity": 1,
+                    "stockId": event_stock_2.id,
+                    "userBirthDate": booking_3.user.birth_date.strftime("%Y-%m-%d"),
+                    "userEmail": "beneficiary-3@example.com",
+                    "offerAddress": booking.stock.offer.offererAddress.address.street,
+                    "offerDepartmentCode": booking.stock.offer.offererAddress.address.departmentCode,
+                    "venueId": venue_provider.venue.id,
+                    "venueName": venue_provider.venue.name,
+                    "userFirstName": booking_3.user.firstName,
+                    "userLastName": booking_3.user.lastName,
+                    "userPhoneNumber": booking_3.user.phoneNumber,
+                    "userPostalCode": booking_3.user.postalCode,
+                },
             ]
         }
 
@@ -859,7 +990,7 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
 
         assert response.json == {"bookings": []}
 
-    def test_should_raise_400_because_no_offer_id_provided(self):
+    def test_should_raise_400_because_no_offer_id_nor_venue_id_provided(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         product_offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
         product_stock = offers_factories.StockFactory(offer=product_offer)
@@ -871,4 +1002,4 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key)
 
-        assert response.json == {"offerId": ["Field required"]}
+        assert response.json == {"global": ["Value error, `offerId` or `venueId` must be set"]}
