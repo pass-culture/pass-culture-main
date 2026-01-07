@@ -1,5 +1,7 @@
 import datetime
 
+import pydantic as pydantic_v2
+
 from pcapi.core.bookings import models as booking_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.routes import serialization
@@ -65,12 +67,20 @@ class GetBookingResponse(serialization.HttpBodyModel):
         )
 
 
-class GetFilteredBookingsRequest(IndexPaginationQueryParamsV2):
-    offer_id: int = fields_v2.OFFER_ID
+class GetBookingsQueryParams(IndexPaginationQueryParamsV2):
+    offer_id: int | None = fields_v2.OFFER_ID_NOT_REQUIRED
+    venue_id: int | None = fields_v2.VENUE_ID_NOT_REQUIRED
     price_category_id: int | None = fields_v2.PRICE_CATEGORY_ID_NOT_REQUIRED
     stock_id: int | None = fields_v2.STOCK_ID_NOT_REQUIRED
     status: booking_models.BookingStatus | None = fields_v2.BOOKING_STATUS_NOT_REQUIRED
     beginning_datetime: datetime.datetime | None = fields_v2.BEGINNING_DATETIME_NOT_REQUIRED
+
+    @pydantic_v2.model_validator(mode="after")
+    def check_offer_id_or_venue_id_is_set(self) -> "GetBookingsQueryParams":
+        if not self.offer_id and not self.venue_id:
+            self._raise(None, "global", "`offerId` or `venueId` must be set")
+
+        return self
 
 
 class GetFilteredBookingsResponse(serialization.HttpBodyModel):

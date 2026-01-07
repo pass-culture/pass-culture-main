@@ -2679,11 +2679,11 @@
                         "type": "boolean"
                     },
                     "eventDuration": {
-                      "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
-                      "example": 60,
-                      "nullable": true,
-                      "title": "Eventduration",
-                      "type": "integer"
+                        "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
+                        "example": 60,
+                        "nullable": true,
+                        "title": "Eventduration",
+                        "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
                         "description": "Link displayed to users wishing to book the offer but who do not have credit.",
@@ -2952,11 +2952,11 @@
                         "type": "boolean"
                     },
                     "eventDuration": {
-                      "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
-                      "example": 60,
-                      "nullable": true,
-                      "title": "Eventduration",
-                      "type": "integer"
+                        "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
+                        "example": 60,
+                        "nullable": true,
+                        "title": "Eventduration",
+                        "type": "integer"
                     },
                     "idAtProvider": {
                         "description": "Id of the object (product, event...) on your side. It should not be more than 70 characters long.",
@@ -3219,11 +3219,11 @@
                         "type": "boolean"
                     },
                     "eventDuration": {
-                      "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
-                      "example": 60,
-                      "nullable": true,
-                      "title": "Eventduration",
-                      "type": "integer"
+                        "description": "Event duration in minutes. It must be under 1440 minutes (24 hours). For events lasting 24 hours or more (e.g., a 3-day festival pass), please leave this field empty.",
+                        "example": 60,
+                        "nullable": true,
+                        "title": "Eventduration",
+                        "type": "integer"
                     },
                     "externalTicketOfficeUrl": {
                         "description": "Link displayed to users wishing to book the offer but who do not have credit.",
@@ -4167,30 +4167,7 @@
                 "title": "GetBookingResponse",
                 "type": "object"
             },
-            "GetDatesResponse": {
-                "properties": {
-                    "dates": {
-                        "items": {
-                            "$ref": "#/components/schemas/DateResponse"
-                        },
-                        "title": "Dates",
-                        "type": "array"
-                    }
-                },
-                "required": [
-                    "dates"
-                ],
-                "title": "GetDatesResponse",
-                "type": "object"
-            },
-            "GetEventCategoriesResponse": {
-                "items": {
-                    "$ref": "#/components/schemas/EventCategoryResponse"
-                },
-                "title": "GetEventCategoriesResponse",
-                "type": "array"
-            },
-            "GetFilteredBookingsRequest": {
+            "GetBookingsQueryParams": {
                 "additionalProperties": false,
                 "properties": {
                     "beginningDatetime": {
@@ -4224,10 +4201,18 @@
                         "type": "integer"
                     },
                     "offerId": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
                         "description": "Offer id",
                         "example": 12345,
-                        "title": "Offerid",
-                        "type": "integer"
+                        "title": "Offerid"
                     },
                     "priceCategoryId": {
                         "anyOf": [
@@ -4269,13 +4254,47 @@
                         "description": "Stock id",
                         "example": 45,
                         "title": "Stockid"
+                    },
+                    "venueId": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                        "example": 535,
+                        "title": "Venueid"
+                    }
+                },
+                "title": "GetBookingsQueryParams",
+                "type": "object"
+            },
+            "GetDatesResponse": {
+                "properties": {
+                    "dates": {
+                        "items": {
+                            "$ref": "#/components/schemas/DateResponse"
+                        },
+                        "title": "Dates",
+                        "type": "array"
                     }
                 },
                 "required": [
-                    "offerId"
+                    "dates"
                 ],
-                "title": "GetFilteredBookingsRequest",
+                "title": "GetDatesResponse",
                 "type": "object"
+            },
+            "GetEventCategoriesResponse": {
+                "items": {
+                    "$ref": "#/components/schemas/EventCategoryResponse"
+                },
+                "title": "GetEventCategoriesResponse",
+                "type": "array"
             },
             "GetFilteredBookingsResponse": {
                 "additionalProperties": false,
@@ -9672,8 +9691,8 @@
     "paths": {
         "/public/bookings/v1/bookings": {
             "get": {
-                "description": "Return all the bookings for a given offer. Results are paginated (by default, there are `50` bookings per page)",
-                "operationId": "GetBookingsByOffer",
+                "description": "Return all the bookings for given offer and/or given venue.\n\nResults are paginated (by default, there are `50` bookings per page).",
+                "operationId": "GetBookings",
                 "parameters": [
                     {
                         "description": "Maximum number of items per page.",
@@ -9706,12 +9725,40 @@
                         "description": "Offer id",
                         "in": "query",
                         "name": "offerId",
-                        "required": true,
+                        "required": false,
                         "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
                             "description": "Offer id",
                             "example": 12345,
-                            "title": "Offerid",
-                            "type": "integer"
+                            "title": "Offerid"
+                        }
+                    },
+                    {
+                        "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                        "in": "query",
+                        "name": "venueId",
+                        "required": false,
+                        "schema": {
+                            "anyOf": [
+                                {
+                                    "type": "integer"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "description": "Venue Id. The venues list is available on [**this endpoint (`Get offerer venues`)**](#tag/Venues/operation/GetOffererVenues)",
+                            "example": 535,
+                            "title": "Venueid"
                         }
                     },
                     {
@@ -9831,7 +9878,7 @@
                         "ApiKeyAuth": []
                     }
                 ],
-                "summary": "Get Offer Bookings",
+                "summary": "Get Bookings",
                 "tags": [
                     "Bookings"
                 ]
