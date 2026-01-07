@@ -169,7 +169,7 @@ const PlaygroundComponent = () => {
 
   // Small (mobile/tablet): the last snackbar appears below the first one (ascending order)
   // Large (desktop): the last snackbar appears above the first one (descending order)
-  const notificationsToDisplay = notifications.toSorted((a, b) => 
+  const notificationsToDisplay = notifications.sort((a, b) =>
     (isSmallScreen ? 1 : -1) * (a.date.getTime() - b.date.getTime())
   );
 
