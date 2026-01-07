@@ -38,6 +38,8 @@ import pcapi.core.users.models as users_models
 from pcapi.connectors import youtube
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
 from pcapi.core import search
+from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -1782,6 +1784,79 @@ class CreateOfferTest:
             )
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    def test_create_offer_with_artist_offer_links_when_feature_flag_enabled(self):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        artist = artist_factories.ArtistFactory()
+
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            artistOfferLinks=[
+                {
+                    "artist_id": artist.id,
+                    "artist_type": artist_models.ArtistType.PERFORMER,
+                    "custom_name": None,
+                },
+                {
+                    "artist_id": None,
+                    "artist_type": artist_models.ArtistType.AUTHOR,
+                    "custom_name": "John Doe",
+                },
+            ],
+        )
+
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.id is not None
+
+        artist_links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer.id).all()
+        assert len(artist_links) == 2
+
+        artist_id_link = [link for link in artist_links if link.artist_id is not None][0]
+        assert artist_id_link.artist_id == artist.id
+        assert artist_id_link.artist_type == artist_models.ArtistType.PERFORMER
+        assert artist_id_link.custom_name is None
+
+        custom_name_link = [link for link in artist_links if link.custom_name is not None][0]
+        assert custom_name_link.artist_id is None
+        assert custom_name_link.artist_type == artist_models.ArtistType.AUTHOR
+        assert custom_name_link.custom_name == "John Doe"
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
+    def test_create_offer_with_artist_offer_links_when_feature_flag_disabled(self):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        artist = artist_factories.ArtistFactory()
+
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            artistOfferLinks=[
+                {
+                    "artist_id": artist.id,
+                    "artist_type": artist_models.ArtistType.PERFORMER,
+                    "custom_name": None,
+                },
+            ],
+        )
+
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.id is not None
+
+        artist_links = db.session.query(artist_models.ArtistOfferLink).filter_by(offer_id=offer.id).all()
+        assert len(artist_links) == 0
 
 
 @pytest.mark.usefixtures("db_session")
