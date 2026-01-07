@@ -95,8 +95,15 @@
       {% call description_detail_horizontal("Téléphone") %}
         {% if collective_offer_template.contactPhone %}{{ collective_offer_template.contactPhone }}{% endif %}
       {% endcall %}
-      {% call description_detail_horizontal("Email") %}
+      {% call description_detail_horizontal("Email de contact") %}
         {% if collective_offer_template.contactEmail %}{{ collective_offer_template.contactEmail }}{% endif %}
+      {% endcall %}
+      {% call description_detail_horizontal("Email auquel envoyer les notifications") %}
+        {% for booking_email in collective_offer_template.bookingEmails %}
+          {{ booking_email | empty_string_if_null }}
+          {% if booking_email %}{{ clipboard.copy_to_clipboard(booking_email, "Copier") }}{% endif %}
+          <br />
+        {% endfor %}
       {% endcall %}
       {% call description_detail_horizontal("Formulaire standard") %}
         {% if collective_offer_template.contactForm %}
