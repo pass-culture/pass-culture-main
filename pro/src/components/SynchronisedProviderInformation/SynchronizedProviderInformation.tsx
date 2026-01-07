@@ -27,9 +27,7 @@ export const SynchronizedProviderInformation = ({
               className={styles['provider-logo']}
             />
           )}
-          <p className={!providerInfo.logo ? styles['provider-text'] : ''}>
-            {providerInfo.synchronizedOfferMessage}
-          </p>
+          <p>{providerInfo.synchronizedOfferMessage}</p>
         </div>
       }
     />
