@@ -22,6 +22,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.offers import models as offers_models
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
 from pcapi.core.users import repository as users_repository
 from pcapi.models import db
@@ -106,6 +107,7 @@ def get_anonymized_attributes(user: users_models.User) -> models.UserAttributes 
         return attributes
 
     return models.UserAttributes(
+        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=[],
         booking_count=0,
         booking_subcategories=[],
@@ -370,7 +372,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
 
 def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     from pcapi.core.subscription import fraud_check_api as fraud_api
-    from pcapi.core.users.api import get_domains_credit
+    from pcapi.core.users import api as users_api
 
     user_bookings = get_user_bookings(user)
     favorites = (
@@ -384,7 +386,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     last_favorite = favorites[0] if favorites else None
     most_favorite_offer_subcategories = get_most_favorite_subcategories(favorites)
 
-    domains_credit = get_domains_credit(user, user_bookings)
+    domains_credit = users_api.get_domains_credit(user, user_bookings)
     bookings_attributes = get_bookings_categories_and_subcategories(user_bookings)
     booking_venues_count = len({booking.venueId for booking in user_bookings})
     last_recredit = deposit_api.get_latest_age_related_user_recredit(user)
@@ -401,6 +403,7 @@ def get_user_attributes(user: users_models.User) -> models.UserAttributes:
     achievements = [achievement.name.value for achievement in user.achievements]
     return models.UserAttributes(
         achievements=achievements,
+        bonification_status=_get_user_bonification_attribute(user),
         booking_categories=bookings_attributes.booking_categories,
         booking_count=len(user_bookings),
         booking_subcategories=bookings_attributes.booking_subcategories,
@@ -550,3 +553,26 @@ def get_most_favorite_subcategories(favorites: list[users_models.Favorite]) -> l
     sorted_by_count = favorites_count.most_common()
     highest_count = sorted_by_count[0][1]
     return [key for (key, value) in sorted_by_count if value == highest_count]
+
+
+def _get_user_bonification_attribute(user: users_models.User) -> subscription_models.QFBonificationStatus:
+    """
+    Allowed return values:
+     - ELIGIBLE
+     - NOT_ELIGIBLE
+     - STARTED
+     - TOO_MANY_RETRIES
+     - GRANTED
+     - KO
+    """
+    from pcapi.core.users import api as users_api
+
+    bonification_status = users_api.get_user_qf_bonification_status(user)
+    if bonification_status in (
+        subscription_models.QFBonificationStatus.CUSTODIAN_NOT_FOUND,
+        subscription_models.QFBonificationStatus.NOT_IN_TAX_HOUSEHOLD,
+        subscription_models.QFBonificationStatus.QUOTIENT_FAMILIAL_TOO_HIGH,
+        subscription_models.QFBonificationStatus.UNKNOWN_KO,
+    ):
+        return subscription_models.QFBonificationStatus.KO
+    return bonification_status

@@ -53,6 +53,9 @@ def format_user_attributes(
         "date(u.deposit_activation_date)": _format_date(user_attributes.deposit_activation_date),
         "date(u.deposit_expiration_date)": _format_date(user_attributes.deposit_expiration_date),
         "date(u.last_booking_date)": _format_date(user_attributes.last_booking_date),
+        "u.bonification_status": (
+            user_attributes.bonification_status.value if user_attributes.bonification_status else None
+        ),
         "u.credit": int(user_attributes.domains_credit.all.remaining * 100) if user_attributes.domains_credit else None,
         "u.city": user_attributes.city,
         "u.departement_code": user_attributes.departement_code,

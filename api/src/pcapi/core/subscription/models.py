@@ -133,6 +133,7 @@ class QFBonificationStatus(enum.Enum):
     TOO_MANY_RETRIES = "too_many_retries"
     GRANTED = "granted"
     UNKNOWN_KO = "unknown_ko"
+    KO = "ko"
 
 
 VALID_IDENTITY_CHECK_TYPES_AFTER_UNDERAGE_DEPOSIT_EXPIRATION = [

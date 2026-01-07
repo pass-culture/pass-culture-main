@@ -36,6 +36,7 @@ class SendinblueUserUpdateData:
 
 class SendinblueAttributes(Enum):
     ACHIEVEMENTS = "ACHIEVEMENTS"
+    BONIFICATION_STATUS = "BONIFICATION_STATUS"
     BOOKED_OFFER_CATEGORIES = "BOOKED_OFFER_CATEGORIES"
     BOOKED_OFFER_CATEGORIES_COUNT = "BOOKED_OFFER_CATEGORIES_COUNT"
     BOOKED_OFFER_SUBCATEGORIES = "BOOKED_OFFER_SUBCATEGORIES"
@@ -201,6 +202,7 @@ def _get_attr(
 def format_user_attributes(attributes: attributes_models.UserAttributes | attributes_models.ProAttributes) -> dict:
     result = {
         SendinblueAttributes.ACHIEVEMENTS.value: _get_attr(attributes, "achievements", format_list),
+        SendinblueAttributes.BONIFICATION_STATUS.value: _get_attr(attributes, "bonification_status", format_enum),
         SendinblueAttributes.BOOKED_OFFER_CATEGORIES.value: _get_attr(attributes, "booking_categories", format_list),
         SendinblueAttributes.BOOKED_OFFER_CATEGORIES_COUNT.value: _get_attr(attributes, "booking_categories", len),
         SendinblueAttributes.BOOKED_OFFER_SUBCATEGORIES.value: _get_attr(

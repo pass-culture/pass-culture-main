@@ -4409,7 +4409,8 @@
                     "quotient_familial_too_high",
                     "too_many_retries",
                     "granted",
-                    "unknown_ko"
+                    "unknown_ko",
+                    "ko"
                 ],
                 "title": "QFBonificationStatus"
             },

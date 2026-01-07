@@ -1495,6 +1495,12 @@ def get_user_is_eligible_for_bonification(user: models.User) -> bool:
 
 
 def get_user_qf_bonification_status(user: models.User) -> subscription_models.QFBonificationStatus:
+    is_18_years_old = user.age == 18
+    has_v3_credit = user.received_pass_17_18
+
+    if not is_18_years_old or not user.is_beneficiary or not has_v3_credit:
+        return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
+
     qf_bonus_credit_fraud_checks = [
         fraud_check
         for fraud_check in user.beneficiaryFraudChecks
@@ -1514,16 +1520,11 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
     if bonus_fraud_check_status == subscription_models.FraudCheckStatus.OK:
         return subscription_models.QFBonificationStatus.GRANTED
 
-    is_18_years_old = user.age == 18
-    has_v3_credit = user.received_pass_17_18
     has_never_completely_tried = bonus_fraud_check_status in (
         None,
         subscription_models.FraudCheckStatus.CANCELED,
         subscription_models.FraudCheckStatus.ERROR,
     )
-
-    if not is_18_years_old or not has_v3_credit:
-        return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
 
     if is_18_years_old and has_v3_credit and has_never_completely_tried:
         return subscription_models.QFBonificationStatus.ELIGIBLE
