@@ -30,7 +30,7 @@ export const SnackBarContainer = (): JSX.Element => {
 
   // Small (mobile/app): the last snackbar appears below the first one (ascending order)
   // Large (desktop/tablet): the last snackbar appears above the first one (descending order)
-  const snackBarsToDisplay = snackBars.toSorted(
+  const snackBarsToDisplay = snackBars.sort(
     (a, b) =>
       (isSmallScreen ? 1 : -1) *
       (new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
