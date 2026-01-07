@@ -3,11 +3,11 @@ from dataclasses import dataclass
 from dataclasses import field
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, order=True)
 class Field:
     name: str
-    optional: bool = True
-    components: typing.Collection[typing.Self] = field(default_factory=list)
+    optional: bool = False
+    components: typing.Collection[typing.Self] = field(default_factory=tuple, compare=False)
 
 
 @dataclass(frozen=True)

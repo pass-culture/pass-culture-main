@@ -3,28 +3,227 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+
+        <!-- ----------------------- FONTS ------------------------- -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
 		<title>Modèles d'offres</title>
+
+        <style>
+        :root {
+            color-scheme: light dark;
+
+            /* mocha */
+            --rosewater: #f5e0dc;
+            --flamingo: #f2cdcd;
+            --pink: #f5c2e7;
+            --mauve: #cba6f7;
+            --red: #f38ba8;
+            --maroon: #eba0ac;
+            --peach: #fab387;
+            --yellow: #f9e2af;
+            --green: #a6e3a1;
+            --teal: #94e2d5;
+            --sky: #89dceb;
+            --sapphire: #74c7ec;
+            --blue: #89b4fa;
+            --lavender: #b4befe;
+            --text: #cdd6f4;
+            --subtext1: #bac2de;
+            --subtext0: #a6adc8;
+            --overlay2: #9399b2;
+            --overlay1: #7f849c;
+            --overlay0: #6c7086;
+            --surface2: #585b70;
+            --surface1: #45475a;
+            --surface0: #313244;
+            --base: #1e1e2e;
+            --mantle: #181825;
+            --crust: #11111b;
+
+            /* latte */
+            --alt-rosewater: #dc8a78;
+            --alt-flamingo: #dd7878;
+            --alt-pink: #ea76cb;
+            --alt-mauve: #8839ef;
+            --alt-red: #d20f39;
+            --alt-maroon: #e64553;
+            --alt-peach: #fe640b;
+            --alt-yellow: #df8e1d;
+            --alt-green: #40a02b;
+            --alt-teal: #179299;
+            --alt-sky: #04a5e5;
+            --alt-sapphire: #209fb5;
+            --alt-blue: #1e66f5;
+            --alt-lavender: #7287fd;
+            --alt-text: #4c4f69;
+            --alt-subtext1: #5c5f77;
+            --alt-subtext0: #6c6f85;
+            --alt-overlay2: #7c7f93;
+            --alt-overlay1: #8c8fa1;
+            --alt-overlay0: #9ca0b0;
+            --alt-surface2: #acb0be;
+            --alt-surface1: #bcc0cc;
+            --alt-surface0: #ccd0da;
+            --alt-base: #eff1f5;
+            --alt-mantle: #e6e9ef;
+            --alt-crust: #dce0e8;
+
+            --bg: light-dark(var(--alt-base), var(--base));
+            --bg-alt: light-dark(var(--alt-mantle), var(--mantle));
+
+            --fg: light-dark(var(--crust), var(--text));
+            --fg-contrast: light-dark(var(--text), var(--surface0));
+
+            --primary: light-dark(var(--alt-mauve), var(--peach));
+            --secondary: light-dark(var(--alt-sapphire), var(--maroon));
+        }
+
+        html {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            grid-template-areas: ". body .";
+
+            background: linear-gradient(to bottom, var(--bg), var(--bg-alt));
+        }
+
+        body {
+            grid-area: body;
+
+            color: var(--fg);
+
+            font-family: "Fira Sans";
+            font-size: 100%;
+
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-family: "Poppins";
+            font-size: 4rem;
+            font-weight: 900;
+
+            text-align: center;
+
+            background-image: linear-gradient(120deg, var(--primary), var(--secondary));
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 900;
+
+            background-image: linear-gradient(240deg, var(--primary), var(--secondary));
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2, h3 {
+            font-family: "Inter";
+            text-align: center;
+        }
+
+        h3 {
+            color: var(--secondary);
+        }
+
+        article {
+            display: grid;
+            grid-template-areas:
+                "title title"
+                "required optional"
+                "required-list optional-list" ;
+            grid-template-columns: 1fr 1fr;
+
+            background: var(--bg-alt);
+
+            border: 1px solid var(--bg-alt);
+            border-radius: 0.5rem;
+
+            margin: 2rem 0;
+        }
+
+        header {
+            grid-area: title;
+
+            background: var(--fg-contrast);
+
+            border-radius: 0.5rem 0.5rem 0 0;
+
+            padding: 0 1rem;
+        }
+
+        h3:first-of-type {
+            grid-area: required;
+        }
+
+        h3:first-of-type + ul {
+            grid-area: required-list;
+        }
+
+        h3:last-of-type {
+            grid-area: optional;
+        }
+
+        h3:last-of-type + ul {
+            grid-area: optional-list;
+        }
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            margin: 1rem auto;
+        }
+        </style>
 	</head>
 
 	<body>
-		<h1>Modèles d'offres</h1>
+        <h1>Modèles d'offres</h1>
 
 		{% for schema in schemas %}
-			<h2>{{ schema.subcategory.pro_label }}<h2>
+        <article>
+            <header>
+                <h2>{{ schema.subcategory.pro_label }}</h2>
+            </header>
 
-			<h3>Informations obligatoires</h3>
-			<ul>
-				{% for field in schema.properties.required %}
-					<li>{{ field }}</li>
-				{% endfor %}
-			</ul>
+            <h3>Informations obligatoires</h3>
+            <ul>
+                {% for field in schema.properties.required %}
+                {% if field.components %}
+                <li class="{{ field.origin }}">{{ field.name }}
+                    <ul>
+                        {% for nested_field in field.components %}
+                        <li>{{ nested_field.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% else %}
+                <li class="{{ field.origin }}">{{ field.name }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
 
-			<h3>Informations optionnelles</h3>
-			<ul>
-				{% for field in schema.properties.optional %}
-					<li>{{ field }}</li>
-				{% endfor %}
-			</ul>
+            <h3>Informations optionnelles</h3>
+            <ul>
+                {% for field in schema.properties.optional %}
+                {% if field.components %}
+                <li class="{{ field.origin }}">{{ field.name }}
+                    <ul>
+                        {% for nested_field in field.components %}
+                        <li>{{ nested_field.name }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% else %}
+                <li class="{{ field.origin }}">{{ field.name }}</li>
+                {% endif %}
+                {% endfor %}
+            </ul>
+        </article>
 		{% endfor %}
 	</body>
 </html>

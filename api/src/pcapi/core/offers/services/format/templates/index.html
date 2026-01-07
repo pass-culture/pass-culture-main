@@ -3,48 +3,5425 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
+
+        <!-- ----------------------- FONTS ------------------------- -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fira+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Manrope:wght@200..800&family=Oswald:wght@200..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
 		<title>Modèles d'offres</title>
+
+        <style>
+        :root {
+            color-scheme: light dark;
+
+            /* mocha */
+            --rosewater: #f5e0dc;
+            --flamingo: #f2cdcd;
+            --pink: #f5c2e7;
+            --mauve: #cba6f7;
+            --red: #f38ba8;
+            --maroon: #eba0ac;
+            --peach: #fab387;
+            --yellow: #f9e2af;
+            --green: #a6e3a1;
+            --teal: #94e2d5;
+            --sky: #89dceb;
+            --sapphire: #74c7ec;
+            --blue: #89b4fa;
+            --lavender: #b4befe;
+            --text: #cdd6f4;
+            --subtext1: #bac2de;
+            --subtext0: #a6adc8;
+            --overlay2: #9399b2;
+            --overlay1: #7f849c;
+            --overlay0: #6c7086;
+            --surface2: #585b70;
+            --surface1: #45475a;
+            --surface0: #313244;
+            --base: #1e1e2e;
+            --mantle: #181825;
+            --crust: #11111b;
+
+            /* latte */
+            --alt-rosewater: #dc8a78;
+            --alt-flamingo: #dd7878;
+            --alt-pink: #ea76cb;
+            --alt-mauve: #8839ef;
+            --alt-red: #d20f39;
+            --alt-maroon: #e64553;
+            --alt-peach: #fe640b;
+            --alt-yellow: #df8e1d;
+            --alt-green: #40a02b;
+            --alt-teal: #179299;
+            --alt-sky: #04a5e5;
+            --alt-sapphire: #209fb5;
+            --alt-blue: #1e66f5;
+            --alt-lavender: #7287fd;
+            --alt-text: #4c4f69;
+            --alt-subtext1: #5c5f77;
+            --alt-subtext0: #6c6f85;
+            --alt-overlay2: #7c7f93;
+            --alt-overlay1: #8c8fa1;
+            --alt-overlay0: #9ca0b0;
+            --alt-surface2: #acb0be;
+            --alt-surface1: #bcc0cc;
+            --alt-surface0: #ccd0da;
+            --alt-base: #eff1f5;
+            --alt-mantle: #e6e9ef;
+            --alt-crust: #dce0e8;
+
+            --bg: light-dark(var(--alt-base), var(--base));
+            --bg-alt: light-dark(var(--alt-mantle), var(--mantle));
+
+            --fg: light-dark(var(--crust), var(--text));
+            --fg-contrast: light-dark(var(--text), var(--surface0));
+
+            --primary: light-dark(var(--alt-mauve), var(--peach));
+            --secondary: light-dark(var(--alt-sapphire), var(--maroon));
+        }
+
+        html {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            grid-template-areas: ". body .";
+
+            background: linear-gradient(to bottom, var(--bg), var(--bg-alt));
+        }
+
+        body {
+            grid-area: body;
+
+            color: var(--fg);
+
+            font-family: "Fira Sans";
+            font-size: 100%;
+
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            font-family: "Poppins";
+            font-size: 4rem;
+            font-weight: 900;
+
+            text-align: center;
+
+            background-image: linear-gradient(120deg, var(--primary), var(--secondary));
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 900;
+
+            background-image: linear-gradient(240deg, var(--primary), var(--secondary));
+            background-clip: text;
+            color: transparent;
+        }
+
+        h2, h3 {
+            font-family: "Inter";
+            text-align: center;
+        }
+
+        h3 {
+            color: var(--secondary);
+        }
+
+        article {
+            display: grid;
+            grid-template-areas:
+                "title title"
+                "required optional"
+                "required-list optional-list" ;
+            grid-template-columns: 1fr 1fr;
+
+            background: var(--bg-alt);
+
+            border: 1px solid var(--bg-alt);
+            border-radius: 0.5rem;
+
+            margin: 2rem 0;
+        }
+
+        header {
+            grid-area: title;
+
+            background: var(--fg-contrast);
+
+            border-radius: 0.5rem 0.5rem 0 0;
+
+            padding: 0 1rem;
+        }
+
+        h3:first-of-type {
+            grid-area: required;
+        }
+
+        h3:first-of-type + ul {
+            grid-area: required-list;
+        }
+
+        h3:last-of-type {
+            grid-area: optional;
+        }
+
+        h3:last-of-type + ul {
+            grid-area: optional-list;
+        }
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            margin: 1rem auto;
+        }
+        </style>
 	</head>
 
 	<body>
-		<h1>Modèles d'offres</h1>
+        <h1>Modèles d'offres</h1>
 
 		
-			<h2>Livre papier<h2>
+        <article>
+            <header>
+                <h2>Abonnement (bibliothèques, médiathèques...)</h2>
+            </header>
 
-			<h3>Informations obligatoires</h3>
-			<ul>
-				
-					<li>audio_disability_compliant</li>
-				
-					<li>extra_data</li>
-				
-					<li>mental_disability_compliant</li>
-				
-					<li>motor_disability_compliant</li>
-				
-					<li>name</li>
-				
-					<li>subcategory_id</li>
-				
-					<li>venue</li>
-				
-					<li>visual_disability_compliant</li>
-				
-			</ul>
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
 
-			<h3>Informations optionnelles</h3>
-			<ul>
-				
-					<li>booking_email</li>
-				
-					<li>description</li>
-				
-					<li>productId</li>
-				
-					<li>provider_data</li>
-				
-			</ul>
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement concert</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>music_type</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement jeux vidéos</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement livres numériques</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement ludothèque</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement médiathèque</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement plateforme musicale</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement plateforme streaming</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement pratique artistique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement presse en ligne</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement spectacle</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>show_type</li>
+                        
+                        <li>show_sub_type</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Achat instrument</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Catégorie technique d&#39;évènement d&#39;activation </h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Catégorie technique de thing d&#39;activation</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Application culturelle</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Atelier, stage de pratique artistique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Autre support numérique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Bon d&#39;achat instrument</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Captation musicale</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Carte cinéma illimité</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Carte cinéma multi-séances</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Carte jeunes</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Abonnement musée, carte ou pass</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Cinéma plein air</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>stage_director</li>
+                        
+                        <li>visa</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Cinéma vente à distance</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>visa</li>
+                        
+                        <li>stage_director</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Concert</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">withdrawal</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Concours - jeux</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Conférence</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Découverte des métiers</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Escape game</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Évènement cinématographique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>stage_director</li>
+                        
+                        <li>visa</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Évènements - jeux</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Autre type d&#39;évènement musical</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">withdrawal</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Évènement et atelier patrimoine</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Festival d&#39;arts visuels / arts numériques</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">withdrawal</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Festival de cinéma</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>stage_director</li>
+                        
+                        <li>visa</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Festival et salon du livre</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Festival de musique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">withdrawal</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Festival de spectacle vivant</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">withdrawal</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>showType</li>
+                        
+                        <li>showSubType</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>stageDirector</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Jeux en ligne</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Catégorie technique Jeu support physique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Livestream d&#39;évènement</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>show_type</li>
+                        
+                        <li>show_sub_type</li>
+                        
+                        <li>stage_director</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Livestream musical</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Pratique artistique - livestream</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Livre audio sur support physique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>author</li>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Livre numérique, e-book</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>author</li>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Livre papier</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>author</li>
+                        
+                        <li>ean</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">productId</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">provider_data
+                    <ul>
+                        
+                        <li>id_at_provider</li>
+                        
+                        <li>provider_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Location instrument</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Matériel arts créatifs</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Musée vente à distance</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Catégorie technique d&#39;oeuvre d&#39;art</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Partition</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Pratique artistique - plateforme en ligne</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Podcast</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Pratique artistique - vente à distance</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Rencontre</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Rencontre en ligne</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Rencontres - jeux</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Salon, Convention</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Séance de cinéma</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>stage_director</li>
+                        
+                        <li>visa</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Séance d&#39;essai</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>speaker</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Spectacle enregistré</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">extra_data
+                    <ul>
+                        
+                        <li>show_sub_type</li>
+                        
+                        <li>show_type</li>
+                        
+                        <li>author</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>stage_director</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Spectacle, représentation</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">withdrawal</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>showType</li>
+                        
+                        <li>showSubType</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>stageDirector</li>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Spectacle vivant - vente à distance</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">extra_data
+                    <ul>
+                        
+                        <li>show_sub_type</li>
+                        
+                        <li>show_type</li>
+                        
+                        <li>author</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>stage_director</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Support physique (DVD, Blu-ray...)</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>CD</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">product
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">productId</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">provider_data
+                    <ul>
+                        
+                        <li>id_at_provider</li>
+                        
+                        <li>provider_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Vinyles et autres supports</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">productId</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">provider_data
+                    <ul>
+                        
+                        <li>id_at_provider</li>
+                        
+                        <li>provider_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Livre audio à télécharger</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>author</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Téléchargement de musique</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+                
+                <li class="FieldOrigin.OWN">extra_data
+                    <ul>
+                        
+                        <li>ean</li>
+                        
+                        <li>performer</li>
+                        
+                        <li>author</li>
+                        
+                        <li>music_type</li>
+                        
+                        <li>music_sub_type</li>
+                        
+                        <li>gtl_id</li>
+                        
+                    </ul>
+                </li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Visite libre</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Visite guidée</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">booking_email</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Visite virtuelle</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
+		
+        <article>
+            <header>
+                <h2>Vidéo à la demande</h2>
+            </header>
+
+            <h3>Informations obligatoires</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.MANDATORY">audio_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">mental_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">motor_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">name</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">subcategory_id</li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">venue
+                    <ul>
+                        
+                        <li>id</li>
+                        
+                        <li>code</li>
+                        
+                        <li>has_ticketing</li>
+                        
+                    </ul>
+                </li>
+                
+                
+                
+                <li class="FieldOrigin.MANDATORY">visual_disability_compliant</li>
+                
+                
+                
+                <li class="FieldOrigin.INHERITED">url</li>
+                
+                
+            </ul>
+
+            <h3>Informations optionnelles</h3>
+            <ul>
+                
+                
+                <li class="FieldOrigin.BASE">booking_email</li>
+                
+                
+                
+                <li class="FieldOrigin.BASE">description</li>
+                
+                
+            </ul>
+        </article>
 		
 	</body>
 </html>

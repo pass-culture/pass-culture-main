@@ -10,7 +10,7 @@ from . import types
 
 def build_components(defs: dict, ref: str, data: dict) -> types.Field:
     props = defs[ref.replace("#/$defs/", "")].get("properties")
-    return list(parse_properties(defs, props))
+    return tuple(parse_properties(defs, props))
 
 
 def parse_properties(defs: dict, properties: dict) -> typing.Generator[types.Field, None, None]:
@@ -31,9 +31,9 @@ def model_full(model: models.base.Base) -> typing.Collection[types.Field]:
     defs = schema["$defs"]
     properties = schema["properties"]
     if not properties:
-        return []
+        return set()
 
-    return list(parse_properties(defs, properties))
+    return set(parse_properties(defs, properties))
 
 
 
