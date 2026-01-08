@@ -284,9 +284,8 @@ class CreateVenueTest:
         "cultural_domains,venue_type_code,expected_venue_type_code",
         (
             (("Architecture",), offerers_models.VenueTypeCode.VISUAL_ARTS, offerers_models.VenueTypeCode.VISUAL_ARTS),
-            (("Architecture",), None, offerers_models.VenueTypeCode.PATRIMONY_TOURISM),
+            (("Architecture",), None, offerers_models.VenueTypeCode.OTHER),
             (("Média et information", "Bande dessinée"), None, offerers_models.VenueTypeCode.OTHER),
-            (("Média et information", "Musique"), None, offerers_models.VenueTypeCode.PERFORMING_ARTS),
         ),
     )
     def test_venue_with_cultural_domains(self, cultural_domains, venue_type_code, expected_venue_type_code):

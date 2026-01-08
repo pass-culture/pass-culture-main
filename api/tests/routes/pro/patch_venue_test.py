@@ -1096,12 +1096,13 @@ class Returns200Test:
             (True, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
             (True, "BOOKSTORE", "CINEMA", offerers_models.VenueTypeCode.BOOKSTORE, offerers_models.Activity.CINEMA),
             (False, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.NOT_ASSIGNED),
+            (False, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
             (
                 False,
                 "BOOKSTORE",
                 "CINEMA",
                 offerers_models.VenueTypeCode.BOOKSTORE,
-                offerers_models.Activity.NOT_ASSIGNED,
+                offerers_models.Activity.CINEMA,
             ),
         ],
     )
@@ -1155,9 +1156,9 @@ class Returns200Test:
         "isOpenToPublic, venueTypeCode, activity, expected_venueTypeCode, expected_activity",
         [
             (True, None, None, offerers_models.VenueTypeCode.GAMES, offerers_models.Activity.GAMES_CENTRE),
-            (False, None, None, offerers_models.VenueTypeCode.GAMES, offerers_models.Activity.NOT_ASSIGNED),
+            (False, None, None, offerers_models.VenueTypeCode.GAMES, offerers_models.Activity.GAMES_CENTRE),
             (True, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
-            (False, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.NOT_ASSIGNED),
+            (False, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
         ],
     )
     def test_update_game_center_activity_or_venue_type_code(
