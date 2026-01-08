@@ -58,7 +58,6 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers import apps_flyer_job
 from pcapi.workers import push_notification_job
-from pcapi.workers import user_emails_job
 
 from . import constants
 from . import exceptions
@@ -721,14 +720,14 @@ def cancel_booking_by_beneficiary(user: users_models.User, booking: models.Booki
         raise RuntimeError("Unexpected call to cancel_booking_by_beneficiary with non-beneficiary user %s" % user)
     validation.check_beneficiary_can_cancel_booking(user, booking)
     _cancel_booking(booking, models.BookingCancellationReasons.BENEFICIARY, raise_if_error=True)
-    user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
+    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
 def cancel_booking_by_offerer(booking: models.Booking) -> None:
     validation.check_booking_can_be_cancelled(booking)
     _cancel_booking(booking, models.BookingCancellationReasons.OFFERER, raise_if_error=True)
     push_notification_job.send_cancel_booking_notification.delay([booking.id])
-    user_emails_job.send_booking_cancellation_emails_to_user_and_offerer_job.delay(booking.id)
+    transactional_mails.send_booking_cancellation_emails_to_user_and_offerer(booking, booking.cancellationReason)
 
 
 def cancel_bookings_from_stock_by_offerer(
