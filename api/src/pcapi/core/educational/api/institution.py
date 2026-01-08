@@ -322,10 +322,9 @@ def _update_institutions_educational_program(
         and start in institution.programAssociations[0].timespan
     }
     if institutions_in_program_not_in_data:
-        logger.error(
-            "UAIs in DB are associated with program %s but not present in data: %s",
-            educational_program.name,
-            ", ".join(institutions_in_program_not_in_data),
+        logger.warning(
+            "UAIs in DB are associated with program but not present in data",
+            extra={"program_name": educational_program.name, "uais": institutions_in_program_not_in_data},
         )
 
     for uai in uais:
@@ -349,8 +348,9 @@ def _update_institutions_educational_program(
                 )
             )
         elif association.timespan.upper is not None and association.timespan.upper < start:
-            logger.error(
-                "UAI %s was previously associated with program %s, cannot add it back", uai, educational_program.name
+            logger.warning(
+                "UAI was previously associated with program, cannot add it back",
+                extra={"uai": uai, "program_name": educational_program.name},
             )
 
     db.session.flush()

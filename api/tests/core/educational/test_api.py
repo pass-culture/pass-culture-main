@@ -796,17 +796,20 @@ class UpdateInstitutionsEducationalProgramTest:
         assert institution_6.programAssociations == [association_6]
         assert association_6.timespan == association_6_timespan
 
-        assert len(caplog.records) == 3
-        logs = {(log_record.message, log_record.levelname) for log_record in caplog.records}
-        assert ("Linking UAI 11111111 to program The Program", "INFO") in logs
-        assert (
-            "UAI 11111113 was previously associated with program The Program, cannot add it back",
-            "ERROR",
-        ) in logs
-        assert (
-            "UAIs in DB are associated with program The Program but not present in data: 11111116",
-            "ERROR",
-        ) in logs
+        logs = [(log_record.message, log_record.extra, log_record.levelname) for log_record in caplog.records]
+        assert logs == [
+            (
+                "UAIs in DB are associated with program but not present in data",
+                {"program_name": "The Program", "uais": {"11111116"}},
+                "WARNING",
+            ),
+            ("Linking UAI 11111111 to program The Program", {}, "INFO"),
+            (
+                "UAI was previously associated with program, cannot add it back",
+                {"program_name": "The Program", "uai": "11111113"},
+                "WARNING",
+            ),
+        ]
 
 
 class CheckAllowedActionTest:
