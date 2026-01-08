@@ -28,7 +28,7 @@ def subcategory_full_status(subcategory: Subcategory) -> types.SubcategoryDiffSt
     model = SUBCATEGORY_TO_MODEL[subcategory.id]
 
     subcategory_fields = parse.subcategory_fields(subcategory)
-    new_model_fields = parse.new_model_fields(model)
+    new_model_fields = parse.build_new_model_extra_data_fields(model)
     diff = build_fields_diff(subcategory_fields, new_model_fields)
 
     return types.SubcategoryDiffStatus.build(

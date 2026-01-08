@@ -39,7 +39,7 @@ class SupportPhysiqueMusiqueCDModel(ThingsWithEan):
     extra_data: shared.ExtraDataMusicWithEan
 
     @pydantic_v2.model_validator(mode='after')
-    def check_has_ean_if_from_record_store(self) -> typing.Self:
+    def check_has_product_if_from_record_store(self) -> typing.Self:
         if self.venue.code == shared.VenueTypeCode.RECORD_STORE and not self.product:
             raise ValueError('Record store implies that a product is set')
         return self

@@ -8,54 +8,67 @@ from pcapi.core.offers.services import models
 from . import types
 
 
-def build_components(defs: dict, ref: str) -> tuple[types.Field]:
+AnyField = types.Field | types.ExtraDataField
+AnyComponents = tuple[types.Field] | tuple[types.ExtraDataField]
+AnyRefs = tuple[types.Field] | tuple[types.ExtraDataField]
+AnyFieldsGenerator = typing.Generator[types.Field, None, None] | typing.Generator[types.ExtraDataField, None, None]
+
+
+def build_components(defs: dict, ref: str) -> AnyComponents:
     props = defs[ref.replace("#/$defs/", "")].get("properties")
     return tuple(parse_properties(defs, props))
 
 
-def parse_refs(defs: dict, refs: list[dict]) -> tuple[types.Field]:
+def parse_choices(defs: dict, refs: list[dict]) -> tuple[types.OrField]:
     match refs:
         case [{"$ref": ref}]:
             definition = defs[ref.replace("#/$defs/", "")]
             props = definition.get("properties")
             name = definition.get("title")
-            return tuple([types.OrField(name=name, components=tuple(parse_properties(defs, props)))])
+            components = tuple(parse_properties(defs, props))
+            return tuple([types.OrField(name=name, components=components)])
         case [{"$ref": ref}, *rest]:
             definition = defs[ref.replace("#/$defs/", "")]
             props = definition.get("properties")
             name = definition.get("title")
-            return tuple([types.OrField(name=name, components=tuple(parse_properties(defs, props)))]) + parse_refs(defs, rest)
+            components = tuple(parse_properties(defs, props))
+            return tuple([types.OrField(name=name, components=components)]) + parse_choices(defs, rest)
         case _:
             return tuple()
 
 
-def parse_properties(defs: dict, properties: dict) -> typing.Generator[types.Field, None, None]:
-    for name, data in (properties.items() if properties else []):
+def parse_properties(defs: dict, properties: dict, field_cls: typing.Type[AnyField]) -> AnyFieldsGenerator:
+    for name, data in properties.items() if properties else []:
         match data:
             case {"$ref": ref}:
-                yield types.Field(name=name, components=build_components(defs, ref))
+                yield field_cls.build(name=name, components=build_components(defs, ref))
             case {"anyOf": [{"$ref": ref}, {"type": "null"}]}:
-                yield types.Field(name=name, optional=True, components=build_components(defs, ref))
+                yield field_cls.build(name=name, optional=True, components=build_components(defs, ref))
             case {"anyOf": choices}:
-                match choices:
-                    case [_, {"type": "null"}]:
-                        components=tuple()
-                    case _:
-                        components = parse_refs(defs, choices)
-                yield types.Field(name=name, optional={"type": "null"} in choices, components=components)
+                components = parse_choices(defs, choices)
+                yield field_cls.build(name=name, optional={"type": "null"} in choices, components=components)
             case _:
-                yield types.Field(name=name)
+                yield field_cls.build(name=name)
 
 
-def model_full(model: models.base.Base) -> typing.Collection[types.Field]:
-    schema = model.schema()
+def build_model_fields(model: models.base.Base) -> typing.Collection[types.Field]:
+    schema = model.model_json_schema()
     defs = schema["$defs"]
     properties = schema["properties"]
     if not properties:
         return set()
 
-    return set(parse_properties(defs, properties))
+    return set(parse_properties(defs, properties, field_cls=types.Field))
 
+
+def build_new_model_extra_data_fields(model: models.base.Base) -> set[types.ExtraDataField]:
+    schema = model.model_json_schema()
+    defs = schema["$defs"]
+    extra_data_properties = schema["properties"].get("extra_data")
+    if not extra_data_properties:
+        return set()
+
+    return set(parse_properties(defs, extra_data_properties, field_cls=types.ExtraDataField))
 
 
 def new_model_fields(model: pydantic_v2.BaseModel) -> set[types.ExtraDataField]:
