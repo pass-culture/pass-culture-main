@@ -62,6 +62,7 @@ class ProductSearchForm(utils.PCForm):
 
     def validate_q(self, q: fields.PCOptSearchField) -> fields.PCOptSearchField:
         if self.product_filter_type.data == ProductFilterTypeEnum.EAN.name:
+            q.data = q.data.replace("-", "").replace(" ", "")
             if q.data and not string_utils.is_ean_valid(q.data):
                 raise wtforms.validators.ValidationError("EAN invalide. Un EAN doit être composé de 13 chiffres.")
         else:
