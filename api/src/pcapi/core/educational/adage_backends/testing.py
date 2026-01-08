@@ -95,38 +95,6 @@ class AdageSpyClient(AdageClient):
     def notify_institution_association(self, data: AdageCollectiveOffer) -> None:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/offre-assoc", "sent_data": data})
 
-    def get_cultural_partner(self, siret: str) -> schemas.AdageCulturalPartner:
-        testing.adage_requests.append({"url": f"{self.base_url}/v1/partenaire-culturel/{siret}", "sent_data": ""})
-        return schemas.AdageCulturalPartner(
-            id=128028,
-            venueId=None,
-            siret=siret,
-            regionId=None,
-            academieId=None,
-            statutId=3,
-            labelId=None,
-            typeId=8,
-            communeId="26324",
-            libelle="Fête du livre jeunesse de St Paul les trois Châteaux",
-            adresse="Place Charles Chausy",
-            siteWeb="http://www.fetedulivrejeunesse.fr/",
-            latitude=44.350457,
-            longitude=4.765918,
-            actif=1,
-            dateModification=datetime.datetime(2021, 9, 1),
-            statutLibelle="Association",
-            labelLibelle=None,
-            typeIcone="town",
-            typeLibelle="Association ou fondation pour la promotion, le développement et la diffusion d\u0027oeuvres",
-            communeLibelle="SAINT-PAUL-TROIS-CHATEAUX",
-            communeDepartement="026",
-            academieLibelle="GRENOBLE",
-            regionLibelle="AUVERGNE-RHÔNE-ALPES",
-            domaines="Architecture|Univers du livre, de la lecture et des écritures",
-            domaineIds="1,11",
-            synchroPass=0,
-        )
-
     def get_adage_educational_institutions(self, ansco: str) -> list[AdageEducationalInstitution]:
         testing.adage_requests.append({"url": f"{self.base_url}/v1/etablissement-culturel/{ansco}", "sent_data": ""})
         return [

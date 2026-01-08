@@ -29,9 +29,6 @@ class AdageClient:
     def notify_institution_association(self, data: serialize.AdageCollectiveOffer) -> None:
         raise NotImplementedError()
 
-    def get_cultural_partner(self, siret: str) -> schemas.AdageCulturalPartner:
-        raise NotImplementedError()
-
     def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
         raise NotImplementedError()
 

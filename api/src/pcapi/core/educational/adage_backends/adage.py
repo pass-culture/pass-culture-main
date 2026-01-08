@@ -163,21 +163,6 @@ class AdageHttpClient(AdageClient):
             if not is_adage_institution_without_email(api_response):
                 raise self._get_api_adage_exception(api_response, "Error getting Adage API")
 
-    def get_cultural_partner(self, siret: str) -> schemas.AdageCulturalPartner:
-        api_response = self._make_get_request(url=f"{self.base_url}/v1/etablissement-culturel/{siret}")
-
-        if api_response.status_code == 404:
-            raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
-        if api_response.status_code != 200:
-            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
-
-        response_content = api_response.json()
-
-        if len(response_content) == 0:
-            raise exceptions.CulturalPartnerNotFoundException("Requested cultural partner not found for Adage")
-
-        return parse_obj_as(schemas.AdageCulturalPartner, response_content[0])
-
     def get_adage_educational_institutions(self, ansco: str) -> list[serialize.AdageEducationalInstitution]:
         template_url = f"{self.base_url}/v1/etablissement-scolaire?ansco={ansco}&page=%s"
         page = 1
