@@ -122,11 +122,6 @@ def already_activated_exception(error: finance_exceptions.DepositTypeAlreadyGran
 
 @app.errorhandler(429)
 def ratelimit_handler(error: Exception) -> ApiErrorResponse:
-    # `pcapi.utils.login_manager` cannot be imported at module-scope,
-    # because the application context may not be available and that
-    # module needs it.
-    from pcapi.utils.login_manager import get_request_authorization
-
     mark_transaction_as_invalid()
     identifier = None
     try:
@@ -134,9 +129,18 @@ def ratelimit_handler(error: Exception) -> ApiErrorResponse:
             identifier = request.json["identifier"]
     except (json.JSONDecodeError, werkzeug_exceptions.BadRequest) as e:
         logger.info("Could not extract user identifier from request: %s", e)
-    auth = get_request_authorization()
-    if auth and auth.username:
-        identifier = auth.username
+    try:
+        auth = request.authorization
+    except UnicodeDecodeError:
+        # `werkzeug.http.parse_authorization_header()` raises a
+        # UnicodeDecodeError if the login or the password contains
+        # characters that have not been encoded in "utf-8", which
+        # we would happily send to Sentry, where the password could
+        # appear as clear text.
+        pass
+    else:
+        if auth and auth.username:
+            identifier = auth.username
     extra = {
         "method": request.method,
         "identifier": identifier,

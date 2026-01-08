@@ -26,11 +26,10 @@ class Returns204Test:
         data = {"ids": [offer1.id, offer2.id]}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            # 1. authentication
-            # 2. load current_user
-            # 3. retrieve all collective_offer_template
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 1. authentication + user
+            # 2. retrieve all collective_offer_template
+            # 3. update dateArchive on collective_offer
+            with assert_num_queries(3):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -85,11 +84,10 @@ class Returns204Test:
         data = {"ids": [draft_template_offer.id, other_template_offer.id]}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            # 1. authentication
-            # 2. load current_user
-            # 3. retrieve all collective_offer_template.ids to batch them in pool for update
-            # 4. update dateArchive on collective_offer
-            with assert_num_queries(4):
+            # 1. authentication + user
+            # 2. retrieve all collective_offer_template.ids to batch them in pool for update
+            # 3. update dateArchive on collective_offer
+            with assert_num_queries(3):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 
@@ -112,12 +110,11 @@ class Returns204Test:
         data = {"ids": [rejected_template_offer.id, other_template_offer.id]}
 
         with patch(educational_testing.PATCH_CAN_CREATE_OFFER_PATH):
-            # 1. authentication
-            # 2. load current_user
-            # 3. retrieve all collective_offer_template.ids to batch them in pool for update
+            # 1. authentication + user
+            # 2. retrieve all collective_offer_template.ids to batch them in pool for update
+            # 3. update dateArchive on collective_offer
             # 4. update dateArchive on collective_offer
-            # 5. update dateArchive on collective_offer
-            with assert_num_queries(5):
+            with assert_num_queries(4):
                 response = client.patch("/collective/offers-template/archive", json=data)
                 assert response.status_code == 204
 

@@ -37,10 +37,9 @@ class GetBankAccountTest(GetEndpointHelper):
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session + user (1 query)
     # get bank_account (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     @mock.patch("pcapi.routes.backoffice.bank_account.blueprint.dms_api.get_dms_stats", lambda x: None)
     def test_get_bank_account(self, authenticated_client):
@@ -145,9 +144,9 @@ class GetBankAccountVenuesTest(GetEndpointHelper):
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 queries)
     # - venues with joined data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_get_linked_venues(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
@@ -215,9 +214,9 @@ class GetBankAccountHistoryTest(GetEndpointHelper):
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # - session + authenticated user (2 queries)
+    # - session + authenticated user (1 queries)
     # - full history with joined data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_no_action(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()
@@ -347,10 +346,9 @@ class GetBankAccountInvoicesTest(GetEndpointHelper):
     endpoint_kwargs = {"bank_account_id": 1}
     needed_permission = perm_models.Permissions.READ_PRO_ENTITY
 
-    # get session (1 query)
-    # get user with profile and permissions (1 query)
+    # get session and user with profile and permissions (1 query)
     # get invoices (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_bank_account_has_no_invoices_point(self, authenticated_client):
         bank_account = finance_factories.BankAccountFactory()

@@ -3,6 +3,7 @@ import decimal
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
+from flask_login import current_user
 
 from pcapi import settings
 from pcapi.core.external.attributes.api import update_external_user
@@ -185,8 +186,8 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
 @blueprint.native_route("/me/favorites", methods=["GET"])
 @spectree_serialize(response_model=serializers.PaginatedFavoritesResponse, api=blueprint.api)
 @authenticated_and_active_user_required
-def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
-    favorites = get_favorites_for(user)
+def get_favorites() -> serializers.PaginatedFavoritesResponse:
+    favorites = get_favorites_for(current_user)
 
     paginated_favorites = {
         "page": 1,
@@ -199,35 +200,35 @@ def get_favorites(user: User) -> serializers.PaginatedFavoritesResponse:
 @blueprint.native_route("/me/favorites", methods=["POST"])
 @spectree_serialize(response_model=serializers.FavoriteResponse, on_error_statuses=[400], api=blueprint.api)
 @authenticated_and_active_user_required
-def create_favorite(user: User, body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
+def create_favorite(body: serializers.FavoriteRequest) -> serializers.FavoriteResponse:
     if settings.MAX_FAVORITES:
-        if db.session.query(Favorite).filter_by(user=user).count() >= settings.MAX_FAVORITES:
+        if db.session.query(Favorite).filter_by(user=current_user).count() >= settings.MAX_FAVORITES:
             raise ApiErrors({"code": "MAX_FAVORITES_REACHED"})
 
     try:
         offer = get_offer_by_id(body.offerId, load_options=["stock"])
         with transaction():
-            favorite = Favorite(offer=offer, user=user)
+            favorite = Favorite(offer=offer, user=current_user)
             db.session.add(favorite)
     except OfferNotFound as exception:
         raise ResourceNotFoundError() from exception
     except sa.exc.IntegrityError as exception:
-        candidate = db.session.query(Favorite).filter_by(offerId=body.offerId, userId=user.id).one_or_none()
+        candidate = db.session.query(Favorite).filter_by(offerId=body.offerId, userId=current_user.id).one_or_none()
         if not candidate:
             raise exception
         favorite = candidate
     else:
-        update_external_user(user)
-        track_offer_added_to_favorites_event(user.id, offer)
+        update_external_user(current_user)
+        track_offer_added_to_favorites_event(current_user.id, offer)
 
-    favorite = get_favorites_for(user, favorite.id)[0]
+    favorite = get_favorites_for(current_user, favorite.id)[0]
     return serializers.FavoriteResponse.from_orm(favorite)
 
 
 @blueprint.native_route("/me/favorites/<int:favorite_id>", methods=["DELETE"])
 @spectree_serialize(on_success_status=204, api=blueprint.api)
 @authenticated_and_active_user_required
-def delete_favorite(user: User, favorite_id: int) -> None:
+def delete_favorite(favorite_id: int) -> None:
     with transaction():
-        favorite = first_or_404(db.session.query(Favorite).filter_by(id=favorite_id, user=user))
+        favorite = first_or_404(db.session.query(Favorite).filter_by(id=favorite_id, user=current_user))
         db.session.delete(favorite)

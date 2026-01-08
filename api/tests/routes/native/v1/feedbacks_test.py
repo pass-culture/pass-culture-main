@@ -20,7 +20,7 @@ class PostFeedbackTest:
         bookings_factories.BookingFactory(user=user)
 
         with caplog.at_level(logging.INFO):
-            response = client.with_token(user.email).post(
+            response = client.with_token(user).post(
                 "/native/v1/feedback",
                 json={"feedback": LOREM_IPSUM},
             )

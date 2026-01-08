@@ -31,10 +31,9 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
     endpoint = "backoffice_web.non_payment_notices.list_notices"
     needed_permission = perm_models.Permissions.READ_NON_PAYMENT_NOTICES
 
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch non payment notices (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     def test_list_non_payment_notices(self, authenticated_client):
         created_notice = offerers_factories.NonPaymentNoticeFactory(
@@ -257,7 +256,7 @@ class GetCreateNonPaymentNoticeFormTest(GetEndpointHelper):
     def test_get_create_form_test(self, authenticated_client):
         form_url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -468,7 +467,7 @@ class GetEditFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.non_payment_notices.get_edit_form"
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
     endpoint_kwargs = {"notice_id": 1}
-    expected_num_queries = 3  # session + current user + notice
+    expected_num_queries = 2  # session + notice
 
     def test_get_edit_form_test(self, authenticated_client):
         notice = offerers_factories.NonPaymentNoticeFactory()
@@ -609,7 +608,7 @@ class EditTest(PostEndpointHelper):
 class GetFormTestHelper(GetEndpointHelper):
     needed_permission = perm_models.Permissions.MANAGE_NON_PAYMENT_NOTICES
     endpoint_kwargs = {"notice_id": 1}
-    expected_num_queries = 2  # session + current user
+    expected_num_queries = 1  # session
 
     def test_get_form_test(self, authenticated_client):
         notice = offerers_factories.NonPaymentNoticeFactory()

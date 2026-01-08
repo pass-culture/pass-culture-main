@@ -31,11 +31,10 @@ class GetArtistDetailsTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_OFFERS
 
     # Expected queries:
-    # 1. User
-    # 2. Session
+    # 2. Session + user
     # 3. Artist with joinedload on products
     # 4. selectinload on aliases
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_get_artist_details_success(self, authenticated_client):
         product1 = offers_factories.ProductFactory.create()
@@ -76,8 +75,8 @@ class GetArtistEditFormTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    # user + session + artist
-    expected_num_queries = 3
+    # session + artist
+    expected_num_queries = 2
 
     def test_get_edit_form_success(self, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
@@ -144,8 +143,8 @@ class GetArtistBlacklistFormTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # user + session + artist
-    expected_num_queries = 3
+    # session + artist
+    expected_num_queries = 2
 
     def test_get_blacklist_form_success(self, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
@@ -198,8 +197,8 @@ class GetArtistUnblacklistFormTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # user + session + artist
-    expected_num_queries = 3
+    # session + artist
+    expected_num_queries = 2
 
     def test_get_blacklist_form_success(self, authenticated_client):
         artist = artist_factories.ArtistFactory.create(is_blacklisted=True)
@@ -249,8 +248,8 @@ class GetAssociateProductFormTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    # user + session + artist
-    expected_num_queries = 3
+    # session + artist
+    expected_num_queries = 2
 
     def test_get_associate_product_form(self, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
@@ -307,8 +306,8 @@ class GetUnlinkProductFormTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid", "product_id": 1}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    # user + session + artist + product
-    expected_num_queries = 4
+    # session + artist + product
+    expected_num_queries = 3
 
     def test_get_unlink_form_success(self, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
@@ -371,8 +370,8 @@ class GetMergeArtistFormTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    # user + session + artist
-    expected_num_queries = 3
+    # session + artist
+    expected_num_queries = 2
 
     def test_get_merge_form_success(self, authenticated_client):
         artist = artist_factories.ArtistFactory.create()
@@ -443,8 +442,8 @@ class GetSplitArtistFormTest(GetEndpointHelper):
     endpoint_kwargs = {"artist_id": "some-uuid"}
     needed_permission = perm_models.Permissions.MANAGE_OFFERS
 
-    # user + session + artist
-    expected_num_queries = 3
+    # session + artist
+    expected_num_queries = 2
 
     def test_get_split_form_success(self, authenticated_client):
         product1 = offers_factories.ProductFactory.create()
@@ -499,10 +498,9 @@ class ListArtistsTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.list_artists"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # - session
-    # - user
+    # - session + user
     # - artists
-    expected_num_queries = 3
+    expected_num_queries = 2
 
     @pytest.fixture
     def artists(self, db_session):
@@ -691,7 +689,7 @@ class ListArtistsTest(GetEndpointHelper):
 
     def test_list_artists_by_invalid_field_returns_400(self, authenticated_client):
         query_args = {"search-0-search_field": "WRONG_FIELD", "search-0-operator": "EQUALS"}
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -703,7 +701,7 @@ class ListArtistsTest(GetEndpointHelper):
             "search-0-operator": "GREATER_THAN",
             "search-0-string": "test",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 

@@ -17,7 +17,6 @@ from flask import g
 from flask import jsonify
 from flask import request
 from flask.logging import default_handler
-from flask_login import LoginManager
 from flask_login import current_user
 from sqlalchemy.event import listens_for
 from werkzeug.middleware.profiler import ProfilerMiddleware
@@ -124,6 +123,8 @@ def setup_sentry_before_request() -> None:
                 "id": current_user.id,
             }
         )
+    if device_id := request.headers.get("device-id", None):
+        sentry_sdk.set_tag("device.id", device_id)
     sentry_sdk.set_tag("correlation-id", get_or_set_correlation_id())
     g.request_start = time.perf_counter()
     g.public_api_log_request_details_extra = {}
@@ -183,7 +184,6 @@ if settings.REMOVE_LOGGER_HANDLER:
     # Remove default logger/handler, since we use our own (see pcapi.core.logging)
     app.logger.removeHandler(default_handler)
 
-login_manager = LoginManager()
 
 if settings.PROFILE_REQUESTS:
     profiling_restrictions = [settings.PROFILE_REQUESTS_LINES_LIMIT]
@@ -216,7 +216,6 @@ install_models()
 db.init_app(app)
 
 sa_orm.configure_mappers()
-login_manager.init_app(app)
 install_commands(app)
 finance_utils.install_template_filters(app)
 

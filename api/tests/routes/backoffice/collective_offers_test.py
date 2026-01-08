@@ -131,16 +131,15 @@ class ListCollectiveOffersTest(GetEndpointHelper):
 
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session +user (1 query)
     # - fetch collective offers with joinedload including extra data (1 query)
-    expected_num_queries = 3
+    expected_num_queries = 2
     # - fetch collective bookings (selectinload)
-    expected_num_queries_with_bookings = 4
+    expected_num_queries_with_bookings = 3
     # - fetch providers (selectinload)
-    expected_num_queries_with_provider = 4
+    expected_num_queries_with_provider = 3
     # - fetch both bookings and provider
-    expected_num_queries_with_selects = 5
+    expected_num_queries_with_selects = 4
 
     def _get_query_args_by_id(self, id_: int) -> dict[str, str]:
         return {
@@ -898,7 +897,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "INTERSECTS",
             "search-0-formats": [EacFormat.PROJECTION_AUDIOVISUELLE.name],
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -910,7 +909,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-region": "Bretagne",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -934,7 +933,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": operator,
             f"search-0-{operand}": "",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -950,7 +949,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-4-search_field": "BOOKING_LIMIT_DATE",
             "search-4-operator": "DATE_TO",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -965,7 +964,7 @@ class ListCollectiveOffersTest(GetEndpointHelper):
             "search-0-operator": "EQUALS",
             "search-0-string": "12, 34, A",
         }
-        with assert_num_queries(3):  # only session + current user + rollback
+        with assert_num_queries(2):  # only session + rollback
             response = authenticated_client.get(url_for(self.endpoint, **query_args))
             assert response.status_code == 400
 
@@ -1285,7 +1284,7 @@ class ValidateCollectiveOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
 
-        with assert_num_queries(3):  # session + current user + collective offer
+        with assert_num_queries(2):  # session + collective offer
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -1379,7 +1378,7 @@ class RejectCollectiveOfferFormTest(GetEndpointHelper):
 
         form_url = url_for(self.endpoint, collective_offer_id=collective_offer.id)
 
-        with assert_num_queries(3):  # session + current user + collective_offer
+        with assert_num_queries(2):  # session + collective_offer
             response = authenticated_client.get(form_url)
             assert response.status_code == 200
 
@@ -1568,7 +1567,7 @@ class GetBatchCollectiveOffersApproveFormTest(GetEndpointHelper):
     def test_get_batch_collective_offers_approve_form(self, legit_user, authenticated_client):
         url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1580,7 +1579,7 @@ class GetBatchCollectiveOffersRejectFormTest(GetEndpointHelper):
     def test_get_batch_collective_offers_reject_form(self, legit_user, authenticated_client):
         url = url_for(self.endpoint)
 
-        with assert_num_queries(2):  # session + current user
+        with assert_num_queries(1):  # session
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
@@ -1590,8 +1589,8 @@ class GetCollectiveOfferPriceFormTest(GetEndpointHelper):
     endpoint_kwargs = {"collective_offer_id": 1}
     needed_permission = perm_models.Permissions.ADVANCED_PRO_SUPPORT
 
-    # session + current user + offer + stock
-    expected_num_queries = 4
+    # session + offer + stock
+    expected_num_queries = 3
 
     def test_get_collective_offer_price_form(self, legit_user, authenticated_client):
         collective_offer_id = educational_factories.CollectiveStockFactory().collectiveOfferId
@@ -1828,11 +1827,10 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_OFFERS
     # Use assert_num_queries() instead of assert_no_duplicated_queries() which does not detect one extra query caused
     # by a field added in the jinja template.
-    # - fetch session (1 query)
-    # - fetch user (1 query)
+    # - fetch session + user (1 query)
     # - fetch CollectiveOffer
     # - _is_collective_offer_price_editable
-    expected_num_queries = 4
+    expected_num_queries = 3
 
     def test_nominal(self, legit_user, authenticated_client):
         start_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
@@ -1945,10 +1943,9 @@ class GetCollectiveOfferDetailTest(GetEndpointHelper):
         url = url_for(self.endpoint, collective_offer_id=pricing.collectiveBooking.collectiveStock.collectiveOffer.id)
         app.redis_client.set(finance_conf.REDIS_GENERATE_CASHFLOW_LOCK, "1", 600)
         try:
-            # 1. UserSession
-            # 2. User
+            # 1. UserSession + user
             # 3. CollectiveOffer
-            with assert_num_queries(3):
+            with assert_num_queries(2):
                 response = authenticated_client.get(url)
                 assert response.status_code == 200
         finally:
