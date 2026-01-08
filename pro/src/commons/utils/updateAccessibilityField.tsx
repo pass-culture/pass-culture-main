@@ -10,8 +10,10 @@ import strokeAccessibilityEarIcon from '@/icons/stroke-accessibility-ear.svg'
 import strokeAccessibilityEyeIcon from '@/icons/stroke-accessibility-eye.svg'
 import strokeAccessibilityLegIcon from '@/icons/stroke-accessibility-leg.svg'
 
+import type { Nullable } from './types'
+
 export type SetAccessibilityFieldValue = UseFormSetValue<{
-  accessibility: AccessibilityFormValues
+  accessibility: Nullable<AccessibilityFormValues>
 }>
 
 const DEFAULT_VALUES: AccessibilityFormValues = {
@@ -24,7 +26,7 @@ const DEFAULT_VALUES: AccessibilityFormValues = {
 
 function updateAccessibilityField(
   setFieldValue: SetAccessibilityFieldValue,
-  accessibilityValues: Partial<AccessibilityFormValues> | undefined
+  accessibilityValues: Nullable<AccessibilityFormValues> | undefined
 ): CheckboxGroupProps['options'] {
   const onOptionChange = (
     event: React.ChangeEvent<HTMLInputElement>,

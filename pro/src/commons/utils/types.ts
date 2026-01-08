@@ -30,6 +30,28 @@ export type PartialExcept<T extends AnyObject, K extends keyof T> = Partial<
 > &
   Pick<T, K>
 
+/**
+ * Makes all properties of a given object type nullable.
+ *
+ * @example
+ * interface Foo {
+ *   a: number
+ *   b: string
+ * }
+ *
+ * type NullableFoo = Nullable<Foo>
+ * // Result:
+ * // {
+ * //   a: number | null;
+ * //   b: string | null;
+ * // }
+ *
+ * @template T - The object type whose properties will be made nullable.
+ */
+export type Nullable<T extends AnyObject> = {
+  [P in keyof T]: T[P] | null
+}
+
 export const hasProperty = <T extends string>(
   element: unknown,
   property: T

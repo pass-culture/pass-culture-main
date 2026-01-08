@@ -91,11 +91,11 @@ export const getValidationSchema = ({
           }),
       })
       .shape({
-        mental: yup.boolean().required(),
-        audio: yup.boolean().required(),
-        visual: yup.boolean().required(),
-        motor: yup.boolean().required(),
-        none: yup.boolean().required(),
+        mental: yup.boolean().nullable().default(null),
+        audio: yup.boolean().nullable().default(null),
+        visual: yup.boolean().nullable().default(null),
+        motor: yup.boolean().nullable().default(null),
+        none: yup.boolean().nullable().default(null),
       }),
     email: yup.string().nullable().test(emailSchema),
     phoneNumber: yup
