@@ -187,6 +187,10 @@ def edit_venue(venue_id: int, body: venues_serialize.EditVenueBodyModel) -> venu
         if venue.offererAddress.address.field_exists_and_has_changed(field, value)
     }
     validation.check_venue_edition(modifications, venue)
+    if "activity" in modifications:
+        validation.check_activity_according_to_open_to_public(
+            modifications["activity"], modifications.get("isOpenToPublic", venue.isOpenToPublic)
+        )
 
     venue = offerers_api.update_venue(
         venue,

@@ -1096,14 +1096,22 @@ class Returns200Test:
             (True, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
             (True, "BOOKSTORE", "CINEMA", offerers_models.VenueTypeCode.BOOKSTORE, offerers_models.Activity.CINEMA),
             (False, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.NOT_ASSIGNED),
-            (False, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
+            (
+                False,
+                None,
+                "STREAMING_PLATFORM",
+                offerers_models.VenueTypeCode.DIGITAL,
+                offerers_models.Activity.STREAMING_PLATFORM,
+            ),
             (
                 False,
                 "BOOKSTORE",
-                "CINEMA",
+                "STREAMING_PLATFORM",
                 offerers_models.VenueTypeCode.BOOKSTORE,
-                offerers_models.Activity.CINEMA,
+                offerers_models.Activity.STREAMING_PLATFORM,
             ),
+            (True, None, "FESTIVAL", offerers_models.VenueTypeCode.FESTIVAL, offerers_models.Activity.FESTIVAL),
+            (False, None, "FESTIVAL", offerers_models.VenueTypeCode.FESTIVAL, offerers_models.Activity.FESTIVAL),
         ],
     )
     def test_update_activity_or_venue_type_code(
@@ -1146,7 +1154,7 @@ class Returns200Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
 
         # then
-        assert response.status_code == 200
+        assert response.status_code == 200, response.json
 
         # the venue should be updated
         assert venue.venueTypeCode == expected_venueTypeCode
@@ -1158,7 +1166,8 @@ class Returns200Test:
             (True, None, None, offerers_models.VenueTypeCode.GAMES, offerers_models.Activity.GAMES_CENTRE),
             (False, None, None, offerers_models.VenueTypeCode.GAMES, offerers_models.Activity.GAMES_CENTRE),
             (True, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
-            (False, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
+            (False, "MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.NOT_ASSIGNED),
+            (True, None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
         ],
     )
     def test_update_game_center_activity_or_venue_type_code(

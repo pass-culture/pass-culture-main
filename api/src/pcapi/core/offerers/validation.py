@@ -1,6 +1,7 @@
 import typing
 
 from pcapi.core.offerers import constants as offerers_constants
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
@@ -110,3 +111,14 @@ def check_venue_can_be_linked_to_pricing_point(venue: models.Venue, pricing_poin
                 ]
             }
         )
+
+
+def check_activity_according_to_open_to_public(
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic, is_open_to_public: bool
+) -> None:
+    if is_open_to_public:
+        if activity.value not in offerers_models.ActivityOpenToPublic:
+            raise ApiErrors(errors={"activity": ["Activité non reconnue."]})
+    else:
+        if activity.value not in offerers_models.ActivityNotOpenToPublic:
+            raise ApiErrors(errors={"activity": ["Activité non reconnue."]})
