@@ -42,11 +42,6 @@ def notify_institution_association(data: serialize.AdageCollectiveOffer) -> None
     _get_backend().notify_institution_association(data=data)
 
 
-def get_cultural_partner(siret: str) -> schemas.AdageCulturalPartner:
-    result = _get_backend().get_cultural_partner(siret)
-    return result
-
-
 def get_adage_educational_institutions(ansco: str) -> list[serialize.AdageEducationalInstitution]:
     result = _get_backend().get_adage_educational_institutions(ansco)
     return result
