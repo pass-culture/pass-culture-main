@@ -89,14 +89,14 @@ def extract_defs_from_schemas(schemas: typing.Collection[ModelSchema]) -> typing
     return list(_extract(schemas))
 
 
-def to_html(schemas, defs) -> str:
+def to_html(schemas) -> str:
     template = env.get_template("index.tmpl.html")
 
     base_dir = os.path.dirname(__file__)
     out_path = Path(base_dir) / "templates" / "index.html"
 
     with open(out_path, mode="w") as f:
-        content = template.render(schemas=schemas, defs=defs)
+        content = template.render(schemas=schemas)
         f.write(content)
 
     return content
