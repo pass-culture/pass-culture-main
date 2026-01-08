@@ -125,8 +125,6 @@ def link_cultural_domains_to_venue(
 
     if venue:
         venue.collectiveDomains = educational_domains
-        if not venue_type_code and educational_domains:
-            venue.venueTypeCode = offerers_utils.get_venue_type_code_from_educational_domains(educational_domains)
 
 
 def update_venue(
@@ -242,8 +240,6 @@ def update_venue(
             logger.error("update_venue called with activity on a venue closed to public", extra={"venue_id": venue.id})
         assert venue.activity  # helps mypy, activity has been modified, not null if we are here and set earlier
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
-    if not venue.isOpenToPublic and venue.activity != offerers_models.Activity.NOT_ASSIGNED:
-        venue.activity = offerers_models.Activity.NOT_ASSIGNED
 
     db.session.add(venue)
     if is_managed_transaction():
