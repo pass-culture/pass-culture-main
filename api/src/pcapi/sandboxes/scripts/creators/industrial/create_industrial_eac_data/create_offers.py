@@ -216,8 +216,6 @@ def create_eac_offers_by_period(
     [venue] = offerer.managedVenues
 
     for deposit in deposits:
-        assert deposit.period is not None
-
         year = deposit.educationalYear
         institution = deposit.educationalInstitution
 

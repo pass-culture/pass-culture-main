@@ -235,7 +235,6 @@ def import_deposit_institution_data(
             output.total_previous_deposit += deposit.amount
 
             # we cannot have two deposits with periods that overlap for the same education year and institution
-            assert deposit.period is not None
             if deposit.period.lower != period_start or deposit.period.upper != period_end:
                 raise ValueError(
                     f"Deposit with id {deposit.id} has a period that overlaps (and is different from) input period"
@@ -368,9 +367,7 @@ def get_current_year_remaining_credit(institution: models.EducationalInstitution
 
     deposits = repository.find_educational_deposits_by_institution_id_and_year(institution.id, educational_year.adageId)
 
-    current_deposit = next(
-        (deposit for deposit in deposits if deposit.period is not None and now in deposit.period), None
-    )
+    current_deposit = next((deposit for deposit in deposits if now in deposit.period), None)
     if current_deposit is None:
         return Decimal(0)
 
