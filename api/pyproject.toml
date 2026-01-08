@@ -79,7 +79,7 @@ sqlalchemy = { version = "2.0.45", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
 time-machine = "3.2.0"
 transitions = "^0.9.3"
-urllib3 = "2.6.0"
+urllib3 = "2.6.2"
 weasyprint = "67.0"
 werkzeug = "3.1.4"
 wtforms = "3.2.1"
