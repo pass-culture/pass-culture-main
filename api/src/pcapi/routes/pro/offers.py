@@ -94,6 +94,7 @@ def get_offer(offer_id: int) -> offers_serialize.GetIndividualOfferWithAddressRe
         "headline_offer",
         "meta_data",
         "highlight_requests",
+        "artists",
     ]
     try:
         offer = offers_repository.get_offer_by_id(offer_id, load_options=load_all)

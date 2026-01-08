@@ -134,6 +134,7 @@ export const getIndividualOfferFactory = (
       videoUrl: undefined,
     },
     highlightRequests: [],
+    artistOfferLinks: [],
     ...customGetIndividualOffer,
   }
 }

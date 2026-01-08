@@ -24,6 +24,7 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import address_serialize
+from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import highlight_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
@@ -459,6 +460,7 @@ class VideoData(ConfiguredBaseModel):
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
+    artistOfferLinks: list[artist_serialize.ArtistOfferResponseModel]
     bookingContact: str | None
     bookingsCount: int | None
     bookingEmail: str | None
