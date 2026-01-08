@@ -34,10 +34,16 @@ class Rates(BaseModel):
     pacificFrancToEuro = XPF_TO_EUR_RATE
 
 
+class Bonification(BaseModel):
+    qfThreshold: int
+    bonusAmount: int
+
+
 class SettingsResponse(ConfiguredBaseModel):
     account_creation_minimum_age: int
     account_unsuspension_limit: int
     app_enable_autocomplete: bool
+    bonification: Bonification
     deposit_amounts_by_age: DepositAmountsByAge
     display_dms_redirection: bool
     enable_front_image_resizing: bool

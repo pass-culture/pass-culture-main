@@ -1,7 +1,10 @@
+from pcapi.core.finance import conf as finance_conf
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.users import constants
 from pcapi.models import db
 from pcapi.models.feature import Feature
 from pcapi.models.feature import FeatureToggle
+from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.settings import OBJECT_STORAGE_URL
 from pcapi.utils import postal_code
@@ -36,6 +39,10 @@ def get_settings() -> serializers.SettingsResponse:
         account_creation_minimum_age=constants.ACCOUNT_CREATION_MINIMUM_AGE,
         account_unsuspension_limit=constants.ACCOUNT_UNSUSPENSION_DELAY,
         app_enable_autocomplete=features[FeatureToggle.APP_ENABLE_AUTOCOMPLETE],
+        bonification=serializers.Bonification(
+            qfThreshold=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
+            bonusAmount=convert_to_cent(finance_conf.BONUS_CREDIT_AMOUNT) or 0,
+        ),
         display_dms_redirection=features[FeatureToggle.DISPLAY_DMS_REDIRECTION],
         enable_front_image_resizing=features[FeatureToggle.ENABLE_FRONT_IMAGE_RESIZING],
         enable_native_cultural_survey=features[FeatureToggle.ENABLE_NATIVE_CULTURAL_SURVEY],

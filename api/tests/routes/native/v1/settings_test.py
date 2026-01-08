@@ -25,6 +25,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": True,
+            "bonification": {"bonusAmount": 5000, "qfThreshold": 3000},
             "depositAmountsByAge": {"age_15": 0, "age_16": 0, "age_17": 5000, "age_18": 15000},
             "displayDmsRedirection": True,
             "enableFrontImageResizing": True,
@@ -56,6 +57,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": False,
+            "bonification": {"bonusAmount": 5000, "qfThreshold": 3000},
             "depositAmountsByAge": {"age_15": 0, "age_16": 0, "age_17": 5000, "age_18": 15000},
             "displayDmsRedirection": False,
             "enableFrontImageResizing": False,
