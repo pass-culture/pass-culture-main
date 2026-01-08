@@ -486,6 +486,7 @@ class EduconnectFraudTest:
         )
         assert not age_check
 
+    @pytest.mark.time_machine("2025-02-02")
     def test_pre_decree_eligibility_used(self):
         sixteen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=16, weeks=1)
         user = users_factories.EmailValidatedUserFactory(dateOfBirth=sixteen_years_ago)
