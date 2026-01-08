@@ -43,7 +43,8 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
     # session + user + product
     expected_num_queries = 3
 
-    def test_search_by_ean_existing_product(self, authenticated_client):
+    @pytest.mark.parametrize("ean", ["1234567891234", "1234 5678 9123 4", "1234-5678-9123-4"])
+    def test_search_by_ean_existing_product(self, ean, authenticated_client):
         product = offers_factories.ProductFactory.create(
             description="Une offre pour tester",
             ean="1234567891234",
@@ -54,7 +55,7 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
             response = authenticated_client.get(
                 url_for(
                     self.endpoint,
-                    q="1234567891234",
+                    q=ean,
                     product_filter_type=ProductFilterTypeEnum.EAN.name,
                 )
             )
