@@ -128,11 +128,6 @@ class Artist(Model):
             "wikidata_id",
             unique=True,
         ),
-        sa.Index(
-            "ix_unique_artist_mediation_uuid",
-            "mediation_uuid",
-            unique=True,
-        ),
     )
 
     @property
