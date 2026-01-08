@@ -651,7 +651,7 @@ class AccountTest:
         deposit_api.recredit_bonus_credit(user)
         response = client.with_token(user.email).get("/native/v1/me")
         assert response.status_code == 200
-        assert response.json["recreditAmountToShow"] == 3000
+        assert response.json["recreditAmountToShow"] == 50_00
         assert response.json["recreditTypeToShow"] == "BonusCredit"
 
 

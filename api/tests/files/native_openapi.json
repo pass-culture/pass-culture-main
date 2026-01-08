@@ -417,6 +417,24 @@
                 "title": "BannerResponse",
                 "type": "object"
             },
+            "Bonification": {
+                "properties": {
+                    "bonusAmount": {
+                        "title": "Bonusamount",
+                        "type": "integer"
+                    },
+                    "qfThreshold": {
+                        "title": "Qfthreshold",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "qfThreshold",
+                    "bonusAmount"
+                ],
+                "title": "Bonification",
+                "type": "object"
+            },
             "BonusCreditRequest": {
                 "properties": {
                     "birthCityCogCode": {
@@ -4683,6 +4701,9 @@
                         "title": "Appenableautocomplete",
                         "type": "boolean"
                     },
+                    "bonification": {
+                        "$ref": "#/components/schemas/Bonification"
+                    },
                     "depositAmountsByAge": {
                         "$ref": "#/components/schemas/DepositAmountsByAge"
                     },
@@ -4741,6 +4762,7 @@
                     "accountCreationMinimumAge",
                     "accountUnsuspensionLimit",
                     "appEnableAutocomplete",
+                    "bonification",
                     "depositAmountsByAge",
                     "displayDmsRedirection",
                     "enableFrontImageResizing",
