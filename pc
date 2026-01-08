@@ -147,7 +147,7 @@ function exit_success_restoring_branch() {
 }
 
 function pod_console() {
-  kubectl get pod -n $ENV --field-selector status.phase=Running | grep pcapi-console | awk '{print $1}'
+  kubectl get pod -n $ENV --field-selector status.phase=Running | grep $ENV-pcapi-console | awk '{print $1}'
 }
 
 # =============================================
