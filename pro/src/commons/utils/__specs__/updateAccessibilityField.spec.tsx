@@ -5,6 +5,7 @@ import { useState } from 'react'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 
+import type { Nullable } from '../types'
 import {
   type SetAccessibilityFieldValue,
   updateAccessibilityField,
@@ -14,7 +15,7 @@ const mockSetFieldValue = vi.fn()
 
 function TestCheckboxGroup() {
   const [formValues, setFormValues] = useState<{
-    accessibility: AccessibilityFormValues | undefined
+    accessibility: Nullable<AccessibilityFormValues> | undefined
   }>({ accessibility: undefined })
 
   const setFieldValue: SetAccessibilityFieldValue = (
@@ -25,7 +26,7 @@ function TestCheckboxGroup() {
     expect(name).toBe('accessibility')
     assert(typeof nextValue !== 'boolean')
 
-    setFormValues({ accessibility: nextValue })
+    setFormValues({ accessibility: nextValue ?? undefined })
     mockSetFieldValue(name, nextValue, options)
   }
 

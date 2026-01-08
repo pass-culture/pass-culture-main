@@ -8,10 +8,10 @@ export const setInitialFormValues = (
 ): VenueEditionFormValues => {
   return {
     accessibility: {
-      [AccessibilityEnum.VISUAL]: venue.visualDisabilityCompliant || false,
-      [AccessibilityEnum.MENTAL]: venue.mentalDisabilityCompliant || false,
-      [AccessibilityEnum.AUDIO]: venue.audioDisabilityCompliant || false,
-      [AccessibilityEnum.MOTOR]: venue.motorDisabilityCompliant || false,
+      [AccessibilityEnum.VISUAL]: venue.visualDisabilityCompliant ?? null,
+      [AccessibilityEnum.MENTAL]: venue.mentalDisabilityCompliant ?? null,
+      [AccessibilityEnum.AUDIO]: venue.audioDisabilityCompliant ?? null,
+      [AccessibilityEnum.MOTOR]: venue.motorDisabilityCompliant ?? null,
       [AccessibilityEnum.NONE]: setAccessibilityNone(venue),
     },
     description: venue.description || '',
