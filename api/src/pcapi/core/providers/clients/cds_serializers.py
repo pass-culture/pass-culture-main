@@ -72,7 +72,7 @@ class ShowCDS(CDSBaseModel):
 class MediaCDS(CDSBaseModel):
     id: int
     title: str
-    duration: int  # CDS api returns duration in seconds
+    duration: int | None = None  # CDS api returns duration in seconds
     posterpath: str | None = None
     storyline: str | None = None
     visanumber: str | None = None
@@ -81,7 +81,7 @@ class MediaCDS(CDSBaseModel):
     def to_generic_movie(self) -> offers_models.Movie:
         return offers_models.Movie(
             allocine_id=str(self.allocineid) if self.allocineid else None,
-            duration=self.duration // 60,
+            duration=self.duration // 60 if self.duration else None,
             description=self.storyline,
             extra_data=None,
             poster_url=self.posterpath,
