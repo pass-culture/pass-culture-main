@@ -11,6 +11,7 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.subscription.phone_validation.exceptions import InvalidPhoneNumber
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.utils.phone_number import ParsedPhoneNumber
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
@@ -18,6 +19,7 @@ from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers.operations_jobs import retrieve_special_event_from_typeform_job
 
 from . import models
+from . import tasks
 
 
 logger = logging.getLogger(__name__)
@@ -56,7 +58,12 @@ def create_special_event_from_typeform(
     db.session.add(special_event)
     db.session.flush()
 
-    on_commit(partial(retrieve_special_event_from_typeform_job.delay, special_event.id))
+    if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM.is_active():
+        payload = tasks.RetrieveSpecialEventFromTypeformPayload(event_id=special_event.id)
+        on_commit(partial(tasks.retrieve_special_event_from_typeform_task.delay, payload.model_dump()))
+    else:
+        on_commit(partial(retrieve_special_event_from_typeform_job.delay, special_event.id))
+
     return special_event
 
 
