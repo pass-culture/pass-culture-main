@@ -9,6 +9,8 @@ import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.schemas as offerers_schemas
 import pcapi.core.providers.factories as providers_factories
 import pcapi.utils.db as db_utils
+from pcapi.core.artist import factories as artist_factories
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offers import factories
@@ -1069,3 +1071,87 @@ class OfferIsSearchableTest:
         offer = factories.StockFactory(offer__venue=venue).offer
 
         assert offer.is_eligible_for_search is True
+
+
+class ArtistOfferLinkTest:
+    def test_offer_can_have_same_artist_with_different_types(self):
+        offer = factories.OfferFactory()
+        artist = artist_factories.ArtistFactory()
+
+        artist_performer = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            artist_id=artist.id,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        artist_author = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            artist_id=artist.id,
+            artist_type=artist_models.ArtistType.AUTHOR,
+        )
+        db.session.add_all([artist_performer, artist_author])
+        db.session.flush()
+
+    def test_offer_can_have_same_artist_when_custom_name(self):
+        offer = factories.OfferFactory()
+        artist = artist_factories.ArtistFactory()
+
+        artist_performer = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            artist_id=artist.id,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        custom_performer = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            artist_id=None,
+            custom_name=artist.name,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        db.session.add_all([artist_performer, custom_performer])
+        db.session.flush()
+
+    def test_offer_can_not_have_same_artist_id_twice(self):
+        offer = factories.OfferFactory()
+        artist = artist_factories.ArtistFactory()
+
+        artist_performer = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            artist_id=artist.id,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        artist_performer_again = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            artist_id=artist.id,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        db.session.add_all([artist_performer_again, artist_performer])
+        with pytest.raises(sa_exc.IntegrityError):
+            db.session.flush()
+
+    def test_offer_can_not_have_same_custom_name_twice(self):
+        offer = factories.OfferFactory()
+
+        artist_performer = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            custom_name="custom_name",
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        artist_performer_again = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            custom_name="custom_name",
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        db.session.add_all([artist_performer_again, artist_performer])
+        with pytest.raises(sa_exc.IntegrityError):
+            db.session.flush()
+
+    def test_offer_can_not_have_empty_artist_name_and_id(self):
+        offer = factories.OfferFactory()
+        artist_link_empty = artist_models.ArtistOfferLink(
+            offer_id=offer.id,
+            artist_id=None,
+            custom_name=None,
+            artist_type=artist_models.ArtistType.PERFORMER,
+        )
+        db.session.add(artist_link_empty)
+        with pytest.raises(sa_exc.IntegrityError):
+            db.session.flush()
