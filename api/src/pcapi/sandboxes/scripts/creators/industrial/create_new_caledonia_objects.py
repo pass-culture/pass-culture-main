@@ -399,7 +399,7 @@ def _create_nc_invoice() -> None:
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
 
     logger.info("Created caledonian and metropolitan Invoices")
 
@@ -437,7 +437,7 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
 
     assert incident_booking.status == bookings_models.BookingStatus.REIMBURSED
 
@@ -473,4 +473,4 @@ def _create_one_nc_individual_incident(beneficiary: users_models.User) -> None:
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)

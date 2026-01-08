@@ -428,7 +428,7 @@ def create_industrial_commercial_gestures() -> None:
         .filter(finance_models.Cashflow.batchId == cashflow_batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
     db.session.flush()
 
     for i in range(2):
