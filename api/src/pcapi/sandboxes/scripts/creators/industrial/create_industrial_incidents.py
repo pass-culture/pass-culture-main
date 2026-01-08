@@ -172,7 +172,7 @@ def _create_one_individual_incident(
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
 
     assert {b.status for b in bookings} == {bookings_models.BookingStatus.REIMBURSED}, [
         (b.id, b.status) for b in bookings
@@ -226,7 +226,7 @@ def _create_one_individual_incident(
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
 
 
 def _create_one_collective_incident(
@@ -310,7 +310,7 @@ def _create_one_collective_incident(
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
 
     assert {booking.status for booking in bookings} == {educational_models.CollectiveBookingStatus.REIMBURSED}, [
         (booking.id, booking.status) for booking in bookings
@@ -357,7 +357,7 @@ def _create_one_collective_incident(
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
 
 
 @log_func_duration

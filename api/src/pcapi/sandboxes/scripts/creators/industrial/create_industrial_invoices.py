@@ -50,7 +50,7 @@ def create_industrial_invoices() -> None:
         .filter(finance_models.Cashflow.batchId == batch.id)
     )
     for invoice in invoices:
-        finance_api.validate_invoice(invoice)
+        finance_api.validate_invoice(invoice.id)
     logger.info("Created %s Invoices", db.session.query(finance_models.Invoice).count())
 
 
