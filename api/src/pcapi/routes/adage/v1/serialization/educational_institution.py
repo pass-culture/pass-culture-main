@@ -16,9 +16,6 @@ class EducationalInstitutionDepositResponse(schemas.AdageBaseResponseModel):
 
 
 def serialize_deposit(deposit: "EducationalDeposit") -> EducationalInstitutionDepositResponse:
-    # TODO(jcicurel): deposit period should be non-nullable
-    assert deposit.period is not None
-
     return EducationalInstitutionDepositResponse(
         credit=float(deposit.amount),
         isFinal=deposit.isFinal,

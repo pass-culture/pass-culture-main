@@ -1477,7 +1477,7 @@ class EducationalDeposit(PcObject, models.Model):
     # when a collective booking is confirmed, we find the corresponding deposit depending on the institution, educational year and period
     # if the confirmation date is in the same educational year as the event, the period must contain the confirmation date
     # if the confirmation date is not in the same educational year as the event, the period must contain the start of the event educational year
-    period: sa_orm.Mapped[DateTimeRange | None] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=True)
+    period: sa_orm.Mapped[DateTimeRange] = sa_orm.mapped_column(postgresql.TSRANGE, nullable=False)
 
     collectiveBookings: sa_orm.Mapped[list["CollectiveBooking"]] = sa_orm.relationship(
         "CollectiveBooking",

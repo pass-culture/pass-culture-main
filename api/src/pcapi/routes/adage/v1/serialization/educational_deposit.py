@@ -28,9 +28,6 @@ def serialize_educational_deposits(
 
 
 def serialize_educational_deposit(educational_deposit: "EducationalDeposit") -> EducationalDepositResponse:
-    # TODO(jcicurel): deposit period should be non-nullable
-    assert educational_deposit.period is not None
-
     return EducationalDepositResponse(
         deposit=float(educational_deposit.amount),
         uai=educational_deposit.educationalInstitution.institutionId,
