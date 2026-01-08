@@ -5,6 +5,7 @@ import typing
 
 import sentry_sdk
 from pydantic.v1 import ValidationError
+from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.flask import FlaskIntegration
 from sentry_sdk.integrations.redis import RedisIntegration
 from sentry_sdk.integrations.rq import RqIntegration
@@ -167,7 +168,13 @@ def init_sentry_sdk() -> None:
         return
     sentry_sdk.init(
         dsn=settings.SENTRY_DSN,
-        integrations=[FlaskIntegration(), RedisIntegration(), RqIntegration(), SqlalchemyIntegration()],
+        integrations=[
+            CeleryIntegration(),
+            FlaskIntegration(),
+            RedisIntegration(),
+            RqIntegration(),
+            SqlalchemyIntegration(),
+        ],
         release=read_version_from_file(),
         environment=settings.ENV,
         traces_sample_rate=None if settings.SENTRY_FINE_SAMPLING else settings.SENTRY_DEFAULT_TRACES_SAMPLE_RATE,
