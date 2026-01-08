@@ -3,13 +3,15 @@ $step-active-border-width: 3px;
 
 [data-registration-steps-id] {
   & .progress {
-    top: 1.4rem;
+    top: 3.4rem;
     left: 0;
     right: 0;
-    height: .3rem;
+    height: .2rem;
 
     & > .progress-bar {
-      height: .3rem;
+      height: .2rem;
+      background-color: $white;
+      border-top: .2rem dashed $gray-600;
     }
   }
 
@@ -30,50 +32,50 @@ $step-active-border-width: 3px;
     }
 
     & .step-number {
-      border-radius: 50%;
-      width: 3rem;
-      height: 3rem;
-      background-color: $gray-200;
-      border: $step-border-width solid $gray-600;
+      border-radius: 9%;
+      width: 7rem;
+      height: 7rem;
+      background-color: $white;
+      border: $step-border-width solid $gray-200;
       z-index: 100;
+
+      & i {
+        font-size: 1.5rem;
+      }
     }
 
     & .step-status-icon-container {
-      width: 1.5rem;
-      height: 1.5rem;
+      width: 2.1rem;
+      height: 2.1rem;
+      left: calc(100% - 1.05rem) !important;
+      top: 28% !important;
       background-color: $gray-200;
 
       &.step-success {
-        background-color: $success-bg-subtle;
+        background-color: $green-100;
       }
 
       &.step-warning {
-        background-color: $warning-bg-subtle;
+        background-color: $yellow-100;
       }
 
       &.step-error {
-        background-color: $danger-bg-subtle;
+        background-color: $red-100;
       }
     }
 
     & .step-success .step-number {
-      background-color: $success-bg-subtle;
-      border: $step-border-width solid $success-border-subtle;
     }
 
     & .step-warning .step-number {
-      background-color: $warning-bg-subtle;
-      border: $step-border-width solid $warning-border-subtle;
     }
 
     & .step-error .step-number {
-      background-color: $danger-bg-subtle;
-      border: $step-border-width solid $danger-border-subtle;
     }
 
     & .step-active .step-number {
-      box-shadow: 0px 0px 0px $step-active-border-width $primary inset;
-      border-color: $primary;
+      border-color: $purple-400;
+      background-color: $purple-200;
     }
 
     & .step-text {
@@ -81,27 +83,11 @@ $step-active-border-width: 3px;
 
       @media(min-width: 568px) {
         display: flex;
-        color: #68737a;
-        font-size: 1rem;
+        font-size: 0.85rem;
         justify-content: center;
         line-height: 1.5rem;
         text-align: center;
         max-width: 5.5rem;
-        padding-top: 10px;
-      }
-    }
-  }
-}
-
-.pc-personal-information-registration-view {
-  .form-switch-show-all-steps {
-    &:has(> input[name="show_all_steps"]:checked) {
-      & ~ .step-content.d-block {
-        display: none !important;
-      }
-
-      & ~ .all-id-check-history-container {
-        display: block !important;
       }
     }
   }

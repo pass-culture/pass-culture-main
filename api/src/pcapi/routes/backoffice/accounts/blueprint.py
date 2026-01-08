@@ -783,7 +783,6 @@ class RegistrationStep:
         fraud_actions_history: list[dict] | None = None,
         is_active: bool = False,
         is_disabled: bool = False,
-        text: str = "",
     ):
         self.step_id = step_id
         self.description = description
@@ -797,7 +796,6 @@ class RegistrationStep:
             "active": is_active,
             "disabled": is_disabled,
         }
-        self.text = text
 
     def __repr__(self) -> str:
         fmt_status = " ".join([f"status[{key}]={value}" for key, value in self.status.items()])
@@ -806,7 +804,6 @@ class RegistrationStep:
             f"subscription_item_status={self.subscription_item_status} "
             f"icon=<{self.icon}> "
             f"fraud_actions_history={self.fraud_actions_history} "
-            f"text='{self.text}' "
             f"{fmt_status}>"
         )
 
@@ -820,7 +817,6 @@ class RegistrationStep:
             and self.subscription_item_status == other.subscription_item_status
             and self.icon == other.icon
             and self.status == other.status
-            and self.text == other.text
         )
 
 
@@ -901,13 +897,13 @@ def _get_steps_tunnel_unspecified(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=email_status,
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=TunnelType.NOT_ELIGIBLE.value,
             subscription_item_status=email_status,
-            icon="bi-question-circle-fill",
+            icon="bi-question-circle",
             is_disabled=True,
         ),
     ]
@@ -926,13 +922,13 @@ def _get_steps_tunnel_underage_age17(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -944,7 +940,7 @@ def _get_steps_tunnel_underage_age17(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -956,7 +952,7 @@ def _get_steps_tunnel_underage_age17(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=5,
@@ -966,7 +962,7 @@ def _get_steps_tunnel_underage_age17(
                 if user.received_pass_15_17
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="1517",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -977,7 +973,7 @@ def _get_steps_tunnel_underage_age17(
             step_id=6,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -989,7 +985,7 @@ def _get_steps_tunnel_underage_age17(
             step_id=7,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=8,
@@ -999,7 +995,7 @@ def _get_steps_tunnel_underage_age17(
                 if user.received_pass_17_18
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="17",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1022,13 +1018,13 @@ def _get_steps_tunnel_underage_age17_18(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1040,7 +1036,7 @@ def _get_steps_tunnel_underage_age17_18(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1052,7 +1048,7 @@ def _get_steps_tunnel_underage_age17_18(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=5,
@@ -1062,7 +1058,7 @@ def _get_steps_tunnel_underage_age17_18(
                 if user.received_pass_15_17
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="1517",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1077,7 +1073,7 @@ def _get_steps_tunnel_underage_age17_18(
                 if user.received_pass_17_18
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            icon="bi-card-checklist",
+            icon="bi-file-text",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1088,7 +1084,7 @@ def _get_steps_tunnel_underage_age17_18(
             step_id=7,
             description=subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value],
-            icon="bi-telephone-fill",
+            icon="bi-telephone",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1100,13 +1096,13 @@ def _get_steps_tunnel_underage_age17_18(
             step_id=8,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
         ),
         RegistrationStep(
             step_id=9,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1118,7 +1114,7 @@ def _get_steps_tunnel_underage_age17_18(
             step_id=10,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=11,
@@ -1128,7 +1124,7 @@ def _get_steps_tunnel_underage_age17_18(
                 if user.received_pass_18_v3
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            icon="bi-card-checklist",
+            icon="bi-file-text",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1151,13 +1147,13 @@ def _get_steps_tunnel_underage_age18(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1169,7 +1165,7 @@ def _get_steps_tunnel_underage_age18(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1181,7 +1177,7 @@ def _get_steps_tunnel_underage_age18(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=5,
@@ -1191,7 +1187,7 @@ def _get_steps_tunnel_underage_age18(
                 if user.received_pass_15_17
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="1517",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1202,7 +1198,7 @@ def _get_steps_tunnel_underage_age18(
             step_id=6,
             description=subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value],
-            icon="bi-telephone-fill",
+            icon="bi-telephone",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1214,13 +1210,13 @@ def _get_steps_tunnel_underage_age18(
             step_id=7,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
         ),
         RegistrationStep(
             step_id=8,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1232,7 +1228,7 @@ def _get_steps_tunnel_underage_age18(
             step_id=9,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=10,
@@ -1242,7 +1238,7 @@ def _get_steps_tunnel_underage_age18(
                 if user.received_pass_18_v3
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            icon="bi-card-checklist",
+            icon="bi-file-text",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1265,13 +1261,13 @@ def _get_steps_tunnel_underage_age18_old(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1283,7 +1279,7 @@ def _get_steps_tunnel_underage_age18_old(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1295,7 +1291,7 @@ def _get_steps_tunnel_underage_age18_old(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=5,
@@ -1305,7 +1301,7 @@ def _get_steps_tunnel_underage_age18_old(
                 if user.received_pass_15_17
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="1517",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1316,7 +1312,7 @@ def _get_steps_tunnel_underage_age18_old(
             step_id=6,
             description=subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value],
-            icon="bi-telephone-fill",
+            icon="bi-telephone",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1328,13 +1324,13 @@ def _get_steps_tunnel_underage_age18_old(
             step_id=7,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
         ),
         RegistrationStep(
             step_id=8,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1346,7 +1342,7 @@ def _get_steps_tunnel_underage_age18_old(
             step_id=9,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=10,
@@ -1356,7 +1352,7 @@ def _get_steps_tunnel_underage_age18_old(
                 if user.received_pass_18
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            icon="bi-card-checklist",
+            icon="bi-file-text",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1378,13 +1374,13 @@ def _get_steps_tunnel_age17(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1396,7 +1392,7 @@ def _get_steps_tunnel_age17(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1408,7 +1404,7 @@ def _get_steps_tunnel_age17(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=5,
@@ -1439,13 +1435,13 @@ def _get_steps_tunnel_age17_18(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1457,7 +1453,7 @@ def _get_steps_tunnel_age17_18(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1469,7 +1465,7 @@ def _get_steps_tunnel_age17_18(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=5,
@@ -1479,7 +1475,7 @@ def _get_steps_tunnel_age17_18(
                 if user.received_pass_17_18
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="17",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1490,7 +1486,7 @@ def _get_steps_tunnel_age17_18(
             step_id=6,
             description=subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value],
-            icon="bi-telephone-fill",
+            icon="bi-telephone",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1502,7 +1498,7 @@ def _get_steps_tunnel_age17_18(
             step_id=7,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1514,7 +1510,7 @@ def _get_steps_tunnel_age17_18(
             step_id=8,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1526,7 +1522,7 @@ def _get_steps_tunnel_age17_18(
             step_id=9,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=10,
@@ -1536,7 +1532,7 @@ def _get_steps_tunnel_age17_18(
                 if user.received_pass_18_v3
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="18",
+            icon="bi-rocket-takeoff",
         ),
     ]
     return steps
@@ -1553,13 +1549,13 @@ def _get_steps_tunnel_age18(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value],
-            icon="bi-telephone-fill",
+            icon="bi-telephone",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1571,7 +1567,7 @@ def _get_steps_tunnel_age18(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1583,7 +1579,7 @@ def _get_steps_tunnel_age18(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1595,7 +1591,7 @@ def _get_steps_tunnel_age18(
             step_id=5,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_17_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=6,
@@ -1605,7 +1601,7 @@ def _get_steps_tunnel_age18(
                 if user.received_pass_18_v3
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="18",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1627,13 +1623,13 @@ def _get_steps_tunnel_age18_old(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.PHONE_VALIDATION.value],
-            icon="bi-telephone-fill",
+            icon="bi-telephone",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1645,7 +1641,7 @@ def _get_steps_tunnel_age18_old(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1657,7 +1653,7 @@ def _get_steps_tunnel_age18_old(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1669,7 +1665,7 @@ def _get_steps_tunnel_age18_old(
             step_id=5,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_18[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=6,
@@ -1679,7 +1675,7 @@ def _get_steps_tunnel_age18_old(
                 if user.received_pass_18
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="18",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc
@@ -1701,13 +1697,13 @@ def _get_steps_tunnel_underage(
             step_id=1,
             description=subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value],
-            icon="bi-envelope-fill",
+            icon="bi-envelope",
         ),
         RegistrationStep(
             step_id=2,
             description=subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.PROFILE_COMPLETION.value],
-            icon="bi-house-check-fill",
+            icon="bi-universal-access",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1719,7 +1715,7 @@ def _get_steps_tunnel_underage(
             step_id=3,
             description=subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value],
-            icon="bi-fingerprint",
+            icon="bi-person-bounding-box",
             fraud_actions_history=[
                 _convert_check_item_to_fraud_action_dict(id_check_history)
                 for id_check_history in id_check_histories
@@ -1731,7 +1727,7 @@ def _get_steps_tunnel_underage(
             step_id=4,
             description=subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value,
             subscription_item_status=item_status_15_17[subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value],
-            icon="bi-card-checklist",
+            icon="bi-file-text",
         ),
         RegistrationStep(
             step_id=5,
@@ -1741,7 +1737,7 @@ def _get_steps_tunnel_underage(
                 if user.received_pass_15_17
                 else subscription_schemas.SubscriptionItemStatus.VOID.value
             ),
-            text="1517",
+            icon="bi-rocket-takeoff",
             fraud_actions_history=[
                 _convert_fraud_review_to_fraud_action_dict(review)
                 for review in fraud_reviews_desc

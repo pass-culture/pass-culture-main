@@ -2576,13 +2576,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 5
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -2688,13 +2688,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 11
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -2706,13 +2706,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert text_views[5].text == "Pass 17"
 
         assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Validation N° téléphone"
+        assert text_views[6].text == "Num. téléphone"
 
         assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "Profil Complet"
+        assert text_views[7].text == "Profil complet"
 
         assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[8].text == "ID Check"
+        assert text_views[8].text == "ID check"
 
         assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[9].text == "Attestation sur l'honneur"
@@ -2802,13 +2802,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 8
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -2817,7 +2817,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert text_views[4].text == "Ancien Pass 15-17"
 
         assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "ID Check"
+        assert text_views[5].text == "ID check"
 
         assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Attestation sur l'honneur"
@@ -2890,13 +2890,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 8
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -2905,7 +2905,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert text_views[4].text == "Ancien Pass 15-17"
 
         assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "ID Check"
+        assert text_views[5].text == "ID check"
 
         assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[6].text == "Attestation sur l'honneur"
@@ -2975,13 +2975,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 5
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3024,7 +3024,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 2
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Non éligible"
@@ -3086,13 +3086,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 5
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3162,13 +3162,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 5
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3209,7 +3209,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 2
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Non éligible"
@@ -3275,13 +3275,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 5
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3345,13 +3345,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 5
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.SUSPICIOUS.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3453,13 +3453,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 10
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3468,13 +3468,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert text_views[4].text == "Ancien Pass 15-17"
 
         assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.VOID.value
-        assert text_views[5].text == "Validation N° téléphone"
+        assert text_views[5].text == "Num. téléphone"
 
         assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Profil Complet"
+        assert text_views[6].text == "Profil complet"
 
         assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
+        assert text_views[7].text == "ID check"
 
         assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[8].text == "Attestation sur l'honneur"
@@ -3565,13 +3565,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 10
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3580,13 +3580,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert text_views[4].text == "Pass 17"
 
         assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "Validation N° téléphone"
+        assert text_views[5].text == "Num. téléphone"
 
         assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Profil Complet"
+        assert text_views[6].text == "Profil complet"
 
         assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
+        assert text_views[7].text == "ID check"
 
         assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[8].text == "Attestation sur l'honneur"
@@ -3652,13 +3652,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 10
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.TODO.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3667,13 +3667,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert text_views[4].text == "Pass 17"
 
         assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[5].text == "Validation N° téléphone"
+        assert text_views[5].text == "Num. téléphone"
 
         assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[6].text == "Profil Complet"
+        assert text_views[6].text == "Profil complet"
 
         assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
+        assert text_views[7].text == "ID check"
 
         assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.TODO.value
         assert text_views[8].text == "Attestation sur l'honneur"
@@ -3749,16 +3749,16 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 6
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Validation N° téléphone"
+        assert text_views[1].text == "Num. téléphone"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "Profil Complet"
+        assert text_views[2].text == "Profil complet"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "ID Check"
+        assert text_views[3].text == "ID check"
 
         assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Attestation sur l'honneur"
@@ -3834,16 +3834,16 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 6
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Validation N° téléphone"
+        assert text_views[1].text == "Num. téléphone"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "Profil Complet"
+        assert text_views[2].text == "Profil complet"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "ID Check"
+        assert text_views[3].text == "ID check"
 
         assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[4].text == "Attestation sur l'honneur"
@@ -3946,13 +3946,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 10
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
+        assert text_views[1].text == "Profil complet"
 
         assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
+        assert text_views[2].text == "ID check"
 
         assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[3].text == "Attestation sur l'honneur"
@@ -3961,13 +3961,13 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert text_views[4].text == "Ancien Pass 15-17"
 
         assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "Validation N° téléphone"
+        assert text_views[5].text == "Num. téléphone"
 
         assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Profil Complet"
+        assert text_views[6].text == "Profil complet"
 
         assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
+        assert text_views[7].text == "ID check"
 
         assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[8].text == "Attestation sur l'honneur"
@@ -4062,7 +4062,7 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
         assert len(text_views) == 2
 
         assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
+        assert text_views[0].text == "Email"
 
         assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
         assert text_views[1].text == "Non éligible"
