@@ -1002,7 +1002,7 @@ class Invoice(PcObject, Model):
 
 
 class SettlementStatus(enum.Enum):
-    """A settlement is considered validated if it hasn't been rejected at least 2 days after its creation"""
+    """A settlement is considered validated if it hasn't been rejected at least 3 days after its creation"""
 
     VALIDATED = "validated"
     PENDING = "pending"
@@ -1044,7 +1044,7 @@ class Settlement(PcObject, Model):
         sa.UniqueConstraint(
             "externalSettlementId",
             "bankAccountId",
-            name="unique_cegid_settlement_id_bank_account_id",
+            name="unique_external_settlement_id_bank_account_id",
         ),
     )
 
