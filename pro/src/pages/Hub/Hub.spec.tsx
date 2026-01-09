@@ -59,6 +59,34 @@ describe('Hub', () => {
     makeVenueListItem({ id: 201, name: 'Venue C', managingOffererId: 200 }),
   ]
 
+  const venuesWithMoreThanFour = [
+    makeVenueListItem({
+      id: 101,
+      name: 'Théâtre du Soleil',
+      managingOffererId: 100,
+    }),
+    makeVenueListItem({
+      id: 102,
+      name: 'Café des Arts',
+      managingOffererId: 100,
+    }),
+    makeVenueListItem({
+      id: 103,
+      name: 'Cinéma Lumière',
+      managingOffererId: 100,
+    }),
+    makeVenueListItem({
+      id: 104,
+      name: 'Musée National',
+      managingOffererId: 100,
+    }),
+    makeVenueListItem({
+      id: 105,
+      name: 'Galerie Moderne',
+      managingOffererId: 100,
+    }),
+  ]
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -176,6 +204,134 @@ describe('Hub', () => {
       expect(
         screen.getByText('Chargement de la structure en cours…')
       ).toBeInTheDocument()
+    })
+  })
+
+  describe('search functionality', () => {
+    it('should not display search input when there are 4 or fewer venues', () => {
+      renderHub({ venues: venuesBase })
+
+      expect(
+        screen.queryByRole('searchbox', { name: 'Rechercher une structure' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display search input when there are more than 4 venues', () => {
+      renderHub({ venues: venuesWithMoreThanFour })
+
+      expect(
+        screen.getByRole('searchbox', { name: 'Rechercher une structure' })
+      ).toBeInTheDocument()
+    })
+
+    it('should filter venues based on search query', async () => {
+      renderHub({ venues: venuesWithMoreThanFour })
+
+      const searchInput = screen.getByRole('searchbox', {
+        name: 'Rechercher une structure',
+      })
+      await userEvent.type(searchInput, 'theatre')
+
+      expect(
+        screen.getByRole('button', { name: /Théâtre du Soleil/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /Café des Arts/ })
+      ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /Cinéma Lumière/ })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should filter venues ignoring accents', async () => {
+      renderHub({ venues: venuesWithMoreThanFour })
+
+      const searchInput = screen.getByRole('searchbox', {
+        name: 'Rechercher une structure',
+      })
+      await userEvent.type(searchInput, 'cafe')
+
+      expect(
+        screen.getByRole('button', { name: /Café des Arts/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /Théâtre du Soleil/ })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should display no results message when no venues match', async () => {
+      renderHub({ venues: venuesWithMoreThanFour })
+
+      const searchInput = screen.getByRole('searchbox', {
+        name: 'Rechercher une structure',
+      })
+      await userEvent.type(searchInput, 'nonexistent')
+
+      expect(
+        screen.getByText(
+          'Aucune structure ne correspond à votre recherche "nonexistent".'
+        )
+      ).toBeInTheDocument()
+    })
+
+    it('should reset filter when search query is cleared', async () => {
+      renderHub({ venues: venuesWithMoreThanFour })
+
+      const searchInput = screen.getByRole('searchbox', {
+        name: 'Rechercher une structure',
+      })
+      await userEvent.type(searchInput, 'theatre')
+
+      expect(
+        screen.getByRole('button', { name: /Théâtre du Soleil/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: /Café des Arts/ })
+      ).not.toBeInTheDocument()
+
+      await userEvent.clear(searchInput)
+
+      expect(
+        screen.getByRole('button', { name: /Théâtre du Soleil/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Café des Arts/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Cinéma Lumière/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Musée National/ })
+      ).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Galerie Moderne/ })
+      ).toBeInTheDocument()
+    })
+
+    it('should announce filtered results count for screen readers', async () => {
+      renderHub({ venues: venuesWithMoreThanFour })
+
+      const searchInput = screen.getByRole('searchbox', {
+        name: 'Rechercher une structure',
+      })
+      await userEvent.type(searchInput, 'musee')
+
+      expect(screen.getByRole('status')).toHaveTextContent(
+        '1 structure trouvée.'
+      )
+    })
+
+    it('should use plural form in screen reader announcement for multiple results', async () => {
+      renderHub({ venues: venuesWithMoreThanFour })
+
+      const searchInput = screen.getByRole('searchbox', {
+        name: 'Rechercher une structure',
+      })
+      await userEvent.type(searchInput, 'a')
+
+      expect(screen.getByRole('status')).toHaveTextContent(
+        'structures trouvées'
+      )
     })
   })
 })
