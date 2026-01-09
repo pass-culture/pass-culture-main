@@ -24,10 +24,6 @@ def serialize_deposit(deposit: "EducationalDeposit") -> EducationalInstitutionDe
 
 
 class EducationalInstitutionResponse(schemas.AdageBaseResponseModel):
-    # TODO(jcicurel): remove credit and isFinal as they are now set on each deposit
-    # we keep these fields here for now so that the change is non-breaking for Adage
-    credit: int = Field(description="Total credit granted to the educational institution")
-    isFinal: bool = Field(description="Flag to know if the credit has been approved and is now final")
     prebookings: list[schemas.EducationalBookingResponse]
     deposits: list[EducationalInstitutionDepositResponse]
 

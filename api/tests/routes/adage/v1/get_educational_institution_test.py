@@ -63,8 +63,6 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == {
-            "credit": 2000,
-            "isFinal": True,
             "prebookings": [expected_serialized_prebooking(booking)],
             "deposits": [
                 {
@@ -101,8 +99,6 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == {
-            "credit": 2000,
-            "isFinal": True,
             "prebookings": [expected_serialized_prebooking(booking)],
             "deposits": [
                 {
@@ -141,8 +137,6 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == {
-            "credit": 0,
-            "isFinal": False,
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Dans l'établissement scolaire"}],
             "deposits": [],
         }
@@ -166,8 +160,6 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == {
-            "credit": 0,
-            "isFinal": False,
             "prebookings": [
                 {
                     **expected_serialized_prebooking(booking),
@@ -194,8 +186,6 @@ class Returns200Test:
 
         assert response.status_code == 200
         assert response.json == {
-            "credit": 0,
-            "isFinal": False,
             "prebookings": [{**expected_serialized_prebooking(booking), "address": "Somewhere in Paris"}],
             "deposits": [],
         }
@@ -254,12 +244,7 @@ class Returns200Test:
         )
 
         assert response.status_code == 200
-        assert response.json == {
-            "credit": 0,
-            "isFinal": False,
-            "prebookings": [],
-            "deposits": [],
-        }
+        assert response.json == {"prebookings": [], "deposits": []}
 
 
 class Returns404Test:
