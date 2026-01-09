@@ -1,6 +1,8 @@
-export function buildFilteredMap(
-  enumObject: Record<string, string>,
-  mappingsObject: Record<string, string>,
+type StringRecord = Record<string, string>
+
+export function buildFilteredMap<M extends StringRecord>(
+  enumObject: StringRecord,
+  mappingsObject: M,
   enumObjectTypeName: string
 ) {
   // Checks if keys between backend model and frontend mappings are exactly the same (it will throw if not)
