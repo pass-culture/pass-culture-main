@@ -73,6 +73,19 @@ class AdageHttpClient(AdageClient):
             message="Cannot establish connection to omogen api",
         )
 
+    def _handle_notify_response(self, api_response: requests.Response, url: str) -> None:
+        if api_response.status_code == 201:
+            return
+
+        # when we call a notify API, a mail can be sent on Adage side
+        # we sometimes receive an error that corresponds to the email sending error on Adage side
+        # we should not raise an error in this case, only log a warning
+        if is_adage_institution_without_email(api_response) or is_adage_institution_email_invalid(api_response):
+            logger.warning("Error when calling Adage API", extra={"url": url, "status_code": api_response.status_code})
+            return
+
+        raise self._get_api_adage_exception(api_response, f"Error when calling Adage API {url}")
+
     def _make_get_request(self, url: str, params: dict[str, typing.Any] | None = None) -> requests.Response:
         try:
             api_response = requests.get(
@@ -101,16 +114,14 @@ class AdageHttpClient(AdageClient):
         return api_response
 
     def notify_prebooking(self, data: schemas.EducationalBookingResponse) -> None:
-        api_response = self._make_post_request(url=f"{self.base_url}/v1/prereservation", data=data.json())
-
-        if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
-            raise self._get_api_adage_exception(api_response, "Error posting new prebooking to Adage API")
+        url = "/v1/prereservation"
+        api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
+        self._handle_notify_response(api_response, url)
 
     def notify_offer_or_stock_edition(self, data: schemas.EducationalBookingEdition) -> None:
-        api_response = self._make_post_request(url=f"{self.base_url}/v1/prereservation-edit", data=data.json())
-
-        if api_response.status_code != 201:
-            raise self._get_api_adage_exception(api_response, "Error posting booking edition notification to Adage API")
+        url = "/v1/prereservation-edit"
+        api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
+        self._handle_notify_response(api_response, url)
 
     def get_adage_offerer(self, siren: str) -> list[schemas.AdageCulturalPartner]:
         api_response = self._make_get_request(url=f"{self.base_url}/v1/partenaire-culturel/{siren}")
@@ -125,12 +136,9 @@ class AdageHttpClient(AdageClient):
         return parse_obj_as(list[schemas.AdageCulturalPartner], api_response.json())
 
     def notify_booking_cancellation_by_offerer(self, data: schemas.EducationalBookingResponse) -> None:
-        api_response = self._make_post_request(url=f"{self.base_url}/v1/prereservation-annule", data=data.json())
-
-        if api_response.status_code != 201:
-            raise self._get_api_adage_exception(
-                api_response, "Error posting booking cancellation by offerer notification to Adage API"
-            )
+        url = "/v1/prereservation-annule"
+        api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
+        self._handle_notify_response(api_response, url)
 
     def get_cultural_partners(
         self, since_date: datetime.datetime | None = None
@@ -212,13 +220,11 @@ class AdageHttpClient(AdageClient):
         return redactors
 
     def notify_reimburse_collective_booking(self, data: schemas.AdageReimbursementNotification) -> None:
-        api_response = self._make_post_request(url=f"{self.base_url}/v1/reservation-remboursement", data=data.json())
-
-        if api_response.status_code != 201:
-            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
+        url = "/v1/reservation-remboursement"
+        api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
+        self._handle_notify_response(api_response, url)
 
     def notify_redactor_when_collective_request_is_made(self, data: serialize.AdageCollectiveRequest) -> None:
-        api_response = self._make_post_request(url=f"{self.base_url}/v1/offre-vitrine", data=data.json())
-
-        if api_response.status_code != 201 and not is_adage_institution_without_email(api_response):
-            raise self._get_api_adage_exception(api_response, "Error getting Adage API")
+        url = "/v1/offre-vitrine"
+        api_response = self._make_post_request(url=f"{self.base_url}{url}", data=data.json())
+        self._handle_notify_response(api_response, url)

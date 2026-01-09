@@ -58,6 +58,23 @@ class AdageHttpClientTest:
 
         adage_client.notify_prebooking(booking_data)
 
+    def test_notify_prebooking_success_if_450(self, requests_mock, caplog):
+        adage_client = AdageHttpClient()
+        booking = educational_factories.CollectiveBookingFactory()
+        booking_data = collective_booking_serialize.serialize_collective_booking(booking)
+
+        endpoint = requests_mock.post(
+            f"{MOCK_API_URL}/v1/prereservation", status_code=450, json=ADAGE_RESPONSE_FOR_INSTITUTION_WITH_INVALID_EMAIL
+        )
+
+        adage_client.notify_prebooking(booking_data)
+
+        assert endpoint.called
+        [record] = caplog.records
+        assert record.levelname == "WARNING"
+        assert record.message == "Error when calling Adage API"
+        assert record.extra == {"url": "/v1/prereservation", "status_code": 450}
+
     def test_notify_prebooking_raises_if_500(self, requests_mock):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
@@ -67,7 +84,9 @@ class AdageHttpClientTest:
         with pytest.raises(AdageException) as ex:
             adage_client.notify_prebooking(booking_data)
 
-        assert ex.value.message == "Error posting new prebooking to Adage API - status code: 500 - error code: ERROR"
+        assert (
+            ex.value.message == "Error when calling Adage API /v1/prereservation - status code: 500 - error code: ERROR"
+        )
 
     def test_notify_prebooking_connect_timeout(self, requests_mock):
         adage_client = AdageHttpClient()
