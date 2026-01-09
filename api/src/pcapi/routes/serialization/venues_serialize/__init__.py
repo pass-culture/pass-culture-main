@@ -27,7 +27,6 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import address_serialize
-from pcapi.routes.serialization import base
 from pcapi.routes.serialization.venue_types_serialize import VenueTypeResponseModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization.utils import string_length_validator
@@ -199,9 +198,23 @@ def parse_venue_bank_account_status(venue: offerers_models.Venue) -> SimplifiedB
             return None
 
 
-class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
+class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
         venue: offerers_models.Venue = self._obj
+
+        if key == "externalAccessibilityData":
+            if not venue.accessibilityProvider:
+                return None
+            accessibility_infos = venue.accessibilityProvider.externalAccessibilityData
+            return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(accessibility_infos)
+        if key == "externalAccessibilityUrl":
+            if not venue.accessibilityProvider:
+                return None
+            return venue.accessibilityProvider.externalAccessibilityUrl
+        if key == "externalAccessibilityId":
+            if not venue.accessibilityProvider:
+                return None
+            return venue.accessibilityProvider.externalAccessibilityId
 
         if key == "bankAccount":
             return venue.current_bank_account
@@ -284,7 +297,19 @@ class GetVenueResponseGetterDict(base.VenueResponseGetterDict):
         return super().get(key, default)
 
 
-class GetVenueResponseModel(base.BaseVenueResponse, AccessibilityComplianceMixin):
+class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
+    isVirtual: bool
+    name: str
+    bannerUrl: str | None
+    contact: offerers_schemas.VenueContactModel | None
+    description: offerers_schemas.VenueDescription | None
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
+    externalAccessibilityUrl: str | None
+    externalAccessibilityId: str | None
+    isOpenToPublic: bool
+    isPermanent: bool | None
+    publicName: str | None
+    withdrawalDetails: str | None
     activity: offerers_models.DisplayableActivity | None
     dateCreated: datetime
     id: int
@@ -598,3 +623,12 @@ class GetOffersStatsResponseModel(HttpBodyModel):
     published_educational_offers: int
     pending_public_offers: int
     pending_educational_offers: int
+
+
+class ListOffersVenueResponseModel(BaseModel):
+    id: int
+    isVirtual: bool
+    name: str
+    offererName: str
+    publicName: str | None
+    departementCode: str | None
