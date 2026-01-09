@@ -53,7 +53,7 @@ if (!isAdageIframe) {
     link.href = `${prefix}${v}/dist/orejime-standard.css`
     link.crossOrigin = 'anonymous'
     head.appendChild(link)
-  })(document, '3.0.2', 'https://cdn.jsdelivr.net/npm/orejime@')
+  })(document, '3.1.0', 'https://cdn.jsdelivr.net/npm/orejime@')
 }
 
 // Start app

@@ -63,6 +63,7 @@ export const useOrejime = () => {
             )
           } else if (!document.cookie.includes('pc-orejime')) {
             // We force the banner to be displayed again if the cookie was deleted somehow
+            orejime.manager.clearConsents()
             orejime = window.loadOrejime(orejimeConfig)
             addListener(setConsentedToFirebase, setConsentedToBeamer)
           }
