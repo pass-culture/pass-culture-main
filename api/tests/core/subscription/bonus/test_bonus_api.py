@@ -7,12 +7,14 @@ import requests_mock
 
 import pcapi.connectors.api_particulier as api_particulier
 import pcapi.core.finance.models as finance_models
+import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.bonus.api as bonus_api
 import pcapi.core.subscription.bonus.schemas as bonus_schemas
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 
 import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 
@@ -101,6 +103,34 @@ class GetQuotientFamilialTest:
         ]
         assert user.recreditAmountToShow == decimal.Decimal("50")
 
+    def test_bonification_granted_mail(self):
+        user = _build_user_from_fixture(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory().model_dump(),
+        )
+        high_quotient_familial = copy.deepcopy(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
+        high_quotient_familial["data"]["quotient_familial"]["valeur"] = 9_999_999
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, json=high_quotient_familial)
+            mock.get(
+                f"{api_particulier.QUOTIENT_FAMILIAL_ENDPOINT}?mois={user.birth_date.month}",
+                json=bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE,
+            )
+
+            bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+        assert len(mails_testing.outbox) == 1
+        out_mail = mails_testing.outbox[0]
+        assert out_mail["template"] == TransactionalEmail.BONIFICATION_GRANTED.value.__dict__
+        assert out_mail["params"]["CREDIT"] == decimal.Decimal("180")
+        assert out_mail["params"]["FORMATTED_CREDIT"] == "180 €"
+        assert out_mail["params"]["BONIFICATION_CREDIT"] == decimal.Decimal("30")
+        assert out_mail["params"]["FORMATTED_BONIFICATION_CREDIT"] == "30 €"
+
     def test_custodian_not_found(self):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -124,6 +154,11 @@ class GetQuotientFamilialTest:
             recredit.recreditType for recredit in user.deposit.recredits
         ]
 
+        assert len(mails_testing.outbox) == 1
+        out_mail = mails_testing.outbox[0]
+        assert out_mail["template"] == TransactionalEmail.BONIFICATION_DECLINED.value.__dict__
+        assert out_mail["params"]["REASON"] == subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND
+
     def test_user_not_in_tax_household(self):
         user = users_factories.BeneficiaryFactory()
         bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
@@ -146,6 +181,11 @@ class GetQuotientFamilialTest:
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+
+        assert len(mails_testing.outbox) == 1
+        out_mail = mails_testing.outbox[0]
+        assert out_mail["template"] == TransactionalEmail.BONIFICATION_DECLINED.value.__dict__
+        assert out_mail["params"]["REASON"] == subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD
 
     def test_user_quotient_familial_too_high(self):
         child_data = bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE["data"]["enfants"][0]
@@ -177,6 +217,11 @@ class GetQuotientFamilialTest:
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+
+        assert len(mails_testing.outbox) == 1
+        out_mail = mails_testing.outbox[0]
+        assert out_mail["template"] == TransactionalEmail.BONIFICATION_DECLINED.value.__dict__
+        assert out_mail["params"]["REASON"] == subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH
 
 
 def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_models.User:
