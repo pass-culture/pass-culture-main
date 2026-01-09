@@ -1,7 +1,5 @@
 from typing import Literal
 
-import pydantic as pydantic_v2
-
 from pcapi.core.categories import subcategories
 
 from . import shared

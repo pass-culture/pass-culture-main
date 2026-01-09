@@ -2,7 +2,6 @@ from typing import Annotated
 from typing import Literal
 
 import pydantic as pydantic_v2
-from pydantic import StringConstraints
 
 from pcapi.core.categories import subcategories
 

@@ -2,8 +2,8 @@ from typing import Literal
 
 from pcapi.core.categories import subcategories
 
-from .things import ThingsBaseModel
 from . import shared
+from .things import ThingsBaseModel
 
 
 class AboBibliothequeModel(ThingsBaseModel):

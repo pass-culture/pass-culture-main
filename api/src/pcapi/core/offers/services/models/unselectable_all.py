@@ -2,8 +2,8 @@ from typing import Literal
 
 from pcapi.core.categories import subcategories
 
-from .unselectable import UnselectableBaseModel
 from . import shared
+from .unselectable import UnselectableBaseModel
 
 
 class ActivationEventModel(UnselectableBaseModel):

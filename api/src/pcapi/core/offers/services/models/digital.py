@@ -1,4 +1,3 @@
-import pydantic as pydantic_v2
 from pydantic import HttpUrl
 
 from .base import Base

@@ -2,8 +2,8 @@ from typing import Literal
 
 from pcapi.core.categories import subcategories
 
-from .digital import DigitalBaseModel
 from . import shared
+from .digital import DigitalBaseModel
 
 
 class TelechargementMusiqueModel(DigitalBaseModel):

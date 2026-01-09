@@ -255,29 +255,3 @@ class ExtraDataBook(ExtraDataEan, ExtraDataAuthor):
 
 class ExtraDataBookWithGtl(ExtraDataBook):
     gtl_id: GtlIdString | None = None
-
-
-class ExtraDataCine(ExtraData):
-    visa: VisaString | None = None
-    stage_director: NameString | None = None
-    author: NameString | None = None
-
-
-class ExtraDataSpeaker(ExtraData):
-    speaker: NameString | None = None
-
-
-class ExtraDataEvent(ExtraData):
-    show_type: ShowType
-    show_sub_type: ShowSubType
-    stage_director: NameString | None = None
-    performer: NameString | None = None
-    author: NameString | None = None
-
-
-class ExtraDataArtistic(ExtraData):
-    show_type: ShowType
-    show_sub_type: ShowSubType
-    music_type: MusicType
-    music_sub_type: MusicSubType
-    gtl_id: TiteLiveMusicGenres
