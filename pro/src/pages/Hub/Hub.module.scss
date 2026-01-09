@@ -1,5 +1,10 @@
+@use "styles/mixins/_a11y.scss" as a11y;
 @use 'styles/mixins/_fonts.scss' as fonts;
 @use 'styles/mixins/_size.scss' as size;
+
+.sr-only {
+  @include a11y.visually-hidden;
+}
 
 .spinner-container {
   align-items: center;
@@ -15,11 +20,11 @@
   gap: 8px;
   grid-template-columns: repeat(1, 1fr);
   margin-top: var(--size-spacing-l);
-  padding-right: var(--size-spacing-l);
 
   @media screen and (min-width: size.$tablet) {
     grid-template-columns: repeat(2, 1fr);
     overflow-y: auto;
+    padding-right: var(--size-spacing-l);
   }
 
   @media screen and (min-width: size.$laptop) {
