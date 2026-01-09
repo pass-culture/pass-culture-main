@@ -27,15 +27,21 @@ export const getActivities = (() => {
     'ActivityNotOpenToPublic'
   )
 
-  return function getActivities(
-    listType: 'OPEN_TO_PUBLIC' | 'NOT_OPEN_TO_PUBLIC'
-  ) {
+  function getActivities(
+    listType: 'OPEN_TO_PUBLIC'
+  ): typeof ActivityOpenToPublicMap
+  function getActivities(
+    listType: 'NOT_OPEN_TO_PUBLIC'
+  ): typeof ActivityNotOpenToPublicMap
+  function getActivities(listType: 'OPEN_TO_PUBLIC' | 'NOT_OPEN_TO_PUBLIC') {
     if (listType === 'OPEN_TO_PUBLIC') {
       return ActivityOpenToPublicMap
     } else {
       return ActivityNotOpenToPublicMap
     }
   }
+
+  return getActivities
 })()
 
 // Getter for all activities that can be DISPLAYED (including potential old ones)
