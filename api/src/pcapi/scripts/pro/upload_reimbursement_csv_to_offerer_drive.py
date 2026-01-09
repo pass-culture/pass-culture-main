@@ -70,13 +70,13 @@ def _create_and_get_csv_file(user_id: int, batch_id: int, parent_folder_id: str,
     except ValueError:
         logger.exception(
             "Multiple reimbursement csv files",
-            extra={"user_id": user_id, "batch_id": batch_id, "filename": filename},
+            extra={"user_id": user_id, "batch_id": batch_id, "csvfilename": filename},
         )
         return None
     if file_already_exists_for_this_batch:
         logger.info(
             "Reimbursement csv file already exists for this batch and user",
-            extra={"user_id": user_id, "batch_id": batch_id, "filename": filename},
+            extra={"user_id": user_id, "batch_id": batch_id, "csvfilename": filename},
         )
         return None
 
