@@ -65,8 +65,11 @@ from pcapi.core.logging import log_elapsed
 from pcapi.core.mails.transactional import send_booking_cancellation_by_pro_to_beneficiary_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_commercial_gesture_email
 from pcapi.core.mails.transactional.finance_incidents.finance_incident_notification import send_finance_incident_emails
+from pcapi.core.mails.transactional.pro.provider_reimbursement_csv import send_provider_reimbursement_email
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import db
+from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
+from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
 from pcapi.utils import human_ids
 from pcapi.utils.chunks import get_chunks
 from pcapi.utils.repository import transaction
@@ -2612,6 +2615,92 @@ def validate_invoice(invoice_id: int) -> None:
                 "cashflow_id": cashflow_id,
             },
         )
+
+
+OFFERER_INFORMATION = [
+    {
+        "email": settings.CGR_EMAIL,
+        "parent_folder_id": settings.CGR_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID,
+        "offerer_name": "CGR",
+    },
+    {
+        "email": settings.KINEPOLIS_EMAIL,
+        "parent_folder_id": settings.KINEPOLIS_GOOGLE_DRIVE_CSV_REIMBURSEMENT_ID,
+        "offerer_name": "KINEPOLIS",
+    },
+]
+
+
+def _create_and_get_provider_reimbursement_csv(
+    user_id: int, batch: models.CashflowBatch, info: dict[str, str]
+) -> str | None:
+    invoices = (
+        db.session.query(models.Invoice)
+        .join(models.Invoice.bankAccount)
+        .join(models.BankAccount.offerer)
+        .join(offerers_models.UserOfferer, offerers_models.UserOfferer.offererId == offerers_models.Offerer.id)
+        .filter(
+            offerers_models.Offerer.isActive.is_(True),
+            offerers_models.UserOfferer.userId == user_id,
+            offerers_models.UserOfferer.isValidated,
+            models.BankAccount.isActive.is_(True),
+        )
+        .join(models.Invoice.cashflows)
+        .filter(models.Cashflow.batchId == batch.id)
+    ).all()
+
+    gdrive_api = googledrive.get_backend()
+    parent_folder_id = info["parent_folder_id"]
+    filename = f"{batch.label}_{info['offerer_name']}_remboursements.csv"
+
+    if len(invoices) == 0:
+        logger.info("Zero invoice for user", extra={"user_id": user_id})
+        return None
+    try:
+        file_already_exists_for_this_batch = gdrive_api.search_file(parent_folder_id, filename)
+    except ValueError:
+        logger.exception(
+            "Multiple reimbursement csv files",
+            extra={"user_id": user_id, "batch_id": batch.id, "csvfilename": filename},
+        )
+        return None
+    if file_already_exists_for_this_batch:
+        logger.info(
+            "Reimbursement csv file already exists for this batch and user",
+            extra={"user_id": user_id, "batch_id": batch.id, "csvfilename": filename},
+        )
+        return None
+
+    headers = ReimbursementDetails.get_csv_headers()
+    local_path = pathlib.Path(tempfile.mkdtemp()) / filename
+    with open(local_path, "a+", encoding="utf-8") as fp:
+        writer = csv.writer(fp, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerow(headers)
+        for invoice in invoices:
+            reimbursement_details = find_reimbursement_details_by_invoices(set([invoice.reference]))
+            for reimbursement_detail in reimbursement_details:
+                writer.writerow(reimbursement_detail.as_csv_row())
+
+    try:
+        link_to_csv = gdrive_api.create_file(
+            parent_folder_id, local_path.name, local_path, response_field="webContentLink"
+        )
+    except Exception as exc:
+        logger.exception("Could not upload csv file to Google Drive", extra={"exc": str(exc)})
+        raise exc
+    logger.info("Csv file has been uploaded to Google Drive", extra={"link_to_csv": str(link_to_csv)})
+    return link_to_csv
+
+
+def export_provider_reimbursement_csv_and_send_notification_emails(batch: models.CashflowBatch) -> None:
+    for info in OFFERER_INFORMATION:
+        try:
+            user = db.session.query(users_models.User).filter_by(email=info["email"]).one()
+        except sa_orm.exc.NoResultFound:
+            logger.exception("Email is not linked to any user", extra={"email": info["email"]})
+        link_to_csv = _create_and_get_provider_reimbursement_csv(user.id, batch, info)
+        if link_to_csv is not None:
+            send_provider_reimbursement_email(user.email, link_to_csv)
 
 
 def create_offerer_reimbursement_rule(
