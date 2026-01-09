@@ -67,7 +67,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     defaultValues: initialValues,
     resolver: yupResolver(
       getValidationSchema({
-        isCulturalDomainsEnabled: isCulturalDomainsEnabled,
+        isCulturalDomainsEnabled,
       })
     ),
     mode: 'onBlur',
@@ -166,6 +166,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
+  const showActivityField =
+    methods.watch('isOpenToPublic') === 'true' ||
+    (methods.watch('isOpenToPublic') === 'false' && isCulturalDomainsEnabled)
+
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -195,13 +199,14 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
               <FormLayout.Row>
                 <OpenToPublicToggle
                   onChange={(e) => {
-                    methods.setValue(
-                      'isOpenToPublic',
-                      e.target.value.toString()
-                    )
-                    if (e.target.value === 'false') {
+                    const isOpenToPublicValue = e.target.value.toString()
+
+                    methods.setValue('isOpenToPublic', isOpenToPublicValue)
+
+                    if (isOpenToPublicValue === 'false') {
                       resetOpeningHoursAndAccessibility()
                     }
+                    methods.setValue('activity', null)
                   }}
                   radioDescriptions={{
                     yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
@@ -258,8 +263,11 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 </>
               )}
             </FormLayout.SubSection>
-            {methods.watch('isOpenToPublic') === 'true' && (
-              <FormLayout.Section title="Activité principale">
+            {showActivityField && (
+              <FormLayout.Section
+                title="Activité principale"
+                key={methods.watch('activity')} // This forces re-render of the field
+              >
                 <FormLayout.Row>
                   <Select
                     {...methods.register('activity')}
@@ -272,7 +280,13 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                             },
                           ]
                         : []),
-                      ...buildSelectOptions(getActivities()),
+                      ...buildSelectOptions(
+                        getActivities(
+                          methods.watch('isOpenToPublic') === 'true'
+                            ? 'OPEN_TO_PUBLIC'
+                            : 'NOT_OPEN_TO_PUBLIC'
+                        )
+                      ),
                     ]}
                     label="Activité principale"
                     disabled={venue.isVirtual}
@@ -295,7 +309,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   label="Domaine(s) d’activité"
                   className={styles['cultural-domains-select']}
                   required={methods.watch('isOpenToPublic') === 'false'}
-                  onSelectedOptionsChanged={(selectedOptions, y, z) => {
+                  onSelectedOptionsChanged={(selectedOptions) => {
                     methods.setValue(
                       'culturalDomains',
                       selectedOptions.map((opt) => opt.label)

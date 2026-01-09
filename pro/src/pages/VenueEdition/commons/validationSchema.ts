@@ -2,10 +2,9 @@ import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
 import { isPhoneValid } from '@/commons/core/shared/utils/parseAndValidateFrenchPhoneNumber'
-import {
-  _ActivityOpenToPublicMappings,
-  type ActivityOpenToPublicType,
-} from '@/commons/mappings/ActivityOpenToPublic'
+import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
+import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+import { getActivities } from '@/commons/mappings/mappings'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 
 import type { VenueEditionFormValues } from './types'
@@ -71,9 +70,12 @@ export const getValidationSchema = ({
 }: {
   isCulturalDomainsEnabled: boolean
 }): ObjectSchema<VenueEditionFormValues> => {
-  const activityTypeValues: ActivityOpenToPublicType[] = Object.keys(
-    _ActivityOpenToPublicMappings
-  ).map((v) => v as ActivityOpenToPublicType)
+  const activityTypeValuesOpenToPublic = Object.keys(
+    getActivities('OPEN_TO_PUBLIC')
+  ) as ActivityOpenToPublicType[]
+  const activityTypeValuesNotOpenToPublic = Object.keys(
+    getActivities('NOT_OPEN_TO_PUBLIC')
+  ) as ActivityNotOpenToPublicType[]
 
   return yup.object().shape({
     description: yup.string(),
@@ -126,12 +128,21 @@ export const getValidationSchema = ({
         then: (schema) => schema.shape(openingHoursSchemaShape),
       }),
     activity: yup
-      .mixed<ActivityOpenToPublicType>()
-      .oneOf(activityTypeValues)
-      .when('isOpenToPublic', {
+      .mixed<ActivityOpenToPublicType | ActivityNotOpenToPublicType>()
+      .nullable()
+      .when(['isOpenToPublic'], {
         is: (open: string) => open === 'true',
-        then: (schema) => schema.required('Veuillez renseigner ce champ'),
-        otherwise: (schema) => schema.nullable(),
+        then: (schema) =>
+          schema
+            .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
+            .required('Veuillez renseigner ce champ'),
+      })
+      .when(['isOpenToPublic'], {
+        is: (open: string) => open === 'false' && isCulturalDomainsEnabled,
+        then: (schema) =>
+          schema
+            .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
+            .required('Veuillez renseigner ce champ'),
       }),
     culturalDomains: yup
       .array()

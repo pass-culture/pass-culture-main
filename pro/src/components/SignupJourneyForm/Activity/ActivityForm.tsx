@@ -63,7 +63,7 @@ export const ActivityForm = ({
 
   const mainActivityOptions =
     offerer?.isOpenToPublic === 'true'
-      ? buildSelectOptions(getActivities())
+      ? buildSelectOptions(getActivities('OPEN_TO_PUBLIC'))
       : venueTypes
 
   const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
