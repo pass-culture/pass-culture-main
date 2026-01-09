@@ -190,6 +190,7 @@ class Roles(enum.Enum):
     FRAUDE_JEUNES = "fraude_jeunes"
     GLOBAL_ACCESS = "global_access"
     HOMOLOGATION = "homologation"
+    HOMOLOGATION_PRO = "homologation_pro"
     LECTURE_SEULE = "lecture_seule"
     PARTENAIRE_TECHNIQUE = "partenaire_technique"
     PERMISSION_MANAGER = "gestionnaire_des_droits"

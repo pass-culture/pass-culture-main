@@ -169,6 +169,9 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.VALIDATE_OFFERER,
         perm_models.Permissions.READ_OFFERS,
     ],
+    "homologation_pro": [
+        perm_models.Permissions.CREATE_PRO_ENTITY,
+    ],
     "product_management": [
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.CONNECT_AS_PRO,
