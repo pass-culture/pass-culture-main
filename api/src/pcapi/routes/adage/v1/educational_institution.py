@@ -38,12 +38,7 @@ def get_educational_institution(year_id: str, uai_code: str) -> EducationalInsti
     educational_deposits = repository.find_educational_deposits_by_institution_id_and_year(
         educational_year_id=year_id, educational_institution_id=educational_institution.id
     )
-    # credit and isFinal fields will be removed soon, for now we fill them using the first deposit
-    educational_deposit = educational_deposits[0] if educational_deposits else None
 
     return EducationalInstitutionResponse(
-        credit=educational_deposit.amount if educational_deposit else 0,  # type: ignore[arg-type]
-        isFinal=educational_deposit.isFinal if educational_deposit else False,
-        prebookings=prebookings,
-        deposits=[serialize_deposit(deposit) for deposit in educational_deposits],
+        prebookings=prebookings, deposits=[serialize_deposit(deposit) for deposit in educational_deposits]
     )
