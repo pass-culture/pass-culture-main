@@ -68,7 +68,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -97,7 +97,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -125,7 +125,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -1135,7 +1135,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -1423,7 +1423,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -1460,7 +1460,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -1496,7 +1496,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -2098,6 +2098,213 @@
                 "title": "DateResponse",
                 "type": "object"
             },
+            "DeprecatedMusicTypeEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "JAZZ-ACID_JAZZ",
+                    "JAZZ-AVANT_GARDE_JAZZ",
+                    "JAZZ-BEBOP",
+                    "JAZZ-BIG_BAND",
+                    "JAZZ-BLUE_NOTE",
+                    "JAZZ-COOL_JAZZ",
+                    "JAZZ-CROSSOVER_JAZZ",
+                    "JAZZ-DIXIELAND",
+                    "JAZZ-ETHIO_JAZZ",
+                    "JAZZ-FUSION",
+                    "JAZZ-JAZZ_CONTEMPORAIN",
+                    "JAZZ-JAZZ_FUNK",
+                    "JAZZ-MAINSTREAM",
+                    "JAZZ-MANOUCHE",
+                    "JAZZ-TRADITIONEL",
+                    "JAZZ-VOCAL_JAZZ",
+                    "JAZZ-RAGTIME",
+                    "JAZZ-SMOOTH",
+                    "JAZZ-OTHER",
+                    "BLUES-BLUES_ACOUSTIQUE",
+                    "BLUES-BLUES_CONTEMPORAIN",
+                    "BLUES-BLUES_ELECTRIQUE",
+                    "BLUES-BLUES_ROCK",
+                    "BLUES-CHICAGO_BLUES",
+                    "BLUES-CLASSIC_BLUES",
+                    "BLUES-COUNTRY_BLUES",
+                    "BLUES-DELTA_BLUES",
+                    "BLUES-RAGTIME",
+                    "BLUES-OTHER",
+                    "REGGAE-TWO_TONE",
+                    "REGGAE-DANCEHALL",
+                    "REGGAE-DUB",
+                    "REGGAE-ROOTS",
+                    "REGGAE-SKA",
+                    "REGGAE-ZOUK",
+                    "REGGAE-OTHER",
+                    "CLASSIQUE-AVANT_GARDE",
+                    "CLASSIQUE-BAROQUE",
+                    "CLASSIQUE-CHANT",
+                    "CLASSIQUE-CHORALE",
+                    "CLASSIQUE-CONTEMPORAIN",
+                    "CLASSIQUE-EXPRESSIONISTE",
+                    "CLASSIQUE-IMPRESSIONISTE",
+                    "CLASSIQUE-MEDIEVALE",
+                    "CLASSIQUE-MINIMALISTE",
+                    "CLASSIQUE-MODERNE",
+                    "CLASSIQUE-ORATORIO",
+                    "CLASSIQUE-OPERA",
+                    "CLASSIQUE-RENAISSANCE",
+                    "CLASSIQUE-ROMANTIQUE",
+                    "CLASSIQUE-OTHER",
+                    "MUSIQUE_DU_MONDE-AFRICAINE",
+                    "MUSIQUE_DU_MONDE-AFRO_BEAT",
+                    "MUSIQUE_DU_MONDE-AFRO_POP",
+                    "MUSIQUE_DU_MONDE-ALTERNATIVO",
+                    "MUSIQUE_DU_MONDE-AMERIQUE_DU_NORD",
+                    "MUSIQUE_DU_MONDE-AMERIQUE_DU_SUD",
+                    "MUSIQUE_DU_MONDE-ASIATIQUE",
+                    "MUSIQUE_DU_MONDE-BALADAS_Y_BOLEROS",
+                    "MUSIQUE_DU_MONDE-BOSSA_NOVA",
+                    "MUSIQUE_DU_MONDE-BRESILIENNE",
+                    "MUSIQUE_DU_MONDE-CAJUN",
+                    "MUSIQUE_DU_MONDE-CALYPSO",
+                    "MUSIQUE_DU_MONDE-CARIBEENNE",
+                    "MUSIQUE_DU_MONDE-CELTIQUE",
+                    "MUSIQUE_DU_MONDE-CUMBIA",
+                    "MUSIQUE_DU_MONDE-FLAMENCO",
+                    "MUSIQUE_DU_MONDE-GRECQUE",
+                    "MUSIQUE_DU_MONDE-INDIENNE",
+                    "MUSIQUE_DU_MONDE-LATIN_JAZZ",
+                    "MUSIQUE_DU_MONDE-MOYEN_ORIENT",
+                    "MUSIQUE_DU_MONDE-LATINE_CONTEMPORAINE",
+                    "MUSIQUE_DU_MONDE-NUEVO_FLAMENCO",
+                    "MUSIQUE_DU_MONDE-POP_LATINO",
+                    "MUSIQUE_DU_MONDE-PORTUGUESE_FADO",
+                    "MUSIQUE_DU_MONDE-RAI",
+                    "MUSIQUE_DU_MONDE-SALSA",
+                    "MUSIQUE_DU_MONDE-TANGO_ARGENTIN",
+                    "MUSIQUE_DU_MONDE-YIDDISH",
+                    "MUSIQUE_DU_MONDE-OTHER",
+                    "POP-BRITPOP",
+                    "POP-BUBBLEGUM",
+                    "POP-DANCE_POP",
+                    "POP-DREAM_POP",
+                    "POP-ELECTRO_POP",
+                    "POP-INDIE_POP",
+                    "POP-J_POP",
+                    "POP-K_POP",
+                    "POP-POP_PUNK",
+                    "POP-POP_ROCK",
+                    "POP-POWER_POP",
+                    "POP-SOFT_ROCK",
+                    "POP-SYNTHPOP",
+                    "POP-TEEN_POP",
+                    "POP-OTHER",
+                    "ROCK-ACID_ROCK",
+                    "ROCK-ARENA_ROCK",
+                    "ROCK-ART_ROCK",
+                    "ROCK-COLLEGE_ROCK",
+                    "ROCK-GLAM_ROCK",
+                    "ROCK-GRUNGE",
+                    "ROCK-HARD_ROCK",
+                    "ROCK-INDIE_ROCK",
+                    "ROCK-LO_FI",
+                    "ROCK-PROG_ROCK",
+                    "ROCK-PSYCHEDELIC",
+                    "ROCK-ROCK_N_ROLL",
+                    "ROCK-EXPERIMENTAL",
+                    "ROCK-ROCKABILLY",
+                    "ROCK-SHOEGAZE",
+                    "ROCK-ELECTRO",
+                    "ROCK-OTHER",
+                    "METAL-BLACK_METAL",
+                    "METAL-DEATH_METAL",
+                    "METAL-DOOM_METAL",
+                    "METAL-GOTHIC",
+                    "METAL-METAL_CORE",
+                    "METAL-METAL_PROGRESSIF",
+                    "METAL-TRASH_METAL",
+                    "METAL-METAL_INDUSTRIEL",
+                    "METAL-FUSION",
+                    "METAL-OTHER",
+                    "PUNK-POST_PUNK",
+                    "PUNK-HARDCORE_PUNK",
+                    "PUNK-AFRO_PUNK",
+                    "PUNK-GRINDCORE",
+                    "PUNK-NOISE_ROCK",
+                    "PUNK-OTHER",
+                    "FOLK-FOLK_CONTEMPORAINE",
+                    "FOLK-INDIE_FOLK",
+                    "FOLK-FOLK_ROCK",
+                    "FOLK-NEW_ACOUSTIC",
+                    "FOLK-FOLK_TRADITIONELLE",
+                    "FOLK-TEX_MEX",
+                    "FOLK-OTHER",
+                    "COUNTRY-COUNTRY_ALTERNATIVE",
+                    "COUNTRY-AMERICANA",
+                    "COUNTRY-BLUEGRASS",
+                    "COUNTRY-COUNTRY_CONTEMPORAINE",
+                    "COUNTRY-GOSPEL_COUNTRY",
+                    "COUNTRY-COUNTRY_POP",
+                    "COUNTRY-OTHER",
+                    "ELECTRO-BITPOP",
+                    "ELECTRO-BREAKBEAT",
+                    "ELECTRO-CHILLWAVE",
+                    "ELECTRO-DANCE",
+                    "ELECTRO-DOWNTEMPO",
+                    "ELECTRO-DRUM_AND_BASS",
+                    "ELECTRO-DUBSTEP",
+                    "ELECTRO-EXPERIMENTAL",
+                    "ELECTRO-ELECTRONICA",
+                    "ELECTRO-GARAGE",
+                    "ELECTRO-GRIME",
+                    "ELECTRO-HARD_DANCE",
+                    "ELECTRO-HARDCORE",
+                    "ELECTRO-HOUSE",
+                    "ELECTRO-INDUSTRIEL",
+                    "ELECTRO-LOUNGE",
+                    "ELECTRO-TECHNO",
+                    "ELECTRO-TRANCE",
+                    "ELECTRO-OTHER",
+                    "HIP_HOP_RAP-BOUNCE",
+                    "HIP_HOP_RAP-HIP_HOP",
+                    "HIP_HOP_RAP-RAP_ALTERNATIF",
+                    "HIP_HOP_RAP-RAP_EAST_COAST",
+                    "HIP_HOP_RAP-RAP_FRANCAIS",
+                    "HIP_HOP_RAP-RAP_GANGSTA",
+                    "HIP_HOP_RAP-RAP_HARDCORE",
+                    "HIP_HOP_RAP-RAP_LATINO",
+                    "HIP_HOP_RAP-RAP_OLD_SCHOOL",
+                    "HIP_HOP_RAP-RAP_UNDERGROUND",
+                    "HIP_HOP_RAP-RAP_WEST_COAST",
+                    "HIP_HOP_RAP-TRAP",
+                    "HIP_HOP_RAP-TRIP_HOP",
+                    "HIP_HOP_RAP-R&B_CONTEMPORAIN",
+                    "HIP_HOP_RAP-DISCO",
+                    "HIP_HOP_RAP-DOO_WOP",
+                    "HIP_HOP_RAP-FUNK",
+                    "HIP_HOP_RAP-SOUL",
+                    "HIP_HOP_RAP-MOTOWN",
+                    "HIP_HOP_RAP-NEO_SOUL",
+                    "HIP_HOP_RAP-SOUL_PSYCHEDELIQUE",
+                    "HIP_HOP_RAP-OTHER",
+                    "GOSPEL-SPIRITUAL_GOSPEL",
+                    "GOSPEL-TRADITIONAL_GOSPEL",
+                    "GOSPEL-SOUTHERN_GOSPEL",
+                    "GOSPEL-CONTEMPORARY_GOSPEL",
+                    "GOSPEL-BLUEGRASS_GOSPEL",
+                    "GOSPEL-BLUES_GOSPEL",
+                    "GOSPEL-COUNTRY_GOSPEL",
+                    "GOSPEL-HYBRID_GOSPEL",
+                    "GOSPEL-OTHER",
+                    "CHANSON_VARIETE-MUSETTE",
+                    "CHANSON_VARIETE-CHANSON_FRANCAISE",
+                    "CHANSON_VARIETE-MUSIC_HALL",
+                    "CHANSON_VARIETE-FOLKLORE_FRANCAIS",
+                    "CHANSON_VARIETE-CHANSON_\u00c0_TEXTE",
+                    "CHANSON_VARIETE-SLAM",
+                    "CHANSON_VARIETE-OTHER",
+                    "OTHER"
+                ],
+                "title": "DeprecatedMusicTypeEnum",
+                "type": "string"
+            },
             "DigitalLocation": {
                 "description": "If your offer has no physical location as it is a digital product",
                 "properties": {
@@ -2307,7 +2514,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -2344,7 +2551,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -2380,7 +2587,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -3724,7 +3931,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -3761,7 +3968,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -3797,7 +4004,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -5017,7 +5224,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -5054,7 +5261,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -5090,7 +5297,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -5488,213 +5695,6 @@
                 ],
                 "title": "MUSEE_VENTE_DISTANCE_read",
                 "type": "object"
-            },
-            "MusicTypeEnum__deprecated_": {
-                "description": "An enumeration.",
-                "enum": [
-                    "JAZZ-ACID_JAZZ",
-                    "JAZZ-AVANT_GARDE_JAZZ",
-                    "JAZZ-BEBOP",
-                    "JAZZ-BIG_BAND",
-                    "JAZZ-BLUE_NOTE",
-                    "JAZZ-COOL_JAZZ",
-                    "JAZZ-CROSSOVER_JAZZ",
-                    "JAZZ-DIXIELAND",
-                    "JAZZ-ETHIO_JAZZ",
-                    "JAZZ-FUSION",
-                    "JAZZ-JAZZ_CONTEMPORAIN",
-                    "JAZZ-JAZZ_FUNK",
-                    "JAZZ-MAINSTREAM",
-                    "JAZZ-MANOUCHE",
-                    "JAZZ-TRADITIONEL",
-                    "JAZZ-VOCAL_JAZZ",
-                    "JAZZ-RAGTIME",
-                    "JAZZ-SMOOTH",
-                    "JAZZ-OTHER",
-                    "BLUES-BLUES_ACOUSTIQUE",
-                    "BLUES-BLUES_CONTEMPORAIN",
-                    "BLUES-BLUES_ELECTRIQUE",
-                    "BLUES-BLUES_ROCK",
-                    "BLUES-CHICAGO_BLUES",
-                    "BLUES-CLASSIC_BLUES",
-                    "BLUES-COUNTRY_BLUES",
-                    "BLUES-DELTA_BLUES",
-                    "BLUES-RAGTIME",
-                    "BLUES-OTHER",
-                    "REGGAE-TWO_TONE",
-                    "REGGAE-DANCEHALL",
-                    "REGGAE-DUB",
-                    "REGGAE-ROOTS",
-                    "REGGAE-SKA",
-                    "REGGAE-ZOUK",
-                    "REGGAE-OTHER",
-                    "CLASSIQUE-AVANT_GARDE",
-                    "CLASSIQUE-BAROQUE",
-                    "CLASSIQUE-CHANT",
-                    "CLASSIQUE-CHORALE",
-                    "CLASSIQUE-CONTEMPORAIN",
-                    "CLASSIQUE-EXPRESSIONISTE",
-                    "CLASSIQUE-IMPRESSIONISTE",
-                    "CLASSIQUE-MEDIEVALE",
-                    "CLASSIQUE-MINIMALISTE",
-                    "CLASSIQUE-MODERNE",
-                    "CLASSIQUE-ORATORIO",
-                    "CLASSIQUE-OPERA",
-                    "CLASSIQUE-RENAISSANCE",
-                    "CLASSIQUE-ROMANTIQUE",
-                    "CLASSIQUE-OTHER",
-                    "MUSIQUE_DU_MONDE-AFRICAINE",
-                    "MUSIQUE_DU_MONDE-AFRO_BEAT",
-                    "MUSIQUE_DU_MONDE-AFRO_POP",
-                    "MUSIQUE_DU_MONDE-ALTERNATIVO",
-                    "MUSIQUE_DU_MONDE-AMERIQUE_DU_NORD",
-                    "MUSIQUE_DU_MONDE-AMERIQUE_DU_SUD",
-                    "MUSIQUE_DU_MONDE-ASIATIQUE",
-                    "MUSIQUE_DU_MONDE-BALADAS_Y_BOLEROS",
-                    "MUSIQUE_DU_MONDE-BOSSA_NOVA",
-                    "MUSIQUE_DU_MONDE-BRESILIENNE",
-                    "MUSIQUE_DU_MONDE-CAJUN",
-                    "MUSIQUE_DU_MONDE-CALYPSO",
-                    "MUSIQUE_DU_MONDE-CARIBEENNE",
-                    "MUSIQUE_DU_MONDE-CELTIQUE",
-                    "MUSIQUE_DU_MONDE-CUMBIA",
-                    "MUSIQUE_DU_MONDE-FLAMENCO",
-                    "MUSIQUE_DU_MONDE-GRECQUE",
-                    "MUSIQUE_DU_MONDE-INDIENNE",
-                    "MUSIQUE_DU_MONDE-LATIN_JAZZ",
-                    "MUSIQUE_DU_MONDE-MOYEN_ORIENT",
-                    "MUSIQUE_DU_MONDE-LATINE_CONTEMPORAINE",
-                    "MUSIQUE_DU_MONDE-NUEVO_FLAMENCO",
-                    "MUSIQUE_DU_MONDE-POP_LATINO",
-                    "MUSIQUE_DU_MONDE-PORTUGUESE_FADO",
-                    "MUSIQUE_DU_MONDE-RAI",
-                    "MUSIQUE_DU_MONDE-SALSA",
-                    "MUSIQUE_DU_MONDE-TANGO_ARGENTIN",
-                    "MUSIQUE_DU_MONDE-YIDDISH",
-                    "MUSIQUE_DU_MONDE-OTHER",
-                    "POP-BRITPOP",
-                    "POP-BUBBLEGUM",
-                    "POP-DANCE_POP",
-                    "POP-DREAM_POP",
-                    "POP-ELECTRO_POP",
-                    "POP-INDIE_POP",
-                    "POP-J_POP",
-                    "POP-K_POP",
-                    "POP-POP_PUNK",
-                    "POP-POP_ROCK",
-                    "POP-POWER_POP",
-                    "POP-SOFT_ROCK",
-                    "POP-SYNTHPOP",
-                    "POP-TEEN_POP",
-                    "POP-OTHER",
-                    "ROCK-ACID_ROCK",
-                    "ROCK-ARENA_ROCK",
-                    "ROCK-ART_ROCK",
-                    "ROCK-COLLEGE_ROCK",
-                    "ROCK-GLAM_ROCK",
-                    "ROCK-GRUNGE",
-                    "ROCK-HARD_ROCK",
-                    "ROCK-INDIE_ROCK",
-                    "ROCK-LO_FI",
-                    "ROCK-PROG_ROCK",
-                    "ROCK-PSYCHEDELIC",
-                    "ROCK-ROCK_N_ROLL",
-                    "ROCK-EXPERIMENTAL",
-                    "ROCK-ROCKABILLY",
-                    "ROCK-SHOEGAZE",
-                    "ROCK-ELECTRO",
-                    "ROCK-OTHER",
-                    "METAL-BLACK_METAL",
-                    "METAL-DEATH_METAL",
-                    "METAL-DOOM_METAL",
-                    "METAL-GOTHIC",
-                    "METAL-METAL_CORE",
-                    "METAL-METAL_PROGRESSIF",
-                    "METAL-TRASH_METAL",
-                    "METAL-METAL_INDUSTRIEL",
-                    "METAL-FUSION",
-                    "METAL-OTHER",
-                    "PUNK-POST_PUNK",
-                    "PUNK-HARDCORE_PUNK",
-                    "PUNK-AFRO_PUNK",
-                    "PUNK-GRINDCORE",
-                    "PUNK-NOISE_ROCK",
-                    "PUNK-OTHER",
-                    "FOLK-FOLK_CONTEMPORAINE",
-                    "FOLK-INDIE_FOLK",
-                    "FOLK-FOLK_ROCK",
-                    "FOLK-NEW_ACOUSTIC",
-                    "FOLK-FOLK_TRADITIONELLE",
-                    "FOLK-TEX_MEX",
-                    "FOLK-OTHER",
-                    "COUNTRY-COUNTRY_ALTERNATIVE",
-                    "COUNTRY-AMERICANA",
-                    "COUNTRY-BLUEGRASS",
-                    "COUNTRY-COUNTRY_CONTEMPORAINE",
-                    "COUNTRY-GOSPEL_COUNTRY",
-                    "COUNTRY-COUNTRY_POP",
-                    "COUNTRY-OTHER",
-                    "ELECTRO-BITPOP",
-                    "ELECTRO-BREAKBEAT",
-                    "ELECTRO-CHILLWAVE",
-                    "ELECTRO-DANCE",
-                    "ELECTRO-DOWNTEMPO",
-                    "ELECTRO-DRUM_AND_BASS",
-                    "ELECTRO-DUBSTEP",
-                    "ELECTRO-EXPERIMENTAL",
-                    "ELECTRO-ELECTRONICA",
-                    "ELECTRO-GARAGE",
-                    "ELECTRO-GRIME",
-                    "ELECTRO-HARD_DANCE",
-                    "ELECTRO-HARDCORE",
-                    "ELECTRO-HOUSE",
-                    "ELECTRO-INDUSTRIEL",
-                    "ELECTRO-LOUNGE",
-                    "ELECTRO-TECHNO",
-                    "ELECTRO-TRANCE",
-                    "ELECTRO-OTHER",
-                    "HIP_HOP_RAP-BOUNCE",
-                    "HIP_HOP_RAP-HIP_HOP",
-                    "HIP_HOP_RAP-RAP_ALTERNATIF",
-                    "HIP_HOP_RAP-RAP_EAST_COAST",
-                    "HIP_HOP_RAP-RAP_FRANCAIS",
-                    "HIP_HOP_RAP-RAP_GANGSTA",
-                    "HIP_HOP_RAP-RAP_HARDCORE",
-                    "HIP_HOP_RAP-RAP_LATINO",
-                    "HIP_HOP_RAP-RAP_OLD_SCHOOL",
-                    "HIP_HOP_RAP-RAP_UNDERGROUND",
-                    "HIP_HOP_RAP-RAP_WEST_COAST",
-                    "HIP_HOP_RAP-TRAP",
-                    "HIP_HOP_RAP-TRIP_HOP",
-                    "HIP_HOP_RAP-R&B_CONTEMPORAIN",
-                    "HIP_HOP_RAP-DISCO",
-                    "HIP_HOP_RAP-DOO_WOP",
-                    "HIP_HOP_RAP-FUNK",
-                    "HIP_HOP_RAP-SOUL",
-                    "HIP_HOP_RAP-MOTOWN",
-                    "HIP_HOP_RAP-NEO_SOUL",
-                    "HIP_HOP_RAP-SOUL_PSYCHEDELIQUE",
-                    "HIP_HOP_RAP-OTHER",
-                    "GOSPEL-SPIRITUAL_GOSPEL",
-                    "GOSPEL-TRADITIONAL_GOSPEL",
-                    "GOSPEL-SOUTHERN_GOSPEL",
-                    "GOSPEL-CONTEMPORARY_GOSPEL",
-                    "GOSPEL-BLUEGRASS_GOSPEL",
-                    "GOSPEL-BLUES_GOSPEL",
-                    "GOSPEL-COUNTRY_GOSPEL",
-                    "GOSPEL-HYBRID_GOSPEL",
-                    "GOSPEL-OTHER",
-                    "CHANSON_VARIETE-MUSETTE",
-                    "CHANSON_VARIETE-CHANSON_FRANCAISE",
-                    "CHANSON_VARIETE-MUSIC_HALL",
-                    "CHANSON_VARIETE-FOLKLORE_FRANCAIS",
-                    "CHANSON_VARIETE-CHANSON_\u00c0_TEXTE",
-                    "CHANSON_VARIETE-SLAM",
-                    "CHANSON_VARIETE-OTHER",
-                    "OTHER"
-                ],
-                "title": "MusicTypeEnum (deprecated)",
-                "type": "string"
             },
             "NationalProgramModel": {
                 "properties": {
@@ -6685,41 +6685,6 @@
                 "title": "PriceCategoryResponse",
                 "type": "object"
             },
-            "ProductCategoryEnum": {
-                "description": "An enumeration.",
-                "enum": [
-                    "ABO_BIBLIOTHEQUE",
-                    "ABO_CONCERT",
-                    "ABO_LIVRE_NUMERIQUE",
-                    "ABO_MEDIATHEQUE",
-                    "ABO_PLATEFORME_MUSIQUE",
-                    "ABO_PLATEFORME_VIDEO",
-                    "ABO_PRATIQUE_ART",
-                    "ABO_PRESSE_EN_LIGNE",
-                    "ABO_SPECTACLE",
-                    "ACHAT_INSTRUMENT",
-                    "APP_CULTURELLE",
-                    "AUTRE_SUPPORT_NUMERIQUE",
-                    "CAPTATION_MUSIQUE",
-                    "CARTE_JEUNES",
-                    "CARTE_MUSEE",
-                    "LIVRE_AUDIO_PHYSIQUE",
-                    "LIVRE_NUMERIQUE",
-                    "LOCATION_INSTRUMENT",
-                    "PARTITION",
-                    "PLATEFORME_PRATIQUE_ARTISTIQUE",
-                    "PODCAST",
-                    "PRATIQUE_ART_VENTE_DISTANCE",
-                    "SPECTACLE_ENREGISTRE",
-                    "SUPPORT_PHYSIQUE_FILM",
-                    "TELECHARGEMENT_LIVRE_AUDIO",
-                    "TELECHARGEMENT_MUSIQUE",
-                    "VISITE_VIRTUELLE",
-                    "VOD"
-                ],
-                "title": "ProductCategoryEnum",
-                "type": "string"
-            },
             "ProductCategoryResponse": {
                 "properties": {
                     "conditionalFields": {
@@ -6731,7 +6696,7 @@
                         "type": "object"
                     },
                     "id": {
-                        "$ref": "#/components/schemas/ProductCategoryEnum"
+                        "$ref": "#/components/schemas/ThingCategoryEnum"
                     },
                     "locationType": {
                         "anyOf": [
@@ -8620,7 +8585,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -8660,7 +8625,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -9016,7 +8981,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -9057,7 +9022,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -9097,7 +9062,7 @@
                                 "$ref": "#/components/schemas/TiteliveMusicTypeEnum"
                             },
                             {
-                                "$ref": "#/components/schemas/MusicTypeEnum__deprecated_"
+                                "$ref": "#/components/schemas/DeprecatedMusicTypeEnum"
                             }
                         ],
                         "title": "Musictype"
@@ -9112,6 +9077,41 @@
                 ],
                 "title": "TELECHARGEMENT_MUSIQUE_read",
                 "type": "object"
+            },
+            "ThingCategoryEnum": {
+                "description": "An enumeration.",
+                "enum": [
+                    "ABO_BIBLIOTHEQUE",
+                    "ABO_CONCERT",
+                    "ABO_LIVRE_NUMERIQUE",
+                    "ABO_MEDIATHEQUE",
+                    "ABO_PLATEFORME_MUSIQUE",
+                    "ABO_PLATEFORME_VIDEO",
+                    "ABO_PRATIQUE_ART",
+                    "ABO_PRESSE_EN_LIGNE",
+                    "ABO_SPECTACLE",
+                    "ACHAT_INSTRUMENT",
+                    "APP_CULTURELLE",
+                    "AUTRE_SUPPORT_NUMERIQUE",
+                    "CAPTATION_MUSIQUE",
+                    "CARTE_JEUNES",
+                    "CARTE_MUSEE",
+                    "LIVRE_AUDIO_PHYSIQUE",
+                    "LIVRE_NUMERIQUE",
+                    "LOCATION_INSTRUMENT",
+                    "PARTITION",
+                    "PLATEFORME_PRATIQUE_ARTISTIQUE",
+                    "PODCAST",
+                    "PRATIQUE_ART_VENTE_DISTANCE",
+                    "SPECTACLE_ENREGISTRE",
+                    "SUPPORT_PHYSIQUE_FILM",
+                    "TELECHARGEMENT_LIVRE_AUDIO",
+                    "TELECHARGEMENT_MUSIQUE",
+                    "VISITE_VIRTUELLE",
+                    "VOD"
+                ],
+                "title": "ThingCategoryEnum",
+                "type": "string"
             },
             "TiteliveEventMusicTypeEnum": {
                 "description": "An enumeration.",
