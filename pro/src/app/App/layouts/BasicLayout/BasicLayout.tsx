@@ -32,6 +32,10 @@ interface BasicLayoutProps {
    * above it.
    */
   isStickyActionBarInChild?: boolean
+  /**
+   * Optional: configure the back button in the header
+   */
+  adminArea?: boolean
 }
 
 export const BasicLayout = ({
@@ -39,6 +43,7 @@ export const BasicLayout = ({
   mainHeading,
   mainSubHeading,
   isStickyActionBarInChild = false,
+  adminArea = false,
 }: BasicLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
@@ -71,6 +76,7 @@ export const BasicLayout = ({
           })
         }}
         ref={openButtonRef}
+        adminArea={adminArea}
       />
       <div
         className={cn(styles['page-layout'], {
@@ -83,6 +89,7 @@ export const BasicLayout = ({
           openButtonRef={openButtonRef}
           closeButtonRef={closeButtonRef}
           navPanel={navPanel}
+          adminArea={adminArea}
         />
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>

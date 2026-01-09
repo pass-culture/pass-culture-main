@@ -3,6 +3,7 @@ import classnames from 'classnames'
 import { useEffect } from 'react'
 
 import { noop } from '@/commons/utils/noop'
+import { AdminSideNavLinks } from '@/components/SideNavLinks/AdminSideNavLinks'
 import { SideNavLinks } from '@/components/SideNavLinks/SideNavLinks'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
@@ -18,6 +19,7 @@ interface LateralPanelProps {
   openButtonRef: React.RefObject<HTMLButtonElement>
   closeButtonRef: React.RefObject<HTMLButtonElement>
   navPanel: React.RefObject<HTMLDivElement>
+  adminArea?: boolean
 }
 
 export const LateralPanel = ({
@@ -26,6 +28,7 @@ export const LateralPanel = ({
   openButtonRef,
   closeButtonRef,
   navPanel,
+  adminArea = false,
 }: LateralPanelProps) => {
   useEffect(() => {
     const modalElement = navPanel.current
@@ -103,7 +106,11 @@ export const LateralPanel = ({
             />
           </div>
         )}
-        <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
+        {adminArea ? (
+          <AdminSideNavLinks isLateralPanelOpen={lateralPanelOpen} />
+        ) : (
+          <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
+        )}
       </div>
     </nav>
   )

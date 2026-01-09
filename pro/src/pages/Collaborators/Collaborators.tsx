@@ -11,6 +11,7 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { GET_MEMBERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
@@ -33,6 +34,7 @@ type UserEmailFormValues = {
 
 export const Collaborators = (): JSX.Element | null => {
   const offererId = useAppSelector(selectCurrentOffererId)
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
@@ -95,7 +97,10 @@ export const Collaborators = (): JSX.Element | null => {
   }
 
   return (
-    <BasicLayout mainHeading="Collaborateurs">
+    <BasicLayout
+      mainHeading="Collaborateurs"
+      adminArea={withSwitchVenueFeature}
+    >
       <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 
