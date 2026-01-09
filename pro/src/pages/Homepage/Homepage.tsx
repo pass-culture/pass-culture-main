@@ -15,10 +15,7 @@ import { BankAccountHasPendingCorrectionCallout } from './components/BankAccount
 import { HighlightHome } from './components/HighlightHome/HighlightHome'
 import { LinkVenueCallout } from './components/LinkVenueCallout/LinkVenueCallout'
 import { OffererBanners } from './components/Offerers/components/OffererBanners/OffererBanners'
-import {
-  getPhysicalVenuesFromOfferer,
-  getVirtualVenueFromOfferer,
-} from './components/Offerers/components/VenueList/venueUtils'
+import { getPhysicalVenuesFromOfferer } from './components/Offerers/components/VenueList/venueUtils'
 import { Offerers } from './components/Offerers/Offerers'
 import { PublishedOfferStats } from './components/StatisticsDashboard/components/PublishedOfferStats'
 import { StatisticsDashboard } from './components/StatisticsDashboard/StatisticsDashboard'
@@ -46,9 +43,8 @@ export const Homepage = (): JSX.Element => {
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
-    const virtualVenue = getVirtualVenueFromOfferer(selectedOfferer)
 
-    return physicalVenues.length === 0 && !virtualVenue
+    return physicalVenues.length === 0
   }, [selectedOfferer])
 
   const isNotReady = offererNamesQuery.isLoading || !offererNames
