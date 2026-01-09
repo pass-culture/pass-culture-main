@@ -15,7 +15,7 @@ import type {
 } from '@/apiClient/adresse/types'
 import { getDataFromAddress } from '@/apiClient/api'
 import type { SelectOption } from '@/commons/custom_types/form'
-import { normalizeStrForSearch } from '@/commons/utils/searchPatternInOptions'
+import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
 import {
   type CustomEvent,
   SelectAutocomplete,

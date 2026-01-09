@@ -1,18 +1,8 @@
 import type { SelectOption } from '@/commons/custom_types/form'
 
-type SelectOptionNormalized = SelectOption & { normalizedLabel?: string }
+import { normalizeStrForSearch } from './normalizeStrForSearch'
 
-export const normalizeStrForSearch = (str: string): string => {
-  return (
-    str
-      .trim()
-      .toLowerCase()
-      //  normalizing to NFD Unicode normal form decomposes combined graphemes into the combination of simple ones. The è becomes e +  ̀
-      .normalize('NFD')
-      //  remove accents
-      .replace(/[\u0300-\u036f]/g, '')
-  )
-}
+type SelectOptionNormalized = SelectOption & { normalizedLabel?: string }
 
 export const searchPatternInOptions = (
   options: SelectOptionNormalized[],
