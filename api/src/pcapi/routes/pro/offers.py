@@ -289,19 +289,13 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
             sa_orm.joinedload(offerers_models.Venue.offererAddress).joinedload(offerers_models.OffererAddress.address)
         )
     )
-    offerer_address: offerers_models.OffererAddress | None = None
     offerer_address = (
         offerers_api.get_offer_location_from_address(
             venue.managingOffererId, offerers_schemas.LocationModel(**body.address.dict())
         )
         if body.address
-        # TODO (prouzet, 2025-11-14) CLEAN_OA Do no longer use venue.offererAddress after step 4.5
-        else (
-            venue.offererAddress
-            if venue.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
-            else offerers_api.get_or_create_offer_location(
-                venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
-            )
+        else offerers_api.get_or_create_offer_location(
+            venue.managingOffererId, venue.offererAddress.addressId, venue.common_name
         )
     )
     rest.check_user_has_access_to_offerer(current_user, venue.managingOffererId)
@@ -494,11 +488,7 @@ def patch_offer(
             updates["ean"] = body_extra_data.pop("ean")
         updates["extraData"] = body_extra_data
 
-    offer = offers_api.update_offer(
-        offer,
-        offers_schemas.UpdateOffer(**updates),
-        is_from_private_api=True,
-    )
+    offers_api.update_offer(offer, offers_schemas.UpdateOffer(**updates), is_from_private_api=True)
     db.session.flush()
     offer = offers_repository.get_offer_by_id(
         offer_id,

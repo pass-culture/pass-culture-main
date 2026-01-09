@@ -221,7 +221,6 @@ def _get_bookings_for_adage_base_query() -> sa_orm.Query[models.CollectiveBookin
                 sa_orm.load_only(
                     offerers_models.Venue.publicName,
                     offerers_models.Venue.name,
-                    offerers_models.Venue.offererAddressId,
                     offerers_models.Venue.siret,
                 ),
                 sa_orm.joinedload(offerers_models.Venue.managingOfferer, innerjoin=True).load_only(

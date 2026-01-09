@@ -324,9 +324,7 @@ class GetBookingsTest:
         user = users_factories.BeneficiaryGrant18Factory(email=self.identifier)
 
         address = AddressFactory()
-        venue = offerers_factories.VenueFactory(
-            offererAddress=offerers_factories.OffererAddressFactory(address=address)
-        )
+        venue = offerers_factories.VenueFactory(offererAddress__address=address)
         offer = offers_factories.OfferFactory(venue=venue, offererAddress=None)
         booking_factories.BookingFactory(stock__offer=offer, user=user)
 
@@ -344,9 +342,7 @@ class GetBookingsTest:
 
         address_on_venue = AddressFactory()
         address_on_offer = AddressFactory()
-        venue = offerers_factories.VenueFactory(
-            offererAddress=offerers_factories.OffererAddressFactory(address=address_on_venue)
-        )
+        venue = offerers_factories.VenueFactory(offererAddress__address=address_on_venue)
         offer = offers_factories.OfferFactory(
             venue=venue, offererAddress=offerers_factories.OffererAddressFactory(address=address_on_offer)
         )
