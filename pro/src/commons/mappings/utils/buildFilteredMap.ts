@@ -1,17 +1,22 @@
+import {
+  objectEntries,
+  objectFromEntries,
+} from '@/pages/VenueEdition/commons/utils'
+
 type StringRecord = Record<string, string>
 
 export function buildFilteredMap<M extends StringRecord>(
   enumObject: StringRecord,
   mappingsObject: M,
   enumObjectTypeName: string
-) {
+): Record<keyof M, string> {
   // Checks if keys between backend model and frontend mappings are exactly the same (it will throw if not)
   ensureMappingsMatch(enumObject, mappingsObject, enumObjectTypeName)
 
-  const entries = Object.entries(mappingsObject)
+  const entries = objectEntries(mappingsObject)
   const sortedEntries = sortEntriesByValue('fr-FR')(entries)
   const finalEntries = putKeyAtTheEnd('OTHER')(sortedEntries)
-  return Object.fromEntries(finalEntries)
+  return objectFromEntries(finalEntries)
 }
 
 /**
@@ -44,24 +49,22 @@ function ensureMappingsMatch(
   }
 }
 
-type Entries = [string, string][]
+type Entries<K = string, V = string> = [K, V][]
 
-function sortEntriesByValue(locale: string): (val: Entries) => Entries {
+function sortEntriesByValue(locale: string) {
   const compareFn = new Intl.Collator(locale).compare
-  return (val: Entries): Entries => {
-    const valCopy: Entries = [...val]
-    return valCopy.sort((a, b) => compareFn(a[1], b[1]))
+  return <K, V extends string>(val: Entries<K, V>): Entries<K, V> => {
+    return val.sort((a, b) => compareFn(a[1], b[1]))
   }
 }
 
-function putKeyAtTheEnd(key: string): (val: Entries) => Entries {
-  return (val: Entries): Entries => {
+function putKeyAtTheEnd(key: string) {
+  return <K, V>(val: Entries<K, V>): Entries<K, V> => {
     const otherIndex = val.findIndex(([k]) => k === key)
     const other = val[otherIndex]
-    const valCopy: Entries = [...val]
     if (otherIndex > -1) {
-      valCopy.splice(otherIndex, 1)
-      return valCopy.concat([other])
+      val.splice(otherIndex, 1)
+      return val.concat([other]) as Entries<K, V>
     }
     return val
   }

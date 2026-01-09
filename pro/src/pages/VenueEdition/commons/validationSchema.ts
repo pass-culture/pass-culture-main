@@ -8,6 +8,7 @@ import { getActivities } from '@/commons/mappings/mappings'
 import { emailSchema } from '@/commons/utils/isValidEmail'
 
 import type { VenueEditionFormValues } from './types'
+import { objectKeys } from './utils'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
@@ -70,12 +71,12 @@ export const getValidationSchema = ({
 }: {
   isCulturalDomainsEnabled: boolean
 }): ObjectSchema<VenueEditionFormValues> => {
-  const activityTypeValuesOpenToPublic = Object.keys(
+  const activityTypeValuesOpenToPublic = objectKeys(
     getActivities('OPEN_TO_PUBLIC')
-  ) as ActivityOpenToPublicType[]
-  const activityTypeValuesNotOpenToPublic = Object.keys(
+  )
+  const activityTypeValuesNotOpenToPublic = objectKeys(
     getActivities('NOT_OPEN_TO_PUBLIC')
-  ) as ActivityNotOpenToPublicType[]
+  )
 
   return yup.object().shape({
     description: yup.string(),
