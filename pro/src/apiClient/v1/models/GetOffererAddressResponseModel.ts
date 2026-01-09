@@ -6,7 +6,6 @@ export type GetOffererAddressResponseModel = {
   city: string;
   departmentCode?: string | null;
   id: number;
-  isLinkedToVenue: boolean;
   label?: string | null;
   postalCode: string;
   street?: string | null;

@@ -466,25 +466,6 @@ class OffererConfidenceRuleTest:
 
 
 class OffererAddressTest:
-    def test_offerer_address_isLinkedToVenue_property_should_be_true(self):
-        offerer_address = factories.OffererAddressFactory()
-        factories.VenueFactory(offererAddress=offerer_address)
-        assert offerer_address.isLinkedToVenue is True
-
-    def test_offerers_address_is_notLinkedToVenue_property_should_be_false(self):
-        offerer_address = factories.OffererAddressFactory()
-        assert offerer_address.isLinkedToVenue is False
-
-    def test_offerers_address_isLinkedToVenue_expression_should_be_false(self):
-        offerer_address = factories.OffererAddressFactory()
-        assert db.session.query(models.OffererAddress).filter_by(id=offerer_address.id).one().isLinkedToVenue is False
-        assert db.session.query(models.OffererAddress).filter(models.OffererAddress.isLinkedToVenue == False).one()
-
-    def test_offerers_address_isLinkedToVenue_expression_should_be_true(self):
-        offerer_address = factories.OffererAddressFactory()
-        factories.VenueFactory(offererAddress=offerer_address)
-        assert db.session.query(models.OffererAddress).filter(models.OffererAddress.isLinkedToVenue == True).one()
-
     def test_unique_constraint_on_legacy_offerer_address_raises(self):
         offerer_address = factories.OffererAddressFactory()
 
