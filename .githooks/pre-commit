@@ -3,6 +3,16 @@
 # uncomment next line to debug
 # set -x
 
+################
+## SAFE-CHAIN ##
+################
+
+command -v "safe-chain" >/dev/null 2>&1 || { echo >&2 "❌ safe-chain is not installed on the system. Follow internal knowledge base to protect against supply chain attacks."; exit 1; }
+
+####################
+## END SAFE-CHAIN ##
+####################
+
 DIR=$(git rev-parse --show-toplevel)
 
 ##########
