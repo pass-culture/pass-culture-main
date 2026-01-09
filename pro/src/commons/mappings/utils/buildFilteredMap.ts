@@ -1,15 +1,17 @@
-export function buildFilteredMap(
-  enumObject: Record<string, string>,
-  mappingsObject: Record<string, string>,
+type StringRecord = Record<string, string>
+
+export function buildFilteredMap<M extends StringRecord>(
+  enumObject: StringRecord,
+  mappingsObject: M,
   enumObjectTypeName: string
-) {
+): Record<keyof M, string> {
   // Checks if keys between backend model and frontend mappings are exactly the same (it will throw if not)
   ensureMappingsMatch(enumObject, mappingsObject, enumObjectTypeName)
 
   const entries = Object.entries(mappingsObject)
   const sortedEntries = sortEntriesByValue('fr-FR')(entries)
   const finalEntries = putKeyAtTheEnd('OTHER')(sortedEntries)
-  return Object.fromEntries(finalEntries)
+  return Object.fromEntries(finalEntries) as unknown as Record<keyof M, string>
 }
 
 /**
