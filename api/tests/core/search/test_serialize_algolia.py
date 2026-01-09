@@ -46,13 +46,6 @@ def test_serialize_offer():
     )
     macro_section = book_macro_section.macroSection.strip()
 
-    venue_offerer_address = offerers_factories.OffererAddressFactory(
-        address__departmentCode="75",
-        address__postalCode="75001",
-        address__latitude=geography_factories.DEFAULT_LATITUDE,
-        address__longitude=geography_factories.DEFAULT_TRUNCATED_LONGITUDE,
-    )
-
     offer_offerer_address = offerers_factories.OffererAddressFactory(
         address__departmentCode="86",
         address__postalCode="86140",
@@ -77,7 +70,10 @@ def test_serialize_offer():
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         offererAddress=offer_offerer_address,
         venue__id=127,
-        venue__offererAddress=venue_offerer_address,
+        venue__offererAddress__address__departmentCode="75",
+        venue__offererAddress__address__postalCode="75001",
+        venue__offererAddress__address__latitude=geography_factories.DEFAULT_LATITUDE,
+        venue__offererAddress__address__longitude=geography_factories.DEFAULT_TRUNCATED_LONGITUDE,
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
         venue__venueTypeCode=VenueTypeCode.LIBRARY,
@@ -625,13 +621,8 @@ def test_serialize_collective_offer_template_other_venue_location():
     domain1 = educational_factories.EducationalDomainFactory(name="Danse")
     domain2 = educational_factories.EducationalDomainFactory(name="Architecture")
 
-    # location venue
-    other_venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
-    other_venue = offerers_factories.VenueFactory(offererAddress=other_venue_offerer_address)
-
-    # offer.venue
-    venue_offerer_address = offerers_factories.OffererAddressFactory(
-        address__postalCode="86140", address__departmentCode="86", address__latitude=44, address__longitude=2
+    other_venue = offerers_factories.VenueFactory(
+        offererAddress__address__latitude=45, offererAddress__address__longitude=3
     )
 
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
@@ -639,7 +630,10 @@ def test_serialize_collective_offer_template_other_venue_location():
         name="Titre formidable",
         description="description formidable",
         students=[educational_models.StudentLevels.CAP1, educational_models.StudentLevels.CAP2],
-        venue__offererAddress=venue_offerer_address,
+        venue__offererAddress__address__postalCode="86140",
+        venue__offererAddress__address__departmentCode="86",
+        venue__offererAddress__address__latitude=44,
+        venue__offererAddress__address__longitude=2,
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
         venue__managingOfferer__name="Les Librairies Associées",
@@ -680,9 +674,9 @@ def test_serialize_collective_offer_template_other_venue_location():
 
 
 def test_serialize_collective_offer_template_location_school():
-    venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-        venue__offererAddress=venue_offerer_address,
+        venue__offererAddress__address__latitude=45,
+        venue__offererAddress__address__longitude=3,
         locationType=educational_models.CollectiveLocationType.SCHOOL,
         offererAddress=None,
     )
@@ -704,9 +698,9 @@ def test_serialize_collective_offer_template_location_address():
 
 
 def test_serialize_collective_offer_template_location_to_be_defined():
-    venue_offerer_address = offerers_factories.OffererAddressFactory(address__latitude=45, address__longitude=3)
     collective_offer_template = educational_factories.CollectiveOfferTemplateFactory(
-        venue__offererAddress=venue_offerer_address,
+        venue__offererAddress__address__latitude=45,
+        venue__offererAddress__address__longitude=3,
         locationType=educational_models.CollectiveLocationType.TO_BE_DEFINED,
         locationComment="Here",
     )

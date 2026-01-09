@@ -8,6 +8,7 @@ from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models
 from pcapi.core.educational import testing as educational_testing
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import testing as sendinblue_testing
 from pcapi.models import db
@@ -224,7 +225,8 @@ class Returns200Test:
         assert response.status_code == 201
         offer = db.session.query(models.CollectiveOffer).filter_by(id=response.json["id"]).one()
 
-        assert offer.offererAddressId == oa.id
+        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+        assert offer.offererAddress.addressId == oa.addressId
         assert offer.locationType == models.CollectiveLocationType.ADDRESS
         assert offer.locationComment is None
 

@@ -68,9 +68,9 @@ def get_venues_without_photo(frequency: int) -> list[offerers_models.Venue]:
             offerers_models.Venue.id % (SHORTEST_MONTH_LENGTH // frequency) == (day - 1) // frequency,
         )
         .options(
-            sa_orm.joinedload(offerers_models.Venue.offererAddress, innerjoin=True)
+            sa_orm.joinedload(offerers_models.Venue.offererAddress)
             .load_only()
-            .joinedload(offerers_models.OffererAddress.address, innerjoin=True)
+            .joinedload(offerers_models.OffererAddress.address)
         )
         .order_by(offerers_models.Venue.id)
     )

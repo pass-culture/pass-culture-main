@@ -97,26 +97,17 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
 
         assert response.status_code == 404
 
-    @pytest.mark.parametrize(
-        "location_type",
-        (
-            None,
-            offerers_models.LocationType.VENUE_LOCATION,
-        ),
-    )
     @time_machine.travel(datetime.datetime(2025, 6, 25, 12, 30, tzinfo=datetime.timezone.utc), tick=False)
-    def test_physical_product_minimal_body(self, location_type, caplog):
+    def test_physical_product_minimal_body(self, caplog):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         payload = self._get_base_payload(venue_provider.venue.id)
-        venue_provider.venue.offererAddress.type = location_type
         db.session.flush()
 
         num_queries = 1  # select the api_key
         num_queries += 1  # select the provider
         num_queries += 1  # select the venue
-        if location_type:
-            num_queries += 1  # select the offererAddress
-            num_queries += 1  # insert the offererAddress
+        num_queries += 1  # select the offererAddress
+        num_queries += 1  # insert the offererAddress
         num_queries += 1  # select existing offer on venue
         num_queries += 1  # insert offer
         num_queries += 1  # select existing offer on venue
@@ -164,16 +155,10 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.description is None
         assert created_offer.status == offer_mixin.OfferStatus.SOLD_OUT
 
-        if location_type:
-            # New behaviour: offer and venue have different offererAddress
-            assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
-            assert created_offer.offererAddressId != created_offer.venue.offererAddressId
-            assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
-            assert created_offer.offererAddress.label == created_offer.venue.publicName
-        else:
-            # Legacy: venue and offer share the same offererAddress
-            assert created_offer.offererAddress.type is None
-            assert created_offer.offererAddressId == created_offer.venue.offererAddressId
+        assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+        assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
+        assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
+        assert created_offer.offererAddress.label == created_offer.venue.publicName
 
         assert response.json == {
             "bookingAllowedDatetime": None,
@@ -279,7 +264,9 @@ class PostProductTest(PublicAPIVenueEndpointHelper):
         assert created_offer.externalTicketOfficeUrl == "https://maposaic.com"
         assert created_offer.status == offer_mixin.OfferStatus.ACTIVE
         assert created_offer.withdrawalDetails == "A retirer au 6ème sous-sol du parking de la gare entre minuit et 2"
-        assert created_offer.offererAddress.id == venue_provider.venue.offererAddress.id
+        assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+        assert created_offer.offererAddress.addressId == venue_provider.venue.offererAddress.addressId
+        assert created_offer.offererAddress.label == venue_provider.venue.publicName
 
         created_stock = db.session.query(offers_models.Stock).one()
         assert created_stock.price == decimal.Decimal("12.34")

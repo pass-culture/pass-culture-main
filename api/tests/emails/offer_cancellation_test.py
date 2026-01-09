@@ -7,7 +7,6 @@ import pytest
 from bs4 import BeautifulSoup
 
 import pcapi.core.bookings.factories as bookings_factories
-import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.mails.transactional.bookings.booking_cancellation import (
@@ -22,17 +21,13 @@ class MakeOffererDrivenCancellationEmailForOffererTest:
         beginning_datetime = datetime(2019, 7, 20, 12, 0, 0, tzinfo=timezone.utc)
         booking_limit_datetime = beginning_datetime - timedelta(hours=1)
 
-        offerer_address = offerers_factories.OffererAddressFactory(
-            address__departmentCode="972",  # Amerique/Martinique
-        )
         stock = offers_factories.EventStockFactory(
             beginningDatetime=beginning_datetime,
             price=20,
             quantity=10,
             bookingLimitDatetime=booking_limit_datetime,
             offer__offererAddress=None,
-            offer__venue__offererAddress=offerer_address,
-            offer__venue__managingOfferer=offerer_address.offerer,
+            offer__venue__offererAddress__address__departmentCode="972",  # Amerique/Martinique,
         )
         booking = bookings_factories.BookingFactory(stock=stock)
 
