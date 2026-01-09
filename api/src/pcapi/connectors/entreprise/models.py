@@ -2,6 +2,7 @@ import datetime
 import typing
 
 import pydantic.v1 as pydantic_v1
+from pydantic import BaseModel as BaseModelV2
 
 
 class SireneAddress(pydantic_v1.BaseModel):
@@ -51,17 +52,17 @@ class SiretInfo(pydantic_v1.BaseModel):
     legal_category_code: str
 
 
-class RCSCorporateOfficer(pydantic_v1.BaseModel):
+class RCSCorporateOfficer(BaseModelV2):
     name: str
     role: str | None
 
 
-class RCSObservation(pydantic_v1.BaseModel):
+class RCSObservation(BaseModelV2):
     date: datetime.date | None
     label: str
 
 
-class RCSInfo(pydantic_v1.BaseModel):
+class RCSInfo(BaseModelV2):
     registered: bool
     # Next fields set only when registered
     registration_date: datetime.date | None = None
@@ -71,7 +72,7 @@ class RCSInfo(pydantic_v1.BaseModel):
     observations: list[RCSObservation] | None = None
 
 
-class UrssafInfo(pydantic_v1.BaseModel):
+class UrssafInfo(BaseModelV2):
     attestation_delivered: bool
     details: str
     # Next fields set only when attestation is delivered
@@ -80,7 +81,7 @@ class UrssafInfo(pydantic_v1.BaseModel):
     verification_code: str | None = None
 
 
-class DgfipInfo(pydantic_v1.BaseModel):
+class DgfipInfo(BaseModelV2):
     attestation_delivered: bool
     # Next fields set only when attestation is delivered
     attestation_date: datetime.date | None = None
