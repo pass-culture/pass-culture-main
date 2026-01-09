@@ -24,7 +24,8 @@ jobs:
       - id: label-pr
         uses: actions/labeler@v6
         with:
-          sync-labels: true
+          # do-not-merge can be added manually
+          sync-labels: false
 
       - run: |
           echo "These labels are added to the PR: ${{ steps.label-pr.outputs.all-labels }}"
