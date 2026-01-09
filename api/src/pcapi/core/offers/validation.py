@@ -12,6 +12,7 @@ from PIL import UnidentifiedImageError
 from dateutil.relativedelta import relativedelta
 from pydantic.v1 import HttpUrl
 
+from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
@@ -33,7 +34,8 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
-from pcapi.routes.serialization import stock_serialize as serialization
+from pcapi.routes.serialization import artist_serialize
+from pcapi.routes.serialization import stock_serialize
 from pcapi.utils import date
 
 
@@ -130,7 +132,7 @@ def check_stock_quantity(quantity: int | None, bookingQuantity: int = 0) -> None
 
 
 def check_stocks_price(
-    stocks: list[serialization.EventStockCreateBodyModel] | list[serialization.EventStockUpdateBodyModel],
+    stocks: list[stock_serialize.EventStockCreateBodyModel] | list[stock_serialize.EventStockUpdateBodyModel],
     offer: models.Offer,
 ) -> None:
     price_categories = {price_category.id: price_category for price_category in offer.priceCategories}
@@ -250,7 +252,7 @@ def check_stocks_count(stocks_count: int) -> None:
 
 
 def check_stocks_count_with_previous_offer_stock(
-    stocks_to_create: list[serialization.EventStockCreateBodyModel],
+    stocks_to_create: list[stock_serialize.EventStockCreateBodyModel],
     offer: models.Offer,
 ) -> None:
     if stocks_to_create:
@@ -954,3 +956,40 @@ def check_offer_can_ask_for_highlight_request(offer: models.Offer) -> None:
         raise api_errors.ApiErrors(
             errors={"global": ["La sous catégorie de l'offre ne lui permet pas de participer à un temps fort"]}
         )
+
+
+def check_artist_offer_links(artist_offer_links: list[artist_serialize.ArtistOfferResponseModel]) -> None:
+    seen_artist_ids: dict[artist_models.ArtistType, set[str]] = {}
+    seen_custom_names: dict[artist_models.ArtistType, set[str]] = {}
+
+    for link in artist_offer_links:
+        artist_id = link.artist_id
+        custom_name = link.custom_name
+        artist_type = link.artist_type
+
+        if artist_id is None and custom_name is None:
+            raise api_errors.ApiErrors(
+                errors={"artistOfferLinks": ["An artist offer link must have either an artist_id or a custom_name"]},
+            )
+
+        if artist_id is not None:
+            if artist_type not in seen_artist_ids:
+                seen_artist_ids[artist_type] = set()
+            if artist_id in seen_artist_ids[artist_type]:
+                raise api_errors.ApiErrors(
+                    errors={
+                        "artistOfferLinks": [f"An artist can only be linked once for the type {artist_type.value}"]
+                    },
+                )
+            seen_artist_ids[artist_type].add(artist_id)
+
+        if custom_name is not None:
+            if artist_type not in seen_custom_names:
+                seen_custom_names[artist_type] = set()
+            if custom_name in seen_custom_names[artist_type]:
+                raise api_errors.ApiErrors(
+                    errors={
+                        "artistOfferLinks": [f"A custom name can only be linked once for the type {artist_type.value}"]
+                    },
+                )
+            seen_custom_names[artist_type].add(custom_name)

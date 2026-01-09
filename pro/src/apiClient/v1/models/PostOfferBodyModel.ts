@@ -2,11 +2,13 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ArtistOfferResponseModel } from './ArtistOfferResponseModel';
 import type { LocationBodyModel } from './LocationBodyModel';
 import type { LocationOnlyOnVenueBodyModel } from './LocationOnlyOnVenueBodyModel';
 import type { WithdrawalTypeEnum } from './WithdrawalTypeEnum';
 export type PostOfferBodyModel = {
   address?: (LocationBodyModel | LocationOnlyOnVenueBodyModel) | null;
+  artistOfferLinks?: Array<ArtistOfferResponseModel> | null;
   audioDisabilityCompliant: boolean;
   bookingContact?: string | null;
   bookingEmail?: string | null;

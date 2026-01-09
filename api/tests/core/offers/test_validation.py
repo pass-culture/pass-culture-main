@@ -6,6 +6,7 @@ from zoneinfo import ZoneInfo
 import pytest
 
 import pcapi.core.providers.factories as providers_factories
+from pcapi.core.artist.models import ArtistType
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.offerers import factories as offerers_factories
@@ -16,6 +17,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.serialization import artist_serialize
 from pcapi.utils import date as date_utils
 
 import tests
@@ -1139,3 +1141,76 @@ class CheckOfferNameIsValidTest:
 
         # The the following should not raise
         validation.check_offer_name_length_is_valid(offer_title_less_than_90_characters)
+
+
+class CheckArtistOfferLinksTest:
+    def test_empty_artist_offer_links(self):
+        validation.check_artist_offer_links([])
+
+    def test_same_artist_id_for_different_types_is_allowed(self):
+        links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id="artist-1", artist_type=ArtistType.AUTHOR, custom_name=None
+            ),
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id="artist-1", artist_type=ArtistType.PERFORMER, custom_name=None
+            ),
+        ]
+
+        validation.check_artist_offer_links(links)
+
+    def test_same_custom_name_for_different_types_is_allowed(self):
+        links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id=None, artist_type=ArtistType.AUTHOR, custom_name="John Doe"
+            ),
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id=None, artist_type=ArtistType.STAGE_DIRECTOR, custom_name="John Doe"
+            ),
+        ]
+
+        validation.check_artist_offer_links(links)
+
+    def test_missing_both_artist_id_and_custom_name(self):
+        links = [
+            artist_serialize.ArtistOfferResponseModel(artist_id=None, artist_type=ArtistType.AUTHOR, custom_name=None),
+        ]
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_artist_offer_links(links)
+
+        assert error.value.errors == {
+            "artistOfferLinks": ["An artist offer link must have either an artist_id or a custom_name"]
+        }
+
+    def test_duplicate_artist_id_for_same_type(self):
+        links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id="artist-1", artist_type=ArtistType.AUTHOR, custom_name=None
+            ),
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id="artist-1", artist_type=ArtistType.AUTHOR, custom_name=None
+            ),
+        ]
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_artist_offer_links(links)
+
+        assert error.value.errors == {"artistOfferLinks": ["An artist can only be linked once for the type author"]}
+
+    def test_duplicate_custom_name_for_same_type(self):
+        links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id=None, artist_type=ArtistType.PERFORMER, custom_name="John Doe"
+            ),
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id=None, artist_type=ArtistType.PERFORMER, custom_name="John Doe"
+            ),
+        ]
+
+        with pytest.raises(ApiErrors) as error:
+            validation.check_artist_offer_links(links)
+
+        assert error.value.errors == {
+            "artistOfferLinks": ["A custom name can only be linked once for the type performer"]
+        }

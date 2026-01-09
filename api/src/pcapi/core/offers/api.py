@@ -22,6 +22,7 @@ from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
 
+import pcapi.core.artist.models as artist_models
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
@@ -347,8 +348,12 @@ def create_offer(
     validation.check_offer_name_does_not_contain_ean(body.name)
     validation.check_duration_minutes(body.duration_minutes, is_from_private_api)
 
+    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and body.artist_offer_links:
+        validation.check_artist_offer_links(body.artist_offer_links)
+
     fields = body.dict(by_alias=True)
     fields.pop("videoUrl", None)
+    artist_offer_links = fields.pop("artistOfferLinks", [])
 
     if is_from_private_api:
         if not body.withdrawal_details:
@@ -380,6 +385,20 @@ def create_offer(
     repository.add_to_session(offer)
 
     db.session.flush()
+
+    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active():
+        for link_data in artist_offer_links:
+            artist_offer_link = artist_models.ArtistOfferLink(
+                offer_id=offer.id,
+                artist_id=link_data.get("artistId"),
+                artist_type=link_data.get("artistType"),
+                custom_name=link_data.get("customName"),
+            )
+            db.session.add(artist_offer_link)
+        try:
+            db.session.flush()
+        except sa_exc.IntegrityError:
+            raise exceptions.OfferException({"artistOfferLinks": ["Invalid artist link data"]})
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
