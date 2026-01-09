@@ -12,7 +12,6 @@ from pcapi.core.finance import models as finance_models
 from pcapi.core.finance.backend.base import SettlementType
 from pcapi.models import db
 from pcapi.notifications.internal import send_internal_message
-from pcapi.scripts.pro.upload_reimbursement_csv_to_offerer_drive import export_csv_and_send_notification_emails
 from pcapi.utils import date as date_utils
 
 
@@ -146,7 +145,7 @@ def push_invoices(count: int, override_work_hours_check: bool = False) -> None:
             )
             batch = cashflow.batch
             if settings.GENERATE_CGR_KINEPOLIS_INVOICES:
-                export_csv_and_send_notification_emails(batch.id, batch.label)
+                finance_api.export_provider_reimbursement_csv_and_send_notification_emails(batch)
 
             if settings.SLACK_GENERATE_INVOICES_FINISHED_CHANNEL:
                 send_internal_message(
