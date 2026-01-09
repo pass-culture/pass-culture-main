@@ -35,6 +35,7 @@ import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { serializeEditVenueBodyModel } from '../commons/serializers'
 import { setInitialFormValues } from '../commons/setInitialFormValues'
 import type { VenueEditionFormValues } from '../commons/types'
+import { objectKeys } from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
@@ -206,7 +207,25 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     if (isOpenToPublicValue === 'false') {
                       resetOpeningHoursAndAccessibility()
                     }
-                    methods.setValue('activity', null)
+
+                    const activityKeys = objectKeys(
+                      getActivities(
+                        isOpenToPublicValue === 'true'
+                          ? 'OPEN_TO_PUBLIC'
+                          : 'NOT_OPEN_TO_PUBLIC'
+                      )
+                    )
+                    const isInitialActivityValid = activityKeys.includes(
+                      // biome-ignore lint/suspicious/noExplicitAny: `any` is needed here because getActivities and objectKeys are strongly typed and TypeScript can't guarantee that the initial activity (which is a mix of 2 different types) is in the list, but that's exactly what we want to check here
+                      initialValues.activity as any
+                    )
+
+                    if (isInitialActivityValid) {
+                      methods.setValue('activity', initialValues.activity)
+                      methods.clearErrors('activity')
+                    } else {
+                      methods.setValue('activity', null)
+                    }
                   }}
                   radioDescriptions={{
                     yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",

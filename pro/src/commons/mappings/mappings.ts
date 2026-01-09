@@ -27,14 +27,19 @@ export const getActivities = (() => {
     'ActivityNotOpenToPublic'
   )
 
-  return function getActivities(
-    listType: 'OPEN_TO_PUBLIC' | 'NOT_OPEN_TO_PUBLIC'
-  ) {
-    if (listType === 'OPEN_TO_PUBLIC') {
-      return ActivityOpenToPublicMap
-    } else {
-      return ActivityNotOpenToPublicMap
-    }
+  type ActivityMap<T extends 'OPEN_TO_PUBLIC' | 'NOT_OPEN_TO_PUBLIC'> =
+    T extends 'OPEN_TO_PUBLIC'
+      ? typeof ActivityOpenToPublicMap
+      : typeof ActivityNotOpenToPublicMap
+
+  return function getActivities<
+    T extends 'OPEN_TO_PUBLIC' | 'NOT_OPEN_TO_PUBLIC',
+  >(listType: T): ActivityMap<T> {
+    return (
+      listType === 'OPEN_TO_PUBLIC'
+        ? ActivityOpenToPublicMap
+        : ActivityNotOpenToPublicMap
+    ) as ActivityMap<T>
   }
 })()
 
