@@ -1,0 +1,17 @@
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+
+-- Extensions required by PostGIS
+CREATE EXTENSION IF NOT EXISTS btree_gist;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch;
+CREATE EXTENSION IF NOT EXISTS unaccent;
+
+CREATE EXTENSION IF NOT EXISTS postgis;
+CREATE EXTENSION IF NOT EXISTS postgis_tiger_geocoder;
+CREATE EXTENSION IF NOT EXISTS postgis_topology;
+
+DO $$
+BEGIN
+    RAISE NOTICE 'TimescaleDB has been initialized.';
+END
+$$;
