@@ -371,6 +371,7 @@ class CreateDigitalEventTest(CreateOfferBase):
 
         assert offer.isDigital
         assert not offer.isEvent
+        assert not offer.offererAddressId
 
     def test_create_offer_without_show_type_is_not_ok(self, auth_client, venue, subcategory_id):
         payload = {

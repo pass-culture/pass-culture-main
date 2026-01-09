@@ -365,7 +365,7 @@ def create_offer(
 
     offerer_address = offerer_address or venue.offererAddress
 
-    if body.url:  # i.e. it is a digital offer
+    if body.subcategory_id in subcategories.ONLINE_SUBCATEGORIES:  # i.e. it is a digital offer
         offerer_address = None
 
     offer = models.Offer(
