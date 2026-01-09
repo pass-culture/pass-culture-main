@@ -3,11 +3,11 @@ import typing
 
 import pydantic.v1 as pydantic_v1
 
+from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.offerers import schemas as offerers_schemas
 from pcapi.core.offers import models as offers_models
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.routes.serialization import BaseModel
-from pcapi.routes.serialization import base
 from pcapi.utils import phone_number as phone_number_utils
 
 
@@ -21,8 +21,23 @@ class VenueAccessibilityModel(BaseModel):
     visualDisability: bool | None
 
 
-class VenueResponseGetterDict(base.VenueResponseGetterDict):
+class VenueResponseGetterDict(pydantic_v1.utils.GetterDict):
     def get(self, key: str, default: typing.Any = None) -> typing.Any:
+        if key == "openingHours":
+            return self._obj.opening_hours
+        if key == "externalAccessibilityData":
+            if not self._obj.accessibilityProvider:
+                return None
+            accessibility_infos = self._obj.accessibilityProvider.externalAccessibilityData
+            return acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(accessibility_infos)
+        if key == "externalAccessibilityUrl":
+            if not self._obj.accessibilityProvider:
+                return None
+            return self._obj.accessibilityProvider.externalAccessibilityUrl
+        if key == "externalAccessibilityId":
+            if not self._obj.accessibilityProvider:
+                return None
+            return self._obj.accessibilityProvider.externalAccessibilityId
         if key == "name":
             return self._obj.common_name
 
@@ -66,7 +81,17 @@ class VenueContactModel(offerers_schemas.VenueContactModel):
             return None
 
 
-class VenueResponse(base.BaseVenueResponse):
+class VenueResponse(BaseModel):
+    name: str
+    bannerUrl: str | None
+    description: offerers_schemas.VenueDescription | None
+    externalAccessibilityData: acceslibre_serializers.ExternalAccessibilityDataModel | None
+    externalAccessibilityUrl: str | None
+    externalAccessibilityId: str | None
+    isOpenToPublic: bool
+    isPermanent: bool | None
+    publicName: str | None
+    withdrawalDetails: str | None
     id: int
     address: str | None
     # TODO (tcoudray-pass, 02/10/25): CLEAN_OA Delete when we are sure the
@@ -84,9 +109,10 @@ class VenueResponse(base.BaseVenueResponse):
     contact: VenueContactModel | None
     openingHours: dict | None
 
-    isVirtual: bool  # duplicated to isolate it from its removal from PCPro
+    isVirtual: bool
 
     class Config:
+        orm_mode = True
         getter_dict = VenueResponseGetterDict
 
 
