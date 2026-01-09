@@ -3,12 +3,14 @@ from decimal import Decimal
 
 from pcapi.core.external.attributes import models as attributes_models
 from pcapi.core.offerers.models import VenueTypeCode
+from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users.models import Credit
 from pcapi.core.users.models import DomainsCredit
 from pcapi.core.users.models import EligibilityType
 
 
 common_user_attributes = attributes_models.UserAttributes(
+    bonification_status=subscription_models.QFBonificationStatus.ELIGIBLE,
     booking_count=4,
     booking_categories=["CINEMA", "LIVRE"],
     booking_subcategories=["ABO_LIVRE_NUMERIQUE", "CARTE_CINE_ILLIMITE", "CINE_PLEIN_AIR"],

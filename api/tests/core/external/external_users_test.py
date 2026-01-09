@@ -168,6 +168,7 @@ def test_get_user_attributes_beneficiary_with_v1_deposit():
             digital=Credit(initial=Decimal("200"), remaining=Decimal("200")),
             physical=Credit(initial=200, remaining=Decimal("195.00")),
         ),
+        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=["CINEMA", "FILM"],
         booking_venues_count=1,  # three bookings on the same venue
         city=user.city,
@@ -226,6 +227,7 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0")),
             physical=None,
         ),
+        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=[],
         booking_venues_count=0,
         city=user.city,
@@ -297,6 +299,7 @@ def test_get_user_attributes_beneficiary_because_of_credit():
             digital=Credit(initial=Decimal("100"), remaining=Decimal("0.00")),
             physical=None,
         ),
+        bonification_status=subscription_models.QFBonificationStatus.ELIGIBLE,
         booking_categories=["CINEMA", "FILM"],
         booking_venues_count=2,
         city=user.city,
@@ -427,6 +430,7 @@ def test_get_user_attributes_not_beneficiary():
         attributes = get_user_attributes(user)
 
     assert attributes == UserAttributes(
+        bonification_status=subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
         booking_categories=[],
         booking_venues_count=0,
         city="Nice",
@@ -618,7 +622,7 @@ def test_get_most_favorite_subcategories_two_equal():
     }
 
 
-def test_get_user_attributes_with_achievements(db_session):
+def test_get_user_attributes_with_achievements():
     user = BeneficiaryFactory()
     booking = BookingFactory(user=user)
     AchievementFactory(
@@ -632,3 +636,23 @@ def test_get_user_attributes_with_achievements(db_session):
     attributes = get_user_attributes(user)
 
     assert attributes.achievements == ["FIRST_MOVIE_BOOKING"]
+
+
+@pytest.mark.parametrize(
+    "fraud_check_status, expected_bonification_status",
+    [
+        (subscription_models.FraudCheckStatus.PENDING, subscription_models.QFBonificationStatus.STARTED),
+        (subscription_models.FraudCheckStatus.OK, subscription_models.QFBonificationStatus.GRANTED),
+    ],
+)
+def test_get_user_attributes_bonification_status(fraud_check_status, expected_bonification_status):
+    user = BeneficiaryFactory()
+    subscription_factories.BeneficiaryFraudCheckFactory(
+        user=user,
+        type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+        status=fraud_check_status,
+    )
+
+    attributes = get_user_attributes(user)
+
+    assert attributes.bonification_status == expected_bonification_status
