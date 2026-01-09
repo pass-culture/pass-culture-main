@@ -6,6 +6,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import click
+from flask import current_app
 
 from pcapi.core import search
 from pcapi.core.educational import models
@@ -16,6 +17,7 @@ from pcapi.core.educational.api import institution as institution_api
 from pcapi.core.educational.api import playlists as playlists_api
 from pcapi.core.educational.api.dms import import_dms_applications_for_all_eac_procedures
 from pcapi.core.educational.utils import create_adage_jwt_fake_valid_token
+from pcapi.core.offerers import models as offerers_models
 from pcapi.models import db
 from pcapi.utils import cron as cron_decorators
 from pcapi.utils import date as date_utils
@@ -149,6 +151,34 @@ def check_deposit_csv(path: str) -> None:
     logger.info("CSV is valid, found %s UAIs for a total amount of %s", len(data.keys()), sum(data.values()))
 
 
+@blueprint.cli.command("synchronize_adage_cultural_partners")
+@cron_decorators.log_cron
+def synchronize_adage_cultural_partners() -> None:
+    since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
+    adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
+
+    activated_offerers, deactivated_offerers = adage_api.synchronize_adage_partners(
+        adage_partners=adage_cultural_partners.partners
+    )
+
+    # for now we rollback the session and set the result in redis, so that we can compare with the current sync logic
+    # (synchronize_venues_from_adage_cultural_partners + synchronize_offerers_from_adage_cultural_partners)
+    db.session.rollback()
+
+    redis_client = current_app.redis_client
+    expiration = 60 * 60 * 12  # 12h
+    redis_client.set(
+        "synchronize_adage_cultural_partners:activated_offerers",
+        ",".join(activated_offerers),
+        ex=expiration,
+    )
+    redis_client.set(
+        "synchronize_adage_cultural_partners:deactivated_offerers",
+        ",".join(deactivated_offerers),
+        ex=expiration,
+    )
+
+
 @blueprint.cli.command("synchronize_venues_from_adage_cultural_partners")
 @click.option(
     "--debug",
@@ -175,6 +205,44 @@ def synchronize_offerers_from_adage_cultural_partners(with_timestamp: bool = Fal
 
     with atomic():
         adage_api.synchronize_adage_ids_on_offerers(adage_cultural_partners.partners)
+
+    # compare the current Offerer allowedOnAdage status with the result of synchronize_adage_cultural_partners stored in redis
+    redis_client = current_app.redis_client
+    activated_sirens_value = redis_client.get("synchronize_adage_cultural_partners:activated_offerers")
+    deactivated_sirens_value = redis_client.get("synchronize_adage_cultural_partners:deactivated_offerers")
+
+    if activated_sirens_value is None or deactivated_sirens_value is None:
+        logger.warning("Could not get synchronize_adage_cultural_partners result for compare")
+        return
+
+    activated_sirens = activated_sirens_value.split(",")
+    deactivated_sirens = deactivated_sirens_value.split(",")
+
+    failed_activated_offerers = (
+        db.session.query(offerers_models.Offerer)
+        .filter(
+            offerers_models.Offerer.siren.in_(activated_sirens),
+            offerers_models.Offerer.allowedOnAdage == False,
+        )
+        .all()
+    )
+    failed_deactivated_offerers = (
+        db.session.query(offerers_models.Offerer)
+        .filter(
+            offerers_models.Offerer.siren.in_(deactivated_sirens),
+            offerers_models.Offerer.allowedOnAdage == True,
+        )
+        .all()
+    )
+
+    if failed_activated_offerers or failed_deactivated_offerers:
+        logger.error(
+            "Adage partners sync - Failed to sync",
+            extra={
+                "failed_activated_offerers": [o.id for o in failed_activated_offerers],
+                "failed_deactivated_offerers": [o.id for o in failed_deactivated_offerers],
+            },
+        )
 
 
 @blueprint.cli.command("eac_notify_pro_one_day_before")
