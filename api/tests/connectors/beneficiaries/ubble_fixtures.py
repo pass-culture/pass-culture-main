@@ -76,6 +76,99 @@ UBBLE_IDENTIFICATION_V2_RESPONSE = {
     },
 }
 
+UBBLE_ID_ATTEMPTS_RESPONSE = {
+    "_links": {
+        "self": {
+            "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01kea2m5mmq4natknnp27vk9mt/attempts"
+        }
+    },
+    "data": [
+        {
+            "_links": {
+                "self": {
+                    "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01kea2m5mmq4natknnp27vk9mt/attempts/iatp_01kea2m6h5hzgfqmc5hvnez23p"
+                },
+                "verification_url": {"href": "https://id.ubble.example.com/b4a67860-9a43-4095-9542-f547bd644fe3"},
+            },
+            "applicant_session_information": {
+                "initial_device": "mobile",
+                "ip_address": "127.0.0.1",
+                "number_of_sessions": 1,
+                "selected_documents": [{"country": "FR", "document_type": "ID"}],
+                "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36",
+            },
+            "created_on": "2026-01-06T16:35:45.831066Z",
+            "id": "iatp_01kea2m6h5hzgfqmc5hvnez23p",
+            "modified_on": "2026-01-06T16:36:20.709744Z",
+            "redirect_url": "https://app.testing.passculture.example.com/verification-identite/fin",
+            "response_codes": [{"code": 10000, "summary": "approved"}],
+            "status": "completed",
+        },
+        {
+            "_links": {
+                "self": {
+                    "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01kea2m5mmq4natknnp27vk9mt/attempts/iatp_01kea2m5n 3rb2qs3ghc2b34szq"
+                },
+                "verification_url": {"href": "https://id.ubble.example.com/03aecb50-51b8-47e0-8a27-49a0ecafa572"},
+            },
+            "created_on": "2026-01-06T16:35:44.936279Z",
+            "id": "iatp_01kea2m5n3rb2qs3ghc2b34szq",
+            "modified_on": "2026-01-06T16:35:45.770329Z",
+            "redirect_url": "https://app.testing.passculture.example.com/verification-identite/fin",
+            "response_codes": [],
+            "status": "expired",
+        },
+    ],
+    "limit": 10,
+    "skip": 0,
+    "total_count": 2,
+}
+
+
+def build_ubble_attempt_assets_response(front_image_url: str, back_image_url: str) -> dict:
+    response = copy.deepcopy(UBBLE_ATTEMPT_ASSETS_RESPONSE)
+    response["data"][1]["_links"]["asset_url"]["href"] = front_image_url
+    response["data"][2]["_links"]["asset_url"]["href"] = back_image_url
+    return response
+
+
+UBBLE_ATTEMPT_ASSETS_RESPONSE = {
+    "_links": {
+        "self": {
+            "href": "https://api.ubble.example.com/v2/identity-verifications/idv_01kea2m5mmq4natknnp27vk9mt/attempts/iatp_01kea 2m6h5hzgfqmc5hvnez23p/assets"
+        }
+    },
+    "data": [
+        {
+            "_links": {
+                "asset_url": {
+                    "href": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01kea2m5mmq4natknnp27v k9mt/b4a67860-9a43-4095-9542-f547bd644fe3/75a4809b-9dc1-4ab0-b42c-66551c9ce474/face.jpeg?response-content-type=image%2Fpng&X-Am z-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20260106%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=202601 06T165631Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=2728e21722d98c2f0aa1f1f4de866e8c4f5ba7bee26755b36cce28fb6 0b09b44"
+                }
+            },
+            "type": "face_image",
+        },
+        {
+            "_links": {
+                "asset_url": {
+                    "href": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01kea2m5mmq4natknnp27v k9mt/b4a67860-9a43-4095-9542-f547bd644fe3/75a4809b-9dc1-4ab0-b42c-66551c9ce474/front_id.jpeg?response-content-type=image%2Fpng& X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20260106%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=20 260106T165631Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=2c145c683b5e802258ebd774b0e964c59d52009fec7612f21f3d7 4a8e6fc2aaf"
+                }
+            },
+            "type": "document_front_image",
+        },
+        {
+            "_links": {
+                "asset_url": {
+                    "href": "https://minio.ubble.example.com/production.ubble.ai/OIOXQTAYFYMF/idv_01kea2m5mmq4natknnp27v k9mt/b4a67860-9a43-4095-9542-f547bd644fe3/75a4809b-9dc1-4ab0-b42c-66551c9ce474/back_id.jpeg?response-content-type=image%2Fpng&X -Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=6nzrc5UNPR864KRwHLkZ%2F20260106%2Feu-west-2%2Fs3%2Faws4_request&X-Amz-Date=202 60106T165631Z&X-Amz-Expires=600&X-Amz-SignedHeaders=host&X-Amz-Signature=0d365586161d39bcca84fa09901f39b3c328c83b0a99dd3a54e23f 1dd1181363"
+                }
+            },
+            "type": "document_back_image",
+        },
+    ],
+    "limit": 10,
+    "skip": 0,
+    "total_count": 3,
+}
+
 UBBLE_IDENTIFICATION_RESPONSE = {
     "data": {
         "type": "identifications",

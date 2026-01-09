@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 
 import pcapi.notifications.push.testing as push_testing
 from pcapi import settings
+from pcapi.connectors.beneficiaries import ubble
 from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription import messages as subscription_messages
 from pcapi.core.subscription import models as subscription_models
@@ -38,6 +39,8 @@ from pcapi.utils.transaction_manager import atomic
 
 import tests
 from tests.connectors.beneficiaries.ubble_fixtures import UBBLE_IDENTIFICATION_V2_RESPONSE
+from tests.connectors.beneficiaries.ubble_fixtures import UBBLE_ID_ATTEMPTS_RESPONSE
+from tests.connectors.beneficiaries.ubble_fixtures import build_ubble_attempt_assets_response
 from tests.connectors.beneficiaries.ubble_fixtures import build_ubble_identification_v2_response
 from tests.core.subscription.test_factories import IdentificationState
 from tests.core.subscription.test_factories import UbbleIdentificationIncludedDocumentsFactory
@@ -1019,12 +1022,10 @@ class DownloadUbbleDocumentPictureTest:
         )
 
         # When
-        with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
+        with pytest.raises(ubble.UbbleAssetExpiredError):
             ubble_subscription_api._download_and_store_ubble_picture(self.fraud_check, self.picture_path, "front")
 
         # Then
-        assert exc_info.value.is_retryable is False
-
         record = caplog.records[0]
         assert record.levelname == "ERROR"
         assert record.message == "Ubble picture-download: request has expired"
@@ -1130,11 +1131,10 @@ class ArchiveUbbleUserIdPicturesTest:
         requests_mock.register_uri("GET", self.back_picture_url, status_code=403)
 
         # When
-        with pytest.raises(requests_utils.ExternalAPIException) as exc_info:
+        with pytest.raises(ubble.UbbleAssetExpiredError):
             ubble_subscription_api.archive_ubble_user_id_pictures(fraud_check.thirdPartyId)
 
         # Then
-        assert exc_info.value.is_retryable is False
         assert fraud_check.idPicturesStored is False
 
     @patch("botocore.session.Session.create_client")
@@ -1243,6 +1243,58 @@ class ArchiveUbbleUserIdPicturesTest:
         # Then
         assert fraud_check.idPicturesStored is expected_id_pictures_stored
         assert mocked_storage_client.return_value.upload_file.call_count == 1
+
+    @patch("botocore.session.Session.create_client")
+    def test_recovery_after_archive_asset_expired(self, mocked_storage_client, requests_mock):
+        expired_front_asset_url = "http://example.com/expired/front_asset.png"
+        expired_back_asset_url = "http://example.com/expired/back_asset.png"
+        fraud_check = BeneficiaryFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            type=subscription_models.FraudCheckType.UBBLE,
+            resultContent=UbbleContentFactory(
+                status=ubble_schemas.UbbleIdentificationStatus.PENDING,
+                signed_image_front_url=expired_front_asset_url,
+                signed_image_back_url=expired_back_asset_url,
+            ),
+        )
+
+        requests_mock.get(expired_front_asset_url, status_code=403)
+        requests_mock.get(expired_back_asset_url, status_code=403)
+
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}/attempts",
+            json=UBBLE_ID_ATTEMPTS_RESPONSE,
+        )
+        successful_attempt_id = UBBLE_ID_ATTEMPTS_RESPONSE["data"][0]["id"]
+        requests_mock.get(
+            f"{settings.UBBLE_API_URL}/v2/identity-verifications/{fraud_check.thirdPartyId}/attempts/{successful_attempt_id}/assets",
+            json=build_ubble_attempt_assets_response(self.front_picture_url, self.back_picture_url),
+        )
+
+        with open(f"{IMAGES_DIR}/carte_identite_front.png", "rb") as img_front:
+            identity_file_picture_front = BytesIO(img_front.read())
+        with open(f"{IMAGES_DIR}/carte_identite_back.png", "rb") as img_back:
+            identity_file_picture_back = BytesIO(img_back.read())
+
+        requests_mock.get(
+            self.front_picture_url,
+            status_code=200,
+            headers={"content-type": "image/png"},
+            body=identity_file_picture_front,
+        )
+        requests_mock.get(
+            self.back_picture_url,
+            status_code=200,
+            headers={"content-type": "image/png"},
+            body=identity_file_picture_back,
+        )
+
+        ubble_subscription_api.archive_id_pictures_with_recovery(fraud_check)
+
+        assert fraud_check.resultContent["signed_image_front_url"] == self.front_picture_url
+        assert fraud_check.resultContent["signed_image_back_url"] == self.back_picture_url
+        assert fraud_check.idPicturesStored
+        assert mocked_storage_client.return_value.upload_file.call_count == 2
 
 
 @pytest.mark.usefixtures("db_session")
