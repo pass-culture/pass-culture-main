@@ -16,3 +16,8 @@ migration:
 # Add 'ticket' label to any PR where the head branch name has a `PC` or 'pc' section in the name
 ticket:
  - head-branch: ['PC', 'pc']
+
+# Add `do-not-merge` to PRs for console job scripts
+do-not-merge:
+- changed-files:
+  - any-glob-to-any-file: api/src/pcapi/scripts/temp/**
