@@ -21,8 +21,8 @@ from pcapi.routes.native.v1.serialization.common_models import AccessibilityComp
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import address_serialize
-from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import collective_history_serialize
+from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
@@ -100,10 +100,10 @@ class GetCollectiveOfferLocationModel(BaseModel):
     location: address_serialize.LocationResponseModel | None
 
 
-def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
+def _serialize_venue(venue: offerers_models.Venue) -> venues_serialize.ListOffersVenueResponseModel:
     department_code = venue.offererAddress.address.departmentCode
 
-    return base_serializers.ListOffersVenueResponseModel(
+    return venues_serialize.ListOffersVenueResponseModel(
         id=venue.id,
         isVirtual=venue.isVirtual,
         name=venue.name,
@@ -116,7 +116,7 @@ def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffer
 class BaseCollectiveOfferResponseModel(ConfiguredBaseModel):
     id: int
     name: str
-    venue: base_serializers.ListOffersVenueResponseModel
+    venue: venues_serialize.ListOffersVenueResponseModel
     displayedStatus: educational_models.CollectiveOfferDisplayedStatus
     imageUrl: str | None
     location: GetCollectiveOfferLocationModel

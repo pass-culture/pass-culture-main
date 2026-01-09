@@ -25,8 +25,8 @@ from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import artist_serialize
-from pcapi.routes.serialization import base as base_serializers
 from pcapi.routes.serialization import highlight_serialize
+from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.address_serialize import LocationResponseModel
 from pcapi.routes.serialization.address_serialize import VenueAddressInfoGetter
 from pcapi.routes.serialization.address_serialize import retrieve_address_info_from_oa
@@ -258,7 +258,7 @@ class ListOffersOfferResponseModel(BaseModel):
     thumbUrl: str | None
     productIsbn: str | None
     subcategoryId: SubcategoryIdEnum
-    venue: base_serializers.ListOffersVenueResponseModel
+    venue: venues_serialize.ListOffersVenueResponseModel
     status: OfferStatus
     isShowcase: bool | None
     location: LocationResponseModel | None
@@ -296,8 +296,8 @@ def _serialize_stock(stock: offers_models.Stock) -> ListOffersStockResponseModel
     )
 
 
-def _serialize_venue(venue: offerers_models.Venue) -> base_serializers.ListOffersVenueResponseModel:
-    return base_serializers.ListOffersVenueResponseModel(
+def _serialize_venue(venue: offerers_models.Venue) -> venues_serialize.ListOffersVenueResponseModel:
+    return venues_serialize.ListOffersVenueResponseModel(
         id=venue.id,
         isVirtual=venue.isVirtual,
         name=venue.name,
