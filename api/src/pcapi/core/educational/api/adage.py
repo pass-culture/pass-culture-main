@@ -92,6 +92,198 @@ def get_venue_by_id_for_adage_iframe(
     return venue, relative
 
 
+def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner]) -> None:
+    from pcapi.core.external.attributes.api import update_external_pro
+
+    adage_id_by_venue_id: dict[int, str] = {}
+    activated_venue_ids: set[int] = set()
+    activated_adage_ids: set[str] = set()
+    activated_sirens: set[str] = set()
+    deactivated_adage_ids: set[str] = set()
+    deactivated_venue_ids: set[int] = set()
+    deactivated_sirens: set[str] = set()
+
+    ### STEP 1: read the adage partners and fill our containers of adage ids / venue ids / SIRENs
+    for partner in adage_partners:
+        adage_id = str(partner.id)
+
+        if partner.venueId:
+            adage_id_by_venue_id[partner.venueId] = adage_id
+
+        if partner.siret:
+            siren = partner.siret[:9]
+
+            if partner.actif == 1:
+                activated_sirens.add(siren)
+            else:
+                deactivated_sirens.add(siren)
+
+        if not adage_id or partner.synchroPass != 1 or partner.actif != 1:
+            deactivated_adage_ids.add(adage_id)
+            if partner.venueId:
+                deactivated_venue_ids.add(partner.venueId)
+        else:
+            activated_adage_ids.add(adage_id)
+            if partner.venueId:
+                activated_venue_ids.add(partner.venueId)
+
+    ### STEP 2: fetch the Venues that are not active on Adage side and remove them from eac
+    deactivated_venues = _fetch_venues(deactivated_adage_ids, deactivated_venue_ids)
+    logger.info(
+        "Adage partners sync - deactivated venues",
+        extra={"number_of_venues": len(deactivated_venues), "deactivated_venues": [v.id for v in deactivated_venues]},
+    )
+
+    offerer_ids_with_deactivated_venue: set[int] = set()
+    for venue in deactivated_venues:
+        _remove_venue_from_eac(venue)
+        offerer_ids_with_deactivated_venue.add(venue.managingOffererId)
+
+    db.session.flush()
+
+    ### STEP 3: fetch the Venues that are active on Adage side and add them to eac
+    activated_venues = _fetch_venues(activated_adage_ids, activated_venue_ids)
+    logger.info(
+        "Adage partners sync - activated venues",
+        extra={"number_of_venues": len(activated_venues), "activated_venues": [v.id for v in activated_venues]},
+    )
+
+    new_adage_id_by_venue_id: dict[int, str] = {}
+    offerers_with_activated_venue_sirens: set[str] = set()
+    for venue in activated_venues:
+        # update the external user in case of previous adageId being None
+        # this is because we track if the user has an adageId, not the value of the adageId
+        if not venue.adageId:
+            emails = offerers_repository.get_emails_by_venue(venue)
+            for email in emails:
+                update_external_pro(email)
+            if venue.managingOfferer.isValidated:
+                send_eac_offerer_activation_email(venue, list(emails))
+
+        new_adage_id = adage_id_by_venue_id.get(venue.id)
+        if not new_adage_id:
+            logger.warning(
+                "Adage partners sync - Venue is not present in Adage, we could add it to a partner with adageId",
+                extra={"venue.id": venue.id, "adageId": venue.adageId},
+            )
+            continue
+
+        if venue.adageId != new_adage_id:
+            new_adage_id_by_venue_id[venue.id] = new_adage_id
+            _add_venue_to_eac(venue, new_adage_id)
+            offerers_with_activated_venue_sirens.add(venue.managingOfferer.siren)
+
+    db.session.flush()
+    logger.info(
+        "Adage partners sync - adageId updates",
+        extra={"number_of_updates": len(new_adage_id_by_venue_id), "updates": new_adage_id_by_venue_id},
+    )
+
+    ### STEP 4: list current allowed Offerers and Offerers that have a Venue with adageId
+    allowed_offerers = (
+        db.session.query(offerers_models.Offerer)
+        .filter(
+            offerers_models.Offerer.siren.in_(activated_sirens),
+            offerers_models.Offerer.allowedOnAdage.is_(True),
+        )
+        .options(sa_orm.load_only(offerers_models.Offerer.siren))
+    )
+    allowed_offerer_sirens = {o.siren for o in allowed_offerers}
+
+    offerers_with_venue_adage_id = (
+        db.session.query(offerers_models.Offerer)
+        .join(offerers_models.Venue)
+        .filter(offerers_models.Venue.adageId.is_not(None))
+        .options(sa_orm.load_only(offerers_models.Offerer.siren))
+        # some venues with an adageId are soft-deleted, we need to include them so that the offerer keeps allowedOnAdage=True
+        .execution_options(include_deleted=True)
+    )
+    offerers_with_venue_adage_id_sirens = {o.siren for o in offerers_with_venue_adage_id}
+
+    ### STEP 5: compute Offerers to activate / deactivate
+    sirens_to_activate = (
+        activated_sirens  # To activate = SIRENs that are active on Adage side
+        | offerers_with_activated_venue_sirens  # and the Offerers for which a Venue has just been activated
+        - allowed_offerer_sirens  # ignore the already activated Offerers
+    )
+    sirens_to_deactivate = (
+        deactivated_sirens  # To deactivate = SIRENs that are not active on Adage side
+        - offerers_with_venue_adage_id_sirens  # do not deactivate an Offerer that has a Venue with adageId
+    )
+
+    # STEP 6: for each Offerer with a deactivated Venue, check if we should also deactivate the Offerer
+    offerers_to_check = (
+        db.session.query(offerers_models.Offerer)
+        .filter(offerers_models.Offerer.id.in_(offerer_ids_with_deactivated_venue))
+        .options(sa_orm.joinedload(offerers_models.Offerer.managedVenues))
+        .execution_options(include_deleted=True)
+    )
+    for offerer in offerers_to_check:
+        if _should_deactivate_offerer(offerer):
+            logger.info(
+                "Adage partners sync - deactivating Offerer following Venue adageId removal",
+                extra={"offerer_id": offerer.id, "siren": offerer.siren},
+            )
+            sirens_to_deactivate.add(offerer.siren)
+
+    # STEP 7: update the Offerers
+    logger.info("Adage partners sync - SIRENs to activate", extra={"sirens_to_activate": sirens_to_activate})
+    logger.info("Adage partners sync - SIRENs to deactivate", extra={"sirens_to_deactivate": sirens_to_deactivate})
+
+    db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(sirens_to_activate)).update(
+        {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
+    )
+    db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(sirens_to_deactivate)).update(
+        {offerers_models.Offerer.allowedOnAdage: False}, synchronize_session=False
+    )
+
+    db.session.flush()
+
+
+def _fetch_venues(adage_ids: typing.Iterable[str], venue_ids: typing.Iterable[int]) -> list[offerers_models.Venue]:
+    return (
+        db.session.query(offerers_models.Venue)
+        .filter(
+            sa.or_(
+                offerers_models.Venue.adageId.in_(adage_ids),
+                offerers_models.Venue.id.in_(venue_ids),
+            )
+        )
+        .options(sa_orm.joinedload(offerers_models.Venue.managingOfferer))
+        .all()
+    )
+
+
+def _add_venue_to_eac(venue: offerers_models.Venue, adage_id: str) -> None:
+    history_api.add_action(
+        history_models.ActionType.INFO_MODIFIED,
+        author=None,
+        venue=venue,
+        comment="Synchronisation ADAGE",
+        modified_info={"adageId": {"old_info": venue.adageId, "new_info": adage_id}},
+    )
+    venue.adageId = adage_id
+    venue.adageInscriptionDate = date_utils.get_naive_utc_now()
+
+
+def _should_deactivate_offerer(offerer: offerers_models.Offerer) -> bool:
+    # the Offerer should remain activated if
+    # - it has one Venue with an adageId
+    # OR
+    # - there is one active Adage partner corresponding to the SIREN
+
+    for venue in offerer.managedVenues:
+        if venue.adageId is not None:
+            return False
+
+    adage_partners = adage_client.get_adage_offerer(siren=offerer.siren)
+    for partner in adage_partners:
+        if partner.actif == 1:
+            return False
+
+    return True
+
+
 def synchronize_adage_ids_on_offerers(partners_from_adage: list[schemas.AdageCulturalPartner]) -> None:
     adage_sirens: set[str] = {p.siret[:9] for p in partners_from_adage if (p.actif == 1 and p.siret)}
     existing_sirens: dict[str, bool] = dict(
