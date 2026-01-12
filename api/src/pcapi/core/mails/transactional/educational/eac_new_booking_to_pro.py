@@ -44,6 +44,7 @@ def get_eac_new_booking_to_pro_email_data(booking: CollectiveBooking) -> models.
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": educational_institution.postalCode,
             "IS_EVENT": True,  #  business rule: It must always be True
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ID": offer.id,
             "COLLECTIVE_OFFER_ADDRESS": get_collective_offer_full_address(offer),
         },
     )
