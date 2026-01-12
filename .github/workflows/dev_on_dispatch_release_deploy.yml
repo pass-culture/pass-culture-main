@@ -35,7 +35,7 @@ jobs:
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
-      color: "#D4AD3B"  # yellow
+      color: "#D4AD3B" # yellow
       message: ":github-pending: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été demandé sur `${{ github.event.inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -58,25 +58,23 @@ jobs:
       - name: "Get app version"
         id: "app-version"
         run: echo APP_VERSION="$(cat ./api/version.txt)" | tee -a $GITHUB_OUTPUT
-  
 
   deployment-confirmed:
     name: "Update message with deployment confirmation"
-    needs: [ask-for-review-on-slack,version]
+    needs: [ask-for-review-on-slack, version]
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{ vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID }}
       method: update
       message-ts: ${{ needs.ask-for-review-on-slack.outputs.posted_message_ts }}
-      color: "#28A745"  # green
+      color: "#28A745" # green
       message: ":rocket: Un <https://github.com/${{github.repository}}/actions/runs/${{github.run_id}}|déploiement> de `${{ github.ref_name }}` a été approuvé sur `${{ github.event.inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
-
   # DELETE THIS : mgeoffray 2025-09-04
-  # As soon as we are confident in our staging automatic deployments 
+  # As soon as we are confident in our staging automatic deployments
   deploy-ehp:
     name: "Deploy on EHP environnement"
     needs: version
@@ -91,6 +89,7 @@ jobs:
       apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
+      is_new_infra: true
       doc-api-entrypoint: "api/documentation"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -156,12 +155,12 @@ jobs:
 
   end-slack-success-notification:
     name: "Send workflow success notification"
-    needs: [version,deploy-prod,deploy-ehp]
+    needs: [version, deploy-prod, deploy-ehp]
     if: always() && !failure() && !cancelled()
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#28A745"  # green
+      color: "#28A745" # green
       message: ":github-success: La version `v${{ needs.version.outputs.APP_VERSION }}` a été <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déployée> sur `${{ github.event.inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
@@ -169,12 +168,12 @@ jobs:
 
   end-slack-failure-notification:
     name: "Send workflow failure notification"
-    needs: [version,deploy-prod,deploy-ehp]
+    needs: [version, deploy-prod, deploy-ehp]
     if: always() && (failure() || cancelled())
     uses: ./.github/workflows/dev_on_workflow_post_slack_message.yml
     with:
       channel: ${{vars.SLACK_ALERTES_DEPLOIEMENT_CHANNEL_ID}}
-      color: "#A30002"  # red
+      color: "#A30002" # red
       message: ":github-failure:Le <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|déploiement> de la version `v${{ needs.version.outputs.APP_VERSION }}` a échoué sur `${{ github.event.inputs.target_environment }}`"
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
