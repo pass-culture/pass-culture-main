@@ -5,11 +5,10 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
-import { ValidationMessageList } from '@/ui-kit/form/ValidationMessageList/ValidationMessageList'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -95,7 +94,7 @@ export const UserPasswordForm = ({
     closeForm()
   }
 
-  const newPassword = watch('newPassword')
+  console.log({ errors })
 
   return (
     <BoxFormLayout.Fields>
@@ -104,6 +103,7 @@ export const UserPasswordForm = ({
           <div className={styles['text-input']}>
             <PasswordInput
               {...register('oldPassword')}
+              value={watch('oldPassword')}
               error={errors.oldPassword?.message}
               label="Mot de passe actuel"
               required
@@ -115,6 +115,7 @@ export const UserPasswordForm = ({
               {...register('newPassword', {
                 onChange: () => trigger('newPassword'),
               })}
+              value={watch('newPassword')}
               error={
                 // This is because we only want to display the field error if it's coming back from the API
                 // In this case, API error responses don't have a ".type" property (which is specific to Yup)
@@ -125,15 +126,13 @@ export const UserPasswordForm = ({
               label="Nouveau mot de passe"
               required
               requiredIndicator="explicit"
-            />
-            <ValidationMessageList
-              passwordValue={newPassword}
-              hasError={!!errors.newPassword}
+              displayValidation
             />
           </div>
           <div className={styles['text-input']}>
             <PasswordInput
               {...register('newConfirmationPassword')}
+              value={watch('newConfirmationPassword')}
               error={errors.newConfirmationPassword?.message}
               label="Confirmez votre nouveau mot de passe"
               required

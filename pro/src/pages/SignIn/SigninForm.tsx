@@ -7,13 +7,13 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullKeyIcon from '@/icons/full-key.svg'
 import iconFullNext from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
 
 import type { SigninFormValues } from './SignIn'
 import styles from './Signin.module.scss'
@@ -32,7 +32,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
     ? '/inscription/compte/creation'
     : '/erreur/indisponible'
 
-  const { formState, register } = useFormContext<SigninFormValues>()
+  const { formState, register, watch } = useFormContext<SigninFormValues>()
   const { errors } = formState
 
   return (
@@ -61,6 +61,7 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             required
             error={errors.password?.message}
             {...register('password')}
+            value={watch('password')}
             requiredIndicator="hidden"
           />
         </div>
