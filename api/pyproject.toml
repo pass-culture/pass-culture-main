@@ -16,7 +16,7 @@ beautifulsoup4 = "4.14.3"
 boto3 = "1.42.8"
 boussole = "2.1.3"
 brevo-python = "1.2.0"
-celery = { version = "5.6.0", extras = ["redis"] }
+celery = { version = "5.6.2", extras = ["redis"] }
 click = "8.3.1"
 clickhouse-sqlalchemy = "0.3.2"
 cryptography = "^46.0.3"
