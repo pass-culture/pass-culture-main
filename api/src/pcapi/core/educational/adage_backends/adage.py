@@ -89,7 +89,13 @@ class AdageHttpClient(AdageClient):
     def _make_get_request(self, url: str, params: dict[str, typing.Any] | None = None) -> requests.Response:
         try:
             api_response = requests.get(
-                url=url, headers={self.header_key: self.api_key}, params=params, timeout=settings.ADAGE_REQUEST_TIMEOUT
+                url=url,
+                headers={
+                    self.header_key: self.api_key,
+                    "Accept": "application/json",
+                },
+                params=params,
+                timeout=settings.ADAGE_REQUEST_TIMEOUT,
             )
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as exp:
             logger.info("could not connect to adage, error: %s", traceback.format_exc())
@@ -102,7 +108,11 @@ class AdageHttpClient(AdageClient):
         try:
             api_response = requests.post(
                 url=url,
-                headers={self.header_key: self.api_key, "Content-Type": "application/json"},
+                headers={
+                    self.header_key: self.api_key,
+                    "Accept": "application/json",
+                    "Content-Type": "application/json",
+                },
                 data=data,
                 timeout=settings.ADAGE_REQUEST_TIMEOUT,
             )
