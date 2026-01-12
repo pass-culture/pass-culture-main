@@ -25,7 +25,7 @@ type HeaderProps = {
   setLateralPanelOpen?: (state: boolean) => void
   focusCloseButton?: () => void
   disableHomeLink?: boolean
-  adminArea?: boolean
+  isAdminArea?: boolean
 }
 
 export const Header = forwardRef(
@@ -35,7 +35,7 @@ export const Header = forwardRef(
       setLateralPanelOpen = () => undefined,
       focusCloseButton = () => undefined,
       disableHomeLink = false,
-      adminArea = false,
+      isAdminArea = false,
     }: HeaderProps,
     openButtonRef: ForwardedRef<HTMLButtonElement>
   ) => {
@@ -106,12 +106,15 @@ export const Header = forwardRef(
               {withSwitchVenueFeature && (
                 <ButtonLink
                   variant={ButtonVariant.SECONDARY}
-                  to={adminArea ? '/accueil' : '/remboursements'}
+                  to={isAdminArea ? '/accueil' : '/remboursements'}
                   iconPosition={IconPositionEnum.LEFT}
-                  icon={adminArea ? fullBackIcon : strokeRepaymentIcon}
-                  className={styles['tablet-and-above']}
+                  icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
+                  className={cn(
+                    styles['tablet-and-above'],
+                    styles['is-switch-venue']
+                  )}
                 >
-                  {adminArea
+                  {isAdminArea
                     ? 'Revenir à l’Espace Partenaire'
                     : 'Espace administration'}
                 </ButtonLink>

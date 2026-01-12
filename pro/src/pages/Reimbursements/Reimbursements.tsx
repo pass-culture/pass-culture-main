@@ -20,7 +20,7 @@ export const Reimbursements = (): JSX.Element => {
   return (
     <BasicLayout
       mainHeading="Gestion financière"
-      adminArea={withSwitchVenueFeature}
+      isAdminArea={withSwitchVenueFeature}
     >
       <div className={styles['reimbursements-container']}>
         <div>

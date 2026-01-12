@@ -10,11 +10,11 @@ const defaultProps = {
   setLateralPanelOpen: vi.fn(),
   focusCloseButton: vi.fn(),
   disableHomeLink: false,
-  adminArea: false,
+  isAdminArea: false,
 }
 
 describe('Header', () => {
-  it('should show "Espace administration" button when FF is enabled and adminArea is false', () => {
+  it('should show "Espace administration" button when FF is enabled and isAdminArea is false', () => {
     renderWithProviders(<Header {...defaultProps} />, {
       features: ['WIP_SWITCH_VENUE'],
     })
@@ -23,8 +23,8 @@ describe('Header', () => {
     ).toHaveAttribute('href', '/remboursements')
   })
 
-  it('should show "Revenir à l’Espace Partenaire" button when FF is enabled and adminArea is true', () => {
-    renderWithProviders(<Header {...defaultProps} adminArea={true} />, {
+  it('should show "Revenir à l’Espace Partenaire" button when FF is enabled and isAdminArea is true', () => {
+    renderWithProviders(<Header {...defaultProps} isAdminArea={true} />, {
       features: ['WIP_SWITCH_VENUE'],
     })
     expect(

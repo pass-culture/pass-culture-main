@@ -99,7 +99,7 @@ export const Collaborators = (): JSX.Element | null => {
   return (
     <BasicLayout
       mainHeading="Collaborateurs"
-      adminArea={withSwitchVenueFeature}
+      isAdminArea={withSwitchVenueFeature}
     >
       <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>

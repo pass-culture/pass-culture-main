@@ -19,7 +19,7 @@ interface LateralPanelProps {
   openButtonRef: React.RefObject<HTMLButtonElement>
   closeButtonRef: React.RefObject<HTMLButtonElement>
   navPanel: React.RefObject<HTMLDivElement>
-  adminArea?: boolean
+  isAdminArea?: boolean
 }
 
 export const LateralPanel = ({
@@ -28,7 +28,7 @@ export const LateralPanel = ({
   openButtonRef,
   closeButtonRef,
   navPanel,
-  adminArea = false,
+  isAdminArea = false,
 }: LateralPanelProps) => {
   useEffect(() => {
     const modalElement = navPanel.current
@@ -106,7 +106,7 @@ export const LateralPanel = ({
             />
           </div>
         )}
-        {adminArea ? (
+        {isAdminArea ? (
           <AdminSideNavLinks isLateralPanelOpen={lateralPanelOpen} />
         ) : (
           <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
