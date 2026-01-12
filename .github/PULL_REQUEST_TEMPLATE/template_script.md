@@ -2,7 +2,9 @@
 
 [Ticket Jira](https://passculture.atlassian.net/browse/PC-XXXXX)
 
-**:warning: Ne pas merger dans `Master`!**
+**:warning: Ne pas merger dans `master`!**
+
+<!-- Ajouter le label `do-not-merge` pour que la CI bloque le merge -->
 
 Mon script a tourné sur :
 
