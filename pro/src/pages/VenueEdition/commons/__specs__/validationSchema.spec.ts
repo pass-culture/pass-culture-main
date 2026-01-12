@@ -112,6 +112,7 @@ describe('VenueEditionForm validationSchema', () => {
       formValues: {
         ...defaultValues,
         isOpenToPublic: 'false',
+        activity: 'PRESS',
         openingHours: {
           MONDAY: null,
         },
@@ -182,6 +183,7 @@ describe('VenueEditionForm validationSchema', () => {
         {
           ...defaultValues,
           isOpenToPublic: 'false',
+          activity: 'PRESS',
           culturalDomains: null,
         }
       )
@@ -199,6 +201,7 @@ describe('VenueEditionForm validationSchema', () => {
         {
           ...defaultValues,
           isOpenToPublic: 'false',
+          activity: 'PRESS',
           culturalDomains: [],
         }
       )
