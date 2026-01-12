@@ -3,12 +3,11 @@ import { useFormContext } from 'react-hook-form'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import iconFullNext from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
-import { ValidationMessageList } from '@/ui-kit/form/ValidationMessageList/ValidationMessageList'
 
 import type { ResetPasswordValues } from '../ResetPassword'
 import styles from './ChangePasswordForm.module.scss'
@@ -29,8 +28,6 @@ export const ChangePasswordForm = ({
     formState: { isSubmitting, errors },
   } = useFormContext<ResetPasswordValues>()
 
-  const newPassword = watch('newPassword')
-
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
@@ -43,10 +40,9 @@ export const ChangePasswordForm = ({
           <PasswordInput
             label="Nouveau mot de passe"
             {...register('newPassword')}
-          />
-          <ValidationMessageList
-            passwordValue={newPassword}
-            hasError={!!errors.newPassword}
+            value={watch('newPassword')}
+            error={errors.newPassword?.message}
+            displayValidation
           />
         </div>
         <div className={styles['text-input']}>
@@ -54,6 +50,7 @@ export const ChangePasswordForm = ({
             label="Confirmez votre nouveau mot de passe"
             error={errors.newConfirmationPassword?.message}
             {...register('newConfirmationPassword')}
+            value={watch('newConfirmationPassword')}
           />
         </div>
 

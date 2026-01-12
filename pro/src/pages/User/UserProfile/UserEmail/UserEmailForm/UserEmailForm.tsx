@@ -6,11 +6,11 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { UserResetEmailBodyModel } from '@/apiClient/v1'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
 
 import styles from './UserEmailForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -47,6 +47,7 @@ export const UserEmailForm = ({
     handleSubmit,
     reset,
     formState: { isSubmitting, errors },
+    watch,
   } = hookForm
 
   const onSubmit = async (values: UserResetEmailBodyModel) => {
@@ -98,6 +99,7 @@ export const UserEmailForm = ({
                 error={errors.password?.message}
                 required={true}
                 {...register('password')}
+                value={watch('password')}
                 requiredIndicator="explicit"
               />
             </div>

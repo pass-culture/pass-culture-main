@@ -1,9 +1,9 @@
 import * as yup from 'yup'
 
-import { isPasswordValid } from '@/ui-kit/form/PasswordInput/validation'
-
 export const validationSchema = yup.object().shape({
-  newPassword: yup.string().required().test('isPasswordValid', isPasswordValid),
+  newPassword: yup
+    .string()
+    .required('Veuillez renseigner votre nouveau mot de passe'),
 
   // Adds "newConfirmationPassword" validation
   newConfirmationPassword: yup

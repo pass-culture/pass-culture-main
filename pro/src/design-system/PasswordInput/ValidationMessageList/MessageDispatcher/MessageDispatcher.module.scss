@@ -1,11 +1,10 @@
 @use "styles/mixins/_fonts.scss" as fonts;
-@use "styles/variables/_forms.scss" as forms;
 @use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_a11y.scss" as a11y;
 
-.field-success {
+.field {
   @include fonts.body-accent-xs;
 
-  color: var(--color-text-success);
   display: flex;
   text-align: left;
 
@@ -18,4 +17,20 @@
   &-text {
     white-space: pre-wrap;
   }
+}
+
+.field-error {
+  color: var(--color-text-error);
+}
+
+.field-success {
+  color: var(--color-text-success);
+}
+
+.field-pristine {
+  color: var(--color-text-subtle);
+}
+
+.sr-only {
+  @include a11y.visually-hidden;
 }

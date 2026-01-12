@@ -7,14 +7,13 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
+import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import iconFullNext from '@/icons/full-next.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { EmailSpellCheckInput } from '@/ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
-import { PasswordInput } from '@/ui-kit/form/PasswordInput/PasswordInput'
-import { ValidationMessageList } from '@/ui-kit/form/ValidationMessageList/ValidationMessageList'
 
 import styles from './SignupContainer.module.scss'
 
@@ -28,8 +27,6 @@ export const SignupForm = (): JSX.Element => {
     watch,
     setValue,
   } = useFormContext<ProUserCreationBodyV2Model>()
-
-  const newPassword = watch('password')
 
   return (
     <>
@@ -81,13 +78,12 @@ export const SignupForm = (): JSX.Element => {
         <FormLayout.Row mdSpaceAfter>
           <PasswordInput
             {...register('password')}
+            value={watch('password')}
             label="Mot de passe"
             autoComplete="new-password"
             required
-          />
-          <ValidationMessageList
-            passwordValue={newPassword}
-            hasError={!!errors.password}
+            error={errors.password?.message}
+            displayValidation
           />
         </FormLayout.Row>
 

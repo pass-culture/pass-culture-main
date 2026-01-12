@@ -8,7 +8,7 @@ import {
 import {
   getPasswordRuleLabel,
   PasswordValidationCheck,
-} from '@/ui-kit/form/PasswordInput/validation'
+} from '@/design-system/PasswordInput/validation'
 
 import {
   ValidationMessageList,
@@ -17,7 +17,7 @@ import {
 
 const defaultProps: ValidationMessageListProps = {
   passwordValue: 'a', // ggignore
-  hasError: false,
+  fieldName: 'password-input',
 }
 
 const renderValidationMessageList = (
