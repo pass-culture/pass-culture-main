@@ -763,7 +763,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "longitude": venue.offererAddress.address.longitude,
             "latitude": venue.offererAddress.address.latitude,
             "is_permanent": venue.isPermanent,
-            "venue_type_code": venue.venueTypeCode.name,
         }
 
     @pytest.mark.parametrize(
@@ -815,7 +814,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": True,
             "latitude": "48.869311",
             "longitude": "2.325463",
-            "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
             "acceslibre_url": None,
         }
 
@@ -841,7 +839,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.bookingEmail == data["booking_email"]
         assert venue.contact.phone_number == data["phone_number"]
         assert venue.isPermanent == data["is_permanent"]
-        assert venue.venueTypeCode == offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE
         assert address.city == data["city"]
         assert address.postalCode == data["postal_code"]
         assert address.street == data["street"]
@@ -866,7 +863,6 @@ class UpdateVenueTest(PostEndpointHelper):
         update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
         update_snapshot = update_action.extraData["modified_info"]
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
         assert update_snapshot["offererAddress.address.street"]["new_info"] == data["street"]
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
         assert update_snapshot["offererAddress.address.longitude"]["new_info"] == str(expected_longitude)
@@ -1074,7 +1070,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": True,
             "latitude": "48.869311",
             "longitude": "2.325463",
-            "venue_type_code": offerers_models.VenueTypeCode.CREATIVE_ARTS_STORE.name,
             "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
         }
 
@@ -1099,7 +1094,6 @@ class UpdateVenueTest(PostEndpointHelper):
         update_snapshot = update_action.extraData["modified_info"]
 
         assert update_snapshot["bookingEmail"]["new_info"] == data["booking_email"]
-        assert update_snapshot["venueTypeCode"]["new_info"] == data["venue_type_code"]
         assert update_snapshot["offererAddress.addressId"]["new_info"] == offerer_address.addressId
         assert update_snapshot["offererAddress.address.street"]["new_info"] == data["street"]
         assert update_snapshot["offererAddress.address.latitude"]["new_info"] == str(expected_latitude)
@@ -1164,7 +1158,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": True,
             "latitude": "16.306774",
             "longitude": "-61.703636",
-            "venue_type_code": offerers_models.VenueTypeCode.CULTURAL_CENTRE.name,
             "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
         }
 
@@ -1232,7 +1225,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": True,
             "latitude": "16.306774",
             "longitude": "-61.703636",
-            "venue_type_code": offerers_models.VenueTypeCode.CULTURAL_CENTRE.name,
             "acceslibre_url": "https://acceslibre.beta.gouv.fr/app/slug/",
         }
 
@@ -1295,7 +1287,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": venue.isPermanent,
             "latitude": other_venue.offererAddress.address.latitude,
             "longitude": other_venue.offererAddress.address.longitude,
-            "venue_type_code": venue.venueTypeCode.name,
             "acceslibre_url": "",
         }
 
@@ -1404,7 +1395,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": venue.isPermanent,
             "latitude": other_venue.offererAddress.address.latitude,
             "longitude": other_venue.offererAddress.address.longitude,
-            "venue_type_code": venue.venueTypeCode.name,
             "acceslibre_url": "",
         }
 
@@ -1464,7 +1454,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": venue.isPermanent,
             "latitude": other_venue.offererAddress.address.latitude,
             "longitude": other_venue.offererAddress.address.longitude,
-            "venue_type_code": venue.venueTypeCode.name,
             "acceslibre_url": "",
         }
 
@@ -1521,7 +1510,6 @@ class UpdateVenueTest(PostEndpointHelper):
             "is_permanent": venue.isPermanent,
             "latitude": "-20.88754",
             "longitude": "55.451008",
-            "venue_type_code": venue.venueTypeCode.name,
             "acceslibre_url": "",
         }
 
