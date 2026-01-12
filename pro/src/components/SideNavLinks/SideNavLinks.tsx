@@ -1,11 +1,9 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
 
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import classnames from 'classnames'
 import { useEffect } from 'react'
-import { NavLink, useLocation } from 'react-router'
+import { useLocation } from 'react-router'
 
-import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
 import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
 import {
   INDIVIDUAL_OFFER_WIZARD_STEP_IDS,
@@ -26,12 +24,8 @@ import {
   selectSelectedPartnerPageId,
 } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
-import fullDownIcon from '@/icons/full-down.svg'
-import fullHelpIcon from '@/icons/full-help.svg'
 import fullLeftIcon from '@/icons/full-left.svg'
-import fullRightIcon from '@/icons/full-right.svg'
 import fullSmsIcon from '@/icons/full-sms.svg'
-import fullUpIcon from '@/icons/full-up.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
@@ -44,12 +38,13 @@ import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { EllipsissedText } from '../EllipsissedText/EllipsissedText'
+import { HubPageNavigation } from '../HubPageNavigation/HubPageNavigation'
+import { HelpDropdownNavItem } from './HelpDropdownNavItem'
+import { SideNavLink } from './SideNavLink'
 import styles from './SideNavLinks.module.scss'
-
-const NAV_ITEM_ICON_SIZE = '20'
+import { SideNavToggleButton } from './SideNavToggleButton'
 
 interface SideNavLinksProps {
   isLateralPanelOpen: boolean
@@ -140,29 +135,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     stillRelevantSavedPartnerPageVenueId ||
     hasPartnerPageVenues.at(0)?.id
 
-  const isHubPage = location.pathname.includes('/hub')
-  if (isHubPage) {
-    return (
-      <div
-        className={classnames({
-          [styles['nav-links']]: true,
-          [styles['nav-links-open']]: isLateralPanelOpen,
-        })}
-      >
-        <ButtonLink
-          variant={ButtonVariant.SECONDARY}
-          to="/remboursements"
-          iconPosition={IconPositionEnum.LEFT}
-          icon={strokeRepaymentIcon}
-          className={styles['back-to-partner-space-button']}
-        >
-          Espace Administration
-        </ButtonLink>
-      </div>
-    )
-  }
+  const isHubPage = location.pathname === '/hub'
 
-  return (
+  return isHubPage ? (
+    <HubPageNavigation isLateralPanelOpen={isLateralPanelOpen} />
+  ) : (
     <div
       className={classnames({
         [styles['nav-links']]: true,
@@ -237,28 +214,17 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         )}
       >
         <li>
-          <NavLink
-            to="/accueil"
-            className={({ isActive }) =>
-              classnames(styles['nav-links-item'], {
-                [styles['nav-links-item-active']]: isActive,
-              })
-            }
-          >
-            <SvgIcon
-              src={strokeHomeIcon}
-              alt=""
-              width={NAV_ITEM_ICON_SIZE}
-              className={styles.icon}
-            />
-            <span className={styles['nav-links-item-title']}>Accueil</span>
-          </NavLink>
+          <SideNavLink to="/accueil" icon={strokeHomeIcon}>
+            Accueil
+          </SideNavLink>
         </li>
 
         {/* INDIVIDUEL */}
         <li>
-          <button
-            type="button"
+          <SideNavToggleButton
+            icon={strokePhoneIcon}
+            title="Individuel"
+            isExpanded={navOpenSection.individual}
             onClick={() => {
               const willOpen = !navOpenSection.individual
 
@@ -272,28 +238,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 })
               )
             }}
-            className={classnames(
-              styles['nav-links-item'],
-              styles['nav-section-button']
-            )}
-            aria-expanded={navOpenSection.individual}
-            aria-controls="individual-sublist"
+            ariaControls="individual-sublist"
             id="individual-sublist-button"
-          >
-            <SvgIcon
-              src={strokePhoneIcon}
-              alt=""
-              width={NAV_ITEM_ICON_SIZE}
-              className={styles.icon}
-            />
-            <span className={styles['nav-section-title']}>Individuel</span>
-            <SvgIcon
-              src={navOpenSection.individual ? fullUpIcon : fullDownIcon}
-              alt=""
-              width="18"
-              className={styles['nav-section-icon']}
-            />
-          </button>
+          />
 
           {navOpenSection.individual && (
             <ul
@@ -301,64 +248,26 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               aria-labelledby="individual-sublist-button"
             >
               <li>
-                <NavLink
-                  to="/offres"
-                  end
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Offres
-                  </span>
-                </NavLink>
+                <SideNavLink to="/offres" end>
+                  Offres
+                </SideNavLink>
               </li>
               <li>
-                <NavLink
-                  to="/reservations"
-                  end
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Réservations
-                  </span>
-                </NavLink>
+                <SideNavLink to="/reservations" end>
+                  Réservations
+                </SideNavLink>
               </li>
               <li>
-                <NavLink
-                  to="/guichet"
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Guichet
-                  </span>
-                </NavLink>
+                <SideNavLink to="/guichet">Guichet</SideNavLink>
               </li>
               {selectedOfferer && selectedPartnerPageVenueId && (
                 <li>
-                  <NavLink
+                  <SideNavLink
                     to={`/structures/${selectedOfferer.id}/lieux/${selectedPartnerPageVenueId}/page-partenaire`}
                     end
-                    className={({ isActive }) =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isActive,
-                      })
-                    }
                   >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Page sur l’application
-                    </span>
-                  </NavLink>
+                    Page sur l’application
+                  </SideNavLink>
                 </li>
               )}
             </ul>
@@ -367,8 +276,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
 
         {/* COLLECTIF */}
         <li>
-          <button
-            type="button"
+          <SideNavToggleButton
+            icon={strokeTeacherIcon}
+            title="Collectif"
+            isExpanded={navOpenSection.collective}
             onClick={() => {
               const willOpen = !navOpenSection.collective
 
@@ -382,28 +293,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 })
               )
             }}
-            className={classnames(
-              styles['nav-links-item'],
-              styles['nav-section-button']
-            )}
-            aria-expanded={navOpenSection.collective}
-            aria-controls="collective-sublist"
+            ariaControls="collective-sublist"
             id="collective-sublist-button"
-          >
-            <SvgIcon
-              src={strokeTeacherIcon}
-              alt=""
-              width={NAV_ITEM_ICON_SIZE}
-              className={styles.icon}
-            />
-            <span className={styles['nav-section-title']}>Collectif</span>
-            <SvgIcon
-              src={navOpenSection.collective ? fullUpIcon : fullDownIcon}
-              alt=""
-              width="18"
-              className={styles['nav-section-icon']}
-            />
-          </button>
+          />
 
           {navOpenSection.collective && (
             <ul
@@ -411,49 +303,22 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               aria-labelledby="collective-sublist-button"
             >
               <li>
-                <NavLink
-                  to="/offres/vitrines"
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Offres vitrines
-                  </span>
-                </NavLink>
+                <SideNavLink to="/offres/vitrines">Offres vitrines</SideNavLink>
               </li>
               <li>
-                <NavLink
-                  to="/offres/collectives"
-                  className={({ isActive }) =>
-                    classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isActive,
-                    })
-                  }
-                >
-                  <span className={styles['nav-links-item-without-icon']}>
-                    Offres réservables
-                  </span>
-                </NavLink>
+                <SideNavLink to="/offres/collectives">
+                  Offres réservables
+                </SideNavLink>
               </li>
 
               {selectedOfferer && venueId && (
                 <li>
-                  <NavLink
+                  <SideNavLink
                     to={`/structures/${selectedOfferer.id}/lieux/${venueId}/collectif`}
                     end
-                    className={({ isActive }) =>
-                      classnames(styles['nav-links-item'], {
-                        [styles['nav-links-item-active']]: isActive,
-                      })
-                    }
                   >
-                    <span className={styles['nav-links-item-without-icon']}>
-                      Page dans ADAGE
-                    </span>
-                  </NavLink>
+                    Page dans ADAGE
+                  </SideNavLink>
                 </li>
               )}
             </ul>
@@ -487,28 +352,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               />
             </li>
             <li>
-              <div>
-                <DropdownMenu.Root>
-                  <DropdownMenu.Trigger asChild>
-                    <Button
-                      variant={ButtonVariant.TERNARY}
-                      className={styles['nav-links-item']}
-                    >
-                      <SvgIcon src={fullHelpIcon} alt="" width="18" />
-                      <span className={styles['nav-section-title']}>
-                        Centre d’aide
-                      </span>
-                      <SvgIcon src={fullRightIcon} alt="" width="18" />
-                    </Button>
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Content
-                    side={isMobileScreen ? 'top' : 'right'}
-                    className={styles['help-dropdown-content']}
-                  >
-                    <HelpDropdownMenu />
-                  </DropdownMenu.Content>
-                </DropdownMenu.Root>
-              </div>
+              <HelpDropdownNavItem isMobileScreen={isMobileScreen ?? false} />
             </li>
           </div>
         </ul>
@@ -521,40 +365,17 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             <div className={styles['separator-line']} />
           </div>
           <div>
-            <NavLink
+            <SideNavLink
               to="/remboursements"
-              className={({ isActive }) =>
-                classnames(styles['nav-links-item'], {
-                  [styles['nav-links-item-active']]: isActive,
-                })
-              }
+              icon={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
             >
-              <SvgIcon
-                src={isCaledonian ? strokeFrancIcon : strokeEuroIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
-                className={styles.icon}
-              />
               Gestion financière
-            </NavLink>
+            </SideNavLink>
           </div>
           <div>
-            <NavLink
-              to="/collaborateurs"
-              className={({ isActive }) =>
-                classnames(styles['nav-links-item'], {
-                  [styles['nav-links-item-active']]: isActive,
-                })
-              }
-            >
-              <SvgIcon
-                src={strokeCollaboratorIcon}
-                alt=""
-                width={NAV_ITEM_ICON_SIZE}
-                className={styles.icon}
-              />
+            <SideNavLink to="/collaborateurs" icon={strokeCollaboratorIcon}>
               Collaborateurs
-            </NavLink>
+            </SideNavLink>
           </div>
         </div>
       )}
