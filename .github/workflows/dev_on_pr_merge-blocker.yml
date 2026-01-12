@@ -7,6 +7,8 @@ on:
       - labeled
       - unlabeled
       - ready_for_review
+      - synchronize
+      - reopened
 
 jobs:
   check-forbidden-pr-label:
