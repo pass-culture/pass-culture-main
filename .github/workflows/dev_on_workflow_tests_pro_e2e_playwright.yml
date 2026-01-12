@@ -203,6 +203,9 @@ jobs:
           path: pro/playwright-report/
           retention-days: 30
 
+      - name: "Chromatic run"
+        run: npx chromatic --project-token=d736390addac
+
       - name: "Show pcapi log when it fails"
         if: failure()
         run: docker logs pc-api
