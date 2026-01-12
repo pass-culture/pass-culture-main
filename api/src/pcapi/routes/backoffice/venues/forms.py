@@ -82,9 +82,6 @@ class EditVenueForm(EditVirtualVenueForm):
         validators=(wtforms.validators.Length(max=5, message="doit contenir au maximum %(max)d caractères"),),
     )
     is_manual_address = fields.PCOptHiddenField("Édition manuelle de l'adresse")
-    venue_type_code = fields.PCSelectWithPlaceholderValueField(
-        "Activité principale", choices=utils.choices_from_enum(offerers_models.VenueTypeCode)
-    )
     is_permanent = fields.PCSwitchBooleanField("Partenaire culturel permanent")
     acceslibre_url = fields.PCOptStringField(
         "URL chez acceslibre",
@@ -104,7 +101,6 @@ class EditVenueForm(EditVirtualVenueForm):
         # self._fields is a collections.OrderedDict
         self._fields.move_to_end("booking_email")
         self._fields.move_to_end("phone_number")
-        self._fields.move_to_end("venue_type_code")
         self._fields.move_to_end("acceslibre_url")
         self._fields.move_to_end("is_permanent")
 
