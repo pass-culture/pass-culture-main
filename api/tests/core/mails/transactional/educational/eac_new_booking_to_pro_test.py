@@ -38,5 +38,6 @@ class SendEacNewBookingEmailToProTest:
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": booking.educationalInstitution.postalCode,
             "IS_EVENT": True,
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ID": booking.collectiveStock.collectiveOfferId,
             "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }

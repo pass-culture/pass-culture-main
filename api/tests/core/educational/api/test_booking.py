@@ -206,6 +206,7 @@ class NotifyOfferersOfExpiredBookingsTest:
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": educational_models.CollectiveBookingCancellationReasons.EXPIRED.value,
             "BOOKING_ID": first_expired_booking.id,
+            "COLLECTIVE_OFFER_ID": stock_one.collectiveOfferId,
             "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }
 
@@ -225,5 +226,6 @@ class NotifyOfferersOfExpiredBookingsTest:
             "EDUCATIONAL_INSTITUTION_POSTAL_CODE": second_educational_institution.postalCode,
             "COLLECTIVE_CANCELLATION_REASON": educational_models.CollectiveBookingCancellationReasons.EXPIRED.value,
             "BOOKING_ID": second_expired_booking.id,
+            "COLLECTIVE_OFFER_ID": stock_two.collectiveOfferId,
             "COLLECTIVE_OFFER_ADDRESS": "À déterminer avec l'enseignant",
         }
