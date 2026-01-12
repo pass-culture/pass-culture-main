@@ -236,9 +236,7 @@ def update_venue(
     if modifications.get("venueTypeCode", None) and not modifications.get("activity", None):
         venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
     if modifications.get("activity", None) and not modifications.get("venueTypeCode", None):
-        if not venue.isOpenToPublic:
-            logger.error("update_venue called with activity on a venue closed to public", extra={"venue_id": venue.id})
-        assert venue.activity  # helps mypy, activity has been modified, not null if we are here and set earlier
+        assert venue.activity  # helps mypy, activity has been modified, is not null if we are here and set above
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
 
     db.session.add(venue)
