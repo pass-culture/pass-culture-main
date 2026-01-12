@@ -92,6 +92,10 @@
   display: none;
 
   @media (min-width: size.$tablet) {
-    display: flex;
+    display: block;
+
+    &.is-switch-venue {
+      display: flex;
+    }
   }
 }
