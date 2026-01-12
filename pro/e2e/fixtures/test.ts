@@ -1,10 +1,7 @@
 // biome-ignore assist/source/organizeImports: Unfixable.
 import AxeBuilder from '@axe-core/playwright'
-import {
-  test as base,
-  expect,
-  request as playwrightRequest,
-} from '@playwright/test'
+import { test as base, expect } from '@chromatic-com/playwright'
+import { request as playwrightRequest } from '@playwright/test'
 import * as path from 'node:path'
 
 import { login } from '../helpers/auth'

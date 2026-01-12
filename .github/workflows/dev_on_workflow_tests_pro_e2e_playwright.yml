@@ -219,3 +219,32 @@ jobs:
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+
+  chromatic:
+    name: Run Chromatic
+    needs: playwright-run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+          node-version-file: "pro/package.json"
+      - name: Install dependencies
+        run: yarn install --immutable
+      - name: Download Playwright test results
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-report-chromium
+          path: pro/playwright-report/
+      - name: Run Chromatic
+        uses: chromaui/action@latest
+        with:
+          # ⚠️ Enable Playwright
+          playwright: true
+          # ⚠️ Make sure to configure a `CHROMATIC_PROJECT_TOKEN` repository secret
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
