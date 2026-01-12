@@ -575,6 +575,12 @@ describe('VenueEditionFormScreen', () => {
       })
 
       await userEvent.click(screen.getByRole('radio', { name: 'Oui' }))
+      await userEvent.selectOptions(
+        screen.getByRole('combobox', { name: /Activité principale/ }),
+        screen.getByRole('option', {
+          name: 'Centre culturel pluridisciplinaire',
+        })
+      )
       await userEvent.click(screen.getByText(/Enregistrer/))
 
       expect(editVenueSpy).toHaveBeenCalledWith(

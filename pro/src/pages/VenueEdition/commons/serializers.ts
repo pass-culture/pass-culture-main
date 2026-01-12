@@ -3,6 +3,7 @@ import type {
   EditVenueBodyModel,
   WeekdayOpeningHoursTimespans,
 } from '@/apiClient/v1'
+import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 import { OPENING_HOURS_DAYS } from '@/commons/utils/date'
 
@@ -62,7 +63,7 @@ function buildEditVenuePayload(
 
 function normalizeActivity(
   activity: VenueEditionFormValues['activity']
-): ActivityOpenToPublicType | null | undefined {
+): ActivityOpenToPublicType | ActivityNotOpenToPublicType | null | undefined {
   if ((activity as string | null) === 'GAMES_CENTRE') {
     return null
   }
