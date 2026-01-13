@@ -1,4 +1,4 @@
-import type { AnyObject } from '@/commons/utils/types'
+import type { AnyObject } from './types'
 
 /**
  * Returns the keys of the given object as an array of its key types.
@@ -8,8 +8,12 @@ import type { AnyObject } from '@/commons/utils/types'
  * @param obj - The object whose keys should be retrieved.
  * @returns An array of the object's keys, typed as (keyof O)[]
  */
-export function objectKeys<O extends AnyObject>(obj: O): (keyof O)[] {
-  return Object.keys(obj) as (keyof O)[]
+export function objectKeys<O extends AnyObject>(
+  obj: O
+  // biome-ignore lint/suspicious/noExplicitAny: Trick to forces TypeScript to distribute generic type in union (instead of intersection)
+): (O extends any ? keyof O : never)[] {
+  // biome-ignore lint/suspicious/noExplicitAny: see above
+  return Object.keys(obj) as any
 }
 
 /**

@@ -6,9 +6,9 @@ import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNot
 import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 import { getActivities } from '@/commons/mappings/mappings'
 import { emailSchema } from '@/commons/utils/isValidEmail'
+import { objectKeys } from '@/commons/utils/object'
 
 import type { VenueEditionFormValues } from './types'
-import { objectKeys } from './utils'
 
 const isOneTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)

@@ -1,7 +1,4 @@
-import {
-  objectEntries,
-  objectFromEntries,
-} from '@/pages/VenueEdition/commons/utils'
+import { objectEntries, objectFromEntries } from '@/commons/utils/object'
 
 type StringRecord = Record<string, string>
 
