@@ -16,7 +16,7 @@ function build_backend {
     move
     concat_command
     if  [[ $FAST != true ]];then
-        RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build"
+        RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build --build-arg=\"uid=$UID\""
     fi
 }
 
@@ -25,7 +25,7 @@ function build_proxy_backend {
     move
     concat_command
     if  [[ $FAST != true ]];then
-        RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build --build-arg=\"network_mode=proxy\""
+        RUN="$RUN docker compose -f '$ROOT_PATH/docker-compose-backend.yml' build --build-arg=\"network_mode=proxy\" --build-arg=\"uid=$UID\""
     fi
 }
 
@@ -43,7 +43,7 @@ function drop_data {
 }
 
 function rebuild_backend {
-    RUN='docker compose -f "$ROOT_PATH"/docker-compose-backend.yml build --no-cache;
+    RUN='docker compose -f "$ROOT_PATH"/docker-compose-backend.yml build --no-cache --build-arg=\"uid=$UID\";
     sudo rm -rf $ROOT_PATH/api/static/object_store_data;
     docker compose -f "$ROOT_PATH"/docker-compose-backend.yml down --volumes'
 }
