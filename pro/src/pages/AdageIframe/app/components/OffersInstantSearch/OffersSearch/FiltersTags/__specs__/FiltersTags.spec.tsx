@@ -46,7 +46,8 @@ const renderFiltersTag = (
 describe('FiltersTag', () => {
   const venueFilter = {
     id: 1,
-    name: 'Mon super lieu',
+    name: 'Venue Name',
+    publicName: 'Venue Public Name',
     relative: [],
     departementCode: '75',
   }
@@ -57,7 +58,7 @@ describe('FiltersTag', () => {
       venue: venueFilter,
     })
 
-    expect(screen.getByText(/Lieu : Mon super lieu/)).toBeInTheDocument()
+    expect(screen.getByText(/Lieu : Venue Public Name/)).toBeInTheDocument()
   })
 
   it('should remove venue tag on click', async () => {

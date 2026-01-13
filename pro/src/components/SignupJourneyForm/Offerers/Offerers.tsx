@@ -172,7 +172,7 @@ export const Offerers = (): JSX.Element => {
                     displayToggleVenueList && !isVenueListOpen && index >= 4
                   }
                 >
-                  {venue.publicName || venue.name}
+                  {venue.publicName}
                 </li>
               ))}
             </ul>

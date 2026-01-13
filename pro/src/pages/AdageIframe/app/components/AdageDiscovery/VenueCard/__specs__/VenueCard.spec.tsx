@@ -44,15 +44,6 @@ describe('VenueCard', () => {
     ])
   })
 
-  it('should display venue name if publicName is not defined', () => {
-    renderVenueCard({
-      venue: { ...mockVenue, publicName: undefined },
-      handlePlaylistElementTracking: vi.fn(),
-    })
-
-    expect(screen.getByText(mockVenue.name)).toBeInTheDocument()
-  })
-
   it('should redirect on click in offer card', () => {
     renderVenueCard({
       venue: mockVenue,

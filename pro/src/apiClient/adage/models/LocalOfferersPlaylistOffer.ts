@@ -8,6 +8,6 @@ export type LocalOfferersPlaylistOffer = {
   id: number;
   imgUrl?: string | null;
   name: string;
-  publicName?: string | null;
+  publicName: string;
 };
 

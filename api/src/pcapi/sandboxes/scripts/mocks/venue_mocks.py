@@ -15,3 +15,7 @@ MOCK_NAMES = [
     "La Salle de Bain",
     "Vivement Lundi",
 ]
+
+MOCK_NAME_TO_PUBLIC_NAME = {
+    "Terrain vague": "Terrain vague (nom public)",
+}

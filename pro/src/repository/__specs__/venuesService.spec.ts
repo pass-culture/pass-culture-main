@@ -69,20 +69,7 @@ describe('formatAndOrderVenues', () => {
 })
 
 describe('computeVenueDisplayName', () => {
-  it('should give venue name when venue is not virtual and has no public name', () => {
-    const venue = {
-      id: 12,
-      name: 'Librairie Fnac',
-      offererName: 'gilbert Joseph',
-      isVirtual: false,
-    }
-
-    const computedVenueDisplayName = computeVenueDisplayName(venue)
-
-    expect(computedVenueDisplayName).toBe('Librairie Fnac')
-  })
-
-  it('should give venue public name when venue is not virtual and has a public name', () => {
+  it('should give venue public name when venue is not virtual', () => {
     const venue = {
       id: 12,
       name: 'Librairie Fnac',
@@ -101,6 +88,7 @@ describe('computeVenueDisplayName', () => {
       id: 12,
       name: 'Librairie Fnac',
       offererName: 'gilbert Joseph',
+      publicName: 'Ma petite librairie',
       isVirtual: true,
     }
 

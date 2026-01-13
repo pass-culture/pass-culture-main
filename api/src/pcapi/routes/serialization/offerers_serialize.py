@@ -50,7 +50,7 @@ class GetOffererVenueResponseModel(BaseModel):
     isVirtual: bool
     name: str
     id: int
-    publicName: str | None
+    publicName: str
     siret: str | None
     venueTypeCode: offerers_models.VenueTypeCode | None
     activity: offerers_models.DisplayableActivity | None
@@ -217,7 +217,7 @@ class GetEducationalOffererVenueResponseModel(BaseModel, AccessibilityCompliance
     city: str | None
     id: int
     isVirtual: bool
-    publicName: str | None
+    publicName: str
     name: str
     postalCode: str | None
     street: str | None

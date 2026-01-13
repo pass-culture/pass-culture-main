@@ -16,7 +16,7 @@ class VenueListItemResponseModel(BaseModel, AccessibilityComplianceMixin):
     managingOffererId: int
     name: str
     offererName: str
-    publicName: str | None
+    publicName: str
     isVirtual: bool
     bookingEmail: str | None
     withdrawalDetails: str | None

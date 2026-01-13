@@ -18,7 +18,8 @@ export const managedVenueFactory = (
     {},
     {
       id: currentVenueId,
-      name: 'Venue name',
+      name: 'Nom de la structure',
+      publicName: 'Nom public de la structure',
       address: '2 bis Street Name',
       postalCode: '93100',
       city: 'Montreuil',

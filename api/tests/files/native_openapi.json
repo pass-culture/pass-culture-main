@@ -1447,7 +1447,6 @@
                         "type": "string"
                     },
                     "publicName": {
-                        "nullable": true,
                         "title": "Publicname",
                         "type": "string"
                     },
@@ -1459,6 +1458,7 @@
                 "required": [
                     "id",
                     "name",
+                    "publicName",
                     "timezone",
                     "isOpenToPublic"
                 ],
@@ -1488,7 +1488,6 @@
                         "type": "string"
                     },
                     "publicName": {
-                        "nullable": true,
                         "title": "Publicname",
                         "type": "string"
                     },
@@ -1501,6 +1500,7 @@
                     "id",
                     "address",
                     "name",
+                    "publicName",
                     "timezone",
                     "isOpenToPublic"
                 ],
@@ -3979,7 +3979,6 @@
                         "type": "string"
                     },
                     "publicName": {
-                        "nullable": true,
                         "title": "Publicname",
                         "type": "string"
                     },
@@ -3992,6 +3991,7 @@
                     "id",
                     "offerer",
                     "name",
+                    "publicName",
                     "coordinates",
                     "isPermanent",
                     "isOpenToPublic",

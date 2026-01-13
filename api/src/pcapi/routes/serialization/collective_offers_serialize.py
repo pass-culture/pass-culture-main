@@ -213,7 +213,7 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
     id: int
     managingOfferer: GetCollectiveOfferManagingOffererResponseModel
     name: str
-    publicName: str | None
+    publicName: str
     bannerUrl: str | None = Field(alias="imgUrl")
 
     class Config:

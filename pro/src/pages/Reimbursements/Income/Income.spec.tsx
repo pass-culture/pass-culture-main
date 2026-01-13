@@ -30,13 +30,11 @@ const MOCK_DATA: {
   venues: [
     makeVenueListItem({
       id: 1,
-      name: 'First Venue',
       isPermanent: true,
       hasCreatedOffer: true,
     }),
     makeVenueListItem({
       id: 2,
-      name: 'Second Venue',
       isPermanent: true,
       hasCreatedOffer: true,
     }),
@@ -52,7 +50,7 @@ const MOCK_DATA: {
 
 const LABELS = {
   error: /Erreur dans le chargement des données./,
-  venuesSelector: /Partenaire/,
+  secondVenueSelector: /Nom public de la structure 2/,
   venuesSelectorError: /Vous devez sélectionner au moins un partenaire/,
   incomeResultsLabel: /Chiffre d’affaires total/,
   forecastIncomeResultLabel: /Chiffre d’affaires total prévisionnel/,
@@ -199,7 +197,7 @@ describe('Income', () => {
 
       expect(
         screen.queryByRole('button', {
-          name: LABELS.venuesSelector,
+          name: LABELS.secondVenueSelector,
         })
       ).not.toBeInTheDocument()
 
@@ -297,7 +295,7 @@ describe('Income', () => {
       await waitFor(() => {
         expect(
           screen.getByRole('button', {
-            name: LABELS.venuesSelector,
+            name: LABELS.secondVenueSelector,
           })
         ).toBeInTheDocument()
       })
@@ -335,7 +333,7 @@ describe('Income', () => {
       await waitFor(() => {
         expect(
           screen.getByRole('button', {
-            name: LABELS.venuesSelector,
+            name: LABELS.secondVenueSelector,
           })
         ).toBeInTheDocument()
       })
@@ -349,10 +347,7 @@ describe('Income', () => {
       await waitFor(() =>
         expect(screen.getByTestId('income-spinner')).toBeInTheDocument()
       )
-      const expectedLeftVenueIds = MOCK_DATA.venues
-        .filter((v) => v.name !== unselectedVenue.textContent)
-        .map((v) => v.id)
-      expect(api.getStatistics).toHaveBeenNthCalledWith(2, expectedLeftVenueIds)
+      expect(api.getStatistics).toHaveBeenNthCalledWith(2, [2])
     })
   })
 

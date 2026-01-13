@@ -22,7 +22,8 @@ describe('NoResultPage', () => {
   it('should display venue link when no result and venue filter active ', () => {
     const venue = {
       id: 1,
-      name: 'test',
+      name: 'Nom de la structire',
+      publicName: 'Venue Public Name',
       relative: [],
       departementCode: '75',
       adageId: '123456',

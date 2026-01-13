@@ -13,7 +13,7 @@ class GetRelativeVenuesQueryModel(BaseModel):
 
 class VenueResponse(BaseModel):
     id: int
-    publicName: str | None
+    publicName: str
     name: str
     departementCode: str | None
     relative: list[int]

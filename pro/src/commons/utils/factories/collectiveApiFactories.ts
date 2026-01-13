@@ -89,7 +89,8 @@ export const listOffersVenueFactory = (
   customListOffersVenue: Partial<ListOffersVenueResponseModel> = {}
 ): ListOffersVenueResponseModel => ({
   id: 1,
-  name: 'venue name',
+  name: 'Nom de la structure',
+  publicName: 'Nom public de la structure',
   offererName: 'offerer name',
   isVirtual: false,
   ...customListOffersVenue,
@@ -213,9 +214,9 @@ export const getCollectiveOfferVenueFactory = (
 ): GetCollectiveOfferVenueResponseModel => {
   const currentVenueId = venueId++
   return {
-    name: `Le nom du lieu ${currentVenueId}`,
+    name: `Nom de la structure ${currentVenueId}`,
     managingOfferer: getCollectiveOfferManagingOffererFactory(),
-    publicName: 'Mon Lieu',
+    publicName: `Nom public de la structure ${currentVenueId}`,
     id: currentVenueId,
     departementCode: '973',
     ...customGetCollectiveOfferVenue,
@@ -228,7 +229,7 @@ export const getCollectiveOfferManagingOffererFactory = (
   const currentOffererId = offererId++
   return {
     id: currentOffererId,
-    name: `La nom de la structure ${currentOffererId}`,
+    name: `Nom de l'entité ${currentOffererId}`,
     siren: '123456789',
     allowedOnAdage: true,
     ...customGetCollectiveOfferManagingOfferer,
@@ -283,7 +284,8 @@ export const defaultGetVenue: GetVenueResponseModel = {
   },
   mentalDisabilityCompliant: true,
   motorDisabilityCompliant: false,
-  name: 'Lieu de test',
+  name: 'Nom de la structure',
+  publicName: 'Nom public de la structure',
   venueType: { value: VenueTypeCode.CENTRE_CULTUREL, label: 'Centre culturel' },
   visualDisabilityCompliant: true,
   openingHours: null,

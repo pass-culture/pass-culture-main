@@ -1,5 +1,6 @@
 import { screen, within } from '@testing-library/react'
 
+import type { GetOffererVenueResponseModel } from '@/apiClient/v1'
 import {
   defaultGetOffererResponseModel,
   defaultGetOffererVenueResponseModel,
@@ -14,23 +15,23 @@ const renderVenueList = (props: Partial<VenueListProps> = {}) => {
   )
 }
 
-const virtualVenue = {
+const virtualVenue: GetOffererVenueResponseModel = {
   ...defaultGetOffererVenueResponseModel,
   id: 1,
   isVirtual: true,
   name: 'Le Sous-sol (Offre numérique)',
-  publicName: null,
+  publicName: 'Le Sous-sol (Offre numérique)',
   isPermanent: false,
 }
-const physicalVenue = {
+const physicalVenue: GetOffererVenueResponseModel = {
   ...defaultGetOffererVenueResponseModel,
   id: 2,
   isVirtual: false,
   name: 'Le Sous-sol (Offre physique)',
-  publicName: null,
+  publicName: 'Le Sous-sol (Offre physique)',
   isPermanent: false,
 }
-const physicalVenueWithPublicName = {
+const physicalVenueWithPublicName: GetOffererVenueResponseModel = {
   ...defaultGetOffererVenueResponseModel,
   id: 3,
   isVirtual: false,
@@ -38,12 +39,12 @@ const physicalVenueWithPublicName = {
   publicName: 'Le deuxième Sous-sol',
   isPermanent: false,
 }
-const physicalVenuePermanent = {
+const physicalVenuePermanent: GetOffererVenueResponseModel = {
   ...defaultGetOffererVenueResponseModel,
   id: 3,
   isVirtual: false,
   name: 'Le troisième Sous-sol (Offre physique)',
-  publicName: null,
+  publicName: 'Le troisième Sous-sol (Offre physique)',
   isPermanent: true,
 }
 

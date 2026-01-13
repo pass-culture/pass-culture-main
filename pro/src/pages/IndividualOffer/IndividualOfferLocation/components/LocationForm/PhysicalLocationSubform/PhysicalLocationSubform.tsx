@@ -104,7 +104,7 @@ export const PhysicalLocationSubform = ({
     })
   }
 
-  const venueFullText = `${venue.publicName || venue.name} – ${
+  const venueFullText = `${venue.publicName} – ${
     venue.location ? computeAddressDisplayName(venue.location, false) : null
   }`
 

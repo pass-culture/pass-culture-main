@@ -15,6 +15,6 @@ export type OfferVenueResponse = {
   managingOfferer: OfferManagingOffererResponse;
   name: string;
   postalCode?: string | null;
-  publicName?: string | null;
+  publicName: string;
 };
 

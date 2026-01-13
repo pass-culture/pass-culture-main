@@ -25,7 +25,7 @@ export type VenueListItemResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   offererName: string;
-  publicName?: string | null;
+  publicName: string;
   siret?: string | null;
   venueTypeCode: VenueTypeCode;
   visualDisabilityCompliant?: boolean | null;

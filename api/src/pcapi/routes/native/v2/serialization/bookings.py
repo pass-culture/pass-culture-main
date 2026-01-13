@@ -53,7 +53,7 @@ class BookingVenueResponseV2(ConfiguredBaseModel):
     id: int
     address: BookingVenueAddressResponseV2
     name: str
-    publicName: str | None
+    publicName: str
     timezone: str
     bannerUrl: str | None
     isOpenToPublic: bool

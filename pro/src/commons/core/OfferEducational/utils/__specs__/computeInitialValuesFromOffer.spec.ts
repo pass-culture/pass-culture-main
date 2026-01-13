@@ -38,7 +38,8 @@ const offerVenue = {
   id: 2,
   managingOfferer: offerer,
   managedVenues: venues,
-  name: 'opéra de paris',
+  name: 'Nom de la structure 2',
+  publicName: 'Nom public de la structure 2',
 }
 
 describe('computeInitialValuesFromOffer', () => {
@@ -58,7 +59,7 @@ describe('computeInitialValuesFromOffer', () => {
           id: '1',
           isManualEdition: false,
           isVenueLocation: true,
-          label: 'Le nom du lieu 2',
+          label: 'Nom de la structure 2',
         },
       },
       contactUrl: undefined,
@@ -266,7 +267,7 @@ describe('computeInitialValuesFromOffer', () => {
             id: '1',
             isVenueLocation: true,
             isManualEdition: false,
-            label: 'Le nom du lieu 2',
+            label: 'Nom de la structure 2',
           },
           locationType: 'ADDRESS',
         },

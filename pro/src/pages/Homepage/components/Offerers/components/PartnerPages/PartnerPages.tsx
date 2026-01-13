@@ -40,7 +40,7 @@ export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
   )
 
   const venuesOptions: SelectOption[] = venues.map((venue) => ({
-    label: venue.publicName || venue.name,
+    label: venue.publicName,
     value: venue.id.toString(),
   }))
   const selectedOffererVenue =

@@ -25,8 +25,8 @@ export const offerVenueFactory = (
     },
     mentalDisabilityCompliant: true,
     motorDisabilityCompliant: true,
-    name: `Le nom du lieu ${id}`,
-    publicName: undefined,
+    name: `Nom de la structure ${id}`,
+    publicName: `Nom public de la structure ${id}`,
     visualDisabilityCompliant: true,
     ...customOfferVenue,
   }
@@ -85,8 +85,8 @@ export const makeGetVenueResponseModel = <
     managingOfferer: offerer,
     mentalDisabilityCompliant: false,
     motorDisabilityCompliant: false,
-    name: `Structure ${override.id}`,
-    publicName: undefined,
+    name: `Nom de la structure ${override.id}`,
+    publicName: `Nom public de la structure ${override.id}`,
     venueType: makeVenueTypeResponseModel({}),
     visualDisabilityCompliant: false,
   }

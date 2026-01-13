@@ -14,7 +14,7 @@ export type GetEducationalOffererVenueResponseModel = {
   motorDisabilityCompliant?: boolean | null;
   name: string;
   postalCode?: string | null;
-  publicName?: string | null;
+  publicName: string;
   street?: string | null;
   visualDisabilityCompliant?: boolean | null;
 };

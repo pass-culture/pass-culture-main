@@ -20,7 +20,7 @@ export const CollectiveOfferVenueSection = ({
           },
           {
             title: 'Structure',
-            text: venue.publicName || venue.name,
+            text: venue.publicName,
           },
         ]}
       />

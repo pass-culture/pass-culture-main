@@ -87,6 +87,7 @@ describe('<Offerers />', () => {
             isVirtual: false,
             isPermanent: false,
             name: 'My venue',
+            publicName: 'My venue',
           },
         ],
       },

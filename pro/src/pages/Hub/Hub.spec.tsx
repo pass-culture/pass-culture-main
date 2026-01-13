@@ -54,36 +54,34 @@ const renderHub: RenderComponentFunction<
 
 describe('Hub', () => {
   const venuesBase = [
-    makeVenueListItem({ id: 101, name: 'Venue A', managingOffererId: 100 }),
-    makeVenueListItem({ id: 102, name: 'Venue B', managingOffererId: 100 }),
-    makeVenueListItem({ id: 201, name: 'Venue C', managingOffererId: 200 }),
-  ]
-
-  const venuesWithMoreThanFour = [
     makeVenueListItem({
       id: 101,
-      name: 'Théâtre du Soleil',
+      publicName: 'Théâtre du Soleil',
       managingOffererId: 100,
     }),
     makeVenueListItem({
       id: 102,
-      name: 'Café des Arts',
+      publicName: 'Café des Arts',
       managingOffererId: 100,
     }),
     makeVenueListItem({
-      id: 103,
-      name: 'Cinéma Lumière',
-      managingOffererId: 100,
+      id: 201,
+      publicName: 'Cinéma Lumière',
+      managingOffererId: 200,
+    }),
+  ]
+
+  const venuesWithMoreThanFour = [
+    ...venuesBase,
+    makeVenueListItem({
+      id: 202,
+      publicName: 'Musée National',
+      managingOffererId: 200,
     }),
     makeVenueListItem({
-      id: 104,
-      name: 'Musée National',
-      managingOffererId: 100,
-    }),
-    makeVenueListItem({
-      id: 105,
-      name: 'Galerie Moderne',
-      managingOffererId: 100,
+      id: 203,
+      publicName: 'Galerie Moderne',
+      managingOffererId: 200,
     }),
   ]
 
@@ -103,16 +101,22 @@ describe('Hub', () => {
       })
     ).toBeInTheDocument()
 
-    expect(screen.getByRole('button', { name: /Venue A/ })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Venue B/ })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Venue C/ })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Théâtre du Soleil/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Café des Arts/ })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /Cinéma Lumière/ })
+    ).toBeInTheDocument()
   })
 
   it('should display venue address when location is available', () => {
     const venuesWithLocation = [
       makeVenueListItem({
         id: 101,
-        name: 'Venue With Location',
+        publicName: 'Nom public de la structure avec localisation',
         managingOffererId: 100,
         location: {
           id: 1,
@@ -133,26 +137,29 @@ describe('Hub', () => {
   })
 
   it('should not display venue address when location is unavailable', () => {
-    const venuesWithoutAddress = [
+    const venuesWithoutLocation = [
       makeVenueListItem({
         id: 101,
-        name: 'Venue Without Location',
+        publicName: 'Nom public de la structure sans localisation',
         managingOffererId: 100,
         location: undefined,
       }),
     ]
 
-    renderHub({ venues: venuesWithoutAddress })
+    renderHub({ venues: venuesWithoutLocation })
 
     expect(
-      screen.getByRole('button', { name: 'Venue Without Location' })
-    ).toHaveTextContent('Venue Without Location')
+      screen.getByRole('button', {
+        name: 'Nom public de la structure sans localisation',
+      })
+    ).toBeInTheDocument()
   })
 
   it('should call setSelectedVenueById when clicking on any venue', async () => {
     vi.spyOn(api, 'getVenue').mockResolvedValue(
       makeGetVenueResponseModel({
         id: 102,
+        publicName: 'Café des Arts',
         managingOfferer: {
           id: 100,
           allowedOnAdage: true,
@@ -170,7 +177,7 @@ describe('Hub', () => {
 
     renderHub({ venues: venuesBase })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Venue B' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Café des Arts' }))
 
     await waitFor(() => {
       expect(api.getVenue).toHaveBeenCalledWith(102)
@@ -198,7 +205,7 @@ describe('Hub', () => {
 
     renderHub({ venues: venuesBase })
 
-    await userEvent.click(screen.getByRole('button', { name: 'Venue B' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Café des Arts' }))
 
     await waitFor(() => {
       expect(

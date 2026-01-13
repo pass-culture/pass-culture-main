@@ -20,7 +20,7 @@ export type GetOffererVenueResponseModel = {
   isPermanent: boolean;
   isVirtual: boolean;
   name: string;
-  publicName?: string | null;
+  publicName: string;
   siret?: string | null;
   venueTypeCode?: VenueTypeCode | null;
   withdrawalDetails?: string | null;

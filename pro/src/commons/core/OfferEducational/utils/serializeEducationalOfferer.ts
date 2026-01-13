@@ -7,7 +7,7 @@ const serializeVenues = (
     .filter((venue) => !venue.isVirtual)
     .map((venue) => ({
       ...venue,
-      name: venue.publicName || venue.name,
+      name: venue.publicName,
     }))
 
 export const serializeEducationalOfferer = (

@@ -1,6 +1,9 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { FormProvider, useForm } from 'react-hook-form'
 
+import { SuggestionType } from '@/apiClient/adage'
+import { apiAdage } from '@/apiClient/api'
 import { defaultAdageUser } from '@/commons/utils/factories/adageFactories'
 import {
   type RenderWithProvidersOptions,
@@ -10,7 +13,15 @@ import * as storageAvailable from '@/commons/utils/storageAvailable'
 import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import { AdageUserContext } from '@/pages/AdageIframe/app/providers/AdageUserContext'
 
+import type { SearchFormValues } from '../../../OffersInstantSearch'
+import { ADAGE_FILTERS_DEFAULT_VALUES } from '../../../utils'
 import { Autocomplete } from '../Autocomplete'
+
+vi.mock('@/apiClient/api', () => ({
+  apiAdage: {
+    logTrackingAutocompleteSuggestionClick: vi.fn(),
+  },
+}))
 
 interface getItems {
   objectID: string
@@ -28,8 +39,10 @@ const mockVenueSuggestions = [
     nb_words: 1,
     label: 'Mock Venue 1',
     venue: {
+      id: '1',
       name: 'Mock Venue 1',
       publicName: 'Mock Venue 1',
+      departmentCode: '75',
     },
     offerer: {
       name: 'Mock Offerer 1',
@@ -42,8 +55,10 @@ const mockVenueSuggestions = [
     nb_words: 1,
     label: 'Mock Venue 2',
     venue: {
+      id: '2',
       name: 'Mock Venue 2',
       publicName: 'Mock Venue 2',
+      departmentCode: '75',
     },
     offerer: {
       name: 'Mock Offerer 2',
@@ -90,17 +105,26 @@ let mockSourceId = 'VenueSuggestionsSource'
 vi.mock('@algolia/autocomplete-plugin-query-suggestions', () => {
   return {
     ...vi.importActual('@algolia/autocomplete-plugin-query-suggestions'),
-    createQuerySuggestionsPlugin: vi.fn(() => {
-      return {
-        name: 'querySuggestionName',
-        getSources: () => [
-          {
-            sourceId: mockSourceId,
-            getItems: mockGetItems,
-          },
-        ],
+    createQuerySuggestionsPlugin: vi.fn(
+      (options?: { transformSource?: Function }) => {
+        const baseSource = {
+          sourceId: mockSourceId,
+          getItems: mockGetItems,
+        }
+
+        const finalSource = options?.transformSource
+          ? {
+              ...options.transformSource({ source: baseSource }),
+              getItems: mockGetItems,
+            }
+          : baseSource
+
+        return {
+          name: 'querySuggestionName',
+          getSources: () => [finalSource],
+        }
       }
-    }),
+    ),
   }
 })
 
@@ -296,5 +320,125 @@ describe('Autocomplete', () => {
     await userEvent.click(inputElement)
 
     expect(await screen.findByText('Atelier de pratique')).toBeInTheDocument()
+  })
+
+  describe('venue suggestions onSelect', () => {
+    const renderAutocompleteWithForm = (
+      initialQuery: string = '',
+      handleSubmitMock: () => void = vi.fn(),
+      initialFormValues: Partial<SearchFormValues> = {}
+    ) => {
+      const AutocompleteWithForm = () => {
+        const form = useForm<SearchFormValues>({
+          defaultValues: {
+            ...ADAGE_FILTERS_DEFAULT_VALUES,
+            ...initialFormValues,
+          },
+        })
+
+        return (
+          <FormProvider {...form}>
+            <AdageUserContext.Provider value={{ adageUser: defaultAdageUser }}>
+              <Autocomplete
+                initialQuery={initialQuery}
+                handleSubmit={handleSubmitMock}
+              />
+            </AdageUserContext.Provider>
+          </FormProvider>
+        )
+      }
+
+      return renderWithProviders(<AutocompleteWithForm />)
+    }
+
+    beforeEach(() => {
+      mockGetItems = vi.fn().mockImplementation(() => mockVenueSuggestions)
+      mockSourceId = 'VenueSuggestionsSource'
+      vi.mocked(apiAdage.logTrackingAutocompleteSuggestionClick).mockClear()
+    })
+
+    it('should call handleSubmit and refine when venue suggestion is clicked', async () => {
+      const handleSubmitMock = vi.fn()
+      renderAutocompleteWithForm('', handleSubmitMock)
+
+      const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+      await userEvent.type(inputElement, 'Mock')
+
+      const venueSuggestions = await screen.findAllByText('Mock Venue 1')
+      await userEvent.click(venueSuggestions[0])
+
+      await waitFor(() => {
+        expect(handleSubmitMock).toHaveBeenCalled()
+      })
+      expect(refineMock).toHaveBeenCalledWith('')
+    })
+
+    it('should log autocomplete suggestion click when venue is selected', async () => {
+      renderAutocompleteWithForm('')
+
+      const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+      await userEvent.type(inputElement, 'Mock')
+
+      const venueSuggestions = await screen.findAllByText('Mock Venue 1')
+      await userEvent.click(venueSuggestions[0])
+
+      await waitFor(() => {
+        expect(
+          apiAdage.logTrackingAutocompleteSuggestionClick
+        ).toHaveBeenCalledWith({
+          iframeFrom: '/',
+          suggestionType: SuggestionType.VENUE,
+          suggestionValue: 'Mock Venue 1',
+        })
+      })
+    })
+
+    it('should add venue selection to history when localStorage is available', async () => {
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+      vi.spyOn(storageAvailable, 'storageAvailable').mockReturnValue(true)
+
+      renderAutocompleteWithForm('')
+
+      const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+      await userEvent.type(inputElement, 'Mock')
+
+      const venueSuggestions = await screen.findAllByText('Mock Venue 1')
+      await userEvent.click(venueSuggestions[0])
+
+      await waitFor(() => {
+        expect(setItemSpy).toHaveBeenCalledWith(
+          'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
+          expect.stringContaining('Mock Venue 1')
+        )
+      })
+
+      setItemSpy.mockRestore()
+    })
+
+    it('should not add to history when localStorage is not available', async () => {
+      const setItemSpy = vi.spyOn(Storage.prototype, 'setItem')
+      vi.spyOn(storageAvailable, 'storageAvailable').mockReturnValue(false)
+
+      renderAutocompleteWithForm('')
+
+      const inputElement = screen.getByRole('searchbox', { name: 'Rechercher' })
+      await userEvent.type(inputElement, 'Mock')
+
+      const venueSuggestions = await screen.findAllByText('Mock Venue 1')
+      await userEvent.click(venueSuggestions[0])
+
+      await waitFor(() => {
+        expect(
+          apiAdage.logTrackingAutocompleteSuggestionClick
+        ).toHaveBeenCalled()
+      })
+
+      expect(setItemSpy).not.toHaveBeenCalledWith(
+        'AUTOCOMPLETE_RECENT_SEARCHES:RECENT_SEARCH',
+        expect.stringContaining('Mock Venue 1')
+      )
+
+      setItemSpy.mockRestore()
+    })
   })
 })

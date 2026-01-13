@@ -61,7 +61,7 @@ export type GetVenueResponseModel = {
   name: string;
   openingHours?: WeekdayOpeningHoursTimespans | null;
   pricingPoint?: GetVenuePricingPointResponseModel | null;
-  publicName?: string | null;
+  publicName: string;
   siret?: string | null;
   venueType: VenueTypeResponseModel;
   visualDisabilityCompliant?: boolean | null;

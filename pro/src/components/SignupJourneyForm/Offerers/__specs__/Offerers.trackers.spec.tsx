@@ -55,7 +55,8 @@ describe('Offerers trackers', () => {
         {
           id: 0,
           siret: '12345678913334',
-          name: 'venue 0',
+          name: 'Venue Name',
+          publicName: 'Venue Public Name',
           isPermanent: false,
         },
       ],

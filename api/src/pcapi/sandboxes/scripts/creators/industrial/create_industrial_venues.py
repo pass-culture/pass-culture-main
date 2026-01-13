@@ -12,6 +12,7 @@ from pcapi.core.providers import factories as providers_factories
 from pcapi.models.validation_status_mixin import ValidationStatus
 from pcapi.sandboxes.scripts.mocks.accessibility_mocks import ACCESSIBILITY_MOCK
 from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAMES
+from pcapi.sandboxes.scripts.mocks.venue_mocks import MOCK_NAME_TO_PUBLIC_NAME
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 
 
@@ -58,6 +59,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
         longitude = float(geoloc_match.group(3)) if geoloc_match else None
 
         venue_name = MOCK_NAMES[mock_index % len(MOCK_NAMES)]
+        venue_public_name = MOCK_NAME_TO_PUBLIC_NAME.get(venue_name, venue_name)
         venue_accessibility = ACCESSIBILITY_MOCK[mock_accessibility_index % len(ACCESSIBILITY_MOCK)]
 
         if offerer_index % OFFERERS_WITH_PHYSICAL_VENUE_REMOVE_MODULO == 0:
@@ -68,6 +70,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
             venue_by_name[virtual_venue_name] = offerers_factories.VenueWithoutSiretFactory.create(
                 managingOfferer=offerer,
                 name=virtual_venue_name.format(venue_name),
+                publicName=venue_public_name,
             )
 
         else:
@@ -91,6 +94,7 @@ def create_industrial_venues(offerers_by_name: dict) -> dict[str, Venue]:
                 offererAddress__address__longitude=longitude,
                 comment=comment,
                 name=venue_name,
+                publicName=venue_public_name,
                 siret=siret,
                 venueTypeCode=random.choice(offerers_models.PERMENANT_VENUE_TYPES),
                 pricing_point="self" if siret else None,

@@ -7,7 +7,7 @@ export type VenueResponse = {
   departementCode?: string | null;
   id: number;
   name: string;
-  publicName?: string | null;
+  publicName: string;
   relative: Array<number>;
 };
 

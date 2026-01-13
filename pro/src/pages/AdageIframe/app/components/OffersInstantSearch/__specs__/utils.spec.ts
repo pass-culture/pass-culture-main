@@ -5,7 +5,8 @@ import { adageFiltersToFacetFilters, serializeFiltersForData } from '../utils'
 
 const venueFilter = {
   id: 123,
-  name: 'test',
+  name: 'Venue Name',
+  publicName: 'Venue Public Name',
   departementCode: '01',
   relative: [456],
 }

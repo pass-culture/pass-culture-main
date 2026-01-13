@@ -45,11 +45,7 @@ vi.mock('@/apiClient/adresse/apiAdresse', () => ({
 
 // Disable memoization because getSiretData value needs to change
 vi.mock('@/commons/utils/memoize', () => ({
-  memoize: <T extends (...args: any[]) => any>(func: T): T => {
-    return ((...args: Parameters<T>): ReturnType<T> => {
-      return func(...args)
-    }) as T
-  },
+  memoize: (func: unknown) => func,
 }))
 
 const renderOffererScreen = (contextValue: SignupJourneyContextValues) => {
@@ -201,8 +197,18 @@ describe('Offerer', () => {
     vi.spyOn(api, 'getVenuesOfOffererFromSiret').mockResolvedValue({
       offererSiren: '123456789',
       venues: [
-        { id: 1, name: 'First Venue', isPermanent: true },
-        { id: 2, name: 'Second Venue', isPermanent: true },
+        {
+          id: 1,
+          name: 'Venue Name 1',
+          publicName: 'Venue Public Name 1',
+          isPermanent: true,
+        },
+        {
+          id: 2,
+          name: 'Venue Name 2',
+          publicName: 'Venue Public Name 2',
+          isPermanent: true,
+        },
       ],
     })
     renderOffererScreen(contextValue)
@@ -247,11 +253,17 @@ describe('Offerer', () => {
       venues: [
         {
           id: 1,
-          name: 'First Venue',
+          name: 'Venue Name 1',
+          publicName: 'Venue Public Name 1',
           isPermanent: true,
           siret: '12345678933333',
         },
-        { id: 2, name: 'Second Venue', isPermanent: true },
+        {
+          id: 2,
+          name: 'Venue Name 2',
+          publicName: 'Venue Public Name 2',
+          isPermanent: true,
+        },
       ],
     })
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue({
@@ -282,10 +294,16 @@ describe('Offerer', () => {
       venues: [
         {
           id: 1,
-          name: 'First Venue',
+          name: 'Venue Name 1',
+          publicName: 'Venue Public Name 1',
           isPermanent: true,
         },
-        { id: 2, name: 'Second Venue', isPermanent: true },
+        {
+          id: 2,
+          name: 'Venue Name 2',
+          publicName: 'Venue Public Name 2',
+          isPermanent: true,
+        },
       ],
     })
     vi.spyOn(getSiretData, 'getSiretData').mockResolvedValue({

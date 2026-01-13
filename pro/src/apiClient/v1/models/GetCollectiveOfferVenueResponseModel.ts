@@ -9,6 +9,6 @@ export type GetCollectiveOfferVenueResponseModel = {
   imgUrl?: string | null;
   managingOfferer: GetCollectiveOfferManagingOffererResponseModel;
   name: string;
-  publicName?: string | null;
+  publicName: string;
 };
 

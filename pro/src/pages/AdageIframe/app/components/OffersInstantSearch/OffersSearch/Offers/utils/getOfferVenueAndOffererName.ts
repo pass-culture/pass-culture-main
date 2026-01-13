@@ -1,15 +1,9 @@
 import type { OfferVenueResponse } from '@/apiClient/adage'
 
-const formatToReadableString = (input: string): string => {
-  const lowerCasedInput = input.toLowerCase()
-  return lowerCasedInput.charAt(0).toUpperCase() + lowerCasedInput.slice(1)
-}
-
 export const getOfferVenueAndOffererName = (
   offerVenue: OfferVenueResponse
 ): string => {
-  const venueName =
-    offerVenue.publicName || formatToReadableString(offerVenue.name)
+  const venueName = offerVenue.publicName
 
   const offererName = offerVenue.managingOfferer.name
 
