@@ -44,7 +44,7 @@ export const VenueCard = ({
           data-testid="venue-infos-name"
           className={styles['venue-infos-name']}
         >
-          {venue.publicName || venue.name}
+          {venue.publicName}
         </div>
         <div
           className={styles['venue-infos-distance']}

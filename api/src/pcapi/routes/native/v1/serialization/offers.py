@@ -140,7 +140,7 @@ class OfferVenueResponse(BaseModel):
     managingOfferer: OfferOffererResponse = Field(..., alias="offerer")
     name: str
     postalCode: str | None
-    publicName: str | None
+    publicName: str
     coordinates: Coordinates
     isPermanent: bool
     isOpenToPublic: bool

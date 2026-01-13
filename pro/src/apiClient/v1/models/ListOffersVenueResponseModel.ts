@@ -8,6 +8,6 @@ export type ListOffersVenueResponseModel = {
   isVirtual: boolean;
   name: string;
   offererName: string;
-  publicName?: string | null;
+  publicName: string;
 };
 

@@ -106,52 +106,58 @@ describe('screens:SignupJourney::Offerers', () => {
     venues = [
       {
         id: 0,
-        siret: '12345678913333',
-        name: 'venue 0',
+        siret: '12345678903333',
+        name: 'Venue Name 0',
+        publicName: 'Venue Public Name 0',
         isPermanent: false,
       },
       {
         id: 1,
         siret: '12345678913333',
-        name: 'venue 1',
+        name: 'Venue Name 1',
+        publicName: 'Venue Public Name 1',
         isPermanent: true,
       },
       {
         id: 2,
         siret: '12345678923333',
-        name: 'venue 2',
+        name: 'Venue Name 2',
+        publicName: 'Venue Public Name 2',
         isPermanent: true,
       },
       {
         id: 3,
         siret: '12345678933333',
-        name: 'venue 3',
+        name: 'Venue Name 3',
+        publicName: 'Venue Public Name 3',
         isPermanent: true,
       },
       {
         id: 4,
         siret: '12345678943333',
-        name: 'venue 4',
+        name: 'Venue Name 4',
+        publicName: 'Venue Public Name 4',
         isPermanent: true,
       },
       {
         id: 5,
         siret: '12345678953333',
-        name: 'venue 5',
+        name: 'Venue Name 5',
+        publicName: 'Venue Public Name 5',
         isPermanent: true,
       },
       {
         id: 6,
         siret: '12345678963333',
-        name: 'venue 6',
-        publicName: 'public venue 6',
+        name: 'Venue Name 6',
+        publicName: 'Venue Public Name 6',
         isPermanent: true,
       },
       {
         id: 7,
-        siret: '12345678963334',
-        name: 'venue 7',
-        publicName: '',
+        siret: '12345678973333',
+        name: 'Venue Name 7',
+        publicName: 'Venue Public Name 7',
         isPermanent: true,
       },
     ]
@@ -176,8 +182,8 @@ describe('screens:SignupJourney::Offerers', () => {
     expect(screen.getByText('Offerer Name')).toBeInTheDocument()
 
     expect(screen.getAllByRole('listitem')).toHaveLength(4)
-    expect(screen.queryByText('venue 5')).not.toBeVisible()
-    expect(screen.queryByText('public venue 6')).not.toBeVisible()
+    expect(screen.queryByText('Venue Public Name 5')).not.toBeVisible()
+    expect(screen.queryByText('Venue Public Name 6')).not.toBeVisible()
 
     expect(
       await screen.findByRole('button', {
@@ -272,13 +278,7 @@ describe('screens:SignupJourney::Offerers', () => {
         { exact: false }
       )
     ).toBeInTheDocument()
-    expect(screen.queryByText('venue 0')).not.toBeInTheDocument()
-    expect(screen.queryByText('public venue 0')).not.toBeInTheDocument()
-  })
-
-  it('should render name if public name is an empty string', async () => {
-    renderOfferersScreen(contextValue)
-    expect(await screen.findByText('venue 7')).toBeInTheDocument()
+    expect(screen.queryByText('Venue Public Name 0')).not.toBeInTheDocument()
   })
 
   it('should not display venueListToggle', async () => {
@@ -288,7 +288,7 @@ describe('screens:SignupJourney::Offerers', () => {
     renderOfferersScreen(contextValue)
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(5)
-    expect(screen.queryByText('venue 5')).toBeVisible()
+    expect(screen.queryByText('Venue Public Name 5')).toBeVisible()
 
     expect(
       screen.queryByRole('button', {
@@ -307,8 +307,8 @@ describe('screens:SignupJourney::Offerers', () => {
     renderOfferersScreen(contextValue)
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(4)
-    expect(screen.queryByText('venue 5')).not.toBeVisible()
-    expect(screen.queryByText('public venue 6')).not.toBeVisible()
+    expect(screen.queryByText('Venue Public Name 5')).not.toBeVisible()
+    expect(screen.queryByText('Venue Public Name 6')).not.toBeVisible()
 
     await userEvent.click(screen.getByText('Afficher plus de structures'))
 
@@ -327,8 +327,8 @@ describe('screens:SignupJourney::Offerers', () => {
     ).toBeInTheDocument()
 
     expect(await screen.findAllByRole('listitem')).toHaveLength(7)
-    expect(screen.queryByText('venue 5')).toBeVisible()
-    expect(screen.queryByText('public venue 6')).toBeVisible()
+    expect(screen.queryByText('Venue Public Name 5')).toBeVisible()
+    expect(screen.queryByText('Venue Public Name 6')).toBeVisible()
 
     await userEvent.click(screen.getByText('Afficher moins de structures'))
 

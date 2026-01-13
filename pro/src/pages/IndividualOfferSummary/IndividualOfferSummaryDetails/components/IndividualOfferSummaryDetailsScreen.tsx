@@ -54,7 +54,7 @@ export function IndividualOfferSummaryDetailsScreen({
   const aboutDescriptions: Description[] = [
     {
       title: 'Structure',
-      text: offerData.venuePublicName || offerData.venueName,
+      text: offerData.venuePublicName,
     },
     { title: 'Titre de l’offre', text: offerData.name },
     {

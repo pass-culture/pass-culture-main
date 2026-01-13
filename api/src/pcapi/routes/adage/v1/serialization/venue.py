@@ -52,7 +52,7 @@ class VenueModel(BaseModel):
     latitude: float | None
     longitude: float | None
     city: str | None
-    publicName: str | None
+    publicName: str
     description: str | None
     collectiveDescription: str | None
     id: int

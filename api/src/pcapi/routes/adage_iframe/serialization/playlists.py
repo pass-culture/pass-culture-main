@@ -10,7 +10,7 @@ class LocalOfferersPlaylistOffer(BaseModel):
     name: str
     distance: Decimal | None
     imgUrl: str | None
-    publicName: str | None
+    publicName: str
     city: str | None
 
     class Config:

@@ -90,9 +90,7 @@ export const FiltersTags = ({
     if (!venueValue) {
       return null
     }
-    const venueDisplayName = `Lieu :  ${
-      venueValue.publicName || venueValue.name
-    }`
+    const venueDisplayName = `Lieu :  ${venueValue.publicName}`
     return createTag(venueDisplayName, () => {
       form.setValue('venue', null)
       onSubmit()

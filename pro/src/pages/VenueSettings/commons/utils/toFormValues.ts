@@ -28,7 +28,7 @@ export const toFormValues = ({
     bookingEmail: venue.bookingEmail || '',
     name: venue.name,
     venueSiret: venue.pricingPoint?.id || '',
-    publicName: venue.publicName || '',
+    publicName: venue.publicName,
     siret: venue.isCaledonian
       ? unhumanizeRidet(venue.siret || '', false, false)
       : humanizeSiret(venue.siret || ''),

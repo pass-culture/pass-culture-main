@@ -122,7 +122,7 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
           postalCode: '1',
         }),
       },
-      venue: getOfferVenueFactory({ publicName: undefined }),
+      venue: getOfferVenueFactory(),
     }
 
     renderIndividualOfferSummaryDetailsScreen({ props: { offer } })
@@ -130,7 +130,7 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
     expect(
       screen.getByText(new RegExp(LABELS.headings.structure))
     ).toBeInTheDocument()
-    expect(screen.getByText(/Le nom du lieu/)).toBeInTheDocument()
+    expect(screen.getByText(/Nom public de la structure/)).toBeInTheDocument()
   })
 
   it('should have "Structure" section with publicName', () => {

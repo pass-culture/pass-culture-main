@@ -33,7 +33,8 @@ describe('<Venues />', () => {
     venue: {
       ...defaultGetOffererVenueResponseModel,
       id: venueId,
-      name: 'My venue',
+      name: 'Mon Lieu',
+      publicName: 'My venue',
       isVirtual: false,
     },
     isFirstVenue: false,

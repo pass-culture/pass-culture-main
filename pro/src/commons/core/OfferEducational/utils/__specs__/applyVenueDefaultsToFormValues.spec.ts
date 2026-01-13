@@ -28,7 +28,8 @@ describe('applyVenueDefaultsToFormValues', () => {
           {
             id: 2,
             isVirtual: true,
-            name: 'test',
+            name: 'Venue Name',
+            publicName: 'Venue Public Name',
             audioDisabilityCompliant: true,
             mentalDisabilityCompliant: true,
           },
@@ -61,7 +62,8 @@ describe('applyVenueDefaultsToFormValues', () => {
           {
             id: 2,
             isVirtual: true,
-            name: 'test',
+            name: 'Venue Name',
+            publicName: 'Venue Public Name',
           },
         ],
         name: 'test',
@@ -92,7 +94,8 @@ describe('applyVenueDefaultsToFormValues', () => {
           {
             id: 2,
             isVirtual: true,
-            name: 'test',
+            name: 'Venue Name',
+            publicName: 'Venue Public Name',
             collectiveEmail: 'test@email.co',
             collectivePhone: '00000000',
           },
@@ -122,7 +125,8 @@ describe('applyVenueDefaultsToFormValues', () => {
           {
             id: 2,
             isVirtual: true,
-            name: 'test',
+            name: 'Venue Name',
+            publicName: 'Venue Public Name',
             collectiveEmail: 'test@email.co',
             collectivePhone: '00000000',
           },

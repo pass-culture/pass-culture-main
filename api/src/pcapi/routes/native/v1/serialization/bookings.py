@@ -44,7 +44,7 @@ class BookingVenueResponseGetterDict(GetterDict):
 class BookingVenueResponse(BaseModel):
     id: int
     name: str
-    publicName: str | None
+    publicName: str
     timezone: str
     bannerUrl: str | None
     isOpenToPublic: bool

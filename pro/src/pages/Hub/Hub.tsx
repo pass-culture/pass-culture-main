@@ -47,7 +47,7 @@ export const Hub = () => {
 
     if (venuesWithNormalizedNameRef.current.length === 0) {
       venuesWithNormalizedNameRef.current = venues.map((venue) => [
-        normalizeStrForSearch(venue.name),
+        normalizeStrForSearch(venue.publicName),
         venue,
       ])
     }
@@ -126,7 +126,7 @@ export const Hub = () => {
                 className={styles['venue-item-name']}
                 id={`venue-${venue.id}-name`}
               >
-                {venue.name}
+                {venue.publicName}
               </span>
               {venue.location && (
                 <span

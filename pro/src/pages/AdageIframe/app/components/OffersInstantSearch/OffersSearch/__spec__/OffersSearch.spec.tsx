@@ -350,7 +350,8 @@ describe('offersSearch component', () => {
         initialFilters: {
           venue: {
             id: 1,
-            name: 'test',
+            name: 'Venue Name',
+            publicName: 'Venue Public Name',
             relative: [],
             departementCode: '75',
           },
@@ -360,7 +361,7 @@ describe('offersSearch component', () => {
     )
 
     const tagVenue = await screen.findByRole('button', {
-      name: /Lieu : test/,
+      name: /Lieu : Venue Public Name/,
     })
     expect(tagVenue).toBeInTheDocument()
   })

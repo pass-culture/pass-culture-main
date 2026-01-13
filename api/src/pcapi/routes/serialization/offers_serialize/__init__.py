@@ -385,7 +385,7 @@ class GetOfferVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     managingOfferer: GetOfferManagingOffererResponseModel
     name: str
     postalCode: str | None
-    publicName: str | None
+    publicName: str
 
     class Config:
         orm_mode = True

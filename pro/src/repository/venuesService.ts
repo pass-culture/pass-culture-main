@@ -16,7 +16,7 @@ export const computeVenueDisplayName = (
   if (venue.isVirtual && 'offererName' in venue) {
     return `${venue.offererName} - Offre numérique`
   } else {
-    return venue.publicName || venue.name
+    return venue.publicName
   }
 }
 

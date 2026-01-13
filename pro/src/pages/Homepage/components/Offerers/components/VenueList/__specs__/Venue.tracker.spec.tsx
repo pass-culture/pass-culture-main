@@ -27,7 +27,8 @@ describe('venue create offer link', () => {
       venue: {
         ...defaultGetOffererVenueResponseModel,
         id: venueId,
-        name: 'My venue',
+        name: 'Mon Lieu',
+        publicName: 'My venue',
       },
       isFirstVenue: false,
     }

@@ -216,8 +216,8 @@ describe('filterAvailableVenues', () => {
 describe('getVenuesAsOptions', () => {
   it('should correctly map a list of venues to an array of Option objects', () => {
     const venues = [
-      venueListItemFactory({ id: 10, name: 'My Venue' }),
-      venueListItemFactory({ id: 20, name: 'Your Venue' }),
+      venueListItemFactory({ id: 10, publicName: 'My Venue' }),
+      venueListItemFactory({ id: 20, publicName: 'Your Venue' }),
     ]
     const options = getVenuesAsOptions(venues)
 
@@ -232,9 +232,9 @@ describe('getVenuesAsOptions', () => {
 
   it('should sort the resulting options by label using French locale rules', () => {
     const venues = [
-      venueListItemFactory({ name: 'Zoo' }),
-      venueListItemFactory({ name: 'Cinéma' }),
-      venueListItemFactory({ name: 'À la ferme' }), // Accented char should be sorted correctly
+      venueListItemFactory({ publicName: 'Zoo' }),
+      venueListItemFactory({ publicName: 'Cinéma' }),
+      venueListItemFactory({ publicName: 'À la ferme' }),
     ]
 
     const optionsResult = getVenuesAsOptions(venues)

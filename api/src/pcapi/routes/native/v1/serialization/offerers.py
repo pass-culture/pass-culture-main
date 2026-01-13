@@ -90,7 +90,7 @@ class VenueResponse(BaseModel):
     externalAccessibilityId: str | None
     isOpenToPublic: bool
     isPermanent: bool | None
-    publicName: str | None
+    publicName: str
     withdrawalDetails: str | None
     id: int
     address: str | None

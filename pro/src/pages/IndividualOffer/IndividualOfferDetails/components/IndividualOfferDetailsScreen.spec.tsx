@@ -454,7 +454,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
 
     await userEvent.selectOptions(
       await screen.findByLabelText(LABELS.venue),
-      'Le nom du lieu 189'
+      'Nom public de la structure 189'
     )
 
     await userEvent.selectOptions(
@@ -944,7 +944,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
 
     const venueWithoutExternalAccessibilityData = venueListItemFactory({
       id: 1,
-      name: 'Lieu sans données d’accessibilité externe',
+      publicName: 'Structure sans données d’accessibilité externe',
       audioDisabilityCompliant: true,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
@@ -952,7 +952,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
     })
     const venueWithExternalAccessibilityData = venueListItemFactory({
       id: 2,
-      name: 'Lieu avec données d’accessibilité externe',
+      publicName: 'Structure avec données d’accessibilité externe',
       audioDisabilityCompliant: true,
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
@@ -1008,7 +1008,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       fireEvent.change(screen.getByLabelText(LABELS.venue), {
         target: {
           value: screen.getByRole<HTMLOptionElement>('option', {
-            name: 'Lieu sans données d’accessibilité externe',
+            name: 'Structure sans données d’accessibilité externe',
           }).value,
         },
       })
@@ -1032,7 +1032,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       fireEvent.change(screen.getByLabelText(LABELS.venue), {
         target: {
           value: screen.getByRole<HTMLOptionElement>('option', {
-            name: 'Lieu avec données d’accessibilité externe',
+            name: 'Structure avec données d’accessibilité externe',
           }).value,
         },
       })

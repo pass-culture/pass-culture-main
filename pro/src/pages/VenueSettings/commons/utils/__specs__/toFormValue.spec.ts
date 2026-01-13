@@ -49,7 +49,7 @@ describe('toFormValues', () => {
       manuallySetAddress: true,
       comment: '',
       bookingEmail: '',
-      name: 'Lieu de test',
+      name: 'Nom de la structure',
       venueSiret: '',
       publicName: 'Adresse de la venue',
       siret: '',

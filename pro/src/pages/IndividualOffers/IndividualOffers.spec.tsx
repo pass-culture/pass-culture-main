@@ -43,9 +43,9 @@ const categoriesAndSubcategories = {
 const proVenues = [
   makeVenueListItem({
     id: 1,
-    name: 'Ma venue',
+    name: 'Venue Name',
     offererName: 'Mon offerer',
-    publicName: null,
+    publicName: 'Venue Public Name',
     isVirtual: false,
   }),
   makeVenueListItem({

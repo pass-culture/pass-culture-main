@@ -25,8 +25,16 @@ interface VenueEditionTestProps {
   options?: RenderWithProvidersOptions
 }
 
-const FIRST_VENUE = { id: 101, name: 'First Venue' }
-const SECOND_VENUE = { id: 102, name: 'Second Venue' }
+const FIRST_VENUE = {
+  id: 101,
+  name: 'Venue Name 1',
+  publicName: 'Venue Public Name 1',
+}
+const SECOND_VENUE = {
+  id: 102,
+  name: 'Venue Name 2',
+  publicName: 'Venue Public Name 2',
+}
 
 const renderVenueEdition = ({
   context = 'address',
@@ -61,17 +69,20 @@ const renderVenueEdition = ({
             selectedVenue: makeGetVenueResponseModel({
               id: FIRST_VENUE.id,
               name: FIRST_VENUE.name,
+              publicName: FIRST_VENUE.publicName,
             }),
             venues: [
               makeVenueListItem({
                 id: FIRST_VENUE.id,
                 name: FIRST_VENUE.name,
+                publicName: FIRST_VENUE.publicName,
                 isPermanent: true,
                 hasCreatedOffer: true,
               }),
               makeVenueListItem({
                 id: SECOND_VENUE.id,
                 name: SECOND_VENUE.name,
+                publicName: SECOND_VENUE.publicName,
                 isPermanent: true,
                 hasCreatedOffer: true,
               }),
@@ -189,13 +200,13 @@ describe('VenueEdition', () => {
         screen.getByLabelText('Sélectionnez votre page partenaire'),
         FIRST_VENUE.id.toString()
       )
-      expect(screen.getByText(FIRST_VENUE.name)).toBeInTheDocument()
+      expect(screen.getByText(FIRST_VENUE.publicName)).toBeInTheDocument()
 
       await userEvent.selectOptions(
         screen.getByLabelText('Sélectionnez votre page partenaire'),
         SECOND_VENUE.id.toString()
       )
-      expect(screen.getByText(SECOND_VENUE.name)).toBeInTheDocument()
+      expect(screen.getByText(SECOND_VENUE.publicName)).toBeInTheDocument()
     })
 
     it('should save the venue id in local storage on selection', async () => {
@@ -222,15 +233,18 @@ describe('VenueEdition', () => {
             selectedVenue: makeGetVenueResponseModel({
               id: FIRST_VENUE.id,
               name: FIRST_VENUE.name,
+              publicName: FIRST_VENUE.publicName,
             }),
             venues: [
               makeVenueListItem({
                 id: FIRST_VENUE.id,
-                publicName: FIRST_VENUE.name,
+                name: FIRST_VENUE.name,
+                publicName: FIRST_VENUE.publicName,
               }),
               makeVenueListItem({
                 id: SECOND_VENUE.id,
-                publicName: SECOND_VENUE.name,
+                name: SECOND_VENUE.name,
+                publicName: SECOND_VENUE.publicName,
                 isPermanent: false,
                 hasCreatedOffer: false,
               }),
@@ -383,7 +397,7 @@ describe('VenueEdition', () => {
 
       renderVenueEdition({ options: optionsBase })
 
-      await screen.findByRole('heading', { name: 'First Venue' })
+      await screen.findByRole('heading', { name: FIRST_VENUE.publicName })
 
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
     })

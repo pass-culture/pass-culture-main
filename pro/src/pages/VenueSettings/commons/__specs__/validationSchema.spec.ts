@@ -18,8 +18,8 @@ describe('VenueSettingsValidationSchema', () => {
   const baseFormValues: VenueSettingsFormValues = {
     bookingEmail: 'contact@lieuexemple.com',
     comment: 'comment',
-    name: 'raison',
-    publicName: '',
+    name: 'Venue Name',
+    publicName: 'Venue Public Name',
     siret: '12345678901234',
     venueSiret: 12345678901234,
     venueType: 'Théâtre',

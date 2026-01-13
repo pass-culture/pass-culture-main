@@ -56,7 +56,7 @@ class OfferVenueResponse(BaseModel):
     name: str
     postalCode: str | None
     departementCode: str | None = Field(alias="departmentCode")
-    publicName: str | None
+    publicName: str
     coordinates: common_models.Coordinates
     managingOfferer: OfferManagingOffererResponse
     adageId: str | None

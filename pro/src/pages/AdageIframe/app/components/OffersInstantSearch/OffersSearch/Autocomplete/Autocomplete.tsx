@@ -172,7 +172,7 @@ export const Autocomplete = ({
         ...source,
         sourceId: VENUE_SUGGESTIONS_SOURCE_ID,
         async onSelect({ item }) {
-          const venueDisplayName = item.venue.publicName || item.venue.name
+          const venueDisplayName = item.venue.publicName
           autocomplete.setQuery('')
           refine('')
           dispatch(setAdageQuery(''))
@@ -197,7 +197,7 @@ export const Autocomplete = ({
         },
         templates: {
           item({ item }) {
-            return item.venue.publicName || item.venue.name
+            return item.venue.publicName
           },
         },
       }
@@ -509,10 +509,7 @@ export const Autocomplete = ({
                           <div>
                             <Highlight
                               hit={item}
-                              attribute={[
-                                'venue',
-                                item.venue.publicName ? 'publicName' : 'name',
-                              ]}
+                              attribute={['venue', 'publicName']}
                               tagName="strong"
                             />
                           </div>

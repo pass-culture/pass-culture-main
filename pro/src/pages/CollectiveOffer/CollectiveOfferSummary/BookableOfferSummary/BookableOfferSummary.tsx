@@ -209,11 +209,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
         <div className={styles['header-description-info']}>
           <dl className={styles['detail-list']}>
             <DetailItem>n°{offer.id}</DetailItem>
-            <DetailItem alt={offer.venue.publicName ?? ''} src={strokeHomeIcon}>
-              Proposé par{' '}
-              {offer.venue.publicName
-                ? offer.venue.publicName
-                : offer.venue.name}
+            <DetailItem alt={offer.venue.publicName} src={strokeHomeIcon}>
+              Proposé par {offer.venue.publicName}
             </DetailItem>
             <DetailItem alt={'Date de l’offre'} src={strokeCalendarIcon}>
               {formatDateRangeWithTime()}

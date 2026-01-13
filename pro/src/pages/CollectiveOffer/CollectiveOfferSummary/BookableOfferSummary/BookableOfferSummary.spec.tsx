@@ -106,7 +106,7 @@ describe('BookableOfferSummary', () => {
     const testProps = {
       offer: getCollectiveOfferFactory({
         venue: getCollectiveOfferVenueFactory({
-          publicName: null,
+          publicName: 'Venue 1',
           name: 'Venue 1',
           departementCode: '75',
         }),

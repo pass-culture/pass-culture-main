@@ -149,7 +149,7 @@ class GetVenuePricingPointResponseModel(BaseModel):
 
     @classmethod
     def from_orm(cls, venue: offerers_models.Venue) -> "GetVenuePricingPointResponseModel":
-        venue.venueName = venue.publicName or venue.name
+        venue.venueName = venue.publicName
         return super().from_orm(venue)
 
 
@@ -304,7 +304,7 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     externalAccessibilityId: str | None
     isOpenToPublic: bool
     isPermanent: bool | None
-    publicName: str | None
+    publicName: str
     withdrawalDetails: str | None
     activity: offerers_models.DisplayableActivity | None
     dateCreated: datetime
@@ -598,7 +598,7 @@ class VenuesEducationalStatusesResponseModel(BaseModel):
 class VenueOfOffererFromSiretResponseModel(BaseModel):
     id: int
     name: str
-    publicName: str | None
+    publicName: str
     siret: str | None
     isPermanent: bool
 
@@ -624,5 +624,5 @@ class ListOffersVenueResponseModel(BaseModel):
     isVirtual: bool
     name: str
     offererName: str
-    publicName: str | None
+    publicName: str
     departementCode: str | None
