@@ -628,6 +628,30 @@ describe('VenueEditionFormScreen', () => {
 
         expect(editVenueSpy).toHaveBeenCalled()
       })
+
+      it('should display the proper activities list for structures not open to public (when FF WIP_VENUE_CULTURAL_DOMAINS is activated)', async () => {
+        renderForm(
+          {
+            ...baseVenue,
+            isOpenToPublic: false,
+          },
+          { features: ['WIP_VENUE_CULTURAL_DOMAINS'] }
+        )
+
+        const mainActivitySelect = await screen.findByRole('combobox', {
+          name: /Activité principale/,
+        })
+
+        ;[
+          'Société de production, tourneur ou label',
+          'Plateforme de streaming musique ou vidéo',
+          'Cinéma itinérant',
+        ].forEach((label) => {
+          expect(
+            within(mainActivitySelect).getByRole('option', { name: label })
+          ).toBeInTheDocument()
+        })
+      })
     })
 
     describe('when the venue is open to public', () => {
@@ -716,6 +740,23 @@ describe('VenueEditionFormScreen', () => {
           ).not.toBeInTheDocument()
           expect(
             screen.getByText('Modalités d’accessibilité via acceslibre')
+          ).toBeInTheDocument()
+        })
+      })
+
+      it('should display the proper activities list for structures open to public (when FF WIP_VENUE_CULTURAL_DOMAINS is activated)', async () => {
+        renderForm(
+          { ...baseVenue, isOpenToPublic: true },
+          { features: ['WIP_VENUE_CULTURAL_DOMAINS'] }
+        )
+
+        const mainActivitySelect = await screen.findByRole('combobox', {
+          name: /Activité principale/,
+        })
+
+        ;['Librairie', 'Cinéma', 'Centre socio-culturel'].forEach((label) => {
+          expect(
+            within(mainActivitySelect).getByRole('option', { name: label })
           ).toBeInTheDocument()
         })
       })
