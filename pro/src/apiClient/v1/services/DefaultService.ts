@@ -57,6 +57,7 @@ import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListLiteResponseModel } from '../models/GetVenueListLiteResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
+import type { GetVenueOffersStatsModel } from '../models/GetVenueOffersStatsModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
 import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel';
@@ -3008,6 +3009,27 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_venue_offers_stats <GET>
+   * @param venueId
+   * @returns GetVenueOffersStatsModel OK
+   * @throws ApiError
+   */
+  public getVenueOffersStats(
+    venueId: number,
+  ): CancelablePromise<GetVenueOffersStatsModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{venue_id}/offers-statistics',
+      path: {
+        'venue_id': venueId,
+      },
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

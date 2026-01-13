@@ -288,6 +288,28 @@ def get_offerer_stats(offerer_id: int) -> offerers_serialize.GetOffererStatsResp
     )
 
 
+@private_api.route("/venues/<int:venue_id>/offers-statistics", methods=["GET"])
+@login_required
+@spectree_serialize(
+    on_success_status=200,
+    api=blueprint.pro_private_schema,
+    response_model=offerers_serialize.GetVenueOffersStatsModel,
+)
+def get_venue_offers_stats(venue_id: int) -> offerers_serialize.GetVenueOffersStatsModel:
+    stats = api.get_venue_offers_statistics(venue_id)
+
+    return offerers_serialize.GetVenueOffersStatsModel(
+        venueId=venue_id,
+        totalViews6Months=stats.offers_consultation_count,
+        topOffersByConsultation=[
+            offerers_serialize.TopOffersByConsultationModel(
+                offerId=offer.offer_id, totalViewsLast30Days=offer.consultation_count
+            )
+            for offer in stats.top_offers_by_consultation
+        ],
+    )
+
+
 @private_api.route("/offerers/<int:offerer_id>/v2/stats", methods=["GET"])
 @login_required
 @spectree_serialize(
