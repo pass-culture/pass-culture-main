@@ -15,6 +15,7 @@
 }
 
 .venue-list {
+  align-content: start;
   display: grid;
   flex-grow: 1;
   gap: 8px;
@@ -23,7 +24,7 @@
 
   @media screen and (min-width: size.$tablet) {
     grid-template-columns: repeat(2, 1fr);
-    overflow-y: auto;
+    overflow-y: scroll;
     padding-right: var(--size-spacing-l);
   }
 
