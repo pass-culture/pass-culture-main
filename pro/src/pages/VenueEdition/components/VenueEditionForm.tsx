@@ -19,6 +19,7 @@ import { setSelectedVenue } from '@/commons/store/user/reducer'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { getFormattedAddress } from '@/commons/utils/getFormattedAddress'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
+import { objectKeys } from '@/commons/utils/object'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
@@ -35,7 +36,6 @@ import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 import { serializeEditVenueBodyModel } from '../commons/serializers'
 import { setInitialFormValues } from '../commons/setInitialFormValues'
 import type { VenueEditionFormValues } from '../commons/types'
-import { objectKeys } from '../commons/utils'
 import { getValidationSchema } from '../commons/validationSchema'
 import { AccessibilityForm } from './AccessibilityForm/AccessibilityForm'
 import { RouteLeavingGuardVenueEdition } from './RouteLeavingGuardVenueEdition'
@@ -167,6 +167,32 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
+  const onOpenToPublicChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isOpenToPublicValue = e.target.value.toString()
+
+    methods.setValue('isOpenToPublic', isOpenToPublicValue)
+
+    if (isOpenToPublicValue === 'false') {
+      resetOpeningHoursAndAccessibility()
+    }
+
+    const activityKeys = objectKeys(
+      getActivities(
+        isOpenToPublicValue === 'true' ? 'OPEN_TO_PUBLIC' : 'NOT_OPEN_TO_PUBLIC'
+      )
+    )
+    const isInitialActivityValid = initialValues.activity
+      ? activityKeys.includes(initialValues.activity)
+      : false
+
+    if (isInitialActivityValid) {
+      methods.setValue('activity', initialValues.activity)
+      methods.clearErrors('activity')
+    } else {
+      methods.setValue('activity', null)
+    }
+  }
+
   const showActivityField =
     methods.watch('isOpenToPublic') === 'true' ||
     (methods.watch('isOpenToPublic') === 'false' && isCulturalDomainsEnabled)
@@ -199,34 +225,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             <FormLayout.SubSection title="Accueil du public">
               <FormLayout.Row>
                 <OpenToPublicToggle
-                  onChange={(e) => {
-                    const isOpenToPublicValue = e.target.value.toString()
-
-                    methods.setValue('isOpenToPublic', isOpenToPublicValue)
-
-                    if (isOpenToPublicValue === 'false') {
-                      resetOpeningHoursAndAccessibility()
-                    }
-
-                    const activityKeys = objectKeys(
-                      getActivities(
-                        isOpenToPublicValue === 'true'
-                          ? 'OPEN_TO_PUBLIC'
-                          : 'NOT_OPEN_TO_PUBLIC'
-                      )
-                    )
-                    const isInitialActivityValid = activityKeys.includes(
-                      // biome-ignore lint/suspicious/noExplicitAny: `any` is needed here because getActivities and objectKeys are strongly typed and TypeScript can't guarantee that the initial activity (which is a mix of 2 different types) is in the list, but that's exactly what we want to check here
-                      initialValues.activity as any
-                    )
-
-                    if (isInitialActivityValid) {
-                      methods.setValue('activity', initialValues.activity)
-                      methods.clearErrors('activity')
-                    } else {
-                      methods.setValue('activity', null)
-                    }
-                  }}
+                  onChange={onOpenToPublicChange}
                   radioDescriptions={{
                     yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
                   }}
@@ -285,7 +284,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             {showActivityField && (
               <FormLayout.Section
                 title="Activité principale"
-                key={methods.watch('activity')} // This forces re-render of the field
+                key={methods.watch('activity')}
               >
                 <FormLayout.Row>
                   <Select
