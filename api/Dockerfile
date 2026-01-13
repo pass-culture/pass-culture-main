@@ -3,6 +3,7 @@ ARG network_mode=default
 ########## BUILDER ##########
 
 FROM python:3.13-slim AS builder
+ARG uid=1000
 
 RUN apt update \
     && apt -y install \
@@ -13,7 +14,7 @@ RUN apt update \
     apt clean && \
     rm -rf /var/lib/apt/lists*
 
-RUN useradd -rm -d /home/pcapi -u 1000 pcapi
+RUN useradd -rm -d /home/pcapi -u ${uid} pcapi
 
 USER pcapi
 
@@ -100,8 +101,9 @@ ENV PIP_CERT=/cacert.pem
 ENV CURL_CA_BUNDLE=/cacert.pem 
 
 FROM lib-${network_mode} AS lib
+ARG uid=1000
 
-RUN useradd -rm -d /home/pcapi -u 1000 pcapi
+RUN useradd -rm -d /home/pcapi -u ${uid} pcapi
 
 ENV PATH=$PATH:/home/pcapi/.local/bin
 ENV PROMETHEUS_MULTIPROC_DIR /tmp
