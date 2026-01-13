@@ -143,6 +143,7 @@ export type { GetVenueDomainResponseModel } from './models/GetVenueDomainRespons
 export type { GetVenueListLiteResponseModel } from './models/GetVenueListLiteResponseModel';
 export type { GetVenueListResponseModel } from './models/GetVenueListResponseModel';
 export type { GetVenueManagingOffererResponseModel } from './models/GetVenueManagingOffererResponseModel';
+export type { GetVenueOffersStatsModel } from './models/GetVenueOffersStatsModel';
 export type { GetVenuePricingPointResponseModel } from './models/GetVenuePricingPointResponseModel';
 export type { GetVenueResponseModel } from './models/GetVenueResponseModel';
 export type { GetVenuesOfOffererFromSiretResponseModel } from './models/GetVenuesOfOffererFromSiretResponseModel';
@@ -240,6 +241,7 @@ export type { SubmitReviewRequestModel } from './models/SubmitReviewRequestModel
 export { Target } from './models/Target';
 export type { ThingStocksBulkUpsertBodyModel } from './models/ThingStocksBulkUpsertBodyModel';
 export type { ThingStockUpsertBodyModel } from './models/ThingStockUpsertBodyModel';
+export type { TopOffersByConsultationModel } from './models/TopOffersByConsultationModel';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';

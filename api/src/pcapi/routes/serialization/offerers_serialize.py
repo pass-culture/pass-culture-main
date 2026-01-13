@@ -443,3 +443,14 @@ class OffererEligibilityResponseModel(BaseModel):
     class Config:
         allow_population_by_field_name = True
         alias_generator = to_camel
+
+
+class TopOffersByConsultationModel(HttpBodyModel):
+    offerId: str
+    totalViewsLast30Days: int
+
+
+class GetVenueOffersStatsModel(HttpBodyModel):
+    venueId: int
+    totalViews6Months: int
+    topOffersByConsultation: list[TopOffersByConsultationModel]

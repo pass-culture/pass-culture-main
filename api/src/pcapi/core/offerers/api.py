@@ -2112,6 +2112,34 @@ def get_venues_stats(venue_ids: typing.Iterable[int]) -> dict[str, int | float |
     return stats
 
 
+@dataclasses.dataclass
+class OfferConsultationModel:
+    offer_id: str
+    consultation_count: int
+
+
+@dataclasses.dataclass
+class VenueOffersStatisticsModel:
+    offers_consultation_count: int
+    top_offers_by_consultation: list[OfferConsultationModel]
+
+
+def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
+    offers_consultation_count = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": venue_id})
+    top_offers_by_consultation = clickhouse_queries.TopOffersByConsultationQuery().execute({"venue_id": venue_id})
+
+    return VenueOffersStatisticsModel(
+        offers_consultation_count=offers_consultation_count[0].total_views_6_months if offers_consultation_count else 0,
+        top_offers_by_consultation=[
+            OfferConsultationModel(
+                offer_id=offer.offer_id,
+                consultation_count=offer.total_views_last_30_days,
+            )
+            for offer in top_offers_by_consultation
+        ],
+    )
+
+
 def count_offerers_by_validation_status() -> dict[str, int]:
     stats: dict[validation_status_mixin.ValidationStatus, int] = dict(
         db.session.query(  # type: ignore [arg-type]
