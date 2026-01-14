@@ -961,9 +961,8 @@ class CollectiveOfferTemplate(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
     )
 
-    # TODO: dateUpdated should be nullable=False
     dateUpdated: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=True, default=date_utils.get_naive_utc_now, onupdate=date_utils.get_naive_utc_now
+        sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now, onupdate=date_utils.get_naive_utc_now
     )
 
     students: sa_orm.Mapped[list[StudentLevels]] = sa_orm.mapped_column(
