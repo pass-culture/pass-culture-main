@@ -85,3 +85,13 @@ $connect-as-header-height: rem.torem(52px);
     flex-grow: 1;
   }
 }
+
+.tablet-and-above {
+  @media screen and (min-width: size.$tablet) {
+    display: none;
+  }
+
+  @media screen and (max-width: size.$tablet) {
+    display: block;
+  }
+}

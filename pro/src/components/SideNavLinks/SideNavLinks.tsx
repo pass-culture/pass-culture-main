@@ -40,7 +40,6 @@ import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 
 import { EllipsissedText } from '../EllipsissedText/EllipsissedText'
-import { HubPageNavigation } from '../HubPageNavigation/HubPageNavigation'
 import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import { SideNavLink } from './SideNavLink'
 import styles from './SideNavLinks.module.scss'
@@ -135,11 +134,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     stillRelevantSavedPartnerPageVenueId ||
     hasPartnerPageVenues.at(0)?.id
 
-  const isHubPage = location.pathname === '/hub'
-
-  return isHubPage ? (
-    <HubPageNavigation isLateralPanelOpen={isLateralPanelOpen} />
-  ) : (
+  return (
     <div
       className={classnames({
         [styles['nav-links']]: true,
@@ -153,13 +148,18 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           to="/remboursements"
           iconPosition={IconPositionEnum.LEFT}
           icon={strokeRepaymentIcon}
-          className={styles['back-to-partner-space-button']}
+          className={styles['back-to-admin']}
         >
           Espace Administration
         </ButtonLink>
       )}
       {selectedOfferer && (
-        <div className={styles['nav-links-group']}>
+        <div
+          className={classnames({
+            [styles['nav-links-group-switch-venue']]: withSwitchVenueFeature,
+            [styles['nav-links-group']]: !withSwitchVenueFeature,
+          })}
+        >
           {withSwitchVenueFeature && selectedVenue && (
             <ButtonLink
               aria-label={`Changer de structure (actuellement sélectionnée : ${selectedVenue.name})`}
