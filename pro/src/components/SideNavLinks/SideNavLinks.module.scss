@@ -52,7 +52,6 @@
 
   &-open {
     height: calc(100% - #{size.$top-menu-height});
-    overflow: hidden;
 
     @media (min-width: size.$laptop) {
       min-height: 100%;
@@ -64,9 +63,15 @@
     display: flex;
     flex-direction: column;
 
+    &:nth-child(2),
     &:nth-child(3) {
       height: 100%;
     }
+  }
+
+  &-group-switch-venue {
+    display: flex;
+    flex-direction: column;
   }
 
   &-create-offer-wrapper {
@@ -196,7 +201,19 @@
   text-align: center;
   margin: var(--size-spacing-l);
   margin-bottom: 0;
-  padding: var(--size-spacing-l);
+  padding: var(--size-spacing-m);
+
+  @media (min-width: size.$tablet) {
+    display: none;
+    padding: var(--size-spacing-s);
+  }
+}
+
+.back-to-admin {
+  text-align: center;
+  margin: var(--size-spacing-l);
+  margin-bottom: 0;
+  padding: var(--size-spacing-xl);
 
   @media (min-width: size.$tablet) {
     display: none;

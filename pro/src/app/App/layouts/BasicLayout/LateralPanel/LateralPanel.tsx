@@ -1,8 +1,10 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: LateralPanel is used once per page. There cannot be id duplications. */
 import classnames from 'classnames'
 import { useEffect } from 'react'
+import { useLocation } from 'react-router'
 
 import { noop } from '@/commons/utils/noop'
+import { HubPageNavigation } from '@/components/HubPageNavigation/HubPageNavigation'
 import { AdminSideNavLinks } from '@/components/SideNavLinks/AdminSideNavLinks'
 import { SideNavLinks } from '@/components/SideNavLinks/SideNavLinks'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
@@ -20,6 +22,7 @@ interface LateralPanelProps {
   closeButtonRef: React.RefObject<HTMLButtonElement>
   navPanel: React.RefObject<HTMLDivElement>
   isAdminArea?: boolean
+  isHubPage?: boolean
 }
 
 export const LateralPanel = ({
@@ -29,7 +32,10 @@ export const LateralPanel = ({
   closeButtonRef,
   navPanel,
   isAdminArea = false,
+  isHubPage,
 }: LateralPanelProps) => {
+  const { pathname } = useLocation()
+  const isActualHubPage = isHubPage ?? pathname === '/hub'
   useEffect(() => {
     const modalElement = navPanel.current
     if (!modalElement) {
@@ -62,6 +68,13 @@ export const LateralPanel = ({
       modalElement.removeEventListener('keydown', handleTabKeyPress)
     }
   }, [lateralPanelOpen, navPanel])
+
+  let Navigation = SideNavLinks
+  if (isActualHubPage) {
+    Navigation = HubPageNavigation
+  } else if (isAdminArea) {
+    Navigation = AdminSideNavLinks
+  }
 
   return (
     <nav
@@ -106,11 +119,7 @@ export const LateralPanel = ({
             />
           </div>
         )}
-        {isAdminArea ? (
-          <AdminSideNavLinks isLateralPanelOpen={lateralPanelOpen} />
-        ) : (
-          <SideNavLinks isLateralPanelOpen={lateralPanelOpen} />
-        )}
+        <Navigation isLateralPanelOpen={lateralPanelOpen} />
       </div>
     </nav>
   )

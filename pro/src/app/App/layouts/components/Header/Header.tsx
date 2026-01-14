@@ -91,37 +91,35 @@ export const Header = forwardRef(
               </NavLink>
             )}
           </div>
-          {
-            <div className={styles['top-right-menu']}>
-              {!withSwitchVenueFeature && (
-                <div className={styles['top-right-menu-links']}>
-                  <div className={styles['tablet-and-above']}>
-                    {isProFeedbackEnabled && <UserReviewDialog />}
-                  </div>
-                  <div className={styles['tablet-and-above']}>
-                    <HeaderHelpDropdown />
-                  </div>
+          <div className={styles['top-right-menu']}>
+            {!withSwitchVenueFeature && (
+              <div className={styles['top-right-menu-links']}>
+                <div className={styles['tablet-and-above']}>
+                  {isProFeedbackEnabled && <UserReviewDialog />}
                 </div>
-              )}
-              {withSwitchVenueFeature && (
-                <ButtonLink
-                  variant={ButtonVariant.SECONDARY}
-                  to={isAdminArea ? '/accueil' : '/remboursements'}
-                  iconPosition={IconPositionEnum.LEFT}
-                  icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
-                  className={cn(
-                    styles['tablet-and-above'],
-                    styles['is-switch-venue']
-                  )}
-                >
-                  {isAdminArea
-                    ? 'Revenir à l’Espace Partenaire'
-                    : 'Espace administration'}
-                </ButtonLink>
-              )}
-              <HeaderDropdown />
-            </div>
-          }
+                <div className={styles['tablet-and-above']}>
+                  <HeaderHelpDropdown />
+                </div>
+              </div>
+            )}
+            {withSwitchVenueFeature && (
+              <ButtonLink
+                variant={ButtonVariant.SECONDARY}
+                to={isAdminArea ? '/accueil' : '/remboursements'}
+                iconPosition={IconPositionEnum.LEFT}
+                icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
+                className={cn(
+                  styles['tablet-and-above'],
+                  styles['is-switch-venue']
+                )}
+              >
+                {isAdminArea
+                  ? 'Revenir à l’Espace Partenaire'
+                  : 'Espace administration'}
+              </ButtonLink>
+            )}
+            <HeaderDropdown />
+          </div>
         </div>
       </header>
     )

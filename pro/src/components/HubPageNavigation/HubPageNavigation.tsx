@@ -25,7 +25,7 @@ export const HubPageNavigation = ({
         to="/remboursements"
         iconPosition={IconPositionEnum.LEFT}
         icon={strokeRepaymentIcon}
-        className={styles['back-to-partner-space-button']}
+        className={styles['back-to-admin']}
       >
         Espace Administration
       </ButtonLink>

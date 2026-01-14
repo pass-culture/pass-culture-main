@@ -1,7 +1,7 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import classnames from 'classnames'
 import { useId, useState } from 'react'
-import { NavLink, useLocation } from 'react-router'
+import { NavLink } from 'react-router'
 
 import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
 import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
@@ -35,17 +35,11 @@ export const AdminSideNavLinks = ({
   isLateralPanelOpen,
 }: AdminSideNavLinksProps) => {
   const [openSection, setOpenSection] = useState<OpenSection>({ data: true })
-  const location = useLocation()
   const dataId = useId()
   const dataSublistId = useId()
-  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
-  const isIndividuelActive = location.pathname.startsWith(
-    '/administration/individuel'
-  )
-  const isCollectifActive = location.pathname.startsWith(
-    '/administration/collectif'
-  )
+  // Used because `<DropdownMenu.Content />` `side` prop comes from `@radix-ui` and can't be handled via CSS unless by creating an intermediary UI component.
+  const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
   return (
     <nav
@@ -120,11 +114,11 @@ export const AdminSideNavLinks = ({
             <ul id={dataSublistId} aria-labelledby={dataId}>
               <li>
                 <NavLink
-                  to="#"
+                  to="/admin/individuel"
                   end
-                  className={() =>
+                  className={({ isActive }) =>
                     classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isIndividuelActive,
+                      [styles['nav-links-item-active']]: isActive,
                     })
                   }
                 >
@@ -135,11 +129,11 @@ export const AdminSideNavLinks = ({
               </li>
               <li>
                 <NavLink
-                  to="#"
+                  to="/admin/collectif"
                   end
-                  className={() =>
+                  className={({ isActive }) =>
                     classnames(styles['nav-links-item'], {
-                      [styles['nav-links-item-active']]: isCollectifActive,
+                      [styles['nav-links-item-active']]: isActive,
                     })
                   }
                 >
