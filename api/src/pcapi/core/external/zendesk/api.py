@@ -72,7 +72,8 @@ def update_contact_attributes(
     assert email is not None  # helps mypy
     _send_contact_attributes(zendesk_user_id, email, attributes)
     if is_new_ticket:
-        _add_internal_note(ticket_id, zendesk_user_id, email, attributes)
+        html_body = _build_internal_note(email, attributes)
+        add_comment(ticket_id, zendesk_user_id, html_body)
 
 
 def _format_user_attributes(email: str, attributes: attributes_models.UserAttributes) -> dict:
@@ -174,16 +175,10 @@ def _send_contact_attributes(
     return _put_to_zendesk(zendesk_user_id, f"/users/{zendesk_user_id}", data)
 
 
-def _add_internal_note(
-    ticket_id: int,
-    zendesk_user_id: int,
+def _build_internal_note(
     email: str,
     attributes: attributes_models.UserAttributes | attributes_models.ProAttributes,
-) -> bool:
-    """
-    Post an internal note so that support people can click on hyperlinks (not possible with custom attributes)
-    https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_comments/
-    """
+) -> Markup:
     html_body = Markup("<i>Note automatique générée par le backend pass Culture ({})</i><br/>").format(settings.ENV)
 
     name = (
@@ -218,15 +213,29 @@ def _add_internal_note(
         bo_link = urls.build_backoffice_public_account_link(attributes.user_id)
         html_body += Markup('<br/><a href="{}" target="_blank">{}</a>').format(bo_link, bo_link)
 
-    data = {
+    return html_body
+
+
+def add_comment(
+    ticket_id: int, zendesk_user_id: int, html_body: str, public: bool = False, resolve: bool = False
+) -> bool:
+    """
+    Post an internal note so that support people can click on hyperlinks (not possible with custom attributes)
+    https://developer.zendesk.com/api-reference/ticketing/tickets/ticket_comments/
+    https://developer.zendesk.com/api-reference/ticketing/tickets/tickets/#update-ticket
+    """
+    data: dict = {
         "ticket": {
             "comment": {
                 "html_body": html_body,
-                "public": False,
+                "public": public,
                 "type": "Comment",
             }
         }
     }
+
+    if resolve is True:
+        data["ticket"]["status"] = "solved"
 
     return _put_to_zendesk(zendesk_user_id, f"/tickets/{ticket_id}.json", data)
 
@@ -250,7 +259,7 @@ def _put_to_zendesk(zendesk_user_id: int, route: str, data: dict) -> bool:
         return True
     except Exception as exception:
         logger.exception(
-            "Exception when calling Zendesk API: %e",
+            "Exception when calling Zendesk API: %s",
             exception,
             extra={"zendesk_user_id": zendesk_user_id, "route": route, "data": data},
         )

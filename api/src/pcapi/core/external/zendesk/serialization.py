@@ -10,3 +10,11 @@ class UpdateZendeskAttributesRequest(BaseModel):
     zendesk_user_id: int
     email: str | None
     phone_number: str | None
+
+
+class ZendeskCheckUpdateRequestStatus(BaseModel):
+    ticket_id: int
+    zendesk_user_id: int
+    email: str
+    first_name: str
+    dossier_dn: int | str | None
