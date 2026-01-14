@@ -13,6 +13,8 @@ import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
+import pcapi.notifications.push.testing as push_testing
+import pcapi.notifications.push.trigger_events as trigger_events
 
 import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 
@@ -70,6 +72,13 @@ class GetQuotientFamilialTest:
         assert finance_models.RecreditType.BONUS_CREDIT in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+        # Ensure that a Batch notification is triggered
+        assert push_testing.requests[0] == {
+            "can_be_asynchronously_retried": True,
+            "user_id": user.id,
+            "event_name": trigger_events.BatchEvent.HAS_RECEIVED_BONUS.value,
+            "event_payload": {"has_received_bonus": True},
+        }
 
     def test_minimum_quotient_familial_retained(self):
         user = _build_user_from_fixture(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
@@ -123,6 +132,7 @@ class GetQuotientFamilialTest:
         assert finance_models.RecreditType.BONUS_CREDIT not in [
             recredit.recreditType for recredit in user.deposit.recredits
         ]
+        assert len(push_testing.requests) == 0
 
     def test_user_not_in_tax_household(self):
         user = users_factories.BeneficiaryFactory()
