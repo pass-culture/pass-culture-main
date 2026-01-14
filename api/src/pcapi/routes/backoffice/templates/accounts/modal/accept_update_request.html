@@ -9,7 +9,7 @@
 {% set user = update_request.user %}
 {% if can_be_accepted %}
   <div class="m-2">
-    Vérifie attentivement les données ci-dessous. L'acceptation du dossier appliquera automatiquement les modifications en base de données et un email transactionnel sera envoyé à <b>{{ update_request.newEmail if update_request.has_email_update else user.email }}</b> pour confirmer la mise à jour de ses informations personnelles.
+    Vérifie attentivement les données ci-dessous. L'acceptation du dossier appliquera automatiquement les modifications en base de données et un email transactionnel sera envoyé à <b>{{ update_request.newEmail if update_request.has_new_email else user.email }}</b> pour confirmer la mise à jour de ses informations personnelles.
   </div>
 {% endif %}
 <div class="my-1 card">
@@ -54,6 +54,8 @@
       <div class="col-6 block">
         <span class="fw-bold">Ancien email :</span> {{ user.email }}
       </div>
+    {% endif %}
+    {% if update_request.has_new_email %}
       <div class="col-6 block">
         <span class="fw-bold">Nouvel email :</span> {{ warn_when_empty(update_request.newEmail) }}
       </div>

@@ -689,7 +689,11 @@ class GetAcceptFormTest(GetEndpointHelper):
 
     button_label = "Appliquer les modifications et accepter"
 
-    def _test_email_update(self, authenticated_client, update_request, expected_modification_text):
+    def test_email_update(self, authenticated_client):
+        update_request = users_factories.EmailUpdateRequestFactory(
+            user__email="ancien_email@example.com",
+            oldEmail="ancien_email@example.com",
+        )
         ds_application_id = update_request.dsApplicationId
 
         with assert_num_queries(self.expected_num_queries_email_update):
@@ -704,7 +708,7 @@ class GetAcceptFormTest(GetEndpointHelper):
         assert f"Email : {update_request.user.email} " in content
         assert f"Date de naissance : {update_request.user.birth_date.strftime('%d/%m/%Y')} " in content
         assert f"Âge : {update_request.user.age} ans " in content
-        assert f"Modifications demandées : {expected_modification_text} " in content
+        assert "Modifications demandées : Email " in content
         assert f"Dossier : {update_request.dsApplicationId} " in content
         assert f"Dépôt de la demande : {update_request.dateCreated.strftime('%d/%m/%Y')} " in content
         assert f"Ancien email : {update_request.user.email} " in content
@@ -716,19 +720,34 @@ class GetAcceptFormTest(GetEndpointHelper):
         assert "Doublon" not in content
         assert self.button_label in content
 
-    def test_email_update(self, authenticated_client):
-        update_request = users_factories.EmailUpdateRequestFactory(
-            user__email="ancien_email@example.com",
-            oldEmail="ancien_email@example.com",
-        )
-
-        self._test_email_update(authenticated_client, update_request, "Email")
-
     def test_lost_credentials(self, authenticated_client):
         user = users_factories.BeneficiaryGrant18Factory()
         update_request = users_factories.LostCredentialsUpdateRequestFactory(user=user)
+        ds_application_id = update_request.dsApplicationId
 
-        self._test_email_update(authenticated_client, update_request, "Perte de l'identifiant")
+        with assert_num_queries(self.expected_num_queries_email_update):
+            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            assert response.status_code == 200
+
+        content = html_parser.content_as_text(response.data)
+        assert (
+            f"Jeune : {update_request.user.firstName} {update_request.user.lastName} ({update_request.user.id}) Pass 18 "
+            in content
+        )
+        assert f"Email : {update_request.user.email} " in content
+        assert f"Date de naissance : {update_request.user.birth_date.strftime('%d/%m/%Y')} " in content
+        assert f"Âge : {update_request.user.age} ans " in content
+        assert "Modifications demandées : Perte de l'identifiant " in content
+        assert f"Dossier : {update_request.dsApplicationId} " in content
+        assert f"Dépôt de la demande : {update_request.dateCreated.strftime('%d/%m/%Y')} " in content
+        assert "Ancien email " not in content
+        assert f"Nouvel email : {update_request.newEmail} " in content
+        assert "Ancien numéro " not in content
+        assert "Nouveau numéro " not in content
+        assert "Nouveau prénom " not in content
+        assert "Nouveau nom " not in content
+        assert "Doublon" not in content
+        assert self.button_label in content
 
     def test_phone_number_update(self, authenticated_client):
         ds_application_id = 21268381

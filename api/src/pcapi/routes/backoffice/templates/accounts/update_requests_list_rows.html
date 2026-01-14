@@ -166,6 +166,8 @@
       {% if update_request.has_lost_credentials %}
         <div>
           <span class="fw-bold">Perte de l'identifiant de connexion</span>
+          <br />
+          <span class="fw-bold">Nouvel email&nbsp;:</span> {{ text_or_question_mark(update_request.newEmail) }}
         </div>
       {% endif %}
       {% if update_request.has_account_has_same_info_update %}

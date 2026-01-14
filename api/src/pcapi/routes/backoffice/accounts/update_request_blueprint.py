@@ -299,7 +299,7 @@ def instruct(ds_application_id: int) -> utils.BackofficeResponse:
 
 
 def _find_duplicate(update_request: users_models.UserAccountUpdateRequest) -> users_models.User | None:
-    if not update_request.has_email_update or not update_request.newEmail:
+    if not update_request.has_new_email or not update_request.newEmail:
         return None
 
     return (
@@ -422,7 +422,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         flash(Markup("Une erreur s'est produite : {message}").format(message=str(exc)), "warning")
         return _render_account_update_requests([ds_application_id])
 
-    if update_request.has_email_update:
+    if update_request.has_new_email:
         duplicate_user = _find_duplicate(update_request)
         if duplicate_user:
             if duplicate_user.roles or duplicate_user.deposit:  # should be consistent but check both
@@ -458,7 +458,7 @@ def accept(ds_application_id: int) -> utils.BackofficeResponse:
         user,
         is_first_name_updated=update_request.has_first_name_update,
         is_last_name_updated=update_request.has_last_name_update,
-        is_email_updated=update_request.has_email_update,
+        is_email_updated=update_request.has_new_email,
         is_phone_number_updated=update_request.has_phone_number_update,
     )
 

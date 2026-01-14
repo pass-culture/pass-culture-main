@@ -1249,10 +1249,7 @@ class UserAccountUpdateRequest(PcObject, Model):
 
     @property
     def has_email_update(self) -> bool:
-        return (
-            UserAccountUpdateType.EMAIL in self.updateTypes
-            or UserAccountUpdateType.LOST_CREDENTIALS in self.updateTypes
-        )
+        return UserAccountUpdateType.EMAIL in self.updateTypes
 
     @property
     def has_phone_number_update(self) -> bool:
@@ -1273,6 +1270,10 @@ class UserAccountUpdateRequest(PcObject, Model):
     @property
     def has_account_has_same_info_update(self) -> bool:
         return UserAccountUpdateType.ACCOUNT_HAS_SAME_INFO in self.updateTypes
+
+    @property
+    def has_new_email(self) -> bool:
+        return self.has_email_update or self.has_lost_credentials
 
     @property
     def can_be_accepted(self) -> bool:
