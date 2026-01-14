@@ -153,12 +153,6 @@ def create_collective_offer_template(
     educational_domains = get_educational_domains_from_ids(offer_data.domains)
     validation.validate_national_program(national_program_id=offer_data.nationalProgramId, domains=educational_domains)
 
-    # TODO: move this to validation and see if that can be merged with check_contact_request
-    if not any((offer_data.contact_email, offer_data.contact_phone, offer_data.contact_url, offer_data.contact_form)):
-        raise offers_exceptions.AllNullContactRequestDataError()
-    if offer_data.contact_url and offer_data.contact_form:
-        raise offers_exceptions.UrlandFormBothSetError()
-
     offerer_address = get_or_create_offerer_address_from_collective_offer_location(offer_data.location, venue)
 
     collective_offer_template = models.CollectiveOfferTemplate(
@@ -187,6 +181,8 @@ def create_collective_offer_template(
         locationComment=offer_data.location.locationComment if offer_data.location else None,
         offererAddressId=offerer_address.id if offerer_address else None,
     )
+
+    validation.check_contact_request(offer=collective_offer_template, updates={})
 
     if offer_data.dates:
         # this is necessary to pass constraint template_dates_non_empty_daterange
@@ -1132,6 +1128,7 @@ def update_collective_offer_template(
         else:
             offer_to_update.dateRange = None
 
+    validation.check_contact_request(offer_to_update, new_values)
     _update_collective_offer(offer=offer_to_update, new_values=new_values, location_body=body.location)
 
     on_commit(
@@ -1148,8 +1145,7 @@ def _update_collective_offer(
     new_values: dict,
     location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
 ) -> list[str]:
-    offer_validation.check_validation_status(offer)
-    offer_validation.check_contact_request(offer, new_values)
+    validation.check_validation_status(offer)
 
     # check domains and national program
     domains_to_check = offer.domains
