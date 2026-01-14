@@ -41,6 +41,7 @@
   "dependencies": {
     "@algolia/autocomplete-plugin-query-suggestions": "1.19.4",
     "@algolia/autocomplete-plugin-recent-searches": "1.19.4",
+    "@chromatic-com/playwright": "^0.12.8",
     "@firebase/analytics": "0.10.19",
     "@firebase/app": "0.14.6",
     "@firebase/remote-config": "0.7.0",
@@ -60,6 +61,7 @@
     "dompurify": "3.3.1",
     "downshift": "9.0.13",
     "libphonenumber-js": "1.12.33",
+    "package.json": "^2.0.1",
     "react": "18.3.1",
     "react-avatar-editor": "13.0.2",
     "react-chartjs-2": "5.3.1",
@@ -72,6 +74,7 @@
     "swr": "2.3.8",
     "use-debounce": "10.0.6",
     "uuidv4": "6.2.13",
+    "yarn.lock": "^0.0.1-security",
     "yup": "1.7.1"
   },
   "devDependencies": {
@@ -101,6 +104,7 @@
     "allure-js-commons": "3.4.3",
     "allure-vitest": "3.4.3",
     "axe-core": "4.11.0",
+    "chromatic": "^13.3.5",
     "cypress": "15.8.2",
     "cypress-axe": "1.7.0",
     "cypress-fail-fast": "7.1.1",
