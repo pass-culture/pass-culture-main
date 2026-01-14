@@ -10,7 +10,7 @@ from pcapi.connectors.dms import serializer as dms_serializer
 from pcapi.core.subscription.dms import schemas as dms_schemas
 from pcapi.core.users import models as users_models
 
-from tests.scripts.beneficiary import fixture
+from tests.connectors import fixtures
 
 
 class ParseBeneficiaryInformationTest:
@@ -23,13 +23,13 @@ class ParseBeneficiaryInformationTest:
         ],
     )
     def test_handles_postal_codes(self, postal_code, expected_code):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code=postal_code)
+        application_detail = fixtures.make_parsed_graphql_application(1, "accepte", postal_code=postal_code)
         information = dms_serializer.parse_beneficiary_information_graphql(application_detail)
         assert information.postal_code == expected_code
 
     def test_handles_civility_parsing(self):
         # given
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", civility="M")
+        application_detail = fixtures.make_parsed_graphql_application(1, "accepte", civility="M")
 
         # when
         information = dms_serializer.parse_beneficiary_information_graphql(application_detail)
@@ -39,19 +39,19 @@ class ParseBeneficiaryInformationTest:
 
     @pytest.mark.parametrize("activity", ["Étudiant", None])
     def test_handles_activity(self, activity):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", activity=activity)
+        application_detail = fixtures.make_parsed_graphql_application(1, "accepte", activity=activity)
         information = dms_serializer.parse_beneficiary_information_graphql(application_detail)
         assert information.activity == activity
 
     @pytest.mark.parametrize("possible_value", ["123456789012", " 123456789012", "123456789012 ", " 123456789012 "])
     def test_beneficiary_information_id_piece_number_with_spaces_graphql(self, possible_value):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
+        application_detail = fixtures.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
         information = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
         assert information.id_piece_number == "123456789012"
 
     def test_new_procedure(self):
-        raw_data = fixture.make_new_application()
+        raw_data = fixtures.make_new_application()
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.last_name == "VALGEAN"
         assert content.first_name == "Jean"
@@ -68,7 +68,7 @@ class ParseBeneficiaryInformationTest:
         assert content.id_piece_number == "F9GFAL123"
 
     def test_new_procedure_for_stranger_residents(self):
-        raw_data = fixture.make_new_stranger_application()
+        raw_data = fixtures.make_new_stranger_application()
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.last_name == "VALGEAN"
         assert content.first_name == "Jean"
@@ -85,7 +85,7 @@ class ParseBeneficiaryInformationTest:
         assert content.id_piece_number == "K682T8YLO"
 
     def test_new_procedure_made_for_beneficiary_by_representative(self):
-        raw_data = fixture.make_new_stranger_application()
+        raw_data = fixtures.make_new_stranger_application()
         procedure_made_by_representative = {
             **raw_data,
             "demandeur": {**raw_data.get("demandeur"), "nom": "DOE", "prenom": "John", "email": "john.doe@example.com"},
@@ -108,7 +108,7 @@ class ParseBeneficiaryInformationTest:
         assert content.id_piece_number == "K682T8YLO"
 
     def test_modification_datetime(self):
-        raw_data = fixture.make_graphql_application(
+        raw_data = fixtures.make_graphql_application(
             1,
             "en_construction",
             last_modification_date="2025-03-01T12:00:00+01:00",
@@ -119,12 +119,12 @@ class ParseBeneficiaryInformationTest:
         assert content.latest_user_fields_modification_datetime == datetime(2025, 3, 2, 14)
 
     def test_processed_datetime_none(self):
-        raw_data = fixture.make_graphql_application(1, "en_construction", processed_datetime=None)
+        raw_data = fixtures.make_graphql_application(1, "en_construction", processed_datetime=None)
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.processed_datetime is None
 
     def test_processed_datetime_not_none(self):
-        raw_data = fixture.make_graphql_application(1, "accepte")
+        raw_data = fixtures.make_graphql_application(1, "accepte")
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.processed_datetime == datetime(2020, 5, 13, 8, 41, 21)
 
@@ -145,20 +145,20 @@ class ParseBeneficiaryInformationTest:
         ],
     )
     def test_activity_accepted_values(self, dms_activity, expected_activity):
-        raw_data = fixture.make_graphql_application(1, "accepte", activity=dms_activity)
+        raw_data = fixtures.make_graphql_application(1, "accepte", activity=dms_activity)
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.activity == expected_activity
 
     @patch("pcapi.connectors.dms.serializer.logger.error")
     def test_activity_unknown_values(self, mocked_logger):
-        raw_data = fixture.make_graphql_application(1, "accepte", activity="invalid")
+        raw_data = fixtures.make_graphql_application(1, "accepte", activity="invalid")
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.activity is None
         mocked_logger.assert_called_once_with("Unknown activity value for application %s: %s", 1, "invalid")
 
     def test_serializer_is_resilient_to_minor_label_updates(self):
-        base_raw_data = fixture.make_graphql_application(1, "accepte")
-        labels_edited_raw_data = fixture.make_graphql_application(
+        base_raw_data = fixtures.make_graphql_application(1, "accepte")
+        labels_edited_raw_data = fixtures.make_graphql_application(
             1,
             "accepte",
             labels={
@@ -182,14 +182,14 @@ class ParseBeneficiaryInformationTest:
         assert base_content == labels_edited_content
 
     def test_serializer_handles_id_piece_numbers_with_extra_spaces(self):
-        raw_data = fixture.make_graphql_application(1, "accepte", id_piece_number="  12  345 67 89  012 ")
+        raw_data = fixtures.make_graphql_application(1, "accepte", id_piece_number="  12  345 67 89  012 ")
         content = dms_serializer.parse_beneficiary_information_graphql(dms_models.DmsApplicationResponse(**raw_data))
         assert content.id_piece_number == "12 345 67 89 012"
 
 
 class FieldErrorsTest:
     def test_beneficiary_information_postalcode_error(self):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
+        application_detail = fixtures.make_parsed_graphql_application(1, "accepte", postal_code="Strasbourg")
         application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 
         assert len(application_content.field_errors) == 1
@@ -198,7 +198,7 @@ class FieldErrorsTest:
 
     @pytest.mark.parametrize("possible_value", ["Passeport n: XXXXX", "sans numéro"])
     def test_beneficiary_information_id_piece_number_error(self, possible_value):
-        application_detail = fixture.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
+        application_detail = fixtures.make_parsed_graphql_application(1, "accepte", id_piece_number=possible_value)
 
         application_content = dms_serializer.parse_beneficiary_information_graphql(application_detail)
 

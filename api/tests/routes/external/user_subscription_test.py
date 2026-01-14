@@ -36,8 +36,8 @@ from pcapi.models import db
 from pcapi.routes.external.authentication import compute_signature
 from pcapi.utils import date as date_utils
 
+from tests.connectors.fixtures import make_single_application
 from tests.core.subscription import test_factories
-from tests.scripts.beneficiary.fixture import make_single_application
 from tests.test_utils import json_default
 
 

@@ -6,9 +6,7 @@ import time_machine
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import models as dms_models
 
-from tests.scripts.beneficiary.fixture import make_graphql_application
-from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
-from tests.scripts.beneficiary.fixture import make_single_application
+from tests.connectors import fixtures
 
 
 DS_MAKE_ON_GOING_RESPONSE = {
@@ -80,8 +78,8 @@ class GraphqlResponseTest:
     @patch.object(dms_api.DMSGraphQLClient, "execute_query")
     def test_get_applications_with_details(self, execute_query):
         execute_query.side_effect = [
-            make_graphql_application(123, "accepte", full_graphql_response=True, has_next_page=True),
-            make_graphql_application(456, "accepte", full_graphql_response=True),
+            fixtures.make_graphql_application(123, "accepte", full_graphql_response=True, has_next_page=True),
+            fixtures.make_graphql_application(456, "accepte", full_graphql_response=True),
         ]
 
         client = dms_api.DMSGraphQLClient()
@@ -107,7 +105,7 @@ class GraphqlResponseTest:
 
     @patch.object(dms_api.DMSGraphQLClient, "execute_query")
     def test_get_single_application_details(self, execute_query):
-        execute_query.return_value = make_single_application(12, state="accepte")
+        execute_query.return_value = fixtures.make_single_application(12, state="accepte")
 
         client = dms_api.DMSGraphQLClient()
         result = client.get_single_application_details(42)
@@ -164,7 +162,9 @@ class GraphqlResponseTest:
     @patch.object(dms_api.DMSGraphQLClient, "execute_query")
     def test_get_deleted_applications(self, execute_query):
         procedure_number = 1
-        execute_query.return_value = make_graphql_deleted_applications(procedure_number, application_numbers=[1, 2, 3])
+        execute_query.return_value = fixtures.make_graphql_deleted_applications(
+            procedure_number, application_numbers=[1, 2, 3]
+        )
 
         client = dms_api.DMSGraphQLClient()
 
