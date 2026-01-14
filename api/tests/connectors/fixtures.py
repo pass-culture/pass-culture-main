@@ -23,8 +23,6 @@ DEFAULT_MESSAGES = [
 AGE18_ELIGIBLE_BIRTH_DATE = date_utils.get_naive_utc_now() - relativedelta(years=ELIGIBILITY_AGE_18)
 
 
-# TODO (thconte: 2023-09-06)
-# Change these hard-written datetimes to variables
 def make_graphql_application(
     application_number: int,
     state: str,
