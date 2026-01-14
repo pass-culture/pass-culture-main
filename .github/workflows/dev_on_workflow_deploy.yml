@@ -265,19 +265,19 @@ jobs:
             FAIL=0
             echo "flask commands runs on ${POD_NAME}"
 
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings artists --not-dry; then
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings artists --apply; then
                 echo "Failed to apply algolia settings for artists"
                 FAIL=1
             fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings offers --not-dry; then
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings offers --apply; then
                 echo "Failed to apply algolia settings for offers"
                 FAIL=1
             fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings collective_offers --not-dry; then
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings collective_offers --apply; then
                 echo "Failed to apply algolia settings for collective_offers"
                 FAIL=1
             fi
-            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings venues --not-dry; then
+            if ! kubectl exec -it -n $ENV ${POD_NAME} -- flask set_algolia_settings venues --apply; then
                 echo "Failed to apply algolia settings for venues"
                 FAIL=1
             fi

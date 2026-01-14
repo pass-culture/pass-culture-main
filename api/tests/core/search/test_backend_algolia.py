@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 import requests_mock
 import time_machine
+from algoliasearch.search.models import search_response
 
 import pcapi.core.artist.factories as artists_factories
 import pcapi.core.educational.factories as educational_factories
@@ -144,10 +145,12 @@ def test_index_artists(app):
     backend = get_backend()
     artist = artists_factories.ArtistFactory()
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/artists/batch", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/artists/batch", json={"task_id": 123, "object_ids": []}
+        )
         backend.index_artists([artist])
         posted_json = posted.last_request.json()
-        assert posted_json["requests"][0]["action"] == "updateObject"
+        assert posted_json["requests"][0]["action"] == "addObject"
         assert posted_json["requests"][0]["body"]["objectID"] == artist.id
 
 
@@ -156,10 +159,13 @@ def test_index_offers(app):
     backend = get_backend()
     offer = offers_factories.StockFactory().offer
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/offers/batch", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/offers/batch",
+            json={"task_id": 123, "object_ids": []},
+        )
         backend.index_offers([offer], {offer.id: 0})
         posted_json = posted.last_request.json()
-        assert posted_json["requests"][0]["action"] == "updateObject"
+        assert posted_json["requests"][0]["action"] == "addObject"
         assert posted_json["requests"][0]["body"]["objectID"] == offer.id
     assert backend.check_offer_id_is_indexed(offer.id)
 
@@ -168,11 +174,14 @@ def test_unindex_offer_ids(app):
     backend = get_backend()
     app.redis_client.hset("indexed_offers", "1", "")
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/offers/batch", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/offers/batch",
+            json={"task_id": 123, "object_ids": []},
+        )
         backend.unindex_offer_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
-        assert posted_json["requests"][0]["body"]["objectID"] == 1
+        assert posted_json["requests"][0]["body"]["objectID"] == "1"
     assert not backend.check_offer_id_is_indexed(1)
 
 
@@ -180,7 +189,10 @@ def test_unindex_all_offers(app):
     backend = get_backend()
     app.redis_client.hset("indexed_offers", "1", "")
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/offers/clear", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/offers/clear",
+            json={"task_id": 123, "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()},
+        )
         backend.unindex_all_offers()
         assert posted.called
     assert not backend.check_offer_id_is_indexed(1)
@@ -190,27 +202,36 @@ def test_index_venues(app):
     backend = get_backend()
     venue = offerers_factories.VenueFactory()
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/venues/batch",
+            json={"task_id": 123, "object_ids": []},
+        )
         backend.index_venues([venue])
         posted_json = posted.last_request.json()
-        assert posted_json["requests"][0]["action"] == "updateObject"
+        assert posted_json["requests"][0]["action"] == "addObject"
         assert posted_json["requests"][0]["body"]["objectID"] == venue.id
 
 
 def test_unindex_venue_ids(app):
     backend = get_backend()
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/venues/batch", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/venues/batch",
+            json={"task_id": 123, "object_ids": []},
+        )
         backend.unindex_venue_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
-        assert posted_json["requests"][0]["body"]["objectID"] == 1
+        assert posted_json["requests"][0]["body"]["objectID"] == "1"
 
 
 def test_unindex_all_collective_offer_templates():
     backend = get_backend()
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/clear",
+            json={"task_id": 123, "updated_at": datetime.datetime.now(datetime.timezone.utc).isoformat()},
+        )
         backend.unindex_all_collective_offer_templates()
         assert posted.called
 
@@ -236,7 +257,10 @@ def test_index_collective_offers_templates():
     )
 
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch",
+            json={"task_id": 123, "object_ids": []},
+        )
         backend.index_collective_offer_templates(
             [
                 collective_offer_template,
@@ -245,7 +269,7 @@ def test_index_collective_offers_templates():
             ]
         )
         posted_json = posted.last_request.json()
-        assert posted_json["requests"][0]["action"] == "updateObject"
+        assert posted_json["requests"][0]["action"] == "addObject"
         assert posted_json["requests"][0]["body"]["objectID"] == f"T-{collective_offer_template.id}"
         assert (
             posted_json["requests"][0]["body"]["venue"]["departmentCode"]
@@ -258,7 +282,10 @@ def test_index_collective_offers_templates():
 def test_unindex_collective_offer_templates_ids():
     backend = get_backend()
     with requests_mock.Mocker() as mocker:
-        posted = mocker.post("https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch", json={})
+        posted = mocker.post(
+            "https://dummy-app-id.algolia.net/1/indexes/testing-collective-offers/batch",
+            json={"task_id": 123, "object_ids": []},
+        )
         backend.unindex_collective_offer_template_ids([1])
         posted_json = posted.last_request.json()
         assert posted_json["requests"][0]["action"] == "deleteObject"
@@ -370,8 +397,14 @@ class ProcessingQueueTest:
 )
 def test_search_offer_ids(raw_ids, clean_ids):
     backend = get_backend()
-    backend.algolia_offers_client.search = mock.MagicMock(
-        return_value={"hits": [{"objectID": raw} for raw in raw_ids]},
+    # TODO: ideally, we should mock the SearchClientSync client instead
+    backend.search = mock.MagicMock(
+        return_value=search_response.SearchResponse(
+            hits=[{"objectID": raw} for raw in raw_ids],
+            processing_time_ms=10,
+            query="query",
+            params="?p=params",
+        )
     )
     result = backend.search_offer_ids(query="some")
     assert result == clean_ids
