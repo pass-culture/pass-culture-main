@@ -17,8 +17,12 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import postal_code as postal_code_utils
 
 
-@pytest.mark.usefixtures("db_session")
-class ZendeskWebhookTest:
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+]
+
+
+class ZendeskWebhookCommon:
     @pytest.mark.parametrize(
         "phone_number,postal_code,expected_additional_tags",
         [
@@ -320,3 +324,13 @@ class ZendeskWebhookTest:
 
         assert response.status_code == 400
         assert len(users_testing.zendesk_requests) == 0
+
+
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK=False)
+class ZendeskWebhookTest(ZendeskWebhookCommon):
+    pass
+
+
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK=True)
+class ZendeskWebhookCeleryTest(ZendeskWebhookCommon):
+    pass

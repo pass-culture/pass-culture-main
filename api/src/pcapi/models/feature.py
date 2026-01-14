@@ -130,6 +130,7 @@ class FeatureToggle(enum.Enum):
     WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour du statut actif des offres"
     WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des opérations spéciales"
     WIP_ASYNCHRONOUS_CELERY_UBBLE = "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
+    WIP_ASYNCHRONOUS_CELERY_ZENDESK = "Activer le backend de tâches asynchrones Celery pour le webhook Zendesk Support"
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
     )
@@ -203,6 +204,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_ZENDESK,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_HIGHLIGHT,
     FeatureToggle.WIP_OFFER_ARTISTS,
