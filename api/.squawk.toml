@@ -10,5 +10,7 @@ excluded_rules = [
   "prefer-identity",
   # every timestamp is stored as UTC, which is i18n best practice
   "prefer-timestamptz",
-  "prefer-identity"
+  "prefer-identity",
+  # timeout is already set globally for each migration
+  "require-timeout-settings",
 ]
