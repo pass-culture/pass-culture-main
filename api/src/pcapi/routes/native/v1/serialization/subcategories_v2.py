@@ -83,8 +83,6 @@ class HomepageLabelResponseModelv2(BaseModel):
 class CategoryGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         if key == "positions":
-            # FIXME (tconte-pass, 2025-02-28): delete this specific case
-            # https://passculture.atlassian.net/browse/PC-34893
             return None if "LIVRES" in [parent.name for parent in self._obj.parents] else self._obj.positions
 
         if key == "parents":

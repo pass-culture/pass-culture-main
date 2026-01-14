@@ -47,9 +47,6 @@ def notify_newly_eligible_users() -> None:
     if not settings.NOTIFY_NEWLY_ELIGIBLE_USERS:
         return
 
-    # TODO: (tconte-pass, 2025-02-20) https://passculture.atlassian.net/browse/PC-34732
-    # Make `get_users_that_had_birthday_since` return a query
-    # and join here necessary tables to compute remaining credit later.
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     for user in users_repository.get_users_that_had_birthday_since(yesterday, age=17):
         transactional_mails.send_birthday_age_17_email_to_newly_eligible_user(user)
