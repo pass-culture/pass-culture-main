@@ -77,9 +77,6 @@ STANDARD_THUMBNAIL_HEIGHT = 600
 ACCEPTED_THUMBNAIL_FORMATS = ("png", "jpg", "jpeg", "mpo", "webp")
 
 
-AnyCollectiveOffer = educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate
-
-
 def check_can_edit_synchronized_stock(
     offer: models.Offer,
     editing_provider: providers_models.Provider | None = None,
@@ -409,23 +406,6 @@ def check_image(
 def check_validation_status(offer: models.Offer) -> None:
     if offer.validation == models.OfferValidationStatus.REJECTED:
         raise exceptions.OfferException({"global": ["Les offres refusées ne sont pas modifiables"]})
-
-
-def check_contact_request(offer: AnyCollectiveOffer, in_data: dict) -> None:
-    if isinstance(offer, educational_models.CollectiveOffer):
-        # collective offers are not concerned, for now.
-        return
-
-    set_email = in_data.get("contactEmail", offer.contactEmail)
-    set_phone = in_data.get("contactPhone", offer.contactPhone)
-    set_url = in_data.get("contactUrl", offer.contactUrl)
-    set_form = in_data.get("contactForm", offer.contactForm)
-
-    if not any((set_email, set_phone, set_url, set_form)):
-        raise exceptions.AllNullContactRequestDataError()
-
-    if set_url and set_form:
-        raise exceptions.UrlandFormBothSetError()
 
 
 def check_offer_can_have_activation_codes(offer: models.Offer) -> None:

@@ -368,7 +368,7 @@ def edit_collective_offer_template(
         raise ApiErrors({"global": ["Cette action n'est pas autorisée sur cette offre"]}, 403)
     except exceptions.UpdateCollectiveOfferTemplateError as err:
         raise ApiErrors({err.field: err.msg}, 400)
-    except offers_exceptions.CollectiveOfferContactRequestError as err:
+    except exceptions.CollectiveOfferContactRequestError as err:
         raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
     offer = repository.get_collective_offer_template_by_id(offer_id)
@@ -561,7 +561,7 @@ def create_collective_offer_template(
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NATIONAL_PROGRAM_INACTIVE"}, status_code=400)
 
     # creation errors
-    except offers_exceptions.CollectiveOfferContactRequestError as err:
+    except exceptions.CollectiveOfferContactRequestError as err:
         raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
     return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)

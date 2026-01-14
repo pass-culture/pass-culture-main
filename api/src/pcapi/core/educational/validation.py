@@ -150,3 +150,16 @@ def check_validation_status(
         raise exceptions.EducationalException(
             {"global": ["Les offres refusées ou en attente de validation ne sont pas modifiables"]}
         )
+
+
+def check_contact_request(offer: models.CollectiveOfferTemplate, updates: dict) -> None:
+    set_email = updates.get("contactEmail", offer.contactEmail)
+    set_phone = updates.get("contactPhone", offer.contactPhone)
+    set_url = updates.get("contactUrl", offer.contactUrl)
+    set_form = updates.get("contactForm", offer.contactForm)
+
+    if not any((set_email, set_phone, set_url, set_form)):
+        raise exceptions.AllNullContactRequestDataError()
+
+    if set_url and set_form:
+        raise exceptions.UrlandFormBothSetError()
