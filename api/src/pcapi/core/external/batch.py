@@ -222,3 +222,12 @@ def send_users_reminders_for_offer(user_ids: list[int], offer: offers_models.Off
 
     payload = TrackBatchEventsRequest(trigger_events=trigger_events)
     on_commit(partial(batch_tasks.track_event_bulk_task.delay, payload))
+
+
+def track_has_received_bonus(user_id: int) -> None:
+    event_name = BatchEvent.HAS_RECEIVED_BONUS
+    event_payload = {
+        "has_received_bonus": True,
+    }
+    payload = TrackBatchEventRequest(event_name=event_name, event_payload=event_payload, user_id=user_id)
+    on_commit(partial(batch_tasks.track_event_task.delay, payload))
