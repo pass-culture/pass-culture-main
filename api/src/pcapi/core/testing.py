@@ -1,8 +1,6 @@
 import collections
 import contextlib
-import functools
 import math
-import types
 import typing
 
 import flask
@@ -127,69 +125,6 @@ def register_event_for_query_logger() -> None:
     )
 
 
-DecoratedClass = typing.TypeVar("DecoratedClass")
-
-
-class TestContextDecorator:
-    """A base class that can be used for test class and test function
-    decorators, or as a context manager within a test.
-
-    Taken from Django and slightly adapted and simplified.
-    """
-
-    def enable(self) -> None:
-        raise NotImplementedError()
-
-    def disable(self) -> None:
-        raise NotImplementedError()
-
-    def __enter__(self) -> None:
-        return self.enable()
-
-    def __exit__(
-        self,
-        exc_type: type[BaseException] | None,
-        exc_value: BaseException | None,
-        traceback: types.TracebackType,
-    ) -> None:
-        self.disable()
-
-    def decorate_class(self, cls: type[DecoratedClass]) -> type[DecoratedClass]:
-        decorated_setup_method = getattr(cls, "setup_method", None)
-        decorated_teardown_method = getattr(cls, "teardown_method", None)
-
-        def setup_method(inner_self: DecoratedClass) -> None:
-            self.enable()
-            if decorated_setup_method:
-                decorated_setup_method(inner_self)
-
-        def teardown_method(inner_self: DecoratedClass) -> None:
-            self.disable()
-            if decorated_teardown_method:
-                decorated_teardown_method(inner_self)
-
-        cls.setup_method = setup_method  # type: ignore[attr-defined]
-        cls.teardown_method = teardown_method  # type: ignore[attr-defined]
-        return cls
-
-    def decorate_callable(self, func: typing.Callable) -> typing.Callable:
-        @functools.wraps(func)
-        def inner(*args: typing.Any, **kwargs: typing.Any) -> typing.Callable:
-            with self:
-                return func(*args, **kwargs)
-
-        return inner
-
-    def __call__(self, decorated: typing.Callable) -> typing.Callable:
-        if isinstance(decorated, type):
-            if not getattr(self, "CAN_BE_USED_ON_CLASSES", True):
-                raise TypeError(f"{self.__class__.__name__} cannot be used to decorate a class")
-            return self.decorate_class(decorated)
-        if callable(decorated):
-            return self.decorate_callable(decorated)
-        raise TypeError(f"Cannot decorate object {decorated}")
-
-
 class SettingsContext:
     def __init__(self) -> None:
         # Use `object.__setattr__` because `__setattr__` method is overriden
@@ -205,6 +140,7 @@ class SettingsContext:
     def reset(self) -> None:
         for attr_name, value in self._initial_settings.items():
             setattr(settings, attr_name, value)
+        object.__setattr__(self, "_initial_settings", {})
 
 
 class FeaturesCache(collections.UserDict):
