@@ -127,19 +127,6 @@ def confirm_collective_booking(educational_booking_id: int) -> models.Collective
     confirmation_datetime = date_utils.get_naive_utc_now()
     validation.check_confirmation_limit_date_has_not_passed(collective_booking, confirmation_datetime)
 
-    # TODO(jcicurel-pass, 2026-01-07): we must block confirmation for Agriculture UAIs
-    # remove this once we have updated the Agriculture deposits
-    deposit = (
-        db.session.query(models.EducationalDeposit)
-        .filter(
-            models.EducationalDeposit.educationalInstitutionId == collective_booking.educationalInstitutionId,
-            models.EducationalDeposit.period.op("@>")(confirmation_datetime),  # current deposit
-        )
-        .one_or_none()
-    )
-    if deposit is not None and deposit.ministry == models.Ministry.AGRICULTURE:
-        raise exceptions.InsufficientFund()
-
     if settings.EAC_CHECK_INSTITUTION_FUND:
         _check_institution_fund_and_link_deposit(collective_booking, confirmation_datetime)
 

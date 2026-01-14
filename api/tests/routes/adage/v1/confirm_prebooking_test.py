@@ -33,8 +33,7 @@ class Returns200Test:
     # 2. select deposit
     # 3. select stock.price sum
     # 4. update booking
-    # 5. deposit (temporary, for Agriculture ministry)
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     @time_machine.travel("2021-10-15 09:00:00", tick=False)
     def test_confirm_collective_prebooking(self, client, caplog) -> None:
@@ -669,50 +668,3 @@ class PeriodCheckTest:
 
         assert booking.status == models.CollectiveBookingStatus.CONFIRMED
         assert booking.educationalDepositId == period_data.deposit_first_period_next_year.id
-
-
-class AgricultureTest:
-    def test_agriculture_error(self, client):
-        educational_year = EducationalCurrentYearFactory()
-        deposit = EducationalDepositFactory(
-            educationalYear=educational_year, isFinal=True, amount=Decimal(2000), ministry=models.Ministry.AGRICULTURE
-        )
-
-        booking = PendingCollectiveBookingFactory(
-            collectiveStock__price=Decimal(20),
-            educationalInstitution=deposit.educationalInstitution,
-            educationalYear=educational_year,
-        )
-
-        client = client.with_eac_token()
-        booking_id = booking.id
-        response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
-
-        assert response.status_code == 422
-        assert response.json == {"code": "INSUFFICIENT_FUND"}
-        assert booking.status == models.CollectiveBookingStatus.PENDING
-        assert booking.educationalDepositId is None
-
-    @pytest.mark.parametrize("ministry", (m for m in models.Ministry if m != models.Ministry.AGRICULTURE))
-    def test_other_ministry_ok(self, client, ministry):
-        educational_year = EducationalCurrentYearFactory()
-        deposit = EducationalDepositFactory(
-            educationalYear=educational_year,
-            isFinal=True,
-            amount=Decimal(2000),
-            ministry=ministry,
-        )
-
-        booking = PendingCollectiveBookingFactory(
-            collectiveStock__price=Decimal(20),
-            educationalInstitution=deposit.educationalInstitution,
-            educationalYear=educational_year,
-        )
-
-        client = client.with_eac_token()
-        booking_id = booking.id
-        response = client.post(f"/adage/v1/prebookings/{booking_id}/confirm")
-
-        assert response.status_code == 200
-        assert booking.status == models.CollectiveBookingStatus.CONFIRMED
-        assert booking.educationalDepositId == deposit.id
