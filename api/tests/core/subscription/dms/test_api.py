@@ -32,10 +32,7 @@ from pcapi.models import db
 from pcapi.utils import date as date_utils
 from pcapi.utils.transaction_manager import atomic
 
-from tests.scripts.beneficiary import fixture
-from tests.scripts.beneficiary.fixture import make_graphql_deleted_applications
-from tests.scripts.beneficiary.fixture import make_parsed_graphql_application
-from tests.scripts.beneficiary.fixture import make_single_application
+from tests.connectors import fixtures
 
 
 AGE18_ELIGIBLE_BIRTH_DATE = datetime.date.today() - relativedelta(years=ELIGIBILITY_AGE_18)
@@ -54,7 +51,7 @@ class DMSOrphanSubsriptionTest:
             email=email, application_id=application_number, process_id=procedure_number
         )
 
-        execute_query.return_value = make_single_application(
+        execute_query.return_value = fixtures.make_single_application(
             application_number, dms_models.GraphQLApplicationStates.draft, email=email
         )
 
@@ -77,7 +74,7 @@ class DMSOrphanSubsriptionTest:
             email=email, application_id=application_number, process_id=procedure_number
         )
 
-        execute_query.return_value = make_single_application(
+        execute_query.return_value = fixtures.make_single_application(
             application_number, dms_models.GraphQLApplicationStates.draft, email=email, postal_code="1234"
         )
 
@@ -110,7 +107,7 @@ class HandleDmsApplicationTest:
 
     def test_handle_dms_application_sends_user_identity_check_started_event(self):
         user = users_factories.UserFactory(dateOfBirth=datetime.datetime(2000, 1, 1))
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1234,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
@@ -129,7 +126,7 @@ class HandleDmsApplicationTest:
     def test_handle_dms_application_made_for_beneficiary_by_representative(self):
         representative = users_factories.UserFactory(dateOfBirth=datetime.datetime(1980, 1, 1))
         applicant = users_factories.UserFactory(dateOfBirth=datetime.datetime(2000, 1, 1))
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1234,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=representative.email,
@@ -148,7 +145,7 @@ class HandleDmsApplicationTest:
 
     def test_handle_dms_application_serializes_dms_response(self):
         user = users_factories.ProfileCompletedUserFactory(age=18)
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1234,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
@@ -175,7 +172,7 @@ class HandleDmsApplicationTest:
     def test_handle_dms_application_updates_birth_info(self):
         user = users_factories.ProfileCompletedUserFactory(age=17)
         seventeen_years_ago = date_utils.get_naive_utc_now() - relativedelta(years=17, months=1)
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1234,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
@@ -201,7 +198,7 @@ class HandleDmsApplicationTest:
             status=subscription_models.FraudCheckStatus.OK,
             type=subscription_models.FraudCheckType.DMS,
         )
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=application_number,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
@@ -221,7 +218,7 @@ class HandleDmsApplicationTest:
             dateOfBirth=datetime.datetime(2000, 1, 1), roles=[users_models.UserRole.UNDERAGE_BENEFICIARY]
         )
         application_number = 1234
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=application_number,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
@@ -254,7 +251,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.connectors.dms.serializer.parse_beneficiary_information_graphql")
     def test_field_error(self, mocked_parse_beneficiary_information):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1, state=dms_models.GraphQLApplicationStates.draft, email=user.email
         )
         mocked_parse_beneficiary_information.side_effect = [Exception()]
@@ -267,7 +264,7 @@ class HandleDmsApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "send_user_message")
     def test_field_error_when_draft(self, send_dms_message_mock):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=user.email,
@@ -310,7 +307,7 @@ class HandleDmsApplicationTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             type=subscription_models.FraudCheckType.DMS,
         )
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
@@ -349,7 +346,7 @@ class HandleDmsApplicationTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             type=subscription_models.FraudCheckType.DMS,
         )
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=user.email,
@@ -389,7 +386,7 @@ class HandleDmsApplicationTest:
             status=subscription_models.FraudCheckStatus.STARTED,
             type=subscription_models.FraudCheckType.DMS,
         )
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
             email=user.email,
@@ -420,7 +417,7 @@ class HandleDmsApplicationTest:
     @pytest.mark.settings(ENABLE_PERMISSIVE_NAME_VALIDATION=False)
     def test_field_error_allows_fraud_check_content(self):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
             email=user.email,
@@ -451,7 +448,7 @@ class HandleDmsApplicationTest:
 
     @patch("pcapi.core.mails.transactional.send_create_account_after_dms_email")
     def test_processing_accepted_orphan_application_is_idempotent(self, mock_send_create_account_after_dms_email):
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email="orphan@example.com",
@@ -467,7 +464,7 @@ class HandleDmsApplicationTest:
 
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_processing_draft_orphan_application_is_idempotent(self, mock_send_user_message):
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email="orphan@example.com",
@@ -484,7 +481,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_correcting_application_resets_errors(self, mock_send_user_message, db_session):
         user = users_factories.UserFactory(email="john.stiles@example.com")
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email="john.stiles@example.com",
@@ -504,7 +501,7 @@ class HandleDmsApplicationTest:
         assert fraud_check.reason == "Erreur dans les données soumises dans le dossier DMS : 'birth_date' (2000-01-01)"
 
         # User then fixes date error
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email="john.stiles@example.com",
@@ -522,7 +519,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.add_label_to_application")
     def test_add_label_when_almost_19_years_old(self, mock_add_label_to_application, db_session):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
@@ -540,7 +537,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.add_label_to_application")
     def test_keep_label_when_almost_19_years_old(self, mock_add_label_to_application, db_session):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
@@ -558,7 +555,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
     def test_do_not_process_instructor_annotation_without_feature_flag(self, mock_make_refused):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=user.email,
@@ -584,7 +581,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
     def test_process_instructor_annotation_NEL(self, mock_make_refused, annotation):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
@@ -628,7 +625,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
     def test_process_instructor_annotation_IDP(self, mock_make_refused, annotation):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
@@ -658,7 +655,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
     def test_process_instructor_annotation_IDP_when_fields_updated_later(self, mock_make_refused):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=user.email,
@@ -681,7 +678,7 @@ class HandleDmsApplicationTest:
     @pytest.mark.parametrize("annotation", ["NEL", "IDM, NEL"])
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
     def test_process_instructor_annotation_without_user_account(self, mock_make_refused, annotation):
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             procedure_number=settings.DMS_ENROLLMENT_PROCEDURE_ID_FR,
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
@@ -711,7 +708,7 @@ class HandleDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.make_refused")
     def test_process_instructor_annotation_IDM(self, mock_make_refused):
         user = users_factories.UserFactory()
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=user.email,
@@ -833,7 +830,7 @@ class DmsSubscriptionMessageTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_started_no_error(self, mock_send_user_message):
         users_factories.UserFactory(email=self.user_email)
-        dms_response = make_parsed_graphql_application(
+        dms_response = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
@@ -853,7 +850,7 @@ class DmsSubscriptionMessageTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_started_error_wrong_birth_date(self, mock_send_user_message):
         users_factories.UserFactory(email=self.user_email)
-        wrong_birth_date_application = make_parsed_graphql_application(
+        wrong_birth_date_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
@@ -873,7 +870,7 @@ class DmsSubscriptionMessageTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_started_error_wrong_birth_date_and_id_piece_number(self, mock_send_user_message):
         users_factories.UserFactory(email=self.user_email)
-        wrong_birth_date_application = make_parsed_graphql_application(
+        wrong_birth_date_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.draft,
             email=self.user_email,
@@ -894,7 +891,7 @@ class DmsSubscriptionMessageTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_pending_error_not_eligible_date(self, mock_send_user_message):
         users_factories.UserFactory(email=self.user_email)
-        not_eligible_application = make_parsed_graphql_application(
+        not_eligible_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.on_going,
             email=self.user_email,
@@ -918,7 +915,7 @@ class DmsSubscriptionMessageTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_ko_not_eligible(self, mock_send_user_message):
         users_factories.UserFactory(email=self.user_email)
-        not_eligible_application = make_parsed_graphql_application(
+        not_eligible_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=self.user_email,
@@ -939,7 +936,7 @@ class DmsSubscriptionMessageTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_accepted(self, mock_send_user_message):
         users_factories.UserFactory(email=self.user_email)
-        application_ok = make_parsed_graphql_application(
+        application_ok = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=self.user_email,
@@ -952,7 +949,7 @@ class DmsSubscriptionMessageTest:
     @patch("pcapi.core.subscription.dms.api.dms_connector_api.DMSGraphQLClient.send_user_message")
     def test_refused_by_operator(self, mock_send_user_message):
         users_factories.UserFactory(email=self.user_email)
-        refused_application = make_parsed_graphql_application(
+        refused_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.refused,
             email=self.user_email,
@@ -983,7 +980,7 @@ class DmsSubscriptionMessageTest:
         )
 
         users_factories.UserFactory(email=self.user_email)
-        duplicate_application = make_parsed_graphql_application(
+        duplicate_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state=dms_models.GraphQLApplicationStates.accepted,
             email=self.user_email,
@@ -1089,7 +1086,7 @@ class ShouldImportDmsApplicationTest:
 
     def start_id_check(self, fields):
         user = users_factories.UserFactory(email=self.user_email)
-        application = make_parsed_graphql_application(
+        application = fixtures.make_parsed_graphql_application(
             application_number=1, state=dms_models.GraphQLApplicationStates.draft, email=self.user_email, **fields
         )
 
@@ -1106,7 +1103,7 @@ class ShouldImportDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api._process_dms_application")
     def test_should_import_dms_application_when_status_changed(self, _process_dms_application_mock):
         user, fraud_check = self.start_id_check(fields={})
-        updated_application = make_parsed_graphql_application(
+        updated_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             application_techid="TECH_ID",
             state=dms_models.GraphQLApplicationStates.refused,
@@ -1123,7 +1120,7 @@ class ShouldImportDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api._process_dms_application")
     def test_should_import_dms_application_when_user_field_updated(self, _process_dms_application_mock):
         user, fraud_check = self.start_id_check(fields={"first_name": "Lucy"})
-        updated_application = make_parsed_graphql_application(
+        updated_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             application_techid="TECH_ID",
             state=dms_models.GraphQLApplicationStates.draft,
@@ -1141,7 +1138,7 @@ class ShouldImportDmsApplicationTest:
     @patch("pcapi.core.subscription.dms.api._process_dms_application")
     def should_not_update_on_last_modification_date_update(self, _process_dms_application_mock):
         self.start_id_check(fields={})
-        updated_application = make_parsed_graphql_application(
+        updated_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             application_techid="TECH_ID",
             state=dms_models.GraphQLApplicationStates.draft,
@@ -1163,13 +1160,13 @@ class RunTest:
         get_applications_with_details,
     ):
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123, "accepte", email="email1@example.com", id_piece_number="123123121"
             ),
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 456, "accepte", email="email2@example.com", id_piece_number="123123122"
             ),
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 789, "accepte", email="email3@example.com", id_piece_number="123123123"
             ),
         ]
@@ -1189,21 +1186,21 @@ class RunTest:
         users_factories.UserFactory(email="email2@example.com")
         users_factories.UserFactory(email="email3@example.com")
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123,
                 "accepte",
                 email="email1@example.com",
                 id_piece_number="123123121",
                 birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 456,
                 "accepte",
                 email="email2@example.com",
                 id_piece_number="123123122",
                 birth_date=AGE18_ELIGIBLE_BIRTH_DATE,
             ),
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 789,
                 "accepte",
                 email="email3@example.com",
@@ -1223,7 +1220,7 @@ class RunTest:
         # same user, but different
         user = users_factories.BeneficiaryGrant18Factory(email="john.doe@example.com")
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(123, "accepte", email="john.doe@example.com")
+            fixtures.make_parsed_graphql_application(123, "accepte", email="john.doe@example.com")
         ]
 
         dms_subscription_api.import_all_updated_dms_applications(6712558)
@@ -1246,7 +1243,7 @@ class RunTest:
     ):
         applicant = users_factories.UserFactory(firstName="Doe", lastName="John", email="john.doe@test.com")
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123,
                 "accepte",
                 id_piece_number="123123121",
@@ -1278,7 +1275,7 @@ class RunIntegrationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123, state="accepte", email=user.email, city="Strasbourg"
             )
         ]
@@ -1325,7 +1322,7 @@ class RunIntegrationTest:
                 deposit__expirationDate=date_utils.get_naive_utc_now() + relativedelta(years=2),
             )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
-        details = fixture.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
+        details = fixtures.make_parsed_graphql_application(application_number=123, state="accepte", email=user.email)
         details.draft_date = date_utils.get_naive_utc_now().isoformat()
         get_applications_with_details.return_value = [details]
 
@@ -1353,7 +1350,7 @@ class RunIntegrationTest:
     def test_import_with_no_user_found(self, get_applications_with_details):
         # when
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123, state="accepte", email="nonexistant@example.com", procedure_number=6712558
             )
         ]
@@ -1385,7 +1382,7 @@ class RunIntegrationTest:
             phoneValidationStatus=None,
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123,
                 state="accepte",
                 email=user.email,
@@ -1444,7 +1441,7 @@ class RunIntegrationTest:
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123,
                 state="accepte",
                 email=user.email,
@@ -1508,7 +1505,7 @@ class RunIntegrationTest:
         )
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123,
                 state="accepte",
                 email=user.email,
@@ -1544,7 +1541,7 @@ class RunIntegrationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123,
                 state="accepte",
                 email=user.email,
@@ -1589,7 +1586,7 @@ class RunIntegrationTest:
             phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123,
                 state="accepte",
                 email=applicant.email,
@@ -1627,7 +1624,7 @@ class RunIntegrationTest:
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
         push_testing.reset_requests()
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123,
                 state="accepte",
                 email=user.email,
@@ -1655,7 +1652,7 @@ class RunIntegrationTest:
     def test_dms_application_value_error(self, get_applications_with_details):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=123,
                 state="accepte",
                 email=user.email,
@@ -1689,7 +1686,7 @@ class RunIntegrationTest:
     def test_dms_application_value_error_known_user(self, get_applications_with_details):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=1,
                 state="accepte",
                 postal_code="Strasbourg",
@@ -1723,7 +1720,7 @@ class RunIntegrationTest:
             city=None,
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 email=user.email,
                 application_number=123,
                 state="accepte",
@@ -1742,7 +1739,7 @@ class RunIntegrationTest:
             city=None,
         )
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 email=user.email,
                 application_number=123,
                 state="accepte",
@@ -1767,7 +1764,7 @@ class GraphQLSourceProcessApplicationTest:
         user = users_factories.UserFactory(dateOfBirth=AGE18_ELIGIBLE_BIRTH_DATE)
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(123, "accepte", email=user.email),
+            fixtures.make_parsed_graphql_application(123, "accepte", email=user.email),
         ]
 
         dms_subscription_api.import_all_updated_dms_applications(6712558)
@@ -1797,7 +1794,7 @@ class GraphQLSourceProcessApplicationTest:
         subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123,
                 "accepte",
                 email=user.email,
@@ -1823,7 +1820,7 @@ class GraphQLSourceProcessApplicationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123123,
                 "accepte",
                 email=user.email,
@@ -1852,7 +1849,7 @@ class GraphQLSourceProcessApplicationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123123,
                 "accepte",
                 email=user.email,
@@ -1876,7 +1873,7 @@ class GraphQLSourceProcessApplicationTest:
         )
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123123,
                 "accepte",
                 email=user.email,
@@ -1897,7 +1894,7 @@ class GraphQLSourceProcessApplicationTest:
     def test_dms_application_value_error(self, get_applications_with_details):
         user = users_factories.UserFactory()
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=1,
                 state="accepte",
                 postal_code="Strasbourg",
@@ -1930,7 +1927,7 @@ class GraphQLSourceProcessApplicationTest:
         already_imported_user = users_factories.BeneficiaryGrant18Factory()
 
         get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 application_number=2,
                 state="accepte",
                 email=already_imported_user.email,
@@ -1960,7 +1957,7 @@ class DmsImportTest:
         mock_get_applications_with_details,
     ):
         mock_get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123,
                 "accepte",
                 email="email1@example.com",
@@ -1968,7 +1965,7 @@ class DmsImportTest:
                 last_modification_date="2020-10-01T20:00:00+02:00",
                 procedure_number=1,
             ),
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 456,
                 "en_construction",
                 email="email2@example.com",
@@ -2005,7 +2002,7 @@ class DmsImportTest:
         mock_get_applications_with_details,
     ):
         mock_get_applications_with_details.return_value = [
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 123,
                 "accepte",
                 email="email1@example.com",
@@ -2013,7 +2010,7 @@ class DmsImportTest:
                 last_modification_date="2020-10-01T20:00:00+02:00",
                 procedure_number=1,
             ),
-            fixture.make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 456,
                 "en_construction",
                 email="email2@example.com",
@@ -2090,10 +2087,12 @@ class ArchiveDMSApplicationsTest:
             thirdPartyId=str(pending_applications_id),
         )
         dms_applications.return_value = [
-            make_parsed_graphql_application(
+            fixtures.make_parsed_graphql_application(
                 to_archive_applications_id, "accepte", application_techid="TO_ARCHIVE_TECHID"
             ),
-            make_parsed_graphql_application(pending_applications_id, "accepte", application_techid="PENDING_ID"),
+            fixtures.make_parsed_graphql_application(
+                pending_applications_id, "accepte", application_techid="PENDING_ID"
+            ),
         ]
 
         dms_subscription_api.archive_applications(procedure_number, dry_run=False)
@@ -2128,7 +2127,7 @@ class HandleDeletedDmsApplicationsTest:
         )
 
         procedure_number = 1
-        execute_query.return_value = make_graphql_deleted_applications(procedure_number, [2, 3, 4])
+        execute_query.return_value = fixtures.make_graphql_deleted_applications(procedure_number, [2, 3, 4])
 
         dms_subscription_api.handle_deleted_dms_applications(procedure_number)
 
@@ -2186,7 +2185,7 @@ class HandleDeletedDmsApplicationsTest:
             resultContent=None,
         )
 
-        execute_query.return_value = make_graphql_deleted_applications(procedure_number, [8888, 8889, 8890])
+        execute_query.return_value = fixtures.make_graphql_deleted_applications(procedure_number, [8888, 8889, 8890])
 
         assert dms_subscription_api._get_latest_deleted_application_datetime(procedure_number) == latest_deletion_date
 
@@ -2197,12 +2196,12 @@ class HandleInactiveApplicationTest:
     @patch.object(api_dms.DMSGraphQLClient, "get_applications_with_details")
     @pytest.mark.settings(DMS_ENROLLMENT_INSTRUCTOR="SomeInstructorId")
     def test_mark_without_continuation(self, dms_applications_mock, mark_without_continuation_mock):
-        active_application = make_parsed_graphql_application(
+        active_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             last_modification_date=datetime.datetime.today() - datetime.timedelta(days=25),
         )
-        inactive_application = make_parsed_graphql_application(
+        inactive_application = fixtures.make_parsed_graphql_application(
             application_number=2,
             state="en_construction",
             last_modification_date=datetime.datetime.today() - datetime.timedelta(days=190),
@@ -2256,7 +2255,7 @@ class HandleInactiveApplicationTest:
     def test_mark_without_continuation_skip_never_eligible(
         self, dms_applications_mock, make_on_going_mock, mark_without_continuation_mock
     ):
-        inactive_application = make_parsed_graphql_application(
+        inactive_application = fixtures.make_parsed_graphql_application(
             application_number=2,
             state="en_construction",
             last_modification_date="2021-11-11T00:00:00+02:00",
@@ -2286,7 +2285,7 @@ class HandleInactiveApplicationTest:
     def test_duplicated_application_can_be_cancelled(self, dms_applications_mock, mark_without_continuation_mock):
         old_email = "lucille.ellingson@example.com"
         new_email = "lucy.ellingson@example.com"
-        inactive_application = make_parsed_graphql_application(
+        inactive_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             last_modification_date="2021-11-11T00:00:00+02:00",
@@ -2342,7 +2341,7 @@ class HandleInactiveApplicationTest:
 class IsNeverEligibleTest:
     @time_machine.travel("2022-04-27")
     def test_19_yo_at_generalisation_from_not_test_department(self):
-        inactive_application = make_parsed_graphql_application(
+        inactive_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 1, 1),
@@ -2352,7 +2351,7 @@ class IsNeverEligibleTest:
 
     @time_machine.travel("2022-04-27")
     def test_19_yo_at_generalisation_from_test_department(self):
-        inactive_application = make_parsed_graphql_application(
+        inactive_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 1, 1),
@@ -2362,7 +2361,7 @@ class IsNeverEligibleTest:
 
     @time_machine.travel("2022-04-27")
     def test_still_18_yo_after_generalisation(self):
-        inactive_application = make_parsed_graphql_application(
+        inactive_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             birth_date=datetime.datetime(2002, 6, 1),
@@ -2373,7 +2372,7 @@ class IsNeverEligibleTest:
 
 class HasInactivityDelayExpiredTest:
     def test_has_inactivity_delay_expired_without_message(self):
-        no_message_application = make_parsed_graphql_application(
+        no_message_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             last_modification_date="2022-01-01T00:00:00+02:00",
@@ -2384,7 +2383,7 @@ class HasInactivityDelayExpiredTest:
 
     @time_machine.travel("2022-04-27")
     def test_has_inactivity_delay_expired_with_recent_message(self):
-        no_message_application = make_parsed_graphql_application(
+        no_message_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             last_modification_date="2022-01-01T00:00:00+02:00",
@@ -2398,7 +2397,7 @@ class HasInactivityDelayExpiredTest:
 
     @time_machine.travel("2022-04-27")
     def test_has_inactivity_delay_expired_with_old_message(self):
-        no_message_application = make_parsed_graphql_application(
+        no_message_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             state="en_construction",
             last_modification_date="2022-01-01T00:00:00+02:00",
@@ -2414,7 +2413,7 @@ class HasInactivityDelayExpiredTest:
     def test_has_inactivity_delay_expired_with_old_message_sent_by_user(self):
         applicant_email = "applikant@example.com"
 
-        no_message_application = make_parsed_graphql_application(
+        no_message_application = fixtures.make_parsed_graphql_application(
             application_number=1,
             email=applicant_email,
             state="en_construction",

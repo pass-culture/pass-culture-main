@@ -34,7 +34,7 @@ from pcapi.models import db
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 
-from tests.scripts.beneficiary.fixture import make_single_application
+from tests.connectors.fixtures import make_single_application
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
