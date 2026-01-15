@@ -86,13 +86,13 @@
 *   [PcFormsCheckValidity][82]
 *   [PcHideOnClick][83]
 *   [PcHtmxManager][84]
-*   [PcOfferCriterionForm][85]
-*   [PcOverrideCustomTextareaEnter][86]
-    *   [Examples][87]
-*   [PcPostalAddressAutocomplete][88]
-    *   [Examples][89]
-*   [PcProSearchForm][90]
-*   [PcRegistrationSteps][91]
+*   [PcInputForm][85]
+*   [PcOfferCriterionForm][86]
+*   [PcOverrideCustomTextareaEnter][87]
+    *   [Examples][88]
+*   [PcPostalAddressAutocomplete][89]
+    *   [Examples][90]
+*   [PcProSearchForm][91]
 *   [PcSectionFocusOnload][92]
 *   [PcSortTable][93]
 *   [PcStripQueryString][94]
@@ -828,6 +828,8 @@ JS to handle flash messages:
 This adds PcAddOn forbit to do multiple validations on the same form.
 To opt out of the behavior add the class "pc-multiple-submit" to your form.
 
+A form can opt out of management by setting the attribute `data-pc-form-opt-out="true"`
+
 ## PcFormField
 
 **Extends PcAddOn**
@@ -861,6 +863,12 @@ JS to handle htmx interactions while waiting for backend's response:
 
 *   refresh tom select inside newly loaded forms
 *   display loader spinner while loading distant content
+
+## PcInputForm
+
+**Extends PcAddOn**
+
+JS for adding a button to clear an input
 
 ## PcOfferCriterionForm
 
@@ -925,17 +933,6 @@ longitude = fields.PCOptHiddenField("Longitude") // if selected in the autocompl
 **Extends PcAddOn**
 
 Enables or disables departments filter depending on selected pro type.
-
-## PcRegistrationSteps
-
-**Extends PcAddOn**
-
-Add control over the user registration stepper:
-
-*   show step content when available
-*   animate progress to active step
-
-Macro template for this addon can be found in `src/pcapi/routes/backoffice/templates/components/public_accounts/registration_steps.html`
 
 ## PcSectionFocusOnload
 
@@ -1245,19 +1242,19 @@ Addon to add filters toggling using a button and make their state persistent.
 
 [84]: #pchtmxmanager
 
-[85]: #pcoffercriterionform
+[85]: #pcinputform
 
-[86]: #pcoverridecustomtextareaenter
+[86]: #pcoffercriterionform
 
-[87]: #examples-22
+[87]: #pcoverridecustomtextareaenter
 
-[88]: #pcpostaladdressautocomplete
+[88]: #examples-22
 
-[89]: #examples-23
+[89]: #pcpostaladdressautocomplete
 
-[90]: #pcprosearchform
+[90]: #examples-23
 
-[91]: #pcregistrationsteps
+[91]: #pcprosearchform
 
 [92]: #pcsectionfocusonload
 

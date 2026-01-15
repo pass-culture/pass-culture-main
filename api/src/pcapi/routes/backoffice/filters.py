@@ -39,6 +39,7 @@ from pcapi.core.offers import models as offers_models
 from pcapi.core.operations import models as operations_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.ubble import api as ubble_api
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
@@ -986,13 +987,13 @@ def format_registration_step_description(description: str) -> str:
 def format_subscription_step(step_value: str) -> str:
     match step_value.lower():
         case "email-validation":
-            return "Validation Email"
+            return "Email"
         case "phone-validation":
-            return "Validation N° téléphone"
+            return "Num. téléphone"
         case "profile-completion":
-            return "Profil Complet"
+            return "Profil complet"
         case "identity-check":
-            return "ID Check"
+            return "ID check"
         case "honor-statement":
             return "Attestation sur l'honneur"
         case _:
@@ -1984,17 +1985,24 @@ def format_chronicle_product_identifier_type(chronicle_type: chronicles_models.C
             return chronicle_type.value
 
 
+_SUBSCRIPTION_STATUS_TO_ICON = {
+    subscription_schemas.SubscriptionItemStatus.KO.value: "x-circle",
+    subscription_schemas.SubscriptionItemStatus.NOT_APPLICABLE.value: "x-circle",
+    subscription_schemas.SubscriptionItemStatus.NOT_ENABLED.value: "x-circle",
+    subscription_schemas.SubscriptionItemStatus.OK.value: "check-circle",
+    subscription_schemas.SubscriptionItemStatus.PENDING.value: "clock",
+    subscription_schemas.SubscriptionItemStatus.SKIPPED.value: "exclamation-circle",
+    subscription_schemas.SubscriptionItemStatus.SUSPICIOUS.value: "exclamation-circle",
+    subscription_schemas.SubscriptionItemStatus.TODO.value: None,
+    subscription_schemas.SubscriptionItemStatus.VOID.value: None,
+}
+
+
 def format_user_subscription_tunnel_step_status(status: str) -> str:
-    match status:
-        case "ok":
-            markup = Markup('<i class="bi bi-check" title={status}></i>')
-        case "ko":
-            markup = Markup('<i class="bi bi-x-lg" title="{status}"></i>')
-        case "canceled":
-            markup = Markup('<i class="bi bi-trash3-fill" title="{status}"></i>')
-        case _:
-            markup = Markup('<i class="bi bi-exclamation-lg" title="{status}"></i>')
-    return markup.format(status=status)
+    icon = _SUBSCRIPTION_STATUS_TO_ICON.get(status, "exclamation-circle")
+    if not icon:
+        return ""
+    return Markup('<i class="bi bi-{icon}" title="{status}"></i>').format(icon=icon, status=status)
 
 
 def offer_mediation_link(mediation_id: int, thumb_count: int) -> str | None:

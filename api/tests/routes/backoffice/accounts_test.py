@@ -47,7 +47,6 @@ from pcapi.notifications.sms import testing as sms_testing
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStep
 from pcapi.routes.backoffice.accounts.blueprint import RegistrationStepStatus
 from pcapi.routes.backoffice.accounts.blueprint import TunnelType
-from pcapi.routes.backoffice.accounts.blueprint import _get_fraud_reviews_desc
 from pcapi.routes.backoffice.accounts.blueprint import _get_id_check_histories_desc
 from pcapi.routes.backoffice.accounts.blueprint import _get_progress
 from pcapi.routes.backoffice.accounts.blueprint import _get_status
@@ -2511,6 +2510,26 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
     endpoint_kwargs = {"user_id": 1}
     needed_permission = perm_models.Permissions.READ_PUBLIC_ACCOUNT
 
+    def _check_steps(self, authenticated_client, user_id, expected_steps_id, expected_texts_and_icons):
+        response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+        assert response.status_code == 200
+
+        soup = html_parser.get_soup(response.data)
+        assert soup.select(f'[data-registration-steps-id="{expected_steps_id}"]')
+        steps = soup.select(".steps")
+        assert len(steps) == len(expected_texts_and_icons)
+
+        for step, expected_text_and_icon in zip(steps, expected_texts_and_icons):
+            step_text = step.find(class_="step-text")
+            assert step_text.text == expected_text_and_icon[0]
+            step_icon_view = step.select(".step-status-icon-container i")
+            if expected_text_and_icon[1]:
+                assert len(step_icon_view) == 1
+                step_icon_title = step_icon_view[0].attrs.get("title")
+                assert step_icon_title == expected_text_and_icon[1]
+            else:
+                assert not step_icon_view
+
     @pytest.mark.parametrize("signup_age", [15, 16])
     def test_registration_age_lt_17_decree_age_lt_17_current_age_lt_17(
         self, authenticated_client, settings, signup_age
@@ -2561,34 +2580,18 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage"]')
-        assert len(step_icon_views) == 5
-        assert len(step_icon_titles) == 5
-        assert len(text_views) == 5
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     @pytest.mark.parametrize("signup_age", [15, 16])
     def test_registration_age_lt_16_decree_age_lt_17_current_age_gte_18(
@@ -2673,52 +2676,24 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage+age-17-18"]')
-        assert len(step_icon_views) == 11
-        assert len(step_icon_titles) == 11
-        assert len(text_views) == 11
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "Pass 17"
-
-        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Validation N° téléphone"
-
-        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "Profil Complet"
-
-        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[8].text == "ID Check"
-
-        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[9].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[10] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[10].text == "Pass 18"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage+age-17-18",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 17", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Num. téléphone", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 18", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_at_age16_and_becoming_17_before_decree_current_age17(self, authenticated_client, settings):
         # Setup:
@@ -2787,43 +2762,21 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             dateCreated=settings.CREDIT_V3_DECREE_DATETIME + relativedelta(days=3),
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage+age-17"]')
-        assert len(step_icon_views) == 8
-        assert len(step_icon_titles) == 8
-        assert len(text_views) == 8
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "ID Check"
-
-        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "Pass 17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage+age-17",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 17", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_at_age15_and_becoming_16_before_decree_current_age17(self, authenticated_client, settings):
         # Setup:
@@ -2875,43 +2828,21 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage+age-17"]')
-        assert len(step_icon_views) == 8
-        assert len(step_icon_titles) == 8
-        assert len(text_views) == 8
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
-        assert text_views[4].text == "Ancien Pass 15-17"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "ID Check"
-
-        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "Pass 17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage+age-17",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", None),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 17", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_at_age15_before_decree(self, authenticated_client, settings):
         # Setup:
@@ -2960,34 +2891,18 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage"]')
-        assert len(step_icon_views) == 5
-        assert len(step_icon_titles) == 5
-        assert len(text_views) == 5
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_at_age15_after_decree(self, authenticated_client, settings):
         # Setup:
@@ -3009,25 +2924,15 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             validatedBirthDate=birth_date,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="not-eligible"]')
-        assert len(step_icon_views) == 2
-        assert len(step_icon_titles) == 2
-        assert len(text_views) == 2
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Non éligible"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "not-eligible",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Non éligible", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_at_age_17_on_birthdate_after_decree(self, authenticated_client, settings):
         # Setup:
@@ -3071,34 +2976,18 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="age-17"]')
-        assert len(step_icon_views) == 5
-        assert len(step_icon_titles) == 5
-        assert len(text_views) == 5
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
-        assert text_views[4].text == "Pass 17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "age-17",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 17", None),
+            ),
+        )
 
     def test_registration_at_age17_before_decree(self, authenticated_client, settings):
         # Setup:
@@ -3147,34 +3036,18 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.UNDERAGE,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage"]')
-        assert len(step_icon_views) == 5
-        assert len(step_icon_titles) == 5
-        assert len(text_views) == 5
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_at_age16_after_decree(self, authenticated_client, settings):
         # Setup
@@ -3194,25 +3067,15 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             validatedBirthDate=birth_date,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="not-eligible"]')
-        assert len(step_icon_views) == 2
-        assert len(step_icon_titles) == 2
-        assert len(text_views) == 2
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Non éligible"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "not-eligible",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Non éligible", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_age_17_after_decree(self, authenticated_client, settings):
         # Setup:
@@ -3260,34 +3123,18 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="age-17"]')
-        assert len(step_icon_views) == 5
-        assert len(step_icon_titles) == 5
-        assert len(text_views) == 5
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Pass 17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "age-17",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 17", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_age_16_after_decree_current_age_17(self, authenticated_client, settings):
         # Setup:
@@ -3330,34 +3177,18 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="age-17"]')
-        assert len(step_icon_views) == 5
-        assert len(step_icon_titles) == 5
-        assert len(text_views) == 5
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.SUSPICIOUS.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
-        assert text_views[4].text == "Pass 17"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "age-17",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.SUSPICIOUS.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 17", None),
+            ),
+        )
 
     def test_registration_age_15_before_decree_current_age_18(self, authenticated_client, settings):
         # Setup:
@@ -3438,49 +3269,23 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage+age-18"]')
-        assert len(step_icon_views) == 10
-        assert len(step_icon_titles) == 10
-        assert len(text_views) == 10
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.VOID.value
-        assert text_views[5].text == "Validation N° téléphone"
-
-        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Profil Complet"
-
-        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
-
-        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[8].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[9].text == "Pass 18"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage+age-18",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Num. téléphone", None),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 18", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_age_17_after_decree_current_age_18(self, authenticated_client, settings):
         # Setup:
@@ -3550,49 +3355,23 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="age-17-18"]')
-        assert len(step_icon_views) == 10
-        assert len(step_icon_titles) == 10
-        assert len(text_views) == 10
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Pass 17"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "Validation N° téléphone"
-
-        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Profil Complet"
-
-        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
-
-        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[8].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[9].text == "Pass 18"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "age-17-18",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 17", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Num. téléphone", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 18", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_age_17_decree_age_17_current_age_18(self, authenticated_client, settings):
         # Setup:
@@ -3637,49 +3416,23 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="age-17-18"]')
-        assert len(step_icon_views) == 10
-        assert len(step_icon_titles) == 10
-        assert len(text_views) == 10
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.VOID.value
-        assert text_views[4].text == "Pass 17"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[5].text == "Validation N° téléphone"
-
-        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[6].text == "Profil Complet"
-
-        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
-
-        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.TODO.value
-        assert text_views[8].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.VOID.value
-        assert text_views[9].text == "Pass 18"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "age-17-18",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", None),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", None),
+                ("Pass 17", None),
+                ("Num. téléphone", None),
+                ("Profil complet", None),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", None),
+                ("Pass 18", None),
+            ),
+        )
 
     def test_registration_age_18_after_decree(self, authenticated_client, settings):
         # Setup:
@@ -3734,37 +3487,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE17_18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="age-18"]')
-        assert len(step_icon_views) == 6
-        assert len(step_icon_titles) == 6
-        assert len(text_views) == 6
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Validation N° téléphone"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "Profil Complet"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "ID Check"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "Pass 18"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "age-18",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Num. téléphone", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Pass 18", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_age_18_before_decree(self, authenticated_client, settings):
         # Setup:
@@ -3819,37 +3554,19 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="age-18-old"]')
-        assert len(step_icon_views) == 6
-        assert len(step_icon_titles) == 6
-        assert len(text_views) == 6
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Validation N° téléphone"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "Profil Complet"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "ID Check"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "Ancien Pass 18"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "age-18-old",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Num. téléphone", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 18", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_age_15_long_before_decree_start(self, settings, authenticated_client):
         # Setup:
@@ -3931,49 +3648,23 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="underage+age-18-old"]')
-        assert len(step_icon_views) == 10
-        assert len(step_icon_titles) == 10
-        assert len(text_views) == 10
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Profil Complet"
-
-        assert step_icon_titles[2] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[2].text == "ID Check"
-
-        assert step_icon_titles[3] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[3].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[4] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[4].text == "Ancien Pass 15-17"
-
-        assert step_icon_titles[5] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[5].text == "Validation N° téléphone"
-
-        assert step_icon_titles[6] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[6].text == "Profil Complet"
-
-        assert step_icon_titles[7] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[7].text == "ID Check"
-
-        assert step_icon_titles[8] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[8].text == "Attestation sur l'honneur"
-
-        assert step_icon_titles[9] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[9].text == "Ancien Pass 18"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "underage+age-18-old",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 15-17", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Num. téléphone", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Profil complet", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("ID check", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Attestation sur l'honneur", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Ancien Pass 18", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
     def test_registration_wrong_birthdate(self, settings, authenticated_client):
         # Setup:
@@ -4047,25 +3738,15 @@ class GetUserRegistrationStepTest(GetEndpointHelper):
             eligibilityType=users_models.EligibilityType.AGE18,
         )
 
-        response = authenticated_client.get(url_for(self.endpoint, user_id=user.id))
-        assert response.status_code == 200
-
-        soup = html_parser.get_soup(response.data)
-
-        step_icon_views = soup.select(".steps .step-status-icon-container i")
-        step_icon_titles = [e.attrs.get("title") for e in step_icon_views]
-        text_views = soup.select(".steps .step-text")
-
-        assert soup.select('[data-registration-steps-id="not-eligible"]')
-        assert len(step_icon_views) == 2
-        assert len(step_icon_titles) == 2
-        assert len(text_views) == 2
-
-        assert step_icon_titles[0] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[0].text == "Validation Email"
-
-        assert step_icon_titles[1] == subscription_schemas.SubscriptionItemStatus.OK.value
-        assert text_views[1].text == "Non éligible"
+        self._check_steps(
+            authenticated_client,
+            user.id,
+            "not-eligible",
+            (
+                ("Email", subscription_schemas.SubscriptionItemStatus.OK.value),
+                ("Non éligible", subscription_schemas.SubscriptionItemStatus.OK.value),
+            ),
+        )
 
 
 @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=date_utils.get_naive_utc_now() + datetime.timedelta(days=30))
@@ -4329,12 +4010,12 @@ class RegistrationStepTest:
 
         assert steps[0].step_id == 1
         assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
-        assert steps[0].icon == "bi-envelope-fill"
+        assert steps[0].icon == "bi-envelope"
         assert steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.OK.value
 
         assert steps[1].step_id == 2
         assert steps[1].description == TunnelType.NOT_ELIGIBLE.value
-        assert steps[1].icon == "bi-question-circle-fill"
+        assert steps[1].icon == "bi-question-circle"
         assert steps[1].subscription_item_status == subscription_schemas.SubscriptionItemStatus.OK.value
 
     def test_get_steps_tunnel_unspecified_pending_email_validation(self):
@@ -4343,12 +4024,12 @@ class RegistrationStepTest:
 
         assert steps[0].step_id == 1
         assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
-        assert steps[0].icon == "bi-envelope-fill"
+        assert steps[0].icon == "bi-envelope"
         assert steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.PENDING.value
 
         assert steps[1].step_id == 2
         assert steps[1].description == TunnelType.NOT_ELIGIBLE.value
-        assert steps[1].icon == "bi-question-circle-fill"
+        assert steps[1].icon == "bi-question-circle"
         assert steps[1].subscription_item_status == subscription_schemas.SubscriptionItemStatus.PENDING.value
 
     def test_get_id_check_histories_desc(self):
@@ -4390,12 +4071,10 @@ class RegistrationStepTest:
         subscription_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
         subscription_factories.BeneficiaryFraudCheckFactory(user=user)
         eligibility_history = get_eligibility_history(user)
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
 
-        steps = _get_steps_tunnel_age18_old(user, id_check_histories, item_status_18, fraud_reviews_desc)
+        steps = _get_steps_tunnel_age18_old(user, item_status_18)
         assert len(steps) == 6
 
         assert steps[0].step_id == 1
@@ -4409,7 +4088,6 @@ class RegistrationStepTest:
 
         assert steps[3].step_id == 4
         assert steps[3].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
-        assert len(steps[3].fraud_actions_history) == 2
 
         assert steps[4].step_id == 5
         assert steps[4].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
@@ -4421,12 +4099,10 @@ class RegistrationStepTest:
     def test_get_steps_tunnel_age18(self):
         user = users_factories.BeneficiaryFactory()
         eligibility_history = get_eligibility_history(user)
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_17_18 = subscription_item_status[EligibilityType.AGE17_18.value]
 
-        steps = _get_steps_tunnel_age18(user, id_check_histories, item_status_17_18, fraud_reviews_desc)
+        steps = _get_steps_tunnel_age18(user, item_status_17_18)
         assert len(steps) == 6
         assert steps[0].step_id == 1
         assert steps[0].description == subscription_schemas.SubscriptionStep.EMAIL_VALIDATION.value
@@ -4455,12 +4131,10 @@ class RegistrationStepTest:
             user=user, eligibilityType=None, dateCreated=dateOfBirth + relativedelta(years=15)
         )
         eligibility_history = get_eligibility_history(user)
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
 
-        steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
+        steps = _get_steps_tunnel_underage(user, item_status_15_17)
         assert len(steps) == 5
 
         assert steps[0].step_id == 1
@@ -4471,7 +4145,6 @@ class RegistrationStepTest:
 
         assert steps[2].step_id == 3
         assert steps[2].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
-        assert len(steps[2].fraud_actions_history) == 1
 
         assert steps[3].step_id == 4
         assert steps[3].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
@@ -4493,15 +4166,11 @@ class RegistrationStepTest:
         )
         subscription_factories.BeneficiaryFraudCheckFactory(user=user, eligibilityType=None)
         eligibility_history = get_eligibility_history(user)
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
 
-        steps = _get_steps_tunnel_underage_age18(
-            user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
-        )
+        steps = _get_steps_tunnel_underage_age18(user, item_status_15_17, item_status_18)
         assert len(steps) == 10
 
         assert steps[0].step_id == 1
@@ -4512,7 +4181,6 @@ class RegistrationStepTest:
 
         assert steps[2].step_id == 3
         assert steps[2].description == subscription_schemas.SubscriptionStep.IDENTITY_CHECK.value
-        assert len(steps[2].fraud_actions_history) == 1
 
         assert steps[3].step_id == 4
         assert steps[3].description == subscription_schemas.SubscriptionStep.HONOR_STATEMENT.value
@@ -4545,12 +4213,8 @@ class RegistrationStepTest:
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         tunnel_type = _get_tunnel_type(user)
-        steps = _get_steps_for_tunnel(
-            user, tunnel_type, subscription_item_status, id_check_histories, fraud_reviews_desc
-        )
+        steps = _get_steps_for_tunnel(user, tunnel_type, subscription_item_status)
         steps_to_compare = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18, {})
         assert steps == steps_to_compare
 
@@ -4597,15 +4261,9 @@ class RegistrationStepTest:
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         tunnel_type = _get_tunnel_type(user)
-        steps = _get_steps_for_tunnel(
-            user, tunnel_type, subscription_item_status, id_check_histories, fraud_reviews_desc
-        )
-        steps_to_compare = _get_steps_tunnel_underage_age18_old(
-            user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
-        )
+        steps = _get_steps_for_tunnel(user, tunnel_type, subscription_item_status)
+        steps_to_compare = _get_steps_tunnel_underage_age18_old(user, item_status_15_17, item_status_18)
         _set_steps_with_active_and_disabled(steps_to_compare)
         assert steps == steps_to_compare
 
@@ -4633,13 +4291,9 @@ class RegistrationStepTest:
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         tunnel_type = _get_tunnel_type(user)
-        steps = _get_steps_for_tunnel(
-            user, tunnel_type, subscription_item_status, id_check_histories, fraud_reviews_desc
-        )
-        steps_to_compare = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
+        steps = _get_steps_for_tunnel(user, tunnel_type, subscription_item_status)
+        steps_to_compare = _get_steps_tunnel_underage(user, item_status_15_17)
         _set_steps_with_active_and_disabled(steps_to_compare)
         assert steps == steps_to_compare
 
@@ -4666,50 +4320,12 @@ class RegistrationStepTest:
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
         tunnel_type = _get_tunnel_type(user)
 
-        steps = _get_steps_for_tunnel(
-            user, tunnel_type, subscription_item_status, id_check_histories, fraud_reviews_desc
-        )
-        steps_to_compare = _get_steps_tunnel_age18_old(user, id_check_histories, item_status_18, fraud_reviews_desc)
+        steps = _get_steps_for_tunnel(user, tunnel_type, subscription_item_status)
+        steps_to_compare = _get_steps_tunnel_age18_old(user, item_status_18)
         _set_steps_with_active_and_disabled(steps_to_compare)
         assert steps == steps_to_compare
-
-    def test_fraud_reviews_in_tunnel_steps(self, legit_user):
-        dateOfBirth = datetime.date.today() - relativedelta(years=users_constants.ELIGIBILITY_AGE_18, days=1)
-        user = users_factories.UserFactory(dateOfBirth=dateOfBirth, validatedBirthDate=dateOfBirth)
-        subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
-
-        subscription_factories.BeneficiaryFraudCheckFactory(
-            user=user,
-            eligibilityType=users_models.EligibilityType.AGE18,
-            type=subscription_models.FraudCheckType.UBBLE,
-            status=subscription_models.FraudCheckStatus.SUSPICIOUS,
-            reasonCodes=[subscription_models.FraudReasonCode.DUPLICATE_USER],
-            resultContent=subscription_factories.UbbleContentFactory(),
-        )
-
-        subscription_factories.BeneficiaryFraudReviewFactory(
-            user=user,
-            author=legit_user,
-            review=subscription_models.FraudReviewStatus.OK,
-            eligibilityType=users_models.EligibilityType.AGE18,
-        )
-
-        eligibility_history = get_eligibility_history(user)
-        subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
-        tunnel_type = _get_tunnel_type(user)
-        steps = _get_steps_for_tunnel(
-            user, tunnel_type, subscription_item_status, id_check_histories, fraud_reviews_desc
-        )
-
-        pass18_status_item = next((step for step in steps if step.description == "Ancien Pass 18"))
-        assert len(pass18_status_item.fraud_actions_history) == 1
-        assert pass18_status_item.fraud_actions_history[0]["status"] == subscription_models.FraudReviewStatus.OK.value
 
     def test_set_steps_with_active_and_disabled_underage_age18(self):
         creation_date = date_utils.get_naive_utc_now() - relativedelta(
@@ -4753,12 +4369,8 @@ class RegistrationStepTest:
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
 
-        steps = _get_steps_tunnel_underage_age18(
-            user, id_check_histories, item_status_15_17, item_status_18, fraud_reviews_desc
-        )
+        steps = _get_steps_tunnel_underage_age18(user, item_status_15_17, item_status_18)
         assert steps[8].status["active"] is False
         assert steps[9].status["disabled"] is False
 
@@ -4790,10 +4402,8 @@ class RegistrationStepTest:
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_15_17 = subscription_item_status[EligibilityType.UNDERAGE.value]
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
 
-        steps = _get_steps_tunnel_underage(user, id_check_histories, item_status_15_17, fraud_reviews_desc)
+        steps = _get_steps_tunnel_underage(user, item_status_15_17)
         assert steps[3].status["active"] is False
         assert steps[4].status["disabled"] is False
 
@@ -4825,10 +4435,8 @@ class RegistrationStepTest:
         eligibility_history = get_eligibility_history(user)
         subscription_item_status = _get_subscription_item_status_by_eligibility(eligibility_history)
         item_status_18 = subscription_item_status[EligibilityType.AGE18.value]
-        id_check_histories = _get_id_check_histories_desc(eligibility_history)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
 
-        steps = _get_steps_tunnel_age18_old(user, id_check_histories, item_status_18, fraud_reviews_desc)
+        steps = _get_steps_tunnel_age18_old(user, item_status_18)
         assert steps[4].status["active"] is False
         assert steps[5].status["disabled"] is False
 
@@ -4857,13 +4465,12 @@ class RegistrationStepTest:
             status=subscription_models.FraudCheckStatus.OK,
         )
         eligibility_history = get_eligibility_history(user)
-        fraud_reviews_desc = _get_fraud_reviews_desc(user.beneficiaryFraudReviews)
-        tunnel = _get_tunnel(user, eligibility_history, fraud_reviews_desc)
+        tunnel = _get_tunnel(user, eligibility_history)
         assert tunnel["type"] == TunnelType.UNDERAGE
         assert tunnel["progress"] == 75
 
         users_factories.DepositGrantFactory(user=user, type=finance_models.DepositType.GRANT_15_17)
-        tunnel_end = _get_tunnel(user, eligibility_history, fraud_reviews_desc)
+        tunnel_end = _get_tunnel(user, eligibility_history)
         assert tunnel_end["progress"] == 100
 
 

@@ -41,7 +41,6 @@ JS_FILES = [
     Path("src/pcapi/static/backoffice/js/addons/pc-table-multi-select.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-batch-action-form.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-postal-address-autocomplete.js"),
-    Path("src/pcapi/static/backoffice/js/addons/pc-registration-steps.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-filter-dataset.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-confirm-modal.js"),
     Path("src/pcapi/static/backoffice/js/addons/pc-field-list.js"),
