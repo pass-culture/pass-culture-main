@@ -1,12 +1,12 @@
 {% macro build_idcheck_histories(fraud_actions) %}
   <div class="table-responsive">
-    <table class="table table-hover table-bordered">
-      <thead>
-        <tr>
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr class="table-secondary fs-7">
           <th>Date de création</th>
-          <th>ID Technique</th>
+          <th>ID technique</th>
           <th>Type</th>
-          <th>Eligibilité</th>
+          <th>Éligibilité</th>
           <th>Statut</th>
           <th>Explication</th>
           <th>Code d'erreur</th>
@@ -28,9 +28,10 @@
               <td>
                 {% if fraud_action | format_fraud_action_dict_url %}
                   <a href="{{ fraud_action | format_fraud_action_dict_url }}"
-                     target="_blank">
+                     target="_blank"
+                     class="link-primary">
                     {{ fraud_action['type'] }}
-                    <i class="bi bi-folder"></i>
+                    <i class="bi bi-box-arrow-up-right"></i>
                   </a>
                 {% else %}
                   {{ fraud_action['type'] }}
@@ -48,15 +49,15 @@
               <td>
                 {% if fraud_action['status'] %}
                   {% if fraud_action['status'].lower() == 'ok' %}
-                    {{ fraud_action['status'].upper() | format_badge("success", "check-circle") }}
+                    {{ fraud_action['status'].upper() | format_badge("success") }}
                   {% elif fraud_action['status'].lower() == 'ko' %}
-                    {{ fraud_action['status'].upper() | format_badge("danger", "exclamation-circle") }}
+                    {{ fraud_action['status'].upper() | format_badge("danger") }}
                   {% elif fraud_action['status'].lower() == 'suspicious' %}
-                    {{ fraud_action['status'].upper() | format_badge("warning", "shield-shaded") }}
+                    {{ fraud_action['status'].upper() | format_badge("warning") }}
                   {% elif fraud_action['status'].lower() == 'redirected_to_dms' %}
-                    {{ fraud_action['status'].upper() | format_badge("warning", "person-circle") }}
+                    {{ fraud_action['status'].upper() | format_badge("warning") }}
                   {% else %}
-                    {{ fraud_action['status'].upper() | format_badge("warning", "exclamation-circle") }}
+                    {{ fraud_action['status'].upper() | format_badge("warning") }}
                   {% endif %}
                 {% endif %}
               </td>
@@ -92,29 +93,28 @@
                                   class="btn btn-outline-primary-subtle-bg"
                                   data-bs-dismiss="modal">Fermer</button>
                         </div>
-                      </form>
+                      </div>
                     </div>
                   </div>
-                </div>
-              {% endif %}
-            </td>
-          </tr>
-        {% endfor %}
-      {% endif %}
-    </tbody>
-  </table>
-</div>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
 {% endmacro %}
-<div class="card my-4 pc-personal-information-registration-view">
+<div class="card my-4">
   <div class="card-body">
     <h5 class="card-title text-bold fs-2 m-3">
       Parcours d'inscription
       {{ tunnel.type.value | format_eligibility_value | format_badge("primary") }}
     </h5>
     <div class="card-body">
-      <div class="row py-1"
+      <div class="py-1"
            data-registration-steps-id="{{ tunnel.type.value }}">
-        <div class="col-12 position-relative">
+        <div class="position-relative">
           <div class="progress position-absolute">
             <div class="progress-bar"
                  role="progressbar"
@@ -127,50 +127,31 @@
             {% for step in tunnel.steps %}
               <li>
                 {% set div_class %}
-                  {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ ' step-active' if step.status.active }}{{ 'step-disabled' if step.status.disabled }}
+                  {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
                 {% endset %}
-                <div class="steps d-flex flex-column flex-grow-1 justify-content-center align-items-center {{ div_class }}"
+                <div class="steps {{ div_class }}"
                      disabled
-                     role="button"
-                     data-step-id="step-{{ step.step_id }}"
                      title="{{ step.subscription_item_status }}">
-                  <span class="step-number d-flex justify-content-center align-items-center pe-none position-relative">
+                  <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
                     {% if step.icon %}
                       <i class="bi {{ step.icon }} pe-none"></i>
                     {% else %}
                       {{ step.text }}
                     {% endif %}
-                    <div class="step-status-icon-container position-absolute top-100 start-100 translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
-                      {{ step.subscription_item_status | format_user_subscription_tunnel_step_status }}
-                    </div>
+                    {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
+                    {% if status_icon %}
+                      <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
+                        {{ status_icon }}
+                      </div>
+                    {% endif %}
+                    <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
                   </span>
-                  <span class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</span>
                 </div>
               </li>
             {% endfor %}
           </ol>
         </div>
-        <div class="col-6 form-check form-switch m-3 form-switch-show-all-steps">
-          {% set switch_boolean_field_id = random_hash() %}
-          <input class="form-check-input"
-                 type="checkbox"
-                 role="switch"
-                 name="show_all_steps"
-                 id="{{ switch_boolean_field_id }}" />
-          <label role="button"
-                 class="form-check-label pc-switch-boolean-field-label pt-1"
-                 for="{{ switch_boolean_field_id }}">Voir tout</label>
-        </div>
-        {% for step in tunnel.steps %}
-          <div class="row step-content step {{ 'd-block' if step.status.active else 'd-none' }} step-{{ step.step_id }}">
-            <div class="col-xs-12">
-              <div class="col-md-12 well text-center">{{ build_idcheck_histories(step.fraud_actions_history) }}</div>
-            </div>
-          </div>
-        {% endfor %}
-        <div class="row all-id-check-history-container d-none">
-          <div class="col-md-12 well text-center">{{ build_idcheck_histories(fraud_actions_desc) }}</div>
-        </div>
+        {% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
       </div>
     </div>
   </div>
