@@ -112,7 +112,6 @@ vi.mock('@/commons/store/offerer/selectors', async () => ({
 const baseVenue: GetVenueResponseModel = {
   ...defaultGetVenue,
   publicName: 'Cinéma des iles',
-  dmsToken: 'dms-token-12345',
   isPermanent: true,
 }
 

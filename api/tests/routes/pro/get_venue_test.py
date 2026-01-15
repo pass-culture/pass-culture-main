@@ -114,7 +114,6 @@ class Returns200Test:
             },
             "dateCreated": format_into_utc_date(venue.dateCreated),
             "description": venue.description,
-            "dmsToken": "PRO-" + venue.dmsToken,
             "externalAccessibilityData": {
                 "isAccessibleMotorDisability": True,
                 "isAccessibleAudioDisability": True,
@@ -159,7 +158,6 @@ class Returns200Test:
             "openingHours": opening_hours_api.format_opening_hours(venue.openingHours),
             "publicName": venue.publicName,
             "siret": venue.siret,
-            "venueLabelId": venue.venueLabelId,
             "venueType": {"label": venue.venueTypeCode.value, "value": venue.venueTypeCode.name},
             "visualDisabilityCompliant": venue.visualDisabilityCompliant,
             "withdrawalDetails": None,

@@ -71,7 +71,6 @@ export const makeGetVenueResponseModel = <
     audioDisabilityCompliant: false,
     collectiveDomains: [],
     dateCreated: new Date().toISOString(),
-    dmsToken: '',
     hasActiveIndividualOffer: false,
     hasAdageId: false,
     hasOffers: false,

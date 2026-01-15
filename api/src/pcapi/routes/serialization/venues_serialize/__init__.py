@@ -12,7 +12,6 @@ from pydantic.v1 import validator
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
-from pcapi.core.finance.ds import DMS_TOKEN_PRO_PREFIX
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.geography.constants import MAX_LATITUDE
 from pcapi.core.geography.constants import MAX_LONGITUDE
@@ -222,9 +221,6 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
         if key == "collectiveLegalStatus":
             return venue.venueEducationalStatus
 
-        if key == "dmsToken":
-            return DMS_TOKEN_PRO_PREFIX + venue.dmsToken
-
         if key == "hasAdageId":
             return bool(venue.adageId)
 
@@ -316,11 +312,9 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     bannerMeta: BannerMetaModel | None
     bookingEmail: str | None
     comment: str | None
-    dmsToken: str
     managingOfferer: GetVenueManagingOffererResponseModel
     pricingPoint: GetVenuePricingPointResponseModel | None
     siret: str | None
-    venueLabelId: int | None
     venueType: VenueTypeResponseModel
     collectiveDescription: str | None
     collectiveStudents: list[educational_models.StudentLevels] | None
