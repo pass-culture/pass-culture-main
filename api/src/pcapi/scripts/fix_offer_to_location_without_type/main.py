@@ -33,13 +33,13 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE = 1000
 
 
-def migrate_offers_on_regular_locations_if_needed(batch_number: int) -> None:
+def migrate_offers_on_regular_locations_if_needed(batch_number: int, batch_size: int) -> None:
     location_ids = (
         db.session.query(offerers_models.OffererAddress.id)
         .filter(offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION)
         .order_by(offerers_models.OffererAddress.id)
-        .limit(BATCH_SIZE)
-        .offset(batch_number * BATCH_SIZE)
+        .limit(batch_size)
+        .offset(batch_number * batch_size)
     )
     locations_offers_mapping: dict[int, list[int]] = {}
     offer_per_location_query = (
@@ -53,7 +53,7 @@ def migrate_offers_on_regular_locations_if_needed(batch_number: int) -> None:
     logger.info(
         "Batch %i (size=%i) found: %s",
         batch_number,
-        BATCH_SIZE,
+        batch_size,
         {k: len(v) for k, v in locations_offers_mapping.items()},
     )
 
@@ -76,7 +76,7 @@ def migrate_offers_on_regular_locations_if_needed(batch_number: int) -> None:
         ).update({"offererAddressId": offer_location.id})
 
 
-def main(not_dry: bool) -> None:
+def main(not_dry: bool, batch_size: int) -> None:
     nb_OA = (
         db.session.query(sa.func.count(offerers_models.OffererAddress.id))
         .filter(offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION)
@@ -85,12 +85,12 @@ def main(not_dry: bool) -> None:
     # using limit at 1000 and offset keeps the query planer with faster requests than using
     # cursors or whatever
     i = 0
-    while i < nb_OA:
+    while i * batch_size < nb_OA:
         with atomic():
-            migrate_offers_on_regular_locations_if_needed(i)
+            migrate_offers_on_regular_locations_if_needed(i, batch_size)
             if not not_dry:
                 mark_transaction_as_invalid()
-        i += BATCH_SIZE
+        i += 1
 
 
 if __name__ == "__main__":
@@ -98,9 +98,10 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--not-dry", action="store_true")
+    parser.add_argument("--batch_size", default=BATCH_SIZE, type=int)
     args = parser.parse_args()
 
-    main(not_dry=args.not_dry)
+    main(not_dry=args.not_dry, batch_size=args.batch_size)
 
     if args.not_dry:
         logger.info("Finished")
