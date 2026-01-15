@@ -39,7 +39,6 @@ export type GetVenueResponseModel = {
   contact?: VenueContactModel | null;
   dateCreated: string;
   description?: string | null;
-  dmsToken: string;
   externalAccessibilityData?: ExternalAccessibilityDataModel | null;
   externalAccessibilityId?: string | null;
   externalAccessibilityUrl?: string | null;
@@ -64,7 +63,6 @@ export type GetVenueResponseModel = {
   pricingPoint?: GetVenuePricingPointResponseModel | null;
   publicName?: string | null;
   siret?: string | null;
-  venueLabelId?: number | null;
   venueType: VenueTypeResponseModel;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;

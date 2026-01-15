@@ -268,7 +268,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
   collectiveDmsApplications: [],
   collectiveDomains: [],
   dateCreated: new Date().toISOString(),
-  dmsToken: 'fakeDmsToken',
   hasAdageId: true,
   hasOffers: true,
   hasActiveIndividualOffer: true,
