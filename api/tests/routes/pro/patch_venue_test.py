@@ -65,12 +65,16 @@ class Returns200Test:
             banId="75101_8894_00035",
         )
         venue = offerers_factories.VenueFactory(
-            name="old name", managingOfferer=user_offerer.offerer, offererAddress__address=initial_address
+            name="old name",
+            managingOfferer=user_offerer.offerer,
+            offererAddress__address=initial_address,
+            venueTypeCode=offerers_models.VenueTypeCode.PERFORMING_ARTS,
+            activity=offerers_models.Activity.PERFORMANCE_HALL,
         )
         initial_location = venue.offererAddress
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
         cultural_domain = educational_factories.EducationalDomainFactory()
-        venue.collectiveDomains.append(cultural_domain)
+        venue.collectiveDomains = [cultural_domain]
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
 

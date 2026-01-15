@@ -4,6 +4,7 @@ import typing
 
 import factory
 
+import pcapi.core.educational.models as educational_models
 import pcapi.core.geography.factories as geography_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.connectors.acceslibre import ExpectedFieldsEnum as acceslibre_enum
@@ -73,6 +74,11 @@ class VenueFactory(BaseFactory[models.Venue]):
     class Meta:
         model = models.Venue
 
+    activity = factory.Maybe(
+        "isOpenToPublic",
+        yes_declaration=factory.Iterator(models.ActivityOpenToPublic),
+        no_declaration=factory.Iterator(models.ActivityNotOpenToPublic),
+    )
     name = factory.Sequence("Le Petit Rintintin {}".format)
     managingOfferer = factory.SubFactory(OffererFactory)
     publicName = factory.SelfAttribute("name")
@@ -151,6 +157,25 @@ class VenueFactory(BaseFactory[models.Venue]):
                     OpeningHoursFactory.create(venue=self, offer=None, weekday=weekday, timespan=timespan)
                 )
         return opening_hours
+
+    @factory.post_generation
+    def collectiveDomains(
+        self, create: bool, extracted: list[educational_models.EducationalDomain] | None, **kwargs: typing.Any
+    ) -> list[educational_models.EducationalDomain]:
+        if not create:
+            return []
+        if kwargs:
+            raise ValueError(
+                "`VenueFactory(collectiveDomains__*)` not allowed, please use explicit `VenueFactory(collectiveDomains=[EducationalDomainFactory()]`"
+            )
+        if not self.isOpenToPublic and extracted is None:
+            extracted = db.session.query(educational_models.EducationalDomain).limit(1).all()
+        if not self.isOpenToPublic and not extracted:
+            import pcapi.core.educational.factories as educational_factories
+
+            extracted = [educational_factories.EducationalDomainFactory()]
+        self.collectiveDomains = extracted or []
+        return extracted or []
 
 
 class CaledonianVenueFactory(VenueFactory):

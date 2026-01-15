@@ -12,6 +12,7 @@ from pcapi.core.educational import models
 from pcapi.core.educational import utils
 from pcapi.core.factories import BaseFactory
 from pcapi.core.offerers import factories as offerers_factories
+from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.utils import date as date_utils
@@ -160,7 +161,10 @@ class CollectiveOfferTemplateFactory(BaseFactory[models.CollectiveOfferTemplate]
         extracted: list[models.EducationalDomain] | None = None,
     ) -> None:
         if not create or not extracted:
-            self.domains = [EducationalDomainFactory.create(name="Danse", collectiveOfferTemplates=[self])]
+            domain = db.session.query(models.EducationalDomain).filter(models.EducationalDomain.name == "Danse").first()
+            if not domain:
+                domain = EducationalDomainFactory.create(name="Danse", collectiveOfferTemplates=[self])
+            self.domains = [domain]
 
         if extracted:
             domains = []
