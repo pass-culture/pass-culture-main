@@ -1549,3 +1549,21 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
 def get_latest_user_recredit_type(user: models.User) -> finance_models.RecreditType | None:
     recredit = deposit_api.get_latest_age_related_user_recredit(user) if user.recreditAmountToShow else None
     return recredit.recreditType if recredit else None
+
+
+def get_user_remaining_bonus_attempts(user: models.User) -> int:
+    qf_bonification_status = get_user_qf_bonification_status(user)
+
+    if qf_bonification_status in (
+        subscription_models.QFBonificationStatus.TOO_MANY_RETRIES,
+        subscription_models.QFBonificationStatus.GRANTED,
+    ):
+        return 0
+
+    ko_qf_bonus_credit_fraud_checks = [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        and fraud_check.status == subscription_models.FraudCheckStatus.KO
+    ]
+    return constants.MAX_QF_BONUS_RETRIES - len(ko_qf_bonus_credit_fraud_checks)

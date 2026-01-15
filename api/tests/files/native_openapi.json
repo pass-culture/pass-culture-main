@@ -5674,6 +5674,11 @@
                         ],
                         "nullable": true
                     },
+                    "remainingBonusAttempts": {
+                        "nullable": true,
+                        "title": "Remainingbonusattempts",
+                        "type": "integer"
+                    },
                     "requiresIdCheck": {
                         "title": "Requiresidcheck",
                         "type": "boolean"
