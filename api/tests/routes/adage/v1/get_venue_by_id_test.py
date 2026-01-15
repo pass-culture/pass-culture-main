@@ -144,7 +144,12 @@ class Returns200Test:
                     "mentalDisabilityCompliant": False,
                     "motorDisabilityCompliant": False,
                     "visualDisabilityCompliant": False,
-                    "domains": [],
+                    "domains": [
+                        {
+                            "id": venue2.collectiveDomains[0].id,
+                            "name": venue2.collectiveDomains[0].name,
+                        }
+                    ],
                     "interventionArea": ["075", "092"],
                     "network": None,
                     "statusId": None,

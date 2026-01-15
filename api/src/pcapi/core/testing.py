@@ -69,6 +69,8 @@ def assert_num_queries(expected_n_queries: int) -> collections.abc.Generator[Non
             with assert_num_queries(n_queries):
                 function_under_test()
     """
+    # Ensures we won't get any extra query from pending data within the sqlalchemy session
+    db.session.flush()
     # Flask gracefully provides a global. Flask-SQLAlchemy uses it for
     # the same purpose. Let's do the same.
     flask.g._query_logger = []

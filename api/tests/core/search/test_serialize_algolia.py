@@ -175,6 +175,7 @@ def test_serialize_offer_legacy():
         venue__name="La Moyenne Librairie SA",
         venue__publicName="La Moyenne Librairie",
         venue__venueTypeCode=VenueTypeCode.LIBRARY,
+        venue__activity=offerers_models.Activity.BOOKSTORE,
         venue__managingOfferer__name="Les Librairies Associées",
     )
     offers_factories.StockFactory(offer=offer, price=10)
@@ -217,6 +218,7 @@ def test_serialize_offer_legacy():
         },
         "venue": {
             "address": offer.venue.offererAddress.address.street,
+            "activity": offerers_models.Activity.BOOKSTORE.name,
             "banner_url": offer.venue.bannerUrl,
             "city": offer.venue.offererAddress.address.city,
             "departmentCode": offer.venue.offererAddress.address.departmentCode,

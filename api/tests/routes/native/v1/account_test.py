@@ -410,7 +410,7 @@ class AccountTest:
         user = sso.user
         user.password = None
 
-        expected_num_queries = 6  # user(update) + user + achievements + bookings + deposit + fraud check
+        expected_num_queries = 5  # user + achievements + bookings + deposit + fraud check
         with assert_num_queries(expected_num_queries):
             response = client.with_token(user.email).get("/native/v1/me")
             assert response.status_code == 200, response.json

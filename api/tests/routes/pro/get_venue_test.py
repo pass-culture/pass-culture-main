@@ -3,6 +3,7 @@ import datetime
 import pytest
 
 import pcapi.core.offerers.factories as offerers_factories
+import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.opening_hours.api as opening_hours_api
 import pcapi.core.users.factories as users_factories
@@ -28,6 +29,7 @@ class Returns200Test:
             managingOfferer=user_offerer.offerer,
             collectiveDescription="Description du lieu",
             isOpenToPublic=True,
+            activity=offerers_models.Activity.BOOKSTORE,
         )
         offerers_factories.VenuePricingPointLinkFactory(
             venue=venue,
@@ -97,7 +99,7 @@ class Returns200Test:
         )
         offers_factories.EventStockFactory(offer__venue=venue)
         expected_serialized_venue = {
-            "activity": None,
+            "activity": "BOOKSTORE",
             "audioDisabilityCompliant": venue.audioDisabilityCompliant,
             "bookingEmail": venue.bookingEmail,
             "contact": {

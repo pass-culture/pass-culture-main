@@ -24,6 +24,7 @@ from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.sandboxes.scripts.creators.industrial.create_industrial_eac_data.create_collective_api_provider import (
     create_collective_api_provider,
 )
+from pcapi.sandboxes.scripts.getters.pro import get_national_programs_and_domains
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
 from pcapi.utils import db as db_utils
@@ -101,7 +102,7 @@ def create_eac_offers(
     offerers: list[offerers_models.Offerer], institutions: list[educational_models.EducationalInstitution]
 ) -> None:
     reset_offer_id_seq()
-    national_programs, domains = create_national_programs_and_domains()
+    national_programs, domains = get_national_programs_and_domains()
     offerers_iterator = iter(offerers)
 
     # eac_1

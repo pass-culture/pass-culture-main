@@ -17,12 +17,12 @@ def create_books(size: int) -> None:
         offerers_factories.VenueFactory.create(
             name="Librairie,  " + str(venue["name"]),
             venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-            latitude=venue["latitude"],
-            longitude=venue["longitude"],
-            address=venue["address"],
-            postalCode=venue["postalCode"],
-            city=venue["city"],
-            departementCode=venue["departementCode"],
+            offererAddress__address__latitude=venue["latitude"],
+            offererAddress__address__longitude=venue["longitude"],
+            offererAddress__address__street=venue["address"],
+            offererAddress__address__postalCode=venue["postalCode"],
+            offererAddress__address__city=venue["city"],
+            offererAddress__address__departmentCode=venue["departementCode"],
         )
         for venue in venues_mock.venues
     ]

@@ -324,13 +324,6 @@ def create_pro_user_with_collective_offers() -> dict:
         locationType=educational_models.CollectiveLocationType.SCHOOL,
     )
 
-    educational_factories.EducationalDomainFactory.create(
-        name="Danse",
-    )
-    educational_factories.EducationalDomainFactory.create(
-        name="Architecture",
-    )
-
     educational_factories.EducationalCurrentYearFactory.create()
     educational_factories.EducationalYearFactory.create()
     educational_institution = educational_factories.EducationalInstitutionFactory(name="COLLEGE 123")
@@ -544,3 +537,12 @@ def create_pro_user_with_collective_bookings() -> dict:
         collectiveStock=collectiveStock_B, educationalInstitution__name="Victor Hugo"
     )
     return {"user": get_pro_user_helper(pro_user)}
+
+
+def get_national_programs_and_domains() -> tuple[
+    list[educational_models.NationalProgram], list[educational_models.EducationalDomain]
+]:
+    return (
+        db.session.query(educational_models.NationalProgram).order_by(educational_models.NationalProgram.id).all(),
+        db.session.query(educational_models.EducationalDomain).order_by(educational_models.EducationalDomain.id).all(),
+    )

@@ -407,8 +407,9 @@ class GetVenueTest(GetEndpointHelper):
     def test_get_venue_with_no_contact(self, authenticated_client):
         venue = offerers_factories.VenueFactory(contact=None)
 
+        venue_id = venue.id
         with assert_num_queries(self.expected_num_queries):
-            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue.id))
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
             assert response.status_code == 200
 
         response_text = html_parser.content_as_text(response.data)

@@ -80,7 +80,7 @@ class GetVenueTest:
                 "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
             },
             "accessibilityUrl": venue.accessibilityProvider.externalAccessibilityUrl,
-            "activity": venue.activity,
+            "activity": venue.activity.name,
             "bannerCredit": "Wikimedia Commons CC By",
             "bannerIsFromGoogle": False,
             "bannerUrl": venue.bannerUrl,
