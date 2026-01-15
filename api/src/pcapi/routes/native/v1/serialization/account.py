@@ -214,6 +214,8 @@ class UserProfileGetterDict(GetterDict):
             return users_api.get_user_qf_bonification_status(user)
         if key == "recreditTypeToShow":
             return users_api.get_latest_user_recredit_type(user)
+        if key == "remainingBonusAttempts":
+            return users_api.get_user_remaining_bonus_attempts(user)
 
         return super().get(key, default)
 
@@ -247,6 +249,7 @@ class UserProfileResponse(ConfiguredBaseModel):
     postal_code: str | None
     recredit_amount_to_show: int | None
     recredit_type_to_show: finance_models.RecreditType | None
+    remaining_bonus_attempts: int | None
     requires_id_check: bool
     roles: list[users_models.UserRole]
     show_eligible_card: bool

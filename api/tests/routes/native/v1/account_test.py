@@ -150,6 +150,7 @@ class AccountTest:
             "roles": ["BENEFICIARY"],
             "recreditAmountToShow": None,
             "recreditTypeToShow": None,
+            "remainingBonusAttempts": 10,
             "requiresIdCheck": True,
             "showEligibleCard": False,
             "subscriptions": {"marketingPush": True, "marketingEmail": True, "subscribedThemes": []},
@@ -653,6 +654,36 @@ class AccountTest:
         assert response.status_code == 200
         assert response.json["recreditAmountToShow"] == 50_00
         assert response.json["recreditTypeToShow"] == "BonusCredit"
+
+    def test_get_user_profile_remaining_bonus_attempts_after_success(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.BonusFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=None,
+            dateCreated=date_utils.get_naive_utc_now() - timedelta(days=7),
+            user=user,
+        )
+        subscription_factories.BonusFraudCheckFactory(
+            status=subscription_models.FraudCheckStatus.OK,
+            reasonCodes=None,
+            user=user,
+        )
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["remainingBonusAttempts"] == 0
+
+    def test_get_user_profile_remaining_bonus_attempts(self, client):
+        user = users_factories.BeneficiaryFactory(age=18)
+        subscription_factories.BonusFraudCheckFactory.create_batch(
+            size=5,
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=None,
+            dateCreated=date_utils.get_naive_utc_now() - timedelta(days=7),
+            user=user,
+        )
+        response = client.with_token(user.email).get("/native/v1/me")
+        assert response.status_code == 200
+        assert response.json["remainingBonusAttempts"] == 5
 
 
 class AccountCreationTest:
