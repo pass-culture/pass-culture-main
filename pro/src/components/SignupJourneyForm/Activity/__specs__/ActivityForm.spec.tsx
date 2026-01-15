@@ -15,6 +15,7 @@ import {
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { defaultActivityFormValues } from '@/components/SignupJourneyForm/Activity/constants'
+import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { Button } from '@/ui-kit/Button/Button'
 
 import {
@@ -84,7 +85,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
     }
     contextValue = {
       activity: activity,
-      offerer: null,
+      offerer: { ...DEFAULT_OFFERER_FORM_VALUES, isOpenToPublic: 'false' },
       setActivity: () => {},
       setOfferer: () => {},
       initialAddress: null,

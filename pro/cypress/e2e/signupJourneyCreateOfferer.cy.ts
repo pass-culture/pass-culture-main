@@ -298,7 +298,7 @@ describe('Signup journey with known offerer...', () => {
       cy.findByLabelText('Numéro de téléphone').type('612345678')
       cy.findByText('Au grand public').click()
       cy.findByText('Étape suivante').click()
-      cy.findByText('Veuillez sélectionner une activité principale')
+      cy.findByText('Activité non valide')
 
       cy.stepLog({ message: 'I fill in missing main activity' })
       cy.url().should('contain', '/inscription/structure/activite')

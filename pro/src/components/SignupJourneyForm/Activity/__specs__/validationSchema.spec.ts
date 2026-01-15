@@ -20,18 +20,21 @@ describe('Activity validationSchema', () => {
     formValues: ActivityFormValues
     expectedErrors: string[]
     withCulturalDomains: boolean
+    notOpenToPublic: boolean
   }[] = [
     {
       description: 'complete form',
       formValues: validFormValues,
       expectedErrors: [],
       withCulturalDomains: false,
+      notOpenToPublic: false,
     },
     {
       description: 'no venue type code',
-      formValues: { ...validFormValues, venueTypeCode: '' },
+      formValues: { ...validFormValues, venueTypeCode: undefined },
       expectedErrors: ['Veuillez sélectionner une activité principale'],
       withCulturalDomains: false,
+      notOpenToPublic: false,
     },
     {
       description: 'invalid social url',
@@ -40,6 +43,7 @@ describe('Activity validationSchema', () => {
         'Veuillez renseigner une URL valide. Ex : https://exemple.com',
       ],
       withCulturalDomains: false,
+      notOpenToPublic: false,
     },
     {
       description: 'No target customer',
@@ -49,6 +53,7 @@ describe('Activity validationSchema', () => {
       },
       expectedErrors: ['Veuillez sélectionner au moins une option'],
       withCulturalDomains: false,
+      notOpenToPublic: false,
     },
     {
       description: 'No phone number',
@@ -62,6 +67,7 @@ describe('Activity validationSchema', () => {
         'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
       ],
       withCulturalDomains: false,
+      notOpenToPublic: false,
     },
     {
       description: 'No cultural domain but not required',
@@ -71,6 +77,7 @@ describe('Activity validationSchema', () => {
       },
       expectedErrors: [],
       withCulturalDomains: false,
+      notOpenToPublic: false,
     },
     {
       description: 'No cultural domain when required',
@@ -79,9 +86,11 @@ describe('Activity validationSchema', () => {
         culturalDomains: undefined,
       },
       expectedErrors: [
+        'Activité non valide',
         'Veuillez sélectionner un ou plusieurs domaines d’activité',
       ],
       withCulturalDomains: true,
+      notOpenToPublic: true,
     },
     {
       description: 'Empty cultural domain when required',
@@ -90,17 +99,54 @@ describe('Activity validationSchema', () => {
         culturalDomains: [],
       },
       expectedErrors: [
+        'Activité non valide',
         'Veuillez sélectionner un ou plusieurs domaines d’activité',
       ],
       withCulturalDomains: true,
+      notOpenToPublic: true,
+    },
+    {
+      description: 'Wrong cultural domain',
+      formValues: {
+        ...validFormValues,
+      },
+      expectedErrors: ['Activité non valide'],
+      withCulturalDomains: true,
+      notOpenToPublic: true,
+    },
+    {
+      description: 'Right cultural domain',
+      formValues: {
+        ...validFormValues,
+        venueTypeCode: 'ART_GALLERY',
+      },
+      expectedErrors: [],
+      withCulturalDomains: true,
+      notOpenToPublic: false,
+    },
+    {
+      description: 'Right cultural domain',
+      formValues: {
+        ...validFormValues,
+        venueTypeCode: 'FESTIVAL',
+      },
+      expectedErrors: [],
+      withCulturalDomains: true,
+      notOpenToPublic: true,
     },
   ]
 
   cases.forEach(
-    ({ description, formValues, expectedErrors, withCulturalDomains }) => {
-      it(`should validate the form for case: ${description} ${withCulturalDomains ? 'with' : 'without'} cultural domains`, async () => {
+    ({
+      description,
+      formValues,
+      expectedErrors,
+      withCulturalDomains,
+      notOpenToPublic,
+    }) => {
+      it(`should validate the form for case: ${description} ${withCulturalDomains ? 'with' : 'without'} cultural domains and ${notOpenToPublic ? 'not ' : ''}open to public`, async () => {
         const errors = await getYupValidationSchemaErrors(
-          validationSchema(withCulturalDomains),
+          validationSchema(withCulturalDomains, notOpenToPublic),
           formValues
         )
         expect(errors).toEqual(expectedErrors)

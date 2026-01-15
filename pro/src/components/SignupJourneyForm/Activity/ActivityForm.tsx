@@ -5,6 +5,8 @@ import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
+import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
 import { getActivities } from '@/commons/mappings/mappings'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { pluralizeFr } from '@/commons/utils/pluralize'
@@ -25,8 +27,12 @@ import styles from './ActivityForm.module.scss'
 interface SocialUrl {
   url: string
 }
+
 export interface ActivityFormValues {
-  venueTypeCode: string
+  venueTypeCode?:
+    | ActivityOpenToPublicType
+    | ActivityNotOpenToPublicType
+    | string
   socialUrls: SocialUrl[]
   targetCustomer: {
     individual: boolean
@@ -61,10 +67,14 @@ export const ActivityForm = ({
 
   const watchSocialUrls = watch('socialUrls')
 
+  const notOpenToPublicMainActivityOptions = isCulturalDomainsEnabled
+    ? buildSelectOptions(getActivities('NOT_OPEN_TO_PUBLIC'))
+    : venueTypes
+
   const mainActivityOptions =
-    offerer?.isOpenToPublic === 'true'
-      ? buildSelectOptions(getActivities('OPEN_TO_PUBLIC'))
-      : venueTypes
+    offerer?.isOpenToPublic === 'false'
+      ? notOpenToPublicMainActivityOptions
+      : buildSelectOptions(getActivities('OPEN_TO_PUBLIC'))
 
   const defaultCulturalDomain: Option[] | undefined = useMemo(() => {
     return educationalDomains.length === 0 ||

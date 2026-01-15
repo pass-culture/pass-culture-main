@@ -1,5 +1,5 @@
 export const defaultActivityFormValues = {
-  venueTypeCode: '',
+  venueTypeCode: undefined,
   socialUrls: [{ url: '' }],
   targetCustomer: {
     individual: false,
