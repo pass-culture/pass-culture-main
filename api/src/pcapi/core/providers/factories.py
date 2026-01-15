@@ -16,7 +16,7 @@ from pcapi.utils.crypto import encrypt
 from . import models
 
 
-class AllocinePivotFactory(BaseFactory):
+class AllocinePivotFactory(BaseFactory[models.AllocinePivot]):
     class Meta:
         model = models.AllocinePivot
 
@@ -25,7 +25,7 @@ class AllocinePivotFactory(BaseFactory):
     internalId = "PXXXXX"
 
 
-class AllocineTheaterFactory(BaseFactory):
+class AllocineTheaterFactory(BaseFactory[models.AllocineTheater]):
     class Meta:
         model = models.AllocineTheater
 
@@ -38,7 +38,7 @@ class AllocineTheaterFactory(BaseFactory):
     )
 
 
-class ProviderFactory(BaseFactory):
+class ProviderFactory(BaseFactory[models.Provider]):
     class Meta:
         model = models.Provider
 
@@ -49,7 +49,7 @@ class ProviderFactory(BaseFactory):
     isActive = True
 
 
-class PublicApiProviderFactory(BaseFactory):
+class PublicApiProviderFactory(BaseFactory[models.Provider]):
     class Meta:
         model = models.Provider
         sqlalchemy_get_or_create = ["name"]
@@ -73,7 +73,7 @@ class VenueProviderFactory(BaseFactory[models.VenueProvider]):
     venueIdAtOfferProvider = factory.SelfAttribute("venue.siret")
 
 
-class VenueProviderExternalUrlsFactory(BaseFactory):
+class VenueProviderExternalUrlsFactory(BaseFactory[models.VenueProviderExternalUrls]):
     class Meta:
         model = models.VenueProviderExternalUrls
 
@@ -119,7 +119,7 @@ class EMSCinemaProviderPivotFactory(CinemaProviderPivotFactory):
     provider = factory.LazyFunction(lambda: providers_repository.get_provider_by_local_class("EMSStocks"))
 
 
-class CDSCinemaDetailsFactory(BaseFactory):
+class CDSCinemaDetailsFactory(BaseFactory[models.CDSCinemaDetails]):
     class Meta:
         model = models.CDSCinemaDetails
 
@@ -138,7 +138,7 @@ class BoostCinemaDetailsFactory(BaseFactory[models.BoostCinemaDetails]):
     tokenExpirationDate = factory.LazyAttribute(lambda _: date_utils.get_naive_utc_now() + datetime.timedelta(hours=24))
 
 
-class CGRCinemaDetailsFactory(BaseFactory):
+class CGRCinemaDetailsFactory(BaseFactory[models.CGRCinemaDetails]):
     class Meta:
         model = models.CGRCinemaDetails
 
@@ -148,7 +148,7 @@ class CGRCinemaDetailsFactory(BaseFactory):
     password = factory.LazyAttribute(lambda _: encrypt("a great password"))
 
 
-class EMSCinemaDetailsFactory(BaseFactory):
+class EMSCinemaDetailsFactory(BaseFactory[models.EMSCinemaDetails]):
     class Meta:
         model = models.EMSCinemaDetails
 
@@ -156,7 +156,7 @@ class EMSCinemaDetailsFactory(BaseFactory):
     lastVersion = 0
 
 
-class AllocineProviderFactory(BaseFactory):
+class AllocineProviderFactory(BaseFactory[models.Provider]):
     class Meta:
         model = models.Provider
         sqlalchemy_get_or_create = ["localClass"]
@@ -167,7 +167,7 @@ class AllocineProviderFactory(BaseFactory):
     isActive = True
 
 
-class AllocineVenueProviderFactory(BaseFactory):
+class AllocineVenueProviderFactory(BaseFactory[models.AllocineVenueProvider]):
     class Meta:
         model = models.AllocineVenueProvider
 
@@ -180,7 +180,7 @@ class AllocineVenueProviderFactory(BaseFactory):
     price = decimal.Decimal("5.7")
 
 
-class OffererProviderFactory(BaseFactory):
+class OffererProviderFactory(BaseFactory[offerers_models.OffererProvider]):
     class Meta:
         model = offerers_models.OffererProvider
 
@@ -188,7 +188,7 @@ class OffererProviderFactory(BaseFactory):
     provider = factory.SubFactory(ProviderFactory)
 
 
-class LocalProviderEventFactory(BaseFactory):
+class LocalProviderEventFactory(BaseFactory[models.LocalProviderEvent]):
     class Meta:
         model = models.LocalProviderEvent
 

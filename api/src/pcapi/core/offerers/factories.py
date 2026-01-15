@@ -26,7 +26,7 @@ if typing.TYPE_CHECKING:
 OPENING_HOURS = [("10:00", "13:00"), ("14:00", "19:30")]
 
 
-class OffererFactory(BaseFactory):
+class OffererFactory(BaseFactory[models.Offerer]):
     class Meta:
         model = models.Offerer
 
@@ -69,7 +69,7 @@ class CollectiveOffererFactory(OffererFactory):
     name = factory.Sequence("[EAC] La structure de Moz'Art {}".format)
 
 
-class VenueFactory(BaseFactory):
+class VenueFactory(BaseFactory[models.Venue]):
     class Meta:
         model = models.Venue
 
@@ -189,7 +189,7 @@ class CollectiveVenueFactory(VenueFactory):
     collectiveInterventionArea = ["75", "92"]
 
 
-class GooglePlacesInfoFactory(BaseFactory):
+class GooglePlacesInfoFactory(BaseFactory[models.GooglePlacesInfo]):
     class Meta:
         model = models.GooglePlacesInfo
 
@@ -211,7 +211,7 @@ class CaledonianVenueWithoutRidetFactory(CaledonianVenueFactory):
     comment = "No RIDET"
 
 
-class VenuePricingPointLinkFactory(BaseFactory):
+class VenuePricingPointLinkFactory(BaseFactory[models.VenuePricingPointLink]):
     class Meta:
         model = models.VenuePricingPointLink
 
@@ -228,7 +228,7 @@ class VenuePricingPointLinkFactory(BaseFactory):
     )
 
 
-class VenueBankAccountLinkFactory(BaseFactory):
+class VenueBankAccountLinkFactory(BaseFactory[models.VenueBankAccountLink]):
     class Meta:
         model = models.VenueBankAccountLink
 
@@ -239,7 +239,7 @@ class VenueBankAccountLinkFactory(BaseFactory):
     timespan = factory.LazyFunction(lambda: [date_utils.get_naive_utc_now() - datetime.timedelta(days=365), None])
 
 
-class OpeningHoursFactory(BaseFactory):
+class OpeningHoursFactory(BaseFactory[models.OpeningHours]):
     class Meta:
         model = models.OpeningHours
 
@@ -252,7 +252,7 @@ class OpeningHoursFactory(BaseFactory):
     timespan = timespan_str_to_numrange(OPENING_HOURS)
 
 
-class UserOffererFactory(BaseFactory):
+class UserOffererFactory(BaseFactory[models.UserOfferer]):
     class Meta:
         model = models.UserOfferer
 
@@ -281,7 +281,7 @@ class DeletedUserOffererFactory(NonAttachedUserOffererFactory):
     validationStatus = ValidationStatus.DELETED
 
 
-class UserNotValidatedOffererFactory(BaseFactory):
+class UserNotValidatedOffererFactory(BaseFactory[models.UserOfferer]):
     class Meta:
         model = models.UserOfferer
 
@@ -290,14 +290,14 @@ class UserNotValidatedOffererFactory(BaseFactory):
     validationStatus = ValidationStatus.VALIDATED
 
 
-class VenueLabelFactory(BaseFactory):
+class VenueLabelFactory(BaseFactory[models.VenueLabel]):
     class Meta:
         model = models.VenueLabel
 
     label = "Cinéma d'art et d'essai"
 
 
-class VenueContactFactory(BaseFactory):
+class VenueContactFactory(BaseFactory[models.VenueContact]):
     class Meta:
         model = models.VenueContact
 
@@ -320,7 +320,7 @@ DEFAULT_SECRET = "clearSecret"
 DEFAULT_CLEAR_API_KEY = build_clear_api_key()
 
 
-class ApiKeyFactory(BaseFactory):
+class ApiKeyFactory(BaseFactory[models.ApiKey]):
     class Meta:
         model = models.ApiKey
 
@@ -337,31 +337,31 @@ class ApiKeyFactory(BaseFactory):
         return super()._create(model_class, *args, **kwargs)
 
 
-class OffererTagFactory(BaseFactory):
+class OffererTagFactory(BaseFactory[models.OffererTag]):
     class Meta:
         model = models.OffererTag
 
     name = factory.Sequence("OffererTag_{}".format)
 
 
-class OffererTagCategoryFactory(BaseFactory):
+class OffererTagCategoryFactory(BaseFactory[models.OffererTagCategory]):
     class Meta:
         model = models.OffererTagCategory
 
     name = factory.Sequence("offerer-tag-category-{}".format)
 
 
-class OffererTagCategoryMappingFactory(BaseFactory):
+class OffererTagCategoryMappingFactory(BaseFactory[models.OffererTagCategoryMapping]):
     class Meta:
         model = models.OffererTagCategoryMapping
 
 
-class OffererTagMappingFactory(BaseFactory):
+class OffererTagMappingFactory(BaseFactory[models.OffererTagMapping]):
     class Meta:
         model = models.OffererTagMapping
 
 
-class VenueEducationalStatusFactory(BaseFactory):
+class VenueEducationalStatusFactory(BaseFactory[models.VenueEducationalStatus]):
     class Meta:
         model = models.VenueEducationalStatus
 
@@ -369,7 +369,7 @@ class VenueEducationalStatusFactory(BaseFactory):
     name = factory.Sequence(lambda x: f"venue educational status {x}")
 
 
-class VenueRegistrationFactory(BaseFactory):
+class VenueRegistrationFactory(BaseFactory[models.VenueRegistration]):
     class Meta:
         model = models.VenueRegistration
 
@@ -378,7 +378,7 @@ class VenueRegistrationFactory(BaseFactory):
     webPresence = "https://example.com, https://pass.culture.fr"
 
 
-class OffererInvitationFactory(BaseFactory):
+class OffererInvitationFactory(BaseFactory[models.OffererInvitation]):
     class Meta:
         model = models.OffererInvitation
 
@@ -389,7 +389,7 @@ class OffererInvitationFactory(BaseFactory):
     status = models.InvitationStatus.PENDING
 
 
-class IndividualOffererSubscriptionFactory(BaseFactory):
+class IndividualOffererSubscriptionFactory(BaseFactory[models.IndividualOffererSubscription]):
     class Meta:
         model = models.IndividualOffererSubscription
 
@@ -399,14 +399,14 @@ class IndividualOffererSubscriptionFactory(BaseFactory):
     dateReminderEmailSent: datetime.datetime | None = None
 
 
-class OffererStatsFactory(BaseFactory):
+class OffererStatsFactory(BaseFactory[models.OffererStats]):
     class Meta:
         model = models.OffererStats
 
     syncDate = factory.LazyFunction(lambda: datetime.date.today() - datetime.timedelta(hours=3))
 
 
-class AccessibilityProviderFactory(BaseFactory):
+class AccessibilityProviderFactory(BaseFactory[models.AccessibilityProvider]):
     class Meta:
         model = models.AccessibilityProvider
 
@@ -430,7 +430,7 @@ class AccessibilityProviderFactory(BaseFactory):
     lastUpdateAtProvider = datetime.datetime(2024, 3, 1, 0, 0)
 
 
-class OffererAddressFactory(BaseFactory):
+class OffererAddressFactory(BaseFactory[models.OffererAddress]):
     class Meta:
         model = models.OffererAddress
 
@@ -494,7 +494,7 @@ def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.Off
     )
 
 
-class OffererConfidenceRuleFactory(BaseFactory):
+class OffererConfidenceRuleFactory(BaseFactory[models.OffererConfidenceRule]):
     class Meta:
         model = models.OffererConfidenceRule
 
