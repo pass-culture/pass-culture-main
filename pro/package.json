@@ -100,7 +100,7 @@
     "@vitest/runner": "4.0.16",
     "allure-js-commons": "3.4.4",
     "allure-vitest": "3.4.4",
-    "axe-core": "4.11.0",
+    "axe-core": "4.11.1",
     "cypress": "15.8.2",
     "cypress-axe": "1.7.0",
     "cypress-fail-fast": "7.1.1",
