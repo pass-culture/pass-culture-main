@@ -114,7 +114,7 @@ describe('ToggleVenueProviderStatusButton', () => {
       })
 
       // Verify that the payload is correct
-      expect(api.updateVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith(1, {
         ...mockVenueProvider,
         providerId: mockVenueProvider.provider.id,
         isActive: false, // Inversé car isActive était true
@@ -162,7 +162,7 @@ describe('ToggleVenueProviderStatusButton', () => {
       })
 
       // Verify that the payload is correct (isActive is inverted)
-      expect(api.updateVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith(1, {
         ...inactiveVenueProvider,
         providerId: inactiveVenueProvider.provider.id,
         isActive: true, // Inversé car isActive était false

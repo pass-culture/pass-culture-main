@@ -47,7 +47,6 @@ export const GenericCinemaProviderForm = ({
   const onSubmit = async (formValues: GenericCinemaProviderFormValues) => {
     const payload: PostVenueProviderBody = {
       providerId,
-      venueId,
       isDuo: formValues.isDuo,
       isActive: formValues.isActive,
     }

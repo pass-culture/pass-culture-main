@@ -18,7 +18,7 @@ from pcapi.core.offers import tasks as offers_tasks
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
-from pcapi.routes.serialization.venue_provider_serialize import PostVenueProviderBody
+from pcapi.routes.serialization.venue_provider_serialize import PutVenueProviderBody
 from pcapi.utils.transaction_manager import on_commit
 from pcapi.workers.update_all_offers_active_status_job import (
     update_venue_synchronized_collective_offers_active_status_job,
@@ -178,7 +178,7 @@ def activate_or_deactivate_venue_provider(
 
 def update_venue_provider(
     venue_provider: providers_models.VenueProvider,
-    venue_provider_payload: PostVenueProviderBody,
+    venue_provider_payload: PutVenueProviderBody,
     author: users_models.User,
 ) -> providers_models.VenueProvider:
     activate_or_deactivate_venue_provider(venue_provider, bool(venue_provider_payload.is_active), author)
@@ -193,7 +193,7 @@ def update_venue_provider(
 
 
 def _update_cinema_venue_provider(
-    venue_provider: providers_models.VenueProvider, venue_provider_payload: PostVenueProviderBody
+    venue_provider: providers_models.VenueProvider, venue_provider_payload: PutVenueProviderBody
 ) -> providers_models.VenueProvider:
     venue_provider.isDuoOffers = bool(venue_provider_payload.is_duo)
 
@@ -201,7 +201,7 @@ def _update_cinema_venue_provider(
 
 
 def _update_allocine_venue_provider(
-    allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PostVenueProviderBody
+    allocine_venue_provider: providers_models.AllocineVenueProvider, venue_provider_payload: PutVenueProviderBody
 ) -> providers_models.AllocineVenueProvider:
     allocine_venue_provider.quantity = venue_provider_payload.quantity
     assert venue_provider_payload.is_duo is not None  # helps mypy, see PostVenueProviderBody

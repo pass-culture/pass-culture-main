@@ -38,7 +38,7 @@ export const ToggleVenueProviderStatusButton = ({
     }
 
     try {
-      await api.updateVenueProvider(payload)
+      await api.updateVenueProvider(venue.id, payload)
       await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
     } catch {
       snackBar.error('Une erreur est survenue. Merci de réessayer plus tard')

@@ -30,7 +30,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue_provider.venue.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_request.get(f"/venueProviders?venueId={venue_id}")
+            response = auth_request.get(f"/venues/{venue_id}/venue-providers")
             assert response.status_code == 200
 
         assert response.json["venueProviders"][0].get("id") == venue_provider.id
@@ -53,7 +53,7 @@ class Returns200Test:
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = allocine_venue_provider.venue.id
         with testing.assert_num_queries(self.num_queries):
-            response = auth_request.get(f"/venueProviders?venueId={venue_id}")
+            response = auth_request.get(f"/venues/{venue_id}/venue-providers")
             assert response.status_code == 200
 
         assert response.status_code == 200
@@ -62,7 +62,7 @@ class Returns200Test:
         assert response.json["venueProviders"][0].get("price") == 123.2
 
 
-class Returns400Test:
+class Returns404Test:
     @pytest.mark.usefixtures("db_session")
     def when_listing_all_venues_without_venue_id_argument(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -74,6 +74,5 @@ class Returns400Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        with testing.assert_num_queries(testing.AUTHENTICATION_QUERIES + 1):  # Authentication and rollback
-            response = auth_request.get("/venueProviders")
-            assert response.status_code == 400
+        response = auth_request.get("/venues/404/venue-providers")
+        assert response.status_code == 404
