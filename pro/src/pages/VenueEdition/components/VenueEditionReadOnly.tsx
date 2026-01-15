@@ -8,6 +8,7 @@ import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescri
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 
+import styles from '../VenueEdition.module.scss'
 import { AccessibilityReadOnly } from './AccessibilityReadOnly/AccessibilityReadOnly'
 import { OpeningHoursAndAddressReadOnly } from './OpeningHoursAndAddressReadOnly/OpeningHoursAndAddressReadOnly'
 
@@ -64,7 +65,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
 
   return (
     <SummarySection
-      title="Vos informations pour le grand public"
+      title="Vos informations"
       editLink={getVenuePagePathToNavigateTo(
         venue.managingOfferer.id,
         venue.id,
@@ -73,9 +74,11 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
     >
       {!isCulturalDomainsEnabled && aboutSection}
       <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
-        {!venue.isOpenToPublic && (
-          <span>Accueil du public dans la structure : Non</span>
-        )}
+        <div className={styles['opentopublic-label']}>
+          Accueil du public dans la structure :{' '}
+          {venue.isOpenToPublic ? 'Oui' : 'Non'}
+        </div>
+
         {venue.isOpenToPublic && (
           <>
             <OpeningHoursAndAddressReadOnly

@@ -202,32 +202,15 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
       <form onSubmit={methods.handleSubmit(onSubmit)}>
         <ScrollToFirstHookFormErrorAfterSubmit />
         <FormLayout fullWidthActions>
-          <FormLayout.Section title="Vos informations pour le grand public">
+          <FormLayout.Section title="Vos informations">
             <MandatoryInfo />
-            <FormLayout.SubSection
-              title="À propos de votre activité"
-              description={
-                venue.isVirtual
-                  ? undefined
-                  : 'Vous pouvez décrire les différentes actions que vous menez, votre histoire ou préciser des informations sur votre activité.'
-              }
-            >
-              <FormLayout.Row>
-                <TextArea
-                  label="Description"
-                  description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
-                  maxLength={1000}
-                  {...methods.register('description')}
-                  error={methods.formState.errors.description?.message}
-                />
-              </FormLayout.Row>
-            </FormLayout.SubSection>
+
             <FormLayout.SubSection title="Accueil du public">
               <FormLayout.Row>
                 <OpenToPublicToggle
                   onChange={onOpenToPublicChange}
                   radioDescriptions={{
-                    yes: "Votre adresse postale sera visible, veuillez renseigner vos horaires d'ouvertures et vos modalités d'accessibilité.",
+                    yes: 'Votre adresse postale sera visible',
                   }}
                   isOpenToPublic={methods.watch('isOpenToPublic')}
                 />
@@ -281,12 +264,10 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 </>
               )}
             </FormLayout.SubSection>
-            {showActivityField && (
-              <FormLayout.Section
-                title="Activité principale"
-                key={methods.watch('activity')}
-              >
-                <FormLayout.Row>
+
+            <FormLayout.SubSection title="À propos de votre activité">
+              {showActivityField && (
+                <FormLayout.Row key={methods.watch('activity')} mdSpaceAfter>
                   <Select
                     {...methods.register('activity')}
                     options={[
@@ -312,41 +293,60 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     required
                   />
                 </FormLayout.Row>
-              </FormLayout.Section>
-            )}
-            {isCulturalDomainsEnabled && !isLoadingEducationalDomains && (
-              <FormLayout.Row mdSpaceAfter>
-                <MultiSelect
-                  name="culturalDomains"
-                  options={educationalDomains.map((educationalDomain) => ({
-                    id: String(educationalDomain.id),
-                    label: educationalDomain.name,
-                  }))}
-                  defaultOptions={defaultCulturalDomain}
-                  error={methods.formState.errors.culturalDomains?.message}
-                  label="Domaine(s) d’activité"
-                  className={styles['cultural-domains-select']}
-                  required={methods.watch('isOpenToPublic') === 'false'}
-                  onSelectedOptionsChanged={(selectedOptions) => {
-                    methods.setValue(
-                      'culturalDomains',
-                      selectedOptions.map((opt) => opt.label)
-                    )
-                  }}
-                  buttonLabel={
-                    (methods.watch('culturalDomains') ?? []).length > 0
-                      ? pluralizeFr(
-                          (methods.watch('culturalDomains') ?? []).length,
-                          'domaine sélectionné',
-                          'domaines sélectionnés'
-                        )
-                      : 'Sélectionnez un ou plusieurs domaines d’activité'
-                  }
+              )}
+
+              {isCulturalDomainsEnabled && !isLoadingEducationalDomains && (
+                <FormLayout.Row mdSpaceAfter>
+                  <MultiSelect
+                    name="culturalDomains"
+                    options={educationalDomains.map((educationalDomain) => ({
+                      id: String(educationalDomain.id),
+                      label: educationalDomain.name,
+                    }))}
+                    defaultOptions={defaultCulturalDomain}
+                    error={methods.formState.errors.culturalDomains?.message}
+                    label="Domaine(s) d’activité"
+                    className={styles['cultural-domains-select']}
+                    required={methods.watch('isOpenToPublic') === 'false'}
+                    onSelectedOptionsChanged={(selectedOptions) => {
+                      methods.setValue(
+                        'culturalDomains',
+                        selectedOptions.map((opt) => opt.label)
+                      )
+                    }}
+                    buttonLabel={
+                      (methods.watch('culturalDomains') ?? []).length > 0
+                        ? pluralizeFr(
+                            (methods.watch('culturalDomains') ?? []).length,
+                            'domaine sélectionné',
+                            'domaines sélectionnés'
+                          )
+                        : 'Sélectionnez un ou plusieurs domaines d’activité'
+                    }
+                  />
+                </FormLayout.Row>
+              )}
+
+              <FormLayout.Row>
+                {!venue.isVirtual && (
+                  <p className={styles['description-helper']}>
+                    Vous pouvez décrire les différentes actions que vous menez,
+                    votre histoire ou préciser des informations sur votre
+                    activité.
+                  </p>
+                )}
+                <TextArea
+                  label="Description"
+                  description="Par exemple : mon établissement propose des spectacles, de l’improvisation..."
+                  maxLength={1000}
+                  {...methods.register('description')}
+                  error={methods.formState.errors.description?.message}
                 />
               </FormLayout.Row>
-            )}
+            </FormLayout.SubSection>
+
             <FormLayout.SubSection
-              title="Contact"
+              title="Informations de contact"
               description="Ces informations permettront aux bénéficiaires de vous contacter en cas de besoin."
             >
               <FormLayout.Row mdSpaceAfter>

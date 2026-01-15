@@ -205,9 +205,7 @@ describe('VenueEditionFormScreen', () => {
         },
         { initialRouterEntries: ['/'] }
       )
-      expect(
-        await screen.findByText('Vos informations pour le grand public')
-      ).toBeInTheDocument()
+      expect(await screen.findByText('Vos informations')).toBeInTheDocument()
       expect(screen.getByText('À propos de votre activité')).toBeInTheDocument()
       expect(screen.getByText(/Description/)).toBeInTheDocument()
       expect(screen.getByText(/TOTOTO/)).toBeInTheDocument()
