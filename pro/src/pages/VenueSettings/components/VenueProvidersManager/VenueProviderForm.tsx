@@ -35,7 +35,7 @@ export const VenueProviderForm = ({
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
-      await api.createVenueProvider(payload)
+      await api.createVenueProvider(venue.id, payload)
 
       snackBar.success('La synchronisation a bien été initiée.')
       await afterSubmit()

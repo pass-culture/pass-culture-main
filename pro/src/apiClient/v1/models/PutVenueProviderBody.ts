@@ -2,11 +2,10 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type PostVenueProviderBody = {
+export type PutVenueProviderBody = {
   isActive?: (boolean | null);
   isDuo?: (boolean | null);
   price?: (number | null);
-  providerId: number;
   quantity?: (number | null);
   venueIdAtOfferProvider?: (string | null);
 };

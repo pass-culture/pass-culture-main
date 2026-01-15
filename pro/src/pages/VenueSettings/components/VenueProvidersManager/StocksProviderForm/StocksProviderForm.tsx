@@ -61,7 +61,6 @@ export const StocksProviderForm = ({
     const payload: PostVenueProviderBody = {
       providerId,
       venueIdAtOfferProvider: siret ?? undefined,
-      venueId,
     }
 
     const isSuccess = await saveVenueProvider(payload)

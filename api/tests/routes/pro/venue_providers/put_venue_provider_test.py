@@ -10,38 +10,53 @@ from pcapi.models import db
 class Returns200Test:
     @pytest.mark.usefixtures("db_session")
     def test_allocine_venue_provider_is_successfully_updated(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
-        providers_factories.AllocineVenueProviderFactory(
-            venue=venue, provider=provider, isDuo=False, quantity=42, isActive=True, price=10
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
+            venue=venue,
+            provider=provider,
+            isDuo=False,
+            quantity=42,
+            isActive=True,
+            price=10,
+            venueIdAtOfferProvider="00000029900263",
         )
-
-        updated_venue_provider_data = {
-            "providerId": provider.id,
-            "venueId": venue.id,
-            "isDuo": True,
-            "quantity": 77,
-            "price": 64,
-            "isActive": False,
-        }
 
         auth_request = client.with_session_auth(email=user.email)
 
-        # When
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
+        response = auth_request.put(
+            f"/venue-providers/{venue_provider.id}",
+            json={
+                "isDuo": True,
+                "quantity": 77,
+                "price": 64,
+                "isActive": False,
+            },
+        )
 
-        # Then
         assert response.status_code == 200
-        assert response.json["provider"]["id"] == provider.id
-        assert response.json["venueId"] == venue.id
-        assert response.json["quantity"] == updated_venue_provider_data["quantity"]
-        assert response.json["price"] == updated_venue_provider_data["price"]
-        assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
-        assert response.json["isActive"] == updated_venue_provider_data["isActive"]
+        assert response.json == {
+            "id": venue_provider.id,
+            "isActive": False,
+            "isDuo": True,
+            "isFromAllocineProvider": True,
+            "lastSyncDate": None,
+            "dateCreated": venue_provider.dateCreated.isoformat() + "Z",
+            "price": 64.0,
+            "provider": {
+                "id": venue_provider.providerId,
+                "name": "Allociné",
+                "enabledForPro": True,
+                "isActive": True,
+                "hasOffererProvider": False,
+            },
+            "quantity": 77,
+            "venueId": venue_provider.venueId,
+            "venueIdAtOfferProvider": "00000029900263",
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_cinema_venue_provider_is_successfully_updated(self, client):
@@ -52,46 +67,51 @@ class Returns200Test:
         cds_provider = (
             db.session.query(provider_models.Provider).filter(provider_models.Provider.localClass == "CDSStocks").one()
         )
-        providers_factories.VenueProviderFactory(venue=venue, provider=cds_provider, isDuoOffers=False, isActive=False)
+        venue_provider = providers_factories.VenueProviderFactory(
+            venue=venue,
+            provider=cds_provider,
+            isDuoOffers=False,
+            isActive=False,
+            venueIdAtOfferProvider="00000030700272",
+        )
 
-        updated_venue_provider_data = {
-            "providerId": cds_provider.id,
-            "venueId": venue.id,
-            "isDuo": True,
-            "isActive": True,
-        }
         auth_request = client.with_session_auth(email=user.email)
-
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
-
+        response = auth_request.put(f"/venue-providers/{venue_provider.id}", json={"isDuo": True, "isActive": True})
+        print(response.json)
         assert response.status_code == 200
-        assert response.json["provider"]["id"] == cds_provider.id
-        assert response.json["venueId"] == venue.id
-        assert response.json["isDuo"] == updated_venue_provider_data["isDuo"]
-        assert response.json["isActive"] == updated_venue_provider_data["isActive"]
+        assert response.json == {
+            "id": venue_provider.id,
+            "isActive": True,
+            "isDuo": True,
+            "isFromAllocineProvider": False,
+            "lastSyncDate": None,
+            "dateCreated": venue_provider.dateCreated.isoformat() + "Z",
+            "price": None,
+            "provider": {
+                "id": venue_provider.providerId,
+                "name": "Ciné Office",
+                "enabledForPro": True,
+                "isActive": True,
+                "hasOffererProvider": False,
+            },
+            "quantity": None,
+            "venueId": venue_provider.venueId,
+            "venueIdAtOfferProvider": "00000030700272",
+        }
 
     @pytest.mark.usefixtures("db_session")
     def test_provider_is_not_allocine_and_not_cinema_provider(self, client):
-        # Given
         user_offerer = offerers_factories.UserOffererFactory()
         user = user_offerer.user
         offerer = user_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.ProviderFactory()
-        providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=True)
-
-        updated_venue_provider_data = {
-            "providerId": provider.id,
-            "venueId": venue.id,
-            "isActive": False,
-        }
+        venue_provider = providers_factories.VenueProviderFactory(venue=venue, provider=provider, isActive=True)
 
         auth_request = client.with_session_auth(email=user.email)
 
-        # When
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
+        response = auth_request.put(f"/venue-providers/{venue_provider.id}", json={"isActive": False})
 
-        # then
         assert response.status_code == 200
         assert not response.json["isActive"]
 
@@ -99,38 +119,31 @@ class Returns200Test:
 class Returns401Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_is_not_logged_in(self, client):
-        # when
-        response = client.put("/venueProviders")
-
-        # then
+        response = client.put("/venue-providers/1")
         assert response.status_code == 401
 
 
 class Returns403Test:
     @pytest.mark.usefixtures("db_session")
     def test_user_has_right_on_venue(self, client):
-        # Given
         user = user_factories.ProFactory()
         owner_offerer = offerers_factories.UserOffererFactory()
         offerer = owner_offerer.offerer
         venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         provider = providers_factories.AllocineProviderFactory()
-        providers_factories.AllocineVenueProviderFactory(
+        venue_provider = providers_factories.AllocineVenueProviderFactory(
             venue=venue, provider=provider, isDuo=False, quantity=42, price=10
         )
 
-        updated_venue_provider_data = {
-            "providerId": provider.id,
-            "venueId": venue.id,
-            "isDuo": True,
-            "quantity": 77,
-            "price": 64,
-        }
-
         auth_request = client.with_session_auth(email=user.email)
 
-        # When
-        response = auth_request.put("/venueProviders", json=updated_venue_provider_data)
+        response = auth_request.put(
+            f"/venue-providers/{venue_provider.id}",
+            json={
+                "isDuo": True,
+                "quantity": 77,
+                "price": 64,
+            },
+        )
 
-        # Then
         assert response.status_code == 403

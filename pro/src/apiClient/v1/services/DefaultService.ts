@@ -98,6 +98,7 @@ import type { PostVenueProviderBody } from '../models/PostVenueProviderBody';
 import type { PriceCategoryBody } from '../models/PriceCategoryBody';
 import type { ProAnonymizationEligibilityResponseModel } from '../models/ProAnonymizationEligibilityResponseModel';
 import type { ProUserCreationBodyV2Model } from '../models/ProUserCreationBodyV2Model';
+import type { PutVenueProviderBody } from '../models/PutVenueProviderBody';
 import type { ResetPasswordBodyModel } from '../models/ResetPasswordBodyModel';
 import type { SaveNewOnboardingDataQueryModel } from '../models/SaveNewOnboardingDataQueryModel';
 import type { SharedCurrentUserResponseModel } from '../models/SharedCurrentUserResponseModel';
@@ -2775,6 +2776,52 @@ export class DefaultService {
     });
   }
   /**
+   * delete_venue_provider <DELETE>
+   * @param venueProviderId
+   * @returns void
+   * @throws ApiError
+   */
+  public deleteVenueProvider(
+    venueProviderId: number,
+  ): CancelablePromise<void> {
+    return this.httpRequest.request({
+      method: 'DELETE',
+      url: '/venue-providers/{venue_provider_id}',
+      path: {
+        'venue_provider_id': venueProviderId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * update_venue_provider <PUT>
+   * @param venueProviderId
+   * @param requestBody
+   * @returns VenueProviderResponse OK
+   * @throws ApiError
+   */
+  public updateVenueProvider(
+    venueProviderId: number,
+    requestBody: PutVenueProviderBody,
+  ): CancelablePromise<VenueProviderResponse> {
+    return this.httpRequest.request({
+      method: 'PUT',
+      url: '/venue-providers/{venue_provider_id}',
+      path: {
+        'venue_provider_id': venueProviderId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
    * get_venue_types <GET>
    * @returns VenueTypeListResponseModel OK
    * @throws ApiError
@@ -2803,111 +2850,6 @@ export class DefaultService {
       url: '/venue/{venue_id}/offers-statistics',
       path: {
         'venue_id': venueId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * list_venue_providers <GET>
-   * @param venueId
-   * @returns ListVenueProviderResponse OK
-   * @throws ApiError
-   */
-  public listVenueProviders(
-    venueId: number,
-  ): CancelablePromise<ListVenueProviderResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/venueProviders',
-      query: {
-        'venueId': venueId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * create_venue_provider <POST>
-   * @param requestBody
-   * @returns VenueProviderResponse Created
-   * @throws ApiError
-   */
-  public createVenueProvider(
-    requestBody: PostVenueProviderBody,
-  ): CancelablePromise<VenueProviderResponse> {
-    return this.httpRequest.request({
-      method: 'POST',
-      url: '/venueProviders',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * update_venue_provider <PUT>
-   * @param requestBody
-   * @returns VenueProviderResponse OK
-   * @throws ApiError
-   */
-  public updateVenueProvider(
-    requestBody: PostVenueProviderBody,
-  ): CancelablePromise<VenueProviderResponse> {
-    return this.httpRequest.request({
-      method: 'PUT',
-      url: '/venueProviders',
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_providers_by_venue <GET>
-   * @param venueId
-   * @returns ListProviderResponse OK
-   * @throws ApiError
-   */
-  public getProvidersByVenue(
-    venueId: number,
-  ): CancelablePromise<ListProviderResponse> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/venueProviders/{venue_id}',
-      path: {
-        'venue_id': venueId,
-      },
-      errors: {
-        401: `Unauthorized`,
-        403: `Forbidden`,
-        404: `Not Found`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * delete_venue_provider <DELETE>
-   * @param venueProviderId
-   * @returns void
-   * @throws ApiError
-   */
-  public deleteVenueProvider(
-    venueProviderId: number,
-  ): CancelablePromise<void> {
-    return this.httpRequest.request({
-      method: 'DELETE',
-      url: '/venueProviders/{venue_provider_id}',
-      path: {
-        'venue_provider_id': venueProviderId,
       },
       errors: {
         403: `Forbidden`,
@@ -3086,6 +3028,75 @@ export class DefaultService {
     return this.httpRequest.request({
       method: 'POST',
       url: '/venues/{venue_id}/pricing-point',
+      path: {
+        'venue_id': venueId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_providers_by_venue <GET>
+   * @param venueId
+   * @returns ListProviderResponse OK
+   * @throws ApiError
+   */
+  public getProvidersByVenue(
+    venueId: number,
+  ): CancelablePromise<ListProviderResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{venue_id}/providers',
+      path: {
+        'venue_id': venueId,
+      },
+      errors: {
+        401: `Unauthorized`,
+        403: `Forbidden`,
+        404: `Not Found`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * list_venue_providers <GET>
+   * @param venueId
+   * @returns ListVenueProviderResponse OK
+   * @throws ApiError
+   */
+  public listVenueProviders(
+    venueId: number,
+  ): CancelablePromise<ListVenueProviderResponse> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/venues/{venue_id}/venue-providers',
+      path: {
+        'venue_id': venueId,
+      },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * create_venue_provider <POST>
+   * @param venueId
+   * @param requestBody
+   * @returns VenueProviderResponse Created
+   * @throws ApiError
+   */
+  public createVenueProvider(
+    venueId: number,
+    requestBody: PostVenueProviderBody,
+  ): CancelablePromise<VenueProviderResponse> {
+    return this.httpRequest.request({
+      method: 'POST',
+      url: '/venues/{venue_id}/venue-providers',
       path: {
         'venue_id': venueId,
       },

@@ -174,7 +174,6 @@ export type { ListOffersResponseModel } from './models/ListOffersResponseModel';
 export type { ListOffersStockResponseModel } from './models/ListOffersStockResponseModel';
 export type { ListOffersVenueResponseModel } from './models/ListOffersVenueResponseModel';
 export type { ListProviderResponse } from './models/ListProviderResponse';
-export type { ListVenueProviderQuery } from './models/ListVenueProviderQuery';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
 export type { LocationBodyModel } from './models/LocationBodyModel';
 export type { LocationModel } from './models/LocationModel';
@@ -219,6 +218,7 @@ export type { PriceCategoryResponseModel } from './models/PriceCategoryResponseM
 export type { ProAnonymizationEligibilityResponseModel } from './models/ProAnonymizationEligibilityResponseModel';
 export type { ProUserCreationBodyV2Model } from './models/ProUserCreationBodyV2Model';
 export type { ProviderResponse } from './models/ProviderResponse';
+export type { PutVenueProviderBody } from './models/PutVenueProviderBody';
 export type { ReimbursementCsvByInvoicesModel } from './models/ReimbursementCsvByInvoicesModel';
 export type { ResetPasswordBodyModel } from './models/ResetPasswordBodyModel';
 export type { SaveNewOnboardingDataQueryModel } from './models/SaveNewOnboardingDataQueryModel';

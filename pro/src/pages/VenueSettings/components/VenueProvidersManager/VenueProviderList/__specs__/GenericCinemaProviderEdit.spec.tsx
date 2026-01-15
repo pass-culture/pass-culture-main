@@ -67,9 +67,8 @@ describe('GenericCinemaProviderEdit', () => {
     await userEvent.click(submitButton)
 
     await waitFor(() => {
-      expect(api.updateVenueProvider).toHaveBeenCalledWith({
+      expect(api.updateVenueProvider).toHaveBeenCalledWith(defaultGetVenue.id, {
         providerId: defaultVenueProvider.provider.id,
-        venueId: defaultVenueProvider.venueId,
         isDuo: defaultVenueProvider.isDuo,
         isActive: defaultVenueProvider.isActive,
       })

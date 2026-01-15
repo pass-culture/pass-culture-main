@@ -5,7 +5,6 @@ import pydantic as pydantic_v2
 from pydantic import RootModel
 
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.routes.serialization import HttpQueryParamsModel
 
 
 class ProviderResponse(HttpBodyModel):
@@ -21,8 +20,16 @@ class ListProviderResponse(RootModel):
 
 
 class PostVenueProviderBody(HttpBodyModel):
-    venue_id: int
     provider_id: int
+    venue_id_at_offer_provider: str | None = None
+    price: Annotated[float, pydantic_v2.Field(ge=0)] | None = None
+    # absent/ignored for regular providers, required for cinema-related providers
+    is_duo: bool | None = None
+    quantity: int | None = None
+    is_active: bool | None = None
+
+
+class PutVenueProviderBody(HttpBodyModel):
     venue_id_at_offer_provider: str | None = None
     price: Annotated[float, pydantic_v2.Field(ge=0)] | None = None
     # absent/ignored for regular providers, required for cinema-related providers
@@ -47,7 +54,3 @@ class VenueProviderResponse(HttpBodyModel):
 
 class ListVenueProviderResponse(HttpBodyModel):
     venue_providers: list[VenueProviderResponse]
-
-
-class ListVenueProviderQuery(HttpQueryParamsModel):
-    venue_id: int

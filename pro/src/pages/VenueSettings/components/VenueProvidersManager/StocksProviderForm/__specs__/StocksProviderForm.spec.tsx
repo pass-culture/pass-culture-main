@@ -71,7 +71,6 @@ describe('StocksProviderForm', () => {
       ).toBeInTheDocument()
       expect(props.saveVenueProvider).toHaveBeenCalledWith({
         providerId: providerId,
-        venueId: venueId,
         venueIdAtOfferProvider: '12345678901234',
       })
     })
