@@ -4,6 +4,7 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
+  type ActivityNotOpenToPublic,
   type ActivityOpenToPublic,
   type SaveNewOnboardingDataQueryModel,
   Target,
@@ -94,8 +95,12 @@ export const Validation = (): JSX.Element | undefined => {
   }
 
   const activityLabel =
-    offerer?.isOpenToPublic === 'true'
-      ? getActivityLabel(activity.venueTypeCode as ActivityOpenToPublic) // TODO (jclery, 2025-11-27): This is TEMPORARY as we currently use the "venueTypeCode" field to store either the actual venueTypeCode, or the new activity ID. But they will be dissociated very soon and this comment will be removed.
+    isVenueCulturalDomainsFeatureActive || offerer?.isOpenToPublic === 'true'
+      ? getActivityLabel(
+          activity.venueTypeCode as
+            | ActivityOpenToPublic
+            | ActivityNotOpenToPublic
+        )
       : venueTypes.find(
           (venueType) => venueType.value === activity.venueTypeCode
         )?.label
@@ -110,11 +115,14 @@ export const Validation = (): JSX.Element | undefined => {
         isOpenToPublic: offerer.isOpenToPublic === 'true',
         publicName: offerer.publicName || null,
         siret: offerer.siret.replaceAll(' ', ''),
-        ...(offerer?.isOpenToPublic === 'true'
+        ...(isVenueCulturalDomainsFeatureActive ||
+        offerer?.isOpenToPublic === 'true'
           ? {
               activity:
                 /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-                activity.venueTypeCode as ActivityOpenToPublic, // TODO (jclery, 2025-11-27): Also TEMPORARY (see above)
+                activity.venueTypeCode as
+                  | ActivityOpenToPublic
+                  | ActivityNotOpenToPublic,
             }
           : {
               venueTypeCode:
@@ -124,7 +132,7 @@ export const Validation = (): JSX.Element | undefined => {
         ...(isVenueCulturalDomainsFeatureActive
           ? {
               culturalDomains:
-                /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
+                /* istanbul ignore next: should not have empty or null culturalDomains at this step */
                 activity.culturalDomains,
             }
           : {}),

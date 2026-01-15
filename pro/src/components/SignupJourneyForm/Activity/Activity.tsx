@@ -61,7 +61,8 @@ export const Activity = (): JSX.Element => {
       : defaultActivityFormValues,
     resolver: yupResolver(
       validationSchema(
-        isCulturalDomainsEnabled && offerer?.isOpenToPublic === 'false'
+        isCulturalDomainsEnabled,
+        offerer?.isOpenToPublic === 'false'
       )
     ),
   })

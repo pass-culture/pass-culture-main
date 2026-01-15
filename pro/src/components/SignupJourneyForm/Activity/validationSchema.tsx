@@ -2,20 +2,44 @@ import parsePhoneNumberFromString from 'libphonenumber-js'
 import type { ObjectSchema } from 'yup'
 import * as yup from 'yup'
 
+import type { ActivityNotOpenToPublicType } from '@/commons/mappings/ActivityNotOpenToPublic'
+import type { ActivityOpenToPublicType } from '@/commons/mappings/ActivityOpenToPublic'
+import { getActivities } from '@/commons/mappings/mappings'
+import { objectKeys } from '@/commons/utils/object'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 
 export const validationSchema = (
-  shouldRequireCulturalDomains: boolean
-): ObjectSchema<ActivityFormValues> =>
-  yup.object().shape({
-    venueTypeCode: yup
-      .string()
-      .required('Veuillez sélectionner une activité principale'),
+  isCulturalDomainsEnabled: boolean,
+  notOpenToPublic: boolean
+): ObjectSchema<ActivityFormValues> => {
+  const activityTypeValuesOpenToPublic = objectKeys(
+    getActivities('OPEN_TO_PUBLIC')
+  )
+  const activityTypeValuesNotOpenToPublic = objectKeys(
+    getActivities('NOT_OPEN_TO_PUBLIC')
+  )
+
+  const notOpenToPublicTypeCodeValidator = isCulturalDomainsEnabled
+    ? yup
+        .mixed<ActivityNotOpenToPublicType>()
+        .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
+    : yup.string()
+
+  const typeCodeValidator = notOpenToPublic
+    ? notOpenToPublicTypeCodeValidator
+    : yup
+        .mixed<ActivityOpenToPublicType>()
+        .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
+
+  return yup.object().shape({
+    venueTypeCode: typeCodeValidator.required(
+      'Veuillez sélectionner une activité principale'
+    ),
     culturalDomains: yup
       .array()
       .of(yup.string().required())
       .when([], (_, schema) => {
-        if (shouldRequireCulturalDomains) {
+        if (isCulturalDomainsEnabled && notOpenToPublic) {
           return schema
             .required(
               'Veuillez sélectionner un ou plusieurs domaines d’activité'
@@ -72,3 +96,4 @@ export const validationSchema = (
         }
       ),
   })
+}
