@@ -3687,6 +3687,33 @@ class AccessibilityProviderTest:
         assert venue.external_accessibility_id == "mon-lieu-chez-acceslibre"
 
 
+class MatchAcceslibreTest:
+    @patch("pcapi.connectors.acceslibre.get_id_at_accessibility_provider")
+    def test_match_acceslibre(self, mock_get_id_at_accessibility_provider):
+        venue = offerers_factories.VenueFactory(name="Une librairie de test")
+        slug = "mon-slug"
+        mock_get_id_at_accessibility_provider.side_effect = [
+            acceslibre_connector.AcceslibreInfos(slug=slug, url=f"https://acceslibre.beta.gouv.fr/app/erps/{slug}/")
+        ]
+        offerers_api.match_acceslibre(venue)
+        assert venue.accessibilityProvider.externalAccessibilityId == slug
+        assert (
+            venue.accessibilityProvider.externalAccessibilityUrl == f"https://acceslibre.beta.gouv.fr/app/erps/{slug}/"
+        )
+        assert venue.action_history[0].extraData == {
+            "modified_info": {
+                "accessibilityProvider.externalAccessibilityId": {
+                    "new_info": slug,
+                    "old_info": None,
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "new_info": f"https://acceslibre.beta.gouv.fr/app/erps/{slug}/",
+                    "old_info": None,
+                },
+            }
+        }
+
+
 class GetOffererConfidenceLevelTest:
     def test_no_rule(self):
         venue = offerers_factories.VenueFactory()

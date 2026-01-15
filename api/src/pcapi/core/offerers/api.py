@@ -2905,6 +2905,40 @@ def synchronize_accessibility_with_acceslibre(
     logger.info("Accessibility data synchronization with acceslibre complete successfully")
 
 
+def match_acceslibre(venue: offerers_models.Venue) -> None:
+    old_slug = venue.external_accessibility_id
+    old_url = venue.external_accessibility_url
+    delete_venue_accessibility_provider(venue)
+    # TODO(xordoquy): see why delete_venue_accessibility_provider doesn't synchronize session
+    db.session.refresh(venue)
+    set_accessibility_provider_id(venue)
+
+    if not venue.accessibilityProvider:
+        logger.info("No match found at acceslibre for Venue %s ", venue.id)
+        return
+    if old_slug != venue.accessibilityProvider.externalAccessibilityId:
+        history_api.add_action(
+            history_models.ActionType.INFO_MODIFIED,
+            author=None,
+            venue=venue,
+            comment="Recherche automatisée du lieu permanent avec Acceslibre",
+            modified_info={
+                "accessibilityProvider.externalAccessibilityId": {
+                    "old_info": old_slug,
+                    "new_info": venue.accessibilityProvider.externalAccessibilityId,
+                },
+                "accessibilityProvider.externalAccessibilityUrl": {
+                    "old_info": old_url,
+                    "new_info": venue.accessibilityProvider.externalAccessibilityUrl,
+                },
+            },
+        )
+
+    set_accessibility_infos_from_provider_id(venue)
+    db.session.add(venue)
+    db.session.commit()
+
+
 def match_venue_with_new_entries(
     venues_list: list[models.Venue],
     results: list[accessibility_provider.AcceslibreResult],
