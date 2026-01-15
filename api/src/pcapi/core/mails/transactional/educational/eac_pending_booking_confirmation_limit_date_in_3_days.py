@@ -35,6 +35,7 @@ def get_data_pending_booking_confirmation_limit_date_in_3_days(
             "USER_EMAIL": booking.educationalRedactor.email,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ID": offer.id,
             "COLLECTIVE_OFFER_ADDRESS": get_collective_offer_full_address(offer),
         },
     )

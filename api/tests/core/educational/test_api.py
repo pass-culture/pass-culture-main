@@ -431,6 +431,7 @@ class EACPendingBookingWithConfirmationLimitDate3DaysTest:
             "USER_EMAIL": booking.educationalRedactor.email,
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ID": booking.collectiveStock.collectiveOffer.id,
             "COLLECTIVE_OFFER_ADDRESS": "En établissement scolaire",
         }
 

@@ -42,6 +42,7 @@ def get_eac_new_collective_prebooking_email_data(
             "EDUCATIONAL_INSTITUTION_NAME": booking.educationalInstitution.name,
             "IS_EVENT": True,
             "BOOKING_ID": booking.id,
+            "COLLECTIVE_OFFER_ID": offer.id,
             "COLLECTIVE_OFFER_ADDRESS": get_collective_offer_full_address(offer),
         },
     )
