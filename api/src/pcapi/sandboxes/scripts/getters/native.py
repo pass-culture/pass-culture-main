@@ -10,6 +10,7 @@ from pcapi.core.offers import factories as offers_factories
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
+from pcapi.utils import siren as siren_utils
 from pcapi.utils.date import timespan_str_to_numrange
 
 
@@ -37,7 +38,8 @@ def create_offerer() -> offerers_models.Offerer:
         )
     ).scalar()
 
-    new_siren = str((max_siren or 0) + 1)
+    new_siren_nr = str((max_siren or 0) + 1)
+    new_siren = siren_utils.complete_siren_or_siret(f"{new_siren_nr:08}")
     offerer = offerers_factories.OffererFactory.build(siren=new_siren)
     db.session.add(offerer)
     return offerer
