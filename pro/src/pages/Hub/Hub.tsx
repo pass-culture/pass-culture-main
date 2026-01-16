@@ -82,6 +82,7 @@ export const Hub = () => {
     <FunnelLayout
       mainHeading="À quelle structure souhaitez-vous accéder ?"
       withFlexContent
+      tabIndex={-1}
     >
       {venues.length > 4 && (
         <SearchInput
