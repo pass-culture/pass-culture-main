@@ -1,3 +1,4 @@
+import decimal
 import typing
 from datetime import datetime
 
@@ -11,6 +12,12 @@ from pcapi.routes.serialization import HttpBodyModel
 
 Quantity = Annotated[int, pydantic_v2.Field(ge=0, le=models.Stock.MAX_STOCK_QUANTITY)]
 
+# convert to string before building a `decimal.Decimal` object because
+# doing so with a float will lead to an unexpected value.
+# eg. value = 19.95 ; Decimal(value) -> Decimal('19.9409718987...')
+# Decimal(str(value)) -> Decimal('19.95')
+Decimal = Annotated[decimal.Decimal, lambda value: decimal.Decimal(str(value))]
+
 
 class ThingStockUpsertBodyModel(HttpBodyModel):
     id: int | None = None
@@ -18,7 +25,7 @@ class ThingStockUpsertBodyModel(HttpBodyModel):
     activation_codes_expiration_datetime: datetime | None = None
     booking_limit_datetime: datetime | None = None
     offer_id: int
-    price: float
+    price: Decimal
     quantity: int | None = None
 
     @pydantic_v2.field_validator("booking_limit_datetime", "activation_codes_expiration_datetime", mode="after")

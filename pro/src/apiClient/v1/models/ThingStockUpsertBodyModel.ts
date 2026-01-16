@@ -8,7 +8,7 @@ export type ThingStockUpsertBodyModel = {
   bookingLimitDatetime?: (string | null);
   id?: (number | null);
   offerId: number;
-  price: number;
+  price: (number | string);
   quantity?: (number | null);
 };
 
