@@ -60,7 +60,6 @@ class Returns200Test:
                 "educationalPriceDetail": stock.priceDetail,
                 "endDatetime": format_into_utc_date(stock.endDatetime),
                 "id": stock.id,
-                "isBooked": False,
                 "numberOfTickets": stock.numberOfTickets,
                 "price": float(stock.price),
                 "startDatetime": format_into_utc_date(stock.startDatetime),
@@ -77,7 +76,6 @@ class Returns200Test:
             "domains": [],
             "durationMinutes": None,
             "formats": [f.value for f in offer.formats],
-            "hasBookingLimitDatetimesPassed": False,
             "history": {
                 "future": [
                     "PREBOOKED",
@@ -92,9 +90,6 @@ class Returns200Test:
             "imageUrl": None,
             "institution": None,
             "interventionArea": offer.interventionArea,
-            "isActive": True,
-            "isBookable": True,
-            "isNonFreeOffer": None,
             "isPublicApi": True,
             "isTemplate": False,
             "location": {
@@ -231,32 +226,12 @@ class Returns200Test:
         assert response_location["location"] is None
         assert response_json["interventionArea"] == ["33", "75", "93"]
 
-    def test_sold_out(self, client):
-        # Given
-        stock = educational_factories.CollectiveStockFactory()
-        educational_factories.UsedCollectiveBookingFactory(collectiveStock=stock)
-        offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
-        offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
-
-        # When
-        client = client.with_session_auth(email="user@example.com")
-        offer_id = offer.id
-        with assert_num_queries(self.num_queries):
-            response = client.get(f"/collective/offers/{offer_id}")
-            assert response.status_code == 200
-
-        # Then
-        response_json = response.json
-        assert response_json["collectiveStock"]["isBooked"] is True
-
     def test_performance(self, client):
-        # Given
         stock = educational_factories.CollectiveStockFactory()
         educational_factories.CancelledCollectiveBookingFactory.create_batch(5, collectiveStock=stock)
         offer = educational_factories.CollectiveOfferFactory(collectiveStock=stock)
         offerers_factories.UserOffererFactory(user__email="user@example.com", offerer=offer.venue.managingOfferer)
 
-        # When
         client = client.with_session_auth(email="user@example.com")
         offer_id = offer.id
 

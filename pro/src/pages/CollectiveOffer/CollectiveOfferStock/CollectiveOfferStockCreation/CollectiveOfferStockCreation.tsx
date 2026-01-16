@@ -108,7 +108,6 @@ export const CollectiveOfferStockCreation = ({
           collectiveStock: {
             ...offer.collectiveStock,
             ...response,
-            isBooked: false,
           },
         },
         { revalidate: false }

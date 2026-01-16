@@ -74,7 +74,6 @@ describe('BookableOfferSummary', () => {
       }),
       collectiveStock: {
         id: 1,
-        isBooked: false,
         numberOfTickets: 50,
         price: 1000,
         startDatetime: '2023-12-21T10:00:00Z',
@@ -126,7 +125,6 @@ describe('BookableOfferSummary', () => {
       offer: getCollectiveOfferFactory({
         collectiveStock: {
           id: 1,
-          isBooked: false,
           numberOfTickets: null,
           price: 1000,
           bookingLimitDatetime: null,
@@ -148,7 +146,6 @@ describe('BookableOfferSummary', () => {
       offer: getCollectiveOfferFactory({
         collectiveStock: {
           id: 1,
-          isBooked: false,
           numberOfTickets: 50,
           price: 0,
           bookingLimitDatetime: null,
@@ -204,7 +201,6 @@ describe('BookableOfferSummary', () => {
         }),
         collectiveStock: {
           id: 1,
-          isBooked: false,
           numberOfTickets: 50,
           price: 1000,
           startDatetime: '2023-12-21T10:00:00Z', // 11:00 in Paris (UTC+1)

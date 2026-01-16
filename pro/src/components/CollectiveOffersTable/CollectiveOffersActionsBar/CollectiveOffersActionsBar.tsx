@@ -9,7 +9,6 @@ import {
   CollectiveOfferTemplateAllowedAction,
   type CollectiveOfferTemplateResponseModel,
 } from '@/apiClient/v1'
-import { isCollectiveOffer } from '@/commons/core/OfferEducational/types'
 import { MAX_OFFERS_TO_DISPLAY } from '@/commons/core/Offers/constants'
 import { useQueryCollectiveSearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import { getCollectiveOffersSwrKeys } from '@/commons/core/Offers/utils/getCollectiveOffersSwrKeys'
@@ -116,32 +115,8 @@ export function CollectiveOffersActionsBar<
     newSatus:
       | CollectiveOfferDisplayedStatus.ARCHIVED
       | CollectiveOfferDisplayedStatus.HIDDEN
-      | CollectiveOfferDisplayedStatus.PUBLISHED
   ) {
     switch (newSatus) {
-      case CollectiveOfferDisplayedStatus.PUBLISHED: {
-        const updateOfferStatusMessage = getPublishOffersErrorMessage()
-        if (!updateOfferStatusMessage) {
-          try {
-            await toggleCollectiveOffersActiveInactiveStatus(
-              CollectiveOfferDisplayedStatus.PUBLISHED,
-              selectedOffers,
-              areTemplateOffers,
-              snackBar
-            )
-            await mutate(collectiveOffersQueryKeys)
-            snackBar.success(
-              computeActivationSuccessMessage(selectedOffers.length)
-            )
-          } catch {
-            snackBar.error('Une erreur est survenue')
-          }
-        } else {
-          snackBar.error(updateOfferStatusMessage)
-          return
-        }
-        break
-      }
       case CollectiveOfferDisplayedStatus.HIDDEN: {
         try {
           await toggleCollectiveOffersActiveInactiveStatus(
@@ -272,37 +247,6 @@ export function CollectiveOffersActionsBar<
     if (collectiveOfferIds.length > 0) {
       await api.patchCollectiveOffersArchive({ ids: [...collectiveOfferIds] })
     }
-  }
-
-  function getPublishOffersErrorMessage() {
-    if (
-      selectedOffers.some(
-        (offer) =>
-          offer.displayedStatus === CollectiveOfferDisplayedStatus.ARCHIVED
-      )
-    ) {
-      snackBar.error(
-        `Une erreur est survenue lors de la publication des offres sélectionnées`
-      )
-      return
-    }
-    if (
-      selectedOffers.some(
-        (offer) =>
-          offer.displayedStatus === CollectiveOfferDisplayedStatus.DRAFT
-      )
-    ) {
-      return 'Vous ne pouvez pas publier des brouillons depuis cette liste'
-    }
-    if (
-      selectedOffers.some(
-        (offer) =>
-          isCollectiveOffer(offer) && offer.hasBookingLimitDatetimesPassed
-      )
-    ) {
-      return 'Vous ne pouvez pas publier des offres collectives dont la date de réservation est passée'
-    }
-    return ''
   }
 
   const getTemplateOffersCTAs = () => {

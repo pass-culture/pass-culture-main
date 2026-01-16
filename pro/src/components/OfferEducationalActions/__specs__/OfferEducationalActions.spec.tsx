@@ -73,7 +73,6 @@ describe('OfferEducationalActions', () => {
 
   it('should update active status value for template offer', async () => {
     const offer = getCollectiveOfferTemplateFactory({
-      isActive: false,
       isTemplate: true,
       allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
     })
@@ -105,7 +104,6 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
-        isActive: false,
         isTemplate: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
       }),
@@ -132,7 +130,6 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
-        isActive: false,
         isTemplate: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
       }),
@@ -160,7 +157,6 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
-        isActive: true,
         isTemplate: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
       }),
@@ -187,7 +183,6 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
-        isActive: false,
         isTemplate: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_PUBLISH],
       }),
@@ -214,7 +209,6 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
-        isActive: true,
         isTemplate: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
       }),
@@ -236,7 +230,6 @@ describe('OfferEducationalActions', () => {
     renderOfferEducationalActions({
       ...defaultValues,
       offer: getCollectiveOfferTemplateFactory({
-        isActive: false,
         isTemplate: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
       }),

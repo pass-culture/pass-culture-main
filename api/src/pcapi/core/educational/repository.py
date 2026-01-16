@@ -977,18 +977,7 @@ def get_collective_offer_by_id(offer_id: int) -> models.CollectiveOffer:
         raise exceptions.CollectiveOfferNotFound()
 
 
-def get_collective_offer_and_extra_data(offer_id: int) -> models.CollectiveOffer | None:
-    is_non_free_offer_subquery = (
-        sa.select(1)
-        .select_from(models.CollectiveStock)
-        .where(
-            models.CollectiveStock.collectiveOfferId == models.CollectiveOffer.id,
-            models.CollectiveStock.price > 0,
-        )
-        .correlate(models.CollectiveOffer)
-        .exists()
-    )
-
+def get_collective_offer_and_confidence_rules(offer_id: int) -> models.CollectiveOffer | None:
     collective_offer = (
         get_collective_offer_by_id_query(offer_id=offer_id)
         .options(
@@ -1002,7 +991,6 @@ def get_collective_offer_and_extra_data(offer_id: int) -> models.CollectiveOffer
             .joinedload(offerers_models.Venue.confidenceRule)
             .load_only(offerers_models.OffererConfidenceRule.confidenceLevel),
         )
-        .options(sa_orm.with_expression(models.CollectiveOffer.isNonFreeOffer, is_non_free_offer_subquery))
         .one_or_none()
     )
 

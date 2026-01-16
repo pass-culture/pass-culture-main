@@ -64,8 +64,6 @@ describe('CollectiveOfferSummary', () => {
 
   it('should display hide offer option when action is allowed', async () => {
     offer = getCollectiveOfferTemplateFactory({
-      isTemplate: true,
-      isActive: true,
       allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_HIDE],
     })
 

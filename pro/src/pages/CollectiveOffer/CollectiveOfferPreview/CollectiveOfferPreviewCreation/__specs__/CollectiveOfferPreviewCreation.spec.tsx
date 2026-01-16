@@ -109,7 +109,6 @@ describe('CollectiveOfferPreviewCreation', () => {
   it('should show the redirect modal', async () => {
     vi.spyOn(api, 'patchCollectiveOfferPublication').mockResolvedValue({
       ...getCollectiveOfferFactory(),
-      isNonFreeOffer: true,
     })
 
     renderCollectiveOfferPreviewCreation(

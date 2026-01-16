@@ -102,12 +102,9 @@ class Returns200Test:
             "students": ["Lycée - Seconde"],
             "contactEmail": "collectiveofferfactory+contact@example.com",
             "contactPhone": "+33199006328",
-            "hasBookingLimitDatetimesPassed": False,
-            "isActive": False,
             "isPublicApi": False,
             "id": duplicate.id,
             "name": offer.name,
-            "isNonFreeOffer": None,
             "venue": {
                 "departementCode": "75",
                 "managingOfferer": {
@@ -125,10 +122,8 @@ class Returns200Test:
             "interventionArea": ["93", "94", "95"],
             "imageCredit": None,
             "imageUrl": None,
-            "isBookable": False,
             "collectiveStock": {
                 "id": duplicate.collectiveStock.id,
-                "isBooked": False,
                 "startDatetime": format_into_utc_date(offer.collectiveStock.startDatetime),
                 "endDatetime": format_into_utc_date(offer.collectiveStock.endDatetime),
                 "bookingLimitDatetime": format_into_utc_date(offer.collectiveStock.bookingLimitDatetime),

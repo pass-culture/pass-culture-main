@@ -71,7 +71,6 @@ export const defaultCollectiveOffer: CollectiveOfferResponseModel = {
     id: 825,
     startDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
     bookingLimitDatetime: new Date('2022-09-16T00:00:00Z').toISOString(),
-    isBookable: true,
     price: 140000,
     numberOfTickets: 10,
   },

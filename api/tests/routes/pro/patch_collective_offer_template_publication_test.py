@@ -21,6 +21,7 @@ class Returns204Test:
 
         assert response.status_code == 200
         assert not offer.lastValidationAuthor
+        assert offer.validation == OfferValidationStatus.APPROVED
 
     def expect_offer_to_be_pending(self, client):
         offer = educational_factories.CollectiveOfferTemplateFactory(
@@ -42,8 +43,8 @@ class Returns204Test:
         response = client.with_session_auth(user_offerer.user.email).patch(url)
 
         assert response.status_code == 200
-        assert not response.json["isActive"]
         assert not offer.lastValidationAuthor
+        assert offer.validation == OfferValidationStatus.PENDING
 
 
 @pytest.mark.usefixtures("db_session")

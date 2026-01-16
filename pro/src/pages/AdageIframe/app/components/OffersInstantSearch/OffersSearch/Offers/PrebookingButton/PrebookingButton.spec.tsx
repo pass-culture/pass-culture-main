@@ -47,7 +47,6 @@ describe('offer item', () => {
         id: 117,
         startDatetime: '03/01/2023',
         bookingLimitDatetime: '01/01/2023',
-        isBookable: true,
         price: 20,
         numberOfTickets: 3,
         educationalPriceDetail: '1200',

@@ -34,11 +34,11 @@ class Returns204Test:
             response = client_auth.patch(url)
 
         assert response.status_code == 200
-        assert response.json["isActive"] is True
-        assert response.json["isNonFreeOffer"] is False
+        assert response.json["id"] == offer.id
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert not offer.lastValidationAuthor
+        assert offer.validation == OfferValidationStatus.APPROVED
 
     def expect_offer_to_be_pending(self, client):
         stock = educational_factories.CollectiveStockFactory()
@@ -65,11 +65,11 @@ class Returns204Test:
             response = client_auth.patch(url)
 
         assert response.status_code == 200
-        assert response.json["isActive"] is False
-        assert response.json["isNonFreeOffer"] is True
+        assert response.json["id"] == offer.id
 
         offer = db.session.query(educational_models.CollectiveOffer).filter_by(id=offer.id).one()
         assert not offer.lastValidationAuthor
+        assert offer.validation == OfferValidationStatus.PENDING
 
 
 @pytest.mark.usefixtures("db_session")

@@ -38,10 +38,6 @@ export const CollectiveOfferEdition = ({
           domainsOptions={offerEducationalFormData.domains}
           venues={offerEducationalFormData.venues}
           offer={offer}
-          isOfferActive={offer.isActive}
-          isOfferBooked={
-            isOfferTemplate ? false : offer.collectiveStock?.isBooked
-          }
           mode={
             isCollectiveOfferDetailsEditable(offer)
               ? Mode.EDITION

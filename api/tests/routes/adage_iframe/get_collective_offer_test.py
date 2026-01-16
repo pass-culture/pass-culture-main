@@ -73,7 +73,6 @@ class CollectiveOfferTest:
                 "endDatetime": "2021-05-15T00:00:00Z",
                 "bookingLimitDatetime": "2021-05-14T23:00:00Z",
                 "id": stock.id,
-                "isBookable": True,
                 "price": 1000,
                 "educationalPriceDetail": stock.priceDetail,
                 "numberOfTickets": stock.numberOfTickets,

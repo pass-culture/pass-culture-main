@@ -7,7 +7,6 @@ export type OfferStockResponse = {
   educationalPriceDetail?: string | null;
   endDatetime?: string | null;
   id: number;
-  isBookable: boolean;
   numberOfTickets?: number | null;
   price: number;
   startDatetime?: string | null;
