@@ -41,6 +41,13 @@ export const SearchInput = forwardRef(
                   onClick: () => {
                     if (inputRef.current) {
                       inputRef.current.value = ''
+                      if (props.onChange) {
+                        const event = {
+                          currentTarget: inputRef.current,
+                        } as React.ChangeEvent<HTMLInputElement>
+
+                        props.onChange(event)
+                      }
                     }
                   },
                 }

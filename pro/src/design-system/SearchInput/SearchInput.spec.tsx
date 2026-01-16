@@ -37,6 +37,15 @@ describe('SearchInput', () => {
     expect(input).toHaveValue('')
   })
 
+  it('should call onChange when clearing the input', async () => {
+    const handleChange = vi.fn()
+    renderSearchInput({ value: 'test', onChange: handleChange })
+
+    await userEvent.click(screen.getByRole('button', { name: 'Effacer' }))
+
+    expect(handleChange).toHaveBeenCalled()
+  })
+
   it('should not show the clear button when the input is disabled', () => {
     renderSearchInput({ value: 'test', onChange: () => {}, disabled: true })
 
