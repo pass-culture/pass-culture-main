@@ -49,13 +49,7 @@ describe('Create collective offers', () => {
     )
     cy.intercept(
       'GET',
-      'http://localhost:5001/collective/educational-domains',
-      {
-        body: [
-          { id: 2, name: 'Danse', nationalPrograms: [] },
-          { id: 3, name: 'Architecture', nationalPrograms: [] },
-        ],
-      }
+      'http://localhost:5001/collective/educational-domains'
     ).as('getDomains')
 
     cy.intercept({ method: 'GET', url: '/collective/offers-template*' }).as(
@@ -82,7 +76,7 @@ describe('Create collective offers', () => {
     cy.findByText('Mon Lieu 2 - 1 boulevard Poissonnière 75002 Paris')
     cy.findByLabelText(/Structure/).select(venueName)
     cy.findByLabelText('Domaines artistiques').click()
-    cy.findByLabelText('Architecture').click()
+    cy.findByLabelText('Danse').click()
     cy.findByText('Quel est le type de votre offre ?').click()
     cy.findByLabelText('Formats').click()
     cy.findByLabelText('Concert').click()
