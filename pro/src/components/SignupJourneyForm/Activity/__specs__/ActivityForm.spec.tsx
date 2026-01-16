@@ -5,7 +5,6 @@ import useSWR, { type SWRResponse } from 'swr'
 import { expect, vi } from 'vitest'
 
 import { api } from '@/apiClient/api'
-import type { VenueTypeResponseModel } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type ActivityContext,
@@ -18,11 +17,7 @@ import { defaultActivityFormValues } from '@/components/SignupJourneyForm/Activi
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { Button } from '@/ui-kit/Button/Button'
 
-import {
-  ActivityForm,
-  type ActivityFormProps,
-  type ActivityFormValues,
-} from '../ActivityForm'
+import { ActivityForm, type ActivityFormValues } from '../ActivityForm'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -34,18 +29,11 @@ vi.mock('swr', async (importOriginal) => ({
   default: vi.fn(),
 }))
 
-const venueTypes: VenueTypeResponseModel[] = [
-  { value: 'ARTISTIC_COURSE', label: 'Cours et pratique artistiques' },
-  { value: 'SCIENTIFIC_CULTURE', label: 'Culture scientifique' },
-]
-
 const onSubmit = vi.fn()
 
 function renderActivityForm(
   initialValues: Partial<ActivityFormValues>,
-  props: ActivityFormProps,
-  contextValue: SignupJourneyContextValues,
-  features: string[] = []
+  contextValue: SignupJourneyContextValues
 ) {
   const Wrapper = () => {
     const methods = useForm({
@@ -54,7 +42,7 @@ function renderActivityForm(
     return (
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
-          <ActivityForm {...props} />
+          <ActivityForm />
           <Button type="submit" isLoading={false}>
             Étape suivante
           </Button>
@@ -66,8 +54,7 @@ function renderActivityForm(
   renderWithProviders(
     <SignupJourneyContext.Provider value={contextValue}>
       <Wrapper />
-    </SignupJourneyContext.Provider>,
-    { features }
+    </SignupJourneyContext.Provider>
   )
 }
 
@@ -75,17 +62,13 @@ describe('screens:SignupJourney::ActivityForm', () => {
   const useSWRMock = vi.mocked(useSWR)
   let activity: ActivityContext
   let contextValue: SignupJourneyContextValues
-  let props: ActivityFormProps
   let initialValues: Partial<ActivityFormValues>
   beforeEach(() => {
     activity = DEFAULT_ACTIVITY_VALUES
     initialValues = defaultActivityFormValues
-    props = {
-      venueTypes: venueTypes,
-    }
     contextValue = {
       activity: activity,
-      offerer: { ...DEFAULT_OFFERER_FORM_VALUES, isOpenToPublic: 'false' },
+      offerer: { ...DEFAULT_OFFERER_FORM_VALUES, isOpenToPublic: 'true' },
       setActivity: () => {},
       setOfferer: () => {},
       initialAddress: null,
@@ -115,7 +98,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should render activity form', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     expect(screen.getByLabelText(/Activité principale/)).toHaveValue('')
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
@@ -132,9 +115,22 @@ describe('screens:SignupJourney::ActivityForm', () => {
         exact: false,
       })
     ).not.toBeChecked()
+
+    // Cultural domains
+    const multiSelect = screen.getByLabelText(
+      'Sélectionnez un ou plusieurs domaines d’activité'
+    )
+
+    expect(multiSelect).toBeInTheDocument()
+    await userEvent.click(multiSelect)
+    await waitFor(() => {
+      expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+    })
+    expect(screen.getByText(/3 résultats trouvés/)).toBeInTheDocument()
+    expect(screen.getByText(/domaine III/)).toBeInTheDocument()
   })
 
-  it('should render activity form with initialValues', () => {
+  it('should render activity form with initialValues', async () => {
     initialValues = {
       venueTypeCode: 'MUSEUM',
       socialUrls: [
@@ -142,13 +138,12 @@ describe('screens:SignupJourney::ActivityForm', () => {
         { url: 'https://exampleTwo.fr' },
       ],
       targetCustomer: { individual: false, educational: false },
+      culturalDomains: ['domaine 1'],
     }
 
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
-    expect(
-      screen.getByText('Cours et pratique artistiques')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Musée')).toBeInTheDocument()
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
     expect(
       screen.getByLabelText('Au grand public', {
@@ -160,10 +155,16 @@ describe('screens:SignupJourney::ActivityForm', () => {
         exact: false,
       })
     ).not.toBeChecked()
+
+    await userEvent.click(screen.getByLabelText('domaine sélectionné'))
+    await waitFor(() => {
+      expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
+    })
+    expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
   })
 
   it('should not navigate to the next step if activity form is not valid', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     await userEvent.click(
       screen.getByRole('button', { name: 'Étape suivante' })
@@ -173,7 +174,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should add social url input on click add url button', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(1)
     await userEvent.click(screen.getByText('Ajouter un lien'))
@@ -185,7 +186,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
       { url: 'https://example.com' },
       { url: 'https://exampleTwo.fr' },
     ]
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     expect(screen.getAllByText('Site internet, réseau social')).toHaveLength(2)
 
@@ -202,7 +203,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should change targetCustomer value on click', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     const publicTarget = screen.getByLabelText('Au grand public')
     const schoolTarget = screen.getByLabelText('À des groupes scolaires')
@@ -223,68 +224,33 @@ describe('screens:SignupJourney::ActivityForm', () => {
   })
 
   it('should change venueType', async () => {
-    renderActivityForm(initialValues, props, contextValue)
+    renderActivityForm(initialValues, contextValue)
 
     const venueTypeSelect = screen.getByLabelText(/Activité principale/)
     expect(venueTypeSelect).toHaveValue('')
 
     await userEvent.click(venueTypeSelect)
-    await userEvent.click(screen.getByText('Culture scientifique'))
+    await userEvent.click(screen.getByText('Bibliothèque ou médiathèque'))
     await waitFor(() => {
-      expect(screen.getByText('Culture scientifique')).toBeInTheDocument()
+      expect(
+        screen.getByText('Bibliothèque ou médiathèque')
+      ).toBeInTheDocument()
     })
   })
-  describe('with FF WIP_VENUE_CULTURAL_DOMAINS', () => {
-    it('should render cultural domains input', async () => {
-      renderActivityForm(initialValues, props, contextValue, [
-        'WIP_VENUE_CULTURAL_DOMAINS',
-      ])
-      const multiSelect = screen.getByLabelText(
-        'Sélectionnez un ou plusieurs domaines d’activité'
-      )
 
-      expect(multiSelect).toBeInTheDocument()
-      await userEvent.click(multiSelect)
-      await waitFor(() => {
-        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
-      })
-      expect(screen.getByText(/3 résultats trouvés/)).toBeInTheDocument()
-      expect(screen.getByText(/domaine III/)).toBeInTheDocument()
+  it('should select cultural domain', async () => {
+    renderActivityForm(initialValues, contextValue)
+
+    await userEvent.click(
+      screen.getByLabelText('Sélectionnez un ou plusieurs domaines d’activité')
+    )
+    await waitFor(() => {
+      expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
     })
-
-    it('should render cultural domains input with context value', async () => {
-      renderActivityForm(
-        { ...initialValues, culturalDomains: ['domaine 1'] },
-        props,
-        contextValue,
-        ['WIP_VENUE_CULTURAL_DOMAINS']
-      )
-
-      await userEvent.click(screen.getByLabelText('domaine sélectionné'))
-      await waitFor(() => {
-        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
-      })
-      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
-    })
-
-    it('should select cultural domain', async () => {
-      renderActivityForm(initialValues, props, contextValue, [
-        'WIP_VENUE_CULTURAL_DOMAINS',
-      ])
-
-      await userEvent.click(
-        screen.getByLabelText(
-          'Sélectionnez un ou plusieurs domaines d’activité'
-        )
-      )
-      await waitFor(() => {
-        expect(screen.getByTestId('panel-scrollable')).toBeInTheDocument()
-      })
-      expect(screen.getAllByText(/domaine 1/)).toHaveLength(1)
-      await userEvent.click(screen.getByText(/domaine 1/))
-      expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
-      await userEvent.click(screen.getByText(/domaine III/))
-      expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
-    })
+    expect(screen.getAllByText(/domaine 1/)).toHaveLength(1)
+    await userEvent.click(screen.getByText(/domaine 1/))
+    expect(screen.getAllByText(/domaine 1/)).toHaveLength(2)
+    await userEvent.click(screen.getByText(/domaine III/))
+    expect(screen.getByLabelText('domaines sélectionnés')).toBeInTheDocument()
   })
 })

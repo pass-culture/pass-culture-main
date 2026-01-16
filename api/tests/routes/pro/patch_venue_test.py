@@ -1191,48 +1191,6 @@ class Returns200Test:
         assert venue.venueTypeCode == expected_venueTypeCode
         assert venue.activity == expected_activity
 
-    @pytest.mark.features(WIP_VENUE_CULTURAL_DOMAINS=False)
-    def test_update_with_invalid_activity_with_wip_venue_cultural_domains_off(self, client) -> None:
-        user_offerer = offerers_factories.UserOffererFactory(
-            user__lastConnectionDate=date_utils.get_naive_utc_now(),
-        )
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            venueTypeCode=offerers_models.VenueTypeCode.GAMES,
-            activity=offerers_models.Activity.GAMES_CENTRE,
-            isOpenToPublic=True,
-        )
-
-        auth_request = client.with_session_auth(email=user_offerer.user.email)
-
-        # when
-        venue_data = populate_missing_data_from_venue(
-            {
-                "publicName": "Ma librairie",
-                "withdrawalDetails": "",  # should not appear in history with None => ""
-                # Default data from api adresse TestingBackend
-                "street": "3 Rue de Valois",
-                "banId": "75101_9575_00003",
-                "city": "Paris",
-                "inseeCode": "75056",
-                "latitude": 48.87171,
-                "longitude": 2.308289,
-                "postalCode": "75001",
-                "isOpenToPublic": False,
-                "activity": offerers_models.Activity.CINEMA.value,
-            },
-            venue,
-        )
-        response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
-
-        # then
-        assert response.status_code == 200
-
-        # the venue should be updated
-        assert venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
-        assert venue.activity == offerers_models.Activity.CINEMA
-        assert venue.isOpenToPublic == False
-
 
 class Returns400Test:
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)
@@ -1389,8 +1347,7 @@ class Returns400Test:
         assert response.status_code == 400
         assert "Le format d'email est incorrect." in response.json["bookingEmail"]
 
-    @pytest.mark.features(WIP_VENUE_CULTURAL_DOMAINS=True)
-    def test_update_with_invalid_activity_with_wip_venue_cultural_domains_on(self, client) -> None:
+    def test_update_with_invalid_activity(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory(
             user__lastConnectionDate=date_utils.get_naive_utc_now(),
         )

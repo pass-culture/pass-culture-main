@@ -5,7 +5,6 @@ from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offerers import repository as offerers_repository
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.models.feature import FeatureToggle
 
 from . import models
 
@@ -120,6 +119,5 @@ def check_activity_according_to_open_to_public(
     if is_open_to_public:
         if activity.value not in offerers_models.ActivityOpenToPublic:
             raise ApiErrors(errors={"activity": ["Activité non reconnue."]})
-    elif FeatureToggle.WIP_VENUE_CULTURAL_DOMAINS.is_active():
-        if activity.value not in offerers_models.ActivityNotOpenToPublic:
-            raise ApiErrors(errors={"activity": ["Activité non reconnue."]})
+    elif activity.value not in offerers_models.ActivityNotOpenToPublic:
+        raise ApiErrors(errors={"activity": ["Activité non reconnue."]})

@@ -220,7 +220,7 @@ describe('screens:SignupJourney::Activity', () => {
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
 
-  describe('WITH WIP_VENUE_CULTURAL_DOMAINS FF', () => {
+  describe('Cultural domains', () => {
     beforeEach(() => {
       contextValue.offerer = {
         name: 'test name',
@@ -260,7 +260,7 @@ describe('screens:SignupJourney::Activity', () => {
       if (contextValue.offerer) {
         contextValue.offerer.isOpenToPublic = 'false'
       }
-      renderActivityScreen(contextValue, ['WIP_VENUE_CULTURAL_DOMAINS'])
+      renderActivityScreen(contextValue)
       expect(
         await screen.findByRole('heading', {
           level: 2,
@@ -274,7 +274,7 @@ describe('screens:SignupJourney::Activity', () => {
       if (contextValue.offerer) {
         contextValue.offerer.isOpenToPublic = 'true'
       }
-      renderActivityScreen(contextValue, ['WIP_VENUE_CULTURAL_DOMAINS'])
+      renderActivityScreen(contextValue)
       expect(
         await screen.findByRole('heading', {
           level: 2,

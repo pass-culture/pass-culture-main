@@ -31,6 +31,9 @@ describe('Signup journey with not diffusible offerer siret', () => {
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
+    cy.intercept({ method: 'GET', url: '/collective/educational-domains' }).as(
+      'getCulturalDomains'
+    )
     cy.setFeatureFlags([{ name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true }])
   })
 
@@ -51,8 +54,14 @@ describe('Signup journey with not diffusible offerer siret', () => {
     cy.findByLabelText(/Nom public/).type(newVenueName)
     cy.findByLabelText('Non').click()
     cy.findByLabelText(/Adresse postale/).should('not.exist')
-
     cy.findByText('Étape suivante').click()
+    cy.wait('@getCulturalDomains').its('response.statusCode').should('eq', 200)
+
+    cy.findByLabelText(
+      /Sélectionnez un ou plusieurs domaines d’activité/
+    ).click()
+    cy.findByLabelText(/Théatre/).click()
+
     cy.findByText('Étape précédente').click()
     cy.findByLabelText('Non').should('be.checked')
     cy.findByText('Étape suivante').click()
@@ -64,6 +73,12 @@ describe('Signup journey with not diffusible offerer siret', () => {
     cy.findByLabelText(/Activité principale/).select('Autre')
     cy.findByLabelText('Numéro de téléphone').type('612345678')
     cy.findByText('Au grand public').click()
+
+    cy.findByLabelText(
+      /Sélectionnez un ou plusieurs domaines d’activité/
+    ).click()
+    cy.findByLabelText(/Théatre/).click()
+
     cy.findByText('Étape suivante').click()
 
     cy.stepLog({ message: 'the next step is displayed' })

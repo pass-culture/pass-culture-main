@@ -9,7 +9,6 @@ import { objectKeys } from '@/commons/utils/object'
 import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
 
 export const validationSchema = (
-  isCulturalDomainsEnabled: boolean,
   notOpenToPublic: boolean
 ): ObjectSchema<ActivityFormValues> => {
   const activityTypeValuesOpenToPublic = objectKeys(
@@ -19,14 +18,10 @@ export const validationSchema = (
     getActivities('NOT_OPEN_TO_PUBLIC')
   )
 
-  const notOpenToPublicTypeCodeValidator = isCulturalDomainsEnabled
+  const typeCodeValidator = notOpenToPublic
     ? yup
         .mixed<ActivityNotOpenToPublicType>()
         .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
-    : yup.string()
-
-  const typeCodeValidator = notOpenToPublic
-    ? notOpenToPublicTypeCodeValidator
     : yup
         .mixed<ActivityOpenToPublicType>()
         .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
@@ -39,7 +34,7 @@ export const validationSchema = (
       .array()
       .of(yup.string().required())
       .when([], (_, schema) => {
-        if (isCulturalDomainsEnabled && notOpenToPublic) {
+        if (notOpenToPublic) {
           return schema
             .required(
               'Veuillez sélectionner un ou plusieurs domaines d’activité'
@@ -88,11 +83,7 @@ export const validationSchema = (
             return false
           }
           const phoneNumber = parsePhoneNumberFromString(value, 'FR')
-          const isValid = phoneNumber?.isValid()
-          if (!isValid) {
-            return false
-          }
-          return true
+          return phoneNumber?.isValid()
         }
       ),
   })
