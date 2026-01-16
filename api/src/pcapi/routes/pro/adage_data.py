@@ -30,17 +30,10 @@ def get_educational_institutions(
         page=query.page,
         per_page_limit=query.per_page_limit,
     )
-    return educational_institutions.EducationalInstitutionsResponseModel.construct(
+
+    return educational_institutions.EducationalInstitutionsResponseModel(
         educational_institutions=[
-            educational_institutions.EducationalInstitutionResponseModel.construct(
-                id=institution.id,
-                name=institution.name,
-                institutionType=institution.institutionType,
-                postalCode=institution.postalCode,
-                city=institution.city,
-                phoneNumber=institution.phoneNumber,
-                institutionId=institution.institutionId,
-            )
+            educational_institutions.EducationalInstitutionResponseModelV2.model_validate(institution)
             for institution in institutions
         ],
         page=query.page,

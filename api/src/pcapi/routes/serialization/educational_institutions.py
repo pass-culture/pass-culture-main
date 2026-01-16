@@ -1,7 +1,9 @@
 from pcapi.routes.serialization import BaseModel
-from pcapi.serialization.utils import to_camel
+from pcapi.routes.serialization import HttpBodyModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 
 
+# this v1 model is still used in collective offer serialize
 class EducationalInstitutionResponseModel(BaseModel):
     id: int
     name: str
@@ -16,21 +18,23 @@ class EducationalInstitutionResponseModel(BaseModel):
         extra = "forbid"
 
 
-class EducationalInstitutionsResponseModel(BaseModel):
-    educational_institutions: list[EducationalInstitutionResponseModel]
+class EducationalInstitutionResponseModelV2(HttpBodyModel):
+    id: int
+    name: str
+    institutionType: str | None
+    postalCode: str
+    city: str
+    phoneNumber: str
+    institutionId: str
+
+
+class EducationalInstitutionsResponseModel(HttpBodyModel):
+    educational_institutions: list[EducationalInstitutionResponseModelV2]
     page: int
     pages: int
     total: int
 
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
 
-
-class EducationalInstitutionsQueryModel(BaseModel):
+class EducationalInstitutionsQueryModel(HttpQueryParamsModel):
     per_page_limit: int = 1000
     page: int = 1
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"

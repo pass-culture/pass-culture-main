@@ -80,6 +80,7 @@ export type { EditVenueCollectiveDataBodyModel } from './models/EditVenueCollect
 export type { EducationalDomainResponseModel } from './models/EducationalDomainResponseModel';
 export type { EducationalDomainsResponseModel } from './models/EducationalDomainsResponseModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
+export type { EducationalInstitutionResponseModelV2 } from './models/EducationalInstitutionResponseModelV2';
 export type { EducationalInstitutionsQueryModel } from './models/EducationalInstitutionsQueryModel';
 export type { EducationalInstitutionsResponseModel } from './models/EducationalInstitutionsResponseModel';
 export type { EducationalRedactor } from './models/EducationalRedactor';
