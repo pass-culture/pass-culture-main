@@ -2,6 +2,7 @@ import classNames from 'classnames'
 import {
   type ForwardedRef,
   forwardRef,
+  useCallback,
   useEffect,
   useImperativeHandle,
   useRef,
@@ -104,19 +105,21 @@ export const SelectAutocomplete = forwardRef(
       )
     }, [options])
 
-    useEffect(() => {
-      const handleClickOutside = (e: MouseEvent): void => {
-        if (!containerRef.current?.contains(e.target as Node)) {
-          setIsDropdownOpen(false)
-        }
+    const handleClickOutside = useCallback((e: MouseEvent): void => {
+      if (!containerRef.current?.contains(e.target as Node)) {
+        setIsDropdownOpen(false)
       }
+    }, [])
+
+    useEffect(() => {
       if (containerRef.current) {
         document.addEventListener('mousedown', handleClickOutside)
       }
+
       return () => {
         document.removeEventListener('mousedown', handleClickOutside)
       }
-    }, [containerRef])
+    }, [handleClickOutside])
 
     const filteredOptions = searchInOptions(options, searchField)
 

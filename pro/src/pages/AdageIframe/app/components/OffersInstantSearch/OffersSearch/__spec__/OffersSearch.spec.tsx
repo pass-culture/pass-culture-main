@@ -95,6 +95,7 @@ vi.mock('@/apiClient/api', () => ({
   },
   apiAdage: {
     getAcademies: vi.fn(() => ['Amiens', 'Paris']),
+    logTrackingFilter: vi.fn(),
   },
 }))
 

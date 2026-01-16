@@ -78,7 +78,7 @@ export const FormVenue = ({
                     isOfferCreated,
                     venues
                   )
-                ).map(([key, val]) => {
+                ).forEach(([key, val]) => {
                   setValue(key as keyof OfferEducationalFormValues, val)
                 })
               }

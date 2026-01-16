@@ -19,6 +19,7 @@ export function FieldLayoutCharacterCount({
 
   return (
     <>
+      {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
       <span
         role="status"
         className={styles['visually-hidden']}

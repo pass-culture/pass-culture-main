@@ -202,7 +202,7 @@ export function CollectiveOffersActionsBar<
   }
 
   function openHideOffersDialog() {
-    selectedOffers.map((offer) => {
+    selectedOffers.forEach((offer) => {
       if (
         !isActionAllowedOnCollectiveOffer(
           offer,
@@ -213,7 +213,6 @@ export function CollectiveOffersActionsBar<
           `Seules les offres vitrines au statut publié peuvent être mises en pause.`
         )
         clearSelectedOfferIds()
-        return
       }
     })
 

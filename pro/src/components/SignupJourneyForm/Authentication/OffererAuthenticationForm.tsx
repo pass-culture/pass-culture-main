@@ -43,8 +43,8 @@ export const OffererAuthenticationForm = (): JSX.Element => {
   const toggleManuallySetAddress = () => {
     setValue('manuallySetAddress', !manuallySetAddress)
 
-    resetReactHookFormAddressFields((name, defaultValue) =>
-      setValue(name, defaultValue)
+    resetReactHookFormAddressFields<OffererAuthenticationFormValues>(
+      (name, defaultValue) => setValue(name, defaultValue)
     )
   }
 
@@ -109,8 +109,8 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             if (!offerer?.isDiffusible) {
               if (e.target.value === 'true') {
                 // We reset the address fields when the user toggles the open to public toggle when they aren't diffusible
-                resetReactHookFormAddressFields((name, defaultValue) =>
-                  setValue(name, defaultValue)
+                resetReactHookFormAddressFields<OffererAuthenticationFormValues>(
+                  (name, defaultValue) => setValue(name, defaultValue)
                 )
               } else {
                 // We init the address fields as the default ones when the user untoggle the open to public toggle when they are not diffusible

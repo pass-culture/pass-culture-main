@@ -102,7 +102,6 @@ export const IndividualOfferMediaScreen = ({
             {
               revalidate: false,
               populateCache: (
-                // biome-ignore lint/suspicious/noConfusingVoidType: needed here
                 thumbnailResult: CreateThumbnailResponseModel | void,
                 offer
               ) => {

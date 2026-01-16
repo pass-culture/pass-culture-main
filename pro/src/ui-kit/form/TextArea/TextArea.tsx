@@ -3,6 +3,7 @@ import type React from 'react'
 import {
   type ForwardedRef,
   forwardRef,
+  useCallback,
   useEffect,
   useId,
   useImperativeHandle,
@@ -138,7 +139,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
      * Updates the height of the textarea based on its content.
      * Resets the height to initial value before setting it to scrollHeight to allow shrinking.
      */
-    function updateTextAreaHeight() {
+    const updateTextAreaHeight = useCallback(() => {
       if (textAreaRef.current) {
         // Reset the textarea height to its initial value before reading the scrollHeight
         textAreaRef.current.style.height = 'unset'
@@ -146,12 +147,12 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         const scrollHeight = textAreaRef.current.scrollHeight
         textAreaRef.current.style.height = `${hasTemplateButton ? scrollHeight + 92 : scrollHeight}px`
       }
-    }
+    }, [])
 
     useEffect(() => {
       // Set the textarea height after the first render to fit the initial content
       updateTextAreaHeight()
-    }, [textValue])
+    }, [textValue, updateTextAreaHeight])
 
     // Constructing aria-describedby attribute
     const describedBy = [charactersCountId, errorId]

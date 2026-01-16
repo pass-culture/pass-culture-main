@@ -95,7 +95,7 @@ export const Hub = () => {
 
       {/* Hidden helper text for screen readers */}
       {
-        // biome-ignore lint/a11y/useSemanticElements: `<output />` is for calculations results + accessibility support is partial.
+        // biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`.
         <div
           className={styles['sr-only']}
           role="status"

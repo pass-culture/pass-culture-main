@@ -130,7 +130,12 @@ export const OfferInfos = () => {
       ) : (
         <div className={styles['offers-info-fallback']}>
           <div className={styles['offers-info-fallback-svg']}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="238" height="185">
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="238"
+              height="185"
+            >
               <use xlinkHref={`${offerInfosFallback}#path`} />
             </svg>
           </div>

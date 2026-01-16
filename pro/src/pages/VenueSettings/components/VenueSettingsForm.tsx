@@ -57,8 +57,8 @@ export const VenueSettingsForm = ({
   const toggleManuallySetAddress = () => {
     setValue('manuallySetAddress', !manuallySetAddress)
 
-    resetReactHookFormAddressFields((name, defaultValue) =>
-      setValue(name, defaultValue)
+    resetReactHookFormAddressFields<VenueSettingsFormValues>(
+      (name, defaultValue) => setValue(name, defaultValue)
     )
     clearErrors()
   }

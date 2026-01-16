@@ -29,7 +29,7 @@ export const shouldBlockNavigation: BlockerFunction = ({
 }) => {
   // when multiples url match (example: offer and stocks),
   // we're keeping the last one (example: stocks)
-  let from
+  let from: string | undefined
   const fromMatchs = Object.keys(collectiveUrlPatterns).filter(
     (stepName): boolean =>
       collectiveUrlPatterns[stepName].test(currentLocation.pathname)
@@ -38,7 +38,7 @@ export const shouldBlockNavigation: BlockerFunction = ({
     from = fromMatchs.reverse()[0]
   }
 
-  let to
+  let to: string | undefined
 
   const toMatchs = Object.keys(collectiveUrlPatterns).filter(
     (stepName): boolean =>

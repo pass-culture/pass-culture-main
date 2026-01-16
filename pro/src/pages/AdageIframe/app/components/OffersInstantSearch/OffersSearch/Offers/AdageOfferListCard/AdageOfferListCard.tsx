@@ -88,7 +88,6 @@ export function AdageOfferListCard({
           <PrebookingButton
             canPrebookOffers={adageUser.role === AdageFrontRoles.REDACTOR}
             className={styles['offer-prebooking-button']}
-            offerId={offer.id}
             queryId={queryId}
             stock={offer.stock}
             isInSuggestions={isInSuggestions}

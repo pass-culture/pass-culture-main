@@ -40,4 +40,5 @@ const getSiretDataRequest = async (
   }
 }
 
+// TODO (igabriele, 2026-01-20): Over-engineered custom memoization.
 export const getSiretData = memoize(getSiretDataRequest)

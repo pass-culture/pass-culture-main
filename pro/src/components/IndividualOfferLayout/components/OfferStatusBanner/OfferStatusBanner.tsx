@@ -9,9 +9,7 @@ interface OfferStatusBannerProps {
   status: OfferStatus
 }
 
-export const OfferStatusBanner = ({
-  status,
-}: OfferStatusBannerProps): JSX.Element => {
+export const OfferStatusBanner = ({ status }: OfferStatusBannerProps) => {
   if (status === OfferStatus.REJECTED) {
     return (
       <div className={styles['callout-offre-refused']}>
@@ -48,5 +46,6 @@ export const OfferStatusBanner = ({
       </div>
     )
   }
-  return <></>
+
+  return null
 }

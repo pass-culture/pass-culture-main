@@ -1,5 +1,6 @@
 import { isPlainObject } from './isPlainObject'
 
+// biome-ignore lint/suspicious/noExplicitAny: Generic Array or Object.
 export const trimStringsInObject = <T extends Record<string, any>>(
   obj: T,
   visited = new Set<object>()
@@ -10,6 +11,7 @@ export const trimStringsInObject = <T extends Record<string, any>>(
   }
   visited.add(obj)
 
+  // biome-ignore lint/suspicious/noExplicitAny: Generic re-mapping.
   const result: any = Array.isArray(obj) ? [] : {}
   for (const key of Object.keys(obj) as Array<keyof T>) {
     if (typeof obj[key] === 'string') {

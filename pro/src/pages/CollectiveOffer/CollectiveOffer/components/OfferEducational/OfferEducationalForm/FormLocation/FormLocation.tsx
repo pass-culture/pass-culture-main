@@ -41,8 +41,8 @@ export const FormLocation = ({
     if (!isManualEdition) {
       setValue('location.location.isVenueLocation', false)
       setValue('location.location.isManualEdition', true)
-      resetReactHookFormAddressFields((name, defaultValue) =>
-        setValue(name, defaultValue)
+      resetReactHookFormAddressFields<OfferEducationalFormValues>(
+        (name, defaultValue) => setValue(name, defaultValue)
       )
     }
   }
@@ -71,9 +71,11 @@ export const FormLocation = ({
 
     if (isSpecificAddress) {
       setValue('location.location.label', '')
-      resetReactHookFormAddressFields((name, defaultValue) => {
-        setValue(name, defaultValue)
-      })
+      resetReactHookFormAddressFields<OfferEducationalFormValues>(
+        (name, defaultValue) => {
+          setValue(name, defaultValue)
+        }
+      )
     } else {
       // If here, the user chose to use the venue address
       setVenueAddressFields()
@@ -214,8 +216,8 @@ export const FormLocation = ({
       setValue('location.locationComment', '')
       setValue('interventionArea', [])
     } else {
-      resetReactHookFormAddressFields((name, defaultValue) =>
-        setValue(name, defaultValue)
+      resetReactHookFormAddressFields<OfferEducationalFormValues>(
+        (name, defaultValue) => setValue(name, defaultValue)
       )
     }
 

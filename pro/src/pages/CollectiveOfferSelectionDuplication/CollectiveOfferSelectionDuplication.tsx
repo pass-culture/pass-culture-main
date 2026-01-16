@@ -155,7 +155,7 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
               <SkeletonLoader />
             ) : (
               <>
-                {/** biome-ignore lint/a11y/useSemanticElements: We want a role status */}
+                {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
                 <p className={styles['visually-hidden']} role="status">
                   {offers && (
                     <>

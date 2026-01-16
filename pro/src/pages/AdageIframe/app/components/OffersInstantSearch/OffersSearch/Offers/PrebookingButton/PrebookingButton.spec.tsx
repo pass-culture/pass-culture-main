@@ -41,7 +41,6 @@ describe('offer item', () => {
   beforeEach(() => {
     props = {
       canPrebookOffers: true,
-      offerId: 1,
       queryId: 'aez',
       shouldDisablePrebookButton: false,
       stock: {

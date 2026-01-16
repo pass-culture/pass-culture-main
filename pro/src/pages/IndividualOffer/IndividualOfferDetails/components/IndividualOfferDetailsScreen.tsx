@@ -39,7 +39,7 @@ import {
   getVenuesAsOptions,
   hasMusicType,
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { getValidationSchemaForNewOfferCreationFlow } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+import { getValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 
 import {
   serializeDetailsPatchData,
@@ -89,7 +89,7 @@ export const IndividualOfferDetailsScreen = ({
   const form = useForm<DetailsFormValues>({
     defaultValues: getInitialValues(),
     resolver: yupResolver<DetailsFormValues, unknown, unknown>(
-      getValidationSchemaForNewOfferCreationFlow()
+      getValidationSchema()
     ),
     mode: 'onBlur',
   })

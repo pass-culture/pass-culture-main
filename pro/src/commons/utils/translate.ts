@@ -8,6 +8,7 @@ import type {
 import { Audience } from '@/commons/core/shared/types'
 
 const translateObjectKeysAndValues = (
+  // biome-ignore lint/suspicious/noExplicitAny: Too generic to type.
   originalObject: Record<string, any>,
   translationsMap: Record<string, string>
 ) => {

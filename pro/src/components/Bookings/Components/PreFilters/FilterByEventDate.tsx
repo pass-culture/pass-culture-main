@@ -19,10 +19,12 @@ export const FilterByEventDate = ({
 }: FilterByEventDateProps): JSX.Element => (
   <FieldLayout
     label="Date de l’évènement"
+    // TODO (2026-01-20, igabriele): Should be renamed `for` since that's what it's doing.
     name="select-filter-date"
     className={styles['offer-date-filter']}
     required={false}
   >
+    {/** biome-ignore lint/correctness/useUniqueElementIds: Very confusing but `id` is used by a generated `for` in `<FieldLayout />` via its `name` prop... */}
     <BaseDatePicker
       name="select-filter-date"
       id="select-filter-date"

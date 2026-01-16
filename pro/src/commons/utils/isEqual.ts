@@ -1,4 +1,5 @@
 // Native TypeScript version of isEqual
+// biome-ignore lint/suspicious/noExplicitAny: Generic utility function.
 export const isEqual = (x: any, y: any): boolean => {
   const ok = Object.keys,
     tx = typeof x,

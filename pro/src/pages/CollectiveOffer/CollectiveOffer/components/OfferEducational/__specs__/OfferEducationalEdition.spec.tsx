@@ -66,7 +66,9 @@ describe('screens | OfferEducational: edition', () => {
       name: 'Enregistrer et continuer',
     })
     await waitFor(() => {
-      inputs.forEach((input) => expect(input).toBeDisabled())
+      inputs.forEach((input) => {
+        expect(input).toBeDisabled()
+      })
     })
     expect(submitButton).toBeDisabled()
   })

@@ -45,7 +45,9 @@ describe('parseDms', () => {
   it('should be able to correctly parse DMS into decimal degrees', () => {
     const v = ['46°59′5″ N', '122°54′8″ W']
     // Get RegExp matches for each string in v and test to see if the match was successful.
-    v.forEach((s) => expect(s.match(dmsRe)).toBeTruthy())
+    v.forEach((s) => {
+      expect(s.match(dmsRe)).toBeTruthy()
+    })
     // Parse the strings in v into decimal degrees.
     const [y, x] = v.map(parseDms)
     expect(typeof x).toEqual('number')

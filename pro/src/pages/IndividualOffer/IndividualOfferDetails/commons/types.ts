@@ -25,7 +25,6 @@ export type DetailsFormValues = {
   subcategoryConditionalFields: (keyof DetailsFormValues)[]
   productId?: string
   callId?: string
-  url?: string | null
   accessibility?: AccessibilityFormValues
 }
 

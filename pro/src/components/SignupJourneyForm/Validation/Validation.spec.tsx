@@ -93,7 +93,6 @@ const renderValidationScreen = (
 }
 
 const createMockPromise = (value: string) => {
-  // biome-ignore lint/suspicious/noExplicitAny: Only way to mock unwrap
   const p: any = Promise.resolve({
     type: 'user/setSelectedOffererById/fulfilled',
     payload: value,

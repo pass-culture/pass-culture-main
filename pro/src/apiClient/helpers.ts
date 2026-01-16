@@ -44,6 +44,7 @@ type ErrorAdage = {
 }
 
 // TODO remove this function because it is use at only one place
+// biome-ignore lint/suspicious/noExplicitAny: Generic error.
 export const hasErrorCode = (error: any): error is ErrorAdage =>
   typeof error?.body?.code === 'string'
 

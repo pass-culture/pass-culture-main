@@ -58,7 +58,7 @@ export const FiltersTags = ({
   const getOfferAdressTypeTag = () => {
     const locationTypeValue = form.watch('locationType')
     if (locationTypeValue === CollectiveLocationType.TO_BE_DEFINED) {
-      return <></>
+      return null
     }
 
     const label =

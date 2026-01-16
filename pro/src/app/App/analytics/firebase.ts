@@ -142,7 +142,8 @@ export const useAnalytics = () => {
           | number
           | boolean
           | undefined
-          | { [key: string]: any }
+          // biome-ignore lint/suspicious/noExplicitAny: Generic params type.
+          | Record<string, any>
       }
     ) => {
       if (!firebaseApp || !firebaseRemoteConfig) {

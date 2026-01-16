@@ -21,6 +21,7 @@ export const useFocus = (): void => {
   const currentUser = useAppSelector(selectCurrentUser)
   const isConnected = !!currentUser
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `location.pathname` must be included to trigger a re-focus on path change.
   useEffect(() => {
     // TODO (igabriele, 2025-12-17): This useEffect is a complex pattern to maintain, it will likely be replaced by a focus handling done within each page to clarify responsability.
     // In the meantime, we gradually exclude pages that migrated to `useFocusOnMounted`:

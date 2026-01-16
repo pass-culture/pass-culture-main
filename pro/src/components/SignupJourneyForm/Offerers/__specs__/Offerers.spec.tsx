@@ -41,7 +41,6 @@ vi.mock('@/commons/store/user/dispatchers/setSelectedOffererById', () => ({
       payload: undefined,
     }
 
-    // biome-ignore lint/suspicious/noExplicitAny: Only way to mock unwrap
     const p: any = Promise.resolve(action)
     p.unwrap = () => Promise.resolve(action.payload)
 

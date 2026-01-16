@@ -78,13 +78,10 @@ export const AddVenueProviderButton = ({
         )
 
         if (!shouldBeFilteredOut) {
-          return [
-            ...filteredProvidersOptions,
-            {
-              value: provider['id'].toString(),
-              label: provider['name'],
-            },
-          ]
+          return filteredProvidersOptions.concat({
+            value: provider['id'].toString(),
+            label: provider['name'],
+          })
         }
 
         return filteredProvidersOptions

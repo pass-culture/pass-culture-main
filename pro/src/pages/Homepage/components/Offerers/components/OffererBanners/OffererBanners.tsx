@@ -28,20 +28,18 @@ export const OffererBanners = ({ offerer }: OffererBannersProps) => {
             },
           ]}
           description={
-            <>
-              {hasAtLeastOnePhysicalVenue ? (
-                'Vos offres seront publiées sous réserve de validation de votre structure.'
-              ) : (
-                <>
-                  Nous vous invitons à créer une structure afin de pouvoir
-                  proposer des offres physiques ou des évènements. Vous pouvez
-                  dès à présent créer des offres numériques.
-                  <br />
-                  L’ensemble de ces offres seront publiées sous réserve de
-                  validation de votre structure.
-                </>
-              )}
-            </>
+            hasAtLeastOnePhysicalVenue ? (
+              'Vos offres seront publiées sous réserve de validation de votre structure.'
+            ) : (
+              <>
+                Nous vous invitons à créer une structure afin de pouvoir
+                proposer des offres physiques ou des évènements. Vous pouvez dès
+                à présent créer des offres numériques.
+                <br />
+                L’ensemble de ces offres seront publiées sous réserve de
+                validation de votre structure.
+              </>
+            )
           }
         />
       </div>

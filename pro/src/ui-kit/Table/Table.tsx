@@ -74,6 +74,7 @@ function getValue<T>(
     return ordererField(row)
   }
   if (typeof ordererField === 'string') {
+    // biome-ignore lint/suspicious/noExplicitAny: Difficult to type.
     return ordererField.split('.').reduce<any>((obj, key) => obj?.[key], row)
   }
   return row[ordererField]
