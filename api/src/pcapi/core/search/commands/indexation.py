@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_offers_in_algolia_by_offer() -> None:
     """Pop offers from indexation queue and reindex them."""
-    search.index_offers_in_queue()
+    search.index_offers_in_queue(max_batches_to_process=50)
 
 
 @blueprint.cli.command("index_offers_in_algolia_by_artist")
