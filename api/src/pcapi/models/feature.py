@@ -138,6 +138,7 @@ class FeatureToggle(enum.Enum):
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
+    WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
     WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
     WIP_OFFER_ARTISTS = "Active la suggestion d'artistes à la création d'une offre"
     WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
@@ -204,6 +205,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_ENABLE_OHO,
+    FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_HIGHLIGHT,
     FeatureToggle.WIP_OFFER_ARTISTS,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,

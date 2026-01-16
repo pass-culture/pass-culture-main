@@ -10,7 +10,7 @@
           size: A4;
           margin: 2cm 1cm;
           @top-left {
-              content: "Relevé n°{{ invoice.reference }}";
+              content: "Relevé n°A240000001 du 28/01/2024";
               color: #870087;
               font-size: 10pt;
               font-style: normal;
@@ -49,7 +49,7 @@
       }
 
       title:after {
-          content: "Relevé n°{{ invoice.reference }}";
+          content: "Relevé n°A240000001 du 28/01/2024";
           color: #870087;
           font-size: 10pt;
           font-style: normal;
@@ -192,10 +192,10 @@
     </clipPath>
   </defs>
 </svg>
-<h1>Note de débit</h1>{% set currency_symbol = "CFP" if is_caledonian_invoice else "€" %}
+<h1>Note de débit</h1>
 <div class="customerInfo">
-    <p><b>Entité juridique :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.identifier }}</p>
-    <p><b>Compte bancaire :</b> {{ bank_account_label }}</p>
+    <p><b>Entité juridique :</b> Association de coiffeurs - 8533184</p>
+    <p><b>Compte bancaire :</b> Compte bancaire Coiffeur - NC5307528000009880000000100</p>
 </div>
 <h3 class="coloredTitle">
   Note de débit suite à un incident de paiement
@@ -215,36 +215,36 @@
   </tr>
   </thead>
   <tbody>
-  {% for group in groups %}
+  
     <tr class="coloredSection">
-      <td colspan="6" style="text-align:left"><b> {{ group.label }} </b></td>
+      <td colspan="6" style="text-align:left"><b> Barème dérogatoire </b></td>
     </tr>
-    {% for line in group.lines %}
+    
       <tr>
-        <td class="headRow">{{ line.label }}</td>
-        <td>{{ line.rate|fr_percentage }}</td>
-        <td>{{ line.bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-        <td>{{ line.contribution_rate|fr_percentage }}</td>
-        <td>{{ line.contributionAmount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-        <td>{{ line.reimbursedAmount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td class="headRow">Incidents</td>
+        <td>71,25 %</td>
+        <td>-4 773 CFP</td>
+        <td>28,75 %</td>
+        <td>-1 372 CFP</td>
+        <td>-3 401 CFP</td>
       </tr>
-    {% endfor %}
+    
     <tr style="color: dimgrey">
       <td class="headRow">SOUS-TOTAL</td>
       <td></td>
-      <td>{{ group.used_bookings_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+      <td>-4 773 CFP</td>
       <td></td>
-      <td>{{ group.contribution_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-      <td>{{ group.reimbursed_amount_subtotal|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+      <td>-1 372 CFP</td>
+      <td>-3 401 CFP</td>
     </tr>
-  {% endfor %}
+  
   <tr class="bottomTableText">
     <td class="headRow">TOTAL</td>
     <td></td>
-    <td>{{ total_used_bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+    <td>-4 773 CFP</td>
     <td></td>
-    <td>{{ total_contribution_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-    <td>{{ total_reimbursed_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}{% if is_caledonian_invoice %} ({{ total_reimbursed_amount|fr_currency_opposite }} €){% endif %}</td>
+    <td>-1 372 CFP</td>
+    <td>-3 401 CFP (-28,50 €)</td>
   </tr>
   </tbody>
 </table>

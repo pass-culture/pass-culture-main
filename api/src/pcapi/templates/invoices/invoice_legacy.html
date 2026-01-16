@@ -10,7 +10,7 @@
             size: A4;
             margin: 2cm 1cm;
             @top-left {
-                content: "Relevé n°{{ invoice.reference }}";
+                content: "Relevé n°{{ invoice.reference }} du {{ invoice_date }}";
                 color: #870087;
                 font-size: 10pt;
                 font-style: normal;
@@ -49,7 +49,7 @@
         }
 
         title:after {
-            content: "Relevé n°{{ invoice.reference }}";
+            content: "Relevé n°{{ invoice.reference }} du {{ invoice_date }}";
             color: #870087;
             font-size: 10pt;
             font-style: normal;
@@ -194,7 +194,7 @@
 <h1>Justificatif de remboursement</h1>{% set currency_symbol = "CFP" if is_caledonian_invoice else "€" %}
 <div class="customerInfo">
     <p><b>Entité juridique :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.identifier }}</p>
-    <p><b>Compte bancaire :</b> {{ bank_account_label }}</p>
+    <p><b>Compte bancaire :</b> {{ bank_account_label }} - {{ bank_account_iban }}</p>
 </div>
 <h3 class="coloredTitle">
     Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels.
@@ -256,6 +256,35 @@
     sens de l’article 267 du code général des impôts, et qu’à ce
     titre, les offreurs pourront ainsi régulariser leur base imposable (article 267 du CGI).
 </p>
+{% if cashflows %}
+<h3>Règlements effectués correspondant au montant remboursé</h3>
+<table class="totalAccountTable">
+    <thead>
+    <tr>
+        <th>Mode de règlement</th>
+        <th>N° de virement</th>
+        <th>Date</th>
+        <th>Montant réglé</th>
+        <th>Destinataire</th>
+    </tr>
+    </thead>
+    <tbody>
+{% for cashflow in cashflows %}
+    <tr>
+        <td>Virement {{ cashflow.bankAccount.iban }}</td>
+        <td class="cashflow_batch_label">{{ cashflow.batch.label }}</td>
+        <td class="cashflow_creation_date">{{ invoice_date }}</td>
+        <td>{{ cashflow.amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>{{ bank_account_label }}</td>
+    </tr>
+{% endfor %}
+    <tr class="coloredSection bottomTableText">
+        <td class="headRow" colspan="3">TOTAL RÈGLEMENT PASS CULTURE</td>
+        <td>{{ invoice.amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+    </tr>
+    </tbody>
+</table>
+{% endif %}
 <h3>Montant des remboursements par structure{{ ' et détail de la part individuelle et collective' if not is_caledonian_invoice else '' }}</h3>
 <table class="reimbursementByVenueTable">
     <thead>

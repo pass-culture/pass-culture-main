@@ -10,7 +10,7 @@
             size: A4;
             margin: 2cm 1cm;
             @top-left {
-                content: "Relevé n°{{ invoice.reference }}";
+                content: "Relevé n°F220000001 du 01/02/2022";
                 color: #870087;
                 font-size: 10pt;
                 font-style: normal;
@@ -49,7 +49,7 @@
         }
 
         title:after {
-            content: "Relevé n°{{ invoice.reference }}";
+            content: "Relevé n°F220000001 du 01/02/2022";
             color: #870087;
             font-size: 10pt;
             font-style: normal;
@@ -191,16 +191,16 @@
         </clipPath>
     </defs>
 </svg>
-<h1>Justificatif de remboursement</h1>{% set currency_symbol = "CFP" if is_caledonian_invoice else "€" %}
+<h1>Justificatif de remboursement</h1>
 <div class="customerInfo">
-    <p><b>Entité juridique :</b> {{ bank_account.offerer.name }} - {{ bank_account.offerer.identifier }}</p>
-    <p><b>Compte bancaire :</b> {{ bank_account_label }}</p>
+    <p><b>Entité juridique :</b> Association de coiffeurs - 8533184</p>
+    <p><b>Compte bancaire :</b> Compte bancaire Coiffeur - NC5307528000009880000000100</p>
 </div>
 <h3 class="coloredTitle">
-    Remboursement des réservations validées entre le {{ period_start.strftime("%d/%m/%y") }} et le {{ period_end.strftime("%d/%m/%y") }}, sauf cas exceptionnels.
+    Remboursement des réservations validées entre le 01/01/22 et le 14/01/22, sauf cas exceptionnels.
 </h3>
 <h3>
-    Détail des offres remboursées{% if including_finance_incident %} et des incidents de paiement{% endif %} incluant la contribution offreur,
+    Détail des offres remboursées et des incidents de paiement incluant la contribution offreur,
     appliquée selon le barème défini dans nos conditions générales de vente
 </h3>
 <table>
@@ -215,36 +215,138 @@
     </tr>
     </thead>
     <tbody>
-{% for group in groups %}
+
     <tr class="coloredSection">
-        <td colspan="6" style="text-align:left"><b> {{ group.label }} </b></td>
+        <td colspan="6" style="text-align:left"><b> Barème général </b></td>
     </tr>
-{% for line in group.lines %}
+
     <tr>
-        <td class="headRow">{{ line.label }}</td>
-        <td>{{ line.rate|fr_percentage }}</td>
-        <td>{{ line.bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-        <td>{{ line.contribution_rate|fr_percentage }}</td>
-        <td>{{ line.contributionAmount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-        <td>{{ line.reimbursedAmount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td class="headRow">Réservations</td>
+        <td>100 %</td>
+        <td>2 384 248 CFP</td>
+        <td>0 %</td>
+        <td>0 CFP</td>
+        <td>2 384 248 CFP</td>
     </tr>
-{% endfor %}
+
+    <tr>
+        <td class="headRow">Réservations</td>
+        <td>95 %</td>
+        <td>9 940 CFP</td>
+        <td>5 %</td>
+        <td>496 CFP</td>
+        <td>9 444 CFP</td>
+    </tr>
+
     <tr style="color: dimgrey">
         <td class="headRow">SOUS-TOTAL</td>
         <td></td>
-        <td>{{ group.used_bookings_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>2 394 189 CFP</td>
         <td></td>
-        <td>{{ group.contribution_subtotal|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-        <td>{{ group.reimbursed_amount_subtotal|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>496 CFP</td>
+        <td>2 393 692 CFP</td>
     </tr>
-{% endfor %}
+
+    <tr class="coloredSection">
+        <td colspan="6" style="text-align:left"><b> Barème livres </b></td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Réservations</td>
+        <td>100 %</td>
+        <td>2 387 CFP</td>
+        <td>0 %</td>
+        <td>0 CFP</td>
+        <td>2 387 CFP</td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Réservations</td>
+        <td>95 %</td>
+        <td>4 773 CFP</td>
+        <td>5 %</td>
+        <td>239 CFP</td>
+        <td>4 535 CFP</td>
+    </tr>
+
+    <tr style="color: dimgrey">
+        <td class="headRow">SOUS-TOTAL</td>
+        <td></td>
+        <td>7 160 CFP</td>
+        <td></td>
+        <td>239 CFP</td>
+        <td>6 921 CFP</td>
+    </tr>
+
+    <tr class="coloredSection">
+        <td colspan="6" style="text-align:left"><b> Barème non remboursé </b></td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Réservations</td>
+        <td>0 %</td>
+        <td>6 921 CFP</td>
+        <td>100 %</td>
+        <td>6 921 CFP</td>
+        <td>0 CFP</td>
+    </tr>
+
+    <tr style="color: dimgrey">
+        <td class="headRow">SOUS-TOTAL</td>
+        <td></td>
+        <td>6 921 CFP</td>
+        <td></td>
+        <td>6 921 CFP</td>
+        <td>0 CFP</td>
+    </tr>
+
+    <tr class="coloredSection">
+        <td colspan="6" style="text-align:left"><b> Barème dérogatoire </b></td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Réservations</td>
+        <td>95,65 %</td>
+        <td>2 745 CFP</td>
+        <td>4,35 %</td>
+        <td>119 CFP</td>
+        <td>2 625 CFP</td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Réservations</td>
+        <td>94 %</td>
+        <td>2 387 CFP</td>
+        <td>6 %</td>
+        <td>143 CFP</td>
+        <td>2 243 CFP</td>
+    </tr>
+
+    <tr>
+        <td class="headRow">Incidents</td>
+        <td>71,25 %</td>
+        <td>-4 773 CFP</td>
+        <td>28,75 %</td>
+        <td>-1 372 CFP</td>
+        <td>-3 401 CFP</td>
+    </tr>
+
+    <tr style="color: dimgrey">
+        <td class="headRow">SOUS-TOTAL</td>
+        <td></td>
+        <td>358 CFP</td>
+        <td></td>
+        <td>-1 110 CFP</td>
+        <td>1 468 CFP</td>
+    </tr>
+
     <tr class="bottomTableText">
         <td class="headRow">TOTAL</td>
         <td></td>
-        <td>{{ total_used_bookings_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
+        <td>2 408 628 CFP</td>
         <td></td>
-        <td>{{ total_contribution_amount|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-        <td>{{ total_reimbursed_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}{% if is_caledonian_invoice %} ({{ total_reimbursed_amount|fr_currency_opposite }} €){% endif %}</td>
+        <td>6 547 CFP</td>
+        <td>2 402 081 CFP (20 129,44 €)</td>
     </tr>
     </tbody>
 </table>
@@ -256,7 +358,36 @@
     sens de l’article 267 du code général des impôts, et qu’à ce
     titre, les offreurs pourront ainsi régulariser leur base imposable (article 267 du CGI).
 </p>
-<h3>Montant des remboursements par structure{{ ' et détail de la part individuelle et collective' if not is_caledonian_invoice else '' }}</h3>
+
+<h3>Règlements effectués correspondant au montant remboursé</h3>
+<table class="totalAccountTable">
+    <thead>
+    <tr>
+        <th>Mode de règlement</th>
+        <th>N° de virement</th>
+        <th>Date</th>
+        <th>Montant réglé</th>
+        <th>Destinataire</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <tr>
+        <td>Virement NC5307528000009880000000100</td>
+        <td class="cashflow_batch_label">1</td>
+        <td class="cashflow_creation_date">23/12/2021</td>
+        <td>2 402 081 CFP</td>
+        <td>Compte bancaire Coiffeur</td>
+    </tr>
+
+    <tr class="coloredSection bottomTableText">
+        <td class="headRow" colspan="3">TOTAL RÈGLEMENT PASS CULTURE</td>
+        <td>2 402 081 CFP</td>
+    </tr>
+    </tbody>
+</table>
+
+<h3>Montant des remboursements par structure</h3>
 <table class="reimbursementByVenueTable">
     <thead>
         <tr>
@@ -266,27 +397,19 @@
             <th>Incidents (TTC)</th>
             <th>Contribution offreur incidents (TTC)</th>
             <th class="coloredSection">Montant remboursé (TTC)</th>
-{%- if not is_caledonian_invoice %}
-            <th class="minimizedCell">Dont offres individuelles (TTC)</th>
-            <th class="minimizedCell">Dont offres collectives (TTC)</th>
-{%- endif %}
         </tr>
     </thead>
     <tbody>
-{% for venue in reimbursements_by_venue %}
+
         <tr>
-            <td>{{ venue.venue_name }}</td>
-            <td>{{ venue.validated_booking_amount|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-            <td>{{ (venue.validated_booking_amount - venue.reimbursed_amount)|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-            <td>{{ (venue.finance_incident_amount + venue.finance_incident_contribution)|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-            <td>{{ venue.finance_incident_contribution|fr_currency(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-            <td class="coloredSection">{{ (venue.reimbursed_amount + venue.finance_incident_amount)|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-{%- if not is_caledonian_invoice %}
-            <td>{{ (venue.individual_amount + venue.individual_incident_amount)|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-            <td>{{ (venue.reimbursed_amount - venue.individual_amount + (venue.finance_incident_amount - venue.individual_incident_amount))|fr_currency_opposite(is_caledonian_invoice) }} {{ currency_symbol }}</td>
-{%- endif %}
+            <td>Coiffeur justificaTIF</td>
+            <td>2 413 401 CFP</td>
+            <td>7 919 CFP</td>
+            <td>4 773 CFP</td>
+            <td>1 372 CFP</td>
+            <td class="coloredSection">2 402 081 CFP</td>
         </tr>
-{% endfor %}
+
     </tbody>
   </table>
 </body>
