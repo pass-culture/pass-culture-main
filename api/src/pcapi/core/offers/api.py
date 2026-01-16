@@ -2653,9 +2653,14 @@ def _chronicles_count_query(start: int, end: int) -> sa.sql.expression.Select:
         sa.select(product_id, count)
         .select_from(chronicles_models.ProductChronicle)
         .join(models.Product, models.Product.id == chronicles_models.ProductChronicle.productId)
+        .join(
+            chronicles_models.Chronicle,
+            chronicles_models.Chronicle.id == chronicles_models.ProductChronicle.chronicleId,
+        )
         .where(
             chronicles_models.ProductChronicle.productId >= start,
             chronicles_models.ProductChronicle.productId < end,
+            chronicles_models.Chronicle.isPublished.is_(True),
         )
         .group_by(models.Product.id, models.Product.chroniclesCount)
         .having(models.Product.chroniclesCount != count)

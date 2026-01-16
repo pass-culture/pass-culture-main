@@ -1386,6 +1386,7 @@ class GetUserActivityTest(GetEndpointHelper):
         first_chronicle = chronicles_factories.ChronicleFactory(
             user=user,
             productIdentifier="9782370730541",
+            isSocialMediaDiffusible=False,
             dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=3),
             products=[offers_factories.ProductFactory(ean="9782370730541", name="Le Backoffice pour les nuls")],
         )

@@ -137,24 +137,3 @@ class Chronicle(PcObject, Model, DeactivableMixin):
     @classmethod
     def _isPublishedExpression(cls) -> ColumnElement[bool]:
         return sa.and_(cls.isActive.is_(True), cls.isSocialMediaDiffusible.is_(True))
-
-
-@sa.event.listens_for(Chronicle, "after_insert")
-def after_insert_chronicle(_mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: Chronicle) -> None:
-    _increment_product_counts(connection, target, 1)
-
-
-@sa.event.listens_for(Chronicle, "after_delete")
-def after_delete_chronicle(_mapper: sa_orm.Mapper, connection: sa.engine.Connection, target: Chronicle) -> None:
-    # SQLAlchemy will not call this event if the object is deleted using a bulk delete
-    # (e.g. db.session.execute(sa.delete(Chronicle).where(...)))
-    _increment_product_counts(connection, target, -1)
-
-
-def _increment_product_counts(connection: sa.engine.Connection, target: Chronicle, increment: int) -> None:
-    if product_ids := [product.id for product in target.products]:
-        connection.execute(
-            sa.update(Product)
-            .where(Product.id.in_(product_ids))
-            .values(chroniclesCount=Product.chroniclesCount + increment)
-        )

@@ -42,7 +42,7 @@ class OfferCommandsTest:
     def test_command_check_product_counts_consistency(self, app, caplog):
         product_1 = offers_factories.ProductFactory()
         product_2 = offers_factories.ProductFactory()
-        chronicles_factories.ChronicleFactory.create(products=[product_1, product_2])
+        chronicles_factories.ChronicleFactory.create(products=[product_1, product_2], isSocialMediaDiffusible=True)
 
         product_1.chroniclesCount = 0
         product_2.chroniclesCount = 0
