@@ -1,5 +1,6 @@
 import base64
 import random
+import re
 import string
 import typing
 import uuid
@@ -103,8 +104,10 @@ class BaseUserFactory(BaseFactory):
     @classmethod
     def set_custom_attributes(cls, obj: models.User, **kwargs: typing.Any) -> None:
         if obj.email.endswith("@to_override.com"):
-            if obj.firstName and obj.lastName:
-                obj.email = f"{obj.firstName}.{obj.lastName}.{obj.id}@passculture.gen".lower()
+            clean_first_name = re.sub(r"\W+", "", obj.firstName or "")
+            clean_last_name = re.sub(r"\W+", "", obj.lastName or "")
+            if clean_first_name and clean_last_name:
+                obj.email = f"{clean_first_name}.{clean_last_name}.{obj.id}@passculture.gen".lower()
             else:
                 obj.email = f"user.{obj.id}@passculture.gen"
 
