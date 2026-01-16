@@ -1044,7 +1044,7 @@ class Settlement(PcObject, Model):
         sa.UniqueConstraint(
             "externalSettlementId",
             "bankAccountId",
-            name="unique_cegid_settlement_id_bank_account_id",
+            name="unique_external_settlement_id_bank_account_id",
         ),
     )
 
