@@ -1,0 +1,224 @@
+@use "styles/mixins/_a11y.scss" as a11y;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
+@use "styles/mixins/_rem.scss" as rem;
+
+// =============================================================================
+// MIXINS RÉUTILISABLES
+// =============================================================================
+
+@mixin button-border($color) {
+  box-shadow: 0 0 0 1px $color;
+}
+
+@mixin hover-state {
+  &.btn-hovered,
+  &:hover:not(:disabled, .btn-disabled, [aria-disabled="true"]) {
+    @content;
+  }
+}
+
+@mixin disabled-state {
+  &:disabled,
+  &.btn-disabled,
+  &[aria-disabled="true"] {
+    cursor: not-allowed;
+    @content;
+  }
+}
+
+// =============================================================================
+// BASE BUTTON STYLES
+// =============================================================================
+.button {
+  align-items: center;
+  display: inline-flex;
+  justify-content: center;
+  outline: none;
+  box-shadow: none;
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+  border: none;
+  width: fit-content;
+
+  &.btn-default {
+    border-radius: var(--size-border-radius-m);
+    gap: var(--size-spacing-s);
+    padding: var(--size-spacing-s) var(--size-spacing-m);
+
+    @include button-border(var(--color-border-brand-primary));
+
+    .btn-label {
+      @include fonts.body-accent;
+
+      line-height: 24px;
+    }
+
+    &.btn-icon-only {
+      padding: var(--size-spacing-m);
+
+      &.btn-tertiary {
+        padding: var(--size-spacing-m);
+      }
+    }
+  }
+
+  &.btn-small {
+    border-radius: var(--size-border-radius-m);
+    gap: var(--size-spacing-xs);
+    padding: var(--size-spacing-s) var(--size-spacing-m);
+
+    .btn-label {
+      @include fonts.body-accent-xs;
+
+      line-height: 16px;
+    }
+
+    &.btn-icon-only {
+      padding: var(--size-spacing-s);
+
+      &.btn-tertiary {
+        padding: var(--size-spacing-s);
+      }
+    }
+  }
+
+  &.btn-full-width {
+    width: 100%;
+  }
+
+  // =============================================================================
+  // BRAND BUTTONS
+  // =============================================================================
+  &.btn-brand {
+    &.btn-primary {
+      background-color: var(--color-background-brand-primary);
+      color: var(--color-text-inverted);
+
+      @include button-border(var(--color-border-brand-primary));
+
+      @include hover-state {
+        background-color: var(--color-background-brand-primary-hover);
+
+        @include button-border(var(--color-background-brand-primary-hover));
+      }
+
+      @include disabled-state {
+        opacity: 0.4;
+      }
+    }
+
+    &.btn-secondary {
+      background-color: var(--color-background-default);
+      color: var(--color-text-brand-primary);
+
+      @include button-border(var(--color-border-brand-primary));
+
+      &.btn-transparent {
+        background-color: transparent;
+      }
+
+      @include hover-state {
+        color: var(--color-text-brand-primary-hover);
+
+        @include button-border(var(--color-border-brand-primary-hover));
+
+        .btn-icon {
+          color: var(--color-icon-brand-primary-hover);
+        }
+      }
+
+      @include disabled-state {
+        background-color: var(--color-background-disabled);
+        color: var(--color-text-disabled);
+
+        @include button-border(var(--color-border-disabled));
+
+        .btn-icon {
+          color: var(--color-icon-disabled);
+        }
+      }
+    }
+
+    &.btn-tertiary {
+      background-color: transparent;
+      box-shadow: none;
+      color: var(--color-text-brand-primary);
+      padding: 0;
+
+      @include hover-state {
+        color: var(--color-text-brand-primary-hover);
+      }
+
+      @include disabled-state {
+        color: var(--color-text-disabled);
+      }
+    }
+  }
+
+  // =============================================================================
+  // NEUTRAL BUTTONS
+  // =============================================================================
+  &.btn-neutral {
+    &.btn-primary {
+      background-color: var(--color-background-inverted);
+      color: var(--color-text-inverted);
+
+      @include button-border(var(--color-border-selected));
+
+      @include hover-state {
+        background-color: var(--color-background-brand-primary-hover);
+
+        @include button-border(var(--color-border-brand-primary-hover));
+      }
+
+      @include disabled-state {
+        opacity: 0.4;
+      }
+    }
+
+    &.btn-secondary {
+      background-color: var(--color-background-default);
+      color: var(--color-text-default);
+
+      @include button-border(var(--color-border-default));
+
+      &.btn-transparent {
+        background-color: transparent;
+      }
+
+      @include hover-state {
+        @include button-border(var(--color-border-brand-primary-hover));
+
+        color: var(--color-text-brand-primary-hover);
+
+        .btn-icon {
+          color: var(--color-text-brand-primary-hover);
+        }
+      }
+
+      @include disabled-state {
+        background-color: var(--color-background-disabled);
+        color: var(--color-text-disabled);
+
+        @include button-border(var(--color-border-disabled));
+      }
+    }
+
+    &.btn-tertiary {
+      background-color: transparent;
+      box-shadow: none;
+      color: var(--color-text-default);
+      padding: 0;
+
+      @include hover-state {
+        color: var(--color-text-brand-primary-hover);
+      }
+
+      @include disabled-state {
+        color: var(--color-text-disabled);
+      }
+    }
+  }
+}
