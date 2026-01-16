@@ -26,11 +26,6 @@ from pcapi.utils import postal_code as postal_code_utils
 logger = logging.getLogger(__name__)
 
 
-def get_all_educational_institutions(page: int, per_page_limit: int) -> tuple[list, int]:
-    offset = (per_page_limit * (page - 1)) if page > 0 else 0
-    return repository.get_all_educational_institutions(offset=offset, limit=per_page_limit)
-
-
 def get_educational_institution_department_code(institution: models.EducationalInstitution) -> str:
     department_code = postal_code_utils.PostalCode(institution.postalCode).get_departement_code()
     return department_code
