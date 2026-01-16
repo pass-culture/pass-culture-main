@@ -68,6 +68,7 @@ from pcapi.core.mails.transactional.finance_incidents.finance_incident_notificat
 from pcapi.core.mails.transactional.pro.provider_reimbursement_csv import send_provider_reimbursement_email
 from pcapi.core.object_storage import store_public_object
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.serialization.reimbursement_csv_serialize import ReimbursementDetails
 from pcapi.routes.serialization.reimbursement_csv_serialize import find_reimbursement_details_by_invoices
 from pcapi.utils import human_ids
@@ -2266,18 +2267,19 @@ def _prepare_invoice_context(invoice: models.Invoice, batch: models.CashflowBatc
     invoice_date = invoice.date.strftime("%d/%m/%Y")
     period_start, period_end = get_invoice_period(batch.cutoff)
 
+    # TODO (vroullier 16/01/2026) remove unused entries when legacy files are dropped
     return dict(
         invoice=invoice,
         is_caledonian_invoice=is_caledonian_invoice,
-        cashflows=cashflows,
+        cashflows=cashflows,  # legacy
         groups=groups,
         bank_account=bank_account,
         bank_account_label=bank_account_label,
-        bank_account_iban=bank_account_iban,
+        bank_account_iban=bank_account_iban,  # legacy
         total_used_bookings_amount=total_used_bookings_amount,
         total_contribution_amount=total_contribution_amount,
         total_reimbursed_amount=total_reimbursed_amount,
-        invoice_date=invoice_date,
+        invoice_date=invoice_date,  # legacy
         period_start=period_start,
         period_end=period_end,
         reimbursements_by_venue=reimbursements_by_venue,
@@ -2451,12 +2453,16 @@ def get_reimbursements_by_venue(
 
 def _generate_invoice_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
     context = _prepare_invoice_context(invoice, batch)
-    return render_template("invoices/invoice.html", **context)
+    if FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
+        return render_template("invoices/invoice.html", **context)
+    return render_template("invoices/invoice_legacy.html", **context)
 
 
 def _generate_debit_note_html(invoice: models.Invoice, batch: models.CashflowBatch) -> str:
     context = _prepare_invoice_context(invoice, batch)
-    return render_template("invoices/debit_note.html", **context)
+    if FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS.is_active():
+        return render_template("invoices/debit_note.html", **context)
+    return render_template("invoices/debit_note_legacy.html", **context)
 
 
 def _store_invoice_pdf(invoice_storage_id: str, invoice_html: str) -> None:
