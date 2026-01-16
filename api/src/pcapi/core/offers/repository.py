@@ -925,7 +925,13 @@ def get_offer_chronicles_count_subquery() -> sa.sql.selectable.ScalarSelect:
     return (
         sa.select(sa.func.count())
         .select_from(chronicles_models.OfferChronicle)
-        .where(chronicles_models.OfferChronicle.offerId == models.Offer.id)
+        .join(
+            chronicles_models.Chronicle, chronicles_models.Chronicle.id == chronicles_models.OfferChronicle.chronicleId
+        )
+        .where(
+            chronicles_models.OfferChronicle.offerId == models.Offer.id,
+            chronicles_models.Chronicle.isPublished.is_(True),
+        )
         .correlate(models.Offer)
         .scalar_subquery()
     )

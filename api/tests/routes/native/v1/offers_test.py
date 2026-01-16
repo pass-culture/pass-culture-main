@@ -1298,8 +1298,8 @@ class OffersV2Test:
 
     def test_get_offer_with_chronicles(self, client):
         offer = offers_factories.OfferFactory()
-        chronicles_factories.ChronicleFactory(offers=[offer])
-        chronicles_factories.ChronicleFactory(offers=[offer])
+        chronicles_factories.ChronicleFactory(offers=[offer], isSocialMediaDiffusible=True)
+        chronicles_factories.ChronicleFactory(offers=[offer], isSocialMediaDiffusible=True)
 
         offer_id = offer.id
         response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1318,23 +1318,19 @@ class OffersV2Test:
         assert response.json["chroniclesCount"] == 0
 
     def test_get_offer_with_product_with_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = offers_factories.ProductFactory(chroniclesCount=1)
         offer = offers_factories.OfferFactory(product=product)
-        chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
-        chronicles_factories.ChronicleFactory(products=[product])
 
         offer_id = offer.id
         response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
-        assert response.json["chroniclesCount"] == 2
+        assert response.json["chroniclesCount"] == 1
 
     def test_get_offer_with_chronicles_with_product_with_chronicles(self, client):
-        product = offers_factories.ProductFactory()
+        product = offers_factories.ProductFactory(chroniclesCount=2)
         offer = offers_factories.OfferFactory(product=product)
-        chronicles_factories.ChronicleFactory(products=[product], isActive=False, isSocialMediaDiffusible=False)
-        chronicles_factories.ChronicleFactory(products=[product])
-        chronicles_factories.ChronicleFactory(offers=[offer])
+        chronicles_factories.ChronicleFactory(offers=[offer], isSocialMediaDiffusible=True)
 
         offer_id = offer.id
         response = client.get(f"/native/v2/offer/{offer_id}")
@@ -1350,7 +1346,7 @@ class OffersV2Test:
         response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
-        assert response.json["chroniclesCount"] == 1
+        assert response.json["chroniclesCount"] == 0
 
     def test_get_offer_with_product_with_unpublished_chronicles(self, client):
         product = offers_factories.ProductFactory()
@@ -1361,7 +1357,7 @@ class OffersV2Test:
         response = client.get(f"/native/v2/offer/{offer_id}")
 
         assert response.status_code == 200
-        assert response.json["chroniclesCount"] == 1
+        assert response.json["chroniclesCount"] == 0
 
     def test_get_offer_with_youtube_video_data(self, client):
         metadata = offers_factories.OfferMetaDataFactory(

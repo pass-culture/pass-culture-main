@@ -28,8 +28,8 @@ class ListChroniclesTest(GetEndpointHelper):
     needed_permission = perm_models.Permissions.READ_CHRONICLE
     # session
     # current user
-    # list chronicles
     # count chronicles
+    # list chronicles
     expected_num_queries = 4
 
     def test_without_filters(self, authenticated_client):
@@ -39,7 +39,7 @@ class ListChroniclesTest(GetEndpointHelper):
             isActive=True,
             isSocialMediaDiffusible=True,
         )
-        chronicle_2 = chronicles_factories.ChronicleFactory(isActive=False)
+        chronicle_2 = chronicles_factories.ChronicleFactory(isActive=False, isSocialMediaDiffusible=False)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
@@ -159,7 +159,7 @@ class ListChroniclesTest(GetEndpointHelper):
 
     def test_search_by_social_media_diffusible(self, authenticated_client):
         chronicle_to_find = chronicles_factories.ChronicleFactory(isSocialMediaDiffusible=True)
-        chronicles_factories.ChronicleFactory()
+        chronicles_factories.ChronicleFactory(isSocialMediaDiffusible=False)
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(
                 url_for(self.endpoint, social_media_diffusible="true"),
@@ -200,9 +200,7 @@ class ListChroniclesTest(GetEndpointHelper):
 
     def test_chronicle_with_offer(self, authenticated_client):
         offer = offers_factories.OfferFactory()
-        chronicles_factories.ChronicleFactory(
-            offers=[offer],
-        )
+        chronicles_factories.ChronicleFactory(offers=[offer])
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint))
             assert response.status_code == 200
@@ -315,7 +313,7 @@ class GetChronicleDetailsTest(GetEndpointHelper):
         assert chronicle.content in content_as_text
 
     def test_mininal(self, authenticated_client):
-        chronicle = chronicles_factories.ChronicleFactory(isActive=False)
+        chronicle = chronicles_factories.ChronicleFactory(isActive=False, isSocialMediaDiffusible=False)
         url = url_for(self.endpoint, chronicle_id=chronicle.id)
 
         with assert_num_queries(self.expected_num_queries):
@@ -1144,7 +1142,7 @@ class CreateChronicleTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries + 2,  # get the product and attach it
+            expected_num_queries=self.expected_num_queries + 1,  # attach product to chronicle
             client=authenticated_client,
             form=form,
         )
@@ -1178,7 +1176,7 @@ class CreateChronicleTest(PostEndpointHelper):
 
         response = self.post_to_endpoint(
             follow_redirects=True,
-            expected_num_queries=self.expected_num_queries + 3,  # get product from old chronicle and attach it
+            expected_num_queries=self.expected_num_queries + 2,  # get product from old chronicle and attach it
             client=authenticated_client,
             form=form,
         )
