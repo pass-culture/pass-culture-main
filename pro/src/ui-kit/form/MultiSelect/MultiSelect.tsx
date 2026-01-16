@@ -2,6 +2,7 @@ import cn from 'classnames'
 import {
   type ForwardedRef,
   forwardRef,
+  useCallback,
   useEffect,
   useId,
   useRef,
@@ -182,11 +183,11 @@ export const MultiSelect = forwardRef(
       updateSelectedItems(updatedItems)
     }
 
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = useCallback((event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsOpen(false)
       }
-    }
+    }, [])
 
     useEffect(() => {
       document.addEventListener('keydown', handleKeyDown)
@@ -194,7 +195,7 @@ export const MultiSelect = forwardRef(
       return () => {
         document.removeEventListener('keydown', handleKeyDown)
       }
-    }, [])
+    }, [handleKeyDown])
 
     useOnClickOrFocusOutside(containerRef, () => setIsOpen(false))
 
@@ -243,7 +244,7 @@ export const MultiSelect = forwardRef(
           removeOption={handleRemoveTag}
           fieldName="tags"
           optionsLabelById={selectedItems.reduce(
-            (acc, item) => ({ ...acc, [item.id]: item.label }),
+            (acc, item) => Object.assign(acc, { [item.id]: item.label }),
             {}
           )}
         />

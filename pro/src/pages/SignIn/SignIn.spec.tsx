@@ -197,7 +197,6 @@ describe('SignIn', () => {
   it('should call submit prop when user clicks on "Se connecter"', async () => {
     const initializeUserSpy = vi
       .spyOn(initializeUserModule, 'initializeUser')
-      // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Redux Thunk return type
       .mockReturnValueOnce({ unwrap: () => Promise.resolve() } as any)
 
     renderSignIn()

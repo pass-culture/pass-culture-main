@@ -20,6 +20,7 @@ if (SENTRY_SERVER_URL) {
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
 if (!isAdageIframe) {
+  // biome-ignore lint/suspicious/noExplicitAny: Hotjar script.
   ;((h: any, o, t, j, a?: any, r?: any, tmpl?: any) => {
     h.hj =
       h.hj ||

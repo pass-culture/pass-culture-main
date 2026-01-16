@@ -48,7 +48,7 @@ export const Spinner = ({
   testId = 'spinner',
 }: SpinnerProps): JSX.Element => {
   return (
-    // biome-ignore lint/a11y/useSemanticElements: `<output />` is for calculations results + accessibility support is partial.
+    // biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`.
     <div
       aria-live="polite"
       className={cn(styles['loading-spinner'], className)}

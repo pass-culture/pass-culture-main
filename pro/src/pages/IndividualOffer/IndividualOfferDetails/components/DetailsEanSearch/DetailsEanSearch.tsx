@@ -170,7 +170,7 @@ export const DetailsEanSearch = ({
             />
           </div>
         </div>
-        {/** biome-ignore lint/a11y/useSemanticElements: What we want here is a role="status", not an output */}
+        {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
         <div role="status" className={styles['details-ean-search-callout']}>
           {isProductBased && <EanSearchCallout isDraftOffer={isDraftOffer} />}
         </div>

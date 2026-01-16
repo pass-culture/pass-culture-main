@@ -1,7 +1,7 @@
 import type { CollectiveRevenue, TotalRevenue } from '@/apiClient/v1'
 
 export const isCollectiveAndIndividualRevenue = (
-  revenue: any
+  revenue: Partial<TotalRevenue> | undefined
 ): revenue is TotalRevenue => {
   return (
     revenue?.collective !== undefined &&
@@ -11,7 +11,7 @@ export const isCollectiveAndIndividualRevenue = (
 }
 
 export const isCollectiveRevenue = (
-  revenue: any
+  revenue: Partial<TotalRevenue> | undefined
 ): revenue is CollectiveRevenue => {
   return (
     revenue?.collective !== undefined &&

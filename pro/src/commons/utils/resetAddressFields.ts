@@ -1,3 +1,10 @@
+import type {
+  FieldValues,
+  Path,
+  PathValue,
+  UseFormReturn,
+} from 'react-hook-form'
+
 import type { AddressFormValues } from '@/commons/core/shared/types'
 
 const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
@@ -13,10 +20,13 @@ const fieldsNames: Map<keyof AddressFormValues, string | null> = new Map([
   ['addressAutocomplete', ''],
 ])
 
-export function resetReactHookFormAddressFields(
-  resetField: (name: any, defaultValue: any) => void
-) {
-  ;[...fieldsNames.entries()].map(([fieldName, defaultValue]) => {
-    resetField(fieldName, defaultValue)
+export function resetReactHookFormAddressFields<
+  TFieldValues extends FieldValues,
+>(resetField: UseFormReturn<TFieldValues>['setValue']) {
+  fieldsNames.entries().forEach(([fieldName, defaultValue]) => {
+    resetField(
+      fieldName as Path<TFieldValues>,
+      defaultValue as PathValue<TFieldValues, Path<TFieldValues>>
+    )
   })
 }

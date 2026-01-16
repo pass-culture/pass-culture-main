@@ -14,18 +14,16 @@ export const computeIndividualOffersUrl = (
   const newFilters: Partial<IndividualSearchFiltersParams> = Object.entries({
     page: 1,
     ...offersSearchFilters,
-  }).reduce((accumulator, [filter, filterValue]) => {
-    if (
-      filterValue !==
+  }).reduce(
+    (accumulator, [filter, filterValue]) =>
+      filterValue ===
       DEFAULT_SEARCH_FILTERS[filter as keyof IndividualSearchFiltersParams]
-    ) {
-      return {
-        ...accumulator,
-        [filter]: filterValue,
-      }
-    }
-    return accumulator
-  }, emptyNewFilters)
+        ? accumulator
+        : Object.assign(accumulator, {
+            [filter]: filterValue,
+          }),
+    emptyNewFilters
+  )
 
   const queryString = stringify(
     translateApiParamsToQueryParams(newFilters, Audience.INDIVIDUAL)

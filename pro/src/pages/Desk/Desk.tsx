@@ -179,7 +179,7 @@ export const Desk = (): JSX.Element => {
                 )}
               </div>
 
-              {/** biome-ignore lint/a11y/useSemanticElements: We want a status div here, and not an output element */}
+              {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
               <div role="status" id={statusId}>
                 <DeskInputMessage
                   message={message.message}

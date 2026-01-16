@@ -1,6 +1,7 @@
+import classnames from 'classnames'
 import { format } from 'date-fns-tz'
 import type React from 'react'
-import { useCallback, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import type { OfferStockResponse } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
@@ -19,7 +20,6 @@ export interface PrebookingButtonProps {
   className?: string
   stock: OfferStockResponse
   canPrebookOffers: boolean
-  offerId: number
   queryId: string
   isInSuggestions?: boolean
   children?: React.ReactNode
@@ -36,7 +36,6 @@ export const PrebookingButton = ({
   className,
   stock,
   canPrebookOffers,
-  offerId,
   queryId,
   isInSuggestions,
   children,
@@ -77,7 +76,7 @@ export const PrebookingButton = ({
     })
   }
 
-  const preBookCurrentStock = useCallback(async () => {
+  const preBookCurrentStock = async () => {
     try {
       await apiAdage.bookCollectiveOffer({ stockId: stock.id })
     } catch (error) {
@@ -110,11 +109,13 @@ export const PrebookingButton = ({
     setOfferPrebooked?.(true)
     closeModal()
     snackBar.success('Votre préréservation a été effectuée avec succès')
-  }, [stock.id, offerId, queryId])
+  }
 
   return canPrebookOffers ? (
     <>
-      <div className={(styles['prebooking-button-container'], className)}>
+      <div
+        className={classnames(styles['prebooking-button-container'], className)}
+      >
         {hasPrebookedOffer ? (
           <Tag
             label="Préréservé"

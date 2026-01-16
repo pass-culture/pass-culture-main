@@ -5,11 +5,12 @@ import { useEffect, useRef } from 'react'
 // https://caniuse.com/?search=beforeunload
 export const useLogEventOnUnload = (logEvent: () => void) => {
   const logEventRef = useRef(logEvent)
+
   useEffect(() => {
     const onUnload = () => logEventRef.current()
     window.addEventListener('beforeunload', onUnload)
     return () => {
       window.removeEventListener('beforeunload', onUnload)
     }
-  }, [logEventRef])
+  }, [])
 }

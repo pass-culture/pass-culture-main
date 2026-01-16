@@ -71,28 +71,7 @@ const commonValidationShape = {
   venueId: yup.string().required('Veuillez sélectionner une structure'),
 }
 
-export const getValidationSchema = (isDigitalOffer: boolean) => {
-  return yup.object<DetailsFormValues>().shape({
-    ...commonValidationShape,
-    accessibility: yup.mixed<any>().optional(), // `any` represents `undefined` here which is impossible to type via yup
-    url: isDigitalOffer
-      ? yup
-          .string()
-          .required(
-            'Veuillez renseigner une URL valide. Ex : https://exemple.com'
-          )
-          .test({
-            name: 'url',
-            message:
-              'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-            test: (url?: string) =>
-              url ? url.match(offerFormUrlRegex) !== null : true,
-          })
-      : yup.string().nullable(),
-  })
-}
-
-export const getValidationSchemaForNewOfferCreationFlow = () => {
+export const getValidationSchema = () => {
   return yup.object<DetailsFormValues>().shape({
     ...commonValidationShape,
     accessibility: yup
@@ -109,8 +88,6 @@ export const getValidationSchemaForNewOfferCreationFlow = () => {
         test: isAnyTrue,
       })
       .required(),
-    // TODO (igabriele, 2025-07-24): Remove this useless field once the FF is enabled in production.
-    url: yup.mixed<any>().optional(), // `any` represents `undefined` here which is impossible to type via yup
   })
 }
 

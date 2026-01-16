@@ -186,7 +186,6 @@ describe('UserAnonymization', () => {
       const logoutSpy = vi.spyOn(logoutModule, 'logout').mockReturnValue({
         type: 'user/logout/pending',
         payload: undefined,
-        // biome-ignore lint/suspicious/noExplicitAny: Mocking complex Redux Thunk return type
       } as any)
 
       renderUserAnonymization({

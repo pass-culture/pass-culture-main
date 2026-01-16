@@ -16,18 +16,16 @@ export const computeCollectiveOffersUrl = (
   const newFilters: Partial<CollectiveSearchFiltersParams> = Object.entries({
     page: 1,
     ...offersSearchFilters,
-  }).reduce((accumulator, [filter, filterValue]) => {
-    if (
-      filterValue !==
+  }).reduce(
+    (accumulator, [filter, filterValue]) =>
+      filterValue ===
       defaultFilters[filter as keyof CollectiveSearchFiltersParams]
-    ) {
-      return {
-        ...accumulator,
-        [filter]: filterValue,
-      }
-    }
-    return accumulator
-  }, emptyNewFilters)
+        ? accumulator
+        : Object.assign(accumulator, {
+            [filter]: filterValue,
+          }),
+    emptyNewFilters
+  )
 
   const queryString = Object.entries(
     translateApiParamsToQueryParams(newFilters, Audience.COLLECTIVE)

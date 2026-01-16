@@ -61,7 +61,6 @@ export function AdageOfferInstitutionPanel({
           canPrebookOffers={
             adageUser?.role === AdageFrontRoles.REDACTOR || isPreview
           }
-          offerId={offer.id}
           queryId={''}
           stock={offer.stock}
           hideLimitDate={true}

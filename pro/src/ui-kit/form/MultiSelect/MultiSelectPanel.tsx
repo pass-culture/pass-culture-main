@@ -64,6 +64,7 @@ export const MultiSelectPanel = ({
         className={styles['panel-scrollable']}
         data-testid="panel-scrollable"
       >
+        {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
         <p className={styles['visually-hidden']} role="status">
           <span>{filteredOptions.length} résultats trouvés</span>
         </p>

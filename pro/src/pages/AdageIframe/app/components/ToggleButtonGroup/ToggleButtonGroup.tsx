@@ -26,6 +26,7 @@ export function ToggleButtonGroup({
   className,
 }: ToggleButtonGroupProps) {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: We don't want to use a `<fieldset />` here.
     <div
       role="group"
       aria-label={groupLabel}

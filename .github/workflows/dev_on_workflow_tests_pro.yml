@@ -47,7 +47,7 @@ jobs:
 
       - run: yarn tsc -b
       - run: yarn lint:dead-code
-      - run: yarn lint:js --diagnostic-level=error
+      - run: yarn lint:js --diagnostic-level=warn
       - run: yarn lint:scss
 
   pro-run-tests:

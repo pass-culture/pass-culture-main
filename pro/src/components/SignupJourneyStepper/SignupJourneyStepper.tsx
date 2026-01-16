@@ -84,7 +84,7 @@ export const SignupJourneyStepper = () => {
   const stepsIds = signupJourneyBreadcrumbSteps.map((step) => step.id)
 
   if (!stepsIds.includes(activeStep)) {
-    return <></>
+    return null
   }
 
   return (

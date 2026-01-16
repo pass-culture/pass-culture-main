@@ -133,7 +133,16 @@ export const serializeOfferSectionData = (
     musicTypes
   )
 
-  let offerAddressData
+  let offerAddressData:
+    | {
+        location?: {
+          label?: string | null
+          city: string
+          street?: string | null
+          postalCode: string
+        }
+      }
+    | undefined
 
   // Could be simpler with lodash.pick
   if (offer.location) {

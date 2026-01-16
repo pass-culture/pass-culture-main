@@ -1,6 +1,7 @@
 import {
   type Dispatch,
   type SetStateAction,
+  useCallback,
   useEffect,
   useRef,
   useState,
@@ -76,16 +77,6 @@ export const OffersSearch = ({
   )?.results
   const nbHits = mainOffersSearchResults?.nbHits
 
-  useEffect(() => {
-    if (mainOffersSearchResults) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
-      logFiltersOnSearch(
-        mainOffersSearchResults.nbHits,
-        mainOffersSearchResults.queryID
-      )
-    }
-  }, [mainOffersSearchResults?.queryID])
-
   const isMarseilleEnabled = useActiveFeature('ENABLE_MARSEILLE')
   const isUserInMarseilleProgram = (adageUser.programs ?? []).some(
     (prog) => prog.name === MARSEILLE_EN_GRAND
@@ -117,7 +108,7 @@ export const OffersSearch = ({
     label: name,
   }))
 
-  function onSubmit() {
+  const onSubmit = useCallback(() => {
     resetUrlSearchFilterParams()
     dispatch(setAdageFilter(form.watch()))
     dispatch(setAdagePageSaved(0))
@@ -133,7 +124,7 @@ export const OffersSearch = ({
           : DEFAULT_GEO_RADIUS
       )
     }
-  }
+  }, [])
 
   function resetUrlSearchFilterParams() {
     searchParams.delete('domain')
@@ -147,26 +138,29 @@ export const OffersSearch = ({
   const resetForm = () => {
     setIsUserTriggered(true)
     setlocalisationFilterState(LocalisationFilterStates.NONE)
-    Object.entries(ADAGE_FILTERS_DEFAULT_VALUES).map(([key, value]) => {
+    Object.entries(ADAGE_FILTERS_DEFAULT_VALUES).forEach(([key, value]) => {
       form.setValue(key as keyof SearchFormValues, value)
     })
   }
 
-  async function logFiltersOnSearch(nbHits: number, queryId?: string) {
-    /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
-    if (form.formState.submitCount > 0 || adageQueryFromSelector !== null) {
-      await logTrackingFilter({
-        iframeFrom: location.pathname,
-        resultNumber: nbHits,
-        queryId: queryId ?? null,
-        filterValues: serializeFiltersForData(
-          form.watch(),
-          adageQueryFromSelector,
-          domainsOptions
-        ),
-      })
-    }
-  }
+  const logFiltersOnSearch = useCallback(
+    async (nbHits: number, queryId?: string) => {
+      /* istanbul ignore next: TO FIX the current structure make it hard to test, we probably should not mock Offers in OfferSearch tests */
+      if (form.formState.submitCount > 0 || adageQueryFromSelector !== null) {
+        await logTrackingFilter({
+          iframeFrom: location.pathname,
+          resultNumber: nbHits,
+          queryId: queryId ?? null,
+          filterValues: serializeFiltersForData(
+            form.watch(),
+            adageQueryFromSelector,
+            domainsOptions
+          ),
+        })
+      }
+    },
+    []
+  )
 
   const getActiveLocalisationFilter = () => {
     if (form.watch('departments').length > 0) {
@@ -186,6 +180,16 @@ export const OffersSearch = ({
     useState<LocalisationFilterStates>(getActiveLocalisationFilter())
   const [isUserTriggered, setIsUserTriggered] = useState(false)
 
+  useEffect(() => {
+    if (mainOffersSearchResults) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      logFiltersOnSearch(
+        mainOffersSearchResults.nbHits,
+        mainOffersSearchResults.queryID
+      )
+    }
+  }, [logFiltersOnSearch, mainOffersSearchResults])
+
   // This useEffect ensures onSubmit is called only when localisationFilterState changes to NONE due to user actions.
   // Ensures onSubmit runs after localisationFilterState updates to NONE, fixing async state issues.
   useEffect(() => {
@@ -196,7 +200,7 @@ export const OffersSearch = ({
       onSubmit()
       setIsUserTriggered(false)
     }
-  }, [localisationFilterState, isUserTriggered])
+  }, [isUserTriggered, localisationFilterState, onSubmit])
 
   const offerFilterRef = useRef<HTMLDivElement>(null)
   const [isOfferFiltersVisible] = useIsElementVisible(offerFilterRef)

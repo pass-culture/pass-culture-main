@@ -21,7 +21,7 @@ import { ActivityForm, type ActivityFormValues } from './ActivityForm'
 import { defaultActivityFormValues } from './constants'
 import { validationSchema } from './validationSchema'
 
-export const Activity = (): JSX.Element => {
+export const Activity = () => {
   const navigate = useNavigate()
   const { activity, setActivity, offerer } = useSignupJourneyContext()
   const isCulturalDomainsEnabled = useActiveFeature(
@@ -100,7 +100,7 @@ export const Activity = (): JSX.Element => {
   }
 
   if (!venueTypes) {
-    return <></>
+    return null
   }
 
   return (

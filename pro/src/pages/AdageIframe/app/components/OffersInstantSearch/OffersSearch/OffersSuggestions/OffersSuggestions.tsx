@@ -143,6 +143,7 @@ export const OffersSuggestions = ({ formValues }: OffersSuggestionsProps) => {
           <Index
             indexName={ALGOLIA_COLLECTIVE_OFFERS_INDEX}
             indexId={`no_results_offers_index_${i}`}
+            // biome-ignore lint/suspicious/noArrayIndexKey: We willingly use the index as a key here.
             key={i}
           >
             <Configure

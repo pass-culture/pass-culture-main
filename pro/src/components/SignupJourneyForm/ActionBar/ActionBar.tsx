@@ -43,9 +43,9 @@ export const ActionBar = ({
       used: SignupJourneyAction.ActionBar,
     })
   }
-  const Left = (): JSX.Element => {
+  const Left = () => {
     if (!onClickPrevious) {
-      return <></>
+      return null
     }
 
     return (
@@ -65,9 +65,9 @@ export const ActionBar = ({
     )
   }
 
-  const Right = (): JSX.Element | null => {
+  const Right = () => {
     if (hideRightButton) {
-      return <></>
+      return null
     }
 
     return (

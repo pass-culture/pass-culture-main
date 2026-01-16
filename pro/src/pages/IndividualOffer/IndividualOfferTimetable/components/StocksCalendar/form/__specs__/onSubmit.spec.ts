@@ -443,7 +443,7 @@ describe('onSubmit', () => {
     },
   ]
 
-  errorCases.forEach(({ errorMessage, formValues }) =>
+  errorCases.forEach(({ errorMessage, formValues }) => {
     it(`should raise error if ${errorMessage}`, async () => {
       try {
         await onSubmit(formValues, '75', 66, notify, ['queryKey', 1, 1, {}, {}])
@@ -454,7 +454,7 @@ describe('onSubmit', () => {
         }
       }
     })
-  )
+  })
 
   it(`should create nothing when creation limit is reach`, async () => {
     const formValues = {

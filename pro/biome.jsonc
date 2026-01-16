@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.3.8/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
   // https://biomejs.dev/guides/big-projects/#monorepo
   "root": false,
   "extends": "//",
@@ -144,11 +144,12 @@
         "useConst": "error"
       },
       "suspicious": {
-        "noAssignInExpressions": "warn", // default: "error"
+        "noAssignInExpressions": "error",
         "noArrayIndexKey": "warn", // default: "error"
         "noAsyncPromiseExecutor": "error",
         "noCatchAssign": "error",
         "noClassAssign": "error",
+        "noConfusingVoidType": "off", // default: "warn"
         "noCommentText": "error",
         "noCompareNegZero": "error",
         "noConsole": {
@@ -172,7 +173,7 @@
         "noFocusedTests": "error",
         "noFunctionAssign": "error",
         "noGlobalAssign": "error",
-        "noImplicitAnyLet": "warn", // default: "error"
+        "noImplicitAnyLet": "error",
         "noImportAssign": "error",
         "noIrregularWhitespace": "error",
         "noMisleadingCharacterClass": "error",
@@ -187,7 +188,7 @@
         "noWith": "error",
         "useAwait": "error",
         "useGetterReturn": "error",
-        "useIterableCallbackReturn": "warn", // default: "error"
+        "useIterableCallbackReturn": "error",
         "useNamespaceKeyword": "error"
       }
     }
@@ -285,6 +286,7 @@
           "suspicious": {
             "noEmptyBlockStatements": "off",
             "noExportsInTest": "off",
+            "noExplicitAny": "off",
             "noImplicitAnyLet": "off"
           }
         }

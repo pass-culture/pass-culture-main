@@ -147,7 +147,6 @@ Cypress.Commands.add(
   (
     method: 'GET' | 'POST',
     url: string,
-    // biome-ignore lint/suspicious/noExplicitAny: Acceptable for an e2e tests util.
     onRequest: (response: any) => void,
     retry: boolean = true
   ) => {

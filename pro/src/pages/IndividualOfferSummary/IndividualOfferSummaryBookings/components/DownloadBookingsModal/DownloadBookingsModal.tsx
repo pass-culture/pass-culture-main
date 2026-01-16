@@ -9,6 +9,8 @@ import {
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { FrontendError } from '@/commons/errors/FrontendError'
+import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
@@ -61,12 +63,22 @@ export const DownloadBookingsModal = ({
   ) {
     event.preventDefault()
     const fileFormat = event.nativeEvent.submitter?.dataset.export
+    if (!selectedDate) {
+      return handleUnexpectedError(
+        new FrontendError('`selectedDate` is undefined'),
+        {
+          userMessage:
+            'Une erreur est survenue lors de la génération du fichier.',
+        }
+      )
+    }
+
     if (fileFormat === BookingExportType.CSV) {
       downloadFile(
         await api.exportBookingsForOfferAsCsv(
           offerId,
           selectedBookingType,
-          selectedDate!
+          selectedDate
         ),
         `reservations-${selectedBookingType}-${selectedDate}.csv`
       )
@@ -75,11 +87,12 @@ export const DownloadBookingsModal = ({
         await api.exportBookingsForOfferAsExcel(
           offerId,
           selectedBookingType,
-          selectedDate!
+          selectedDate
         ),
         `reservations-${selectedBookingType}-${selectedDate}.xlsx`
       )
     }
+
     logEvent(Events.CLICKED_DOWNLOAD_OFFER_BOOKINGS, {
       format: fileFormat,
       bookingStatus: selectedBookingType,

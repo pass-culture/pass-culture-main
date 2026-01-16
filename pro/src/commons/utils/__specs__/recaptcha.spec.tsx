@@ -6,7 +6,9 @@ vi.mock('../config', () => ({ RECAPTCHA_SITE_KEY: 'recaptcha-site-key' }))
 
 describe('initReCaptchaScript', () => {
   beforeEach(() => {
-    document.querySelectorAll('script').forEach((script) => script.remove())
+    document.querySelectorAll('script').forEach((script) => {
+      script.remove()
+    })
   })
 
   it('should append script tag on first render', () => {

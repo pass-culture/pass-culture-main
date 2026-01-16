@@ -5,6 +5,8 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
 import { api } from '@/apiClient/api'
+import { FrontendError } from '@/commons/errors/FrontendError'
+import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
@@ -43,8 +45,15 @@ export const UserReviewDialog = ({
   const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false)
   const onSubmitReview = async (formValues: UserReviewDialogFormValues) => {
     try {
+      if (!selectedOffererId) {
+        return handleUnexpectedError(
+          new FrontendError('`selectedOffererId` is null.'),
+          { isSilent: true }
+        )
+      }
+
       await api.submitUserReview({
-        offererId: selectedOffererId!,
+        offererId: selectedOffererId,
         location: location.pathname,
         pageTitle: document.title,
         userSatisfaction: formValues.userSatisfaction,

@@ -3,7 +3,6 @@ export const getImageBitmap = async (
 ): Promise<ImageBitmap | null> => {
   // Polyfill for Safari and IE not supporting createImageBitmap
   // https://gist.github.com/nektro/84654b5183ddd1ccb7489607239c982d
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!window.createImageBitmap) {
     window.createImageBitmap = (
       blob: ImageBitmapSource
@@ -11,10 +10,11 @@ export const getImageBitmap = async (
       new Promise((resolve) => {
         const img = document.createElement('img')
         img.addEventListener('load', function () {
-          resolve(this as any)
+          resolve(this as unknown as ImageBitmap)
         })
         img.src = URL.createObjectURL(blob as Blob)
       })
   }
+
   return await createImageBitmap(file).catch(() => null)
 }
