@@ -152,7 +152,6 @@ export const VenueSettingsForm = ({
               label="Adresse email"
               type="email"
               description="Format : email@exemple.com"
-              required={!venue.isVirtual}
               disabled={venue.isVirtual}
               error={errors.bookingEmail?.message}
             />
