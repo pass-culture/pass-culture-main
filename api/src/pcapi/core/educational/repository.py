@@ -1231,28 +1231,15 @@ def get_all_educational_domains_ordered_by_name() -> list[models.EducationalDoma
     )
 
 
-def get_all_educational_institutions(offset: int = 0, limit: int = 0) -> tuple[list, int]:
-    count_query = db.session.query(sa.func.count(models.EducationalInstitution.id)).filter(
-        models.EducationalInstitution.isActive
+def get_all_educational_institutions(
+    offset: int = 0, limit: int = 0
+) -> tuple[list[models.EducationalInstitution], int]:
+    active_institutions_query = db.session.query(models.EducationalInstitution).filter(
+        models.EducationalInstitution.isActive.is_(True)
     )
-    total = count_query.one()[0]
+    total = active_institutions_query.count()
 
-    query = (
-        db.session.query(
-            models.EducationalInstitution.name,
-            models.EducationalInstitution.id,
-            models.EducationalInstitution.postalCode,
-            models.EducationalInstitution.city,
-            models.EducationalInstitution.institutionType,
-            models.EducationalInstitution.phoneNumber,
-            models.EducationalInstitution.institutionId,
-        )
-        .filter(models.EducationalInstitution.isActive)
-        .order_by(
-            models.EducationalInstitution.name,
-            models.EducationalInstitution.id,
-        )
-    )
+    query = active_institutions_query.order_by(models.EducationalInstitution.name, models.EducationalInstitution.id)
 
     if offset != 0:
         query = query.offset(offset)

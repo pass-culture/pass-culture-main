@@ -3,7 +3,7 @@ import math
 
 from flask_login import login_required
 
-from pcapi.core.educational.api import institution as educational_api_institution
+from pcapi.core.educational import repository
 from pcapi.routes.apis import private_api
 from pcapi.routes.pro import blueprint
 from pcapi.routes.serialization import educational_institutions
@@ -26,10 +26,9 @@ logger = logging.getLogger(__name__)
 def get_educational_institutions(
     query: educational_institutions.EducationalInstitutionsQueryModel,
 ) -> educational_institutions.EducationalInstitutionsResponseModel:
-    institutions, total = educational_api_institution.get_all_educational_institutions(
-        page=query.page,
-        per_page_limit=query.per_page_limit,
-    )
+    offset = (query.per_page_limit * (query.page - 1)) if query.page > 0 else 0
+
+    institutions, total = repository.get_all_educational_institutions(offset=offset, limit=query.per_page_limit)
 
     return educational_institutions.EducationalInstitutionsResponseModel(
         educational_institutions=[
