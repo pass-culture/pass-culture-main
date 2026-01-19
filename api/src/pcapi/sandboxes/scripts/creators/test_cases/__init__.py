@@ -396,7 +396,25 @@ def create_artists() -> None:
             artist_id=artist_5.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
 
+    _create_multi_artists_offer(venue)
     _create_library_with_writers()
+
+
+def _create_multi_artists_offer(venue: offerers_models.Venue) -> None:
+    product = offers_factories.ProductFactory.create(
+        name="Offre avec plusieurs artistes", subcategoryId=subcategories.LIVRE_PAPIER.id
+    )
+    artist_1 = artist_factories.ArtistFactory.create(name="Albert Dessinateur")
+    artist_2 = artist_factories.ArtistFactory.create(name="Bernard Auteur")
+    offers_factories.ArtistProductLinkFactory.create(
+        artist_id=artist_1.id, product_id=product.id, artist_type=ArtistType.AUTHOR
+    )
+    offers_factories.ArtistProductLinkFactory.create(
+        artist_id=artist_2.id, product_id=product.id, artist_type=ArtistType.AUTHOR
+    )
+
+    offer = offers_factories.OfferFactory(product=product, venue=venue)
+    offers_factories.StockFactory(offer=offer)
 
 
 def _create_library_with_writers() -> None:
