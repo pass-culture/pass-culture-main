@@ -1,5 +1,4 @@
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
 
 import styles from './EmailChangeValidation.module.scss'
 
@@ -17,9 +16,7 @@ export const EmailChangeValidationScreen = ({
           <p className={styles['subtitle']}>
             Merci d’avoir confirmé votre changement d’adresse email.
           </p>
-          <ButtonLink variant={ButtonVariant.PRIMARY} to="/">
-            Se connecter
-          </ButtonLink>
+          <Button as="a" to="/" label="Se connecter" />
         </>
       )}
       {!isSuccess && (
@@ -31,9 +28,7 @@ export const EmailChangeValidationScreen = ({
           <p className={styles['subtitle']}>
             Connectez-vous avec votre ancienne adresse email.
           </p>
-          <ButtonLink variant={ButtonVariant.PRIMARY} to="/">
-            Se connecter
-          </ButtonLink>
+          <Button as="a" to="/" label="Se connecter" />
         </>
       )}
     </>

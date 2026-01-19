@@ -199,7 +199,9 @@ describe('UserAnonymization', () => {
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
       await userEvent.type(emailInput, 'user@example.com')
 
-      const submitButton = screen.getByTestId('user-anonymization-submit')
+      const submitButton = screen.getByRole('button', {
+        name: 'Supprimer mon compte',
+      })
 
       await userEvent.click(submitButton!)
 
@@ -225,7 +227,9 @@ describe('UserAnonymization', () => {
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
       await userEvent.type(emailInput, 'user@example.com')
 
-      const submitButton = screen.getByTestId('user-anonymization-submit')
+      const submitButton = screen.getByRole('button', {
+        name: 'Supprimer mon compte',
+      })
 
       await userEvent.click(submitButton!)
 
@@ -316,7 +320,9 @@ describe('UserAnonymization', () => {
       const emailInput = screen.getByLabelText(/Confirmer votre adresse email/)
       await userEvent.type(emailInput, 'invalid-email')
 
-      const submitButton = screen.getByTestId('user-anonymization-submit')
+      const submitButton = screen.getByRole('button', {
+        name: 'Supprimer mon compte',
+      })
       await userEvent.click(submitButton!)
 
       await waitFor(() => {

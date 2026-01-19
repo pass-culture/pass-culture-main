@@ -3,13 +3,13 @@ import { useParams } from 'react-router'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import {
   type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { CollectiveOfferSummary } from '../components/CollectiveOfferSummary/CollectiveOfferSummary'
 import styles from './CollectiveOfferSummaryCreation.module.scss'
@@ -48,17 +48,19 @@ export const CollectiveOfferSummaryCreation = ({
         />
         <ActionsBarSticky>
           <ActionsBarSticky.Left>
-            <ButtonLink
+            <Button
+              as="a"
               variant={ButtonVariant.SECONDARY}
               to={backRedirectionUrl}
-            >
-              Retour
-            </ButtonLink>
+              label="Retour"
+            />
           </ActionsBarSticky.Left>
           <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
-            <ButtonLink variant={ButtonVariant.PRIMARY} to={nextRedirectionUrl}>
-              Enregistrer et continuer
-            </ButtonLink>
+            <Button
+              as="a"
+              to={nextRedirectionUrl}
+              label="Enregistrer et continuer"
+            />
           </ActionsBarSticky.Right>
         </ActionsBarSticky>
       </div>

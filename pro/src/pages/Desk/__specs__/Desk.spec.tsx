@@ -46,7 +46,9 @@ describe('Desk', () => {
           'Saisissez les contremarques présentées par les bénéficiaires afin de les valider ou de les invalider.'
         )
       ).toBeInTheDocument()
-      expect(screen.getByText('Valider la contremarque')).toBeDisabled()
+      expect(
+        screen.getByRole('button', { name: 'Valider la contremarque' })
+      ).toBeDisabled()
     })
 
     it('should indicate the number of characters missing', async () => {

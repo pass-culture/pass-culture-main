@@ -176,7 +176,10 @@ describe('CollectiveOfferVisibility', () => {
         /Nom de l’établissement scolaire ou code UAI/
       )
     ).toBeDisabled()
-    expect(screen.getByText(/Enregistrer et continuer/)).toBeDisabled()
+
+    expect(
+      screen.getByRole('button', { name: /Enregistrer et continuer/ })
+    ).toBeDisabled()
   })
 
   it('should display details on selected institution', async () => {
@@ -683,7 +686,9 @@ describe('CollectiveOfferVisibility', () => {
         /Nom de l’établissement scolaire ou code UAI/
       )
     ).toBeDisabled()
-    expect(screen.getByText(/Enregistrer et continuer/)).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: /Enregistrer et continuer/ })
+    ).toBeDisabled()
   })
 
   describe('redactors preloading', () => {

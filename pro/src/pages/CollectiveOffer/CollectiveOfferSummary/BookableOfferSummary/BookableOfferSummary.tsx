@@ -36,6 +36,12 @@ import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBooki
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
 import { EducationalInstitutionDetails } from '@/components/EducationalInstitutionDetails/EducationalInstitutionDetails'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
@@ -53,9 +59,6 @@ import { getLocation } from '@/pages/AdageIframe/app/components/OfferInfos/Adage
 import { BookableOfferTimeline } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/BookableOfferTimeline/BookableOfferTimeline'
 import { DEFAULT_RECAP_VALUE } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/constants'
 import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { DetailItem } from '../components/DetailItem/DetailItem'
@@ -253,32 +256,36 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
             <ul>
               {canEditOffer && (
                 <li>
-                  <ButtonLink
+                  <Button
+                    as="a"
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.NEUTRAL}
+                    size={ButtonSize.SMALL}
                     to={draftOfferLink ? draftOfferLink : offerEditLink}
                     aria-label={'Modifier l’offre'}
                     icon={fullEditIcon}
-                  >
-                    Modifier
-                  </ButtonLink>
+                    label="Modifier"
+                  />
                 </li>
               )}
 
               {canPreviewOffer && (
                 <li>
-                  <ButtonLink
+                  <Button
+                    as="a"
                     to={`/offre/${offer.id}/collectif/apercu`}
                     icon={fullShowIcon}
                     ref={adagePreviewButtonRef}
-                  >
-                    Aperçu
-                  </ButtonLink>
+                    label="Aperçu"
+                  />
                 </li>
               )}
 
               {canDuplicateOffer && (
                 <li>
                   <Button
-                    variant={ButtonVariant.TERNARY}
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
                     icon={fullCopyIcon}
                     onClick={async () => {
                       logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
@@ -291,9 +298,8 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                       await duplicateBookableOffer(navigate, snackBar, offer.id)
                     }}
                     ref={duplicateButtonRef}
-                  >
-                    Dupliquer
-                  </Button>
+                    label="Dupliquer"
+                  />
                 </li>
               )}
               {canArchiveOffer && (
@@ -301,24 +307,23 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                   <Button
                     onClick={() => setIsArchiveModalOpen(true)}
                     icon={fullArchiveIcon}
-                    variant={ButtonVariant.TERNARY}
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
                     ref={archiveButtonRef}
-                  >
-                    Archiver
-                  </Button>
+                    label="Archiver"
+                  />
                 </li>
               )}
               {isBookingCancellable && (
                 <li>
                   <Button
                     icon={fullClearIcon}
-                    variant={ButtonVariant.TERNARYBRAND}
-                    className={styles['button-cancel-booking']}
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
                     onClick={() => setIsCancelBookingModalOpen(true)}
                     ref={cancelBookingButtonRef}
-                  >
-                    Annuler la réservation
-                  </Button>
+                    label="Annuler la réservation"
+                  />
                 </li>
               )}
             </ul>
@@ -367,12 +372,11 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
+          <Button
+            as="a"
             to={computeCollectiveOffersUrl({})}
-          >
-            Retour à la liste des offres
-          </ButtonLink>
+            label="Retour à la liste des offres"
+          />
         </ActionsBarSticky.Left>
       </ActionsBarSticky>
     </BasicLayout>

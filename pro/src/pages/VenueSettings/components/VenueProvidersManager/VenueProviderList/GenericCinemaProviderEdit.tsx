@@ -9,9 +9,9 @@ import type {
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import {
@@ -79,9 +79,12 @@ export const GenericCinemaProviderEdit = ({
       variant="drawer"
       title="Modifier les paramètres de vos offres"
       trigger={
-        <Button variant={ButtonVariant.TERNARY} icon={fullEditIcon}>
-          Paramétrer
-        </Button>
+        <Button
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullEditIcon}
+          label="Paramétrer"
+        />
       }
       open={isDialogOpen}
       onOpenChange={setIsDialogOpen}

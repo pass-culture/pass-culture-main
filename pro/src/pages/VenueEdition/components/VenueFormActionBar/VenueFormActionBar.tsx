@@ -1,8 +1,7 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 
 import styles from './VenueFormActionBar.module.scss'
 
@@ -19,22 +18,22 @@ export const VenueFormActionBar = ({
 }: VenueFormActionBarProps) => {
   return (
     <div className={styles['action-bar']}>
-      <ButtonLink
+      <Button
+        as="a"
         variant={ButtonVariant.SECONDARY}
+        color={ButtonColor.NEUTRAL}
         to={getVenuePagePathToNavigateTo(
           venue?.managingOfferer.id as number,
           venue?.id as number
         )}
-      >
-        Annuler
-      </ButtonLink>
+        label="Annuler"
+      />
       <Button
         type="submit"
         isLoading={isSubmitting}
         disabled={disableFormSubmission}
-      >
-        Enregistrer
-      </Button>
+        label="Enregistrer"
+      />
     </div>
   )
 }

@@ -11,9 +11,9 @@ import type {
 import { isOfferAllocineSynchronized } from '@/commons/core/Offers/utils/typology'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
@@ -143,11 +143,14 @@ export function StocksCalendarTableEditStock({
         <DialogBuilder.Footer>
           <div className={styles['footer']}>
             <Dialog.Close asChild>
-              <Button type="button" variant={ButtonVariant.SECONDARY}>
-                Annuler
-              </Button>
+              <Button
+                type="button"
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                label="Annuler"
+              />
             </Dialog.Close>
-            <Button type="submit">Valider</Button>
+            <Button type="submit" label="Valider" />
           </div>
         </DialogBuilder.Footer>
       </form>

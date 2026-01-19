@@ -10,9 +10,9 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { sortByLabel } from '@/commons/utils/strings'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -114,9 +114,8 @@ export const AddVenueProviderButton = ({
       variant={ButtonVariant.SECONDARY}
       icon={fullMoreIcon}
       ref={selectSoftwareButtonRef}
-    >
-      Sélectionner un logiciel
-    </Button>
+      label="Sélectionner un logiciel"
+    />
   )
 
   const VenueProviderSelection = (

@@ -13,14 +13,14 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fulleMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { DialogStockThingDeleteConfirm } from '@/pages/IndividualOffer/components/DialogStockThingDeleteConfirm/DialogStockThingDeleteConfirm'
 import { ActivationCodeFormDialog } from '@/pages/IndividualOffer/IndividualOfferPriceTable/components/PriceTableForm/ActivationCodeFormDialog/ActivationCodeFormDialog'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
@@ -398,10 +398,10 @@ export const PriceTableForm = ({
               icon={fulleMoreIcon}
               onClick={addEntry}
               type="button"
-              variant={ButtonVariant.TERNARY}
-            >
-              Ajouter un tarif
-            </Button>
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              label="Ajouter un tarif"
+            />
           </div>
         )}
     </>

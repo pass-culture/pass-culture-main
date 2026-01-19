@@ -1,8 +1,8 @@
 import type { StoryObj } from '@storybook/react-vite'
 
-import { Button } from '@/ui-kit/Button/Button'
 
 import { Tooltip } from './Tooltip'
+import { Button } from '@/design-system/Button/Button';
 
 export default {
   title: '@/ui-kit/Tooltip',
@@ -19,6 +19,6 @@ export default {
 export const Default: StoryObj<typeof Tooltip> = {
   args: {
     content: 'Contenu du tooltip',
-    children: <Button>Je peux afficher un tooltip.</Button>,
+    children: <Button label="Je peux afficher un tooltip."/>,
   },
 }

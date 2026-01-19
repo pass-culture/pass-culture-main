@@ -6,13 +6,14 @@ import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import iconFullNext from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { EmailSpellCheckInput } from '@/ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 
 import styles from './SignupContainer.module.scss'
@@ -100,28 +101,34 @@ export const SignupForm = (): JSX.Element => {
         <div className={styles['buttons-field']}>
           <Button
             type="submit"
-            className={styles['buttons']}
             isLoading={isSubmitting}
             disabled={isSubmitting}
-          >
-            S’inscrire
-          </Button>
+            label="S’inscrire"
+          />
         </div>
         <div className={styles['no-account']}>
           <p className={styles['no-account-text']}>
             Vous avez déjà un compte ?
           </p>
-          <ButtonLink
-            to="/connexion"
-            icon={iconFullNext}
-            variant={
-              isLaptopScreenAtLeast
-                ? ButtonVariant.TERNARY
-                : ButtonVariant.QUATERNARY
-            }
-          >
-            Se connecter
-          </ButtonLink>
+
+          {isLaptopScreenAtLeast ? (
+            <Button
+              as="a"
+              to="/connexion"
+              icon={iconFullNext}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              label="Se connecter"
+            />
+          ) : (
+            <ButtonLink
+              to="/connexion"
+              icon={iconFullNext}
+              variant={OldButtonVariant.QUATERNARY}
+            >
+              Se connecter
+            </ButtonLink>
+          )}
         </div>
       </FormLayout>
     </>

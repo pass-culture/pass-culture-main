@@ -7,12 +7,14 @@ import { GET_OFFERER_V2_STATS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getOffersCountToDisplay } from '@/commons/utils/getOffersCountToDisplay'
 import { Card } from '@/components/Card/Card'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullShowIcon from '@/icons/full-show.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
@@ -47,13 +49,14 @@ const StatBlock = ({ icon, count, label, link, linkLabel }: StatBlockProps) => (
         </span>{' '}
         {label}
       </p>
-      <ButtonLink
-        variant={ButtonVariant.QUATERNARY}
+      <Button
+        as="a"
+        variant={ButtonVariant.SECONDARY}
+        color={ButtonColor.NEUTRAL}
         icon={fullShowIcon}
         to={link}
-      >
-        {linkLabel}
-      </ButtonLink>
+        label={linkLabel}
+      />
     </div>
   </div>
 )
@@ -117,7 +120,7 @@ export const PublishedOfferStats = ({
               </p>
 
               <ButtonLink
-                variant={ButtonVariant.QUATERNARY}
+                variant={OldButtonVariant.QUATERNARY}
                 to="https://aide.passculture.app/hc/fr/articles/4412007222289--Acteurs-Culturels-Quelles-sont-les-raisons-possibles-de-refus-de-votre-offre-"
                 isExternal
                 icon={fullLinkIcon}

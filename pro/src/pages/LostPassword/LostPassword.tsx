@@ -14,11 +14,12 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ReSendEmailCallout } from '@/components/ReSendEmailCallout/ReSendEmailCallout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
@@ -98,29 +99,33 @@ export const LostPassword = (): JSX.Element => {
                   />
                 </div>
               </FormLayout.Row>
-              <FormLayout.Row>
+              <FormLayout.Row className={styles['validation-button']}>
                 <Button
                   type="submit"
-                  className={styles['validation-button']}
                   disabled={isSubmitting}
-                  variant={ButtonVariant.PRIMARY}
-                >
-                  Réinitialiser
-                </Button>
+                  label="Réinitialiser"
+                />
               </FormLayout.Row>
               <FormLayout.Row>
-                <ButtonLink
-                  to="/connexion"
-                  className={styles['back-button']}
-                  variant={
-                    isLaptopScreenAtLeast
-                      ? ButtonVariant.TERNARY
-                      : ButtonVariant.QUATERNARY
-                  }
-                  icon={fullNextIcon}
-                >
-                  Retour à la connexion
-                </ButtonLink>
+                {isLaptopScreenAtLeast ? (
+                  <Button
+                    as="a"
+                    to="/connexion"
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
+                    icon={fullNextIcon}
+                    label="Retour à la connexion"
+                  />
+                ) : (
+                  <ButtonLink
+                    to="/connexion"
+                    className={styles['back-button']}
+                    variant={OldButtonVariant.QUATERNARY}
+                    icon={fullNextIcon}
+                  >
+                    Retour à la connexion
+                  </ButtonLink>
+                )}
               </FormLayout.Row>
             </FormLayout>
           </form>

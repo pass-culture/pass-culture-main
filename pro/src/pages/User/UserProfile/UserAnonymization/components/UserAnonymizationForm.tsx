@@ -7,9 +7,9 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './UserAnonymizationForm.module.scss'
 import { getValidationSchema } from './validationSchema'
@@ -71,16 +71,17 @@ export const UserAnonymizationForm = (): JSX.Element => {
       </div>
       <div className={styles['dialog-footer']}>
         <Dialog.Close asChild>
-          <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
         </Dialog.Close>
         <Button
           type="submit"
-          variant={ButtonVariant.PRIMARY}
           isLoading={isSubmitting}
-          testId="user-anonymization-submit"
-        >
-          Supprimer mon compte
-        </Button>
+          label="Supprimer mon compte"
+        />
       </div>
     </form>
   )

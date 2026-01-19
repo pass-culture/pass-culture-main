@@ -90,20 +90,14 @@ describe('ActionsBar', () => {
   it('should have buttons to activate and deactivate offers, to delete, and to abort action', () => {
     renderActionsBar(props)
 
-    screen.getByText('Publier', { selector: 'button' })
-
+    expect(screen.getByRole('button', { name: 'Publier' })).toBeInTheDocument()
     expect(
-      screen.queryByText('Publier', { selector: 'button' })
+      screen.getByRole('button', { name: 'Mettre en pause' })
     ).toBeInTheDocument()
     expect(
-      screen.queryByText('Mettre en pause', { selector: 'button' })
+      screen.getByRole('button', { name: 'Supprimer' })
     ).toBeInTheDocument()
-    expect(
-      screen.queryByText('Supprimer', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.queryByText('Annuler', { selector: 'button' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
   })
 
   it('should say how many offers are selected when only 1 offer is selected', () => {

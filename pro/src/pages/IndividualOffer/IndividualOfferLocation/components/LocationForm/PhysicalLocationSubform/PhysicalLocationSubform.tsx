@@ -6,13 +6,13 @@ import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 
 import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../../commons/constants'
@@ -157,15 +157,17 @@ export const PhysicalLocationSubform = ({
 
           <FormLayout.Row>
             <Button
-              variant={ButtonVariant.QUATERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               icon={isManualEdition ? fullBackIcon : fullNextIcon}
               onClick={toggleIsManualEdition}
               disabled={isDisabled}
-            >
-              {isManualEdition
-                ? `Revenir à la sélection automatique`
-                : `Vous ne trouvez pas votre adresse ?`}
-            </Button>
+              label={
+                isManualEdition
+                  ? `Revenir à la sélection automatique`
+                  : `Vous ne trouvez pas votre adresse ?`
+              }
+            />
           </FormLayout.Row>
 
           {isManualEdition && (

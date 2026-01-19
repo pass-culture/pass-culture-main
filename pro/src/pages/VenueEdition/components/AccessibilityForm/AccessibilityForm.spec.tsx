@@ -7,7 +7,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 
 import type { VenueEditionFormValues } from '../../commons/types'
 import {
@@ -83,9 +83,7 @@ function renderAccessibility(
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <AccessibilityForm {...props} />
-          <Button type="submit" isLoading={false}>
-            Submit
-          </Button>
+          <Button type="submit" isLoading={false} label="Submit" />
         </form>
       </FormProvider>
     )

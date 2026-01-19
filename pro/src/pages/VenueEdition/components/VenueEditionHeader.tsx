@@ -19,10 +19,14 @@ import { noop } from '@/commons/utils/noop'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
 import { ButtonImageEdit } from '@/components/ImageUploader/components/ButtonImageEdit/ButtonImageEdit'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullParametersIcon from '@/icons/full-parameters.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './VenueEditionHeader.module.scss'
 
@@ -134,27 +138,31 @@ export const VenueEditionHeader = ({
         </div>
 
         <div className={styles['venue-details-links']}>
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
+          <Button
+            as="a"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             icon={fullParametersIcon}
             to={getVenuePagePathToNavigateTo(
               venue.managingOfferer.id,
               venue.id,
               '/parametres'
             )}
-          >
-            Paramètres généraux
-          </ButtonLink>
+            label="Paramètres généraux"
+          />
           {venue.isPermanent && context === 'partnerPage' && (
-            <ButtonLink
-              variant={ButtonVariant.TERNARY}
+            <Button
+              as="a"
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
               icon={fullLinkIcon}
               to={`${WEBAPP_URL}/lieu/${venue.id}`}
               isExternal
               opensInNewTab
-            >
-              Visualiser votre page
-            </ButtonLink>
+              label="Visualiser votre page"
+            />
           )}
           {imageValues.croppedImageUrl && (
             <ButtonImageEdit

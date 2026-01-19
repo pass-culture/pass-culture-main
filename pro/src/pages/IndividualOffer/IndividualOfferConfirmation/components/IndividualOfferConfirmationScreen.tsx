@@ -9,11 +9,11 @@ import {
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { isDateValid } from '@/commons/utils/date'
 import { DisplayOfferInAppLink } from '@/components/DisplayOfferInAppLink/DisplayOfferInAppLink'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferConfirmationScreen.module.scss'
@@ -73,26 +73,19 @@ export const IndividualOfferConfirmationScreen = ({
       )}
 
       <div className={styles['confirmation-actions']}>
-        <ButtonLink
+        <Button
+          as="a"
           to={getIndividualOfferUrl({
             step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
             mode: OFFER_WIZARD_MODE.CREATION,
             isOnboarding: false,
           })}
           isExternal
-          className={styles['confirmation-action']}
           variant={ButtonVariant.SECONDARY}
-        >
-          Créer une nouvelle offre
-        </ButtonLink>
+          label="Créer une nouvelle offre"
+        />
 
-        <ButtonLink
-          to="/offres"
-          className={styles['confirmation-action']}
-          variant={ButtonVariant.PRIMARY}
-        >
-          Voir la liste des offres
-        </ButtonLink>
+        <Button as="a" to="/offres" label="Voir la liste des offres" />
       </div>
     </div>
   )

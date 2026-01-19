@@ -1,8 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog'
 
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 
 import styles from './UserAnonymizationUneligibility.module.scss'
 
@@ -26,18 +25,19 @@ export const UserAnonymizationUneligibility = ({
           Pour plus d’informations, consultez notre charte des données
           personnelles :
         </p>
-        <ButtonLink
+        <Button
+          as="a"
           to={PERSONAL_DATA_CHARTER_URL}
           isExternal
           opensInNewTab
-          variant={ButtonVariant.TERNARY}
-        >
-          Lire la charte des données personnelles
-        </ButtonLink>
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="Lire la charte des données personnelles"
+        />
       </div>
       <div className={styles['dialog-footer']}>
         <Dialog.Close asChild>
-          <Button variant={ButtonVariant.PRIMARY}>J‘ai compris</Button>
+          <Button label="J‘ai compris" />
         </Dialog.Close>
       </div>
     </>

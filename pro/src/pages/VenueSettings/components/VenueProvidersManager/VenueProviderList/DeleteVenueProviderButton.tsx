@@ -5,9 +5,9 @@ import { api } from '@/apiClient/api'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { DeleteVenueProviderDialog } from './DeleteVenueProviderDialog'
 
@@ -52,11 +52,11 @@ export const DeleteVenueProviderButton = ({
       trigger={
         <Button
           onClick={() => setIsModalOpen(true)}
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullTrashIcon}
-        >
-          Supprimer
-        </Button>
+          label="Supprimer"
+        />
       }
     />
   )

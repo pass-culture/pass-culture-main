@@ -4,11 +4,11 @@ import { FormProvider, useForm } from 'react-hook-form'
 
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { BoxFormLayout, type BoxFormLayoutProps } from './BoxFormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import { ButtonVariant, ButtonColor } from '@/design-system/Button/types';
+import { Button } from '@/design-system/Button/Button';
 
 export default {
   title: '@/ui-kit/BoxFormLayout',
@@ -68,16 +68,15 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
                       style={{ marginTop: 24, marginRight: 16 }}
                       onClick={() => setShowForm(false)}
                       variant={ButtonVariant.SECONDARY}
-                    >
-                      Annuler
-                    </Button>
+                      color={ButtonColor.NEUTRAL}
+                      label="Annuler"
+                    />
                     <Button
                       type="submit"
                       style={{ marginTop: 24 }}
                       isLoading={isSubmitting}
-                    >
-                      Enregistrer
-                    </Button>
+                      label="Enregistrer"
+                    />
                   </div>
                 </form>
               </FormProvider>

@@ -27,10 +27,9 @@ import { OfferEducationalActions } from '@/components/OfferEducationalActions/Of
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
 
@@ -196,8 +195,14 @@ export const OfferEducationalStock = <
             </FormLayout.Section>
             <ActionsBarSticky>
               <ActionsBarSticky.Left>
-                <ButtonLink
+                <Button
+                  as="a"
                   variant={ButtonVariant.SECONDARY}
+                  color={
+                    mode === Mode.CREATION
+                      ? ButtonColor.BRAND
+                      : ButtonColor.NEUTRAL
+                  }
                   to={
                     mode === Mode.CREATION
                       ? `/offre/collectif/${offer.id}/creation${
@@ -205,9 +210,10 @@ export const OfferEducationalStock = <
                         }`
                       : '/offres/collectives'
                   }
-                >
-                  {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
-                </ButtonLink>
+                  label={
+                    mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'
+                  }
+                />
               </ActionsBarSticky.Left>
 
               <ActionsBarSticky.Right
@@ -218,9 +224,8 @@ export const OfferEducationalStock = <
                   type="submit"
                   disabled={!(canEditDiscount || canEditDates)}
                   isLoading={isLoading}
-                >
-                  Enregistrer et continuer
-                </Button>
+                  label="Enregistrer et continuer"
+                />
               </ActionsBarSticky.Right>
             </ActionsBarSticky>
           </FormLayout>

@@ -19,11 +19,10 @@ import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -141,11 +140,9 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
                   extension={
                     <Button
                       type="submit"
-                      className={styles['search-button']}
                       disabled={isLoading}
-                    >
-                      Rechercher
-                    </Button>
+                      label="Rechercher"
+                    />
                   }
                 />
               </div>
@@ -213,12 +210,12 @@ export const CollectiveOfferSelectionDuplication = (): JSX.Element => {
 
                 <ActionsBarSticky>
                   <ActionsBarSticky.Left>
-                    <ButtonLink
+                    <Button
+                      as="a"
                       variant={ButtonVariant.SECONDARY}
                       to={computeCollectiveOffersUrl({})}
-                    >
-                      Retour à la liste des offres
-                    </ButtonLink>
+                      label="Retour à la liste des offres"
+                    />
                   </ActionsBarSticky.Left>
                 </ActionsBarSticky>
               </>

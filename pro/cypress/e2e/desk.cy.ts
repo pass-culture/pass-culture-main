@@ -65,7 +65,7 @@ describe('Desk (Guichet) feature', () => {
 
     cy.stepLog({ message: 'I validate the countermark' })
     cy.findByText('Coupon vérifié, cliquez sur "Valider" pour enregistrer')
-    cy.findByText('Valider la contremarque').click()
+    cy.findByRole('button', { name: 'Valider la contremarque' }).click()
 
     cy.stepLog({ message: 'the booking is done' })
     cy.findByText('Contremarque validée !')
@@ -82,7 +82,9 @@ describe('Desk (Guichet) feature', () => {
       'have.text',
       "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
     )
-    cy.findByText('Valider la contremarque').should('be.disabled')
+    cy.findByRole('button', { name: 'Valider la contremarque' }).should(
+      'be.disabled'
+    )
   })
 
   it('It should decline an event countermark more than 48h before', () => {
@@ -98,7 +100,9 @@ describe('Desk (Guichet) feature', () => {
         `Vous pourrez valider cette contremarque à partir du ${date}`
       )
       .and('contain.text', `une fois le délai d’annulation passé.`)
-    cy.findByText('Valider la contremarque').should('be.disabled')
+    cy.findByRole('button', { name: 'Valider la contremarque' }).should(
+      'be.disabled'
+    )
   })
 
   it('I should be able to invalidate an already used countermark', () => {
@@ -121,7 +125,9 @@ describe('Desk (Guichet) feature', () => {
     cy.findByLabelText('Contremarque').type(tokenOther)
 
     cy.stepLog({ message: 'I cannot validate the countermark' })
-    cy.findByText('Valider la contremarque').should('be.disabled')
+    cy.findByRole('button', { name: 'Valider la contremarque' }).should(
+      'be.disabled'
+    )
     cy.findByText(
       "La contremarque n'existe pas, ou vous n'avez pas les droits nécessaires pour y accéder."
     )
@@ -133,7 +139,9 @@ describe('Desk (Guichet) feature', () => {
     cy.findByLabelText('Contremarque').type(tokenCanceled)
 
     cy.stepLog({ message: 'I validate the countermark' })
-    cy.findByText('Valider la contremarque').should('be.disabled')
+    cy.findByRole('button', { name: 'Valider la contremarque' }).should(
+      'be.disabled'
+    )
     cy.findByText('Cette réservation a été annulée')
   })
 
@@ -143,7 +151,9 @@ describe('Desk (Guichet) feature', () => {
     cy.findByLabelText('Contremarque').type(tokenReimbursed)
 
     cy.stepLog({ message: 'I validate the countermark' })
-    cy.findByText('Valider la contremarque').should('be.disabled')
+    cy.findByRole('button', { name: 'Valider la contremarque' }).should(
+      'be.disabled'
+    )
     cy.findByText('Cette réservation a été remboursée')
   })
 })

@@ -16,14 +16,14 @@ import { isDateValid, mapDayToFrench } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { DayCheckbox } from '@/ui-kit/form/DayCheckbox/DayCheckbox'
@@ -155,7 +155,8 @@ const BeginningTimesForm = (): JSX.Element => {
             ))}
           </div>
           <Button
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={fullMoreIcon}
             onClick={() => {
               append('')
@@ -166,9 +167,8 @@ const BeginningTimesForm = (): JSX.Element => {
                 document.getElementById(inputToFocus)?.focus()
               }, 0)
             }}
-          >
-            Ajouter un créneau
-          </Button>
+            label="Ajouter un créneau"
+          />
         </FormLayout.Row>
       </div>
     </fieldset>
@@ -394,16 +394,19 @@ export const RecurrenceForm = ({
         <DialogBuilder.Footer>
           <div className={styles['action-buttons']}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                label="Annuler"
+              />
             </Dialog.Close>
 
             <Button
               type="submit"
               disabled={methods.formState.isSubmitting}
               isLoading={methods.formState.isSubmitting}
-            >
-              Valider
-            </Button>
+              label="Valider"
+            />
           </div>
         </DialogBuilder.Footer>
       </form>

@@ -8,12 +8,11 @@ import { GET_HIGHLIGHTS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag } from '@/design-system/Tag/Tag'
 import fullLinkIcon from '@/icons/full-link.svg'
 import { AccessibleDate } from '@/ui-kit/AccessibleDate/AccessibleDate'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   DialogBuilder,
   type DialogBuilderProps,
@@ -96,7 +95,8 @@ export const ModalHighlight = ({
         )}
       </div>
       <div className={styles['links-container']}>
-        <ButtonLink
+        <Button
+          as="a"
           to="https://aide.passculture.app/hc/fr/articles/20587966046748--Acteurs-Culturels-Comment-et-pourquoi-proposer-des-offres-dans-le-cadre-des-temps-forts-et-zooms-th%C3%A9matiques"
           isExternal
           icon={fullLinkIcon}
@@ -104,10 +104,10 @@ export const ModalHighlight = ({
           onClick={() =>
             logEvent(HighlightEvents.HAS_CLICKED_MORE_INFO_HIGHLIGHT)
           }
-        >
-          En savoir plus sur les temps forts
-        </ButtonLink>
-        <ButtonLink
+          label="En savoir plus sur les temps forts"
+        />
+        <Button
+          as="a"
           to="https://passcultureapp.notion.site/1cfad4e0ff9880288df4c80eebfe3ca0?v=1cfad4e0ff9880f3bbfd000c6f5023f3"
           isExternal
           icon={fullLinkIcon}
@@ -115,24 +115,27 @@ export const ModalHighlight = ({
           onClick={() =>
             logEvent(HighlightEvents.HAS_CLICKED_CALENDAR_HIGHLIGHT)
           }
-        >
-          Voir tout le calendrier
-        </ButtonLink>
+          label="Voir tout le calendrier"
+        />
       </div>
       <DialogBuilder.Footer>
         <div className={styles['actions-container']}>
           <Dialog.Close asChild>
-            <Button variant={ButtonVariant.SECONDARY}>Fermer</Button>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Fermer"
+            />
           </Dialog.Close>
-          <ButtonLink
+          <Button
+            as="a"
             to="/offres"
             variant={ButtonVariant.PRIMARY}
             onClick={() =>
               logEvent(HighlightEvents.HAS_CLICKED_ALL_OFFER_HIGHLIGHT)
             }
-          >
-            Accéder à mes offres
-          </ButtonLink>
+            label="Accéder à mes offres"
+          />
         </div>
       </DialogBuilder.Footer>
     </DialogBuilder>

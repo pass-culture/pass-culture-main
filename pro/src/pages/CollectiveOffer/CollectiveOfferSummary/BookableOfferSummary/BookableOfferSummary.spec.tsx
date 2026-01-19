@@ -298,7 +298,9 @@ describe('BookableOfferSummary', () => {
 
     renderBookableOfferSummary(props)
 
-    const cancelButton = screen.getByText('Annuler la réservation')
+    const cancelButton = screen.getByRole('button', {
+      name: 'Annuler la réservation',
+    })
     await userEvent.click(cancelButton)
 
     expect(

@@ -2,10 +2,10 @@ import { useState } from 'react'
 
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Dialog } from '@/components/Dialog/Dialog'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { UserAnonymizationForm } from './components/UserAnonymizationForm'
 import { UserAnonymizationUneligibility } from './components/UserAnonymizationUneligibility'
@@ -37,12 +37,12 @@ export const UserAnonymization = (): JSX.Element | null => {
       open={isDialogOpen}
       trigger={
         <Button
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullTrashIcon}
           onClick={() => setIsDialogOpen(true)}
-        >
-          Supprimer mon compte
-        </Button>
+          label="Supprimer mon compte"
+        />
       }
     >
       {isEligible ? (

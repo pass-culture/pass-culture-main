@@ -22,11 +22,10 @@ import {
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { RedirectToBankAccountDialog } from '@/components/RedirectToBankAccountDialog/RedirectToBankAccountDialog'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { AdagePreviewLayout } from '@/pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import { PreviewHeader } from '@/pages/CollectiveOffer/CollectiveOfferPreview/components/PreviewHeader'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 export interface CollectiveOfferSummaryCreationProps {
   offer:
@@ -124,12 +123,16 @@ export const CollectiveOfferPreviewCreationScreen = ({
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink variant={ButtonVariant.SECONDARY} to={backRedirectionUrl}>
-            Retour
-          </ButtonLink>
+          <Button
+            as="a"
+            variant={ButtonVariant.SECONDARY}
+            to={backRedirectionUrl}
+            label="Retour"
+          />
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right dirtyForm={false} mode={Mode.CREATION}>
-          <ButtonLink
+          <Button
+            as="a"
             to="/offres/collectives"
             variant={ButtonVariant.SECONDARY}
             onClick={() => {
@@ -141,10 +144,9 @@ export const CollectiveOfferPreviewCreationScreen = ({
 
               snackBar.success('Brouillon sauvegardé dans la liste des offres')
             }}
-          >
-            Sauvegarder le brouillon et quitter
-          </ButtonLink>
-          <Button onClick={publishOffer}>Publier l’offre</Button>
+            label="Sauvegarder le brouillon et quitter"
+          />
+          <Button onClick={publishOffer} label="Publier l’offre" />
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
       {offerer?.id && (

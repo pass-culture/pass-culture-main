@@ -6,11 +6,11 @@ import { isErrorAPIError } from '@/apiClient/helpers'
 import type { UserResetEmailBodyModel } from '@/apiClient/v1'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './UserEmailForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -106,12 +106,18 @@ export const UserEmailForm = ({
           </FormLayout>
 
           <div className={styles['buttons-field']}>
-            <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-              Annuler
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              Enregistrer
-            </Button>
+            <Button
+              onClick={onCancel}
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
+
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              label="Enregistrer"
+            />
           </div>
         </form>
       </BoxFormLayout.Fields>

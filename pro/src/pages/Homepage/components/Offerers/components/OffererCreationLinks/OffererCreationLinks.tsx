@@ -1,6 +1,6 @@
 import { Card } from '@/components/Card/Card'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 
 import styles from './OffererCreationLinks.module.scss'
 
@@ -15,21 +15,20 @@ export const OffererCreationLinks = () => (
       </p>
 
       <div className={styles['actions-container']}>
-        <ButtonLink
-          variant={ButtonVariant.PRIMARY}
+        <Button
+          as="a"
           to="/inscription/structure/recherche"
-        >
-          Ajouter une nouvelle structure
-        </ButtonLink>
+          label="Ajouter une nouvelle structure"
+        />
 
-        <ButtonLink
+        <Button
+          as="a"
           variant={ButtonVariant.SECONDARY}
           isExternal
           opensInNewTab
           to="https://aide.passculture.app/hc/fr/requests"
-        >
-          Contacter le support
-        </ButtonLink>
+          label="Contacter le support"
+        />
       </div>
     </div>
   </Card>

@@ -41,15 +41,15 @@ describe('OfferStats', () => {
     const publishedIndividualOffers = await screen.findByText(
       'Voir les offres individuelles publiées'
     )
-    expect(publishedIndividualOffers.parentElement?.textContent).toContain(
-      '0 à destination du grand public'
-    )
+    expect(
+      publishedIndividualOffers.parentElement?.parentElement?.textContent
+    ).toContain('0 à destination du grand public')
     const publishedCollectiveOffers = await screen.findByText(
       'Voir les offres collectives publiées'
     )
-    expect(publishedCollectiveOffers.parentElement?.textContent).toContain(
-      '0 à destination de groupes scolaires'
-    )
+    expect(
+      publishedCollectiveOffers.parentElement?.parentElement?.textContent
+    ).toContain('0 à destination de groupes scolaires')
   })
 
   it('should render stats when above 0', async () => {
@@ -69,28 +69,28 @@ describe('OfferStats', () => {
     const publishedIndividualOffers = await screen.findByText(
       'Voir les offres individuelles publiées'
     )
-    expect(publishedIndividualOffers.parentElement?.textContent).toContain(
-      '10 à destination du grand public'
-    )
+    expect(
+      publishedIndividualOffers.parentElement?.parentElement?.textContent
+    ).toContain('10 à destination du grand public')
     const publishedCollectiveOffers = await screen.findByText(
       'Voir les offres collectives publiées'
     )
-    expect(publishedCollectiveOffers.parentElement?.textContent).toContain(
-      '0 à destination de groupes scolaires'
-    )
+    expect(
+      publishedCollectiveOffers.parentElement?.parentElement?.textContent
+    ).toContain('0 à destination de groupes scolaires')
 
     const pendingIndividualOffers = await screen.findByText(
       'Voir les offres individuelles en instruction'
     )
-    expect(pendingIndividualOffers.parentElement?.textContent).toContain(
-      '0 à destination du grand public'
-    )
+    expect(
+      pendingIndividualOffers.parentElement?.parentElement?.textContent
+    ).toContain('0 à destination du grand public')
     const pendingCollectiveOffers = await screen.findByText(
       'Voir les offres collectives en instruction'
     )
-    expect(pendingCollectiveOffers.parentElement?.textContent).toContain(
-      '5 à destination de groupes scolaires'
-    )
+    expect(
+      pendingCollectiveOffers.parentElement?.parentElement?.textContent
+    ).toContain('5 à destination de groupes scolaires')
   })
 
   it('should render when the count is too high', async () => {

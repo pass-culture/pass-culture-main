@@ -107,7 +107,7 @@ describe('CollectiveOfferConfirmation', () => {
   it('should redirect to preview step on press Retour', async () => {
     renderCollectiveOfferPreviewCreation(defaultProps)
 
-    const previewStep = screen.getByText('Retour')
+    const previewStep = screen.getByRole('link', { name: 'Retour' })
 
     await userEvent.click(previewStep)
 
@@ -119,9 +119,9 @@ describe('CollectiveOfferConfirmation', () => {
   it('should redirect to list offer with success notification on press "Sauvegarder le brouillon et quitter"', async () => {
     renderCollectiveOfferPreviewCreation(defaultProps)
 
-    const saveAndQuitButton = screen.getByText(
-      'Sauvegarder le brouillon et quitter'
-    )
+    const saveAndQuitButton = screen.getByRole('link', {
+      name: 'Sauvegarder le brouillon et quitter',
+    })
 
     expect(saveAndQuitButton.getAttribute('href')).toBe('/offres/collectives')
 

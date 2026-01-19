@@ -3,8 +3,8 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 
 import { DialogBuilder, type DialogBuilderProps } from './DialogBuilder'
 
@@ -15,17 +15,21 @@ const defaultProps: DialogBuilderProps = {
       <DialogBuilder.Footer>
         <div>
           <Dialog.Close asChild>
-            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
           </Dialog.Close>
           <Dialog.Close asChild>
-            <Button>Continuer</Button>
+            <Button label="Continuer" />
           </Dialog.Close>
         </div>
       </DialogBuilder.Footer>
     </>
   ),
   title: 'Dialog title',
-  trigger: <Button>Open the dialog</Button>,
+  trigger: <Button label="Open the dialog" />,
 }
 
 function renderDialogBuilder(props = defaultProps) {

@@ -4,9 +4,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { getDateToFrenchText } from '@/commons/utils/date'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Timeline, TimelineStepType } from '@/ui-kit/Timeline/Timeline'
 
 import styles from './CollectiveDmsTimeline.module.scss'
@@ -84,24 +84,25 @@ export const CollectiveDmsTimeline = ({
             territoire dans lequel se situe votre siège social.
           </div>
         </div>
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           to={collectiveDmsApplicationLink}
           isExternal
           onClick={() =>
             logClickOnDmsLink(DMSApplicationstatus.EN_CONSTRUCTION)
           }
-        >
-          Consulter ma messagerie sur Démarche Numérique
-        </ButtonLink>
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
+          label="Consulter ma messagerie sur Démarche Numérique"
+        />
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           to={collectiveDmsContactSupport}
           isExternal
-        >
-          Contacter les services des ministères de l’Éducation nationale et de
-          la Culture
-        </ButtonLink>
+          label="Contacter les services des ministères de l’Éducation nationale et de la Culture"
+        />
       </>
     ),
   }
@@ -122,14 +123,15 @@ export const CollectiveDmsTimeline = ({
             établissement public, il est traité par le ministère de la Culture.
           </div>
         </div>
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           to={collectiveDmsApplicationLink}
           isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.EN_INSTRUCTION)}
-        >
-          Consulter ma messagerie sur Démarche Numérique
-        </ButtonLink>
+          label="Consulter ma messagerie sur Démarche Numérique"
+        />
       </>
     ),
   }
@@ -162,14 +164,15 @@ export const CollectiveDmsTimeline = ({
             lorsque votre référencement sera effectif.
           </div>
         </div>
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           to={collectiveDmsApplicationLink}
           isExternal
           onClick={() => logClickOnDmsLink(DMSApplicationstatus.ACCEPTE)}
-        >
-          Consulter ma messagerie sur Démarche Numérique
-        </ButtonLink>
+          label="Consulter ma messagerie sur Démarche Numérique"
+        />
       </>
     ),
   }

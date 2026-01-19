@@ -2,12 +2,12 @@ import { type DMSApplicationForEAC, DMSApplicationstatus } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { getLastCollectiveDmsApplication } from '@/commons/utils/getLastCollectiveDmsApplication'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './PartnerPage.module.scss'
 
@@ -73,29 +73,33 @@ export function PartnerPageCollectiveSection({
         venueId={venueId}
         venueName={venueName}
       >
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          icon={fullLinkIcon}
-          to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
-          isExternal
-          opensInNewTab
-          className={styles['details-link']}
-          onClick={logDMSApplicationLinkClick}
-        >
-          Faire une demande de référencement ADAGE
-        </ButtonLink>
+        <div className={styles['details-link']}>
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            icon={fullLinkIcon}
+            to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
+            isExternal
+            opensInNewTab
+            onClick={logDMSApplicationLinkClick}
+            label="Faire une demande de référencement ADAGE"
+          />
+        </div>
 
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          icon={fullInfoIcon}
-          to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
-          isExternal
-          opensInNewTab
-          className={styles['details-link']}
-          onClick={logCollectiveHelpLinkClick}
-        >
-          En savoir plus sur le pass Culture à destination des scolaires
-        </ButtonLink>
+        <div className={styles['details-link']}>
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            icon={fullInfoIcon}
+            to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
+            isExternal
+            opensInNewTab
+            onClick={logCollectiveHelpLinkClick}
+            label="En savoir plus sur le pass Culture à destination des scolaires"
+          />
+        </div>
       </AdageInformations>
     )
   } else if (
@@ -130,17 +134,19 @@ export function PartnerPageCollectiveSection({
       venueId={venueId}
       venueName={venueName}
     >
-      <ButtonLink
-        variant={ButtonVariant.TERNARY}
-        icon={fullInfoIcon}
-        to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
-        isExternal
-        opensInNewTab
-        className={styles['details-link']}
-        onClick={logCollectiveHelpLinkClick}
-      >
-        En savoir plus sur le pass Culture à destination des scolaires
-      </ButtonLink>
+      <div className={styles['details-link']}>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullInfoIcon}
+          to="https://aide.passculture.app/hc/fr/categories/4410482280977--Acteurs-Culturels-Tout-savoir-sur-le-pass-Culture-collectif-%C3%A0-destination-des-groupes-scolaires"
+          isExternal
+          opensInNewTab
+          onClick={logCollectiveHelpLinkClick}
+          label="En savoir plus sur le pass Culture à destination des scolaires"
+        />
+      </div>
     </AdageInformations>
   )
 }
@@ -185,20 +191,22 @@ function AdageInformations({
         <p className={styles['details-description']}>{description}</p>
       )}
       {isDisplayedInHomepage && (
-        <ButtonLink
-          variant={ButtonVariant.TERNARY}
-          className={styles['details-link']}
-          to={`/structures/${offererId}/lieux/${venueId}/collectif`}
-          aria-label={`Gérer la page pour les enseignants ${venueName}`}
-          icon={fullNextIcon}
-          onClick={() =>
-            logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME, {
-              from: location.pathname,
-            })
-          }
-        >
-          Gérer votre page pour les enseignants
-        </ButtonLink>
+        <div className={styles['details-link']}>
+          <Button
+            as="a"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            to={`/structures/${offererId}/lieux/${venueId}/collectif`}
+            aria-label={`Gérer la page pour les enseignants ${venueName}`}
+            icon={fullNextIcon}
+            onClick={() =>
+              logEvent(Events.CLICKED_PAGE_FOR_ADAGE_HOME, {
+                from: location.pathname,
+              })
+            }
+            label="Gérer votre page pour les enseignants"
+          />
+        </div>
       )}
       {children}
     </section>

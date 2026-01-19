@@ -16,11 +16,10 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectInterventionAreas } from '@/commons/utils/selectInterventionAreas'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { RouteLeavingGuardVenueEdition } from '@/pages/VenueEdition/components/RouteLeavingGuardVenueEdition'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -236,15 +235,15 @@ export const CollectiveDataForm = ({
         </FormLayout>
 
         <div className={styles['action-bar']}>
-          <ButtonLink
+          <Button
+            as="a"
             variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
             to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/collectif`}
-          >
-            Annuler
-          </ButtonLink>
-          <Button type="submit" isLoading={isSubmitting}>
-            Enregistrer
-          </Button>
+            label="Annuler"
+          />
+
+          <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
         </div>
       </form>
 

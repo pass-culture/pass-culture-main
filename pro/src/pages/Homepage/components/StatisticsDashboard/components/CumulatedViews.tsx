@@ -4,10 +4,10 @@ import { useId, useLayoutEffect, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 
 import type { OffererViewsModel } from '@/apiClient/v1'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { chartColors } from '@/ui-kit/chartGlobals'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -92,15 +92,16 @@ export const CumulatedViews = ({ dailyViews }: CumulatedViewsProps) => {
           </div>
 
           <div>
-            <ButtonLink
+            <Button
+              as="a"
               to="https://passcultureapp.notion.site/Les-bonnes-pratiques-et-tudes-du-pass-Culture-323b1a0ec309406192d772e7d803fbd0"
               isExternal
               opensInNewTab
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               icon={fullLinkIcon}
-            >
-              Bonnes pratiques de création d’offres
-            </ButtonLink>
+              label="Bonnes pratiques de création d’offres"
+            />
           </div>
         </div>
       ) : (

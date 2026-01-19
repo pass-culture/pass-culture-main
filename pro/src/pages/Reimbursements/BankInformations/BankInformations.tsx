@@ -14,9 +14,9 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import type { ReimbursementsContextProps } from '../Reimbursements'
@@ -142,27 +142,28 @@ export const BankInformations = (): JSX.Element => {
             ))}
           </div>
         )}
-      <Button
-        icon={fullMoreIcon}
-        className={styles['add-bank-account-button']}
-        variant={
-          /* istanbul ignore next : graphic changes */ selectedOfferer &&
-          (selectedOfferer.hasPendingBankAccount ||
-            selectedOfferer.hasValidBankAccount)
-            ? ButtonVariant.SECONDARY
-            : ButtonVariant.PRIMARY
-        }
-        onClick={() => {
-          setShowAddBankInformationsDialog(true)
-          logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
-            from: location.pathname,
-            offererId: selectedOfferer?.id,
-          })
-        }}
-        ref={addBankAccountButtonRef}
-      >
-        Ajouter un compte bancaire
-      </Button>
+      <div className={styles['add-bank-account-button']}>
+        <Button
+          icon={fullMoreIcon}
+          variant={
+            /* istanbul ignore next : graphic changes */ selectedOfferer &&
+            (selectedOfferer.hasPendingBankAccount ||
+              selectedOfferer.hasValidBankAccount)
+              ? ButtonVariant.SECONDARY
+              : ButtonVariant.PRIMARY
+          }
+          onClick={() => {
+            setShowAddBankInformationsDialog(true)
+            logEvent(BankAccountEvents.CLICKED_ADD_BANK_ACCOUNT, {
+              from: location.pathname,
+              offererId: selectedOfferer?.id,
+            })
+          }}
+          ref={addBankAccountButtonRef}
+          label="Ajouter un compte bancaire"
+        />
+      </div>
+
       <AddBankInformationsDialog
         closeDialog={() => {
           setShowAddBankInformationsDialog(false)

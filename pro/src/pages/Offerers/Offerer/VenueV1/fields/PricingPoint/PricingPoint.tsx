@@ -13,11 +13,10 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
 import type { VenueSettingsFormValues } from '@/pages/VenueSettings/commons/types'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -109,13 +108,13 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
           <br />
           Ce choix ne pourra pas être modifié.
         </p>
-        <ButtonLink
+        <Button
+          as="a"
           icon={fullLinkIcon}
           to="https://aide.passculture.app/hc/fr/sections/4411991876241-Modalités-de-remboursements"
           isExternal
-        >
-          En savoir plus sur les remboursements
-        </ButtonLink>
+          label="En savoir plus sur les remboursements"
+        />
       </ConfirmDialog>
 
       {!venue.pricingPoint && (
@@ -146,13 +145,13 @@ export const PricingPoint = ({ offerer, venue }: PricingPointProps) => {
           />
         </div>
         {!isInputDisabled && !venue.pricingPoint && (
-          <Button
-            className={styles['space-left']}
-            onClick={() => setIsConfirmSiretDialogOpen(true)}
-            disabled={!venueSiret}
-          >
-            Valider la sélection
-          </Button>
+          <div className={styles['space-left']}>
+            <Button
+              onClick={() => setIsConfirmSiretDialogOpen(true)}
+              disabled={!venueSiret}
+              label="Valider la sélection"
+            />
+          </div>
         )}
         {isInputDisabled && (
           <>
