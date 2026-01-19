@@ -1,6 +1,7 @@
 import pytest
 
 from pcapi.core.educational import factories as educational_factories
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import schemas
 from pcapi.core.offers import factories as offers_factories
@@ -106,15 +107,22 @@ class Return200Test:
         pro = user_offerer.user
         offerer = user_offerer.offerer
 
-        offerer_address_1 = offerers_factories.OffererAddressFactory(
-            offerer=offerer,
-            label="1ere adresse",
-            address__street="1 boulevard Poissonnière",
-            address__postalCode="75002",
-            address__city="Paris",
+        address = geography_factories.AddressFactory(
+            street="1 boulevard Poissonnière",
+            postalCode="75002",
+            city="Paris",
         )
-        offerers_factories.OffererAddressFactory(
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            publicName="Venue public name",
+            offererAddress__address=address,
+        )
+        offer_location = offerers_factories.OfferLocationFactory(
+            label="1ere adresse", offerer=offerer, venue=venue, address=address
+        )
+        offerers_factories.OfferLocationFactory(
             offerer=offerer,
+            venue=venue,
             label="2eme adresse",
             address__street="20 Avenue de Ségur",
             address__postalCode="75007",
@@ -122,15 +130,13 @@ class Return200Test:
             address__banId="75107_7560_00001",
         )
         offer_factory(
-            venue__managingOfferer=offerer,
-            offererAddress=offerer_address_1,
-            venue__offererAddress=offerer_address_1,
-            venue__publicName="Venue public name",
+            venue=venue,
+            offererAddress=offer_location,
         )
 
         client = client.with_session_auth(email=pro.email)
         offerer_id = offerer.id
-        offerer_address_id1 = offerer_address_1.id
+        offerer_address_id = offer_location.id
 
         with assert_num_queries(self.num_queries):
             response = client.get(
@@ -141,7 +147,7 @@ class Return200Test:
                 {
                     "city": "Paris",
                     "departmentCode": "75",
-                    "id": offerer_address_id1,
+                    "id": offerer_address_id,
                     "isLinkedToVenue": True,
                     "label": "Venue public name",
                     "postalCode": "75002",

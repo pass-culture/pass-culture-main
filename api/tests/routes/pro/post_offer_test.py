@@ -6,6 +6,7 @@ import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
+from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
 from pcapi.core.testing import assert_num_queries
 from pcapi.models import db
@@ -234,6 +235,7 @@ class CreateOfferBase:
     success_num_queries = 1  # fetch user session
     success_num_queries += 1  # fetch user
     success_num_queries += 1  # fetch venue
+    success_num_queries += 2  # get_or_create_offer_location: select + insert
     success_num_queries += 1  # user offerer check
     success_num_queries += 1  # fetch product
     success_num_queries += 1  # create offer
@@ -626,7 +628,8 @@ class Returns200Test:
         assert offer.mentalDisabilityCompliant is True
         assert offer.validation == OfferValidationStatus.DRAFT
         assert offer.isActive is False
-        assert offer.offererAddress == venue.offererAddress
+        assert offer.offererAddress.type != offerers_models.LocationType.VENUE_LOCATION
+        assert offer.offererAddress.address == venue.offererAddress.address
 
     def test_create_digital_thing_offer(self, client):
         # Given

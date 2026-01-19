@@ -480,15 +480,13 @@ def create_offers_with_gtls() -> None:
     librairie_gtl = offerers_factories.VenueFactory.create(
         name="Librairie des GTls",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        offererAddress=offerers_factories.VenueLocationFactory.create(
-            address__latitude=45.91967,
-            address__longitude=3.06504,
-            address__street="13 AVENUE BARADUC",
-            address__postalCode="63140",
-            address__city="CHATEL-GUYON",
-            address__departmentCode="63",
-            address__banId="63103_0040_00013",
-        ),
+        offererAddress__address__latitude=45.91967,
+        offererAddress__address__longitude=3.06504,
+        offererAddress__address__street="13 AVENUE BARADUC",
+        offererAddress__address__postalCode="63140",
+        offererAddress__address__city="CHATEL-GUYON",
+        offererAddress__address__departmentCode="63",
+        offererAddress__address__banId="63103_0040_00013",
     )
     _create_offers_for_each_gtl_level_1(10, librairie_gtl)
     _create_offers_with_gtl_id("01030000", 10, librairie_gtl)  # littérature, Œuvres classiques
@@ -502,15 +500,13 @@ def create_offers_with_gtls() -> None:
     librairie_manga = offerers_factories.VenueFactory.create(
         name="Librairie des mangas",
         venueTypeCode=offerers_models.VenueTypeCode.BOOKSTORE,
-        offererAddress=offerers_factories.VenueLocationFactory.create(
-            address__latitude=46.66979,
-            address__longitude=-1.42979,
-            address__street="11 RUE GEORGES CLEMENCEAU",
-            address__postalCode="85000",
-            address__city="LA ROCHE-SUR-YON",
-            address__departmentCode="85",
-            address__banId="85191_0940_00011",
-        ),
+        offererAddress__address__latitude=46.66979,
+        offererAddress__address__longitude=-1.42979,
+        offererAddress__address__street="11 RUE GEORGES CLEMENCEAU",
+        offererAddress__address__postalCode="85000",
+        offererAddress__address__city="LA ROCHE-SUR-YON",
+        offererAddress__address__departmentCode="85",
+        offererAddress__address__banId="85191_0940_00011",
     )
     _create_offers_with_gtl_id("03050300", 10, librairie_manga)  # 10 mangas
 

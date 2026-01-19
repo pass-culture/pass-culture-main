@@ -217,7 +217,7 @@ class CreateVenueTest:
         assert offerer_address.address.departmentCode == "75"
         assert offerer_address.address.timezone == "Europe/Paris"
         assert offerer_address.address.isManualEdition is False
-        assert venue.offererAddressId == offerer_address.id
+        assert venue.offererAddress == offerer_address
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.VENUE_CREATED
@@ -2781,7 +2781,7 @@ class CreateFromOnboardingDataTest:
         assert address.inseeCode.startswith(address.departmentCode)
         assert address.departmentCode == "75"
         assert address.timezone == "Europe/Paris"
-        assert created_venue.offererAddressId == offerer_address.id
+        assert created_venue.offererAddress == offerer_address
         assert offerer_address.addressId == address.id
 
         # Action logs
@@ -2881,7 +2881,7 @@ class CreateFromOnboardingDataTest:
         assert address.inseeCode.startswith(address.departmentCode)
         assert address.departmentCode == "75"
         assert address.timezone == "Europe/Paris"
-        assert created_venue.offererAddressId == offerer_address.id
+        assert created_venue.offererAddress == offerer_address
         assert offerer_address.addressId == address.id
 
         # Action logs
@@ -3912,7 +3912,9 @@ class CleanUnusedOffererAddressTest:
         offerers_factories.OffererAddressFactory()
         venue = offerers_factories.VenueFactory()
         oa1 = venue.offererAddress
-        oa2, oa3, oa4, _ = offerers_factories.OffererAddressFactory.create_batch(4, offerer=venue.managingOfferer)
+        oa2, oa3, oa4, _ = offerers_factories.OfferLocationFactory.create_batch(
+            4, offerer=venue.managingOfferer, venue=venue
+        )
         offers_factories.OfferFactory(venue=venue, offererAddress=oa2)
         educational_factories.CollectiveOfferFactory(
             venue=venue, locationType=educational_models.CollectiveLocationType.ADDRESS, offererAddress=oa3

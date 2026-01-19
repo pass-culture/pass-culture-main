@@ -368,13 +368,13 @@ class Returns200Test:
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
 
-        offerer_address1 = offerers_factories.OffererAddressFactory(
-            label="Accor Arena",
-            offerer=offerer,
-            address__street="8 Boulevard de Bercy",
-            address__banId="75112_0877_00008",
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            offererAddress__label="Accor Arena",
+            offererAddress__offerer=offerer,
+            offererAddress__address__street="8 Boulevard de Bercy",
+            offererAddress__address__banId="75112_0877_00008",
         )
-        venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress=offerer_address1)
         event_offer = offers_factories.EventOfferFactory(
             venue=venue, offererAddress=None, validation=offers_models.OfferValidationStatus.DRAFT
         )
@@ -751,17 +751,16 @@ class Returns200Test:
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
-        offerer_address1 = offerers_factories.OffererAddressOfVenueFactory(
-            offerer=offerer,
-            address__street="4 Boulevard de Bercy",
-            address__banId="75112_0877_00001",
-            address__postalCode="75001",
-            address__longitude=1.34765,
-            address__latitude=4.34765,
-        )
         venue = offerers_factories.VenueFactory(
-            managingOfferer=offerer, offererAddress=offerer_address1, name="Best Place to be"
+            name="Best Place to be",
+            managingOfferer=offerer,
+            offererAddress__address__street="4 Boulevard de Bercy",
+            offererAddress__address__banId="75112_0877_00001",
+            offererAddress__address__postalCode="75001",
+            offererAddress__address__longitude=1.34765,
+            offererAddress__address__latitude=4.34765,
         )
+        offerer_address1 = venue.offererAddress
 
         event_offer1 = offers_factories.EventOfferFactory(
             name="The Weeknd",

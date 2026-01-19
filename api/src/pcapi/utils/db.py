@@ -83,6 +83,8 @@ class MagicEnum(sa_types.TypeDecorator):
     ) -> str | None:
         if value is None:
             return None
+        if isinstance(value, str):
+            return value
         if self.use_values:
             return value.value
         return value.name

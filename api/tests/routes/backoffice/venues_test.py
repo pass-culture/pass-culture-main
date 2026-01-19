@@ -18,7 +18,6 @@ from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
-from pcapi.core.geography import factories as geography_factories
 from pcapi.core.geography import models as geography_models
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.history import factories as history_factories
@@ -27,7 +26,6 @@ from pcapi.core.mails import testing as mails_testing
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.offerers import models as offerers_models
-from pcapi.core.offers.factories import OfferFactory
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import factories as providers_factories
 from pcapi.core.providers import models as providers_models
@@ -88,9 +86,8 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
             venueTypeCode=offerers_models.VenueTypeCode.MOVIE,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Cinéma d'art et d'essai").id,
             criteria=criteria[:2],
-            offererAddress=offerers_factories.OffererAddressFactory(
-                address__postalCode="82000", address__departmentCode="82"
-            ),
+            offererAddress__address__postalCode="82000",
+            offererAddress__address__departmentCode="82",
             isPermanent=True,
         ),
         offerers_factories.VenueFactory(
@@ -98,9 +95,8 @@ def venues_fixture(criteria) -> list[offerers_models.Venue]:
             venueTypeCode=offerers_models.VenueTypeCode.GAMES,
             venueLabelId=offerers_factories.VenueLabelFactory(label="Scènes conventionnées").id,
             criteria=criteria[2:],
-            offererAddress=offerers_factories.OffererAddressFactory(
-                address__postalCode="45000", address__departmentCode="45"
-            ),
+            offererAddress__address__postalCode="45000",
+            offererAddress__address__departmentCode="45",
             isPermanent=False,
         ),
     ]
@@ -189,9 +185,8 @@ class ListVenuesTest(GetEndpointHelper):
 
     def test_list_venues_by_regions(self, authenticated_client, venues):
         venue = offerers_factories.VenueFactory(
-            offererAddress=offerers_factories.OffererAddressFactory(
-                address__postalCode="82000", address__departmentCode="82"
-            ),
+            offererAddress__address__postalCode="82000",
+            offererAddress__address__departmentCode="82",
         )
         with assert_num_queries(self.expected_num_queries):
             response = authenticated_client.get(url_for(self.endpoint, regions="Occitanie", order="asc"))
@@ -827,10 +822,7 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
-        offerer_addresses = db.session.query(offerers_models.OffererAddress).order_by(
-            offerers_models.OffererAddress.id.desc()
-        )
-        offerer_address, old_oa = offerer_addresses
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()  # address updated in the same OA
         address = offerer_address.address
 
         assert venue.name == data["name"]
@@ -847,10 +839,9 @@ class UpdateVenueTest(PostEndpointHelper):
         assert address.longitude == expected_longitude
         assert address.inseeCode == "75101"
         assert address.isManualEdition is False
-        assert venue.offererAddressId == offerer_address.id
+        assert venue.offererAddress == offerer_address
         assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION
         assert offerer_address.venue == venue
-        assert old_oa.label == "Venue Name"
 
         # should not have been updated or erased
         assert venue.contact.email == contact_email
@@ -933,117 +924,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert venue.isPermanent == new_isPermanent
         assert venue.isOpenToPublic == new_isOpenToPublic
 
-    @pytest.mark.parametrize("venue_metadata", [{"public_name": "New public name"}, {"is_permanent": False}])
-    def test_updating_venue_metadata_shouldnt_create_offerer_address_unnecessarily(
-        self, venue_metadata, authenticated_client
-    ) -> None:
-        user_offerer = offerers_factories.UserOffererFactory()
-        address = geography_factories.AddressFactory(
-            street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.87055, longitude=2.34765
-        )
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            offererAddress=offerer_address,
-            isPermanent=True,
-        )
-        OfferFactory(venue=venue)
-        old_venue_name = venue.publicName
-        venue_id = venue.id
-
-        venue_data = {
-            **self._get_current_data(venue),
-            **{
-                # Updating venue.offererAddress.address to manually edited address
-                "street": "3 Rue de Valois",
-                "city": "Paris",
-                "latitude": 48.87171,
-                "longitude": 2.308289,
-                "postal_code": "75001",
-                "is_manual_address": "on",
-                "ban_id": None,
-            },
-        }
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=venue_data)
-        assert response.status_code == 303
-        db.session.query(offerers_models.Venue).one()
-        assert (
-            len(
-                db.session.query(offerers_models.OffererAddress)
-                .order_by(offerers_models.OffererAddress.id.desc())
-                .all()
-            )
-            == 2
-        )
-
-        venue_data = {
-            **self._get_current_data(venue),
-            # Then updating anything else that the location
-            # We shouldn't unnecessarily create an offererAddress
-            **venue_metadata,
-        }
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=venue_data)
-        assert response.status_code == 303
-
-        venue = db.session.query(offerers_models.Venue).one()
-        offerer_addresses = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
-        )
-        # We should still have only 2 offerer_addresses:
-        #   - The first one created along side the venue
-        #   - The second one created manually along side an edition
-        # The bug this test tries to prevent regression was creating
-        # a duplicate every time a venue was updated with anything else
-        # that the location
-        assert len(offerer_addresses) == 2
-        new_offerer_address = offerer_addresses[0]
-        new_address = new_offerer_address.address
-        assert len(offerer_addresses) == 2
-        assert venue.offererAddressId == new_offerer_address.id
-        assert new_address.street == "3 Rue de Valois"
-        assert new_address.city == "Paris"
-        assert new_address.postalCode == "75001"
-        assert new_address.longitude == Decimal("2.30829")
-        assert new_address.latitude == Decimal("48.87171")
-        assert new_address.isManualEdition
-        assert new_offerer_address.addressId == new_address.id
-        assert new_offerer_address.label is None
-
-        actions_history = sorted(venue.action_history, key=lambda ac: ac.id)
-        # Patching to manually edited address
-        assert actions_history[0].actionType == history_models.ActionType.INFO_MODIFIED
-        assert actions_history[0].venueId == venue_id
-        assert actions_history[0].extraData["modified_info"]["offererAddress.address.street"] == {
-            "new_info": "3 Rue de Valois",
-            "old_info": "2 Rue de Valois",
-        }
-        assert actions_history[0].extraData["modified_info"]["offererAddress.address.latitude"] == {
-            "new_info": "48.87171",
-            "old_info": "48.87055",
-        }
-        assert actions_history[0].extraData["modified_info"]["offererAddress.address.longitude"] == {
-            "new_info": "2.30829",
-            "old_info": "2.34765",
-        }
-        assert actions_history[0].extraData["modified_info"]["offererAddress.address.postalCode"] == {
-            "new_info": "75001",
-            "old_info": "75000",
-        }
-        # Changed the metadata
-        if venue_metadata.get("is_permament"):
-            assert venue.isPermanent is False
-            assert actions_history[2].extraData["modified_info"]["isPermanent"] == {
-                "new_info": False,
-                "old_info": True,
-            }
-        elif venue_metadata.get("public_name"):
-            assert actions_history[2].extraData["modified_info"]["publicName"] == {
-                "new_info": venue_metadata["public_name"],
-                "old_info": old_venue_name,
-            }
-
     def test_update_venue_location_with_offerer_address_not_manual(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
@@ -1083,12 +963,8 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
-        offerer_addresses = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
-        )
-        offerer_address = offerer_addresses[0]
-        assert (len(offerer_addresses)) == 2
-        assert venue.offererAddressId == offerer_address.id
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+        assert venue.offererAddress == offerer_address
         assert len(venue.action_history) == 2
         update_action = [action for action in venue.action_history if action.extraData["modified_info"].get("name")][0]
         update_snapshot = update_action.extraData["modified_info"]
@@ -1142,7 +1018,7 @@ class UpdateVenueTest(PostEndpointHelper):
             contact__social_medias=social_medias,
             isOpenToPublic=True,
         )
-        oa_id = venue.offererAddressId
+        oa_id = venue.offererAddress.id
 
         data = {
             "name": "Musée du Rhum",
@@ -1168,12 +1044,10 @@ class UpdateVenueTest(PostEndpointHelper):
         assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
 
         db.session.refresh(venue)
-        offerer_address = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).first()
-        )
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
         address = offerer_address.address
 
-        assert offerer_address.id != oa_id
+        assert offerer_address.id == oa_id
         assert offerer_address.addressId == address.id
         assert address.inseeCode == expected_insee_code
         assert address.timezone == "America/Guadeloupe"
@@ -1235,13 +1109,8 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
         address = db.session.query(geography_models.Address).order_by(geography_models.Address.id.desc()).first()
-        offerer_addresses = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
-        )
-        offerer_address = offerer_addresses[0]
-
-        assert len(offerer_addresses) == 2
-        assert venue.offererAddressId == offerer_address.id
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+        assert venue.offererAddress == offerer_address
         assert address.isManualEdition is True
         assert address.banId is None
 
@@ -1295,7 +1164,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.offererAddressId != other_venue.offererAddressId
+        assert venue.offererAddress != other_venue.offererAddress
         assert venue.offererAddress.addressId != other_venue.offererAddress.addressId
         address = venue.offererAddress.address
         assert address.isManualEdition is True
@@ -1332,7 +1201,7 @@ class UpdateVenueTest(PostEndpointHelper):
             offererAddress__address__longitude=55.451442,
             offererAddress__address__banId="97411_1120_00001",
         )
-        original_offerer_address_id = venue.offererAddressId
+        original_offerer_address_id = venue.offererAddress.id
         original_address_id = venue.offererAddress.addressId
         original_street = venue.offererAddress.address.street
 
@@ -1345,7 +1214,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.offererAddressId == original_offerer_address_id
+        assert venue.offererAddress.id == original_offerer_address_id
         assert venue.offererAddress.addressId == original_address_id
         assert venue.offererAddress.address.isManualEdition is False
         assert venue.offererAddress.address.street == original_street
@@ -1369,7 +1238,7 @@ class UpdateVenueTest(PostEndpointHelper):
         self, mock_get_municipality_centroid, authenticated_client
     ):
         venue = offerers_factories.VenueFactory()
-        offerer_address_id = venue.offererAddressId
+        offerer_address_id = venue.offererAddress.id
         other_venue = offerers_factories.VenueFactory(
             offererAddress__address__street="1 Rue Poivre",
             offererAddress__address__postalCode="97400",
@@ -1403,7 +1272,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.offererAddressId != offerer_address_id
+        assert venue.offererAddress.id == offerer_address_id
         assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
         address = venue.offererAddress.address
         assert address.isManualEdition is True
@@ -1428,7 +1297,7 @@ class UpdateVenueTest(PostEndpointHelper):
         self, mock_get_municipality_centroid, authenticated_client
     ):
         venue = offerers_factories.VenueFactory()
-        offerer_address_id = venue.offererAddressId
+        offerer_address_id = venue.offererAddress.id
         other_venue = offerers_factories.VenueFactory(
             offererAddress__address__street="1 Rue Poivre",
             offererAddress__address__postalCode="97400",
@@ -1462,7 +1331,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.offererAddressId != offerer_address_id
+        assert venue.offererAddress.id == offerer_address_id
         assert venue.offererAddress.addressId == other_venue.offererAddress.addressId
         assert venue.offererAddress.address.isManualEdition is True
         assert venue.offererAddress.address.banId is None
@@ -1486,7 +1355,7 @@ class UpdateVenueTest(PostEndpointHelper):
         self, mock_get_municipality_centroid, authenticated_client
     ):
         venue = offerers_factories.VenueFactory()
-        offerer_address_id = venue.offererAddressId
+        offerer_address_id = venue.offererAddress.id
         other_venue = offerers_factories.VenueFactory(
             offererAddress__address__street="1 Rue Poivre",
             offererAddress__address__postalCode="97400",
@@ -1518,7 +1387,7 @@ class UpdateVenueTest(PostEndpointHelper):
 
         db.session.refresh(venue)
 
-        assert venue.offererAddressId != offerer_address_id  # changed
+        assert venue.offererAddress.id == offerer_address_id  # venue location never changes
         # same street and Insee code but different GPS position: new row because of manual edition
         assert venue.offererAddress.addressId != other_venue.offererAddress.addressId
         address = venue.offererAddress.address
@@ -1919,7 +1788,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert set(venue.action_history[0].extraData["modified_info"].keys()) == {
             "offererAddress.address.banId",
             "offererAddress.addressId",
-            "offererAddress.id",
         }
         assert venue.action_history[0].extraData["modified_info"]["offererAddress.address.banId"] == {
             "new_info": "15152_0024_00003",

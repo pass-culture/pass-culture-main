@@ -609,7 +609,11 @@ class CollectiveOfferOnSchoolLocationFactory(PublishedCollectiveOfferFactory):
 
 class CollectiveOfferOnAddressVenueLocationFactory(PublishedCollectiveOfferFactory):
     locationType = models.CollectiveLocationType.ADDRESS
-    offererAddress = factory.SelfAttribute("venue.offererAddress")
+    offererAddress = factory.SubFactory(
+        offerers_factories.OffererAddressFactory,
+        address=factory.SelfAttribute("..venue.offererAddress.address"),
+        label=factory.SelfAttribute("..venue.publicName"),
+    )
 
 
 class CollectiveOfferOnOtherAddressLocationFactory(PublishedCollectiveOfferFactory):

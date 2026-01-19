@@ -553,10 +553,8 @@ class OfferResponse(serialization.ConfiguredBaseModel):
         if (
             offer.offererAddressId is not None
             and offer.offererAddress is not None
-            and (
-                offer.offererAddress.addressId != offer.venue.offererAddress.addressId
-                and offer.offererAddress.label != offer.venue.publicName
-            )
+            and offer.offererAddress.addressId != offer.venue.offererAddress.addressId
+            and offer.offererAddress.label != offer.venue.publicName
         ):
             return AddressLocation.build_from_offer(offer)
 
