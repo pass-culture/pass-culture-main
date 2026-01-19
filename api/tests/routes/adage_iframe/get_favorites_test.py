@@ -104,7 +104,7 @@ class GetFavoriteOfferTest:
             venue=venue,
             locationType=models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
         educational_redactor = educational_factories.EducationalRedactorFactory(

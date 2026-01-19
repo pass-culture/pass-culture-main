@@ -199,7 +199,7 @@ class CollectiveOfferTemplateTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 
@@ -375,7 +375,7 @@ class GetCollectiveOfferTemplatesTest:
             venue=venue,
             locationType=educational_models.CollectiveLocationType.ADDRESS,
             locationComment=None,
-            offererAddressId=venue.offererAddressId,
+            offererAddressId=venue.offererAddress.id,
             interventionArea=None,
         )
 

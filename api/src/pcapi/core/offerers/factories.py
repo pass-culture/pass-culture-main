@@ -96,11 +96,10 @@ class VenueFactory(BaseFactory):
     _bannerUrl: str | None = None
     adageId: str | factory.declarations.BaseDeclaration | None = None
 
-    offererAddress: factory.declarations.BaseDeclaration | None = factory.SubFactory(
-        "pcapi.core.offerers.factories.OffererAddressOfVenueFactory",
-        address=factory.SubFactory(
-            "pcapi.core.geography.factories.AddressFactory",
-        ),
+    offererAddress: factory.declarations.BaseDeclaration | None = factory.RelatedFactory(
+        "pcapi.core.offerers.factories.VenueLocationFactory",
+        factory_related_name="venue",
+        address=factory.SubFactory("pcapi.core.geography.factories.AddressFactory"),
         offerer=factory.SelfAttribute("..managingOfferer"),
     )
 
@@ -163,11 +162,10 @@ class CaledonianVenueFactory(VenueFactory):
     venueTypeCode = models.VenueTypeCode.BOOKSTORE
     adageId = None
 
-    offererAddress: factory.declarations.BaseDeclaration | None = factory.SubFactory(
-        "pcapi.core.offerers.factories.OffererAddressOfVenueFactory",
-        address=factory.SubFactory(
-            "pcapi.core.geography.factories.CaledonianAddressFactory",
-        ),
+    offererAddress: factory.declarations.BaseDeclaration | None = factory.RelatedFactory(
+        "pcapi.core.offerers.factories.VenueLocationFactory",
+        factory_related_name="venue",
+        address=factory.SubFactory("pcapi.core.geography.factories.CaledonianAddressFactory"),
         offerer=factory.SelfAttribute("..managingOfferer"),
     )
 
@@ -475,14 +473,11 @@ class _LocationFactory(OffererAddressFactory):
 
 class VenueLocationFactory(_LocationFactory):
     type = models.LocationType.VENUE_LOCATION
+    label = None
 
 
 class OfferLocationFactory(_LocationFactory):
     type = models.LocationType.OFFER_LOCATION
-
-
-class OffererAddressOfVenueFactory(OffererAddressFactory):
-    label = None
 
 
 def get_offerer_address_with_label_from_venue(venue: models.Venue) -> models.OffererAddress | None:

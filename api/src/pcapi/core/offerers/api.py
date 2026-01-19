@@ -354,32 +354,9 @@ def _update_venue_location(
 
     venue_snapshot.trace_update(snapshot_location_data, venue.offererAddress.address, "offererAddress.address.{}")
 
-    if venue.offererAddress.type == offerers_models.LocationType.VENUE_LOCATION:
-        venue_snapshot.trace_update({"addressId": address.id}, venue.offererAddress, "offererAddress.{}")
-        venue.offererAddress.address = address
-    else:
-        # Switching from shared OffererAddress to venue location
-        # TODO (prouzet, 2025-11-14) CLEAN_OA This block can be removed after step 4.5 when all venues have VENUE_LOCATION
-        new_oa = offerers_models.OffererAddress(
-            offererId=venue.managingOffererId,
-            addressId=address.id,
-            type=offerers_models.LocationType.VENUE_LOCATION,
-            venueId=venue.id,
-        )
-        db.session.add(new_oa)
-        db.session.flush()  # flush to get the new_oa.id
-
-        venue_snapshot.trace_update(
-            {"id": new_oa.id, "addressId": new_oa.addressId, "label": new_oa.label},
-            venue.offererAddress,
-            "offererAddress.{}",
-        )
-
-        old_oa = venue.offererAddress
-        venue.offererAddress = new_oa
-
-        old_oa.label = venue.common_name
-        db.session.add(old_oa)
+    assert venue.offererAddress.type == offerers_models.LocationType.VENUE_LOCATION  # should never raise
+    venue_snapshot.trace_update({"addressId": address.id}, venue.offererAddress, "offererAddress.{}")
+    venue.offererAddress.address = address
 
     db.session.add(venue)
     db.session.flush()
@@ -474,7 +451,6 @@ def create_venue(
     db.session.add(offerer_address)
     db.session.flush()
 
-    venue.offererAddressId = offerer_address.id
     offerer_address.venue = venue
 
     data = venue_data.dict(by_alias=True)
@@ -1908,7 +1884,8 @@ def search_offerer(search_query: str, departments: typing.Iterable[str] = ()) ->
             sa.exists()
             .where(models.Venue.managingOffererId == models.Offerer.id)
             .where(models.Venue.siret.is_not(None))
-            .where(models.OffererAddress.id == models.Venue.offererAddressId)
+            .where(models.OffererAddress.venueId == models.Venue.id)
+            .where(models.OffererAddress.type == models.LocationType.VENUE_LOCATION)
             .where(geography_models.Address.id == models.OffererAddress.addressId)
             .where(geography_models.Address.departmentCode.in_(departments))
         )
@@ -3081,7 +3058,7 @@ def get_or_create_offer_location(offerer_id: int, address_id: int, label: str | 
             models.OffererAddress.offererId == offerer_id,
             models.OffererAddress.label == label,
             models.OffererAddress.addressId == address_id,
-            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION after step 4.5
+            # TODO (prouzet, 2025-11-13) CLEAN_OA When data is migrated, only filter on OFFER_LOCATION
             sa.or_(
                 models.OffererAddress.type.is_(None),
                 models.OffererAddress.type == models.LocationType.OFFER_LOCATION,
@@ -3402,7 +3379,10 @@ def clean_unused_offerer_address() -> None:
     offerer_address_usage = db.session.query(
         offerers_models.OffererAddress.id.label("offerer_address_id"),
         sa.or_(
-            sa.select(1).where(offerers_models.Venue.offererAddressId == offerers_models.OffererAddress.id).exists(),
+            sa.and_(
+                offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION,
+                offerers_models.OffererAddress.venueId.is_not(None),
+            ),
             sa.select(1)
             .where(educational_models.CollectiveOffer.offererAddressId == offerers_models.OffererAddress.id)
             .exists(),

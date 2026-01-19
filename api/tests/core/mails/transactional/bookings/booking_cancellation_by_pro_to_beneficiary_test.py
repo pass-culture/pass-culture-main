@@ -66,16 +66,12 @@ class SendinblueSendWarningToBeneficiaryAfterProBookingCancellationTest:
         # and I don't want to rewrite the code twice to check the result
         # Given
         offerer = offerers_factories.OffererFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(
-            label="Mémorial de la catastrophe de 1902",
-            offerer=offerer,
-            address__street="169 Rue Victor Hugo",
-            address__banId="97225_0640_00169",
-            address__departmentCode="972",  # Amerique/Martinique
-        )
         stock = offers_factories.EventStockFactory(
             offer__venue__managingOfferer=offerer,
-            offer__venue__offererAddress=offerer_address,
+            offer__venue__offererAddress__label="Mémorial de la catastrophe de 1902",
+            offer__venue__offererAddress__address__street="169 Rue Victor Hugo",
+            offer__venue__offererAddress__address__banId="97225_0640_00169",
+            offer__venue__offererAddress__address__departmentCode="972",  # Amerique/Martinique
         )
         booking = bookings_factories.CancelledBookingFactory(
             user__email="user@example.com",

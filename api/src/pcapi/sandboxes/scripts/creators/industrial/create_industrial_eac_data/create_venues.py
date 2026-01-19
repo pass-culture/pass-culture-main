@@ -453,9 +453,7 @@ def create_venue(*, reimbursement: bool = False, **kwargs: typing.Any) -> offere
         **venue_kwargs,
         collectiveEmail="email@exemple.com",
         isPermanent=True,
-        offererAddress=offerers_factories.VenueLocationFactory.create(
-            address=geography_factories.AddressFactory.create(**location_kwargs)
-        ),
+        offererAddress__address=geography_factories.AddressFactory.create(**location_kwargs),
     )
     if reimbursement:
         bank_account = finance_factories.BankAccountFactory.create(offerer=venue.managingOfferer)

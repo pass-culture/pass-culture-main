@@ -765,7 +765,10 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
         db.session.refresh(collective_offer)
         assert collective_offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert collective_offer.locationComment is None
-        assert collective_offer.offererAddressId == venue.offererAddressId
+        assert collective_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+        assert collective_offer.offererAddressId != venue.offererAddress.id
+        assert collective_offer.offererAddress.addressId == venue.offererAddress.addressId
+        assert collective_offer.offererAddress.label == venue.publicName
 
     def test_patch_offer_update_to_address_on_other_location(self):
         key, venue_provider = self.setup_active_venue_provider()
@@ -806,8 +809,8 @@ class CollectiveOffersPublicPatchOfferTest(PublicAPIVenueEndpointHelper):
 
         assert collective_offer.locationType == educational_models.CollectiveLocationType.ADDRESS
         assert collective_offer.locationComment is None
-        assert not collective_offer.offererAddressId == venue.offererAddressId
-        assert collective_offer.offererAddressId == offerer_address.id
+        assert not collective_offer.offererAddress == venue.offererAddress
+        assert collective_offer.offererAddress == offerer_address
 
     @pytest.mark.parametrize(
         "location,error",

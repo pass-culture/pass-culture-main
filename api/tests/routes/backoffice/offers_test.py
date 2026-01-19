@@ -2602,7 +2602,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         assert finance_event2_1.venueId == expected_venue.id
         assert finance_event2_1.pricingPointId == expected_venue.current_pricing_point.id
         if move_offer_address:
-            assert offer.offererAddressId == expected_venue.offererAddress.id
+            assert offer.offererAddress.address.id == expected_venue.offererAddress.address.id
         else:
             assert offer.offererAddress.id != expected_venue.offererAddress.id
             assert offer.offererAddress.id != source_venue.offererAddress.id
@@ -2760,16 +2760,15 @@ class EditOfferVenueTest(PostEndpointHelper):
         self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
     ):
         source_venue, _, _, _ = venues_in_same_offerer
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=source_venue.managingOfferer)
-        venue_with_offerer_address = offerers_factories.VenueFactory(
-            managingOfferer=source_venue.managingOfferer, pricing_point=source_venue, offererAddress=offerer_address
+        destination_venue = offerers_factories.VenueFactory(
+            managingOfferer=source_venue.managingOfferer, pricing_point=source_venue
         )
 
         self._test_move_event(
             mocked_async_index_offer_ids,
             authenticated_client,
             source_venue=source_venue,
-            destination_venue=venue_with_offerer_address,
+            destination_venue=destination_venue,
             move_offer_address=True,
             notify_beneficiary=False,
         )

@@ -64,12 +64,10 @@ class Returns200Test:
             longitude=2.349337,
             banId="75101_8894_00035",
         )
-        initial_location = offerers_factories.OffererAddressFactory(
-            label=None, offerer=user_offerer.offerer, address=initial_address
-        )
         venue = offerers_factories.VenueFactory(
-            name="old name", managingOfferer=user_offerer.offerer, offererAddress=initial_location
+            name="old name", managingOfferer=user_offerer.offerer, offererAddress__address=initial_address
         )
+        initial_location = venue.offererAddress
         venue_label = offerers_factories.VenueLabelFactory(label="CAC - Centre d'art contemporain d'intérêt national")
         cultural_domain = educational_factories.EducationalDomainFactory()
         venue.collectiveDomains.append(cultural_domain)
@@ -105,16 +103,13 @@ class Returns200Test:
         assert venue.venueTypeCode == offerers_models.VenueTypeCode.BOOKSTORE
         assert venue.activity == offerers_models.Activity.BOOKSTORE
 
-        # a new location should be created and linked to the venue
-        assert (len(db.session.query(offerers_models.OffererAddress).all())) == 2
-        new_location = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).first()
-        )
+        # venue location is updated
+        new_location = db.session.query(offerers_models.OffererAddress).one()
+        assert new_location == initial_location
         new_address = new_location.address
 
-        assert venue.offererAddressId == new_location.id
-        assert venue.offererAddress.addressId == new_address.id
-        assert initial_location.label == "old name"
+        assert venue.offererAddress == initial_location
+        assert new_location.addressId != initial_address.id
         assert new_location.label is None
         assert new_location.type == offerers_models.LocationType.VENUE_LOCATION
         assert new_location.venue == venue
@@ -308,8 +303,7 @@ class Returns200Test:
             departmentCode="12",
             inseeCode="12145",
         )
-        location = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=location)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress__address=address)
 
         venue_data = populate_missing_data_from_venue(
             {
@@ -338,12 +332,9 @@ class Returns200Test:
         initial_address = geography_factories.AddressFactory(
             street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
         )
-        initial_offerer_address = offerers_factories.OffererAddressFactory(
-            offerer=user_offerer.offerer, address=initial_address
-        )
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
-            offererAddress=initial_offerer_address,
+            offererAddress__address=initial_address,
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
@@ -369,13 +360,9 @@ class Returns200Test:
         # then
         assert response.status_code == 200
         venue = db.session.query(offerers_models.Venue).one()
-        offerer_addresses = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
-        )
-        new_offerer_address = offerer_addresses[0]
-        new_address = new_offerer_address.address
-        assert len(offerer_addresses) == 2
-        assert venue.offererAddressId == new_offerer_address.id
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+        new_address = offerer_address.address
+        assert venue.offererAddress == offerer_address
         assert new_address.street == "3 Rue de Valois"
         assert new_address.city == "Paris"
         assert new_address.postalCode == "75001"
@@ -383,8 +370,7 @@ class Returns200Test:
         assert new_address.longitude == Decimal("2.30829")
         assert new_address.latitude == Decimal("48.87171")
         assert new_address.isManualEdition
-        assert new_offerer_address.addressId == new_address.id
-        assert new_offerer_address.label is None
+        assert offerer_address.label is None
 
         assert response.json["siret"] == venue.siret
         assert response.json["location"]["street"] == new_address.street
@@ -432,8 +418,7 @@ class Returns200Test:
         address = geography_factories.AddressFactory(
             banId=None, street="2 Rue de Valois", postalCode="75000", city="Paris", latitude=48.87055, longitude=2.34765
         )
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=offerer_address)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress__address=address)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
@@ -456,14 +441,9 @@ class Returns200Test:
         response = auth_request.patch("/venues/%s" % venue.id, json=venue_data)
         assert response.status_code == 200
         venue = db.session.query(offerers_models.Venue).one()
-        offerer_addresses = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
-        )
-        assert len(offerer_addresses) == 2
-
-        current_offerer_address = offerer_addresses[0]
-        current_address = current_offerer_address.address
-        assert venue.offererAddressId == current_offerer_address.id
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+        current_address = offerer_address.address
+        assert venue.offererAddress == offerer_address
         assert venue.offererAddress.addressId == current_address.id
         assert venue.offererAddress.label is None
         assert venue.offererAddress.address.street == "3 Rue de Valois"
@@ -513,17 +493,9 @@ class Returns200Test:
         assert response.status_code == 200
 
         venue = db.session.query(offerers_models.Venue).one()
-        offerer_addresses = (
-            db.session.query(offerers_models.OffererAddress).order_by(offerers_models.OffererAddress.id.desc()).all()
-        )
-        # We should still have only 2 offerer_addresses:
-        #   - The first one created along side the venue
-        #   - The second one created manually along side an edition
-        # The bug this test tries to prevent regression was creating
-        # a duplicate every time a venue was updated with anything else
-        # that the location
-        assert len(offerer_addresses) == 2
-        assert venue.offererAddressId == current_offerer_address.id
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+        # We should still have the same OffererAddress:
+        assert venue.offererAddress == offerer_address
         assert venue.offererAddress.addressId == current_address.id
 
         assert len(venue.action_history[2].extraData["modified_info"]) == 1
@@ -537,8 +509,7 @@ class Returns200Test:
         address = geography_factories.AddressFactory(
             street="1 boulevard Poissonnière", postalCode="75000", inseeCode="75000", city="Paris"
         )
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer, address=address)
-        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress=offerer_address)
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer, offererAddress__address=address)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_data = populate_missing_data_from_venue(

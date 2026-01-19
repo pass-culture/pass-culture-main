@@ -240,7 +240,7 @@ class CDSStocksTest:
         assert created_offers[0].name == "Coupez !"
         assert created_offers[0].product
         assert created_offers[0].venue == venue_provider.venue
-        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
+        assert created_offers[0].offererAddress == venue_provider.venue.offererAddress
         assert created_offers[0]._description is None
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
@@ -329,7 +329,7 @@ class CDSStocksTest:
         assert created_offers[0].name == "Coupez !"
         assert created_offers[0].product
         assert created_offers[0].venue == venue_provider.venue
-        assert created_offers[0].offererAddressId == venue_provider.venue.offererAddressId
+        assert created_offers[0].offererAddress == venue_provider.venue.offererAddress
         assert created_offers[0].description == "Description du produit allociné 1"
         assert created_offers[0].durationMinutes == 111
         assert created_offers[0].isDuo

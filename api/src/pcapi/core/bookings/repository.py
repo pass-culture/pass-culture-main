@@ -329,8 +329,8 @@ def _create_export_query(offer_id: int, event_beginning_date: date) -> sa_orm.Qu
         .join(offers_models.Stock.offer)
         .outerjoin(offers_models.Offer.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
-        .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
-        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        .join(VenueOffererAddress, offerers_models.Venue.offererAddress)
+        .join(VenueAddress, VenueOffererAddress.address)
     )
     timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone)
 
@@ -446,8 +446,8 @@ def _get_filtered_bookings_query(
         .join(models.Booking.venue, isouter=True)
         .outerjoin(offers_models.Offer.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
-        .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
-        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        .join(VenueOffererAddress, offerers_models.Venue.offererAddress)
+        .join(VenueAddress, VenueOffererAddress.address)
     )
     timezone_column = sa.func.coalesce(Address.timezone, VenueAddress.timezone)
     for join_key, *join_conditions in extra_joins:
@@ -545,8 +545,8 @@ def _get_offer_timezone(offer_id: int) -> str:
         .join(offers_models.Offer.venue)
         .outerjoin(offers_models.Offer.offererAddress)
         .outerjoin(offerers_models.OffererAddress.address)
-        .join(VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id)
-        .join(VenueAddress, VenueOffererAddress.addressId == VenueAddress.id)
+        .join(VenueOffererAddress, offerers_models.Venue.offererAddress)
+        .join(VenueAddress, VenueOffererAddress.address)
         .filter(offers_models.Offer.id == offer_id)
         .scalar()
     )
@@ -683,8 +683,8 @@ def _get_filtered_booking_report(
                 (models.Booking.user,),
                 (offers_models.Offer.offererAddress,),
                 (offerers_models.OffererAddress.address,),
-                (VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id),
-                (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
+                (VenueOffererAddress, offerers_models.Venue.offererAddress),
+                (VenueAddress, VenueOffererAddress.address),
             ),
         )
         .with_entities(*with_entities)
@@ -749,8 +749,8 @@ def _get_filtered_booking_pro(
                 (models.Booking.user,),
                 (offers_models.Offer.offererAddress,),
                 (offerers_models.OffererAddress.address,),
-                (VenueOffererAddress, offerers_models.Venue.offererAddressId == VenueOffererAddress.id),
-                (VenueAddress, VenueOffererAddress.addressId == VenueAddress.id),
+                (VenueOffererAddress, offerers_models.Venue.offererAddress),
+                (VenueAddress, VenueOffererAddress.address),
             ),
         )
         .with_entities(*with_entities)

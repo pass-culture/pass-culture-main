@@ -46,7 +46,7 @@ def create_offerer() -> offerers_models.Offerer:
 @log_func_duration
 def create_accessibility_offers() -> dict:
     offerer = create_offerer()
-    venue = offerers_factories.VenueFactory.build(
+    venue = offerers_factories.VenueFactory.create(
         managingOfferer=offerer,
         name="Lieu - Audit Access42",
         venueTypeCode=offerers_models.VenueTypeCode.MOVIE,

@@ -308,6 +308,8 @@ def _get_sent_pricings_for_individual_bookings(
     # TODO bdalbianco 06/06/2025 CLEAN_OA ne garder que venue/offer apres la regul
     sub = sa.select(
         offerers_models.OffererAddress.id,
+        offerers_models.OffererAddress.venueId,
+        offerers_models.OffererAddress.type,
         geography_models.Address.street,
         geography_models.Address.postalCode,
         geography_models.Address.departmentCode,
@@ -327,9 +329,14 @@ def _get_sent_pricings_for_individual_bookings(
             sa_func.coalesce(sub_offer.c.city, sub_venue.c.city).label("address_city"),
         ]
     )
-    query = query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True).join(
-        sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True
-    )
+    query = query.join(
+        sub_venue,
+        sa.and_(
+            sub_venue.c.venueId == offerers_models.Venue.id,
+            sub_venue.c.type == offerers_models.LocationType.VENUE_LOCATION,
+        ),
+        isouter=True,
+    ).join(sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True)
 
     return (
         query.order_by(bookings_models.Booking.dateUsed.desc(), bookings_models.Booking.id.desc()).with_entities(
@@ -470,6 +477,8 @@ def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
     # TODO bdalbianco 06/06/2025 CLEAN_OA retirer offerer après la regul
     sub = sa.select(
         offerers_models.OffererAddress.id,
+        offerers_models.OffererAddress.venueId,
+        offerers_models.OffererAddress.type,
         geography_models.Address.street,
         geography_models.Address.postalCode,
         geography_models.Address.departmentCode,
@@ -490,7 +499,14 @@ def _get_individual_booking_reimbursement_data(query: sa_orm.Query) -> list[tupl
         ]
     )
     query = (
-        query.join(sub_venue, sub_venue.c.id == offerers_models.Venue.offererAddressId, isouter=True)
+        query.join(
+            sub_venue,
+            sa.and_(
+                sub_venue.c.venueId == offerers_models.Venue.id,
+                sub_venue.c.type == offerers_models.LocationType.VENUE_LOCATION,
+            ),
+            isouter=True,
+        )
         .join(sub_offer, sub_offer.c.id == offers_models.Offer.offererAddressId, isouter=True)
         .with_entities(*columns)
     )

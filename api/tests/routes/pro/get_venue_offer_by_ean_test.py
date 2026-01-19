@@ -49,9 +49,7 @@ class Returns200Test:
 
     def test_access_by_pro_user(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
             ean="0123456789123",
         )
@@ -80,9 +78,7 @@ class Returns404Test:
 
     def test_access_to_not_existing_ean(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
             ean="0123456789123",
         )
@@ -98,9 +94,7 @@ class Returns404Test:
 
     def test_access_to_not_active_offer(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
-        offerer_address = offerers_factories.OffererAddressFactory(offerer=user_offerer.offerer)
         offer = offers_factories.ThingOfferFactory(
-            venue__offererAddress=offerer_address,
             venue__managingOfferer=user_offerer.offerer,
             ean="0123456789123",
             isActive=False,

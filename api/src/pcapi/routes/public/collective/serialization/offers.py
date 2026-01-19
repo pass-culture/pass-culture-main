@@ -302,7 +302,11 @@ def get_collective_offer_location_from_offer(offer: CollectiveOffer) -> Collecti
                 comment=offer.locationComment,
             )
         case CollectiveLocationType.ADDRESS:
-            is_venue_address = offer.offererAddressId == offer.venue.offererAddressId
+            is_venue_address = (
+                offer.offererAddress is not None
+                and offer.offererAddress.addressId == offer.venue.offererAddress.addressId
+                and offer.offererAddress.label == offer.venue.common_name
+            )
             if is_venue_address:
                 return CollectiveOfferLocationAddressVenueModel(
                     type=CollectiveLocationType.ADDRESS.value, isVenueAddress=True

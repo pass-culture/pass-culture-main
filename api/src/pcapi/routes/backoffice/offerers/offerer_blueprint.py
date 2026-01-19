@@ -1088,7 +1088,7 @@ def get_offerer_addresses(offerer_id: int) -> utils.BackofficeResponse:
         )
         .select_from(geography_models.Address)
         .join(offerers_models.OffererAddress)
-        .outerjoin(offerers_models.Venue, offerers_models.OffererAddress.id == offerers_models.Venue.offererAddressId)
+        .outerjoin(offerers_models.OffererAddress.venue)
         .filter(offerers_models.OffererAddress.offererId == offerer_id)
         .group_by(
             geography_models.Address.id,

@@ -1856,14 +1856,10 @@ class UpdateOfferTest:
     def test_update_venue(self):
         offerer = offerers_factories.OffererFactory()
         offer_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
-        venue_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
         offer = factories.OfferFactory(offererAddress=offer_oa)
         offer_oa_id = offer.offererAddressId
-        new_venue = offerers_factories.VenueFactory(
-            managingOfferer=offer.venue.managingOfferer,
-            offererAddress=venue_oa,
-        )
-        venue_oa_id = new_venue.offererAddressId
+        new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
+        venue_oa_id = new_venue.offererAddress.id
         body = offers_schemas.UpdateOffer()
         assert offer_oa_id != venue_oa_id
 
@@ -4492,8 +4488,8 @@ class MoveOfferTest:
         new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
         assert offer.venue.current_pricing_point is None
         assert new_venue.current_pricing_point is None
-        assert offer.offererAddressId == offer.venue.offererAddressId
-        assert offer.offererAddressId != new_venue.offererAddressId
+        assert offer.offererAddress == offer.venue.offererAddress
+        assert offer.offererAddress != new_venue.offererAddress
 
         initial_offerer_address_id = offer.offererAddressId
         initial_address_id = offer.offererAddress.addressId
@@ -4531,13 +4527,10 @@ class MoveOfferTest:
         should not change its location."""
         offerer = offerers_factories.OffererFactory()
         offer_oa = offerers_factories.OffererAddressFactory(offerer=offerer, label="Custom location")
-        venue_oa = offerers_factories.OffererAddressFactory(offerer=offerer)
-        offer = factories.OfferFactory(
-            venue__managingOfferer=offerer, offererAddress=offer_oa, venue__offererAddress=venue_oa
-        )
+        offer = factories.OfferFactory(venue__managingOfferer=offerer, offererAddress=offer_oa)
         new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         assert new_venue.current_pricing_point is None
-        assert offer.offererAddressId != new_venue.offererAddressId
+        assert offer.offererAddress != new_venue.offererAddress
         initial_offerer_address_id = offer_oa.id
 
         api.move_offer(offer, new_venue)

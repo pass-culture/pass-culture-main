@@ -345,10 +345,15 @@ def _get_location_from_public_model(
             )
 
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressVenueModel():
+            offerer_address = offerers_api.get_or_create_offer_location(
+                offerer_id=venue.managingOffererId,
+                address_id=venue.offererAddress.addressId,
+                label=venue.common_name,
+            )
             location = CollectiveOfferLocation(
                 location_type=models.CollectiveLocationType.ADDRESS,
                 location_comment=None,
-                offerer_address=venue.offererAddress,
+                offerer_address=offerer_address,
             )
 
         case public_api_collective_offers_serialize.CollectiveOfferLocationAddressModel():

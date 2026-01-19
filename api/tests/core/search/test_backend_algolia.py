@@ -217,22 +217,14 @@ def test_unindex_all_collective_offer_templates():
 
 def test_index_collective_offers_templates():
     backend = get_backend()
-    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory.build()
-    # Unfortunatly had to create explicit OffererAddress because
-    # venue__offererAddress__address__postalCode did not work on the CollectiveOfferTemplateFactory
-    offerer_address_north_corsica = offerers_factories.OffererAddressFactory(
-        address__departmentCode="2B",
-        address__postalCode="20213",
-    )
-    offerer_address_south_corsica = offerers_factories.OffererAddressFactory(
-        address__departmentCode="2A",
-        address__postalCode="20113",
-    )
+    collective_offer_template = educational_factories.CollectiveOfferTemplateFactory()
     collective_offer_template_north_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__offererAddress=offerer_address_north_corsica,
+        venue__offererAddress__address__departmentCode="2B",
+        venue__offererAddress__address__postalCode="20213",
     )
     collective_offer_template_south_corsica = educational_factories.CollectiveOfferTemplateFactory(
-        venue__offererAddress=offerer_address_south_corsica,
+        venue__offererAddress__address__departmentCode="2A",
+        venue__offererAddress__address__postalCode="20113",
     )
 
     with requests_mock.Mocker() as mocker:

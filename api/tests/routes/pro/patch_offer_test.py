@@ -671,7 +671,7 @@ class Returns200Test:
         assert address.isManualEdition is False
 
     @patch("pcapi.connectors.api_adresse.get_address")
-    def test_user_can_link_offer_to_the_offerer_address_of_venue(self, get_address_mock, client):
+    def test_user_can_link_offer_to_the_address_of_venue(self, get_address_mock, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
         venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
         offer = offers_factories.OfferFactory(
@@ -693,21 +693,23 @@ class Returns200Test:
         }
         offer_id = offer.id
         http_client = client.with_session_auth("user@example.com")
-        # select user + session
-        # select offer (1 query)
+        # select user + session (2 queries)
+        # select stock
         # select user_offerer
-        # select mediation (1 query)
+        # select offerer_address in get_or_create_offer_location (1 query)
+        # insert new offerer_address in get_or_create_offer_location (1 query)
         # update offer
-        # select offer (again)
+        # select stock
+        # select mediation (1 query)
         # select artist_offer_link
         # select price category
-        with assert_num_queries(9):
+        with assert_num_queries(11):
             response = http_client.patch(self.endpoint.format(offer_id=offer_id), json=data)
         get_address_mock.assert_not_called()
 
         assert response.status_code == 200
         assert response.json["id"] == offer.id
-        assert offer.offererAddressId == venue.offererAddressId
+        assert offer.offererAddress.address == venue.offererAddress.address
 
     @patch("pcapi.connectors.api_adresse.get_municipality_centroid")
     def test_patch_offer_with_manual_address_edition(self, mocked_get_centroid, client):
@@ -809,87 +811,6 @@ class Returns200Test:
         assert address.latitude == Decimal("-20.08521")
         assert address.longitude == Decimal("164.03239")
         assert address.isManualEdition is True
-
-    @pytest.mark.parametrize(
-        "label,is_manual",
-        [
-            ("", False),
-            ("   ", False),
-            (None, False),
-            (True, False),
-            ("New name", True),
-        ],
-    )
-    @patch("pcapi.connectors.api_adresse.get_address")
-    def test_patch_offer_with_address_twice(self, get_address_mock, label, is_manual, client):
-        """Ensures that OA linked to venue sees their labels set to None and that manually
-        edited OA gets its label, even if it is the same as the venue"""
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user@example.com")
-        venue = offerers_factories.VenueFactory(
-            managingOfferer=user_offerer.offerer,
-            offererAddress__address__street="1 rue de la paix",
-            offererAddress__address__city="Paris",
-            offererAddress__address__postalCode="75102",
-            offererAddress__address__latitude=48.8566,
-            offererAddress__address__longitude=2.3522,
-            offererAddress__label=None,
-        )
-        offer = offers_factories.OfferFactory(
-            subcategoryId=subcategories.ABO_MEDIATHEQUE.id,
-            venue=venue,
-            name="New name",
-            description="description",
-            offererAddress=venue.offererAddress,
-        )
-        oa_id = venue.offererAddress.id
-        if label is True:
-            label = venue.common_name
-
-        data = {
-            "name": "New name",
-            "externalTicketOfficeUrl": "http://example.net",
-            "mentalDisabilityCompliant": True,
-            "location": {
-                "street": "1 rue de la paix",
-                "city": "Paris",
-                "postalCode": "75102",
-                "latitude": 48.8566,
-                "longitude": 2.3522,
-                "label": label,
-                "isVenueLocation": not is_manual,
-                "isManualEdition": is_manual,
-            },
-        }
-        get_address_mock.return_value = api_adresse.AddressInfo(
-            street="1 rue de la paix",
-            city="Paris",
-            citycode="75102",
-            postcode="75102",
-            latitude=48.8566,
-            longitude=2.3522,
-            score=0.9,
-            id="75102_7560_00001",
-            label="",
-        )
-        response = client.with_session_auth("user@example.com").patch(
-            self.endpoint.format(offer_id=offer.id), json=data
-        )
-        assert response.status_code == 200
-        assert response.json["id"] == offer.id
-        updated_offer = db.session.get(Offer, offer.id)
-        address = updated_offer.offererAddress.address
-        if not is_manual:
-            assert updated_offer.offererAddress.label is None
-            assert updated_offer.offererAddress.id == oa_id
-        else:
-            assert updated_offer.offererAddress.label == "New name"
-            assert updated_offer.offererAddress.id != oa_id
-        assert address.street == "1 rue de la paix"
-        assert address.city == "Paris"
-        assert address.postalCode == "75102"
-        assert address.latitude == Decimal("48.85660")
-        assert address.longitude == Decimal("2.3522")
-        assert address.isManualEdition == is_manual
 
     def test_withdrawal_can_be_updated(self, client):
         offer = offers_factories.OfferFactory(
