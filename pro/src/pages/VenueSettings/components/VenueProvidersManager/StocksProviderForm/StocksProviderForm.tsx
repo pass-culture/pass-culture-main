@@ -5,11 +5,11 @@ import type { PostVenueProviderBody } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import { Button } from '@/design-system/Button/Button'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeConnectIcon from '@/icons/stroke-connect.svg'
-import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './StocksProviderForm.module.scss'
@@ -90,12 +90,10 @@ export const StocksProviderForm = ({
           </div>
         )}
         <Button
-          variant={ButtonVariant.PRIMARY}
           onClick={handleOpenConfirmDialog}
           ref={startSynchroButtonRef}
-        >
-          Lancer la synchronisation
-        </Button>
+          label="Lancer la synchronisation"
+        />
       </div>
       <ConfirmDialog
         cancelText="Annuler"
@@ -120,7 +118,7 @@ export const StocksProviderForm = ({
           to="https://aide.passculture.app/hc/fr/articles/10616916478236"
           opensInNewTab
           aria-label="Nouvelle fenêtre"
-          variant={ButtonVariant.QUATERNARY}
+          variant={OldButtonVariant.QUATERNARY}
         >
           Visitez notre FAQ pour plus d’informations
         </ButtonLink>

@@ -3,9 +3,9 @@ import { useHeadlineOfferContext } from '@/commons/context/HeadlineOfferContext/
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { WEBAPP_URL } from '@/commons/utils/config'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Thumb } from '@/ui-kit/Thumb/Thumb'
 
 import styles from './HeadlineOffer.module.scss'
@@ -27,8 +27,10 @@ export function HeadlineOffer() {
     <div className={styles['headline-offer-container']}>
       <div className={styles['headline-offer-title-container']}>
         <h2 className={styles['headline-offer-title']}>Votre offre à la une</h2>
-        <ButtonLink
-          variant={ButtonVariant.QUATERNARY}
+        <Button
+          as="a"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullLinkIcon}
           to={venuePreviewLink}
           isExternal
@@ -39,9 +41,8 @@ export function HeadlineOffer() {
               userId: currentUser.id,
             })
           }}
-        >
-          Visualiser dans l’application
-        </ButtonLink>
+          label="Visualiser dans l’application"
+        />
       </div>
 
       <div className={styles['headline-offer-block']}>

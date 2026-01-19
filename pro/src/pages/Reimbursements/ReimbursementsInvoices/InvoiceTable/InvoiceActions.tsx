@@ -5,10 +5,10 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownItem } from '@/ui-kit/DropdownMenuWrapper/DropdownItem'
 import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 
@@ -62,17 +62,23 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
         title="Télécharger le justificatif comptable (.pdf)"
         onSelect={() => downloadPDFFile(invoice.url)}
       >
-        <Button icon={fullDownloadIcon} variant={ButtonVariant.TERNARY}>
-          Télécharger le justificatif comptable (.pdf)
-        </Button>
+        <Button
+          icon={fullDownloadIcon}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="Télécharger le justificatif comptable (.pdf)"
+        />
       </DropdownItem>
       <DropdownItem
         title="Télécharger le détail des réservations (.csv)"
         onSelect={() => downloadCSVFile(invoice.reference)}
       >
-        <Button icon={fullDownloadIcon} variant={ButtonVariant.TERNARY}>
-          Télécharger le détail des réservations (.csv)
-        </Button>
+        <Button
+          icon={fullDownloadIcon}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="Télécharger le détail des réservations (.csv)"
+        />
       </DropdownItem>
     </DropdownMenuWrapper>
   )

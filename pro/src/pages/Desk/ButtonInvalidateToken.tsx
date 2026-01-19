@@ -2,7 +2,7 @@ import type React from 'react'
 import { useState } from 'react'
 
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 
 interface ButtonInvalidateTokenProps {
   onConfirm: () => void
@@ -33,7 +33,9 @@ export const ButtonInvalidateToken = ({
       onConfirm={handleOnConfirm}
       title="Voulez-vous vraiment invalider cette contremarque ?"
       open={isDialogOpen}
-      trigger={<Button onClick={openDialog}>Invalider la contremarque</Button>}
+      trigger={
+        <Button onClick={openDialog} label="Invalider la contremarque" />
+      }
     >
       <p>
         Cette contremarque a déjà été validée. Si vous l’invalidez, la

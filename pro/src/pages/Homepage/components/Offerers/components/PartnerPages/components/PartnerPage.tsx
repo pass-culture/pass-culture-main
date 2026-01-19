@@ -20,11 +20,15 @@ import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Card } from '@/components/Card/Card'
 import { ImageUploader } from '@/components/ImageUploader/ImageUploader'
 import type { OnImageUploadArgs } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullParametersIcon from '@/icons/full-parameters.svg'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { buildInitialValues } from '@/pages/VenueEdition/components/VenueEditionHeader'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './PartnerPage.module.scss'
 import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
@@ -103,13 +107,15 @@ export const PartnerPage = ({
               {withVenueHelpers(venue).fullAddressAsString}
             </address>
           )}
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
+          <Button
+            as="a"
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             icon={fullParametersIcon}
             to={`/structures/${venue.managingOfferer.id}/lieux/${venue.id}/parametres`}
-          >
-            Paramètres généraux
-          </ButtonLink>
+            label="Paramètres généraux"
+          />
         </div>
       </div>
 

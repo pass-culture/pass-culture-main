@@ -17,14 +17,14 @@ import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { DeleteConfirmDialog } from './components/DeleteConfirmDialog'
 import { IndividualDeactivationConfirmDialog } from './components/IndividualDeactivationConfirmDialog'
@@ -247,18 +247,21 @@ export const IndividualOffersActionsBar = ({
           {computeSelectedOffersLabel(selectedOffers.length)}
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right>
-          <Button onClick={handleClose} variant={ButtonVariant.SECONDARY}>
-            Annuler
-          </Button>
+          <Button
+            onClick={handleClose}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+
           {canDeactivate && (
             <Button
               onClick={() => setIsDeactivationDialogOpen(true)}
               icon={fullHideIcon}
               variant={ButtonVariant.SECONDARY}
               ref={dactivateButtonRef}
-            >
-              Mettre en pause
-            </Button>
+              label="Mettre en pause"
+            />
           )}
           {canDelete && (
             <Button
@@ -266,18 +269,16 @@ export const IndividualOffersActionsBar = ({
               icon={fullTrashIcon}
               variant={ButtonVariant.SECONDARY}
               ref={deleteButtonRef}
-            >
-              Supprimer
-            </Button>
+              label="Supprimer"
+            />
           )}
           {canPublish && (
             <Button
               onClick={handleActivate}
               icon={fullValidateIcon}
               variant={ButtonVariant.SECONDARY}
-            >
-              Publier
-            </Button>
+              label="Publier"
+            />
           )}
         </ActionsBarSticky.Right>
       </ActionsBarSticky>

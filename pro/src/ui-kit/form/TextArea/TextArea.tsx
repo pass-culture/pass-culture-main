@@ -11,9 +11,9 @@ import {
   useState,
 } from 'react'
 
+import { Button } from '@/design-system/Button/Button'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import type { RequiredIndicator } from '@/design-system/common/types'
-import { Button } from '@/ui-kit/Button/Button'
 
 import styles from './TextArea.module.scss'
 
@@ -230,13 +230,13 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
             }}
           />
           {hasTemplateButton && (
-            <Button
-              className={styles['template-button']}
-              onClick={generateTemplate}
-              disabled={Boolean(textValue?.length)}
-            >
-              Générer un modèle
-            </Button>
+            <div className={styles['template-button']}>
+              <Button
+                onClick={generateTemplate}
+                disabled={Boolean(textValue?.length)}
+                label="Générer un modèle"
+              />
+            </div>
           )}
         </div>
         <FieldFooter

@@ -93,10 +93,10 @@ describe('IndividualOfferConfirmation', () => {
       })
     ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
-      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
+      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
     ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
     expect(
-      screen.getByText('Voir la liste des offres', { selector: 'a' })
+      screen.getByRole('link', { name: 'Voir la liste des offres' })
     ).toHaveAttribute('href', `/offres`)
   })
 
@@ -111,10 +111,10 @@ describe('IndividualOfferConfirmation', () => {
       })
     ).not.toBeInTheDocument()
     expect(
-      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
+      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
     ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
     expect(
-      screen.getByText('Voir la liste des offres', { selector: 'a' })
+      screen.getByRole('link', { name: 'Voir la liste des offres' })
     ).toHaveAttribute('href', `/offres`)
   })
 
@@ -127,7 +127,7 @@ describe('IndividualOfferConfirmation', () => {
       })
     ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
-      screen.getByText('Créer une nouvelle offre', { selector: 'a' })
+      screen.getByRole('link', { name: 'Créer une nouvelle offre' })
     ).toHaveAttribute('href', `/offre/individuelle/creation/description`)
   })
 

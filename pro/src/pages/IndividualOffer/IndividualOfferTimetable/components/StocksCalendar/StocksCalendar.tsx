@@ -20,10 +20,10 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -329,11 +329,7 @@ function DialogBuilderButton({
 }) {
   return (
     <DialogBuilder
-      trigger={
-        <Button variant={triggerVariant} className={styles['button']}>
-          {triggerLabel}
-        </Button>
-      }
+      trigger={<Button variant={triggerVariant} label={triggerLabel} />}
       open={isDialogOpen}
       onOpenChange={setIsDialogOpen}
       variant="drawer"

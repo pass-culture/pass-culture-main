@@ -10,7 +10,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 
 import {
   ReimbursementFields,
@@ -31,9 +31,7 @@ const renderReimbursementFields = async (
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(() => {})}>
           <ReimbursementFields {...defaultProps} />
-          <Button type="submit" isLoading={false}>
-            Enregistrer
-          </Button>
+          <Button type="submit" isLoading={false} label="Enregistrer" />
         </form>
       </FormProvider>
     )

@@ -2,10 +2,10 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
@@ -85,12 +85,12 @@ export function QuantityPerPriceCategory({
       {watch('quantityPerPriceCategories').length <
         priceCategoryOptions.length && (
         <Button
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullMoreIcon}
           onClick={() => append({ priceCategory: '' })}
-        >
-          Ajouter d’autres places et tarifs
-        </Button>
+          label="Ajouter d’autres places et tarifs"
+        />
       )}
     </>
   )

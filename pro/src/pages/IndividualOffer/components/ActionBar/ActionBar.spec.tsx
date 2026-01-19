@@ -49,10 +49,14 @@ describe('IndividualOffer::ActionBar', () => {
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY
       renderActionBar({ props })
 
-      const saveDraftButton = screen.getByText(/Sauvegarder le brouillon/)
+      const saveDraftButton = screen.getByRole('link', {
+        name: /Sauvegarder le brouillon/,
+      })
       expect(saveDraftButton).toHaveAttribute('href', '/offres')
 
-      const submitButton = screen.getByText(/Publier/)
+      const submitButton = screen.getByRole('button', {
+        name: 'Publier l’offre',
+      })
       expect(submitButton).toHaveAttribute('type', 'submit')
     })
 
@@ -60,7 +64,9 @@ describe('IndividualOffer::ActionBar', () => {
       props.step = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.LOCATION
       renderActionBar({ props })
 
-      const submitButton = screen.getByText(/Enregistrer et continuer/)
+      const submitButton = screen.getByRole('button', {
+        name: /Enregistrer et continuer/,
+      })
       expect(submitButton).toHaveAttribute('type', 'submit')
     })
 
@@ -116,7 +122,9 @@ describe('IndividualOffer::ActionBar', () => {
 
       renderActionBar({ props, url: '/edition/url' })
 
-      const buttonBack = screen.getByText('Retour à la liste des offres')
+      const buttonBack = screen.getByRole('link', {
+        name: 'Retour à la liste des offres',
+      })
       expect(buttonBack).toHaveAttribute('href', '/offres')
     })
 

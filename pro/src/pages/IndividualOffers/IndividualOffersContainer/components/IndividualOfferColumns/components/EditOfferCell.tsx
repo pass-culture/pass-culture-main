@@ -1,5 +1,5 @@
+import { Button } from '@/design-system/Button/Button'
 import penIcon from '@/icons/full-edit.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { DropdownItem } from '@/ui-kit/DropdownMenuWrapper/DropdownItem'
 
 interface EditOfferCellProps {
@@ -9,9 +9,12 @@ interface EditOfferCellProps {
 export const EditOfferCell = ({ editionOfferLink }: EditOfferCellProps) => {
   return (
     <DropdownItem asChild>
-      <ButtonLink to={editionOfferLink} icon={penIcon}>
-        Voir l’offre
-      </ButtonLink>
+      <Button
+        as="a"
+        to={editionOfferLink}
+        icon={penIcon}
+        label="Voir l’offre"
+      />
     </DropdownItem>
   )
 }

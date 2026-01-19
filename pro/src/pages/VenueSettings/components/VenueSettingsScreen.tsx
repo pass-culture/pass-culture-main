@@ -8,10 +8,10 @@ import type {
   VenueProviderResponse,
 } from '@/apiClient/v1'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import { toFormValues } from '@/pages/VenueSettings/commons/utils/toFormValues'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { useSaveVenueSettings } from '../commons/hooks/useSaveVenueSettings'
 import type {
@@ -60,14 +60,16 @@ export const VenueSettingsScreen = ({
 
   return (
     <>
-      <Button
-        className={styles['back-button']}
-        variant={ButtonVariant.TERNARYBRAND}
-        icon={fullBackIcon}
-        onClick={() => navigate(-1)}
-      >
-        Retour vers la page précédente
-      </Button>
+      <div className={styles['back-button']}>
+        <Button
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.BRAND}
+          icon={fullBackIcon}
+          onClick={() => navigate(-1)}
+          label="Retour vers la page précédente"
+        />
+      </div>
+
       <MandatoryInfo />
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate>

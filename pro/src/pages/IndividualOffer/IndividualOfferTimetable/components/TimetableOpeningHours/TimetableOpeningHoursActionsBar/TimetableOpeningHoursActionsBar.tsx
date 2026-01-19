@@ -8,10 +8,10 @@ import {
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
 import { ActionBarDraftStatus } from '@/pages/IndividualOffer/components/ActionBar/ActionBarDraftStatus/ActionBarDraftStatus'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 export type TimetableOpeningHoursActionsBarProps = {
   offer: GetIndividualOfferWithAddressResponseModel
@@ -60,13 +60,14 @@ export function TimetableOpeningHoursActionsBar({
             variant={ButtonVariant.SECONDARY}
             onClick={handlePreviousStep}
             icon={fullLeftIcon}
-          >
-            {mode === OFFER_WIZARD_MODE.READ_ONLY
-              ? 'Retour à la liste des offres'
-              : mode === OFFER_WIZARD_MODE.EDITION
-                ? 'Annuler et quitter'
-                : 'Retour'}
-          </Button>
+            label={
+              mode === OFFER_WIZARD_MODE.READ_ONLY
+                ? 'Retour à la liste des offres'
+                : mode === OFFER_WIZARD_MODE.EDITION
+                  ? 'Annuler et quitter'
+                  : 'Retour'
+            }
+          />
         }
       </ActionsBarSticky.Left>
       {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
@@ -74,11 +75,14 @@ export function TimetableOpeningHoursActionsBar({
           {form.formState.isDirty !== undefined && (
             <ActionBarDraftStatus isSaved={form.formState.isDirty === false} />
           )}
-          <Button type="submit">
-            {mode === OFFER_WIZARD_MODE.EDITION
-              ? 'Enregistrer les modifications'
-              : 'Enregistrer et continuer'}
-          </Button>
+          <Button
+            type="submit"
+            label={
+              mode === OFFER_WIZARD_MODE.EDITION
+                ? 'Enregistrer les modifications'
+                : 'Enregistrer et continuer'
+            }
+          />
         </ActionsBarSticky.Right>
       )}
     </ActionsBarSticky>

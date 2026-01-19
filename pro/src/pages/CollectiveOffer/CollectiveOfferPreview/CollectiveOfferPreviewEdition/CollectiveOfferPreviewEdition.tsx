@@ -4,13 +4,12 @@ import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
+import { Button } from '@/design-system/Button/Button'
 import { AdagePreviewLayout } from '@/pages/AdageIframe/app/components/OfferInfos/AdagePreviewLayout/AdagePreviewLayout'
 import {
   type MandatoryCollectiveOfferFromParamsProps,
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { PreviewHeader } from '../components/PreviewHeader'
 import styles from './CollectiveOfferPreviewEdition.module.scss'
@@ -38,9 +37,7 @@ export const CollectiveOfferPreviewEdition = ({
       <AdagePreviewLayout offer={offer} />
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink variant={ButtonVariant.PRIMARY} to={backRedirectionUrl}>
-            Retour vers l’offre
-          </ButtonLink>
+          <Button as="a" to={backRedirectionUrl} label="Retour vers l’offre" />
         </ActionsBarSticky.Left>
       </ActionsBarSticky>
     </BasicLayout>

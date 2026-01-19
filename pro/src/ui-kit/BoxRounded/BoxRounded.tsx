@@ -1,8 +1,12 @@
 import cn from 'classnames'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './BoxRounded.module.scss'
 
@@ -54,12 +58,13 @@ export const BoxRounded = ({
         {displayEditButton && (
           <div className={styles['modify-button-container']}>
             <Button
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
               onClick={onClickModify}
               icon={fullEditIcon}
-            >
-              Modifier
-            </Button>
+              label="Modifier"
+            />
           </div>
         )}
         <div>{children}</div>

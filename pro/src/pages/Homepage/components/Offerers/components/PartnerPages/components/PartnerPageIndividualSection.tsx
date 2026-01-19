@@ -3,12 +3,11 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { WEBAPP_URL } from '@/commons/utils/config'
 import { copyTextToClipboard } from '@/commons/utils/copyTextToClipboard'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDuplicateIcon from '@/icons/full-duplicate.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './PartnerPage.module.scss'
 
@@ -45,41 +44,46 @@ export function PartnerPageIndividualSection({
       <div>
         <h4 className={styles['details-title']}>Grand public</h4>
       </div>
-      <ButtonLink
-        variant={ButtonVariant.TERNARY}
-        className={styles['details-link']}
-        to={`/structures/${offererId}/lieux/${venueId}/page-partenaire`}
-        aria-label={`Gérer la page ${venueName}`}
-        icon={fullNextIcon}
-        onClick={() =>
-          logEvent(Events.CLICKED_PAGE_FOR_APP_HOME, {
-            from: location.pathname,
-          })
-        }
-      >
-        Gérer votre page pour le grand public
-      </ButtonLink>
+      <div className={styles['details-link']}>
+        <Button
+          as="a"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          to={`/structures/${offererId}/lieux/${venueId}/page-partenaire`}
+          aria-label={`Gérer la page ${venueName}`}
+          icon={fullNextIcon}
+          onClick={() =>
+            logEvent(Events.CLICKED_PAGE_FOR_APP_HOME, {
+              from: location.pathname,
+            })
+          }
+          label="Gérer votre page pour le grand public"
+        />
+      </div>
 
-      <ButtonLink
-        variant={ButtonVariant.TERNARY}
-        icon={fullLinkIcon}
-        to={venuePreviewLink}
-        isExternal
-        opensInNewTab
-        className={styles['details-link']}
-        onClick={logVenueLinkClick}
-      >
-        Voir votre page dans l’application
-      </ButtonLink>
+      <div className={styles['details-link']}>
+        <Button
+          as="a"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullLinkIcon}
+          to={venuePreviewLink}
+          isExternal
+          opensInNewTab
+          onClick={logVenueLinkClick}
+          label="Voir votre page dans l’application"
+        />
+      </div>
 
-      <Button
-        variant={ButtonVariant.TERNARY}
-        icon={fullDuplicateIcon}
-        className={styles['details-link']}
-        onClick={copyVenueLink}
-      >
-        Copier le lien de la page
-      </Button>
+      <div className={styles['details-link']}>
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullDuplicateIcon}
+          onClick={copyVenueLink}
+          label="Copier le lien de la page"
+        />
+      </div>
     </section>
   )
 }

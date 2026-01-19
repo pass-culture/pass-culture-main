@@ -18,7 +18,7 @@ import { getDateToFrenchText } from '@/commons/utils/date'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './CollectiveOfferFromRequest.module.scss'
@@ -154,9 +154,10 @@ export const CollectiveOfferFromRequest = (): JSX.Element => {
           </SummarySection>
           <ActionsBarSticky>
             <ActionsBarSticky.Right>
-              <Button onClick={handleButtonClick}>
-                Créer l’offre pour l’enseignant
-              </Button>
+              <Button
+                onClick={handleButtonClick}
+                label="Créer l’offre pour l’enseignant"
+              />
             </ActionsBarSticky.Right>
           </ActionsBarSticky>
         </>

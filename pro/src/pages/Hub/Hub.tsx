@@ -12,10 +12,10 @@ import { normalizeStrForSearch } from '@/commons/utils/normalizeStrForSearch'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { withVenueHelpers } from '@/commons/utils/withVenueHelpers'
 import { Footer } from '@/components/Footer/Footer'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import fullMoreIcon from '@/icons/full-more.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './Hub.module.scss'
@@ -143,13 +143,13 @@ export const Hub = () => {
       </div>
 
       <div className={styles['venue-actions']}>
-        <ButtonLink
+        <Button
+          as="a"
           icon={fullMoreIcon}
           to="/inscription/structure/recherche"
           variant={ButtonVariant.SECONDARY}
-        >
-          Ajouter une structure
-        </ButtonLink>
+          label="Ajouter une structure"
+        />
       </div>
 
       <Footer layout={'basic'} />

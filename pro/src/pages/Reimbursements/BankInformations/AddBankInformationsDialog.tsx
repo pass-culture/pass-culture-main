@@ -6,10 +6,9 @@ import {
   DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID,
 } from '@/commons/utils/config'
 import { Dialog } from '@/components/Dialog/Dialog'
+import { Button } from '@/design-system/Button/Button'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeLinkIcon from '@/icons/stroke-link.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './AddBankInformationsDialog.module.scss'
 
@@ -38,25 +37,25 @@ export const AddBankInformationsDialog = ({
       open={isDialogOpen}
       refToFocusOnClose={dialogTriggerRef}
     >
-      <ButtonLink
-        to={
-          isCaledonian
-            ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
-            : DS_BANK_ACCOUNT_PROCEDURE_ID
-        }
-        isExternal
-        opensInNewTab
-        icon={fullLinkIcon}
-        className={styles['link-button']}
-        variant={ButtonVariant.PRIMARY}
-        onClick={() => {
-          logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
-            offererId,
-          })
-        }}
-      >
-        Continuer sur demarche.numerique.gouv.fr
-      </ButtonLink>
+      <div className={styles['link-button']}>
+        <Button
+          as="a"
+          to={
+            isCaledonian
+              ? DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID
+              : DS_BANK_ACCOUNT_PROCEDURE_ID
+          }
+          isExternal
+          opensInNewTab
+          icon={fullLinkIcon}
+          onClick={() => {
+            logEvent(BankAccountEvents.CLICKED_CONTINUE_TO_DS, {
+              offererId,
+            })
+          }}
+          label="Continuer sur demarche.numerique.gouv.fr"
+        />
+      </div>
     </Dialog>
   )
 }

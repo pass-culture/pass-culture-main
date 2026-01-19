@@ -11,10 +11,10 @@ import { isEqual } from '@/commons/utils/isEqual'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { ManadgedVenueItem } from '../ManagedVenueItem/ManagedVenueItem'
@@ -198,18 +198,17 @@ export const LinkVenuesDialog = ({
               <div className={styles['dialog-actions']}>
                 <Button
                   variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.NEUTRAL}
                   onClick={handleCancel}
-                >
-                  Annuler
-                </Button>
+                  label="Annuler"
+                />
 
                 <Button
                   type="submit"
                   isLoading={methods.formState.isSubmitting}
                   ref={saveButtonRef}
-                >
-                  Enregistrer
-                </Button>
+                  label="Enregistrer"
+                />
               </div>
             </DialogBuilder.Footer>
           </form>

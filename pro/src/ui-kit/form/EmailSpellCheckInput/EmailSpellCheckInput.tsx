@@ -1,10 +1,10 @@
 import { type ForwardedRef, forwardRef, useState } from 'react'
 
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { suggestEmail } from '@/ui-kit/form/EmailSpellCheckInput/suggestEmail'
 
 import styles from './EmailSpellCheckInput.module.scss'
@@ -79,17 +79,16 @@ export const EmailSpellCheckInput = forwardRef(
                   <p>Voulez-vous plutôt dire {emailValidationTip} ?</p>
                   {/* Can't this be added as an action ? (needs autofocus and href optional */}
                   <Button
-                    variant={ButtonVariant.TERNARY}
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
                     icon={fullNextIcon}
-                    iconPosition={IconPositionEnum.LEFT}
                     onClick={() => {
                       onApplyTip(emailValidationTip)
                       resetEmailValidation()
                     }}
                     autoFocus
-                  >
-                    Appliquer la modification
-                  </Button>
+                    label="Appliquer la modification"
+                  />
                 </>
               }
               title="Correction suggérée"

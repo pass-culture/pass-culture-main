@@ -334,7 +334,9 @@ describe('IndividualOfferSummaryScreen', () => {
       expect(
         screen.getByText('Sauvegarder le brouillon et quitter')
       ).toBeInTheDocument()
-      expect(screen.getByText('Publier l’offre')).toBeInTheDocument()
+      expect(
+        screen.getByRole('button', { name: /Publier l’offre/ })
+      ).toBeInTheDocument()
     })
 
     it('should link to creation confirmation page', async () => {

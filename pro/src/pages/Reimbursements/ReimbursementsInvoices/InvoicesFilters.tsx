@@ -5,9 +5,9 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { getToday } from '@/commons/utils/date'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
 
@@ -87,32 +87,30 @@ export const InvoicesFilters = ({
             periodEndingDate={filters.periodEnd}
           />
         </FormLayout.Row>
-        <Button
-          className={styles['reset-filters']}
-          disabled={areFiltersDefault}
-          onClick={onReset}
-          variant={ButtonVariant.TERNARY}
-          icon={fullRefreshIcon}
-        >
-          {pluralizeFr(
-            selectableOptions.length,
-            'Réinitialiser le filtre',
-            'Réinitialiser les filtres'
-          )}
-        </Button>
+        <div className={styles['reset-filters']}>
+          <Button
+            disabled={areFiltersDefault}
+            onClick={onReset}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            icon={fullRefreshIcon}
+            label={pluralizeFr(
+              selectableOptions.length,
+              'Réinitialiser le filtre',
+              'Réinitialiser les filtres'
+            )}
+          />
+        </div>
       </div>
 
       <div className={styles['button-group']}>
         <div className={styles['button-group-separator']} />
         <div className={styles['button-group-button']}>
           <Button
-            variant={ButtonVariant.PRIMARY}
-            className={styles['button-group-search-button']}
             disabled={!filters.periodStart || !filters.periodEnd}
             onClick={onSearch}
-          >
-            Lancer la recherche
-          </Button>
+            label="Lancer la recherche"
+          />
         </div>
       </div>
     </>

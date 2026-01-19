@@ -1,10 +1,10 @@
 import { useState } from 'react'
 
 import type { BankAccountResponseModel, ManagedVenue } from '@/apiClient/v1'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { PricingPointDialog } from '../PricingPointDialog/PricingPointDialog'
@@ -65,16 +65,15 @@ export function ManadgedVenueItem({
           title={`Sélectionnez un SIRET pour la structure “${venue.commonName}”`}
           trigger={
             <Button
-              variant={ButtonVariant.QUATERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               icon={fullEditIcon}
-              iconPosition={IconPositionEnum.LEFT}
               onClick={() => {
                 setSelectedVenue(venue)
               }}
               className={styles['dialog-checkbox-button']}
-            >
-              Sélectionner un SIRET
-            </Button>
+              label="Sélectionner un SIRET"
+            />
           }
         >
           <PricingPointDialog

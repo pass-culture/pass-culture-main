@@ -24,24 +24,6 @@
         stroke: currentcolor;
         stroke-width: 3px;
       }
-
-      &-link {
-        @include fonts.body-accent-xs;
-
-        display: inline-flex;
-        align-items: center;
-        text-decoration: underline;
-        white-space: break-spaces;
-
-        &[aria-current="page"] {
-          color: inherit;
-          text-decoration: unset;
-        }
-
-        &-icon {
-          margin-right: var(--size-spacing-xs);
-        }
-      }
     }
   }
 }

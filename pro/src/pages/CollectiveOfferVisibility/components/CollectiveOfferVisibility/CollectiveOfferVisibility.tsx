@@ -35,9 +35,8 @@ import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { SelectAutocomplete } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -432,8 +431,14 @@ export const CollectiveOfferVisibilityScreen = ({
               </FormLayout.Section>
               <ActionsBarSticky>
                 <ActionsBarSticky.Left>
-                  <ButtonLink
+                  <Button
+                    as="a"
                     variant={ButtonVariant.SECONDARY}
+                    color={
+                      mode === Mode.CREATION
+                        ? ButtonColor.BRAND
+                        : ButtonColor.NEUTRAL
+                    }
                     to={
                       mode === Mode.CREATION
                         ? `/offre/${offer.id}/collectif/stocks${
@@ -441,17 +446,17 @@ export const CollectiveOfferVisibilityScreen = ({
                           }`
                         : '/offres/collectives'
                     }
-                  >
-                    {mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'}
-                  </ButtonLink>
+                    label={
+                      mode === Mode.CREATION ? 'Retour' : 'Annuler et quitter'
+                    }
+                  />
                 </ActionsBarSticky.Left>
                 <ActionsBarSticky.Right dirtyForm={isDirty} mode={mode}>
                   <Button
                     type="submit"
                     disabled={!watch('institution') || !canEditInstitution}
-                  >
-                    Enregistrer et continuer
-                  </Button>
+                    label="Enregistrer et continuer"
+                  />
                 </ActionsBarSticky.Right>
               </ActionsBarSticky>
             </FormLayout>

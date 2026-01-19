@@ -2,8 +2,8 @@ import { useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 
 import highlightImg from './assets/highlight.png'
@@ -34,9 +34,8 @@ export const HighlightHome = () => {
                 onClick={() =>
                   logEvent(HighlightEvents.HAS_CLICKED_DISCOVER_HIGHLIGHT)
                 }
-              >
-                Parcourir les temps forts
-              </Button>
+                label="Parcourir les temps forts"
+              />
             }
           />
         }

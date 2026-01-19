@@ -8,10 +8,10 @@ import type {
 } from '@/apiClient/v1'
 import { GET_VENUE_PROVIDERS_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullPauseIcon from '@/icons/full-pause.svg'
 import fullPlayIcon from '@/icons/full-play.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { ToggleVenueProviderStatusDialog } from './ToggleVenueProviderStatusDialog'
 
@@ -59,21 +59,21 @@ export const ToggleVenueProviderStatusButton = ({
         venueProvider.isActive ? (
           <Button
             onClick={() => setIsModalOpen(true)}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={fullPauseIcon}
             iconAlt="Mettre en pause la synchronisation"
-          >
-            Mettre en pause
-          </Button>
+            label="Mettre en pause"
+          />
         ) : (
           <Button
             onClick={() => setIsModalOpen(true)}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={fullPlayIcon}
             iconAlt="Réactiver la synchronisation"
-          >
-            Réactiver
-          </Button>
+            label="Réactiver"
+          />
         )
       }
     />

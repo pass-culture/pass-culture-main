@@ -1,7 +1,7 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefresh from '@/icons/full-refresh.svg'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './TableNoFilterResult.module.scss'
@@ -33,12 +33,12 @@ export const TableNoFilterResult = ({
         <p className={styles['search-no-results-title4']}>{message}</p>
         <p className={styles['search-no-results-text']}>{subtitle}</p>
         <Button
-          variant={ButtonVariant.TERNARYBRAND}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.BRAND}
           icon={fullRefresh}
           onClick={resetFilters}
-        >
-          {resetMessage}
-        </Button>
+          label={resetMessage}
+        />
       </div>
     </td>
   </tr>

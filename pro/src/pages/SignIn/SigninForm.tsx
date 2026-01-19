@@ -7,13 +7,14 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullKeyIcon from '@/icons/full-key.svg'
 import iconFullNext from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 
 import type { SigninFormValues } from './SignIn'
 import styles from './Signin.module.scss'
@@ -65,47 +66,59 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
             requiredIndicator="hidden"
           />
         </div>
-        <ButtonLink
+        <Button
+          as="a"
           icon={fullKeyIcon}
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           to="/demande-mot-de-passe"
           onClick={() =>
             logEvent(Events.CLICKED_FORGOTTEN_PASSWORD, {
               from: location.pathname,
             })
           }
-        >
-          Réinitialisez votre mot de passe
-        </ButtonLink>
+          label="Réinitialisez votre mot de passe"
+        />
         <div className={styles['buttons-field']}>
           <Button
             type="submit"
-            className={styles['buttons']}
             isLoading={formState.isSubmitting}
-          >
-            Se connecter
-          </Button>
+            label="Se connecter"
+          />
         </div>
         <aside className={styles['no-account']}>
           <p className={styles['no-account-text']}>
             Vous n’avez pas encore de compte ?
           </p>
-          <ButtonLink
-            to={accountCreationUrl}
-            icon={iconFullNext}
-            variant={
-              isLaptopScreenAtLeast
-                ? ButtonVariant.TERNARY
-                : ButtonVariant.QUATERNARY
-            }
-            onClick={() =>
-              logEvent(Events.CLICKED_CREATE_ACCOUNT, {
-                from: location.pathname,
-              })
-            }
-          >
-            S’inscrire
-          </ButtonLink>
+          {isLaptopScreenAtLeast ? (
+            <Button
+              as="a"
+              to={accountCreationUrl}
+              icon={iconFullNext}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              onClick={() =>
+                logEvent(Events.CLICKED_CREATE_ACCOUNT, {
+                  from: location.pathname,
+                })
+              }
+              label="S’inscrire"
+            />
+          ) : (
+            <ButtonLink
+              as="a"
+              to={accountCreationUrl}
+              icon={iconFullNext}
+              variant={OldButtonVariant.QUATERNARY}
+              onClick={() =>
+                logEvent(Events.CLICKED_CREATE_ACCOUNT, {
+                  from: location.pathname,
+                })
+              }
+            >
+              S’inscrire
+            </ButtonLink>
+          )}
         </aside>
       </FormLayout>
     </Form>

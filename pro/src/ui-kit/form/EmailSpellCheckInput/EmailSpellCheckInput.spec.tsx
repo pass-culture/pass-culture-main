@@ -101,7 +101,9 @@ describe('EmailSpellCheckInput', () => {
     await userEvent.click(emailField)
     await userEvent.type(emailField, 'email@gmil.com')
     await userEvent.tab()
-    const applyButton = screen.getByText(/Appliquer la modification/)
+    const applyButton = screen.getByRole('button', {
+      name: /Appliquer la modification/,
+    })
     expect(applyButton).toHaveFocus()
 
     await userEvent.keyboard('{enter}')

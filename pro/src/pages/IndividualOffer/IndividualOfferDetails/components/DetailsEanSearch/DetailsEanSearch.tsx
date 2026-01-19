@@ -8,6 +8,7 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCloseIcon from '@/icons/full-close.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
@@ -15,7 +16,6 @@ import type { Product } from '@/pages/IndividualOffer/IndividualOfferDetails/com
 import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { eanSearchValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
 import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDetails/components/EanSearchCallout/EanSearchCallout'
-import { Button } from '@/ui-kit/Button/Button'
 
 import styles from './DetailsEanSearch.module.scss'
 
@@ -161,11 +161,9 @@ export const DetailsEanSearch = ({
               extension={
                 <Button
                   type="submit"
-                  className={styles['details-ean-search-button']}
                   disabled={shouldButtonBeDisabled}
-                >
-                  Rechercher
-                </Button>
+                  label="Rechercher"
+                />
               }
             />
           </div>

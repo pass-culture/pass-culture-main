@@ -10,10 +10,9 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './StocksCalendarActionsBar.module.scss'
 
@@ -85,9 +84,7 @@ export function StocksCalendarActionsBar({
   if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
     return (
       <ActionsBarSticky className={styles['sticky']}>
-        <ButtonLink to="/offres" variant={ButtonVariant.PRIMARY}>
-          Retour à la liste des offres
-        </ButtonLink>
+        <Button as="a" to="/offres" label="Retour à la liste des offres" />
       </ActionsBarSticky>
     )
   }
@@ -111,16 +108,14 @@ export function StocksCalendarActionsBar({
                 onClick={() => {
                   updateCheckedStocks(new Set())
                 }}
-              >
-                Désélectionner
-              </Button>
+                label="Désélectionner"
+              />
               <Button
                 onClick={() => {
                   deleteStocks(Array.from(checkedStocks))
                 }}
-              >
-                Supprimer {checkedStocks.size > 1 ? 'ces dates' : 'cette date'}
-              </Button>
+                label={`Supprimer ${checkedStocks.size > 1 ? 'ces dates' : 'cette date'}`}
+              ></Button>
             </div>
           </div>
         </ActionsBarSticky>

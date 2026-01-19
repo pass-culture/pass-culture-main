@@ -1,6 +1,6 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownItem } from '@/ui-kit/DropdownMenuWrapper/DropdownItem'
 
 interface DeleteDraftOffersProps {
@@ -12,9 +12,12 @@ export const DeleteDraftCell = ({
 }: DeleteDraftOffersProps) => {
   return (
     <DropdownItem onSelect={() => setIsConfirmDialogOpen(true)} asChild>
-      <Button icon={fullTrashIcon} variant={ButtonVariant.TERNARY}>
-        Supprimer l’offre
-      </Button>
+      <Button
+        icon={fullTrashIcon}
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        label="Supprimer l’offre"
+      />
     </DropdownItem>
   )
 }

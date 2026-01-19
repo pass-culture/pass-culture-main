@@ -1,7 +1,7 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { Button } from '@/design-system/Button/Button'
 import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IncomeNoData.module.scss'
@@ -26,20 +26,23 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
         <>
           Vous n’avez aucune réservation sur cette période
           <div className={styles['income-no-data-text-with-link']}>
-            Découvrez nos
-            <ButtonLink
-              isExternal
-              opensInNewTab
-              to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
+            Découvrez nos{' '}
+            <span
               className={styles['income-no-data-text-with-link-buttonlink']}
-              onClick={() =>
-                logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
-                  from: location.pathname,
-                })
-              }
             >
-              Bonnes pratiques & Études
-            </ButtonLink>
+              <Button
+                as="a"
+                isExternal
+                opensInNewTab
+                to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
+                onClick={() =>
+                  logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
+                    from: location.pathname,
+                  })
+                }
+                label="Bonnes pratiques & Études"
+              />
+            </span>
             pour optimiser la visibilité de vos offres.
           </div>
         </>

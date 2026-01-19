@@ -40,10 +40,6 @@
   }
 }
 
-.confirmation-action {
-  width: 100%;
-}
-
 @media (min-width: size.$tablet) {
   .confirmation-actions {
     display: inline;
@@ -52,9 +48,5 @@
     > :first-child {
       margin-right: var(--size-spacing-xl);
     }
-  }
-
-  .confirmation-action {
-    width: fit-content;
   }
 }

@@ -48,7 +48,7 @@ describe('VenueFormActionBar', () => {
       venue: { ...defaultGetVenue },
     })
 
-    expect(screen.getByText('Annuler')).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Annuler' })).toHaveAttribute(
       'href',
       `/structures/${defaultGetVenue.managingOfferer.id}/lieux/${defaultGetVenue.id}`
     )

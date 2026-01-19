@@ -2,10 +2,10 @@ import { StocksOrderedBy } from '@/apiClient/v1'
 import type { PriceCategoryResponseModel } from '@/apiClient/v1/models/PriceCategoryResponseModel'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
@@ -117,11 +117,11 @@ export const StocksCalendarFilters = ({
         <Button
           icon={fullRefreshIcon}
           onClick={() => onUpdateFilters({})}
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           className={styles['reset-button']}
-        >
-          Réinitialiser les filtres
-        </Button>
+          label="Réinitialiser les filtres"
+        />
       )}
     </div>
   )

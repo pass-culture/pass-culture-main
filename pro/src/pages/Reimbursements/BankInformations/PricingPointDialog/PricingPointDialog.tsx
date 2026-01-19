@@ -6,8 +6,8 @@ import { api } from '@/apiClient/api'
 import type { ManagedVenue } from '@/apiClient/v1'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Select } from '@/ui-kit/form/Select/Select'
 
@@ -99,11 +99,17 @@ export const PricingPointDialog = ({
         <DialogBuilder.Footer>
           <div className={styles['dialog-actions']}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                label="Annuler"
+              />
             </Dialog.Close>
-            <Button type="submit" disabled={methods.formState.isSubmitting}>
-              Valider la sélection
-            </Button>
+            <Button
+              type="submit"
+              disabled={methods.formState.isSubmitting}
+              label="Valider la sélection"
+            />
           </div>
         </DialogBuilder.Footer>
       </form>

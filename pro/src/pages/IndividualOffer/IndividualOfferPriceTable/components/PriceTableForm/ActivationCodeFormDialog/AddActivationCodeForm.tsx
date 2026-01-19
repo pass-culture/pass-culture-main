@@ -1,7 +1,7 @@
 import type React from 'react'
 
+import { Button } from '@/design-system/Button/Button'
 import fullDownloadIcon from '@/icons/full-download.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { BaseFileInput } from '@/ui-kit/form/shared/BaseFileInput/BaseFileInput'
 
 import styles from './ActivationCodeFormDialog.module.scss'
@@ -44,18 +44,15 @@ export const AddActivationCodeForm = ({
       <div className={styles['activation-codes-upload-separator']} />
       <div className={styles['activation-codes-upload-template-section']}>
         <p className={styles['activation-codes-upload-gabarit']}>Gabarits</p>
-        <ButtonLink
+        <Button
+          as="a"
           isExternal
           to="/csvtemplates/CodesActivations-Gabarit.csv"
           type="text/csv"
           opensInNewTab
           icon={fullDownloadIcon}
-        >
-          Gabarit CSV
-          <span className="activation-codes-upload-gabarit-type-and-size">
-            (.csv, 50 ko)
-          </span>
-        </ButtonLink>
+          label="Gabarit CSV(.csv, 50 ko)"
+        />
       </div>
     </>
   )

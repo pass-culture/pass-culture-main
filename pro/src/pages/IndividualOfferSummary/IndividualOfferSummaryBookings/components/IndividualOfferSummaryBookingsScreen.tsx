@@ -16,9 +16,8 @@ import { FORMAT_ISO_DATE_ONLY } from '@/commons/utils/date'
 import { DEFAULT_OMNISEARCH_CRITERIA } from '@/components/Bookings/Components/Filters/constants'
 import { filterBookingsRecap } from '@/components/Bookings/Components/utils/filterBookingsRecap'
 import { IndividualBookingsTable } from '@/components/Bookings/IndividualBookingsTable/IndividualBookingsTable'
+import { Button } from '@/design-system/Button/Button'
 import { getFilteredIndividualBookingsAdapter } from '@/pages/Bookings/adapters/getFilteredIndividualBookingsAdapter'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { DownloadBookingsModal } from './DownloadBookingsModal/DownloadBookingsModal'
@@ -86,11 +85,7 @@ export const IndividualOfferSummaryBookingsScreen = ({
               onOpenChange={setIsDownloadBookingModalOpen}
               open={isDownloadBookingModalOpen}
               title="Téléchargement de vos réservations"
-              trigger={
-                <Button variant={ButtonVariant.PRIMARY}>
-                  Télécharger les réservations
-                </Button>
-              }
+              trigger={<Button label="Télécharger les réservations" />}
             >
               <DownloadBookingsModal
                 offerId={offer.id}

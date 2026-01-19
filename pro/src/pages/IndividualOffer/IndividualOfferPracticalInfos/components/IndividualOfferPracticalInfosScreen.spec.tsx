@@ -19,6 +19,13 @@ import {
   type IndividualOfferPracticalInfosScreenProps,
 } from './IndividualOfferPracticalInfosScreen'
 
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    getOffer: vi.fn(),
+    patchOffer: vi.fn(),
+  },
+}))
+
 vi.mock('@/commons/hooks/useOfferWizardMode', () => ({
   useOfferWizardMode: vi.fn(() => OFFER_WIZARD_MODE.CREATION),
 }))

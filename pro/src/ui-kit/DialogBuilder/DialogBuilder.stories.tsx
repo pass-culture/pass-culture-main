@@ -1,10 +1,10 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import type { StoryObj } from '@storybook/react-vite'
 
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { DialogBuilder } from './DialogBuilder'
+import { Button } from '@/design-system/Button/Button';
+import { ButtonVariant, ButtonColor } from '@/design-system/Button/types';
 
 export default {
   title: '@/ui-kit/DialogBuilder',
@@ -13,7 +13,7 @@ export default {
 
 export const Default: StoryObj<typeof DialogBuilder> = {
   args: {
-    trigger: <Button>Cliquez ici!</Button>,
+    trigger: <Button label="Cliquez ici!" />,
     children: (
       <>
         <Dialog.Title asChild>
@@ -28,7 +28,7 @@ export const Default: StoryObj<typeof DialogBuilder> = {
 export const Drawer: StoryObj<typeof DialogBuilder> = {
   args: {
     variant: 'drawer',
-    trigger: <Button>Cliquez ici!</Button>,
+    trigger: <Button label="Cliquez ici!"/>,
     title: 'Dialog title',
     children: (
       <>
@@ -36,10 +36,10 @@ export const Drawer: StoryObj<typeof DialogBuilder> = {
         <DialogBuilder.Footer>
           <div style={{ display: 'flex', gap: '24px' }}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button variant={ButtonVariant.SECONDARY} color={ButtonColor.NEUTRAL} label="Annuler"/>
             </Dialog.Close>
             <Dialog.Close asChild>
-              <Button>Continuer</Button>
+              <Button label="Continuer"/>
             </Dialog.Close>
           </div>
         </DialogBuilder.Footer>
@@ -51,7 +51,7 @@ export const Drawer: StoryObj<typeof DialogBuilder> = {
 export const DrawerWithLongContent: StoryObj<typeof DialogBuilder> = {
   args: {
     variant: 'drawer',
-    trigger: <Button>Cliquez ici!</Button>,
+    trigger: <Button label="Cliquez ici!" />,
     title: 'Dialog title',
     children: (
       <>
@@ -105,10 +105,10 @@ export const DrawerWithLongContent: StoryObj<typeof DialogBuilder> = {
         <DialogBuilder.Footer>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button variant={ButtonVariant.SECONDARY} color={ButtonColor.NEUTRAL} label="Annuler"/>
             </Dialog.Close>
             <Dialog.Close asChild>
-              <Button>Continuer</Button>
+              <Button label="Continuer"/>
             </Dialog.Close>
           </div>
         </DialogBuilder.Footer>

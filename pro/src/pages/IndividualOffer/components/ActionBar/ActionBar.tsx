@@ -8,11 +8,14 @@ import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeI
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullRightIcon from '@/icons/full-right.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import { ActionBarDraftStatus } from './ActionBarDraftStatus/ActionBarDraftStatus'
 
@@ -51,9 +54,8 @@ export const ActionBar = ({
           onClick={onClickPrevious}
           variant={ButtonVariant.SECONDARY}
           disabled={isDisabled}
-        >
-          Retour
-        </Button>
+          label="Retour"
+        />
       )
     }
 
@@ -63,31 +65,33 @@ export const ActionBar = ({
       isEvent
     ) {
       return (
-        <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>
-          Quitter le mode édition
-        </Button>
+        <Button
+          onClick={onClickPrevious}
+          variant={ButtonVariant.SECONDARY}
+          label="Quitter le mode édition"
+        />
       )
     }
 
     // mode === OFFER_WIZARD_MODE.EDITION
     return step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY ? (
-      <ButtonLink to={backOfferUrl} variant={ButtonVariant.PRIMARY}>
-        Retour à la liste des offres
-      </ButtonLink>
+      <Button as="a" to={backOfferUrl} label="Retour à la liste des offres" />
     ) : (
       <>
-        <Button onClick={onClickPrevious} variant={ButtonVariant.SECONDARY}>
-          Annuler et quitter
-        </Button>
+        <Button
+          onClick={onClickPrevious}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler et quitter"
+        />
 
         <Button
           type="submit"
           onClick={onClickNext}
           disabled={isDisabled}
           ref={saveEditionChangesButtonRef}
-        >
-          Enregistrer les modifications
-        </Button>
+          label="Enregistrer les modifications"
+        />
       </>
     )
   }
@@ -103,7 +107,8 @@ export const ActionBar = ({
           {step === INDIVIDUAL_OFFER_WIZARD_STEP_IDS.SUMMARY ? (
             <>
               {!isDisabled && (
-                <ButtonLink
+                <Button
+                  as="a"
                   to={isOnboarding ? '/accueil' : '/offres'}
                   variant={ButtonVariant.SECONDARY}
                   onClick={() => {
@@ -111,16 +116,19 @@ export const ActionBar = ({
                       'Brouillon sauvegardé dans la liste des offres'
                     )
                   }}
-                >
-                  Sauvegarder le brouillon et quitter
-                </ButtonLink>
+                  label="Sauvegarder le brouillon et quitter"
+                />
               )}
 
-              <Button type="submit" disabled={isDisabled}>
-                {publicationMode === 'later'
-                  ? 'Programmer l’offre'
-                  : 'Publier l’offre'}
-              </Button>
+              <Button
+                type="submit"
+                disabled={isDisabled}
+                label={
+                  publicationMode === 'later'
+                    ? 'Programmer l’offre'
+                    : 'Publier l’offre'
+                }
+              />
             </>
           ) : (
             <Button
@@ -130,9 +138,8 @@ export const ActionBar = ({
               disabled={isDisabled}
               onClick={onClickNext}
               ref={saveEditionChangesButtonRef}
-            >
-              Enregistrer et continuer
-            </Button>
+              label="Enregistrer et continuer"
+            />
           )}
         </>
       )

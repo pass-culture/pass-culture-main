@@ -16,12 +16,12 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_DD_MM_YYYY, mapDayToFrench } from '@/commons/utils/date'
 import { downloadFile } from '@/commons/utils/downloadFile'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButton } from '@/design-system/RadioButton/RadioButton'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeDeskIcon from '@/icons/stroke-desk.svg'
 import { formatDateTime } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/components/utils/formatDatetime'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import style from './DownloadBookingsModal.module.scss'
@@ -223,22 +223,23 @@ export const DownloadBookingsModal = ({
       <DialogBuilder.Footer>
         <div className={style['actions']}>
           <Dialog.Close asChild>
-            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
           </Dialog.Close>
           <Button
-            variant={ButtonVariant.PRIMARY}
             type="submit"
             data-export={BookingExportType.CSV}
-          >
-            Télécharger format CSV
-          </Button>
+            label="Télécharger format CSV"
+          />
+
           <Button
-            variant={ButtonVariant.PRIMARY}
             type="submit"
             data-export={BookingExportType.EXCEL}
-          >
-            Télécharger format Excel
-          </Button>
+            label="Télécharger format Excel"
+          />
         </div>
       </DialogBuilder.Footer>
     </form>

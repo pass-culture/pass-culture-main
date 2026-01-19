@@ -4,9 +4,9 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadFile } from '@/commons/utils/downloadFile'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './InvoiceDownloadActionsButton.module.scss'
 
@@ -70,20 +70,20 @@ export const InvoiceDownloadActionsButton = ({
       {checkedInvoices.length > 0 && (
         <>
           <Button
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={fullDownloadIcon}
             onClick={() => downloadInvoices(checkedInvoices)}
             className={styles['first-action']}
-          >
-            Télécharger les justificatifs
-          </Button>
+            label="Télécharger les justificatifs"
+          />
           <Button
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={fullDownloadIcon}
             onClick={() => downloadCSVFiles(checkedInvoices)}
-          >
-            Télécharger les détails
-          </Button>
+            label="Télécharger les détails"
+          />
         </>
       )}
     </div>

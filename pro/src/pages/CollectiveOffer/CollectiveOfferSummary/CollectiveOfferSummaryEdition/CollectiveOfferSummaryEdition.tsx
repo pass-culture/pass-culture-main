@@ -7,11 +7,10 @@ import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/uti
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { OfferEducationalActions } from '@/components/OfferEducationalActions/OfferEducationalActions'
+import { Button } from '@/design-system/Button/Button'
 import { withCollectiveOfferFromParams } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
 import { CollectiveOfferSummary } from '@/pages/CollectiveOffer/CollectiveOfferSummary/components/CollectiveOfferSummary/CollectiveOfferSummary'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { BookableOfferSummary } from '../BookableOfferSummary/BookableOfferSummary'
 import styles from './CollectiveOfferSummaryEdition.module.scss'
@@ -62,12 +61,11 @@ export const CollectiveOfferSummaryEdition = ({
 
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink
-            variant={ButtonVariant.PRIMARY}
+          <Button
+            as="a"
             to={computeCollectiveOffersUrl({}, undefined, offer.isTemplate)}
-          >
-            Retour à la liste des offres
-          </ButtonLink>
+            label="Retour à la liste des offres"
+          />
         </ActionsBarSticky.Left>
       </ActionsBarSticky>
     </CollectiveOfferLayout>

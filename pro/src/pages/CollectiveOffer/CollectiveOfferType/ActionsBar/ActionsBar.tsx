@@ -4,10 +4,13 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { computeIndividualOffersUrl } from '@/commons/core/Offers/utils/computeIndividualOffersUrl'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullRightIcon from '@/icons/full-right.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 interface ActionsBarProps {
   disableNextButton?: boolean
@@ -23,17 +26,18 @@ export const ActionsBar = ({
   return (
     <ActionsBarSticky hasSideNav={!isOnboarding}>
       <ActionsBarSticky.Left>
-        <ButtonLink
+        <Button
+          as="a"
           to={
             isOnboarding
               ? '/onboarding/individuel'
               : computeIndividualOffersUrl({})
           }
           variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
           onClick={() => logEvent(Events.CLICKED_CANCEL_OFFER_CREATION)}
-        >
-          Annuler et quitter
-        </ButtonLink>
+          label="Annuler et quitter"
+        />
       </ActionsBarSticky.Left>
       <ActionsBarSticky.Right>
         <Button
@@ -41,9 +45,8 @@ export const ActionsBar = ({
           icon={fullRightIcon}
           iconPosition={IconPositionEnum.RIGHT}
           disabled={disableNextButton}
-        >
-          Étape suivante
-        </Button>
+          label="Étape suivante"
+        />
       </ActionsBarSticky.Right>
     </ActionsBarSticky>
   )

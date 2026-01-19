@@ -7,13 +7,14 @@ import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { DuoCheckbox } from '@/components/DuoCheckbox/DuoCheckbox'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 
 import styles from './GenericCinemaProviderForm.module.scss'
+
 export interface GenericCinemaProviderFormValues {
   isDuo: boolean
   price?: number | null
@@ -140,31 +141,28 @@ export const GenericCinemaProviderForm = ({
         {isCreatedEntity ? (
           <Button
             type="submit"
-            variant={ButtonVariant.PRIMARY}
             isLoading={isSubmitting}
             disabled={!isValid}
-          >
-            Lancer la synchronisation
-          </Button>
+            label="Lancer la synchronisation"
+          />
         ) : (
           <div className={styles['cinema-provider-form-buttons']}>
             <Dialog.Close asChild>
               <Button
                 variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
                 onClick={onCancel}
                 type="button"
-              >
-                Annuler
-              </Button>
+                label="Annuler"
+              />
             </Dialog.Close>
             <Button
               type="submit"
               variant={ButtonVariant.PRIMARY}
               isLoading={isSubmitting}
               disabled={!isValid}
-            >
-              Modifier
-            </Button>
+              label="Modifier"
+            />
           </div>
         )}
       </DialogBuilder.Footer>

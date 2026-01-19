@@ -8,9 +8,9 @@ import type { GetBookingResponse } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { HeadlineOfferContextProvider } from '@/commons/context/HeadlineOfferContext/HeadlineOfferContext'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { Button } from '@/ui-kit/Button/Button'
 
 import { BookingDetails } from './BookingDetails'
 import { ButtonInvalidateToken } from './ButtonInvalidateToken'
@@ -173,9 +173,11 @@ export const Desk = (): JSX.Element => {
                     onConfirm={() => handleSubmitInvalidate(getValues('token'))}
                   />
                 ) : (
-                  <Button type="submit" disabled={isSubmitting || !booking}>
-                    Valider la contremarque
-                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting || !booking}
+                    label="Valider la contremarque"
+                  />
                 )}
               </div>
             </form>

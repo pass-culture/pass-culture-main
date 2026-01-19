@@ -13,7 +13,7 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 
 import { generateValidationSchema } from '../../validationSchema'
 import { FormStock, type FormStockProps } from '../FormStock'
@@ -48,9 +48,7 @@ function renderFormStock({
       <FormProvider {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FormStock {...props} />
-          <Button type="submit" isLoading={false}>
-            Enregistrer
-          </Button>
+          <Button type="submit" label="Enregistrer" />
         </form>
       </FormProvider>
     )
@@ -85,7 +83,7 @@ describe('FormStock', () => {
   it('should display an error when the field is empty', async () => {
     renderFormStock({ initialValues: initialValues, onSubmit, props })
 
-    const saveButton = screen.getByText('Enregistrer')
+    const saveButton = screen.getByRole('button', { name: 'Enregistrer' })
 
     await userEvent.click(saveButton)
 
