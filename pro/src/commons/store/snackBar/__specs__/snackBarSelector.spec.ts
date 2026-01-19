@@ -19,7 +19,7 @@ describe('snackBarSelector', () => {
     const snackBarItem: ISnackBarItem = {
       id: '123',
       variant: SnackBarVariant.SUCCESS,
-      text: 'My success message',
+      description: 'My success message',
       createdAt: '2025-01-01 12:00',
     }
 
@@ -35,7 +35,7 @@ describe('snackBarSelector', () => {
     expect(snackBar).toHaveLength(1)
     expect(snackBar[0]).toMatchObject({
       variant: SnackBarVariant.SUCCESS,
-      text: 'My success message',
+      description: 'My success message',
     })
   })
 })

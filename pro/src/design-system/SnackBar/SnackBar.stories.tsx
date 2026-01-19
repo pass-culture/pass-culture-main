@@ -58,7 +58,7 @@ export const DefaultSuccessVariant: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.SUCCESS,
-    text: 'Snack Bar with a default success variant',
+    description: 'Snack Bar with a default success variant',
     autoClose: false,
     testId: 'default-success-snack-bar',
     forceMobile: true,
@@ -72,7 +72,7 @@ export const DefaultErrorVariant: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.ERROR,
-    text: 'Snack Bar with a default error variant',
+    description: 'Snack Bar with a default error variant',
     autoClose: false,
     testId: 'default-error-snack-bar',
     forceMobile: true,
@@ -94,7 +94,7 @@ export const LargeSuccessVariant: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.SUCCESS,
-    text: 'SnackBar with a large success variant',
+    description: 'SnackBar with a large success variant',
     autoClose: false,
     testId: 'large-success-snack-bar',
   },
@@ -107,7 +107,7 @@ export const LargeErrorVariant: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.ERROR,
-    text: 'SnackBar with a large error variant',
+    description: 'SnackBar with a large error variant',
     autoClose: false,
     testId: 'large-error-snack-bar',
   },
@@ -120,7 +120,7 @@ export const LargeErrorVariantWithLongMessage: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.SUCCESS,
-    text: 'Snack Bar Success with a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
+    description: 'Snack Bar Success with a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
     autoClose: false,
     testId: 'long-message-success-snack-bar',
   },
@@ -133,7 +133,7 @@ export const LargeSuccessVariantWithLongMessage: Story = {
   render: (args) => <SnackBarWithReopenButton {...args} />,
   args: {
     variant: SnackBarVariant.ERROR,
-    text: 'Snack Bar Error with a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
+    description: 'Snack Bar Error with a very long message that lasts 10 seconds instead of 5 seconds by default (because it contains more than 120 characters)',
     autoClose: false,
     testId: 'long-message-error-snack-bar',
   },
@@ -145,7 +145,7 @@ export const LargeSuccessVariantWithLongMessage: Story = {
 type Notification = {
   id: number
   variant: SnackBarVariant
-  text: string
+  description: string
   date: Date
 }
 
@@ -157,10 +157,10 @@ const PlaygroundComponent = () => {
   const [counter, setCounter] = useState(0)
   const isSmallScreen = useMediaQuery('(max-width: 38.125rem)')
 
-  const addNotification = (variant: SnackBarVariant, text: string) => {
+  const addNotification = (variant: SnackBarVariant, description: string) => {
     const id = counter
     setCounter((prev) => prev + 1)
-    setNotifications((prev) => [...prev, { id, variant, text, date: new Date() }])
+    setNotifications((prev) => [...prev, { id, variant, description, date: new Date() }])
   }
 
   const removeNotification = (id: number) => {
@@ -191,7 +191,7 @@ const PlaygroundComponent = () => {
           <SnackBar
             key={notif.id}
             variant={notif.variant}
-            text={notif.text}
+            description={notif.description}
             onClose={() => removeNotification(notif.id)}
             autoClose={true}
             testId={`snack-bar-${notif.id}`}

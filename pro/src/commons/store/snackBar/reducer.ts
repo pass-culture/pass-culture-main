@@ -11,14 +11,14 @@ import { FORMAT_DD_MM_YYYY_HH_mm } from '@/commons/utils/date'
 import type { SnackBarVariant } from '@/design-system/SnackBar/SnackBar'
 
 export interface ISnackBarItem {
-  text: string
+  description: string
   variant: SnackBarVariant
   id: string
   createdAt: string
 }
 
 interface SnackBarPayload {
-  text: string
+  description: string
   variant: SnackBarVariant
 }
 

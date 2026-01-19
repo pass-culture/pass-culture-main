@@ -46,7 +46,7 @@ describe('SnackBarContainer', () => {
 
   it.each(variants)('should display given %s text with icon', (variant) => {
     const snackBar = {
-      text: 'Mon petit succès',
+      description: 'Mon petit succès',
       variant: variant,
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
@@ -62,7 +62,7 @@ describe('SnackBarContainer', () => {
 
   it('should remove notification after fixed show and transition duration', () => {
     const snackBar = {
-      text: 'Mon petit succès',
+      description: 'Mon petit succès',
       variant: SnackBarVariant.SUCCESS,
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
@@ -88,7 +88,7 @@ describe('SnackBarContainer', () => {
 
   it('should apply sticky bar class when isStickyBarOpen is true', () => {
     const snackBar = {
-      text: 'Test',
+      description: 'Test',
       variant: SnackBarVariant.SUCCESS,
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
@@ -100,7 +100,7 @@ describe('SnackBarContainer', () => {
 
   it('should not apply sticky bar class when isStickyBarOpen is false', () => {
     const snackBar = {
-      text: 'Test',
+      description: 'Test',
       variant: SnackBarVariant.SUCCESS,
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
@@ -112,8 +112,8 @@ describe('SnackBarContainer', () => {
 
   it('should display multiple snackbars', () => {
     const snackBars = [
-      { text: 'First', variant: SnackBarVariant.SUCCESS, id: '1' },
-      { text: 'Second', variant: SnackBarVariant.ERROR, id: '2' },
+      { description: 'First', variant: SnackBarVariant.SUCCESS, id: '1' },
+      { description: 'Second', variant: SnackBarVariant.ERROR, id: '2' },
     ] satisfies Omit<ISnackBarItem, 'createdAt'>[]
 
     renderSnackBarContainer(snackBars)
@@ -124,7 +124,7 @@ describe('SnackBarContainer', () => {
 
   it('should remove snackbar from store when auto-closed', () => {
     const snackBar = {
-      text: 'Test',
+      description: 'Test',
       variant: SnackBarVariant.SUCCESS,
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
@@ -144,7 +144,7 @@ describe('SnackBarContainer', () => {
   it('should remove snackbar from store when manually closed', async () => {
     const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
     const snackBar = {
-      text: 'Test',
+      description: 'Test',
       variant: SnackBarVariant.SUCCESS,
       id: '123',
     } satisfies Omit<ISnackBarItem, 'createdAt'>
@@ -173,19 +173,19 @@ describe('SnackBarContainer', () => {
     // Passer les snackbars dans un ordre différent pour tester le tri
     const snackBars = [
       {
-        text: 'Third',
+        description: 'Third',
         variant: SnackBarVariant.SUCCESS,
         id: '3',
         createdAt: now.toISOString(), // Le plus récent
       },
       {
-        text: 'First',
+        description: 'First',
         variant: SnackBarVariant.SUCCESS,
         id: '1',
         createdAt: new Date(now.getTime() - 2000).toISOString(), // Le plus ancien
       },
       {
-        text: 'Second',
+        description: 'Second',
         variant: SnackBarVariant.ERROR,
         id: '2',
         createdAt: new Date(now.getTime() - 1000).toISOString(), // Au milieu

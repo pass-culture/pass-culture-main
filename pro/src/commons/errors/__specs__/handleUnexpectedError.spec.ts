@@ -43,7 +43,8 @@ describe('handleUnexpectedError', () => {
     const snackBars = listSelector(rootStore.getState())
     expect(snackBars).toHaveLength(1)
     expect(snackBars[0]).toMatchObject({
-      text: 'Une erreur est survenue de notre côté. Veuillez réessayer plus tard.',
+      description:
+        'Une erreur est survenue de notre côté. Veuillez réessayer plus tard.',
       variant: SnackBarVariant.ERROR,
     })
 
@@ -118,7 +119,7 @@ describe('handleUnexpectedError', () => {
     const snackBars = listSelector(rootStore.getState())
     expect(snackBars).toHaveLength(1)
     expect(snackBars[0]).toMatchObject({
-      text: options.userMessage,
+      description: options.userMessage,
       variant: SnackBarVariant.ERROR,
     })
   })
