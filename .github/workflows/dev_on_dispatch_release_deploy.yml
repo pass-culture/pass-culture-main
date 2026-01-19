@@ -167,6 +167,35 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
+  deploy-prod-new-infra:
+    name: "Deploy on production environnement"
+    needs: 
+      - version
+      - deploy-prod
+    if: github.event.inputs.target_environment == 'production'
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    with:
+      environment: ${{ github.event.inputs.target_environment }}
+      environment_short_name: prd
+      app_version: ${{ needs.version.outputs.APP_VERSION }}
+      workflow_cluster_name: gke-infra-prd-eu9
+      workflow_project_id: pc-infra-prd
+      app_cluster_name: gke-backend-prd-eu9
+      app_project_id: pc-backend-prd
+      location: europe-west9
+      is_new_infra: true
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
+      deploy_api: true
+      deploy_pro: true
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      NEW_INFRA_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.WORKLOAD_IDENTITY_PRD }}
+      NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT: ${{ secrets.PCAPI_CI_SERVICE_ACCOUNT_PRD }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
   publish-github-prerelease:
     runs-on: ubuntu-22.04
     needs: deploy-prod
