@@ -1,6 +1,5 @@
 import { render, screen } from '@testing-library/react'
 
-import { ButtonSize } from '../../types'
 import { Icon } from './Icon'
 
 const DEFAULT_ICON_SRC = '/icons/check.svg'
@@ -15,19 +14,5 @@ describe('Icon', () => {
     const icon = screen.getByRole('img', { name: 'Check icon' })
     expect(icon).toBeInTheDocument()
     expect(icon).toHaveAttribute('aria-label', 'Check icon')
-  })
-
-  it('should render with small size', () => {
-    renderIcon({ iconAlt: 'Check icon', size: ButtonSize.SMALL })
-
-    const icon = screen.getByRole('img', { name: 'Check icon' })
-    expect(icon).toHaveAttribute('width', '14')
-  })
-
-  it('should render with default size', () => {
-    renderIcon({ iconAlt: 'Check icon', size: ButtonSize.DEFAULT })
-
-    const icon = screen.getByRole('img', { name: 'Check icon' })
-    expect(icon).toHaveAttribute('width', '16')
   })
 })

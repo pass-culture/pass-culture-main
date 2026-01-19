@@ -180,7 +180,7 @@ export const ButtonIconsLarge: Story = {
     <div style={styles}>
       <Button icon={fullNextIcon} iconPosition={IconPositionEnum.LEFT} label="Icon Left" />
       <Button icon={fullNextIcon} iconPosition={IconPositionEnum.RIGHT} label="Icon Right" />
-      <Button icon={fullNextIcon} iconPosition={IconPositionEnum.CENTER} />
+      <Button icon={fullNextIcon} />
     </div>
   ),
 }
@@ -193,7 +193,7 @@ export const ButtonIconsSmall: Story = {
     <div style={styles}>
       <Button size={ButtonSize.SMALL} icon={fullNextIcon} iconPosition={IconPositionEnum.LEFT} label="Icon Left" />
       <Button size={ButtonSize.SMALL} icon={fullNextIcon} iconPosition={IconPositionEnum.RIGHT} label="Icon Right" />
-      <Button size={ButtonSize.SMALL} icon={fullNextIcon} iconPosition={IconPositionEnum.CENTER} />
+      <Button size={ButtonSize.SMALL} icon={fullNextIcon} />
     </div>
   ),
 }
@@ -231,8 +231,8 @@ export const ButtonLoading: Story = {
       <Button label="Loading" isLoading />
       <Button label="Loading" variant={ButtonVariant.SECONDARY} isLoading />
       <Button label="Loading" variant={ButtonVariant.TERTIARY} isLoading />
-      <Button isLoading icon={fullNextIcon} iconPosition={IconPositionEnum.CENTER} />
-      <Button size={ButtonSize.SMALL} isLoading icon={fullNextIcon} iconPosition={IconPositionEnum.CENTER} />
+      <Button isLoading icon={fullNextIcon} />
+      <Button size={ButtonSize.SMALL} isLoading icon={fullNextIcon} />
     </div>
   ),
 }
@@ -243,8 +243,8 @@ export const ButtonLoading: Story = {
 export const ButtonTooltip: Story = {
   render: () => (
     <div style={styles}>
-      <Button tooltip="Tooltip text" icon={fullNextIcon} iconPosition={IconPositionEnum.CENTER} />
-      <Button tooltip="Tooltip text" icon={fullNextIcon} iconPosition={IconPositionEnum.CENTER} disabled />
+      <Button tooltip="Tooltip text" icon={fullNextIcon} />
+      <Button tooltip="Tooltip text" icon={fullNextIcon} disabled />
     </div>
   ),
 }

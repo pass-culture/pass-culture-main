@@ -187,11 +187,10 @@ describe('Button', () => {
       expect(screen.getByText('Loading Button')).toBeInTheDocument()
     })
 
-    it('should render loading button with spinner only when icon is centered', () => {
+    it('should render loading button with spinner only when icon only', () => {
       renderButton({
         isLoading: true,
         icon: fullNextIcon,
-        iconPosition: IconPositionEnum.CENTER,
       })
 
       const button = screen.getByRole('button')
@@ -256,10 +255,9 @@ describe('Button', () => {
       expect(icon).toBeInTheDocument()
     })
 
-    it('should render button with icon in center (icon only)', () => {
+    it('should render button with icon only (no label)', () => {
       renderButton({
         icon: fullNextIcon,
-        iconPosition: IconPositionEnum.CENTER,
         iconAlt: 'Next icon',
       })
 
@@ -290,28 +288,6 @@ describe('Button', () => {
       const icon = screen.getByRole('img', { name: 'Custom alt text' })
       expect(icon).toBeInTheDocument()
     })
-
-    it('should use correct icon width for DEFAULT size', () => {
-      const { container } = renderButton({
-        label: 'Default icon',
-        icon: fullNextIcon,
-        size: ButtonSize.DEFAULT,
-      })
-
-      const icon = container.querySelector('svg.btn-icon')
-      expect(icon).toHaveAttribute('width', '16')
-    })
-
-    it('should use correct icon width for SMALL size', () => {
-      const { container } = renderButton({
-        label: 'Small icon',
-        icon: fullNextIcon,
-        size: ButtonSize.SMALL,
-      })
-
-      const icon = container.querySelector('svg.btn-icon')
-      expect(icon).toHaveAttribute('width', '14')
-    })
   })
 
   describe('Content rendering', () => {
@@ -326,10 +302,9 @@ describe('Button', () => {
       ).not.toBeInTheDocument()
     })
 
-    it('should render only icon when icon is centered and no label', () => {
+    it('should render only icon when no label', () => {
       const { container } = renderButton({
         icon: fullNextIcon,
-        iconPosition: IconPositionEnum.CENTER,
       })
 
       const icon = container.querySelector('svg.btn-icon')
@@ -537,7 +512,6 @@ describe('Button', () => {
       renderButton({
         tooltip: 'Tooltip content',
         icon: fullNextIcon,
-        iconPosition: IconPositionEnum.CENTER,
         iconAlt: 'Next',
       })
 
@@ -552,7 +526,6 @@ describe('Button', () => {
       renderButton({
         tooltip: 'Tooltip content',
         icon: fullNextIcon,
-        iconPosition: IconPositionEnum.CENTER,
       })
 
       expect(screen.getByText('Tooltip content').parentElement).toHaveClass(

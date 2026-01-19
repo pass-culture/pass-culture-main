@@ -52,8 +52,7 @@ export const Button = forwardRef<
       styles[`btn-${variant}`],
       styles[`btn-${size}`],
       {
-        [styles['btn-icon-only']]:
-          icon && iconPosition === IconPositionEnum.CENTER,
+        [styles['btn-icon-only']]: icon && !label,
         [styles['btn-hovered']]: hovered,
         [styles['btn-disabled']]: disabled,
         [styles['btn-loading']]: isLoading,
@@ -80,17 +79,15 @@ export const Button = forwardRef<
         iconAlt={iconAlt}
         className={styles['btn-icon']}
         iconClassName={iconClassName}
-        size={size}
       />
     )
 
     const contentElement = (
       <>
         {iconPosition === IconPositionEnum.LEFT && iconElement}
-        {isLoading && <Spinner size={size} />}
+        {isLoading && <Spinner />}
         {label && <span className={styles['btn-label']}>{label}</span>}
         {iconPosition === IconPositionEnum.RIGHT && iconElement}
-        {iconPosition === IconPositionEnum.CENTER && !label && iconElement}
       </>
     )
 
