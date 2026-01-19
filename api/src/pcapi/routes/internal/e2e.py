@@ -4,6 +4,7 @@ from flask import jsonify
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.db_utils import clean_all_database
+from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
 from pcapi.sandboxes.scripts import getters
@@ -30,6 +31,7 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
     try:
         clean_all_database(reset_ids=True)
         obj = getter()
+        db.session.commit()  # otherwise reverse relation may be unsaved when using factory_related_name (VenueLocation)
         return jsonify(obj)
     except Exception as e:
         errors = ApiErrors()
