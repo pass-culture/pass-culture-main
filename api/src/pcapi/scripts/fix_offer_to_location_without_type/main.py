@@ -18,6 +18,7 @@ import logging
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
 
+import pcapi.core.educational.models as educational_models
 import pcapi.core.offerers.api as offerers_api
 import pcapi.core.offerers.models as offerers_models
 import pcapi.core.offers.models as offers_models
@@ -33,7 +34,11 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE = 1000
 
 
-def migrate_offers_on_regular_locations_if_needed(batch_number: int, batch_size: int) -> None:
+def migrate_offers_on_regular_locations_if_needed(
+    batch_number: int,
+    batch_size: int,
+    OfferModel: type[offers_models.Offer] | type[educational_models.CollectiveOffer],
+) -> None:
     location_ids = (
         db.session.query(offerers_models.OffererAddress.id)
         .filter(offerers_models.OffererAddress.type == offerers_models.LocationType.VENUE_LOCATION)
@@ -42,18 +47,20 @@ def migrate_offers_on_regular_locations_if_needed(batch_number: int, batch_size:
         .offset(batch_number * batch_size)
     )
     locations_offers_mapping: dict[int, list[int]] = {}
+    assert OfferModel.offererAddressId
     offer_per_location_query = (
-        db.session.query(offers_models.Offer.id, offers_models.Offer.offererAddressId)
-        .filter(offers_models.Offer.offererAddressId.in_(location_ids))
+        db.session.query(OfferModel.id, OfferModel.offererAddressId)
+        .filter(OfferModel.offererAddressId.in_(location_ids))
         .all()
     )
     for offer_id, oa_id in offer_per_location_query:
         locations_offers_mapping.setdefault(oa_id, []).append(offer_id)
 
     logger.info(
-        "Batch %i (size=%i) found: %s",
+        "Batch %i (size=%i) found for %s: %s",
         batch_number,
         batch_size,
+        OfferModel,
         {k: len(v) for k, v in locations_offers_mapping.items()},
     )
 
@@ -71,8 +78,8 @@ def migrate_offers_on_regular_locations_if_needed(batch_number: int, batch_size:
             venue.managingOffererId, venue_location.addressId, venue.publicName
         )
         # move the associated offers to the new location
-        db.session.query(offers_models.Offer).filter(
-            offers_models.Offer.id.in_(offer_ids),
+        db.session.query(OfferModel).filter(
+            OfferModel.id.in_(offer_ids),
         ).update({"offererAddressId": offer_location.id})
 
 
@@ -87,7 +94,8 @@ def main(not_dry: bool, batch_size: int) -> None:
     i = 0
     while i * batch_size < nb_OA:
         with atomic():
-            migrate_offers_on_regular_locations_if_needed(i, batch_size)
+            migrate_offers_on_regular_locations_if_needed(i, batch_size, offers_models.Offer)
+            migrate_offers_on_regular_locations_if_needed(i, batch_size, educational_models.CollectiveOffer)
             if not not_dry:
                 mark_transaction_as_invalid()
         i += 1
