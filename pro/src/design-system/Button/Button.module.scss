@@ -52,7 +52,7 @@
     .btn-label {
       @include fonts.body-accent;
 
-      line-height: 24px;
+      line-height: rem.torem(24px);
     }
 
     &.btn-icon-only {
@@ -72,7 +72,7 @@
     .btn-label {
       @include fonts.body-accent-xs;
 
-      line-height: 16px;
+      line-height: rem.torem(16px);
     }
 
     &.btn-icon-only {
