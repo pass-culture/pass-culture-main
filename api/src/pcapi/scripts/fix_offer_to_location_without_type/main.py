@@ -13,6 +13,7 @@ gh workflow run on_dispatch_pcapi_console_job.yml \
 """
 
 import argparse
+import itertools
 import logging
 
 import sqlalchemy as sa
@@ -32,6 +33,7 @@ logger = logging.getLogger(__name__)
 
 
 BATCH_SIZE = 1000
+OFFER_BATCH_SIZE = 1000
 
 
 def migrate_offers_on_regular_locations_if_needed(
@@ -78,9 +80,10 @@ def migrate_offers_on_regular_locations_if_needed(
             venue.managingOffererId, venue_location.addressId, venue.publicName
         )
         # move the associated offers to the new location
-        db.session.query(OfferModel).filter(
-            OfferModel.id.in_(offer_ids),
-        ).update({"offererAddressId": offer_location.id})
+        for batched_offer_ids in itertools.batched(offer_ids, OFFER_BATCH_SIZE):
+            db.session.query(OfferModel).filter(
+                OfferModel.id.in_(batched_offer_ids),
+            ).update({"offererAddressId": offer_location.id})
 
 
 def main(not_dry: bool, batch_size: int) -> None:
