@@ -16,6 +16,8 @@ import sqlalchemy as sa
 import time_machine
 from factory.faker import faker
 
+import pcapi.core.artist.factories as artist_factories
+import pcapi.core.artist.models as artist_models
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.chronicles.factories as chronicles_factories
@@ -1519,6 +1521,95 @@ class CreateOfferTest:
             )
 
         assert error.value.errors["idAtProvider"] == ["`rolalala` is already taken by another venue offer"]
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
+    def test_call_create_artist_offer_link_when_feature_flag_enabled(self, mock_create_link):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        artist = artist_factories.ArtistFactory()
+
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            artistOfferLinks=[
+                {
+                    "artist_id": artist.id,
+                    "artist_type": artist_models.ArtistType.PERFORMER,
+                    "custom_name": None,
+                },
+                {
+                    "artist_id": artist.id,
+                    "artist_type": artist_models.ArtistType.AUTHOR,
+                    "custom_name": "John Doe",
+                },
+            ],
+        )
+
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.id is not None
+        mock_create_link.assert_called()
+
+        assert len(mock_create_link.call_args_list) == 2
+
+        expected_first_call = mock.call(offer.id, body.artist_offer_links[0])
+        expected_second_call = mock.call(offer.id, body.artist_offer_links[1])
+
+        mock_create_link.assert_has_calls([expected_first_call, expected_second_call], any_order=True)
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
+    @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
+    def test_do_not_call_create_artist_offer_link_when_feature_flag_disabled(self, mock_create_link):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+        artist = artist_factories.ArtistFactory()
+
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            artistOfferLinks=[
+                {
+                    "artist_id": artist.id,
+                    "artist_type": artist_models.ArtistType.PERFORMER,
+                    "custom_name": None,
+                },
+            ],
+        )
+
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.id is not None
+        mock_create_link.assert_not_called()
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
+    def test_do_not_call_create_artist_offer_link_when_artist_offer_links_is_none(self, mock_create_link):
+        venue = offerers_factories.VenueFactory()
+        offerer_address = offerers_factories.OffererAddressFactory(offerer=venue.managingOfferer)
+
+        body = offers_schemas.CreateOffer(
+            name="A pretty good offer",
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            audioDisabilityCompliant=True,
+            mentalDisabilityCompliant=True,
+            motorDisabilityCompliant=True,
+            visualDisabilityCompliant=True,
+            artistOfferLinks=None,
+        )
+
+        offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
+
+        assert offer.id is not None
+        mock_create_link.assert_not_called()
 
 
 @pytest.mark.usefixtures("db_session")

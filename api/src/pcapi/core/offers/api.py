@@ -22,6 +22,7 @@ from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
 
+import pcapi.core.artist.api as artist_api
 import pcapi.core.bookings.api as bookings_api
 import pcapi.core.bookings.models as bookings_models
 import pcapi.core.bookings.repository as bookings_repository
@@ -199,6 +200,7 @@ def create_offer(
 
     validation.check_offer_subcategory_is_valid(body.subcategory_id)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[body.subcategory_id]
+    artist_offer_links = body.artist_offer_links
 
     if is_from_private_api:
         # TODO(jbaudet): should be ok to remove from this if-block since
@@ -234,6 +236,7 @@ def create_offer(
 
     fields = body.dict(by_alias=True)
     fields.pop("videoUrl", None)
+    fields.pop("artistOfferLinks", None)
 
     if is_from_private_api:
         if not body.withdrawal_details:
@@ -265,6 +268,10 @@ def create_offer(
     repository.add_to_session(offer)
 
     db.session.flush()
+
+    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links:
+        for link_data in artist_offer_links:
+            artist_api.create_artist_offer_link(offer.id, link_data)
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.

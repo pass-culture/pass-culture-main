@@ -15,6 +15,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.core.opening_hours import schemas as opening_hours_schemas
 from pcapi.routes.public.individual_offers.v1 import serialization as individual_offers_v1_serialization
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import artist_serialize
 from pcapi.serialization import utils as serialization_utils
 
 from . import deprecated  # noqa: F401
@@ -28,6 +29,7 @@ class CreateOffer(BaseModel):
     motor_disability_compliant: bool
     visual_disability_compliant: bool
 
+    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel] | None = None
     booking_contact: EmailStr | None = None
     booking_email: EmailStr | None = None
     description: str | None = None
@@ -38,10 +40,10 @@ class CreateOffer(BaseModel):
     id_at_provider: str | None = None
     is_duo: bool | None = None
     url: HttpUrl | None = None
+    video_url: HttpUrl | None = None
     withdrawal_delay: int | None = None
     withdrawal_details: str | None = None
     withdrawal_type: offers_models.WithdrawalTypeEnum | None = None
-    video_url: HttpUrl | None = None
 
     # is_national must be placed after url so that the validator
     # can access the url field in the dict of values
