@@ -10,11 +10,9 @@ import pcapi.core.providers.factories as providers_factories
 import pcapi.core.providers.models as providers_models
 from pcapi.core.categories import subcategories
 from pcapi.local_providers.chunk_manager import get_last_update_for_provider
-from pcapi.local_providers.local_provider import _upload_thumb
 from pcapi.local_providers.providable_info import ProvidableInfo
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
-from pcapi.utils.human_ids import humanize
 
 from . import provider_test_utils
 
@@ -245,73 +243,6 @@ class HandleUpdateTest:
         ]
         provider_event = db.session.query(providers_models.LocalProviderEvent).one()
         assert provider_event.type == providers_models.LocalProviderEventType.SyncError
-
-
-@pytest.mark.usefixtures("db_session")
-class HandleThumbTest:
-    def test_handle_thumb_increments_thumbCount(self):
-        # Given
-        provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        product = offers_factories.ThingProductFactory(
-            lastProvider=provider,
-        )
-        local_provider = provider_test_utils.TestLocalProviderWithThumb()
-
-        # When
-        local_provider._handle_thumb(product)
-        db.session.add(product)
-        db.session.commit()
-
-        # Then
-        assert local_provider.checkedThumbs == 1
-        assert local_provider.updatedThumbs == 0
-        assert local_provider.createdThumbs == 1
-        assert product.thumbCount == 1
-
-
-@pytest.mark.usefixtures("db_session")
-class UploadThumbTest:
-    def test_first_thumb(self, app):
-        # Given
-        provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        product = offers_factories.ThingProductFactory(
-            lastProvider=provider,
-            thumbCount=0,
-        )
-        local_provider = provider_test_utils.TestLocalProviderWithThumb()
-        thumb = local_provider.get_object_thumb()
-
-        # When
-        _upload_thumb(product, thumb)
-        db.session.add(product)
-        db.session.commit()
-
-        # Then
-        assert product.thumbCount == 1
-        assert product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(product.id)}"
-
-    @patch("pcapi.core.object_storage.store_public_object")
-    def test_fifth_thumb(self, mock_store_public_object):
-        provider = providers_factories.AllocineProviderFactory(localClass="TestLocalProviderWithThumb")
-        product = offers_factories.ThingProductFactory(
-            lastProvider=provider,
-            thumbCount=4,
-        )
-        local_provider = provider_test_utils.TestLocalProviderWithThumb()
-        thumb = local_provider.get_object_thumb()
-
-        # When
-        _upload_thumb(product, thumb)
-        db.session.add(product)
-        db.session.commit()
-
-        # Then
-        assert product.thumbCount == 5
-        assert product.thumbUrl == f"http://localhost/storage/thumbs/products/{humanize(product.id)}_4"
-        mock_store_public_object.assert_called_once()
-        assert mock_store_public_object.call_args.kwargs["folder"] == "thumbs"
-        assert mock_store_public_object.call_args.kwargs["object_id"] == f"products/{humanize(product.id)}_4"
-        assert mock_store_public_object.call_args.kwargs["content_type"] == "image/jpeg"
 
 
 def test_get_last_update_for_provider_should_return_date_modified_at_last_provider_when_provided():

@@ -1295,12 +1295,10 @@ def create_product_with_multiple_images() -> None:
     offers_factories.StockFactory.create(offer=offer)
     offers_factories.ProductMediationFactory.create(
         product=product,
-        uuid="222A",
         imageType=ImageType.RECTO,
     )
     offers_factories.ProductMediationFactory.create(
         product=product,
-        uuid="222A_1",
         imageType=ImageType.VERSO,
     )
 

@@ -145,7 +145,7 @@ def get_favorites_for(user: User, favorite_id: int | None = None) -> list[Favori
         .options(
             sa_orm.joinedload(Favorite.offer)
             .joinedload(Offer.product)
-            .load_only(Product.id, Product.thumbCount)
+            .load_only(Product.id)
             .joinedload(Product.productMediations)
         )
         .options(sa_orm.joinedload(Favorite.offer).joinedload(Offer.stocks))

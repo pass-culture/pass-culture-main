@@ -1704,7 +1704,6 @@ def fetch_or_update_product_with_titelive_data(titelive_product: models.Product)
     product.name = titelive_product.name
     product.description = titelive_product.description
     product.subcategoryId = titelive_product.subcategoryId
-    product.thumbCount = titelive_product.thumbCount
     old_extra_data = product.extraData
     if old_extra_data is None:
         old_extra_data = {}

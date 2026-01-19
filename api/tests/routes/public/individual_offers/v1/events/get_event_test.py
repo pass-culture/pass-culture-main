@@ -10,7 +10,6 @@ from pcapi.core.categories import subcategories
 from pcapi.core.offers import factories as offers_factories
 from pcapi.core.offers import models as offers_models
 from pcapi.utils import date as date_utils
-from pcapi.utils import human_ids
 
 from tests.conftest import TestClient
 from tests.routes.public.helpers import PublicAPIVenueEndpointHelper
@@ -38,12 +37,12 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
     def setup_base_resource(self, venue=None, **offer_kwargs) -> offers_models.Offer:
         venue = venue or self.setup_venue()
         product = offers_factories.ProductFactory(
-            thumbCount=1,
             description="Un livre de contrepèterie",
             subcategoryId=subcategories.SEANCE_CINE.id,
             name="Vieux motard que jamais",
             extraData=None,
         )
+        offers_factories.ProductMediationFactory(product=product)
 
         offer_kwargs = offer_kwargs if offer_kwargs else {}
         return offers_factories.EventOfferFactory(
@@ -94,7 +93,7 @@ class GetEventTest(PublicAPIVenueEndpointHelper):
             "id": offer.id,
             "image": {
                 "credit": None,
-                "url": f"http://localhost/storage/thumbs/products/{human_ids.humanize(offer.product.id)}",
+                "url": f"http://localhost/storage/thumbs/{offer.product.productMediations[0].uuid}",
             },
             "itemCollectionDetails": None,
             "location": {"type": "physical", "venueId": offer.venueId},

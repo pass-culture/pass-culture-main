@@ -46,7 +46,6 @@ def retrieve_offer_relations_query(query: sa_orm.Query) -> sa_orm.Query:
             sa_orm.joinedload(offers_models.Offer.product)
             .load_only(
                 offers_models.Product.id,
-                offers_models.Product.thumbCount,
                 offers_models.Product.description,
                 offers_models.Product.durationMinutes,
                 offers_models.Product.extraData,

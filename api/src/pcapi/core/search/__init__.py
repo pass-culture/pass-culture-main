@@ -577,7 +577,6 @@ def get_base_query_for_offer_indexation() -> sa_orm.Query:
                 offers_models.Product.chroniclesCount,
                 offers_models.Product.headlinesCount,
                 offers_models.Product.likesCount,
-                offers_models.Product.thumbCount,
             )
             .options(
                 sa_orm.joinedload(offers_models.Product.productMediations).load_only(
