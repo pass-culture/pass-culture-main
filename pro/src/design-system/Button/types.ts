@@ -7,7 +7,6 @@ export enum ButtonVariant {
 export enum IconPositionEnum {
   LEFT = 'left',
   RIGHT = 'right',
-  CENTER = 'center',
 }
 
 export enum ButtonColor {
