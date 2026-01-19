@@ -846,7 +846,7 @@ def list_collective_offers(filters: schemas.CollectiveOffersFilter, offers_limit
                     offerers_models.OffererAddress.address
                 ),
             ),
-            *_get_collective_offer_address_joinedload_with_expression(),
+            _get_collective_offer_address_joinedload(),
         )
         .options(
             sa_orm.joinedload(models.CollectiveOffer.collectiveStock).joinedload(
@@ -875,7 +875,7 @@ def list_collective_offer_templates(
                     offerers_models.OffererAddress.address
                 ),
             ),
-            *_get_collective_offer_template_address_joinedload_with_expression(),
+            _get_collective_offer_template_address_joinedload(),
         )
         .limit(offers_limit)
         .populate_existing()
@@ -966,7 +966,7 @@ def get_collective_offer_by_id_query(offer_id: int) -> sa_orm.Query[models.Colle
         .options(sa_orm.joinedload(models.CollectiveOffer.provider))
         .options(sa_orm.joinedload(models.CollectiveOffer.teacher))
         .options(sa_orm.joinedload(models.CollectiveOffer.institution))
-        .options(*_get_collective_offer_address_joinedload_with_expression())
+        .options(_get_collective_offer_address_joinedload())
     )
 
 
@@ -1053,7 +1053,7 @@ def get_collective_offer_template_by_id(offer_id: int) -> models.CollectiveOffer
             )
             .options(sa_orm.joinedload(models.CollectiveOfferTemplate.domains))
             .options(sa_orm.joinedload(models.CollectiveOfferTemplate.nationalProgram))
-            .options(*_get_collective_offer_template_address_joinedload_with_expression())
+            .options(_get_collective_offer_template_address_joinedload())
             .one()
         )
     except sa_orm.exc.NoResultFound:
@@ -1087,7 +1087,7 @@ def get_collective_offer_templates_for_playlist_query(
                 ),
             ),
             sa_orm.joinedload(models.CollectiveOfferTemplate.domains),
-            *_get_collective_offer_template_address_joinedload_with_expression(),
+            _get_collective_offer_template_address_joinedload(),
         ),
         sa_orm.joinedload(models.CollectivePlaylist.venue).options(
             sa_orm.joinedload(offerers_models.Venue.googlePlacesInfo),
@@ -1127,7 +1127,7 @@ def get_collective_offer_by_id_for_adage(offer_id: int) -> models.CollectiveOffe
                 ),
             ),
             sa_orm.joinedload(models.CollectiveOffer.domains),
-            *_get_collective_offer_address_joinedload_with_expression(),
+            _get_collective_offer_address_joinedload(),
         )
     )
     return query.filter(models.CollectiveOffer.id == offer_id).populate_existing().one()
@@ -1153,7 +1153,7 @@ def _get_collective_offer_template_by_id_for_adage_base_query() -> sa_orm.Query[
                 ),
             ),
             sa_orm.joinedload(models.CollectiveOfferTemplate.domains),
-            *_get_collective_offer_template_address_joinedload_with_expression(),
+            _get_collective_offer_template_address_joinedload(),
         )
     )
 
@@ -1391,7 +1391,7 @@ def get_all_offer_template_by_redactor_id(redactor_id: int) -> list[models.Colle
                 ),
             ),
             sa_orm.joinedload(models.CollectiveOfferTemplate.domains),
-            *_get_collective_offer_template_address_joinedload_with_expression(),
+            _get_collective_offer_template_address_joinedload(),
         )
         .filter(models.EducationalRedactor.id == redactor_id)
         .populate_existing()
@@ -1481,7 +1481,7 @@ def get_offers_for_my_institution(uai: str) -> sa_orm.Query[models.CollectiveOff
             sa_orm.joinedload(models.CollectiveOffer.teacher),
             sa_orm.joinedload(models.CollectiveOffer.nationalProgram),
             sa_orm.joinedload(models.CollectiveOffer.domains),
-            *_get_collective_offer_address_joinedload_with_expression(),
+            _get_collective_offer_address_joinedload(),
         )
         .filter(
             models.EducationalInstitution.institutionId == uai,
@@ -1499,36 +1499,22 @@ def get_national_program_or_none(program_id: int) -> models.NationalProgram | No
     return db.session.query(models.NationalProgram).filter(models.NationalProgram.id == program_id).one_or_none()
 
 
-def _get_collective_offer_template_address_joinedload_with_expression() -> tuple[
-    sa_orm.strategy_options._AbstractLoad, ...
-]:
+def _get_collective_offer_template_address_joinedload() -> sa_orm.strategy_options._AbstractLoad:
     """
-    Use this when querying CollectiveOfferTemplate and you need to load its address, including the isLinkedToVenue expression
+    Use this when querying CollectiveOfferTemplate and you need to load its address
     """
 
-    return (
-        sa_orm.joinedload(models.CollectiveOfferTemplate.offererAddress).joinedload(
-            offerers_models.OffererAddress.address
-        ),
-        sa_orm.joinedload(models.CollectiveOfferTemplate.offererAddress).with_expression(
-            offerers_models.OffererAddress._isLinkedToVenue,
-            offerers_models.OffererAddress.isLinkedToVenue.expression,
-        ),
+    return sa_orm.joinedload(models.CollectiveOfferTemplate.offererAddress).joinedload(
+        offerers_models.OffererAddress.address
     )
 
 
-def _get_collective_offer_address_joinedload_with_expression() -> tuple[sa_orm.interfaces.LoaderOption, ...]:
+def _get_collective_offer_address_joinedload() -> sa_orm.interfaces.LoaderOption:
     """
-    Use this when querying CollectiveOffer and you need to load its address, including the isLinkedToVenue expression
+    Use this when querying CollectiveOffer and you need to load its address
     """
 
-    return (
-        sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(offerers_models.OffererAddress.address),
-        sa_orm.joinedload(models.CollectiveOffer.offererAddress).with_expression(
-            offerers_models.OffererAddress._isLinkedToVenue,
-            offerers_models.OffererAddress.isLinkedToVenue.expression,
-        ),
-    )
+    return sa_orm.joinedload(models.CollectiveOffer.offererAddress).joinedload(offerers_models.OffererAddress.address)
 
 
 def get_synchronized_collective_offers_with_provider_for_venue(
