@@ -1574,8 +1574,6 @@ class OffererAddress(PcObject, Model):
     # Do not add back_populates="offererAddress" because it is not always the venue location
     venue: sa_orm.Mapped[Venue | None] = sa_orm.relationship("Venue", foreign_keys=[venueId])
 
-    _isLinkedToVenue: sa_orm.Mapped["bool|None"] = sa_orm.query_expression()
-
     __table_args__ = (
         # TODO (prouzet, 2025-10-09) When type and venueId are declared as non-nullable, index should be:
         # sa.Index("ix_unique_offerer_address_per_label, "offererId", "addressId", "label", "type", "venueId", unique=True),
@@ -1628,15 +1626,6 @@ class OffererAddress(PcObject, Model):
             "type",
         ),
     )
-
-    @hybrid_property
-    def isLinkedToVenue(self) -> bool:
-        return self.type == LocationType.VENUE_LOCATION  # property removed in next commit
-
-    @isLinkedToVenue.inplace.expression
-    @classmethod
-    def _isLinkedToVenueExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.type == LocationType.VENUE_LOCATION  # property removed in next commit
 
 
 class OffererConfidenceLevel(enum.Enum):
