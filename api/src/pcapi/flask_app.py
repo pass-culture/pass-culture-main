@@ -208,6 +208,7 @@ app.json = EnumJSONEncoder(app)
 app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SQLALCHEMY_ECHO"] = settings.SQLALCHEMY_ECHO
+app.config["SQLALCHEMY_ENGINES"] = {"default": app.config["SQLALCHEMY_DATABASE_URI"]}
 app.config["GOOGLE_CLIENT_ID"] = settings.GOOGLE_CLIENT_ID  # for authlib
 app.config["GOOGLE_CLIENT_SECRET"] = settings.GOOGLE_CLIENT_SECRET  # for authlib
 
@@ -274,18 +275,18 @@ def mark_4xx_as_invalid(response: flask.Response) -> flask.Response:
     return response
 
 
-@app.teardown_request
-def remove_db_session(exc: BaseException | None = None) -> None:
-    try:
-        db.session.remove()
-    except Exception as exception:
-        logger.error(
-            "An error happened while removing the transaction",
-            extra={
-                "exc": str(exception),
-            },
-            exc_info=True,
-        )
+# @app.teardown_request
+# def remove_db_session(exc: BaseException | None = None) -> None:
+#     try:
+#         db.session.remove()
+#     except Exception as exception:
+#         logger.error(
+#             "An error happened while removing the transaction",
+#             extra={
+#                 "exc": str(exception),
+#             },
+#             exc_info=True,
+#         )
 
 
 @app.teardown_request
