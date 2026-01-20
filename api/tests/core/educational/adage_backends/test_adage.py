@@ -16,7 +16,6 @@ ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL = {
     "type": "http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html",
     "title": "Not Found",
     "status": 404,
-    "detail": "EMAIL_ADDRESS_DOES_NOT_EXIST",
 }
 
 ADAGE_RESPONSE_FOR_INSTITUTION_WITH_INVALID_EMAIL = {
@@ -47,13 +46,16 @@ class AdageHttpClientTest:
 
         assert endpoint.called
 
-    def test_notify_prebooking_success_if_404(self, requests_mock):
+    @pytest.mark.parametrize("error_code", ["EMAIL_ADDRESS_DOES_NOT_EXIST", "EMAIL_ADDRESS_INCORRECT"])
+    def test_notify_prebooking_success_if_404(self, requests_mock, error_code):
         adage_client = AdageHttpClient()
         booking = educational_factories.CollectiveBookingFactory()
         booking_data = collective_booking_serialize.serialize_collective_booking(booking)
 
         requests_mock.post(
-            f"{MOCK_API_URL}/v1/prereservation", status_code=404, json=ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL
+            f"{MOCK_API_URL}/v1/prereservation",
+            status_code=404,
+            json={**ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL, "detail": error_code},
         )
 
         adage_client.notify_prebooking(booking_data)
@@ -123,7 +125,8 @@ class AdageHttpClientTest:
 
         assert endpoint.called
 
-    def test_notify_institution_association_success_if_404(self, requests_mock):
+    @pytest.mark.parametrize("error_code", ["EMAIL_ADDRESS_DOES_NOT_EXIST", "EMAIL_ADDRESS_INCORRECT"])
+    def test_notify_institution_association_success_if_404(self, requests_mock, error_code):
         adage_client = AdageHttpClient()
         offer = educational_factories.CollectiveOfferFactory(
             institution=educational_factories.EducationalInstitutionFactory(),
@@ -132,7 +135,9 @@ class AdageHttpClientTest:
         offer_data = serialize_collective_offer(offer)
 
         endpoint = requests_mock.post(
-            f"{MOCK_API_URL}/v1/offre-assoc", status_code=404, json=ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL
+            f"{MOCK_API_URL}/v1/offre-assoc",
+            status_code=404,
+            json={**ADAGE_RESPONSE_FOR_INSTITUTION_WITHOUT_EMAIL, "detail": error_code},
         )
         adage_client.notify_institution_association(offer_data)
 
