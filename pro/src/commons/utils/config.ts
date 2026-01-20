@@ -3,14 +3,7 @@ export const IS_DEV = import.meta.env.MODE === 'development'
 
 export const CGU_URL = 'https://pass.culture.fr/cgu-professionnels/'
 
-// TODO : Remove when transition to new domain is done
-let apiUrlBasedOnDomain
-if (typeof window !== 'undefined') {
-  apiUrlBasedOnDomain = window.location.hostname.includes('beta.gouv')
-    ? import.meta.env.VITE_API_URL_OLD
-    : import.meta.env.VITE_API_URL_NEW
-}
-export const API_URL = apiUrlBasedOnDomain || 'http://localhost'
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost'
 export const ADAGE_URL =
   import.meta.env.VITE_ADAGE_URL ||
   'https://bv.ac-versailles.fr/adage/passculture/offres'
