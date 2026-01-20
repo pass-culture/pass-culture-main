@@ -18,6 +18,7 @@ const makeUserPermissions = (
   hasSelectedVenue: false,
   isOnboarded: false,
   isSelectedVenueAssociated: false,
+  hasSelectedAdminOfferer: false,
   ...overrides,
 })
 

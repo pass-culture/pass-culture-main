@@ -68,6 +68,7 @@ describe('setSelectedOffererById', () => {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
         offererNames: offerersNamesResponseBase.offerersNames,
+        adminCurrentOfferer: null,
       },
       user: {
         currentUser: null,
@@ -116,6 +117,7 @@ describe('setSelectedOffererById', () => {
         currentOfferer: null,
         currentOffererName: null,
         offererNames: null,
+        adminCurrentOfferer: null,
       },
       user: {
         access: null,
@@ -175,6 +177,7 @@ describe('setSelectedOffererById', () => {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
         offererNames: offerersNamesResponseBase.offerersNames,
+        adminCurrentOfferer: null,
       },
       user: {
         access: null,
@@ -224,6 +227,7 @@ describe('setSelectedOffererById', () => {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
         offererNames: offerersNamesResponseBase.offerersNames,
+        adminCurrentOfferer: null,
       },
       user: {
         access: null,
@@ -271,6 +275,7 @@ describe('setSelectedOffererById', () => {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
         offererNames: offerersNamesResponseBase.offerersNames,
+        adminCurrentOfferer: null,
       },
       user: {
         access: null,
@@ -318,6 +323,7 @@ describe('setSelectedOffererById', () => {
         currentOfferer: currentOffererBase,
         currentOffererName: currentOffererNameBase,
         offererNames: offerersNamesResponseBase.offerersNames,
+        adminCurrentOfferer: null,
       },
       user: {
         access: null,
