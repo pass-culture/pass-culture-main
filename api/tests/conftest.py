@@ -283,7 +283,7 @@ def css_font_http_request_mock():
     """Intercept requests to fonts.googleapis.com and return an empty
     string.
 
-    This is for weasyprint, which uses ``urllib.request.urlopen()``.
+    This is for weasyprint, which uses ``urllib.request.open()``.
     """
 
     class FakeResponse:
@@ -320,11 +320,11 @@ def css_font_http_request_mock():
         def geturl(self):
             return self.url
 
-    def fake_urlopen(request, *args, **kwargs):
+    def fake_open(request, *args, **kwargs):
         assert request.host == "fonts.googleapis.com"
         return FakeResponse(request.full_url, content=b"")  # return a bytes-like object to avoid TypeError
 
-    with patch("weasyprint.urls.urlopen", fake_urlopen):
+    with patch("weasyprint.urls.open", fake_open):
         yield
 
 
