@@ -50,7 +50,14 @@ class Returns200ForProUserTest:
             assert response.status_code == 200
 
         assert response.json == {
-            "offerersNames": [{"name": offerer.name, "id": offerer.id, "allowedOnAdage": offerer.allowedOnAdage}]
+            "offerersNames": [
+                {
+                    "name": offerer.name,
+                    "id": offerer.id,
+                    "allowedOnAdage": offerer.allowedOnAdage,
+                    "isCaledonian": offerer.is_caledonian,
+                }
+            ]
         }
 
     @pytest.mark.usefixtures("db_session")

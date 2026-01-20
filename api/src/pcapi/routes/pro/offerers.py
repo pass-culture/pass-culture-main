@@ -58,7 +58,10 @@ def list_offerers_names(
 
     offerers = offerers.options(
         sa_orm.load_only(
-            offerers_models.Offerer.id, offerers_models.Offerer.name, offerers_models.Offerer.allowedOnAdage
+            offerers_models.Offerer.id,
+            offerers_models.Offerer.name,
+            offerers_models.Offerer.allowedOnAdage,
+            offerers_models.Offerer.siren,
         )
     )
 

@@ -5,6 +5,7 @@
 export type GetOffererNameResponseModel = {
   allowedOnAdage: boolean;
   id: number;
+  isCaledonian: boolean;
   name: string;
 };
 

@@ -90,6 +90,7 @@ describe('Homepage', () => {
       id: offerer.id,
       name: offerer.name,
       allowedOnAdage: true,
+      isCaledonian: false,
     })
   )
 
