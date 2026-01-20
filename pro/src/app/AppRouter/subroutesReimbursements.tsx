@@ -9,12 +9,12 @@ import { Income } from '@/pages/Reimbursements/Income/Income'
 import { ReimbursementsInvoices } from '@/pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
 
 import type { CustomRouteObject } from './types'
-import { mustHaveSelectedVenue } from './utils'
+import { mustHaveSelectedAdminOfferer, mustHaveSelectedVenue } from './utils'
 
 export const routesReimbursements: CustomRouteObject[] = [
   {
     element: <ReimbursementsInvoices />,
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
     path: '/remboursements',
     title: 'Gestion financière - justificatifs',
   },
