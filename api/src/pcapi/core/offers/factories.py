@@ -15,6 +15,7 @@ from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
 from pcapi.core.factories import BaseFactory
+from pcapi.core.offerers import api as offerers_api
 from pcapi.core.offerers.schemas import VenueTypeCode
 from pcapi.core.providers.constants import TITELIVE_MUSIC_GENRES_BY_GTL_ID
 from pcapi.core.providers.titelive_gtl import GTLS
@@ -245,7 +246,11 @@ class OfferFactory(BaseFactory[models.Offer]):
         if "offererAddress" not in kwargs and "offererAddressId" not in kwargs:
             venue = kwargs.get("venue")
             if venue:
-                kwargs["offererAddress"] = venue.offererAddress
+                kwargs["offererAddress"] = offerers_api.get_or_create_offer_location(
+                    offerer_id=venue.managingOffererId,
+                    address_id=venue.offererAddress.addressId,
+                    label=venue.common_name,
+                )
 
         kwargs.pop("isActive", None)
         return super()._create(model_class, *args, **kwargs)

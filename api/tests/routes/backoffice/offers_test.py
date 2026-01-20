@@ -2382,9 +2382,9 @@ class BatchOfferValidateTest(PostEndpointHelper):
         # select offer (3 in 1 query)
         # update offer (3 in 1 query)
         # fetch the venues for AO label if needed (3 in 1 query)
-        # re-fetch updated offers to render updated rows (3 queries)
+        # re-fetch updated offers to render updated rows (2 queries - offererAddress joined)
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=8 + additional_query_count
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=7 + additional_query_count
         )
 
         assert response.status_code == 200

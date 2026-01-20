@@ -1090,15 +1090,15 @@ class GetBookingsTest:
                 "priceCategoryLabel": None,
                 "offer": {
                     "address": {
-                        "city": used2.venue.offererAddress.address.city,
+                        "city": used2.stock.offer.offererAddress.address.city,
                         "coordinates": {
-                            "latitude": float(used2.venue.offererAddress.address.latitude),
-                            "longitude": float(used2.venue.offererAddress.address.longitude),
+                            "latitude": float(used2.stock.offer.offererAddress.address.latitude),
+                            "longitude": float(used2.stock.offer.offererAddress.address.longitude),
                         },
-                        "label": None,
-                        "postalCode": used2.venue.offererAddress.address.postalCode,
-                        "street": used2.venue.offererAddress.address.street,
-                        "timezone": used2.venue.offererAddress.address.timezone,
+                        "label": used2.stock.offer.offererAddress.label,
+                        "postalCode": used2.stock.offer.offererAddress.address.postalCode,
+                        "street": used2.stock.offer.offererAddress.address.street,
+                        "timezone": used2.stock.offer.offererAddress.address.timezone,
                     },
                     "bookingContact": None,
                     "subcategoryId": subcategories.ABO_LIVRE_NUMERIQUE.id,

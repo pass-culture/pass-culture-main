@@ -354,10 +354,11 @@ class OffererBookingRecapTest:
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
         # 1 - SELECT venue with bank account
+        # 1 - SELECT offer's offererAddress
         # 0 - SELECT feature (already cached by BeneficiaryGrant18Factory.beneficiaryImports)
         # 1 - SELECT external booking (might be preloaded ?)
         # 1 - SELECT activation code (might be preloaded ?)
-        with assert_num_queries(3):
+        with assert_num_queries(4):
             email_data = get_new_booking_to_pro_email_data(booking)
 
         assert not email_data.params["NEEDS_BANK_INFORMATION_REMINDER"]
@@ -382,10 +383,11 @@ class OffererBookingRecapTest:
         _ = booking.stock.offer.venue.offererAddress.address
         _ = booking.user
         # 1 - SELECT venue with bank account
+        # 1 - SELECT offer's offererAddress
         # 0 - SELECT feature (already cached by BeneficiaryGrant18Factory.beneficiaryImports)
         # 1 - SELECT external booking (might be preloaded ?)
         # 1 - SELECT activation code (might be preloaded ?)
-        with assert_num_queries(3):
+        with assert_num_queries(4):
             email_data = get_new_booking_to_pro_email_data(booking)
 
         assert email_data.params["FORMATTED_PRICE"] == "1195 F"
