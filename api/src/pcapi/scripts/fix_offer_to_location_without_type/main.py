@@ -17,6 +17,7 @@ import itertools
 import logging
 
 import sqlalchemy as sa
+import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 
 import pcapi.core.educational.models as educational_models
@@ -81,9 +82,18 @@ def migrate_offers_on_regular_locations_if_needed(
         )
         # move the associated offers to the new location
         for batched_offer_ids in itertools.batched(offer_ids, OFFER_BATCH_SIZE):
-            db.session.query(OfferModel).filter(
-                OfferModel.id.in_(batched_offer_ids),
-            ).update({"offererAddressId": offer_location.id})
+            try:
+                with atomic():
+                    db.session.query(OfferModel).filter(
+                        OfferModel.id.in_(batched_offer_ids),
+                    ).update({"offererAddressId": offer_location.id})
+            except sa_exc.OperationalError as exc:
+                logger.info("Exception %s - trying to update offer one by one", str(exc))
+                with atomic():
+                    for offer_id in batched_offer_ids:
+                        db.session.query(OfferModel).filter(
+                            OfferModel.id == offer_id,
+                        ).update({"offererAddressId": offer_location.id})
 
 
 def main(not_dry: bool, batch_size: int) -> None:
