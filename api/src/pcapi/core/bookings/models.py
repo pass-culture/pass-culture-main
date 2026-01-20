@@ -5,6 +5,7 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 
 import sqlalchemy as sa
+import sqlalchemy.event as sa_event
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.ext.hybrid import hybrid_property
@@ -523,7 +524,7 @@ class Booking(PcObject, Model):
         return self.dateUsed is not None and self.stock.offer.subcategoryId in SUBCATEGORY_IDS_WITH_REACTION_AVAILABLE
 
 
-Booking.trig_ddl = f"""
+trig_check_booking_deposit_ddl = sa.DDL(f"""
     CREATE OR REPLACE FUNCTION public.get_deposit_balance (deposit_id bigint, only_used_bookings boolean)
         RETURNS numeric
         AS $$
@@ -619,10 +620,10 @@ Booking.trig_ddl = f"""
     -- Happens only for USED to REIMBURSED transition
     WHEN (NEW.status <> '{BookingStatus.REIMBURSED.value}')
     EXECUTE PROCEDURE check_booking()
-    """
-sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_ddl))
+    """)
+sa_event.listen(Booking.__table__, "after_create", trig_check_booking_deposit_ddl)
 
-Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
+trig_update_cancellationDate_on_isCancelled_ddl = sa.DDL(f"""
     CREATE OR REPLACE FUNCTION save_cancellation_date()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -641,9 +642,9 @@ Booking.trig_update_cancellationDate_on_isCancelled_ddl = f"""
     BEFORE INSERT OR UPDATE OF status ON booking
     FOR EACH ROW
     EXECUTE PROCEDURE save_cancellation_date()
-    """
+    """)
 
-sa.event.listen(Booking.__table__, "after_create", sa.DDL(Booking.trig_update_cancellationDate_on_isCancelled_ddl))
+sa_event.listen(Booking.__table__, "after_create", trig_update_cancellationDate_on_isCancelled_ddl)
 
 
 class FraudulentBookingTag(PcObject, Model):

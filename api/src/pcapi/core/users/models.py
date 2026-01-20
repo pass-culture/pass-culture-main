@@ -13,6 +13,7 @@ from operator import attrgetter
 from uuid import UUID
 
 import sqlalchemy as sa
+import sqlalchemy.event as sa_event
 import sqlalchemy.orm as sa_orm
 from sqlalchemy import func
 from sqlalchemy.dialects import postgresql
@@ -944,7 +945,7 @@ class DiscordUser(PcObject, Model):
         return cls.discordId.is_not(None) and cls.isBanned.is_(False)
 
 
-User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
+trig_ensure_password_or_sso_exists_ddl = sa.DDL(
     """
     CREATE OR REPLACE FUNCTION ensure_password_or_sso_exists()
     RETURNS TRIGGER AS $$
@@ -967,10 +968,10 @@ User.trig_ensure_password_or_sso_exists_ddl = sa.DDL(
 )
 
 
-sa.event.listen(
+sa_event.listen(
     User.__table__,
     "after_create",
-    User.trig_ensure_password_or_sso_exists_ddl,
+    trig_ensure_password_or_sso_exists_ddl,
 )
 
 

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 import psycopg2.extras
 import sqlalchemy as sa
+import sqlalchemy.event as sa_event
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from sqlalchemy.dialects import postgresql
@@ -555,7 +556,7 @@ def before_insert(mapper: sa_orm.Mapper, configuration: sa.engine.Connection, se
         )
 
 
-Stock.trig_ddl = """
+trig_stock_quantity_ddl = sa.DDL("""
     CREATE OR REPLACE FUNCTION check_stock()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -591,11 +592,11 @@ Stock.trig_ddl = """
     CREATE CONSTRAINT TRIGGER stock_update AFTER INSERT OR UPDATE
     ON stock
     FOR EACH ROW EXECUTE PROCEDURE check_stock()
-    """
+    """)
 
-sa.event.listen(Stock.__table__, "after_create", sa.DDL(Stock.trig_ddl))
+sa_event.listen(Stock.__table__, "after_create", trig_stock_quantity_ddl)
 
-Stock.trig_update_date_ddl = """
+trig_update_date_ddl = sa.DDL("""
     CREATE OR REPLACE FUNCTION save_stock_modification_date()
     RETURNS TRIGGER AS $$
     BEGIN
@@ -612,9 +613,9 @@ Stock.trig_update_date_ddl = """
     BEFORE UPDATE ON stock
     FOR EACH ROW
     EXECUTE PROCEDURE save_stock_modification_date()
-    """
+    """)
 
-sa.event.listen(Stock.__table__, "after_create", sa.DDL(Stock.trig_update_date_ddl))
+sa_event.listen(Stock.__table__, "after_create", trig_update_date_ddl)
 
 
 @dataclass
