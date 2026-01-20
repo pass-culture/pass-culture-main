@@ -13,6 +13,10 @@ export const mustHaveSelectedVenue = (userPermissions: UserPermissions) =>
   userPermissions.isOnboarded &&
   userPermissions.isSelectedVenueAssociated
 
+export const mustHaveSelectedAdminOfferer = (
+  userPermissions: UserPermissions
+) => userPermissions.isAuthenticated && userPermissions.hasSelectedAdminOfferer
+
 export const mustNotBeOnboarded = (userPermissions: UserPermissions) =>
   userPermissions.isAuthenticated && !userPermissions.isOnboarded
 
