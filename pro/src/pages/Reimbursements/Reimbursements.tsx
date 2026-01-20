@@ -5,6 +5,7 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
+import { LegalEntitySelect } from '@/components/LegalEntitySelect/LegalEntitySelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
 
 import styles from './Reimbursement.module.scss'
@@ -22,6 +23,7 @@ export const Reimbursements = (): JSX.Element => {
       mainHeading="Gestion financière"
       isAdminArea={withSwitchVenueFeature}
     >
+      {withSwitchVenueFeature && <LegalEntitySelect />}
       <div className={styles['reimbursements-container']}>
         <div>
           <ReimbursementsTabs selectedOfferer={selectedOfferer} />

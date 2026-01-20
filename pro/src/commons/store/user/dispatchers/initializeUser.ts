@@ -2,12 +2,17 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import { setAdminCurrentOfferer } from '@/commons/store/offerer/dispatchers/setAdminCurrentOfferer'
 import { updateOffererNames } from '@/commons/store/offerer/reducer'
 import {
   setVenues,
   updateUser,
   updateUserAccess,
 } from '@/commons/store/user/reducer'
+import {
+  LOCAL_STORAGE_KEY,
+  localStorageManager,
+} from '@/commons/utils/localStorageManager'
 
 import { isFeatureActive } from '../../features/selectors'
 import type { AppThunkApiConfig } from '../../store'
@@ -32,6 +37,21 @@ export const initializeUser = createAsyncThunk<
     const venuesResponse = await api.getVenues(null, true) // only active venues
 
     dispatch(updateOffererNames(offererNamesResponse.offerersNames))
+
+    const savedAdminOffererId = localStorageManager.getItem(
+      LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID
+    )
+    const savedAdminOfferer = offererNamesResponse.offerersNames.find(
+      (offerer) => offerer.id === Number(savedAdminOffererId)
+    )
+
+    const offererIdToSet = savedAdminOfferer
+      ? savedAdminOfferer.id
+      : offererNamesResponse.offerersNames[0]?.id
+
+    if (offererIdToSet) {
+      await dispatch(setAdminCurrentOfferer(offererIdToSet))
+    }
     dispatch(setVenues(venuesResponse.venues))
     dispatch(updateUser(user))
 

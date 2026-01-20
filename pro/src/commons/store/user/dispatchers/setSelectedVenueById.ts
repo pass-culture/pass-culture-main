@@ -10,6 +10,7 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
+import { setAdminCurrentOfferer } from '../../offerer/dispatchers/setAdminCurrentOfferer'
 import {
   setCurrentOffererName,
   updateCurrentOfferer,
@@ -52,6 +53,7 @@ export const setSelectedVenueById = createAsyncThunk<
         : 'no-onboarding'
       dispatch(updateUserAccess(nextUserAccess))
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
+      await dispatch(setAdminCurrentOfferer(nextSelectedOfferer.id))
       // TODO (igabriele, 2025-10-28): Handle that case properly before the end of `WIP_SWITCH_VENUE`.
       dispatch(setCurrentOffererName(nextSelectedOffererName))
       dispatch(setSelectedVenue(nextSelectedVenue))

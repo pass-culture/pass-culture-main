@@ -10,9 +10,13 @@ import {
   GET_OFFERER_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectAdminCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { Button } from '@/ui-kit/Button/Button'
@@ -28,8 +32,14 @@ export const BankInformations = (): JSX.Element => {
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const location = useLocation()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const { mutate } = useSWRConfig()
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const adminSelectedOfferer = useAppSelector(selectAdminCurrentOfferer)
+
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : selectedOffererId
 
   const [showAddBankInformationsDialog, setShowAddBankInformationsDialog] =
     useState(false)
@@ -45,7 +55,7 @@ export const BankInformations = (): JSX.Element => {
     useState<BankAccountResponseModel | null>(null)
 
   const bankAccountVenuesQuery = useSWR(
-    [GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES, selectedOffererId],
+    [GET_OFFERER_BANKACCOUNTS_AND_ATTACHED_VENUES, offererId],
     ([, offererId]) =>
       api.getOffererBankAccountsAndAttachedVenues(Number(offererId)),
     {
@@ -71,9 +81,9 @@ export const BankInformations = (): JSX.Element => {
   }
 
   async function closeDialog(update?: boolean) {
-    if (selectedOffererId) {
+    if (offererId) {
       if (update) {
-        await updateOfferer(selectedOffererId)
+        await updateOfferer(offererId)
       }
       setSelectedBankAccount(null)
     }
