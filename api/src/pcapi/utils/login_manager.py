@@ -4,7 +4,6 @@ from datetime import datetime
 from datetime import timedelta
 
 import flask
-import sqlalchemy as sa
 import werkzeug.datastructures
 from flask import current_app as app
 from flask_login import logout_user
@@ -83,10 +82,7 @@ def get_session(user_id: str, session_uuid: str | None) -> users_models.UserSess
         .filter(
             users_models.UserSession.userId == int(user_id),
             users_models.UserSession.uuid == session_uuid,
-            sa.or_(
-                users_models.UserSession.expirationDatetime > date_utils.get_naive_utc_now(),
-                users_models.UserSession.expirationDatetime == None,
-            ),
+            users_models.UserSession.expirationDatetime > date_utils.get_naive_utc_now(),
         )
         .one_or_none()
     )

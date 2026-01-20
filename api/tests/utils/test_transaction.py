@@ -1,4 +1,5 @@
 import uuid
+from datetime import datetime
 
 import pytest
 
@@ -12,7 +13,7 @@ from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 class AtomicTest:
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_commits_on_success(self):
-        user_session = UserSession(userId=1, uuid=uuid.uuid4())
+        user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
 
         with atomic():
             db.session.add(user_session)
@@ -21,7 +22,7 @@ class AtomicTest:
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_rolls_back_on_raise(self):
-        user_session = UserSession(userId=1, uuid=uuid.uuid4())
+        user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
 
         with pytest.raises(ValueError):
             with atomic():
@@ -33,7 +34,7 @@ class AtomicTest:
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_rolls_back_invalid_transaction(self):
         with atomic():
-            user_session = UserSession(userId=1, uuid=uuid.uuid4())
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
             db.session.add(user_session)
             mark_transaction_as_invalid()
 
@@ -41,7 +42,7 @@ class AtomicTest:
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_is_reentrant(self):
-        user_session = UserSession(userId=1, uuid=uuid.uuid4())
+        user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
 
         with pytest.raises(ValueError):
             with atomic():
@@ -56,7 +57,7 @@ class AtomicTest:
 
     @pytest.mark.usefixtures("clean_database")
     def test_atomic_disables_autoflush(self):
-        user_session = UserSession(userId=1, uuid=uuid.uuid4())
+        user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
 
         with atomic():
             db.session.add(user_session)
@@ -66,7 +67,7 @@ class AtomicTest:
     def test_atomic_decorator_commits_on_success(self):
         @atomic()
         def view():
-            user_session = UserSession(userId=1, uuid=uuid.uuid4())
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
             db.session.add(user_session)
 
         view()
@@ -77,7 +78,7 @@ class AtomicTest:
     def test_atomic_decorator_rollsback_on_exception(self):
         @atomic()
         def view():
-            user_session = UserSession(userId=1, uuid=uuid.uuid4())
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
             db.session.add(user_session)
             raise ValueError()
 
@@ -89,7 +90,7 @@ class AtomicTest:
     def test_atomic_decorator_rollback_invalid_transaction(self):
         @atomic()
         def view():
-            user_session = UserSession(userId=1, uuid=uuid.uuid4())
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
             db.session.add(user_session)
             mark_transaction_as_invalid()
 
@@ -101,7 +102,7 @@ class AtomicTest:
         @atomic()
         def view():
             with atomic():
-                user_session = UserSession(userId=1, uuid=uuid.uuid4())
+                user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
                 db.session.add(user_session)
 
         view()
@@ -111,7 +112,7 @@ class AtomicTest:
     def test_decorator_in_context_manager(self):
         @atomic()
         def view():
-            user_session = UserSession(userId=1, uuid=uuid.uuid4())
+            user_session = UserSession(userId=1, uuid=uuid.uuid4(), expirationDatetime=datetime.now())
             db.session.add(user_session)
 
         with atomic():
