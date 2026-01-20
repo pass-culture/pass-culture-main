@@ -99,7 +99,9 @@ describe('AddVenueProviderButton', () => {
     const options = screen.getAllByRole('option')
     expect(options.length).toBe(5)
 
-    const providerSelect = screen.getByTestId('provider-select')
+    const providerSelect = screen.getByRole('combobox', {
+      name: 'Logiciel',
+    })
 
     await userEvent.selectOptions(providerSelect, 'Ticket Buster')
     expect(screen.getByTestId('stocks-provider-form')).toBeInTheDocument()

@@ -16,7 +16,7 @@
 
   &-label {
     display: block;
-    margin-bottom: var(--size-spacing-s);
+    margin-bottom: var(--size-spacing-xs);
   }
 }
 
@@ -38,13 +38,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--size-spacing-s) rem.torem(12px);
+  padding: 0 var(--size-spacing-l);
   background-color: var(--color-background-default);
   border: 1px solid var(--color-border-default);
   border-radius: var(--size-border-radius-m);
   width: 100%;
   cursor: pointer;
-  height: rem.torem(42px);
+  height: rem.torem(40px);
+  line-height: rem.torem(36px);
 
   &:disabled {
     background-color: var(--color-background-disabled);

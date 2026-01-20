@@ -18,8 +18,7 @@ import { setSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenu
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { formatAndOrderVenues } from '@/repository/venuesService'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { Select } from '@/ui-kit/form/Select/Select'
 import {
   type NavLinkItem,
   NavLinkItems,
@@ -107,37 +106,32 @@ export const VenueEdition = (): JSX.Element | null => {
               {context !== 'address' && venuesOptions.length > 1 && (
                 <>
                   <FormLayout.Row>
-                    <FieldLayout
+                    <Select
                       label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
                       name="venues"
-                      required={false}
                       className={styles['select-page-partenaire']}
-                    >
-                      <SelectInput
-                        name="venues"
-                        options={venuesOptions}
-                        value={selectedVenueId?.toString() ?? ''}
-                        onChange={(e) => {
-                          const venueId = e.target.value
+                      options={venuesOptions}
+                      value={selectedVenueId?.toString() ?? ''}
+                      onChange={(e) => {
+                        const venueId = e.target.value
 
-                          if (context === 'partnerPage') {
-                            setSavedPartnerPageVenueId(
-                              'partnerPage',
-                              venue.managingOfferer.id,
-                              venueId
-                            )
-
-                            dispatch(setSelectedPartnerPageId(venueId))
-                          }
-
-                          const path = getVenuePagePathToNavigateTo(
+                        if (context === 'partnerPage') {
+                          setSavedPartnerPageVenueId(
+                            'partnerPage',
                             venue.managingOfferer.id,
                             venueId
                           )
-                          navigate(path)
-                        }}
-                      />
-                    </FieldLayout>
+
+                          dispatch(setSelectedPartnerPageId(venueId))
+                        }
+
+                        const path = getVenuePagePathToNavigateTo(
+                          venue.managingOfferer.id,
+                          venueId
+                        )
+                        navigate(path)
+                      }}
+                    />
                   </FormLayout.Row>
                   <hr className={styles['separator']} />
                 </>

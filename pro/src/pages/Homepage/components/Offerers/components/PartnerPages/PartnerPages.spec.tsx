@@ -181,7 +181,7 @@ describe('PartnerPages', () => {
 
       const mockSelectedVenueId = Math.round(mockedManagedVenues.length / 2) + 1
       await userEvent.selectOptions(
-        screen.getByLabelText('Sélectionnez votre page partenaire *'),
+        screen.getByLabelText(/Sélectionnez votre page partenaire/),
         mockSelectedVenueId.toString()
       )
 
@@ -250,7 +250,7 @@ describe('PartnerPages', () => {
       })
 
       await userEvent.selectOptions(
-        screen.getByLabelText('Sélectionnez votre page partenaire *'),
+        screen.getByLabelText(/Sélectionnez votre page partenaire/),
         '666'
       )
 

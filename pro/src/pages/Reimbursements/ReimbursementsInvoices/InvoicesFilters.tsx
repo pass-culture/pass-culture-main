@@ -9,8 +9,7 @@ import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './InvoicesFilters.module.scss'
 import type { FiltersType } from './types'
@@ -66,22 +65,17 @@ export const InvoicesFilters = ({
       <div className={styles['filters']}>
         <FormLayout.Row inline className={styles['selectors']}>
           {selectableOptions.length > 1 && (
-            <FieldLayout
+            <Select
               label="Compte bancaire"
+              defaultOption={{
+                label: 'Tous les comptes bancaires',
+                value: 'all',
+              }}
+              onChange={setReimbursementPointFilter}
               name="reimbursementPoint"
-              required={false}
-            >
-              <SelectInput
-                defaultOption={{
-                  label: 'Tous les comptes bancaires',
-                  value: 'all',
-                }}
-                onChange={setReimbursementPointFilter}
-                name="reimbursementPoint"
-                options={selectableOptions}
-                value={filters.reimbursementPoint}
-              />
-            </FieldLayout>
+              options={selectableOptions}
+              value={filters.reimbursementPoint}
+            />
           )}
 
           <fieldset>

@@ -13,8 +13,7 @@ import {
   getSavedPartnerPageVenueId,
   setSavedPartnerPageVenueId,
 } from '@/commons/utils/savedPartnerPageVenueId'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import { PartnerPage } from './components/PartnerPage'
 import styles from './PartnerPages.module.scss'
@@ -70,17 +69,17 @@ export const PartnerPages = ({ venues, offerer }: PartnerPagesProps) => {
       </p>
 
       {venues.length > 1 && (
-        <FieldLayout label="Sélectionnez votre page partenaire" name="venues">
-          <SelectInput
-            name="venues"
-            options={venuesOptions}
-            value={selectedVenueId}
-            onChange={(e) => {
-              setSelectedVenueId(e.target.value)
-              setSavedPartnerPageVenueId('homepage', offerer.id, e.target.value)
-            }}
-          />
-        </FieldLayout>
+        <Select
+          label="Sélectionnez votre page partenaire"
+          name="venues"
+          options={venuesOptions}
+          value={selectedVenueId}
+          onChange={(e) => {
+            setSelectedVenueId(e.target.value)
+            setSavedPartnerPageVenueId('homepage', offerer.id, e.target.value)
+          }}
+          required={true}
+        />
       )}
 
       {venue && (

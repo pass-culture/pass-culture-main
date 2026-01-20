@@ -1,7 +1,7 @@
 import type { BookingStatusFilter } from '@/apiClient/v1'
 import { BOOKING_STATUS_FILTER_OPTIONS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
 
@@ -17,10 +17,7 @@ export const FilterByStatus = ({
   selectedStatusId,
 }: FilterByStatusProps): JSX.Element => (
   <>
-    <label htmlFor="status-filter" className={styles['visually-hidden']}>
-      Type de période
-    </label>
-    <SelectInput
+    <Select
       onChange={(event) =>
         updateFilters({
           bookingStatusFilter: event.target.value as BookingStatusFilter,
@@ -31,7 +28,8 @@ export const FilterByStatus = ({
       className={styles['status-filter']}
       options={BOOKING_STATUS_FILTER_OPTIONS}
       value={selectedStatusId}
-      id={'status-filter'}
+      ariaLabel={'Type de période'}
+      label=""
     />
   </>
 )

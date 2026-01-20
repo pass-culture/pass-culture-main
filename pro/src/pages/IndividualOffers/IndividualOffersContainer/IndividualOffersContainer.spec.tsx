@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { computeAddressDisplayName } from 'repository/venuesService'
 import { expect } from 'vitest'
@@ -299,9 +299,9 @@ describe('IndividualOffersScreen', () => {
       periodEndingDate: '2025-02-03',
     })
 
-    expect(screen.getByTestId('wrapper-status')).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Statut' })).toBeInTheDocument()
     await userEvent.selectOptions(
-      within(screen.getByTestId('wrapper-status')).getByRole('combobox'),
+      screen.getByRole('combobox', { name: 'Statut' }),
       OfferStatus.ACTIVE
     )
 
