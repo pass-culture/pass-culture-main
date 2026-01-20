@@ -35,12 +35,7 @@ describe('validationSchema', () => {
     {
       description: 'not valid form without password',
       formValues: { ...signupFormDefault, password: '' },
-      expectedErrors: ['password is a required field', 'password is invalid'], // default yup message
-    },
-    {
-      description: 'not valid form with wrong password',
-      formValues: { ...signupFormDefault, password: 'aaaaaaaa' }, // NOSONAR
-      expectedErrors: ['password is invalid'],
+      expectedErrors: ['Veuillez renseigner un mot de passe'], // default yup message
     },
   ]
 

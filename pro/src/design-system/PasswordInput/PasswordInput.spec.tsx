@@ -1,21 +1,22 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { TextInput, type TextInputProps } from '../TextInput/TextInput'
+import { PasswordInput, type PasswordInputProps } from './PasswordInput'
 
-const defaultProps: TextInputProps = {
+const defaultProps: PasswordInputProps = {
   label: 'Input label',
   name: 'input',
+  value: '',
+  onChange: () => {},
 }
 
-function renderTextInput(props?: Partial<TextInputProps>) {
-  return render(<TextInput {...defaultProps} {...props} />)
+function renderPasswordInput(props?: Partial<PasswordInputProps>) {
+  return render(<PasswordInput {...defaultProps} {...props} />)
 }
 
-describe('TextInput', () => {
+describe('PasswordInput', () => {
   it('should render without accessibility violations', async () => {
-    const { container } = renderTextInput()
+    const { container } = renderPasswordInput()
 
     expect(
       //  Ingore the color contrast to avoid an axe-core error cf https://github.com/NickColley/jest-axe/issues/147
@@ -26,7 +27,7 @@ describe('TextInput', () => {
   })
 
   it('should show a label, a description and an error message', () => {
-    renderTextInput({
+    renderPasswordInput({
       description: 'Input description',
       error: 'Error message',
     })
@@ -37,7 +38,7 @@ describe('TextInput', () => {
   })
 
   it('should show an asterisk if the field is required', () => {
-    renderTextInput({
+    renderPasswordInput({
       required: true,
     })
 
@@ -45,7 +46,7 @@ describe('TextInput', () => {
   })
 
   it('should not show an asterisk if the field is required but the asterisk is disabled', () => {
-    renderTextInput({
+    renderPasswordInput({
       required: true,
       requiredIndicator: 'hidden',
     })
@@ -53,47 +54,21 @@ describe('TextInput', () => {
     expect(screen.queryByText('*')).not.toBeInTheDocument()
   })
 
-  it('should show the characters count', async () => {
-    renderTextInput({
-      maxCharactersCount: 100,
-    })
-
-    expect(screen.getByText('0/100')).toBeInTheDocument()
-
-    await userEvent.type(screen.getByLabelText('Input label'), 'test')
-
-    expect(screen.getByText('4/100')).toBeInTheDocument()
-  })
-
-  it('should show an icon button', () => {
-    renderTextInput({
-      iconButton: {
-        icon: 'fake/icon',
-        label: 'Icon button label',
-        onClick: () => {},
-      },
-    })
-
-    expect(
-      screen.getByRole('button', { name: 'Icon button label' })
-    ).toBeInTheDocument()
-  })
-
   it('should disable the input and its button if the field is disabled', () => {
-    renderTextInput({
+    renderPasswordInput({
       disabled: true,
-      iconButton: {
-        icon: 'fake/icon',
-        label: 'Icon button label',
-        onClick: () => {},
-        disabled: true,
-      },
     })
-
-    expect(
-      screen.getByRole('button', { name: 'Icon button label' })
-    ).toBeDisabled()
 
     expect(screen.getByLabelText('Input label')).toBeDisabled()
+  })
+
+  it('should show validation list', () => {
+    renderPasswordInput({
+      displayValidation: true,
+    })
+
+    expect(
+      screen.getByText(/Le mot de passe doit comporter :/)
+    ).toBeInTheDocument()
   })
 })

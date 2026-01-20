@@ -19,7 +19,7 @@ export const ValidationMessageList = ({
   fieldName,
 }: ValidationMessageListProps) => {
   const [errors, setErrors] = useState<{ [key: string]: boolean }>({})
-  const [debouncedPassword] = useDebounce(passwordValue, 3000)
+  const [debouncedPassword] = useDebounce(passwordValue, 2000)
 
   useEffect(() => {
     setErrors(passwordValidationStatus(passwordValue))
@@ -27,18 +27,33 @@ export const ValidationMessageList = ({
 
   const isPristine = !debouncedPassword
 
+  // used for a11y, voice over doesn't manage to read validation otherwise
+  const announcementText = Object.keys(errors)
+    .map((k) => {
+      const label = getPasswordRuleLabel(k)
+      const status = errors[k] ? 'Il manque : ' : 'Il y a bien : '
+      return `${status} ${label}`
+    })
+    .join('. ')
+
+  const criteria = Object.keys(errors)
+    .map((k) => {
+      const label = getPasswordRuleLabel(k)
+      return `${label}`
+    })
+    .join(' ')
+
   return (
     <div id={fieldName}>
       {isPristine && (
         <div className={styles['sr-only']}>
-          Le mot de passe doit comporter :
+          Le mot de passe doit comporter : {criteria}
         </div>
       )}
-      <ul
-        className={styles['validation-message-list']}
-        aria-live="polite"
-        aria-atomic="true"
-      >
+      <div className={styles['sr-only']} aria-live="polite" aria-atomic="true">
+        {!isPristine && `Mises à jour des critères : ${announcementText}`}
+      </div>
+      <ul className={styles['validation-message-list']} aria-hidden={true}>
         {Object.keys(errors).map((k) => (
           <li key={k}>
             <MessageDispatcher

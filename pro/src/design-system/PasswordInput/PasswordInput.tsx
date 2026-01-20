@@ -17,7 +17,7 @@ import styles from './PasswordInput.module.scss'
 import { ValidationMessageList } from './ValidationMessageList/ValidationMessageList'
 import { isPasswordValid } from './validation'
 
-interface PasswordInputProps
+export interface PasswordInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string
   name: string
@@ -71,6 +71,12 @@ export const PasswordInput = React.forwardRef(
       }
     }
 
+    const showPasswordIcon = disabled
+      ? ''
+      : isPasswordHidden
+        ? strokeHideIcon
+        : strokeShowIcon
+
     return (
       <>
         <div
@@ -93,11 +99,7 @@ export const PasswordInput = React.forwardRef(
             requiredIndicator={requiredIndicator}
             required={required}
             iconButton={{
-              icon: disabled
-                ? ''
-                : isPasswordHidden
-                  ? strokeHideIcon
-                  : strokeShowIcon,
+              icon: showPasswordIcon,
               label: isPasswordHidden
                 ? 'Afficher le mot de passe'
                 : 'Cacher le mot de passe',
