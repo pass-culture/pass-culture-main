@@ -5,8 +5,12 @@ import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectAdminCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
@@ -31,14 +35,20 @@ type VenueFormValues = {
 export const Income = () => {
   const firstYearFilterRef = useRef<HTMLButtonElement>(null)
   const [activeYear, setActiveYear] = useState<number>()
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const adminSelectedOfferer = useAppSelector(selectAdminCurrentOfferer)
+
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : selectedOffererId
 
   const {
     data: venuesData,
     isLoading: areVenuesLoading,
     error: venuesApiError,
-  } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
-    api.getVenues(true, null, selectedOffererId)
+  } = useSWR([GET_VENUES_QUERY_KEY, offererId], () =>
+    api.getVenues(true, null, offererId)
   )
 
   const venueValues = formatAndOrderVenues(venuesData?.venues ?? []).map(
@@ -53,7 +63,7 @@ export const Income = () => {
     watch,
     setValue,
     setError,
-    reset,
+    clearErrors,
     formState: { errors },
   } = useForm<VenueFormValues>({
     values: {
@@ -73,7 +83,7 @@ export const Income = () => {
         message: 'Vous devez sélectionner au moins un partenaire',
       })
     } else {
-      reset()
+      clearErrors('selectedVenues')
     }
 
     const debounced = setTimeout(() => {
