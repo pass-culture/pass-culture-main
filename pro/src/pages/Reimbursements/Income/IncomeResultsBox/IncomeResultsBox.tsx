@@ -4,6 +4,7 @@ import type {
   IndividualRevenue,
   TotalRevenue,
 } from '@/apiClient/v1'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import {
   convertEuroToPacificFranc,
@@ -61,7 +62,8 @@ type IncomeResultsBoxProps = {
 }
 
 export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
-  const isCaledonian = useIsCaledonian()
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
 
   const totalLabel =
     type === 'revenue'
