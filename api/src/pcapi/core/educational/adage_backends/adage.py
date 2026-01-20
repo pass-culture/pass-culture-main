@@ -16,7 +16,7 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 STATUS_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = 404
-ERROR_CODE_FOR_INSTITUTION_WITHOUT_EMAIL = "EMAIL_ADDRESS_DOES_NOT_EXIST"
+ERROR_CODES_FOR_INSTITUTION_WITHOUT_EMAIL = ["EMAIL_ADDRESS_DOES_NOT_EXIST", "EMAIL_ADDRESS_INCORRECT"]
 
 # this is an SMTP error code forwarded to us by Adage
 # this means an email was valid but an error occurred when the mail was sent
@@ -26,7 +26,7 @@ STATUS_CODE_FOR_INVALID_INSTITUTION_EMAIL = 450
 def is_adage_institution_without_email(api_response: requests.Response) -> bool:
     return (
         api_response.status_code == STATUS_CODE_FOR_INSTITUTION_WITHOUT_EMAIL
-        and dict(api_response.json()).get("detail") == ERROR_CODE_FOR_INSTITUTION_WITHOUT_EMAIL
+        and dict(api_response.json()).get("detail") in ERROR_CODES_FOR_INSTITUTION_WITHOUT_EMAIL
     )
 
 
