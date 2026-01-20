@@ -22,6 +22,7 @@ describe('getCurrentUserPermissions', () => {
       const result = getCurrentUserPermissions()
 
       expect(result).toEqual({
+        hasSelectedAdminOfferer: false,
         hasSelectedVenue: false,
         isAuthenticated: false,
         isOnboarded: false,
@@ -137,6 +138,7 @@ describe('getCurrentUserPermissions', () => {
           const result = getCurrentUserPermissions()
 
           expect(result).toEqual({
+            hasSelectedAdminOfferer: false,
             hasSelectedVenue: true,
             isAuthenticated: true,
             isOnboarded: true,

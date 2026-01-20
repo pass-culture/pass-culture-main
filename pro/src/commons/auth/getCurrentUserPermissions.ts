@@ -4,6 +4,7 @@ import type { UserPermissions } from './types'
 
 export const getCurrentUserPermissions = (): UserPermissions => {
   const { access, currentUser, selectedVenue } = rootStore.getState().user
+  const { adminCurrentOfferer } = rootStore.getState().offerer
 
   if (!currentUser) {
     return {
@@ -11,9 +12,11 @@ export const getCurrentUserPermissions = (): UserPermissions => {
       isAuthenticated: false,
       isOnboarded: false,
       isSelectedVenueAssociated: false,
+      hasSelectedAdminOfferer: false,
     }
   }
 
+  const hasSelectedAdminOfferer = !!adminCurrentOfferer
   const hasSelectedVenue = !!selectedVenue
   const isSelectedVenueAssociated = hasSelectedVenue && access !== 'unattached'
   const isOnboarded =
@@ -24,5 +27,6 @@ export const getCurrentUserPermissions = (): UserPermissions => {
     isAuthenticated: true,
     isOnboarded,
     isSelectedVenueAssociated,
+    hasSelectedAdminOfferer,
   }
 }
