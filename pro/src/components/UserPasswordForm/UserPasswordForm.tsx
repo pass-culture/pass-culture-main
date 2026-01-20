@@ -94,8 +94,6 @@ export const UserPasswordForm = ({
     closeForm()
   }
 
-  console.log({ errors })
-
   return (
     <BoxFormLayout.Fields>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -116,13 +114,7 @@ export const UserPasswordForm = ({
                 onChange: () => trigger('newPassword'),
               })}
               value={watch('newPassword')}
-              error={
-                // This is because we only want to display the field error if it's coming back from the API
-                // In this case, API error responses don't have a ".type" property (which is specific to Yup)
-                !errors.newPassword?.type
-                  ? errors.newPassword?.message
-                  : undefined
-              }
+              error={errors.newPassword?.message}
               label="Nouveau mot de passe"
               required
               requiredIndicator="explicit"
