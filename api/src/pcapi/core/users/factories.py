@@ -998,6 +998,7 @@ class UserSessionFactory(BaseFactory):
         model = models.UserSession
 
     uuid = factory.LazyFunction(uuid.uuid4)
+    expirationDatetime = factory.LazyFunction(lambda: datetime.now() + timedelta(days=1))
 
     @classmethod
     def _create(
