@@ -18,6 +18,7 @@ import type { CustomRouteObject } from './types'
 import {
   mustBeAuthenticated,
   mustBeUnauthenticated,
+  mustHaveSelectedAdminOfferer,
   mustHaveSelectedVenue,
   mustNotBeOnboarded,
 } from './utils'
@@ -433,7 +434,7 @@ export const routes: CustomRouteObject[] = [
   },
   {
     lazy: () => import('@/pages/Reimbursements/Reimbursements'),
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
     path: '/remboursements',
     title: 'Gestion financière',
     children: routesReimbursements,
