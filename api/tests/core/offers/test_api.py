@@ -4488,18 +4488,15 @@ class MoveOfferTest:
         new_venue = offerers_factories.VenueFactory(managingOfferer=offer.venue.managingOfferer)
         assert offer.venue.current_pricing_point is None
         assert new_venue.current_pricing_point is None
-        assert offer.offererAddress == offer.venue.offererAddress
+        assert offer.offererAddress != offer.venue.offererAddress
+        assert offer.offererAddress.addressId == offer.venue.offererAddress.addressId
         assert offer.offererAddress != new_venue.offererAddress
-
-        initial_offerer_address_id = offer.offererAddressId
         initial_address_id = offer.offererAddress.addressId
         initial_oa_label = offer.venue.common_name
         api.move_offer(offer, new_venue)
 
         db.session.refresh(offer)
         assert offer.venue == new_venue
-        # The address remains the same but OA is different and uses the source venue's common name
-        assert offer.offererAddressId != initial_offerer_address_id
         assert offer.offererAddress.addressId == initial_address_id
         assert offer.offererAddress.label == initial_oa_label
 
