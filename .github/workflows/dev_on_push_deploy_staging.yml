@@ -76,32 +76,6 @@ jobs:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
 
   deploy-staging:
-    name: "Deploy on staging environnement"
-    needs:
-      [
-        prepare-variables,
-        create-pro-staging-release,
-        create-pro-integration-release,
-        create-pro-production-release,
-      ]
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: staging
-      app_version: "${{ needs.prepare-variables.outputs.releaseNumber }}"
-      cluster_scope: metier
-      cluster_environment: ehp
-      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
-      apply_algolia_config: true
-      deploy_api: true
-      deploy_pro: true
-      doc-api-entrypoint: "api/documentation"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-
-  deploy-to-staging-new-infra:
     name: Deploy to staging new infra
     needs:
       [
