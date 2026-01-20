@@ -21,11 +21,11 @@ describe('useSnackBar', () => {
 
     expect(mockAddSnackBar).toHaveBeenCalledTimes(2)
     expect(mockAddSnackBar).toHaveBeenNthCalledWith(1, {
-      text: 'notification success',
+      description: 'notification success',
       variant: SnackBarVariant.SUCCESS,
     })
     expect(mockAddSnackBar).toHaveBeenNthCalledWith(2, {
-      text: 'notification error',
+      description: 'notification error',
       variant: SnackBarVariant.ERROR,
     })
   })

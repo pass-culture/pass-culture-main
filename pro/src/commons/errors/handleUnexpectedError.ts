@@ -33,7 +33,7 @@ export function handleUnexpectedError(
   if (!isSilent && typeof userMessage === 'string') {
     rootStore.dispatch(
       addSnackBar({
-        text: userMessage,
+        description: userMessage,
         variant: SnackBarVariant.ERROR,
       })
     )

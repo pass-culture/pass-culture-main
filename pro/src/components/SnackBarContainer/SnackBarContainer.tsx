@@ -47,7 +47,7 @@ export const SnackBarContainer = (): JSX.Element => {
         <SnackBar
           key={snackBar.id}
           variant={snackBar.variant}
-          text={snackBar.text}
+          description={snackBar.description}
           onClose={() => dispatch(removeSnackBar(snackBar.id))}
           testId={`global-snack-bar-${snackBar.variant}-${index}`}
         />

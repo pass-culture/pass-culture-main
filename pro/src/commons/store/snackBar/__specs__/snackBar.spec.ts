@@ -21,7 +21,8 @@ describe('snackBarReducer', () => {
   describe('addSnackBar', () => {
     it('should add a snack bar when receiving it', () => {
       const snackBar = {
-        text: 'Votre structure a bien été enregistrée, elle est en cours de validation.',
+        description:
+          'Votre structure a bien été enregistrée, elle est en cours de validation.',
         variant: SnackBarVariant.SUCCESS,
       }
       const action = addSnackBar(snackBar)
@@ -30,7 +31,7 @@ describe('snackBarReducer', () => {
 
       const snackBars = snackBarAdapter.getSelectors().selectAll(state.list)
       expect(snackBars).toHaveLength(1)
-      expect(snackBars[0].text).toBe(snackBar.text)
+      expect(snackBars[0].description).toBe(snackBar.description)
       expect(snackBars[0].variant).toBe(snackBar.variant)
       expect(snackBars[0].id).toBeDefined()
       expect(snackBars[0].createdAt).toBeDefined()
@@ -41,7 +42,7 @@ describe('snackBarReducer', () => {
     it('should remove a snack bar by id', () => {
       const snackBar: ISnackBarItem = {
         id: '123',
-        text: 'Test message',
+        description: 'Test message',
         variant: SnackBarVariant.SUCCESS,
         createdAt: '2025-01-01 12:00',
       }
@@ -62,13 +63,13 @@ describe('snackBarReducer', () => {
       const snackBarItems: ISnackBarItem[] = [
         {
           id: '1',
-          text: 'First message',
+          description: 'First message',
           variant: SnackBarVariant.SUCCESS,
           createdAt: '2025-01-01 12:00',
         },
         {
           id: '2',
-          text: 'Second message',
+          description: 'Second message',
           variant: SnackBarVariant.ERROR,
           createdAt: '2025-01-01 12:01',
         },

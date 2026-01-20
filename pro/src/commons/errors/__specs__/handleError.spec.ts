@@ -41,7 +41,7 @@ describe('handleError', () => {
     const snackBars = listSelector(rootStore.getState())
     expect(snackBars).toHaveLength(1)
     expect(snackBars[0]).toMatchObject({
-      text: userMessage,
+      description: userMessage,
       variant: SnackBarVariant.ERROR,
     })
 
@@ -75,7 +75,7 @@ describe('handleError', () => {
     const snackBars = listSelector(rootStore.getState())
     expect(snackBars).toHaveLength(1)
     expect(snackBars[0]).toMatchObject({
-      text: userMessage,
+      description: userMessage,
       variant: SnackBarVariant.ERROR,
     })
     expect(mockedSentry.captureException).toHaveBeenCalledWith('boom')

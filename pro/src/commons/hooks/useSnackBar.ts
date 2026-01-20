@@ -11,8 +11,8 @@ export const useSnackBar = () => {
   const dispatch = useAppDispatch()
 
   const notify = useCallback(
-    (text: string, variant: SnackBarVariant) => {
-      dispatch(addSnackBar({ text, variant }))
+    (description: string, variant: SnackBarVariant) => {
+      dispatch(addSnackBar({ description, variant }))
     },
     [dispatch]
   )

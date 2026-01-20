@@ -24,9 +24,9 @@ export type SnackBarProps = {
    */
   variant?: SnackBarVariant
   /**
-   * The text of the snack bar
+   * The description of the snack bar
    */
-  text: string
+  description: string
   /**
    * The callback function to be called when the snack bar is closed
    */
@@ -76,7 +76,7 @@ const VARIANT_CONFIG: Record<SnackBarVariant, VariantConfig> = {
 
 export const SnackBar = ({
   variant = SnackBarVariant.SUCCESS,
-  text,
+  description,
   onClose,
   autoClose = true,
   testId,
@@ -94,7 +94,7 @@ export const SnackBar = ({
   }, [onClose])
 
   const duration =
-    text.length <= SHORT_TEXT_THRESHOLD
+    description.length <= SHORT_TEXT_THRESHOLD
       ? SHORT_TEXT_DURATION
       : LONG_TEXT_DURATION
 
@@ -160,7 +160,7 @@ export const SnackBar = ({
             <span className={styles['visually-hidden']}>
               {variantConfig.ariaLabel} :{' '}
             </span>
-            {text}
+            {description}
           </p>
         </div>
         <div className={cx(styles['close-button-container'])}>

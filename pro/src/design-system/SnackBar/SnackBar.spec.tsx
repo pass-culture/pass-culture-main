@@ -20,7 +20,7 @@ const renderSnackBar = (props: SnackBarProps) => {
 const mockOnClose = vi.fn()
 
 const defaultProps: SnackBarProps = {
-  text: 'Message de test',
+  description: 'Message de test',
   variant: SnackBarVariant.SUCCESS,
   autoClose: false,
   onClose: mockOnClose,
@@ -101,7 +101,7 @@ describe('SnackBar', () => {
   it('should auto-close after 5 seconds for short text', () => {
     renderSnackBar({
       ...defaultProps,
-      text: 'Court message',
+      description: 'Court message',
       autoClose: true,
     })
 
@@ -120,7 +120,7 @@ describe('SnackBar', () => {
       'Ceci est un message très long qui dépasse les 120 caractères pour tester que la durée de fermeture automatique est bien de 10 secondes'
     renderSnackBar({
       ...defaultProps,
-      text: longText,
+      description: longText,
       autoClose: true,
     })
 

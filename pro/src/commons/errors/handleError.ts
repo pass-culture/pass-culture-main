@@ -23,7 +23,7 @@ export function handleError(
 
   rootStore.dispatch(
     addSnackBar({
-      text: userMessage,
+      description: userMessage,
       variant: SnackBarVariant.ERROR,
     })
   )
