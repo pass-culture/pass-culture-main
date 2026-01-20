@@ -79,27 +79,19 @@ def build_permutations(request_origins):
 TESTING_ALLOWED_ORIGINS = (
     "https://pro.testing.passculture.team",
     "https://web.testing.passculture.team",
-    "https://app.passculture-testing.beta.gouv.fr",
-    "https://pro.passculture-testing.beta.gouv.fr",
 )
 STAGING_ALLOWED_ORIGINS = (
     "https://web.staging.passculture.team",
     "https://pro.staging.passculture.team",
-    "https://app.passculture-staging.beta.gouv.fr",
-    "https://pro.passculture-staging.beta.gouv.fr",
 )
 PRODUCTION_ALLOWED_ORIGINS = (
     "https://web.passculture.app",
     "https://passculture.pro",
-    "https://app.passculture.beta.gouv.fr",
-    "https://pro.passculture.beta.gouv.fr",
 )
 INTEGRATION_ALLOWED_ORIGINS = (
     "https://web.integration.passculture.app",
     "https://integration.passculture.app",
     "https://integration.passculture.pro",
-    "https://app.passculture-integration.beta.gouv.fr",
-    "https://pro.passculture-integration.beta.gouv.fr",
 )
 
 TESTING_ALLOWED_ORIGINS_NATIVE = ("https://app.testing.passculture.team",)
