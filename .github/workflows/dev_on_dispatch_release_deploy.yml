@@ -119,8 +119,10 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
   deploy-integration-new-infra:
-    name: "Deploy on integration environnement"
-    needs: version
+    name: "Deploy on integration environnement (new infra)"
+    needs: 
+      - version
+      - deploy-integration
     if: github.event.inputs.target_environment == 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
