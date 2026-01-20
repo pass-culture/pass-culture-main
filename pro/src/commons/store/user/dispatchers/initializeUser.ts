@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
 import type { SharedCurrentUserResponseModel } from '@/apiClient/v1'
+import { setAdminCurrentOfferer } from '@/commons/store/offerer/dispatchers/setAdminCurrentOfferer'
 import { updateOffererNames } from '@/commons/store/offerer/reducer'
 import {
   setVenues,
@@ -11,6 +12,7 @@ import {
 
 import { isFeatureActive } from '../../features/selectors'
 import type { AppThunkApiConfig } from '../../store'
+import { getInitialAdminOffererId } from '../utils/getInitialAdminOffererId'
 import { getInitialOffererIdAndVenueId } from '../utils/getInitialOffererIdAndVenueId'
 import { getInitialSelectedVenueId } from '../utils/getInitialSelectedVenueId'
 import { logout } from './logout'
@@ -47,11 +49,24 @@ export const initializeUser = createAsyncThunk<
         )
 
     if (initialVenueId) {
-      await dispatch(setSelectedVenueById(initialVenueId))
+      await dispatch(
+        setSelectedVenueById({
+          nextSelectedVenueId: initialVenueId,
+          shouldSkipAdminOffererId: true,
+        })
+      )
 
       return
     }
     if (withSwitchVenueFeature) {
+      const initialAdminOffererId = getInitialAdminOffererId(
+        offererNamesResponse.offerersNames
+      )
+
+      if (initialAdminOffererId) {
+        await dispatch(setAdminCurrentOfferer(initialAdminOffererId))
+      }
+
       return
     }
 
