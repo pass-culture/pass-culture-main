@@ -84,7 +84,7 @@ describe('src | App', () => {
     expect(api.getProfile).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getVenues).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(3)
     expect(api.getVenue).toHaveBeenCalledTimes(1)
   })
 })

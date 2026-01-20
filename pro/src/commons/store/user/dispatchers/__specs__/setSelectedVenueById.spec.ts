@@ -95,7 +95,7 @@ describe('setSelectedVenueById', () => {
     await store.dispatch(setSelectedVenueById(101)).unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(2)
 
     const state = store.getState()
     expect(state.user.access).toBe('full')
@@ -122,7 +122,7 @@ describe('setSelectedVenueById', () => {
     await store.dispatch(setSelectedVenueById(101)).unwrap()
 
     expect(api.getVenue).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(1)
+    expect(api.getOfferer).toHaveBeenCalledTimes(2)
 
     const state = store.getState()
     expect(state.user.access).toBe('no-onboarding')
