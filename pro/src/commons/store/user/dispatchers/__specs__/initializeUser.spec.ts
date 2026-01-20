@@ -333,14 +333,18 @@ describe('initializeUser', () => {
           makeVenueListItem({ id: 102, managingOffererId: 100 }),
         ],
       })
-      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 100,
+      })
       const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
       const store = configureStoreWithSwitchVenueFeature()
 
       await store.dispatch(initializeUser(user)).unwrap()
 
-      expect(apiGetOffererSpy).not.toHaveBeenCalled()
+      expect(apiGetOffererSpy).toHaveBeenCalledTimes(1)
+      expect(apiGetOffererSpy).toHaveBeenCalledWith(100)
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
       const state = store.getState()
@@ -353,14 +357,18 @@ describe('initializeUser', () => {
         offerersNames: [getOffererNameFactory({ id: 100 })],
       })
       vi.spyOn(api, 'getVenues').mockResolvedValue({ venues: [] })
-      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer')
+      const apiGetOffererSpy = vi.spyOn(api, 'getOfferer').mockResolvedValue({
+        ...defaultGetOffererResponseModel,
+        id: 100,
+      })
       const apiGetVenueSpy = vi.spyOn(api, 'getVenue')
 
       const store = configureStoreWithSwitchVenueFeature()
 
       await store.dispatch(initializeUser(user)).unwrap()
 
-      expect(apiGetOffererSpy).not.toHaveBeenCalled()
+      expect(apiGetOffererSpy).toHaveBeenCalledTimes(1)
+      expect(apiGetOffererSpy).toHaveBeenCalledWith(100)
       expect(apiGetVenueSpy).not.toHaveBeenCalled()
 
       const state = store.getState()

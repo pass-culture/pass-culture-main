@@ -8,6 +8,7 @@ import type {
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
+import * as useActiveFeature from '@/commons/hooks/useActiveFeature'
 import * as useIsCaledonian from '@/commons/hooks/useIsCaledonian'
 import * as convertEuroToPacificFranc from '@/commons/utils/convertEuroToPacificFranc'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
@@ -80,6 +81,7 @@ vi.mock('@/apiClient/api', () => ({
 describe('Income', () => {
   describe('when the page first renders', () => {
     beforeEach(() => {
+      vi.spyOn(useActiveFeature, 'useActiveFeature').mockReturnValue(false)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))
@@ -279,6 +281,7 @@ describe('Income', () => {
 
   describe('when the user changes venue selection', () => {
     beforeEach(() => {
+      vi.spyOn(useActiveFeature, 'useActiveFeature').mockReturnValue(false)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))
@@ -353,6 +356,7 @@ describe('Income', () => {
 
   describe('when the user changes year selection', () => {
     beforeEach(() => {
+      vi.spyOn(useActiveFeature, 'useActiveFeature').mockReturnValue(false)
       vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
         logEvent: vi.fn(),
       }))
@@ -483,6 +487,7 @@ describe('Income', () => {
     })
 
     it('should display total in CFP when isCaledonian is true (individual)', () => {
+      vi.spyOn(useActiveFeature, 'useActiveFeature').mockReturnValue(false)
       vi.spyOn(useIsCaledonian, 'useIsCaledonian').mockReturnValue(true)
       vi.spyOn(
         convertEuroToPacificFranc,
