@@ -170,9 +170,10 @@ def _create_one_individual_incident(
         .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
         .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
         .filter(finance_models.Cashflow.batchId == batch.id)
+        .with_entities(finance_models.Invoice.id)
+        .all()
     )
-    for invoice in invoices:
-        finance_api.validate_invoice(invoice.id)
+    finance_api.validate_invoices([i[0] for i in invoices])
 
     assert {b.status for b in bookings} == {bookings_models.BookingStatus.REIMBURSED}, [
         (b.id, b.status) for b in bookings
@@ -224,9 +225,10 @@ def _create_one_individual_incident(
         .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
         .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
         .filter(finance_models.Cashflow.batchId == batch.id)
+        .with_entities(finance_models.Invoice.id)
+        .all()
     )
-    for invoice in invoices:
-        finance_api.validate_invoice(invoice.id)
+    finance_api.validate_invoices([i[0] for i in invoices])
 
 
 def _create_one_collective_incident(
@@ -308,10 +310,10 @@ def _create_one_collective_incident(
         .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
         .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
         .filter(finance_models.Cashflow.batchId == batch.id)
+        .with_entities(finance_models.Invoice.id)
+        .all()
     )
-    for invoice in invoices:
-        finance_api.validate_invoice(invoice.id)
-
+    finance_api.validate_invoices([i[0] for i in invoices])
     assert {booking.status for booking in bookings} == {educational_models.CollectiveBookingStatus.REIMBURSED}, [
         (booking.id, booking.status) for booking in bookings
     ]
@@ -355,9 +357,10 @@ def _create_one_collective_incident(
         .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
         .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
         .filter(finance_models.Cashflow.batchId == batch.id)
+        .with_entities(finance_models.Invoice.id)
+        .all()
     )
-    for invoice in invoices:
-        finance_api.validate_invoice(invoice.id)
+    finance_api.validate_invoices([i[0] for i in invoices])
 
 
 @log_func_duration

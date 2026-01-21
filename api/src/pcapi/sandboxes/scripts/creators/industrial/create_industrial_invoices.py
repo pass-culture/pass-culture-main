@@ -48,9 +48,10 @@ def create_industrial_invoices() -> None:
         .join(finance_models.InvoiceCashflow, finance_models.InvoiceCashflow.invoiceId == finance_models.Invoice.id)
         .join(finance_models.Cashflow, finance_models.Cashflow.id == finance_models.InvoiceCashflow.cashflowId)
         .filter(finance_models.Cashflow.batchId == batch.id)
+        .with_entities(finance_models.Invoice.id)
+        .all()
     )
-    for invoice in invoices:
-        finance_api.validate_invoice(invoice.id)
+    finance_api.validate_invoices([i[0] for i in invoices])
     logger.info("Created %s Invoices", db.session.query(finance_models.Invoice).count())
 
 

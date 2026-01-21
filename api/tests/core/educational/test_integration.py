@@ -66,7 +66,7 @@ class EducationalWorkflowTest:
                 bank_account_id=bank_account_id,
                 cashflow_ids=cashflow_ids,
             )
-            finance_api.validate_invoice(invoice.id)
+            finance_api.validate_invoices([invoice.id])
 
             assert collective_offer.displayedStatus == educational_models.CollectiveOfferDisplayedStatus.REIMBURSED
             assert collective_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
