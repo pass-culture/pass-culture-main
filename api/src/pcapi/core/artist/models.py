@@ -86,6 +86,7 @@ class Artist(Model):
     aliases: sa_orm.Mapped[list["ArtistAlias"]] = sa_orm.relationship(
         "ArtistAlias", foreign_keys="ArtistAlias.artist_id", back_populates="artist"
     )
+    app_search_score = sa_orm.mapped_column(sa.Float, nullable=False, server_default="0.0", default=0.0)
     biography: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     computed_image: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
@@ -111,6 +112,7 @@ class Artist(Model):
     products: sa_orm.Mapped[list["Product"]] = sa_orm.relationship(
         "Product", back_populates="artists", secondary=ArtistProductLink.__table__
     )
+    pro_search_score = sa_orm.mapped_column(sa.Float, nullable=False, server_default="0.0", default=0.0)
     wikidata_id: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
     wikipedia_url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
 
