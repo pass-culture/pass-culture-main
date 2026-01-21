@@ -162,12 +162,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
         >
           {withSwitchVenueFeature && selectedVenue && (
             <ButtonLink
-              aria-label={`Changer de structure (actuellement sélectionnée : ${selectedVenue.name})`}
+              aria-label={`Changer de structure (actuellement sélectionnée : ${selectedVenue.publicName})`}
               className={styles['nav-links-switch-venue-button']}
               icon={fullLeftIcon}
               to="/hub"
             >
-              <EllipsissedText>{selectedVenue.name}</EllipsissedText>
+              <EllipsissedText>{selectedVenue.publicName}</EllipsissedText>
             </ButtonLink>
           )}
 
