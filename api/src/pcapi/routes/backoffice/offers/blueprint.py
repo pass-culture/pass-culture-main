@@ -1253,7 +1253,7 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
 
             is_not_a_future_offer = (
                 offer.publicationDatetime is None
-                or offer.publicationDatetime <= datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None)
+                or offer.publicationDatetime <= datetime.datetime.now(datetime.timezone.utc)
             )
             if is_not_a_future_offer:
                 offer.publicationDatetime = datetime.datetime.now(datetime.UTC)
@@ -1262,6 +1262,8 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
 
             db.session.add(offer)
 
+            # TODO(jbaudet-pass): this might trigger some extra queries
+            # -> add missing load option to the offers query
             recipients = _get_offer_recipients(offer)
             offer_data = transactional_mails.get_email_data_from_offer(offer, old_validation, new_validation)
             transactional_mails.send_offer_validation_status_update_email(offer_data, recipients)
