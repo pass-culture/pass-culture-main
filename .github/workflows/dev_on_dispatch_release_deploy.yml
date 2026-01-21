@@ -97,32 +97,10 @@ jobs:
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
 
-  deploy-integration:
-    name: "Deploy on integration environnement"
-    needs: version
-    if: github.event.inputs.target_environment == 'production'
-    uses: ./.github/workflows/dev_on_workflow_deploy.yml
-    with:
-      environment: integration
-      app_version: ${{ needs.version.outputs.APP_VERSION }}
-      cluster_scope: metier
-      cluster_environment: ehp
-      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
-      apply_algolia_config: true
-      deploy_api: true
-      deploy_pro: true
-      doc-api-entrypoint: "api/documentation"
-    secrets:
-      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-
   deploy-integration-new-infra:
     name: "Deploy on integration environnement (new infra)"
     needs: 
       - version
-      - deploy-integration
     if: github.event.inputs.target_environment == 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
@@ -146,6 +124,30 @@ jobs:
       NEW_INFRA_PCAPI_DEPLOYER_SERVICE_ACCOUNT: ${{ secrets.PCAPI_CI_SERVICE_ACCOUNT_INT }}
       PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
       PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
+  deploy-integration:
+    name: "Deploy on integration environnement"
+    needs: 
+      - version
+      - deploy-integration-new-infra
+    if: github.event.inputs.target_environment == 'production'
+    uses: ./.github/workflows/dev_on_workflow_deploy.yml
+    with:
+      environment: integration
+      app_version: ${{ needs.version.outputs.APP_VERSION }}
+      cluster_scope: metier
+      cluster_environment: ehp
+      workload_identity_provider_secret_name: gcp_metier_ehp_workload_identity_provider
+      apply_algolia_config: true
+      deploy_api: true
+      deploy_pro: true
+      doc-api-entrypoint: "api/documentation"
+    secrets:
+      GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+      PASSCULTURE_GITHUB_ACTION_APP_ID: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
+      PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
+
 
   deploy-prod:
     name: "Deploy on production environnement"
