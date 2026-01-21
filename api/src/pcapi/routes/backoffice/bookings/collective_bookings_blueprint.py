@@ -1,3 +1,4 @@
+import sqlalchemy.dialects.postgresql as sa_dialects_psql
 import sqlalchemy.orm as sa_orm
 from flask import flash
 from flask import render_template
@@ -100,22 +101,23 @@ def _get_collective_bookings(
 ) -> list[educational_models.CollectiveBooking]:
     base_query = _get_collective_bookings_query()
 
-    if form.has_incident.data and len(form.has_incident.data) == 1:
-        if form.has_incident.data[0] == "true":
-            base_query = base_query.filter(
-                educational_models.CollectiveBooking.validated_incident_id != None,
+    if form.formats.data:
+        base_query = base_query.filter(
+            educational_models.CollectiveOffer.formats.overlap(
+                sa_dialects_psql.array((fmt for fmt in form.formats.data))
             )
-        else:
-            base_query = base_query.filter(
-                educational_models.CollectiveBooking.validated_incident_id == None,
-            )
+        )
 
-    return booking_helpers.get_bookings(
+    if form.institution.data:
+        base_query = base_query.filter(
+            educational_models.CollectiveBooking.educationalInstitutionId.in_(form.institution.data)
+        )
+
+    base_query = booking_helpers.get_filtered_booking_query(
         base_query=base_query,
         form=form,
         stock_class=educational_models.CollectiveStock,
         booking_class=educational_models.CollectiveBooking,
-        offer_class=educational_models.CollectiveOffer,
         id_filters=[
             educational_models.CollectiveBooking.id,
             educational_models.CollectiveOffer.id,
@@ -124,6 +126,7 @@ def _get_collective_bookings(
             educational_models.CollectiveOffer.name,
         ],
     )
+    return base_query.all()
 
 
 def _render_collective_bookings(collective_bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:

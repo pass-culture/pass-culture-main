@@ -1840,7 +1840,7 @@ def get_eligibility_history(user: users_models.User) -> dict[str, serialization.
                 for method in subscription_item_methods
             ],
             idCheckHistory=[
-                serialization.IdCheckItemModel.from_orm(fraud_check)
+                serialization.IdCheckItemModel.build(fraud_check)
                 for fraud_check in user.beneficiaryFraudChecks
                 if serialization.get_fraud_check_eligibility_type(fraud_check) == eligibility
             ],

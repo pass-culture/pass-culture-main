@@ -10,7 +10,6 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import flash
-from flask import redirect
 from flask import render_template
 from flask import request
 from flask import send_file
@@ -26,6 +25,7 @@ from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
 from pcapi.core.bookings import repository as booking_repository
+from pcapi.core.categories import subcategories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.offerers import models as offerers_models
@@ -156,11 +156,17 @@ def _get_individual_bookings(
         else:
             base_query = base_query.filter(bookings_models.Booking.fraudulentBookingTag == None)
 
-    if form.has_incident.data and len(form.has_incident.data) == 1:
-        if form.has_incident.data[0] == "true":
-            base_query = base_query.filter(bookings_models.Booking.validated_incident_id != None)
-        else:
-            base_query = base_query.filter(bookings_models.Booking.validated_incident_id == None)
+    if form.category.data:
+        base_query = base_query.filter(
+            offers_models.Offer.subcategoryId.in_(
+                subcategory.id
+                for subcategory in subcategories.ALL_SUBCATEGORIES
+                if subcategory.category.id in form.category.data
+            )
+        )
+
+    if form.cancellation_reason.data:
+        base_query = base_query.filter(bookings_models.Booking.cancellationReason.in_(form.cancellation_reason.data))
 
     or_filters = []
     if form.q.data:
@@ -180,12 +186,11 @@ def _get_individual_bookings(
                     "info",
                 )
 
-    return booking_helpers.get_bookings(
+    base_query = booking_helpers.get_filtered_booking_query(
         base_query=base_query,
         form=form,
         stock_class=offers_models.Stock,
         booking_class=bookings_models.Booking,
-        offer_class=offers_models.Offer,
         search_by_email=True,
         id_filters=[
             bookings_models.Booking.id,
@@ -197,6 +202,7 @@ def _get_individual_bookings(
         ],
         or_filters=or_filters,
     )
+    return base_query.all()
 
 
 def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.BackofficeResponse:
@@ -266,13 +272,6 @@ def list_individual_bookings() -> utils.BackofficeResponse:
         cancel_booking_form=booking_forms.CancelIndividualBookingForm(),
         pro_visualisation_link=pro_visualisation_link,
     )
-
-
-def _redirect_after_individual_booking_action() -> utils.BackofficeResponse:
-    if request.referrer:
-        return redirect(request.referrer)
-
-    return redirect(url_for("backoffice_web.individual_bookings.list_individual_bookings"), code=303)
 
 
 @individual_bookings_blueprint.route("/download-csv", methods=["GET"])

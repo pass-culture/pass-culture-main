@@ -79,7 +79,7 @@ def _filter_non_pro_by_domain_name_query(domain_name: str) -> sa_orm.Query:
     )
 
 
-def _list_non_pro_suspensions(domain_name: str) -> list[str]:
+def _list_non_pro_suspensions(domain_name: str) -> list[users_models.User]:
     query = _filter_non_pro_by_domain_name_query(domain_name).options(
         sa_orm.load_only(users_models.User.id, users_models.User.email)
     )
@@ -87,7 +87,7 @@ def _list_non_pro_suspensions(domain_name: str) -> list[str]:
     return sorted(query, key=attrgetter("email"))
 
 
-def _list_untouched_pro_accounts(domain_name: str) -> list[str]:
+def _list_untouched_pro_accounts(domain_name: str) -> list[users_models.User]:
     query = (
         db.session.query(users_models.User)
         .filter(

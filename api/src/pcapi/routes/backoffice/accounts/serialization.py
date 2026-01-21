@@ -1,12 +1,11 @@
 import abc
 import datetime
 import decimal
-import typing
 
 import sqlalchemy as sa
 from flask import url_for
 from markupsafe import Markup
-from pydantic.v1.utils import GetterDict
+from pydantic import BaseModel as BaseModelV2
 
 from pcapi import settings
 from pcapi.core.finance import models as finance_models
@@ -66,35 +65,9 @@ class SubscriptionItemModel(BaseModel):
     status: subscription_schemas.SubscriptionItemStatus
 
 
-class IdCheckItemGetterDict(GetterDict):
-    def get(self, key: str, default: typing.Any | None = None) -> typing.Any:
-        if key == "applicable_eligibilities":
-            # For the BO we consider that if the user has had a fraud check on a given date
-            # then he has the eligibility related to that date
-            if not self._obj.is_id_check_ok_across_eligibilities_or_age:
-                eligibility_type = get_fraud_check_eligibility_type(self._obj)
-                return [eligibility_type] if eligibility_type else []
-        return super().get(key, default)
-
-
 class IdCheckItemModel(BaseModel):
     class Config:
-        orm_mode = True
         use_enum_values = True
-        getter_dict = IdCheckItemGetterDict
-
-    @classmethod
-    def from_orm(cls, fraud_check: subscription_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
-        if fraud_check.resultContent:
-            fraud_check.technicalDetails = fraud_check.source_data()
-        else:
-            fraud_check.technicalDetails = None
-
-        if fraud_check.type == subscription_models.FraudCheckType.DMS and fraud_check.resultContent is not None:
-            dms_content = dms_schemas.DMSContent(**fraud_check.resultContent)
-            fraud_check.sourceId = str(dms_content.procedure_number)
-
-        return super().from_orm(fraud_check)
 
     id: int
     type: subscription_models.FraudCheckType
@@ -107,6 +80,42 @@ class IdCheckItemModel(BaseModel):
     sourceId: str | None = None  # DMS only
     eligibilityType: users_models.EligibilityType | None
     applicable_eligibilities: list[users_models.EligibilityType]
+
+    @classmethod
+    def build(cls, fraud_check: subscription_models.BeneficiaryFraudCheck) -> "IdCheckItemModel":
+        if fraud_check.resultContent:
+            technical_data = fraud_check.source_data()
+            technical_details = (
+                technical_data.model_dump() if isinstance(technical_data, BaseModelV2) else technical_data.dict()
+            )
+        else:
+            technical_details = None
+
+        if fraud_check.type == subscription_models.FraudCheckType.DMS and fraud_check.resultContent is not None:
+            dms_content = dms_schemas.DMSContent(**fraud_check.resultContent)
+            source_id = str(dms_content.procedure_number)
+        else:
+            source_id = None
+
+        if not fraud_check.is_id_check_ok_across_eligibilities_or_age:
+            eligibility_type = get_fraud_check_eligibility_type(fraud_check)
+            applicable_eligibilities = [eligibility_type] if eligibility_type else []
+        else:
+            applicable_eligibilities = fraud_check.applicable_eligibilities
+
+        return cls(
+            id=fraud_check.id,
+            type=fraud_check.type,
+            dateCreated=fraud_check.dateCreated,
+            thirdPartyId=fraud_check.thirdPartyId,
+            status=fraud_check.status,
+            reason=fraud_check.reason,
+            reasonCodes=fraud_check.reasonCodes,
+            technicalDetails=technical_details,
+            sourceId=source_id,
+            eligibilityType=fraud_check.eligibilityType,
+            applicable_eligibilities=applicable_eligibilities,
+        )
 
 
 class EligibilitySubscriptionHistoryModel(BaseModel):

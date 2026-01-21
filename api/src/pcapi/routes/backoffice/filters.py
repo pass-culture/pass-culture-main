@@ -1057,7 +1057,7 @@ def format_tag_object_list(
     return ""
 
 
-def format_criteria(criteria: list[criteria_models.OfferCriterion]) -> str:
+def format_criteria(criteria: list[criteria_models.Criterion]) -> str:
     return format_as_badges([criterion.name for criterion in criteria])
 
 
