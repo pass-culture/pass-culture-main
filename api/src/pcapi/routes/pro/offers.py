@@ -329,6 +329,7 @@ def create_offer(body: offers_serialize.PostOfferBodyModel) -> offers_serialize.
         withdrawalDetails=body.withdrawal_details,
         withdrawalType=body.withdrawal_type,
         isNational=body.is_national,
+        artistOfferLinks=body.artist_offer_links,
     )
 
     offer = offers_api.create_offer(

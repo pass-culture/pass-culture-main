@@ -2,7 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
+import type { ArtistOfferResponseModel } from './ArtistOfferResponseModel';
 export type MinimalPostOfferBodyModel = {
+  artistOfferLinks?: Array<ArtistOfferResponseModel> | null;
   audioDisabilityCompliant: boolean;
   description?: string | null;
   durationMinutes?: number | null;

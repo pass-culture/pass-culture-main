@@ -689,6 +689,7 @@ class MinimalPostOfferBodyModel(ConfiguredBaseModel):
     subcategory_id: str
     duration_minutes: int | None
     extra_data: dict[str, typing.Any] | None
+    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel] | None
 
     audio_disability_compliant: bool
     mental_disability_compliant: bool

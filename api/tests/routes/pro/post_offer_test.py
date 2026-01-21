@@ -5,6 +5,7 @@ import pytest
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
+from pcapi.core.artist import factories as artist_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers.models import Offer
@@ -296,6 +297,66 @@ class CreateThingsTest(CreateOfferBase):
         assert offer.ean == "0000000000001"
         assert offer.description == payload["description"]
         assert not offer.productId
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    def test_create_offer_with_artist_links_when_feature_flag_enabled(self, auth_client, venue):
+        artist = artist_factories.ArtistFactory()
+
+        payload = {
+            **offer_minimal_shared_data(subcategories.CONCERT.id, venue),
+            "artistOfferLinks": [
+                {
+                    "artistId": artist.id,
+                    "artistType": "performer",
+                    "customName": None,
+                },
+                {
+                    "artistId": None,
+                    "artistType": "author",
+                    "customName": "Custom Artist Name",
+                },
+            ],
+        }
+
+        with assert_changes(Offer, 1):
+            response = auth_client.post(self.endpoint, json=payload)
+            assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert response.json["artistOfferLinks"] == [
+            {"artistId": artist.id, "artistType": "performer", "customName": None},
+            {"artistId": None, "artistType": "author", "customName": "Custom Artist Name"},
+        ]
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
+    def test_create_offer_with_artist_links_when_feature_flag_disabled(self, auth_client, venue):
+        artist = artist_factories.ArtistFactory()
+
+        payload = {
+            **offer_minimal_shared_data(subcategories.CONCERT.id, venue),
+            "artistOfferLinks": [
+                {
+                    "artistId": artist.id,
+                    "artistType": "performer",
+                    "customName": None,
+                },
+            ],
+        }
+
+        with assert_changes(Offer, 1):
+            response = auth_client.post(self.endpoint, json=payload)
+            assert response.status_code == 201
+
+        offer = db.session.query(Offer).one()
+
+        shared_response_json_checks(offer, response.json)
+        shared_offer_checks(offer, payload)
+
+        assert response.json["artistOfferLinks"] == []
 
 
 class CreateThingWithEanTest(CreateOfferBase):
@@ -693,6 +754,73 @@ class Returns200Test:
         assert offer.venue == venue
         assert offer.ean == "1234567890112"
         assert "ean" not in offer.extraData
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    def test_create_offer_with_artist_links_when_feature_flag_enabled(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        artist = artist_factories.ArtistFactory()
+
+        data = {
+            "venueId": venue.id,
+            "name": "Concert symphonique",
+            "subcategoryId": subcategories.CONCERT.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": False,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "artistOfferLinks": [
+                {
+                    "artistId": artist.id,
+                    "artistType": "performer",
+                    "customName": None,
+                },
+                {
+                    "artistId": None,
+                    "artistType": "author",
+                    "customName": "Custom Artist Name",
+                },
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        assert response.status_code == 201
+
+        assert "artistOfferLinks" in response.json
+        assert response.json["artistOfferLinks"] == [
+            {"artistId": artist.id, "artistType": "performer", "customName": None},
+            {"artistId": None, "artistType": "author", "customName": "Custom Artist Name"},
+        ]
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
+    def test_create_offer_with_artist_links_when_feature_flag_disabled(self, client):
+        venue = offerers_factories.VenueFactory()
+        offerer = venue.managingOfferer
+        offerers_factories.UserOffererFactory(offerer=offerer, user__email="user@example.com")
+        artist = artist_factories.ArtistFactory()
+
+        data = {
+            "venueId": venue.id,
+            "name": "Concert symphonique",
+            "subcategoryId": subcategories.CONCERT.id,
+            "audioDisabilityCompliant": True,
+            "mentalDisabilityCompliant": True,
+            "motorDisabilityCompliant": False,
+            "visualDisabilityCompliant": False,
+            "artistOfferLinks": [
+                {
+                    "artistId": artist.id,
+                    "artistType": "performer",
+                    "customName": None,
+                },
+            ],
+        }
+        response = client.with_session_auth("user@example.com").post("/offers", json=data)
+
+        assert response.status_code == 201
+
+        assert response.json["artistOfferLinks"] == []
 
 
 @pytest.mark.usefixtures("db_session")
