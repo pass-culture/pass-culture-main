@@ -100,7 +100,7 @@ runs:
           --log --wait \
           -p environment=${{ inputs.environment }} \
           -p pcapi_version=${{ inputs.app_version }} \
-          -p prune_k8s_resources=${{ inputs.prune_k8s_resources || 'false' }}
+          -p prune_k8s_resources=${{ inputs.prune_k8s_resources }}
     # End Trigger WF #
     # Trigger post-migrations #
     - name: Authenticate to GKE cluster
