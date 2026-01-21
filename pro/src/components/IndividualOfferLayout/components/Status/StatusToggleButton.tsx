@@ -12,10 +12,10 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { formatDateTimeParts, isDateValid } from '@/commons/utils/date'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 export interface StatusToggleButtonProps {
   offer: GetIndividualOfferResponseModel
@@ -88,7 +88,8 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
       />
 
       <Button
-        variant={ButtonVariant.TERNARY}
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
         disabled={[OfferStatus.PENDING, OfferStatus.REJECTED].includes(
           offer.status
         )}

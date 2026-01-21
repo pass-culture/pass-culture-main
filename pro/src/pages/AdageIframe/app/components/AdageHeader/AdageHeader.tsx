@@ -5,10 +5,10 @@ import useSWR from 'swr'
 import { AdageFrontRoles, type AdageHeaderLink } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
 import { GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY } from '@/commons/config/swrQueryKeys'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import logoPassCultureIcon from '@/icons/logo-pass-culture.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { useAdageUser } from '../../hooks/useAdageUser'
@@ -66,16 +66,17 @@ export const AdageHeader = () => {
       {adageUser.role !== AdageFrontRoles.READONLY && !isDiscoveryPage && (
         <div className={styles['adage-header-help']}>
           Besoin d’aide pour réserver des offres pass Culture ?
-          <ButtonLink
-            variant={ButtonVariant.TERNARY}
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             to={`${document.referrer}adage/index/docGet/format/pptx/doc/PRESENTATION_J_UTILISE_PASS_CULTURE`}
             isExternal
             download
             icon={fullDownloadIcon}
             target="_top"
-          >
-            Télécharger l’aide
-          </ButtonLink>
+            label="Télécharger l'aide"
+          />{' '}
         </div>
       )}
     </div>

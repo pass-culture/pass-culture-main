@@ -110,6 +110,8 @@
     gap: var(--size-spacing-s);
     align-items: center;
     width: 100%;
+    background-color: transparent;
+    border: none;
 
     &:hover {
       background-color: var(--color-background-subtle);
@@ -143,10 +145,6 @@
 
     svg {
       margin-right: 0;
-    }
-
-    &-feedback {
-      gap: unset;
     }
   }
 
@@ -213,7 +211,6 @@
   text-align: center;
   margin: var(--size-spacing-l);
   margin-bottom: 0;
-  padding: var(--size-spacing-xl);
 
   @media (min-width: size.$tablet) {
     display: none;

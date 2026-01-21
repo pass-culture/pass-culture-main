@@ -21,13 +21,13 @@ import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSele
 import { updateUser } from '@/commons/store/user/reducer'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import { MAYBE_LOCAL_AUTHORITY_APE_CODE } from '@/pages/Signup/SignupContainer/constants'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -182,7 +182,8 @@ export const Offerers = (): JSX.Element => {
               onClick={() => {
                 setIsVenueListOpen(!isVenueListOpen)
               }}
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               icon={isVenueListOpen ? fullUpIcon : fullDownIcon}
             >
               {isVenueListOpen
@@ -195,9 +196,8 @@ export const Offerers = (): JSX.Element => {
           variant={ButtonVariant.SECONDARY}
           onClick={doLinkUserToOfferer}
           ref={joinSpaceButtonRef}
-        >
-          Rejoindre cet espace
-        </Button>
+          label="Rejoindre cet espace"
+        />
       </div>
 
       {(!restrictVenueCreationToCollectivity || isLocalAuthority) && (
@@ -208,9 +208,8 @@ export const Offerers = (): JSX.Element => {
           <Button
             onClick={redirectToOnboarding}
             variant={ButtonVariant.SECONDARY}
-          >
-            Ajouter une nouvelle structure
-          </Button>
+            label="Ajouter une nouvelle structure"
+          />
         </>
       )}
       <ActionBar

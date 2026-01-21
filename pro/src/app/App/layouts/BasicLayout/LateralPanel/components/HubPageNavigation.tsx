@@ -1,8 +1,8 @@
 import classnames from 'classnames'
 
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant, IconPositionEnum } from '@/design-system/Button/types'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import styles from './SideNavLinks.module.scss'
 
@@ -20,15 +20,15 @@ export const HubPageNavigation = ({
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
-      <ButtonLink
+      <Button
+        as="a"
         variant={ButtonVariant.SECONDARY}
         to="/remboursements"
         iconPosition={IconPositionEnum.LEFT}
         icon={strokeRepaymentIcon}
         className={styles['back-to-admin']}
-      >
-        Espace Administration
-      </ButtonLink>
+        label="Espace Administration"
+      />
     </div>
   )
 }

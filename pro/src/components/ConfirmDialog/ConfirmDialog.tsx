@@ -1,8 +1,8 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import strokeErrorIcon from '@/icons/stroke-error.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { Dialog, type DialogProps } from '../Dialog/Dialog'
 import styles from './ConfirmDialog.module.scss'
@@ -51,7 +51,7 @@ export const ConfirmDialog = ({
       onClick={onConfirm}
       isLoading={isLoading}
       disabled={isLoading || confirmButtonDisabled}
-      testId="confirm-dialog-button-confirm"
+      data-testid="confirm-dialog-button-confirm"
     >
       {confirmText}
     </Button>

@@ -1,5 +1,6 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './Commitment.module.scss'
@@ -7,13 +8,15 @@ import styles from './Commitment.module.scss'
 export const Commitment = () => {
   return (
     <AccessibilityLayout mainHeading="Les engagements du pass Culture pour l’accessibilité numérique">
-      <ButtonLink
+      <Button
         to="/accessibilite/"
+        as="a"
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
         icon={fullBackIcon}
         className={styles['back-link']}
-      >
-        Retour vers la page Informations d’accessibilité
-      </ButtonLink>
+        label="Retour vers la page Informations d’accessibilité"
+      />
       <p className={styles['paragraph']}>
         <i>Date de publication : 21 mai 2024</i>
       </p>
@@ -85,9 +88,14 @@ export const Commitment = () => {
         inclusive de l’ensemble du dispositif pass Culture et, <i>in fine</i> ,
         à l’accès de tous les jeunes à la culture. En 2024, ce travail a été
         prolongé avec la mise en place d’un partenariat technologique avec{' '}
-        <ButtonLink to="https://acceslibre.beta.gouv.fr/" isExternal>
-          acceslibre
-        </ButtonLink>{' '}
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          to="https://acceslibre.beta.gouv.fr/"
+          isExternal
+          label="acceslibre"
+        />{' '}
         afin d’enrichir plus largement les informations d’accessibilité des
         lieux tout en contribuant à ce projet qui dépasse le pass Culture et qui
         vise à rendre faciliter l’accès pour les personnes en situation de
@@ -99,16 +107,22 @@ export const Commitment = () => {
       <p className={styles['paragraph']}>
         D’autres évolutions sont prévues dans les prochains mois et sont
         disponibles sur le {''}
-        <ButtonLink to="/accessibilite/schema-pluriannuel">
-          Schéma pluriannuel d’accessibilité 2024 - 2025
-        </ButtonLink>
+        <Button
+          as="a"
+          to="/accessibilite/schema-pluriannuel"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="Schéma pluriannuel d’accessibilité 2024 - 2025"
+        />
         {''} et le {''}
-        <ButtonLink
+        <Button
+          as="a"
           to="https://passculture.app/accessibilite/plan-d-actions"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           isExternal
-        >
-          Schéma pluriannuel d’accessibilité 2022 - 2024
-        </ButtonLink>
+          label="Schéma pluriannuel d’accessibilité 2022 - 2024"
+        />
       </p>
       <p className={styles['paragraph']}>
         Au delà de ces premiers aspects, le rôle des aidants et des structures
@@ -128,18 +142,25 @@ export const Commitment = () => {
         Vous trouverez d’ailleurs dans le schéma pluriannuel les chantiers sur
         lesquels nous travaillons à ce niveau. Si vous avez des retours au sujet
         de notre traitement, n’hésitez pas à écrire à {''}
-        <ButtonLink isExternal to="mailto:accessibilite@passculture.app">
-          accessibilite@passculture.app
-        </ButtonLink>
+        <Button
+          as="a"
+          isExternal
+          to="mailto:accessibilite@passculture.app"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="accessibilite@passculture.app"
+        />
       </p>
       <p className={styles['paragraph']}>
-        <ButtonLink
+        <Button
+          as="a"
           to="https://aide.passculture.app/hc/fr/sections/4597468688924-Situation-de-handicap"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           isExternal
-        >
-          Vous pouvez retrouver également toutes nos fiches d’aide pour vous
-          inscrire sur le pass Culture directement dans notre centre d’aide.
-        </ButtonLink>
+          label="Vous pouvez retrouver également toutes nos fiches d’aide pour vous
+          inscrire sur le pass Culture directement dans notre centre d’aide."
+        />
       </p>
     </AccessibilityLayout>
   )

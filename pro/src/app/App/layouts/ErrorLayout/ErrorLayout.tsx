@@ -1,7 +1,7 @@
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ErrorLayout.module.scss'
@@ -43,14 +43,14 @@ export const ErrorLayout = ({
         <p className={styles.description}>{paragraph}</p>
         {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
           rendered once per page, so there cannot be id duplications.> */}
-        <ButtonLink
+        <Button
+          as="a"
           id="error-return-link"
           className={styles['nm-redirection-link']}
           variant={ButtonVariant.SECONDARY}
           to={redirect}
-        >
-          {isConnected ? 'Retour à la page d’accueil' : 'Retour'}
-        </ButtonLink>
+          label={isConnected ? "Retour à la page d'accueil" : 'Retour'}
+        />
       </div>
     </main>
   )

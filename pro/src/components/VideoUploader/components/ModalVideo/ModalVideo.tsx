@@ -5,11 +5,11 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { useVideoUploaderContext } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
 import { getUrlYoutubeError } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/getUrlYoutubeError'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   DialogBuilder,
   type DialogBuilderProps,
@@ -63,7 +63,11 @@ export const ModalVideo = ({
         <DialogBuilder.Footer>
           <div className={styles['modal-video-footer']}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                label="Annuler"
+              />
             </Dialog.Close>
             <Button
               onClick={async () => {
@@ -76,9 +80,8 @@ export const ModalVideo = ({
                   })
                 }
               }}
-            >
-              Ajouter
-            </Button>
+              label="Ajouter"
+            />
           </div>
         </DialogBuilder.Footer>
       </div>

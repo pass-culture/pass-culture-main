@@ -3,11 +3,10 @@ import { useState } from 'react'
 
 import { apiAdage } from '@/apiClient/api'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SurveySatisfaction.module.scss'
@@ -70,20 +69,22 @@ export const SurveySatisfaction = ({
         </div>
 
         <div className={styles['survey-actions']}>
-          <Button onClick={onCloseSurvey} variant={ButtonVariant.SECONDARY}>
-            J’ai déjà répondu
-          </Button>
+          <Button
+            onClick={onCloseSurvey}
+            variant={ButtonVariant.SECONDARY}
+            label="J'ai déjà répondu"
+          />
 
-          <ButtonLink
+          <Button
+            as="a"
             variant={ButtonVariant.PRIMARY}
             to="https://passculture.qualtrics.com/jfe/form/SV_8w5mdHmrxly9bcW"
             isExternal
             opensInNewTab
             icon={fullLinkIcon}
             onClick={logOpenSatisfactionSurvey}
-          >
-            Je donne mon avis
-          </ButtonLink>
+            label="Je donne mon avis"
+          />
         </div>
       </div>
     </div>

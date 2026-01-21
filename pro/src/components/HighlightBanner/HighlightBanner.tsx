@@ -2,10 +2,10 @@ import cn from 'classnames'
 import { useState } from 'react'
 
 import { storageAvailable } from '@/commons/utils/storageAvailable'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './HighlightBanner.module.scss'
@@ -26,7 +26,8 @@ const HighlightBannerCloseButton = ({
     <Button
       className={styles['close']}
       iconClassName={styles['close-svg']}
-      variant={ButtonVariant.TERNARY}
+      variant={ButtonVariant.TERTIARY}
+      color={ButtonColor.NEUTRAL}
       icon={strokeCloseIcon}
       aria-label="Fermer la bannière"
       onClick={onClose}

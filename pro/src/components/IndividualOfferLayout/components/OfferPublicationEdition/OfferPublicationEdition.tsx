@@ -7,9 +7,13 @@ import { GET_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { serializeDateTimeToUTCFromLocalDepartment } from '@/commons/utils/timezone'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import styles from './OfferPublicationEdition.module.scss'
@@ -86,9 +90,13 @@ export function OfferPublicationEdition({
       <OfferPublicationEditionTags offer={offer} />
       <DialogBuilder
         trigger={
-          <Button variant={ButtonVariant.TERNARY} icon={fullEditIcon}>
-            Modifier
-          </Button>
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
+            icon={fullEditIcon}
+            label="Modifier"
+          />
         }
         open={isDialogOpen}
         onOpenChange={setIsDialogOpen}

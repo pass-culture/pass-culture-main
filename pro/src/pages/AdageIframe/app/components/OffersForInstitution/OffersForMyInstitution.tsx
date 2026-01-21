@@ -6,9 +6,9 @@ import {
   GET_COLLECTIVE_OFFERS_FOR_INSTITUTION_QUERY_KEY,
   GET_EDUCATIONAL_INSTITUTION_BUDGET_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import strokeMyInstitution from '@/icons/stroke-my-institution.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { useAdageUser } from '../../hooks/useAdageUser'
@@ -67,12 +67,12 @@ export const OffersForMyInstitution = () => {
             <h2 className={styles['no-results-title']}>
               Vous n’avez pas d’offre à préréserver
             </h2>
-            <ButtonLink
+            <Button
+              as="a"
               to={`/adage-iframe/recherche?token=${adageAuthToken}`}
               variant={ButtonVariant.PRIMARY}
-            >
-              Explorer le catalogue
-            </ButtonLink>
+              label="Explorer le catalogue"
+            />
           </div>
         </div>
       ) : (

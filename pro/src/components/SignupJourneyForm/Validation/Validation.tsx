@@ -31,10 +31,15 @@ import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
@@ -191,7 +196,8 @@ export const Validation = (): JSX.Element | undefined => {
       <section>
         <div className={styles['validation-screen-subtitle']}>
           <h2 className={styles['subtitle']}>Vos informations</h2>
-          <ButtonLink
+          <Button
+            as="a"
             to="/inscription/structure/identification"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
@@ -200,12 +206,13 @@ export const Validation = (): JSX.Element | undefined => {
                 used: SignupJourneyAction.UpdateFromValidation,
               })
             }}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             iconPosition={IconPositionEnum.LEFT}
             icon={fullEditIcon}
-          >
-            Modifier
-          </ButtonLink>
+            label="Modifier"
+          />
         </div>
 
         <div className={styles['data-displaying']}>
@@ -221,7 +228,8 @@ export const Validation = (): JSX.Element | undefined => {
       <section className={styles['validation-screen']}>
         <div className={styles['validation-screen-subtitle']}>
           <h2 className={styles['subtitle']}>Votre activité</h2>
-          <ButtonLink
+          <Button
+            as="a"
             to="/inscription/structure/activite"
             onClick={() => {
               logEvent(Events.CLICKED_ONBOARDING_FORM_NAVIGATION, {
@@ -230,12 +238,13 @@ export const Validation = (): JSX.Element | undefined => {
                 used: SignupJourneyAction.UpdateFromValidation,
               })
             }}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             iconPosition={IconPositionEnum.LEFT}
             icon={fullEditIcon}
-          >
-            Modifier
-          </ButtonLink>
+            label="Modifier"
+          />
         </div>
         <div className={styles['data-displaying']}>
           <div className={styles['data-line']}>{activityLabel}</div>

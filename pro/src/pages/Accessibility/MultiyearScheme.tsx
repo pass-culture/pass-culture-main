@@ -1,5 +1,6 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './MultiyearScheme.module.scss'
@@ -7,13 +8,15 @@ import styles from './MultiyearScheme.module.scss'
 export const MultiyearScheme = () => {
   return (
     <AccessibilityLayout mainHeading="Schéma pluriannuel d’accessibilité 2024 - 2025">
-      <ButtonLink
+      <Button
+        as="a"
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
         to="/accessibilite/"
         icon={fullBackIcon}
         className={styles['back-link']}
-      >
-        Retour vers la page Informations d’accessibilité
-      </ButtonLink>
+        label="Retour vers la page Informations d’accessibilité"
+      />
       <h2 className={styles['heading2']}>INTRODUCTION</h2>
       <p className={styles['paragraph']}>
         L’article 47 de la loi n° 2005-102 du 11 février 2005 pour l’égalité des
@@ -240,9 +243,14 @@ export const MultiyearScheme = () => {
         Conformément aux dispositions prévues par le RGAA et aux attentes
         légitimes des utilisateurs, un moyen de contact est mis en place : les
         demandes sont traitées par le pôle Support (contact –{' '}
-        <ButtonLink isExternal to="mailto:accessibilite@passculture.app">
-          accessibilite@passculture.app
-        </ButtonLink>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          isExternal
+          to="mailto:accessibilite@passculture.app"
+          label="accessibilite@passculture.app"
+        />
         ),
       </p>
       <p className={styles['paragraph']}>
@@ -269,16 +277,26 @@ export const MultiyearScheme = () => {
       </p>
       <p className={styles['paragraph']}>
         Ce schéma pluriannuel ne concerne que le site{' '}
-        <ButtonLink to="https://passculture.pro/" isExternal>
-          https://passculture.pro/
-        </ButtonLink>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          to="https://passculture.pro/"
+          isExternal
+          label="https://passculture.pro/"
+        />
       </p>
       <p className={styles['paragraph']}>
         Vous pouvez retrouver le plan annuel général incluant l’ensemble des
         sites gérés par le pass Culture à l’adresse suivante:{' '}
-        <ButtonLink to="https://passculture.fr/" isExternal>
-          https://passculture.fr/
-        </ButtonLink>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          to="https://passculture.fr/"
+          isExternal
+          label="https://passculture.fr/"
+        />
       </p>
       <p className={styles['paragraph']}>
         <strong>Évaluation et qualification</strong>
@@ -336,9 +354,14 @@ export const MultiyearScheme = () => {
       </h2>
       <p className={styles['paragraph']}>
         Site à destination des acteurs culturels :{' '}
-        <ButtonLink to="https://passculture.pro/" isExternal>
-          https://passculture.pro/
-        </ButtonLink>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          to="https://passculture.pro/"
+          isExternal
+          label="https://passculture.pro/"
+        />
       </p>
       <h3 className={styles['heading3']}>Plan annuel 2024</h3>
       <ul>

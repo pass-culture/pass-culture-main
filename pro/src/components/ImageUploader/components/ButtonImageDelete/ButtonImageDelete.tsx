@@ -1,10 +1,9 @@
 import { useState } from 'react'
 
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ButtonImageDelete.module.scss'
 import { ModalImageDelete } from './ModalImageDelete'
@@ -35,15 +34,12 @@ export const ButtonImageDelete = ({
       trigger={
         <Button
           onClick={() => setIsModalOpen(true)}
-          variant={ButtonVariant.TERNARY}
-        >
-          <SvgIcon
-            alt=""
-            className={styles['button-image-delete-icon']}
-            src={fullTrashIcon}
-          />
-          Supprimer
-        </Button>
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullTrashIcon}
+          iconClassName={styles['button-image-delete-icon']}
+          label="Supprimer"
+        />
       }
     />
   )

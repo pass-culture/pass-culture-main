@@ -4,10 +4,10 @@ import type {
 } from '@/apiClient/adage'
 import { getHumanizeRelativeDistance } from '@/commons/utils/getDistance'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeInstitutionIcon from '@/icons/stroke-institution.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { ContactButton } from '../../../OffersInstantSearch/OffersSearch/Offers/ContactButton/ContactButton'
@@ -73,16 +73,17 @@ export function AdageOfferPartnerPanel({
         <div>
           <p className={styles['partner-panel-info-name']}>{venue.name}</p>
           {venue.adageId && !isPreview && (
-            <ButtonLink
+            <Button
+              as="a"
               isExternal
               to={`${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`}
               opensInNewTab
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               className={styles['partner-panel-info-link']}
               icon={fullLinkIcon}
-            >
-              Voir la page partenaire
-            </ButtonLink>
+              label="Voir la page partenaire"
+            />
           )}
         </div>
       </div>

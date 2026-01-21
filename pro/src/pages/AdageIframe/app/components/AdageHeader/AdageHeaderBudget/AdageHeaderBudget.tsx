@@ -1,6 +1,6 @@
 import { AdageHeaderLink } from '@/apiClient/adage'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 
 import styles from './AdageHeaderBudget.module.scss'
 
@@ -15,17 +15,17 @@ export const AdageHeaderBudget = ({
 }: AdageHeaderBudgetProps) => {
   return (
     <div className={styles['adage-header-budget']}>
-      <ButtonLink
-        variant={ButtonVariant.TERNARY}
+      <Button
+        as="a"
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
         to={`${document.referrer}adage/passculture/index`}
         isExternal
         opensInNewTab
-        icon={null}
         className={styles['adage-header-budget-link']}
         onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
-      >
-        Solde prévisionnel
-      </ButtonLink>
+        label="Solde prévisionnel"
+      />
       <div className={styles['adage-header-budget-value']}>
         {Intl.NumberFormat('fr-FR', {
           style: 'currency',

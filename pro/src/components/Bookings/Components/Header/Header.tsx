@@ -1,7 +1,11 @@
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import styles from './Header.module.scss'
 
@@ -38,13 +42,13 @@ export const Header = ({
           </span>
         ) : (
           <Button
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             onClick={resetBookings}
             icon={fullRefreshIcon}
             iconPosition={IconPositionEnum.LEFT}
-          >
-            Voir toutes les réservations
-          </Button>
+            label="Voir toutes les réservations"
+          />
         )}
       </div>
     )

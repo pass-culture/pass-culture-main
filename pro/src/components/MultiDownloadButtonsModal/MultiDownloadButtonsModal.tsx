@@ -1,9 +1,9 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 
 import styles from './MultiDownloadButtonsModal.module.scss'
@@ -44,7 +44,8 @@ export const MultiDownloadButtonsModal = ({
           id: 'excel',
           element: (
             <Button
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               icon={fullDownloadIcon}
               onClick={async () => {
                 await downloadFunction(filters, 'XLS')
@@ -52,16 +53,16 @@ export const MultiDownloadButtonsModal = ({
                   from: location.pathname,
                 })
               }}
-            >
-              Microsoft Excel (.xls)
-            </Button>
+              label="Microsoft Excel (.xls)"
+            />
           ),
         },
         {
           id: 'csv',
           element: (
             <Button
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               icon={fullDownloadIcon}
               onClick={async () => {
                 await downloadFunction(filters, 'CSV')
@@ -69,9 +70,8 @@ export const MultiDownloadButtonsModal = ({
                   from: location.pathname,
                 })
               }}
-            >
-              Fichier CSV (.csv)
-            </Button>
+              label="Fichier CSV (.csv)"
+            />
           ),
         },
       ]}

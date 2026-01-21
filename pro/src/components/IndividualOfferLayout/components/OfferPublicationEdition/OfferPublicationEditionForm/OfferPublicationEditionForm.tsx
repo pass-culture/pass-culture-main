@@ -9,11 +9,11 @@ import { FORMAT_HH_mm, formatShortDateForInput } from '@/commons/utils/date'
 import { getLocalDepartementDateTimeFromUtc } from '@/commons/utils/timezone'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { getPublicationHoursOptions } from '@/pages/IndividualOffer/IndividualOfferSummary/components/EventPublicationForm/EventPublicationForm'
 import type { EventPublicationFormValues } from '@/pages/IndividualOffer/IndividualOfferSummary/components/EventPublicationForm/types'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -245,11 +245,17 @@ export function OfferPublicationEditionForm({
         <DialogBuilder.Footer>
           <div className={styles['actions']}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                label="Annuler"
+              />
             </Dialog.Close>
-            <Button variant={ButtonVariant.PRIMARY} type="submit">
-              Enregistrer
-            </Button>
+            <Button
+              variant={ButtonVariant.PRIMARY}
+              type="submit"
+              label="Enregistrer"
+            />
           </div>
         </DialogBuilder.Footer>
       </form>

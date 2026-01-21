@@ -13,6 +13,8 @@ import { logout } from '@/commons/store/user/dispatchers/logout'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fulBackIcon from '@/icons/full-back.svg'
 import fullCloseIcon from '@/icons/full-close.svg'
 import fullLogoutIcon from '@/icons/full-logout.svg'
@@ -21,9 +23,6 @@ import fullProfilIcon from '@/icons/full-profil.svg'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import fullSwitchIcon from '@/icons/full-switch.svg'
 import fulValidateIcon from '@/icons/full-validate.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { HelpDropdownMenu } from '../HeaderHelpDropdown/HelpDropdownMenu'
@@ -161,22 +160,22 @@ export const HeaderDropdown = () => {
                       }}
                     >
                       <Button
-                        variant={ButtonVariant.TERNARY}
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.NEUTRAL}
                         icon={fullSwitchIcon}
-                        className={styles['menu-item']}
-                      >
-                        Changer
-                      </Button>
+                        // className={styles['menu-item']}
+                        label="Changer"
+                      />
                     </DropdownMenu.SubTrigger>
                   ) : (
                     <DropdownMenu.Item className={styles['menu-item']} asChild>
-                      <ButtonLink
+                      <Button
+                        as="a"
                         icon={fullMoreIcon}
                         className={styles['menu-item']}
                         to="/inscription/structure/recherche"
-                      >
-                        Ajouter une structure
-                      </ButtonLink>
+                        label="Ajouter une structure"
+                      />
                     </DropdownMenu.Item>
                   )}
                   <DropdownMenu.Portal>
@@ -189,11 +188,11 @@ export const HeaderDropdown = () => {
                       <div className={styles['sub-popin-header']}>
                         <Button
                           icon={fulBackIcon}
-                          variant={ButtonVariant.TERNARY}
+                          variant={ButtonVariant.TERTIARY}
+                          color={ButtonColor.NEUTRAL}
                           onClick={() => setSubOpen(false)}
-                        >
-                          Retour
-                        </Button>
+                          label="Retour"
+                        />
                       </div>
                       <div
                         className={styles['sub-menu']}
@@ -235,13 +234,13 @@ export const HeaderDropdown = () => {
                           className={styles['separator']}
                         />
                         <DropdownMenu.Item asChild>
-                          <ButtonLink
+                          <Button
+                            as="a"
                             icon={fullMoreIcon}
                             className={styles['menu-item']}
                             to="/inscription/structure/recherche"
-                          >
-                            Ajouter une structure
-                          </ButtonLink>
+                            label="Ajouter une structure"
+                          />
                         </DropdownMenu.Item>
                       </div>
                     </DropdownMenu.SubContent>
@@ -256,10 +255,15 @@ export const HeaderDropdown = () => {
             </DropdownMenu.Label>
             <div className={styles['menu-email']}>{currentUser?.email}</div>
             {!hideProfile && (
-              <DropdownMenu.Item className={styles['menu-item']} asChild>
-                <ButtonLink icon={fullProfilIcon} to="/profil">
-                  Voir mon profil
-                </ButtonLink>
+              <DropdownMenu.Item className={styles['menu-item']}>
+                <Button
+                  as="a"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  icon={fullProfilIcon}
+                  to="/profil"
+                  label="Voir mon profil"
+                />
               </DropdownMenu.Item>
             )}
             <DropdownMenu.Separator
@@ -298,11 +302,11 @@ export const HeaderDropdown = () => {
                         onSelect={(e) => e.preventDefault()} //  Necessary to prevent selecting the item from closing the DropdownMenu
                       >
                         <Button
-                          variant={ButtonVariant.TERNARY}
+                          variant={ButtonVariant.TERTIARY}
+                          color={ButtonColor.NEUTRAL}
                           icon={fullSmsIcon}
-                        >
-                          Donner mon avis
-                        </Button>
+                          label="Donner mon avis"
+                        />
                       </DropdownMenu.Item>
                     }
                   />
@@ -312,14 +316,14 @@ export const HeaderDropdown = () => {
                 />
               </>
             )}
-            <DropdownMenu.Item className={styles['menu-item']} asChild>
+            <DropdownMenu.Item className={styles['menu-item']}>
               <Button
                 icon={fullLogoutIcon}
-                variant={ButtonVariant.TERNARY}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
                 onClick={logEventAndLogout}
-              >
-                Se déconnecter
-              </Button>
+                label="Se déconnecter"
+              />
             </DropdownMenu.Item>
           </div>
         </DropdownMenu.Content>

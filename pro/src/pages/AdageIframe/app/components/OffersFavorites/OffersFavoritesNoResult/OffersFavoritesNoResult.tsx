@@ -1,6 +1,6 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import strokeNoFavorite from '@/icons/stroke-no-favorite.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OffersFavoritesNoResult.module.scss'
@@ -26,12 +26,12 @@ export const OffersFavoritesNoResult = () => {
           Explorez le catalogue et ajoutez les offres en favori pour les
           retrouver facilement !
         </p>
-        <ButtonLink
+        <Button
+          as="a"
           to={`/adage-iframe/recherche?token=${adageAuthToken}`}
           variant={ButtonVariant.PRIMARY}
-        >
-          Explorer le catalogue
-        </ButtonLink>
+          label="Explorer le catalogue"
+        />
       </div>
     </div>
   )

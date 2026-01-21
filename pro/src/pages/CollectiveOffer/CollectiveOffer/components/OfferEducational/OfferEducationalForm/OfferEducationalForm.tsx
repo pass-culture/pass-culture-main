@@ -26,9 +26,8 @@ import { BannerPublicApi } from '@/components/BannerPublicApi/BannerPublicApi'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 
 import type { DomainOption } from '../useOfferEducationalFormData'
 import { FormAccessibility } from './FormAccessibility/FormAccessibility'
@@ -209,12 +208,13 @@ export const OfferEducationalForm = ({
       </FormLayout>
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <ButtonLink
+          <Button
+            as="a"
             variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
             to={computeCollectiveOffersUrl({})}
-          >
-            Annuler et quitter
-          </ButtonLink>
+            label="Annuler et quitter"
+          />
         </ActionsBarSticky.Left>
         <ActionsBarSticky.Right
           dirtyForm={formState.isDirty || !offer}
@@ -223,9 +223,8 @@ export const OfferEducationalForm = ({
           <Button
             type="submit"
             disabled={!isEligible || !canEditDetails || isSubmitting}
-          >
-            Enregistrer et continuer
-          </Button>
+            label="Enregistrer et continuer"
+          />
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </>

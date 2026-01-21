@@ -7,13 +7,13 @@ import {
   GET_COLLECTIVE_OFFER_QUERY_KEY,
   GET_COLLECTIVE_OFFER_TEMPLATE_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import strokePassIcon from '@/icons/stroke-pass.svg'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
 import strokeVenueIcon from '@/icons/stroke-venue.svg'
 import { Breadcrumb, type Crumb } from '@/ui-kit/Breadcrumb/Breadcrumb'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { useAdageUser } from '../../hooks/useAdageUser'
@@ -142,12 +142,12 @@ export const OfferInfos = () => {
           <h1 className={styles['offers-info-fallback-title']}>
             Cette offre est introuvable
           </h1>
-          <ButtonLink
+          <Button
+            as="a"
             to={`/adage-iframe/recherche?token=${adageAuthToken}`}
             variant={ButtonVariant.PRIMARY}
-          >
-            Explorer le catalogue
-          </ButtonLink>
+            label="Explorer le catalogue"
+          />
         </div>
       )}
     </div>

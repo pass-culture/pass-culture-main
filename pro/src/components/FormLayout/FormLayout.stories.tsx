@@ -1,7 +1,7 @@
 import type { StoryObj } from '@storybook/react-vite'
 
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant, ButtonColor } from '@/design-system/Button/types'
 
 import { FormLayout, type FormLayoutProps } from './FormLayout'
 import { TextInput } from '@/design-system/TextInput/TextInput'
@@ -106,8 +106,12 @@ const DesignedFormLayout = (args: FormLayoutProps) => (
         </FormLayout.SubSection>
       </FormLayout.Section>
       <FormLayout.Actions>
-        <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
-        <Button>Envoyer</Button>
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          label="Annuler"
+        />
+        <Button label="Envoyer" />
       </FormLayout.Actions>
     </FormLayout>
   </div>

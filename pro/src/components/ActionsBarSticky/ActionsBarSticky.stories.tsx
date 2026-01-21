@@ -2,8 +2,8 @@ import type { StoryObj } from '@storybook/react-vite'
 import { Provider } from 'react-redux'
 
 import { configureTestStore } from '@/commons/store/testUtils'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 
 import { ActionsBarSticky } from './ActionsBarSticky'
 
@@ -39,13 +39,13 @@ function ActionBar() {
     <Provider store={configureTestStore({})}>
       <ActionsBarSticky>
         <ActionsBarSticky.Left>
-          <Button>Bouton Gauche</Button>
+          <Button label="Bouton Gauche" />
         </ActionsBarSticky.Left>
 
         <ActionsBarSticky.Right>
-          <Button>Bouton Droite</Button>
-          <Button>Autre bouton</Button>
-          <Button variant={ButtonVariant.SECONDARY}>Encore un</Button>
+          <Button label="Bouton Droite" />
+          <Button label="Autre bouton" />
+          <Button variant={ButtonVariant.SECONDARY} label="Encore un" />
         </ActionsBarSticky.Right>
       </ActionsBarSticky>
     </Provider>

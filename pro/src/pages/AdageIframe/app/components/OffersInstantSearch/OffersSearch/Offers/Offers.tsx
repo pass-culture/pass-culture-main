@@ -29,14 +29,14 @@ import {
   HighlightBanner,
   HighlightBannerVariant,
 } from '@/components/HighlightBanner/HighlightBanner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullGoTopIcon from '@/icons/full-go-top.svg'
 import fullGridIcon from '@/icons/full-grid.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullListIcon from '@/icons/full-list.svg'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 import { isCollectiveOfferTemplate } from '@/pages/AdageIframe/app/types'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { ShadowTipsHelpIcon } from '@/ui-kit/Icons/SVGs/ShadowTipsHelpIcon'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -287,7 +287,8 @@ export const Offers = ({
                       />
                     }
                     cta={
-                      <ButtonLink
+                      <Button
+                        as="a"
                         variant={ButtonVariant.PRIMARY}
                         to="https://passculture.docsend.com/view/nn7q3isav3dmhue2/d/pkhf9bba2ft4myz8"
                         isExternal
@@ -295,9 +296,8 @@ export const Offers = ({
                         icon={fullLinkIcon}
                         className={styles['highlight-banner-button']}
                         onClick={() => logOpenHighlightBanner('TFD-2025')}
-                      >
-                        en savoir plus
-                      </ButtonLink>
+                        label="en savoir plus"
+                      />
                     }
                     variant={HighlightBannerVariant.ADAGE}
                   />
