@@ -8,6 +8,7 @@ import pcapi.core.artist.models as artist_models
 from pcapi.connectors.big_query.importer.artist import ArtistAliasImporter
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
+from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
 from pcapi.connectors.big_query.importer.base import AbstractImporter
 from pcapi.core.artist import api as artist_api
 from pcapi.core.search import async_index_artist_ids
@@ -65,3 +66,10 @@ def update_artists_from_delta() -> None:
     for importer in ARTIST_IMPORTERS:
         importer.run_delta_update()
     logger.info("Artists update from delta tables finished successfully.")
+
+
+@blueprint.cli.command("update_artist_scores")
+@click.option("--batch-size", type=int, default=1000, help="Batch size for updates.")
+def update_artist_scores(batch_size: int) -> None:
+    importer = ArtistScoresImporter()
+    importer.run_scores_update(batch_size=batch_size)

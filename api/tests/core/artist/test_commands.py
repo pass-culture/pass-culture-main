@@ -3,14 +3,17 @@ import uuid
 from unittest.mock import patch
 
 import pytest
+from sqlalchemy import exc as sa_exc
 
 import pcapi.core.artist.models as artist_models
 import pcapi.core.offers.factories as offers_factories
 from pcapi.connectors.big_query.importer.artist import ArtistAliasImporter
 from pcapi.connectors.big_query.importer.artist import ArtistImporter
 from pcapi.connectors.big_query.importer.artist import ArtistProductLinkImporter
+from pcapi.connectors.big_query.importer.artist_score import ArtistScoresImporter
 from pcapi.connectors.big_query.importer.base import DeltaAction
 from pcapi.connectors.big_query.queries.artist import ArtistProductLinkModel
+from pcapi.connectors.big_query.queries.artist import ArtistScoresModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistAliasModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistModel
 from pcapi.connectors.big_query.queries.artist import DeltaArtistProductLinkModel
@@ -387,3 +390,49 @@ class UpdateArtistFromDeltaTest:
             == "Rick Astley est un chanteur britannique né le 6 février 1966 à Newton-le-Willows..."
         )
         assert artist_to_update.mediation_uuid == mediation_uuid
+
+
+class UpdateArtistScoresTest:
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistScoresQuery.execute")
+    def test_run_scores_update_updates_existing_and_ignores_missing(self, mock_query, caplog):
+        artist = ArtistFactory(app_search_score=0.0, pro_search_score=0.0)
+        fake_bq_data = [
+            ArtistScoresModel(id=artist.id, app_search_score=8.5, pro_search_score=9.0),
+            ArtistScoresModel(id="unknown-id-123", app_search_score=50.0, pro_search_score=50.0),
+        ]
+        mock_query.return_value = fake_bq_data
+
+        with caplog.at_level(logging.INFO):
+            importer = ArtistScoresImporter()
+            importer.run_scores_update(batch_size=1)
+
+        assert artist.app_search_score == 8.5
+        assert artist.pro_search_score == 9.0
+        assert db.session.query(Artist).count() == 1
+        assert "Skipping scores update for missing artist" in caplog.text
+        assert "Finished artist scores update" in caplog.text
+
+    @patch("pcapi.connectors.big_query.queries.artist.ArtistScoresQuery.execute")
+    def test_batch_transaction_failure_triggers_individual_retry_success(self, mock_bq_execute, caplog):
+        artist_1 = ArtistFactory(app_search_score=0.0, pro_search_score=0.0)
+        artist_2 = ArtistFactory(app_search_score=0.0, pro_search_score=0.0)
+        bq_item1 = ArtistScoresModel(id=artist_1.id, app_search_score=10.0, pro_search_score=5.0)
+        bq_item2 = ArtistScoresModel(id=artist_2.id, app_search_score=9.87, pro_search_score=8.0)
+        mock_bq_execute.return_value = iter([bq_item1, bq_item2])
+
+        with patch("pcapi.models.db.session.commit") as mock_commit:
+            mock_commit.side_effect = [
+                sa_exc.SQLAlchemyError("Simulated Batch Commit Failure"),
+                None,
+                None,
+            ]
+            importer = ArtistScoresImporter()
+            importer.run_scores_update(batch_size=2)
+
+            assert mock_commit.call_count == 3
+            assert "Batch update failed" in caplog.text
+            assert "Retrying one by one" in caplog.text
+            assert artist_1.app_search_score == 10.0
+            assert artist_1.pro_search_score == 5.0
+            assert artist_2.app_search_score == 9.87
+            assert artist_2.pro_search_score == 8.0
