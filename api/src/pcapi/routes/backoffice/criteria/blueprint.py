@@ -181,7 +181,7 @@ def get_update_tag_form(tag_id: int) -> utils.BackofficeResponse:
         start_date=tag.startDateTime.date() if tag.startDateTime else None,
         end_date=tag.endDateTime.date() if tag.endDateTime else None,
     )
-    form.categories.choices = [(cat.id, cat.label or cat.name) for cat in get_tags_categories()]
+    form.categories.choices = [(cat.id, cat.label) for cat in get_tags_categories()]
     form.categories.data = [cat.id for cat in tag.categories]
     if tag.highlightId:
         tag_highlight = (

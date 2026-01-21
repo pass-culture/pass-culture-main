@@ -492,7 +492,7 @@ def _get_offer_ids_query(form: forms.GetOfferAdvancedSearchForm) -> sa_orm.Query
 
 def _get_offers_by_ids(
     offer_ids: list[int] | sa_orm.Query, *, sort: str | None = None, order: str | None = None
-) -> list[offers_models.Offer]:
+) -> list[sa.engine.Row]:
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         # Those columns are not shown to fraud pro users
         booked_quantity_subquery: sa.sql.selectable.ScalarSelect | sa.sql.elements.Null = sa.null()

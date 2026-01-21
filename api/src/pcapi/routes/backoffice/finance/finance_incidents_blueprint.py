@@ -319,11 +319,11 @@ def get_incident_overpayment(finance_incident_id: int) -> utils.BackofficeRespon
             )
         else:
             assert isinstance(booking, educational_models.CollectiveBooking)  # helps mypy
-            offer = booking.collectiveStock.collectiveOffer
+            collective_offer = booking.collectiveStock.collectiveOffer
             connect_as[booking.id] = get_connect_as(
                 object_type="collective_offer",
-                object_id=offer.id,
-                pc_pro_path=urls.build_pc_pro_offer_path(offer),
+                object_id=collective_offer.id,
+                pc_pro_path=urls.build_pc_pro_offer_path(collective_offer),
             )
 
     bookings_total_amount = sum(booking.total_amount for booking in bookings if booking)  # helps mypy
@@ -361,11 +361,11 @@ def get_commercial_gesture(finance_incident_id: int) -> utils.BackofficeResponse
             )
         else:
             assert isinstance(booking, educational_models.CollectiveBooking)  # helps mypy
-            offer = booking.collectiveStock.collectiveOffer
-            connect_as[offer.id] = get_connect_as(
+            collective_offer = booking.collectiveStock.collectiveOffer
+            connect_as[collective_offer.id] = get_connect_as(
                 object_type="collective_offer",
-                object_id=offer.id,
-                pc_pro_path=urls.build_pc_pro_offer_path(offer),
+                object_id=collective_offer.id,
+                pc_pro_path=urls.build_pc_pro_offer_path(collective_offer),
             )
 
     bookings_total_amount = sum(booking.total_amount for booking in bookings if booking)  # helps mypy

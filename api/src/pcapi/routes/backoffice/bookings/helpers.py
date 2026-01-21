@@ -8,7 +8,6 @@ import sqlalchemy.orm as sa_orm
 from flask_login import current_user
 
 from pcapi.core.bookings import models as bookings_models
-from pcapi.core.categories import subcategories
 from pcapi.core.educational import models as educational_models
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails.transactional.pro.fraudulent_booking_suspicion import send_fraudulent_booking_suspicion_email
@@ -26,22 +25,21 @@ from pcapi.utils import string as string_utils
 logger = logging.getLogger(__name__)
 
 
-def get_bookings(
+def get_filtered_booking_query(
     *,
     base_query: sa_orm.Query,
     form: BaseBookingListForm,
     stock_class: type[educational_models.CollectiveStock | offers_models.Stock],
     booking_class: type[educational_models.CollectiveBooking | bookings_models.Booking],
-    offer_class: type[educational_models.CollectiveOffer | offers_models.Offer],
     search_by_email: bool = False,
     id_filters: typing.Iterable[sa_orm.InstrumentedAttribute] = (),
     name_filters: typing.Iterable[sa_orm.InstrumentedAttribute] = (),
     or_filters: list | None = None,
-) -> list[bookings_models.Booking] | list[educational_models.CollectiveBooking]:
+) -> sa_orm.Query:
     start_column = (
-        stock_class.startDatetime
+        educational_models.CollectiveStock.startDatetime
         if stock_class is educational_models.CollectiveStock
-        else stock_class.beginningDatetime
+        else offers_models.Stock.beginningDatetime
     )
 
     if or_filters is None:
@@ -69,22 +67,6 @@ def get_bookings(
 
     if form.venue.data:
         base_query = base_query.filter(booking_class.venueId.in_(form.venue.data))
-
-    if getattr(offer_class, "subcategoryId", None) and hasattr(form, "category") and form.category.data:
-        base_query = base_query.filter(
-            offer_class.subcategoryId.in_(
-                subcategory.id
-                for subcategory in subcategories.ALL_SUBCATEGORIES
-                if subcategory.category.id in form.category.data
-            )
-        )
-    elif hasattr(offer_class, "formats") and hasattr(form, "formats") and form.formats.data:
-        base_query = base_query.filter(
-            offer_class.formats.overlap(sa.dialects.postgresql.array((fmt for fmt in form.formats.data)))
-        )
-
-    if getattr(offer_class, "institution", None) and hasattr(form, "institution") and form.institution.data:
-        base_query = base_query.filter(booking_class.educationalInstitutionId.in_(form.institution.data))
 
     if form.status.data:
         if booking_class is bookings_models.Booking:
@@ -124,8 +106,11 @@ def get_bookings(
         )
         base_query = base_query.filter(finance_models.Cashflow.batchId.in_(form.cashflow_batches.data))
 
-    if hasattr(form, "cancellation_reason") and form.cancellation_reason.data:
-        base_query = base_query.filter(booking_class.cancellationReason.in_(form.cancellation_reason.data))
+    if form.has_incident.data and len(form.has_incident.data) == 1:
+        if form.has_incident.data[0] == "true":
+            base_query = base_query.filter(booking_class.validated_incident_id != None)
+        else:
+            base_query = base_query.filter(booking_class.validated_incident_id == None)
 
     if form.q.data:
         search_query = form.q.data
@@ -150,7 +135,7 @@ def get_bookings(
     else:
         query = base_query
 
-    return query.limit(form.limit.data + 1).all()
+    return query.limit(form.limit.data + 1)
 
 
 def tag_bookings_as_fraudulent(bookings_ids: list[int], send_emails: bool) -> None:
