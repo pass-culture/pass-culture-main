@@ -174,9 +174,4 @@ runs:
         sync_timeout: 900
         retry_limit: 1
 
-    - name: "Play post-migrations"
-      uses: pass-culture/common-workflows/actions/pcapi-migration@pcapi-migration/v0.2.4
-      with:
-        environment: ${{ inputs.environment }}
-        app_version: ${{ inputs.app_version }}
-        migration_type: post
+    # post-deploy migrations are run separately, to prevent blocking the frontend deployment and have inconsistent versions
