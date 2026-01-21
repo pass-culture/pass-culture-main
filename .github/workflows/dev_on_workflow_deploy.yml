@@ -43,6 +43,10 @@ on:
         type: boolean
         required: false
         default: false
+      prune_k8s_resources:
+        type: boolean
+        required: false
+        default: false
       location:
         type: string
         required: false
@@ -113,6 +117,7 @@ jobs:
           workflow_project_id: ${{ inputs.workflow_project_id }}
           app_cluster_name: ${{ inputs.app_cluster_name }}
           app_project_id: ${{ inputs.app_project_id }}
+          prune_k8s_resources: ${{ inputs.prune_k8s_resources }}
 
   deploy-api-doc-on-firebase:
     name: "Deploy api doc on firebase"

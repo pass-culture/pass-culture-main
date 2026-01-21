@@ -42,6 +42,9 @@ inputs:
   app_cluster_name:
     description: "Name of the cluster that hosts the application"
     required: true
+  prune_k8s_resources:
+    description: "Prune k8s resources during deployment"
+    required: false
 runs:
   using: composite
   steps:
@@ -96,7 +99,8 @@ runs:
         argo submit --from wftmpl/${{ inputs.argo_template }} \
           --log --wait \
           -p environment=${{ inputs.environment }} \
-          -p pcapi_version=${{ inputs.app_version }}
+          -p pcapi_version=${{ inputs.app_version }} \
+          -p prune_k8s_resources=${{ inputs.prune_k8s_resources || 'false' }}
     # End Trigger WF #
     # Trigger post-migrations #
     - name: Authenticate to GKE cluster

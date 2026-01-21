@@ -163,6 +163,7 @@ jobs:
       apply_algolia_config: true
       deploy_api: true
       deploy_pro: true
+      prune_k8s_resources: true
     secrets:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
