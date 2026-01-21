@@ -17,87 +17,23 @@ from pcapi.core.categories.genres import show
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.offers import models as offers_models
 from pcapi.core.providers import constants
-from pcapi.core.providers.constants import TITELIVE_MUSIC_TYPES
 from pcapi.models import offer_mixin
 from pcapi.routes import serialization
 from pcapi.routes.public.documentation_constants import descriptions
 from pcapi.routes.public.documentation_constants.fields import fields
 from pcapi.routes.public.individual_offers.v1.base_serialization import IndexPaginationQueryParams
-from pcapi.routes.public.serialization.utils import StrEnum
+from pcapi.routes.public.individual_offers.v1.serializers.constants import ALLOWED_PRODUCT_SUBCATEGORIES
+from pcapi.routes.public.individual_offers.v1.serializers.constants import DeprecatedMusicTypeEnum
+from pcapi.routes.public.individual_offers.v1.serializers.constants import ShowTypeEnum
+from pcapi.routes.public.individual_offers.v1.serializers.constants import ThingCategoryEnum
+from pcapi.routes.public.individual_offers.v1.serializers.constants import TiteliveEventMusicTypeEnum
+from pcapi.routes.public.individual_offers.v1.serializers.constants import TiteliveMusicTypeEnum
 from pcapi.routes.serialization import BaseModel
 from pcapi.serialization import utils as serialization_utils
 
 
 logger = logging.getLogger(__name__)
 
-
-ALLOWED_PRODUCT_SUBCATEGORIES = [
-    subcategories.ABO_BIBLIOTHEQUE,
-    subcategories.ABO_CONCERT,
-    subcategories.ABO_LIVRE_NUMERIQUE,
-    subcategories.ABO_MEDIATHEQUE,
-    subcategories.ABO_PLATEFORME_MUSIQUE,
-    subcategories.ABO_PLATEFORME_VIDEO,
-    subcategories.ABO_PRATIQUE_ART,
-    subcategories.ABO_PRESSE_EN_LIGNE,
-    subcategories.ABO_SPECTACLE,
-    subcategories.ACHAT_INSTRUMENT,
-    subcategories.APP_CULTURELLE,
-    subcategories.AUTRE_SUPPORT_NUMERIQUE,
-    subcategories.CAPTATION_MUSIQUE,
-    subcategories.CARTE_JEUNES,
-    subcategories.CARTE_MUSEE,
-    subcategories.LIVRE_AUDIO_PHYSIQUE,
-    subcategories.LIVRE_NUMERIQUE,
-    subcategories.LOCATION_INSTRUMENT,
-    subcategories.PARTITION,
-    subcategories.PLATEFORME_PRATIQUE_ARTISTIQUE,
-    subcategories.PODCAST,
-    subcategories.PRATIQUE_ART_VENTE_DISTANCE,
-    subcategories.SPECTACLE_ENREGISTRE,
-    subcategories.SUPPORT_PHYSIQUE_FILM,
-    subcategories.TELECHARGEMENT_LIVRE_AUDIO,
-    subcategories.TELECHARGEMENT_MUSIQUE,
-    subcategories.VISITE_VIRTUELLE,
-    subcategories.VOD,
-]
-
-
-# The following enum seems to be unused in the codebase.
-# However, it is still needed to read some data from historical offers in the database.
-# It should be removed **if and when** we will have migrated all offers to Titelive music types.
-MusicTypeEnum = StrEnum(  # type: ignore[call-overload]
-    "MusicTypeEnum (deprecated)",
-    {music_sub_type_slug: music_sub_type_slug for music_sub_type_slug in music.MUSIC_SUB_TYPES_BY_SLUG},
-)
-
-TiteliveMusicTypeEnum = StrEnum(  # type: ignore[call-overload]
-    "TiteliveMusicTypeEnum", {music_type: music_type for music_type in constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE}
-)
-
-TiteliveEventMusicTypeEnum = StrEnum(  # type: ignore[call-overload]
-    "TiteliveEventMusicTypeEnum",
-    {
-        constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[music_type.gtl_id]: constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[
-            music_type.gtl_id
-        ]
-        for music_type in TITELIVE_MUSIC_TYPES
-        if music_type.can_be_event
-    },
-)
-
-ShowTypeEnum = StrEnum(  # type: ignore[call-overload]
-    "ShowTypeEnum",
-    {show_sub_type_slug: show_sub_type_slug for show_sub_type_slug in show.SHOW_SUB_TYPES_BY_SLUG},
-)
-
-EventCategoryEnum = StrEnum(  # type: ignore[call-overload]
-    "EventCategoryEnum", {subcategory_id: subcategory_id for subcategory_id in subcategories.EVENT_SUBCATEGORIES}
-)
-
-ProductCategoryEnum = StrEnum(  # type: ignore[call-overload]
-    "ProductCategoryEnum", {subcategory.id: subcategory.id for subcategory in ALLOWED_PRODUCT_SUBCATEGORIES}
-)
 
 if typing.TYPE_CHECKING:
     offer_price_model = pydantic_v1.StrictInt
@@ -180,10 +116,10 @@ class DigitalLocation(serialization.ConfiguredBaseModel):
 class ExtraDataModel(serialization.ConfiguredBaseModel):
     author: str | None = pydantic_v1.Field(example="Jane Doe")
     ean: str | None = fields.EAN
-    musicType: TiteliveMusicTypeEnum | MusicTypeEnum | None  # type: ignore[valid-type]
+    musicType: TiteliveMusicTypeEnum | DeprecatedMusicTypeEnum | None
     performer: str | None = pydantic_v1.Field(example="Jane Doe")
     stageDirector: str | None = pydantic_v1.Field(example="Jane Doe")
-    showType: ShowTypeEnum | None  # type: ignore[valid-type]
+    showType: ShowTypeEnum | None
     speaker: str | None = pydantic_v1.Field(example="Jane Doe")
     visa: str | None = pydantic_v1.Field(example="140843")
 
@@ -310,7 +246,7 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
             constants.TITELIVE_MUSIC_GENRES_BY_GTL_ID[gtl_id[:2] + "0" * 6]
         )
     elif music_sub_type:
-        serialized_data["musicType"] = MusicTypeEnum(music.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
+        serialized_data["musicType"] = DeprecatedMusicTypeEnum(music.MUSIC_SUB_TYPES_BY_CODE[int(music_sub_type)].slug)
 
     # FIXME (mageoffray, 2023-12-14): some historical offers have no showSubType and only showType.
     show_sub_type = serialized_data.pop(subcategories.ExtraDataFieldEnum.SHOW_SUB_TYPE.value, None)
@@ -320,7 +256,7 @@ def serialize_extra_data(offer: offers_models.Offer) -> CategoryRelatedFields:
     if show_sub_type:
         serialized_data["showType"] = ShowTypeEnum(show.SHOW_SUB_TYPES_BY_CODE[int(show_sub_type)].slug)
 
-    return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore[misc, call-arg]
+    return category_fields_model(**serialized_data, subcategory_id=offer.subcategory.id)  # type: ignore[misc, call-arg, arg-type]
 
 
 def deserialize_extra_data(
@@ -336,7 +272,7 @@ def deserialize_extra_data(
             continue
         if field_name == subcategories.ExtraDataFieldEnum.MUSIC_TYPE.value:
             # Convert musicType slug to musicType and musicSubType codes
-            if field_value in TiteliveMusicTypeEnum.__members__:
+            if field_value in TiteliveMusicTypeEnum:
                 extra_data["gtl_id"] = constants.GTL_ID_BY_TITELIVE_MUSIC_GENRE[field_value]
                 music_slug = constants.MUSIC_SLUG_BY_GTL_ID[extra_data["gtl_id"]]
                 extra_data["musicType"] = str(music.MUSIC_TYPES_BY_SLUG[music_slug].code)
@@ -705,7 +641,7 @@ class LocationTypeEnum(str, enum.Enum):
 
 
 class ProductCategoryResponse(serialization.ConfiguredBaseModel):
-    id: ProductCategoryEnum  # type: ignore[valid-type]
+    id: ThingCategoryEnum
     conditional_fields: dict[str, bool] = pydantic_v1.Field(
         description="The keys are fields that should be set in the category_related_fields of a product. The values indicate whether their associated field is mandatory during product creation."
     )
@@ -725,7 +661,7 @@ class ProductCategoryResponse(serialization.ConfiguredBaseModel):
             locationType = LocationTypeEnum.PHYSICAL
 
         return cls(
-            id=subcategory.id,
+            id=ThingCategoryEnum[subcategory.id],
             conditional_fields=conditional_fields,
             locationType=locationType,
         )
@@ -736,7 +672,7 @@ class GetProductCategoriesResponse(serialization.ConfiguredBaseModel):
 
 
 class ShowTypeResponse(serialization.ConfiguredBaseModel):
-    id: ShowTypeEnum  # type: ignore[valid-type]
+    id: ShowTypeEnum
     label: str
 
 
@@ -745,12 +681,12 @@ class GetShowTypesResponse(serialization.ConfiguredBaseModel):
 
 
 class TiteliveMusicTypeResponse(serialization.ConfiguredBaseModel):
-    id: TiteliveMusicTypeEnum  # type: ignore[valid-type]
+    id: TiteliveMusicTypeEnum
     label: str
 
 
 class TiteliveEventMusicTypeResponse(serialization.ConfiguredBaseModel):
-    id: TiteliveEventMusicTypeEnum  # type: ignore[valid-type]
+    id: TiteliveEventMusicTypeEnum
     label: str
 
 

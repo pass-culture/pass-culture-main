@@ -103,7 +103,7 @@ class _FIELDS_V2:
     )
 
     # Image Fields
-    IMAGE_CREDIT = Field(description="Image owner or author", example="Jane Doe")
+    IMAGE_CREDIT_NOT_REQUIRED = Field(description="Image owner or author", example="Jane Doe", default=None)
     IMAGE_FILE = Field(
         description="Image file encoded in base64 string. Image format must be PNG or JPEG. Size must be between 400x600 and 800x1200 pixels. Aspect ratio must be 2:3 (portrait format).",
     )
@@ -147,7 +147,15 @@ class _FIELDS_V2:
     POSTAL_CODE = Field(description="Postal Code", example="75001")
     STREET = Field(description="Street name and number", example="182 Rue Saint-Honoré")
     ADDRESS_ID = Field(description="Address id in the pass Culture DB", example=1)
-    ADDRESS_LABEL = Field(description="Address label", example="Zénith Paris")
+    ADDRESS_LABEL_NOT_REQUIRED = Field(
+        description="Address label",
+        example="Zénith Paris",
+        default=None,
+    )
+    DIGITAL_LOCATION_URL = Field(
+        description="Link users will be redirected to after booking this offer. You may include '{token}', '{email}' and/or '{offerId}' in the URL, which will be replaced respectively by the booking token (use this token to confirm the offer - see API Contremarque), the email of the user who booked the offer and the created offer id",
+        example="https://example.com?token={token}&email={email}&offerId={offerId}",
+    )
 
     # Booking fields
     BOOKING_ID = Field(description="Booking id", example=12346)
@@ -192,6 +200,7 @@ class _FIELDS_V2:
         description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
         example=_example_datetime_with_tz,
         default="now",
+        validate_default=True,
     )
     OFFER_PUBLICATION_DATETIME = Field(
         description=descriptions.PUBLICATION_DATETIME_FIELD_DESCRIPTION,
@@ -219,6 +228,20 @@ class _FIELDS_V2:
     OFFER_LOCATION = Field(discriminator="type", description=descriptions.OFFER_LOCATION_DESCRIPTION)
     OFFER_ADDRESS_NOT_REQUIRED = Field(description="Offer address", example="4 rue des dames", default=None)
     OFFER_DEPARTEMENT_CODE_NOT_REQUIRED = Field(description="Offer departement code", example="63", default=None)
+    CATEGORY_RELATED_FIELD = Field(
+        description="Cultural category the offer belongs to. According to the category, some fields may or must be specified."
+    )
+    OFFER_EXTERNAL_TICKET_OFFICE_URL_NOT_REQUIRED = Field(
+        description="Link displayed to users wishing to book the offer but who do not have credit.",
+        example="https://example.com",
+        default=None,
+    )
+    OFFER_WITHDRAWAL_DETAILS_FIELD_REQUIRED = Field(
+        description="Further information that will be provided to attendees to ease the offer collection.",
+        example="Opening hours, specific office, collection period, access code, email announcement...",
+        alias="itemCollectionDetails",
+        default=None,
+    )
 
     # Products fields
     EANS_FILTER = Field(description="EANs list (max 100)", example="3700551782888,9782895761792")
@@ -274,6 +297,11 @@ class _FIELDS_V2:
         description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
         example=_example_datetime_with_tz,
     )
+    BOOKING_LIMIT_DATETIME_NOT_REQUIRED = Field(
+        description=descriptions.BOOKING_LIMIT_DATETIME_FIELD_DESCRIPTION,
+        example=_example_datetime_with_tz,
+        default=None,
+    )
     EVENT_HAS_TICKET = Field(
         description="Indicated whether a ticket is mandatory to access to the event. True if it is the case, False otherwise. The ticket will be sent by you, the provider and you must have developed the pass Culture ticketing interface to do so.",
         example=False,
@@ -311,7 +339,13 @@ class _FIELDS_V2:
         description="Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
         example=10,
     )
+    QUANTITY_NOT_REQUIRED = Field(
+        description="Quantity of items currently available to pass Culture. Value `'unlimited'` is used for infinite quantity of items.",
+        example=10,
+        default=None,
+    )
     PRICE = Field(description="Offer price in euro cents", example=1000)
+    PRICE_NOT_REQUIRED = Field(description="Offer price in euro cents", example=1000, default=None)
 
     # Collective offer fields
     COLLECTIVE_OFFER_ID = Field(description="Collective offer id", example=12345)

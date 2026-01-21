@@ -1,12 +1,20 @@
 import datetime
 import typing
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
+from typing_extensions import Annotated
 
+from pcapi.core.offers import models as offers_models
 from pcapi.routes import serialization as routes_serialization
 from pcapi.routes.public.documentation_constants.fields import fields
+from pcapi.routes.public.documentation_constants.fields_v2 import fields_v2
 from pcapi.routes.public.individual_offers.v1 import serialization as v1_serialization
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization import utils as serialization_utils
+
+
+UNLIMITED_LITERAL = typing.Literal["unlimited"]
 
 
 def _validate_stock_booking_limit_datetime_is_coherent_with_offer_dates(cls: typing.Any, values: dict) -> dict:
@@ -24,6 +32,69 @@ def _validate_stock_booking_limit_datetime_is_coherent_with_offer_dates(cls: typ
         raise ValueError("`stock.bookingLimitDatetime` must be after `bookingAllowedDatetime`")
 
     return values
+
+
+OfferPrice = Annotated[int, pydantic_v2.Field(ge=0, le=30000)]  # 300€ in cents
+OfferQuantity = Annotated[int, pydantic_v2.Field(ge=0, le=offers_models.Stock.MAX_STOCK_QUANTITY)]
+
+
+class ThingStockEdition(HttpBodyModel):
+    booking_limit_datetime: datetime.datetime | None = fields_v2.BOOKING_LIMIT_DATETIME_NOT_REQUIRED
+    quantity: OfferQuantity | UNLIMITED_LITERAL | None = fields_v2.QUANTITY_NOT_REQUIRED
+    price: OfferPrice | None = fields_v2.PRICE_NOT_REQUIRED
+
+    @pydantic_v2.field_validator("booking_limit_datetime")
+    @classmethod
+    def validate_booking_limit_datetime(cls, value: datetime.datetime | None) -> datetime.datetime | None:
+        return serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
+
+
+class ThingStockCreation(HttpBodyModel):
+    price: OfferPrice = fields_v2.PRICE
+    quantity: OfferQuantity | UNLIMITED_LITERAL | None = fields_v2.QUANTITY_NOT_REQUIRED
+    booking_limit_datetime: datetime.datetime | None = fields_v2.BOOKING_LIMIT_DATETIME_NOT_REQUIRED
+
+    @pydantic_v2.field_validator("booking_limit_datetime")
+    @classmethod
+    def validate_booking_limit_datetime(cls, value: datetime.datetime | None) -> datetime.datetime | None:
+        return serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
+
+
+class Accessibility(HttpBodyModel):
+    audio_disability_compliant: bool
+    mental_disability_compliant: bool
+    motor_disability_compliant: bool
+    visual_disability_compliant: bool
+
+
+class ImageBody(HttpBodyModel):
+    credit: str | None = fields_v2.IMAGE_CREDIT_NOT_REQUIRED
+    file: str = fields_v2.IMAGE_FILE
+
+
+class OfferCreationBase(HttpBodyModel):
+    accessibility: Accessibility
+    booking_contact: pydantic_v2.EmailStr | None = fields_v2.OFFER_BOOKING_CONTACT
+    booking_email: pydantic_v2.EmailStr | None = fields_v2.OFFER_BOOKING_EMAIL
+    # category_related_fields: CategoryRelatedFields = fields_v2.CATEGORY_RELATED_FIELD
+    description: str | None = fields_v2.OFFER_DESCRIPTION_WITH_MAX_LENGTH
+    external_ticket_office_url: pydantic_v2.HttpUrl | None = fields_v2.OFFER_EXTERNAL_TICKET_OFFICE_URL_NOT_REQUIRED
+    image: ImageBody | None = None
+    enable_double_bookings: bool | None = fields_v2.OFFER_ENABLE_DOUBLE_BOOKINGS_WITH_DEFAULT
+    name: str = fields_v2.OFFER_NAME_WITH_MAX_LENGTH
+    withdrawal_details: str | None = fields_v2.OFFER_WITHDRAWAL_DETAILS_FIELD_REQUIRED
+    id_at_provider: str | None = fields_v2.ID_AT_PROVIDER_WITH_MAX_LENGTH
+    publication_datetime: datetime.datetime | serialization_utils.NOW_LITERAL | None = (
+        fields_v2.OFFER_PUBLICATION_DATETIME_WITH_DEFAULT
+    )
+    booking_allowed_datetime: datetime.datetime | None = fields_v2.OFFER_BOOKING_ALLOWED_DATETIME
+
+    @pydantic_v2.field_validator("booking_allowed_datetime", "publication_datetime")
+    @classmethod
+    def validate_booking_limit_datetime(
+        cls, value: datetime.datetime | serialization_utils.NOW_LITERAL | None
+    ) -> datetime.datetime | None:
+        return serialization_utils.check_date_in_future_and_remove_timezone(value, pydantic_version="v2")
 
 
 class StockEdition(v1_serialization.BaseStockEdition):
