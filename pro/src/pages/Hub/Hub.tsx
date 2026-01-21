@@ -80,6 +80,7 @@ export const Hub = () => {
 
   return (
     <FunnelLayout
+      isHubPage
       mainHeading="À quelle structure souhaitez-vous accéder ?"
       withFlexContent
       tabIndex={-1}

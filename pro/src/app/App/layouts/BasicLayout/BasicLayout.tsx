@@ -46,7 +46,7 @@ export const BasicLayout = ({
   isAdminArea = false,
 }: BasicLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
-  const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
+  const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
 
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
@@ -68,8 +68,8 @@ export const BasicLayout = ({
         <ConnectedAsAside currentUser={currentUser} />
       )}
       <Header
-        lateralPanelOpen={lateralPanelOpen}
-        setLateralPanelOpen={setLateralPanelOpen}
+        isLateralPanelOpen={isLateralPanelOpen}
+        onToggleLateralPanel={setIsLateralPanelOpen}
         focusCloseButton={() => {
           setTimeout(() => {
             closeButtonRef.current?.focus()
@@ -84,8 +84,8 @@ export const BasicLayout = ({
         })}
       >
         <LateralPanel
-          lateralPanelOpen={lateralPanelOpen}
-          setLateralPanelOpen={setLateralPanelOpen}
+          isOpen={isLateralPanelOpen}
+          onToggle={setIsLateralPanelOpen}
           openButtonRef={openButtonRef}
           closeButtonRef={closeButtonRef}
           navPanel={navPanel}

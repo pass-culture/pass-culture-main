@@ -21,8 +21,8 @@ import { UserReviewDialog } from './components/UserReviewDialog/UserReviewDialog
 import styles from './Header.module.scss'
 
 type HeaderProps = {
-  lateralPanelOpen?: boolean
-  setLateralPanelOpen?: (state: boolean) => void
+  isLateralPanelOpen?: boolean
+  onToggleLateralPanel?: (state: boolean) => void
   focusCloseButton?: () => void
   disableHomeLink?: boolean
   isAdminArea?: boolean
@@ -31,9 +31,9 @@ type HeaderProps = {
 export const Header = forwardRef(
   (
     {
-      lateralPanelOpen = false,
-      setLateralPanelOpen = () => undefined,
-      focusCloseButton = () => undefined,
+      isLateralPanelOpen = false,
+      onToggleLateralPanel,
+      focusCloseButton,
       disableHomeLink = false,
       isAdminArea = false,
     }: HeaderProps,
@@ -52,12 +52,12 @@ export const Header = forwardRef(
             <Button
               id="header-nav-toggle"
               ref={openButtonRef}
-              aria-expanded={lateralPanelOpen}
+              aria-expanded={isLateralPanelOpen}
               className={styles['burger-icon']}
               variant={ButtonVariant.TERNARY}
               onClick={() => {
-                setLateralPanelOpen(!lateralPanelOpen)
-                focusCloseButton()
+                onToggleLateralPanel?.(!isLateralPanelOpen)
+                focusCloseButton?.()
               }}
               aria-controls="lateral-panel"
             >

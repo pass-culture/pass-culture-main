@@ -385,8 +385,12 @@ describe('SideNavLinks', () => {
       screen.getByRole('button', { name: 'Créer une offre' })
     )
 
-    expect(screen.getByRole('menuitem', { name: 'Pour le grand public' }))
-    expect(screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' }))
+    expect(
+      screen.getByRole('menuitem', { name: 'Pour le grand public' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('menuitem', { name: 'Pour les groupes scolaires' })
+    ).toBeInTheDocument()
   })
 
   describe('with WIP_SWITCH_VENUE feature flag', () => {

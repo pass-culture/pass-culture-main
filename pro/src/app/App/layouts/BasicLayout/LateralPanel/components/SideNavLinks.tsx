@@ -24,6 +24,7 @@ import {
   selectSelectedPartnerPageId,
 } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
+import { EllipsissedText } from '@/components/EllipsissedText/EllipsissedText'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
@@ -39,7 +40,6 @@ import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 
-import { EllipsissedText } from '../EllipsissedText/EllipsissedText'
 import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import { SideNavLink } from './SideNavLink'
 import styles from './SideNavLinks.module.scss'
@@ -108,13 +108,13 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       dispatch(
         setOpenSection({
           individual:
-            openIndividual !== navOpenSection.individual
-              ? openIndividual
-              : navOpenSection.individual,
+            openIndividual === navOpenSection.individual
+              ? navOpenSection.individual
+              : openIndividual,
           collective:
-            openCollective !== navOpenSection.collective
-              ? openCollective
-              : navOpenSection.collective,
+            openCollective === navOpenSection.collective
+              ? navOpenSection.collective
+              : openCollective,
         })
       )
     }
