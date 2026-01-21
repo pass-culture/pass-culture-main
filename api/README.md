@@ -61,7 +61,7 @@ La génération de PDF via `weasyprint` nécessite également de suivre ces [ét
 
 ### 2. Lancement de l'api
 
-Une fois installé les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`)
+Une fois installées les dépendances, on peut utiliser les commandes suivantes (qui utilisent `docker compose`)
 
 ```shell
 # Start api and backoffice
@@ -69,6 +69,19 @@ pc start-backend
 # Restart after cleaning databases; it will also remove data from your sandbox
 pc restart-backend
 ```
+
+---
+
+Troubleshooting:
+
+Si la commande start-backend renvoie une erreur de type
+
+```
+PermissionError: [Errno 13] Permission denied: '/usr/src/app/src/pcapi/connectors/beneficiaries/educonnect/files/public.cert'
+```
+
+cela peut venir du mode rootless de Docker.
+Essayer de [désinstaller le rootless](https://docs.docker.com/engine/security/rootless/troubleshoot/#uninstall) et de faire tourner docker en mode `Defaut`.
 
 ## Database de jeu
 
