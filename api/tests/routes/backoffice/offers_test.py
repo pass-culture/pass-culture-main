@@ -2358,14 +2358,14 @@ class BatchOfferValidateTest(PostEndpointHelper):
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
     @pytest.mark.parametrize(
-        "venue_email, pro_email, expected_recipient, additional_query_count",
+        "venue_email, pro_email, expected_recipient, additional_queries",
         [
-            ("venue@example.com", "pro.user@example.com", "venue@example.com", 0),
-            (None, "pro.user@example.com", "pro.user@example.com", 3),
+            ("venue@example.com", "pro.user@example.com", "venue@example.com", False),
+            (None, "pro.user@example.com", "pro.user@example.com", True),
         ],
     )
     def test_batch_validate_offers(
-        self, legit_user, authenticated_client, venue_email, pro_email, expected_recipient, additional_query_count
+        self, legit_user, authenticated_client, venue_email, pro_email, expected_recipient, additional_queries
     ):
         user_offerer = offerers_factories.UserOffererFactory(user__email=pro_email)
         offerers_factories.NewUserOffererFactory(offerer=user_offerer.offerer)  # not attached
@@ -2373,27 +2373,40 @@ class BatchOfferValidateTest(PostEndpointHelper):
         offers = offers_factories.OfferFactory.create_batch(
             3, validation=offers_models.OfferValidationStatus.DRAFT, venue=venue
         )
+
+        yesterday = datetime.datetime.now(datetime.UTC) - datetime.timedelta(hours=24)
+        offers.append(
+            offers_factories.OfferFactory(
+                validation=offers_models.OfferValidationStatus.REJECTED, venue=venue, publicationDatetime=yesterday
+            )
+        )
+
         for offer in offers:
             offers_factories.StockFactory(offer=offer, price=10.1)
         parameter_ids = ",".join(str(offer.id) for offer in offers)
 
-        # user_session
-        # user
-        # select offer (3 in 1 query)
-        # update offer (3 in 1 query)
-        # fetch the venues for AO label if needed (3 in 1 query)
-        # re-fetch updated offers to render updated rows (2 queries - offererAddress joined)
+        expected_queries = 1  # user session
+        expected_queries += 1  # user
+        expected_queries += 1  # select offers
+        expected_queries += 1  # update offers
+        expected_queries += 1  # select offerer
+        expected_queries += 1  # select offerer_address
+        expected_queries += 1  # select venue
+
+        if additional_queries:
+            expected_queries += len(offers)  # for each offer, fetch its recipients
         response = self.post_to_endpoint(
-            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=7 + additional_query_count
+            authenticated_client, form={"object_ids": parameter_ids}, expected_num_queries=expected_queries
         )
 
         assert response.status_code == 200
-        # ensure rows are rendered
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[0].id}")
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[1].id}")
-        html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offers[2].id}")
+
         for offer in offers:
             db.session.refresh(offer)
+
+            # ensure rows are rendered
+            html_parser.get_tag(response.data, tag="tr", id=f"offer-row-{offer.id}")
+
             assert offer.lastValidationDate.strftime("%d/%m/%Y") == datetime.date.today().strftime("%d/%m/%Y")
             assert offer.isActive is True
             assert offer.lastValidationType is OfferValidationType.MANUAL
@@ -2401,7 +2414,7 @@ class BatchOfferValidateTest(PostEndpointHelper):
             assert offer.lastValidationAuthor == legit_user
             assert offer.lastValidationPrice == decimal.Decimal("10.1")
 
-        assert len(mails_testing.outbox) == 3
+        assert len(mails_testing.outbox) == len(offers)
         for email_data in mails_testing.outbox:
             assert email_data["To"] == expected_recipient
             assert email_data["template"] == dataclasses.asdict(TransactionalEmail.OFFER_APPROVAL_TO_PRO.value)
