@@ -12,7 +12,6 @@ import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
-import styles from '@/components/OffersTableSearch/OffersTableSearch.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
@@ -102,9 +101,8 @@ export const IndividualOffersSearchFilters = ({
       onResetFilters={resetFilters}
       searchButtonRef={searchButtonRef}
     >
-      <FormLayout.Row inline>
+      <FormLayout.Row inline mdSpaceAfter>
         <Select
-          data-testid="wrapper-status"
           label="Statut"
           value={selectedFilters.status as OfferStatus}
           name="status"
@@ -120,7 +118,6 @@ export const IndividualOffersSearchFilters = ({
           disabled={offererAddresses.length === 0 || disableAllFilters}
           name="offererAddressId"
           options={offererAddresses}
-          data-testid="address-select"
           value={selectedFilters.offererAddressId}
         />
 
@@ -144,22 +141,21 @@ export const IndividualOffersSearchFilters = ({
           options={CREATION_MODES_OPTIONS}
           value={selectedFilters.creationMode}
         />
-
-        <FieldLayout
-          label="Période de l’évènement"
-          name="period"
-          required={false}
-          className={styles['offers-table-search-filter-full-width']}
-        >
-          <PeriodSelector
-            onBeginningDateChange={handleDateChange('periodBeginningDate')}
-            onEndingDateChange={handleDateChange('periodEndingDate')}
-            isDisabled={disableAllFilters}
-            periodBeginningDate={selectedFilters.periodBeginningDate}
-            periodEndingDate={selectedFilters.periodEndingDate}
-          />
-        </FieldLayout>
       </FormLayout.Row>
+
+      <FieldLayout
+        label="Période de l’évènement"
+        name="period"
+        required={false}
+      >
+        <PeriodSelector
+          onBeginningDateChange={handleDateChange('periodBeginningDate')}
+          onEndingDateChange={handleDateChange('periodEndingDate')}
+          isDisabled={disableAllFilters}
+          periodBeginningDate={selectedFilters.periodBeginningDate}
+          periodEndingDate={selectedFilters.periodEndingDate}
+        />
+      </FieldLayout>
     </OffersTableSearch>
   )
 }

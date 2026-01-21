@@ -203,7 +203,7 @@ export const CollectiveOffersSearchFilters = ({
       onResetFilters={onResetFilters}
       searchButtonRef={searchButtonRef}
     >
-      <FormLayout.Row inline mdSpaceAfter>
+      <FormLayout.Row inline smSpaceAfter>
         <div className={styles['filter-container']}>
           <MultiSelect
             name="status"

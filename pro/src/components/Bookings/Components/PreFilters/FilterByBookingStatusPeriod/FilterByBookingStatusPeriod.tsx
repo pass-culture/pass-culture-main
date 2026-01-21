@@ -1,8 +1,10 @@
+import type { BookingStatusFilter } from '@/apiClient/v1'
+import { BOOKING_STATUS_FILTER_OPTIONS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './FilterByBookingStatusPeriod.module.scss'
-import { FilterByStatus } from './FilterByStatus'
 
 interface FilterByBookingStatusPeriodProps {
   isDisabled: boolean
@@ -28,16 +30,26 @@ export const FilterByBookingStatusPeriod = ({
   }
 
   return (
-    <fieldset className={styles['status-period-filter']}>
+    <fieldset className={styles['period-filter']}>
       <legend className={styles['visually-hidden']}>Période</legend>
-      <FilterByStatus
-        isDisabled={isDisabled}
-        selectedStatusId={selectedBookingFilter}
-        updateFilters={updateFilters}
+
+      <Select
+        className={styles['period-filter-status']}
+        onChange={(event) =>
+          updateFilters({
+            bookingStatusFilter: event.target.value as BookingStatusFilter,
+          })
+        }
+        disabled={isDisabled}
+        name="statusFilter"
+        options={BOOKING_STATUS_FILTER_OPTIONS}
+        value={selectedBookingFilter}
+        ariaLabel={'Type de période'}
+        label=""
       />
 
       <PeriodSelector
-        className={styles['status-period-filter-selector']}
+        className={styles['period-filter-selector']}
         onBeginningDateChange={handleBookingBeginningDateChange}
         onEndingDateChange={handleBookingEndingDateChange}
         isDisabled={isDisabled}

@@ -105,11 +105,10 @@ export const VenueEdition = (): JSX.Element | null => {
             <FormLayout>
               {context !== 'address' && venuesOptions.length > 1 && (
                 <>
-                  <FormLayout.Row>
+                  <FormLayout.Row mdSpaceAfter>
                     <Select
                       label={`Sélectionnez votre page ${context === 'collective' ? 'dans ADAGE' : 'partenaire'}`}
                       name="venues"
-                      className={styles['select-page-partenaire']}
                       options={venuesOptions}
                       value={selectedVenueId?.toString() ?? ''}
                       onChange={(e) => {
