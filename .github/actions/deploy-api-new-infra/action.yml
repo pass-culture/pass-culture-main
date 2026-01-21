@@ -45,6 +45,7 @@ inputs:
   prune_k8s_resources:
     description: "Prune k8s resources during deployment"
     required: false
+    default: "false"
 runs:
   using: composite
   steps:
