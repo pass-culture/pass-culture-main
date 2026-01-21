@@ -1,5 +1,7 @@
 import type { APIRequestContext } from '@playwright/test'
 
+export const BASE_API_URL = 'http://localhost:5001'
+
 const SANDBOX_TIMEOUT = 120000
 
 export async function sandboxCall<T = unknown>(
