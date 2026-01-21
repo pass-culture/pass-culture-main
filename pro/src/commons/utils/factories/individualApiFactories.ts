@@ -382,7 +382,6 @@ export function getOffererNameFactory(
     id: getOffererNameId++,
     name: 'Ma super structure',
     allowedOnAdage: true,
-    isCaledonian: false,
     ...customGetOfferer,
   }
 }

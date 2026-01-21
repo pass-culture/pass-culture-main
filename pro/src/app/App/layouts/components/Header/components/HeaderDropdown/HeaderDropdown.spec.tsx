@@ -65,7 +65,6 @@ const baseOfferersNames = baseOfferers.map(
     id: offerer.id,
     name: offerer.name,
     allowedOnAdage: true,
-    isCaledonian: false,
   })
 )
 
