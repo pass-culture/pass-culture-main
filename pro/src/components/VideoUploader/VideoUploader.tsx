@@ -1,12 +1,16 @@
 import { useState } from 'react'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeVideoIcon from '@/icons/stroke-video.svg'
 import { useVideoUploaderContext } from '@/pages/IndividualOffer/IndividualOfferMedia/commons/context/VideoUploaderContext/VideoUploaderContext'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { VideoPreview } from '../VideoPreview/VideoPreview'
@@ -32,18 +36,22 @@ export const VideoUploader = () => {
               onOpenChange={setIsOpen}
               open={isOpen}
               trigger={
-                <Button variant={ButtonVariant.TERNARY} icon={fullEditIcon}>
-                  Modifier
-                </Button>
+                <Button
+                  variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.NEUTRAL}
+                  size={ButtonSize.SMALL}
+                  icon={fullEditIcon}
+                  label="Modifier"
+                />
               }
             />
             <Button
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               icon={fullTrashIcon}
               onClick={onVideoDelete}
-            >
-              Supprimer
-            </Button>
+              label="Supprimer"
+            />
           </div>
         </>
       ) : (
@@ -53,9 +61,12 @@ export const VideoUploader = () => {
             onOpenChange={setIsOpen}
             open={isOpen}
             trigger={
-              <Button variant={ButtonVariant.TERNARY} icon={fullMoreIcon}>
-                Ajouter une URL Youtube
-              </Button>
+              <Button
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                icon={fullMoreIcon}
+                label="Ajouter une URL Youtube"
+              />
             }
           />
           <p className={styles['video-uploader-text-subtle']}>

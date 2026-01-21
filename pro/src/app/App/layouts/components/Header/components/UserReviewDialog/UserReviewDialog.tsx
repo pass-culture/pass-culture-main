@@ -12,10 +12,12 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button as OldButton } from '@/ui-kit/Button/Button'
+import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import {
   IconRadioGroup,
@@ -34,9 +36,9 @@ export interface UserReviewDialogFormValues {
 
 export const UserReviewDialog = ({
   dialogTrigger = (
-    <Button variant={ButtonVariant.QUATERNARY} icon={fullSmsIcon}>
+    <OldButton variant={OldButtonVariant.QUATERNARY} icon={fullSmsIcon}>
       Donner mon avis
-    </Button>
+    </OldButton>
   ),
 }: {
   dialogTrigger?: React.ReactNode
@@ -164,9 +166,13 @@ export const UserReviewDialog = ({
               <DialogBuilder.Footer>
                 <div className={styles['dialog-buttons']}>
                   <Dialog.Close asChild>
-                    <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+                    <Button
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.NEUTRAL}
+                      label="Annuler"
+                    />
                   </Dialog.Close>
-                  <Button type="submit">Envoyer</Button>
+                  <Button type="submit" label="Envoyer" />
                 </div>
               </DialogBuilder.Footer>
             </form>
@@ -182,7 +188,7 @@ export const UserReviewDialog = ({
               Merci beaucoup de votre participation !
             </div>
             <Dialog.Close asChild>
-              <Button>Fermer</Button>
+              <Button label="Fermer" />
             </Dialog.Close>
           </div>
         )}

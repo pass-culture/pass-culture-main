@@ -4,10 +4,10 @@ import type { ShortHighlightResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { OfferHighlightForm } from '../OfferHighlightForm/OfferHighlightForm'
@@ -52,7 +52,8 @@ export const OfferHighlightBanner = ({
             highlightRequests={highlightRequests}
           >
             <Button
-              variant={ButtonVariant.TERNARYBRAND}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.BRAND}
               onClick={() => {
                 logEvent(HighlightEvents.HAS_CLICKED_EDIT_HIGHLIGHT, {
                   offerId,
@@ -91,9 +92,8 @@ export const OfferHighlightBanner = ({
                 })
                 setIsOpen(true)
               }}
-            >
-              Choisir un temps fort
-            </Button>
+              label="Choisir un temps fort"
+            />
           </OfferHighlightDialogBuilder>
         </div>
       )}

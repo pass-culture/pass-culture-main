@@ -3,10 +3,10 @@ import classnames from 'classnames'
 import { useEffect } from 'react'
 
 import { noop } from '@/commons/utils/noop'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { AdminSideNavLinks } from './components/AdminSideNavLinks'
@@ -86,20 +86,21 @@ export const LateralPanel = ({
               [styles['lateral-panel-nav-open']]: isOpen,
             })}
           >
-            <Button
-              aria-expanded={isOpen}
-              variant={ButtonVariant.TERNARY}
-              onClick={() => {
-                onToggle(!isOpen)
-                openButtonRef.current?.focus()
-              }}
-              aria-label="Fermer"
-              aria-controls="lateral-panel"
-              ref={closeButtonRef}
-              className={styles['lateral-panel-nav-button']}
-            >
-              <SvgIcon src={strokeCloseIcon} alt="" width="24" />
-            </Button>
+            <div className={styles['lateral-panel-nav-button']}>
+              <Button
+                aria-expanded={isOpen}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                onClick={() => {
+                  onToggle(!isOpen)
+                  openButtonRef.current?.focus()
+                }}
+                aria-label="Fermer"
+                aria-controls="lateral-panel"
+                ref={closeButtonRef}
+                icon={strokeCloseIcon}
+              />
+            </div>
             <SvgIcon
               alt="Pass Culture pro, l’espace des acteurs culturels"
               src={logoPassCultureProIcon}

@@ -39,6 +39,12 @@ import { storageAvailable } from '@/commons/utils/storageAvailable'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
@@ -47,9 +53,6 @@ import fullPlusIcon from '@/icons/full-plus.svg'
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
 
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
@@ -298,9 +301,12 @@ export const OfferActionsCell = ({
               className={styles['menu-item']}
               onSelect={handleCreateOfferClick}
             >
-              <Button icon={fullCopyIcon} variant={ButtonVariant.TERNARY}>
-                Dupliquer
-              </Button>
+              <Button
+                icon={fullCopyIcon}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                label="Dupliquer"
+              />
             </DropdownMenu.Item>
           )}
           {canCreateBookableOffer && (
@@ -308,21 +314,27 @@ export const OfferActionsCell = ({
               className={styles['menu-item']}
               onSelect={handleCreateOfferClick}
             >
-              <Button icon={fullPlusIcon} variant={ButtonVariant.TERNARY}>
-                Créer une offre réservable
-              </Button>
+              <Button
+                icon={fullPlusIcon}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                label="Créer une offre réservable"
+              />
             </DropdownMenu.Item>
           )}
           {canEditOffer && (
             <DropdownMenu.Item className={styles['menu-item']} asChild>
-              <ButtonLink
+              <Button
+                as="a"
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                size={ButtonSize.SMALL}
                 to={editionOfferLink}
                 icon={fullPenIcon}
                 className={styles['button']}
                 onClick={handleEditOfferClick}
-              >
-                Modifier
-              </ButtonLink>
+                label="Modifier"
+              />
             </DropdownMenu.Item>
           )}
           {canPublishOffer && (
@@ -330,9 +342,12 @@ export const OfferActionsCell = ({
               className={styles['menu-item']}
               onSelect={hideOrPublishOffer}
             >
-              <Button icon={strokeCheckIcon} variant={ButtonVariant.TERNARY}>
-                Publier
-              </Button>
+              <Button
+                icon={strokeCheckIcon}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                label="Publier"
+              />
             </DropdownMenu.Item>
           )}
           {!isCollectiveOfferBookable(offer) && canShareOffer && (
@@ -349,9 +364,12 @@ export const OfferActionsCell = ({
               className={styles['menu-item']}
               onSelect={hideOrPublishOffer}
             >
-              <Button icon={fullHideIcon} variant={ButtonVariant.TERNARY}>
-                Mettre en pause
-              </Button>
+              <Button
+                icon={fullHideIcon}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                label="Mettre en pause"
+              />
             </DropdownMenu.Item>
           )}
           {isBookingCancellable && (
@@ -366,11 +384,11 @@ export const OfferActionsCell = ({
               >
                 <Button
                   icon={fullClearIcon}
-                  variant={ButtonVariant.TERNARYBRAND}
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.BRAND}
                   className={styles['button-cancel-booking']}
-                >
-                  Annuler la réservation
-                </Button>
+                  label="Annuler la réservation"
+                />
               </DropdownMenu.Item>
             </>
           )}
@@ -387,10 +405,10 @@ export const OfferActionsCell = ({
                 <div className={styles['status-filter-label']}>
                   <Button
                     icon={strokeThingIcon}
-                    variant={ButtonVariant.TERNARY}
-                  >
-                    Archiver
-                  </Button>
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
+                    label="Archiver"
+                  />
                 </div>
               </DropdownMenu.Item>
             </>

@@ -32,13 +32,13 @@ import {
   ALGOLIA_COLLECTIVE_OFFERS_SUGGESTIONS_INDEX,
 } from '@/commons/utils/config'
 import { storageAvailable } from '@/commons/utils/storageAvailable'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import strokeBuildingIcon from '@/icons/stroke-building.svg'
 import strokeClockIcon from '@/icons/stroke-clock.svg'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Autocomplete.module.scss'
@@ -414,9 +414,8 @@ export const Autocomplete = ({
                   e.preventDefault()
                 }}
                 className={styles['form-search-button']}
-              >
-                Rechercher
-              </Button>
+                label="Rechercher"
+              />
             </div>
 
             <dialog
@@ -438,7 +437,8 @@ export const Autocomplete = ({
                         className={
                           styles['dialog-panel-autocomplete-text-clean']
                         }
-                        variant={ButtonVariant.TERNARYBRAND}
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.BRAND}
                         icon={fullClearIcon}
                         onClick={() => {
                           if (storageAvailable('localStorage')) {
@@ -451,9 +451,8 @@ export const Autocomplete = ({
                         onBlur={() => {
                           autocomplete.setIsOpen(false)
                         }}
-                      >
-                        Effacer
-                      </Button>
+                        label="Effacer"
+                      />
                     </span>
                     <ul
                       className={styles['dialog-panel-autocomplete-list']}

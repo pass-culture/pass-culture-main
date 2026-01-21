@@ -4,11 +4,11 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import type { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant, IconPositionEnum } from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullRightIcon from '@/icons/full-right.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 export interface ActionBarProps {
   onClickNext?: () => void
@@ -59,9 +59,8 @@ export const ActionBar = ({
         }}
         variant={ButtonVariant.SECONDARY}
         disabled={isDisabled}
-      >
-        {previousStepTitle}
-      </Button>
+        label={previousStepTitle}
+      />
     )
   }
 
@@ -82,9 +81,8 @@ export const ActionBar = ({
             logActionBarNavigation(nextTo)
           }
         }}
-      >
-        {nextStepTitle}
-      </Button>
+        label={nextStepTitle}
+      />
     )
   }
 

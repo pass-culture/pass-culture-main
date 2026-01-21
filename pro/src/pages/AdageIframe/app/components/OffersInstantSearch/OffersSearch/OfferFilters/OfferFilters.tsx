@@ -10,6 +10,8 @@ import {
 import { apiAdage } from '@/apiClient/api'
 import { GET_COLLECTIVE_ACADEMIES } from '@/commons/config/swrQueryKeys'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import strokeBuildingIcon from '@/icons/stroke-building.svg'
 import strokeFranceIcon from '@/icons/stroke-france.svg'
@@ -17,8 +19,6 @@ import strokeNearIcon from '@/icons/stroke-near.svg'
 import { departmentOptions } from '@/pages/AdageIframe/app/constants/departmentOptions'
 import { useAdageUser } from '@/pages/AdageIframe/app/hooks/useAdageUser'
 import type { Option } from '@/pages/AdageIframe/app/types'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   AdageMultiselect,
   type ItemProps,
@@ -254,11 +254,11 @@ export const OfferFilters = ({
                             disabled={
                               adageUser.role === AdageFrontRoles.READONLY
                             }
-                            variant={ButtonVariant.TERNARY}
+                            variant={ButtonVariant.TERTIARY}
+                            color={ButtonColor.NEUTRAL}
                             icon={strokeNearIcon}
-                          >
-                            Autour de mon établissement scolaire
-                          </Button>
+                            label="Autour de mon établissement scolaire"
+                          />
                         </li>
                       )}
                       <li className={styles['localisation-list-button']}>
@@ -268,11 +268,11 @@ export const OfferFilters = ({
                               LocalisationFilterStates.DEPARTMENTS
                             )
                           }
-                          variant={ButtonVariant.TERNARY}
+                          variant={ButtonVariant.TERTIARY}
+                          color={ButtonColor.NEUTRAL}
                           icon={strokeFranceIcon}
-                        >
-                          Choisir un département
-                        </Button>
+                          label="Choisir un département"
+                        />
                       </li>
                       <li className={styles['localisation-list-button']}>
                         <Button
@@ -281,11 +281,11 @@ export const OfferFilters = ({
                               LocalisationFilterStates.ACADEMIES
                             )
                           }
-                          variant={ButtonVariant.TERNARY}
+                          variant={ButtonVariant.TERTIARY}
+                          color={ButtonColor.NEUTRAL}
                           icon={strokeBuildingIcon}
-                        >
-                          Choisir une académie
-                        </Button>
+                          label="Choisir une académie"
+                        />
                       </li>
                     </ul>
                   </ModalFilterLayout>

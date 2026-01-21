@@ -11,12 +11,12 @@ import { getActivities } from '@/commons/mappings/mappings'
 import { buildSelectOptions } from '@/commons/utils/buildSelectOptions'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
@@ -190,14 +190,14 @@ export const ActivityForm = ({
         ))}
 
         <Button
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullMoreIcon}
           onClick={() => {
             append({ url: '' })
           }}
-        >
-          Ajouter un lien
-        </Button>
+          label="Ajouter un lien"
+        />
       </FormLayout.Row>
 
       <FormLayout.Row className={styles['target-customer-row']}>

@@ -14,9 +14,9 @@ import { HighlightEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { HighlightDatespanTag } from '@/components/HighlightDatespanTag/HighlightDatespanTag'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { CheckboxGroup } from '@/design-system/CheckboxGroup/CheckboxGroup'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
@@ -156,11 +156,17 @@ export function OfferHighlightForm({
         <DialogBuilder.Footer>
           <div className={styles['form-footer']}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                label="Annuler"
+              />
             </Dialog.Close>
-            <Button type="submit" isLoading={isSubmitting}>
-              Valider la sélection
-            </Button>
+            <Button
+              type="submit"
+              isLoading={isSubmitting}
+              label="Valider la sélection"
+            />
           </div>
         </DialogBuilder.Footer>
       </form>

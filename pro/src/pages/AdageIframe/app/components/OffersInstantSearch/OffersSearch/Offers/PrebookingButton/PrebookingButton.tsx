@@ -8,10 +8,10 @@ import { apiAdage } from '@/apiClient/api'
 import { hasErrorCode } from '@/apiClient/helpers'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { LOGS_DATA } from '@/commons/utils/config'
+import { Button } from '@/design-system/Button/Button'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullStockIcon from '@/icons/full-stock.svg'
 import strokeHourglass from '@/icons/stroke-hourglass.svg'
-import { Button } from '@/ui-kit/Button/Button'
 
 import styles from './PrebookingButton.module.scss'
 import { PrebookingModal } from './PrebookingModal'
@@ -22,7 +22,7 @@ export interface PrebookingButtonProps {
   canPrebookOffers: boolean
   queryId: string
   isInSuggestions?: boolean
-  children?: React.ReactNode
+  label?: string
   hideLimitDate?: boolean
   isPreview?: boolean
   setInstitutionOfferCount?: (value: number) => void
@@ -38,7 +38,7 @@ export const PrebookingButton = ({
   canPrebookOffers,
   queryId,
   isInSuggestions,
-  children,
+  label = 'Préréserver l’offre',
   hideLimitDate,
   isPreview = false,
   setInstitutionOfferCount,
@@ -130,9 +130,8 @@ export const PrebookingButton = ({
               onClick={() => handleBookingModalButtonClick(stock.id)}
               disabled={shouldDisablePrebookButton}
               ref={prebookButtonRef}
-            >
-              {children ?? 'Préréserver l’offre'}
-            </Button>
+              label={label}
+            />
 
             {!hideLimitDate && stock.bookingLimitDatetime && (
               <span className={styles['prebooking-button-booking-limit']}>

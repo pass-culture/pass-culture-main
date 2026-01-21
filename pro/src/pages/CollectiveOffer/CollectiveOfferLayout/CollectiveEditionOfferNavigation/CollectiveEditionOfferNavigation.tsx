@@ -30,13 +30,12 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullArchiveIcon from '@/icons/full-archive.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
 import fullShowIcon from '@/icons/full-show.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   type NavLinkItem,
   NavLinkItems,
@@ -173,29 +172,32 @@ export const CollectiveEditionOfferNavigation = ({
     <>
       <div className={styles['actions-container']}>
         {canPreviewOffer() && (
-          <ButtonLink
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             to={`/offre/${id}/collectif${isTemplate ? '/vitrine' : ''}/apercu`}
             icon={fullShowIcon}
             ref={adagePreviewButtonRef}
-          >
-            Aperçu dans ADAGE
-          </ButtonLink>
+            label="Aperçu dans ADAGE"
+          />
         )}
 
         {canArchiveOffer() && (
           <Button
             onClick={() => setIsArchiveModalOpen(true)}
             icon={fullArchiveIcon}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             ref={archiveButtonRef}
-          >
-            Archiver
-          </Button>
+            label="Archiver"
+          />
         )}
 
         {canDuplicateOffer() && (
           <Button
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={fullCopyIcon}
             onClick={async () => {
               logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
@@ -207,14 +209,14 @@ export const CollectiveEditionOfferNavigation = ({
               })
               await duplicateBookableOffer(navigate, snackBar, offerId)
             }}
-          >
-            Dupliquer
-          </Button>
+            label="Dupliquer"
+          />
         )}
 
         {canCreateBookableOffer && (
           <Button
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={fullPlusIcon}
             onClick={() => {
               if (isTemplate) {
@@ -235,9 +237,8 @@ export const CollectiveEditionOfferNavigation = ({
                 )
               }
             }}
-          >
-            Créer une offre réservable
-          </Button>
+            label="Créer une offre réservable"
+          />
         )}
         {isCollectiveOfferTemplate(offer) && canShareOffer && (
           <ShareLinkDrawer offerId={offer.id} />

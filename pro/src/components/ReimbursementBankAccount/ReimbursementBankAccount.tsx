@@ -9,12 +9,11 @@ import {
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullErrorIcon from '@/icons/full-error.svg'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ReimbursementBankAccount.module.scss'
@@ -83,7 +82,10 @@ export const ReimbursementBankAccount = ({
                 : 'en cours de validation'}
             </span>
           </div>
-          <ButtonLink
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             to={
               bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
                 ? `https://demarche.numerique.gouv.fr/dossiers/${bankAccount.dsApplicationId}`
@@ -103,11 +105,12 @@ export const ReimbursementBankAccount = ({
             }}
             icon={fullLinkIcon}
             className={styles['ds-link-button']}
-          >
-            {bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
-              ? 'Compléter le dossier'
-              : 'Voir le dossier'}
-          </ButtonLink>
+            label={
+              bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
+                ? 'Compléter le dossier'
+                : 'Voir le dossier'
+            }
+          />
         </div>
       ) : (
         <div
@@ -167,9 +170,8 @@ export const ReimbursementBankAccount = ({
                       )
                     }}
                     ref={updateButtonRef}
-                  >
-                    Modifier
-                  </Button>
+                    label="Modifier"
+                  />
                 </>
               )}
               {!hasLinkedVenues && venuesNotLinkedToBankAccount > 0 && (
@@ -185,9 +187,8 @@ export const ReimbursementBankAccount = ({
                     onUpdateButtonClick?.(bankAccount.id)
                   }}
                   ref={updateButtonRef}
-                >
-                  Rattacher une structure
-                </Button>
+                  label="Rattacher une structure"
+                />
               )}
             </div>
           )}

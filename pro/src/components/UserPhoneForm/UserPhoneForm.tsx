@@ -10,9 +10,9 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { updateUser } from '@/commons/store/user/reducer'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 
 import styles from './UserForm.module.scss'
@@ -104,12 +104,13 @@ export const UserPhoneForm = ({
         </FormLayout>
 
         <div className={styles['buttons-field']}>
-          <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-            Annuler
-          </Button>
-          <Button type="submit" isLoading={isSubmitting}>
-            Enregistrer
-          </Button>
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
         </div>
       </form>
     </BoxFormLayout.Fields>

@@ -3,9 +3,9 @@ import { useRef, useState } from 'react'
 
 import type { AdageFrontRoles } from '@/apiClient/adage'
 import { apiAdage } from '@/apiClient/api'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullMailIcon from '@/icons/full-mail.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { RequestFormDialog } from './RequestFormDialog/RequestFormDialog'
@@ -67,9 +67,8 @@ export const ContactButton = ({
           variant={ButtonVariant.PRIMARY}
           icon={fullMailIcon}
           onClick={handleButtonClick}
-        >
-          Contacter le partenaire
-        </Button>
+          label="Contacter le partenaire"
+        />
       }
       open={isDialogOpen}
       onOpenChange={setIsDialogOpen}

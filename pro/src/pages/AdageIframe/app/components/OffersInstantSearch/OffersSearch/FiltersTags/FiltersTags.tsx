@@ -1,12 +1,12 @@
 import { useFormContext } from 'react-hook-form'
 
 import { CollectiveLocationType } from '@/apiClient/v1'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { departmentOptions } from '@/pages/AdageIframe/app/constants/departmentOptions'
 import type { Option } from '@/pages/AdageIframe/app/types'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import type { SearchFormValues } from '../../OffersInstantSearch'
@@ -173,11 +173,11 @@ export const FiltersTags = ({
         <Button
           onClick={resetForm}
           icon={fullRefreshIcon}
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           type="submit"
-        >
-          Réinitialiser les filtres
-        </Button>
+          label="Réinitialiser les filtres"
+        />
       )}
     </div>
   )

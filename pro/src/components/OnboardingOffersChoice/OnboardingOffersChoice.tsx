@@ -3,9 +3,8 @@ import { useState } from 'react'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { OnboardingDidacticEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Dialog } from '@/components/Dialog/Dialog'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { Card } from '@/ui-kit/Card/Card'
 
 import collective from './assets/collective.jpeg'
@@ -27,14 +26,14 @@ export const OnboardingOffersChoice = () => {
           </h3>
         }
         actions={
-          <ButtonLink
+          <Button
+            as="a"
             variant={ButtonVariant.PRIMARY}
             to="/onboarding/individuel"
-            aria-label="Commencer la création d’offre sur l’application mobile"
+            aria-label="Commencer la création d'offre sur l'application mobile"
             className={styles['button-getting-started']}
-          >
-            Commencer
-          </ButtonLink>
+            label="Commencer"
+          />
         }
       >
         Vos offres seront visibles par{' '}
@@ -67,9 +66,8 @@ export const OnboardingOffersChoice = () => {
                   setShowModal(true)
                 }}
                 className={styles['button-getting-started']}
-              >
-                Commencer
-              </Button>
+                label="Commencer"
+              />
             }
             open={showModal}
           >

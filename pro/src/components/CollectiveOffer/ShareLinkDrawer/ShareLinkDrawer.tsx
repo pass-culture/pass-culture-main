@@ -1,8 +1,8 @@
 import * as Dialog from '@radix-ui/react-dialog'
 import { forwardRef, useState } from 'react'
 
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import { ShareLinkButton } from '../ShareLinkButton/ShareLinkButton'
@@ -29,7 +29,11 @@ export const ShareLinkDrawer = forwardRef<
       </div>
       <DialogBuilder.Footer>
         <Dialog.Close asChild>
-          <Button variant={ButtonVariant.SECONDARY}>Fermer</Button>
+          <Button
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Fermer"
+          />
         </Dialog.Close>
       </DialogBuilder.Footer>
     </DialogBuilder>

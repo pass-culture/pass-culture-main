@@ -11,9 +11,9 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from '@/components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
 
@@ -146,11 +146,11 @@ export const PreFilters = ({
                 icon={fullRefreshIcon}
                 disabled={!hasPreFilters}
                 onClick={resetPreFilters}
-                variant={ButtonVariant.TERNARY}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
                 className={styles['reset-filters']}
-              >
-                Réinitialiser les filtres
-              </Button>
+                label="Réinitialiser les filtres"
+              />
             </div>
           </FormLayout.Row>
         </div>
@@ -177,9 +177,8 @@ export const PreFilters = ({
                 applyNow()
                 logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
               }}
-            >
-              Afficher
-            </Button>
+              label="Afficher"
+            />
           </div>
         </div>
       </form>

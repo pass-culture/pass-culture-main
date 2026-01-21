@@ -25,6 +25,12 @@ import {
 } from '@/commons/store/nav/selector'
 import { getSavedPartnerPageVenueId } from '@/commons/utils/savedPartnerPageVenueId'
 import { EllipsissedText } from '@/components/EllipsissedText/EllipsissedText'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
@@ -35,9 +41,7 @@ import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
-import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 
 import { HelpDropdownNavItem } from './HelpDropdownNavItem'
@@ -143,15 +147,16 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       })}
     >
       {withSwitchVenueFeature && (
-        <ButtonLink
-          variant={ButtonVariant.SECONDARY}
-          to="/remboursements"
-          iconPosition={IconPositionEnum.LEFT}
-          icon={strokeRepaymentIcon}
-          className={styles['back-to-admin']}
-        >
-          Espace Administration
-        </ButtonLink>
+        <div className={styles['back-to-admin']}>
+          <Button
+            as="a"
+            variant={ButtonVariant.SECONDARY}
+            to="/remboursements"
+            iconPosition={IconPositionEnum.LEFT}
+            icon={strokeRepaymentIcon}
+            label="Espace Administration"
+          />
+        </div>
       )}
       {selectedOfferer && (
         <div
@@ -180,24 +185,31 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               options={[
                 {
                   element: (
-                    <ButtonLink
+                    <Button
+                      as="a"
+                      variant={ButtonVariant.TERTIARY}
+                      color={ButtonColor.NEUTRAL}
                       to={getIndividualOfferUrl({
                         step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
                         mode: OFFER_WIZARD_MODE.CREATION,
                         isOnboarding: false,
                       })}
                       icon={strokePhoneIcon}
-                    >
-                      Pour le grand public
-                    </ButtonLink>
+                      label="Pour le grand public"
+                    />
                   ),
                   id: 'individual',
                 },
                 {
                   element: (
-                    <ButtonLink to="/offre/creation" icon={strokeBagIcon}>
-                      Pour les groupes scolaires
-                    </ButtonLink>
+                    <Button
+                      as="a"
+                      variant={ButtonVariant.TERTIARY}
+                      color={ButtonColor.NEUTRAL}
+                      to="/offre/creation"
+                      icon={strokeBagIcon}
+                      label="Pour les groupes scolaires"
+                    />
                   ),
                   id: 'collective',
                 },
@@ -339,15 +351,12 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
               <UserReviewDialog
                 dialogTrigger={
                   <Button
-                    variant={ButtonVariant.TERNARY}
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
                     icon={fullSmsIcon}
-                    className={classnames(
-                      styles['nav-links-item'],
-                      styles['nav-links-item-feedback']
-                    )}
-                  >
-                    Donner mon avis
-                  </Button>
+                    className={styles['nav-links-item']}
+                    label="Donner mon avis"
+                  />
                 }
               />
             </li>

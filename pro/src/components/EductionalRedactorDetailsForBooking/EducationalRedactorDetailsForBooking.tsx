@@ -1,7 +1,8 @@
 import type { Contact } from '@/components/EductionalRedactorDetails/EducationalRedactorDetails'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import strokeMailIcon from '@/icons/stroke-mail.svg'
 import strokeUserIcon from '@/icons/stroke-user.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './EducationalRedactorDetailsForBooking.module.scss'
@@ -35,9 +36,15 @@ export const EducationalRedactorDetailsForBooking = ({
           />
         </dt>
         <dd>
-          <ButtonLink to={`mailto:${contact.email}`} isExternal>
+          <Button
+            as="a"
+            to={`mailto:${contact.email}`}
+            isExternal
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+          >
             {contact.email}
-          </ButtonLink>
+          </Button>
         </dd>
       </div>
     </>

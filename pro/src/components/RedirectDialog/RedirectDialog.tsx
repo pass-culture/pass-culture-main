@@ -1,8 +1,8 @@
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink, type LinkProps } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import type { LinkProps } from '@/ui-kit/Button/ButtonLink'
 
 import { Dialog, type DialogProps } from '../Dialog/Dialog'
 import styles from './RedirectDialog.module.scss'
@@ -47,15 +47,16 @@ export const RedirectDialog = ({
       open={open}
     >
       <div className={styles['redirect-dialog-actions']}>
-        <ButtonLink
+        <Button
+          as="a"
           data-testid="redirect-dialog-link"
           {...redirectLink}
           variant={ButtonVariant.PRIMARY}
+          color={ButtonColor.NEUTRAL}
           onClick={onRedirect}
           icon={withRedirectLinkIcon ? fullLinkIcon : undefined}
-        >
-          {redirectText}
-        </ButtonLink>
+          label={redirectText}
+        />
 
         <Button
           icon={cancelIcon || fullNextIcon}
@@ -63,10 +64,10 @@ export const RedirectDialog = ({
             onCancel()
           }}
           data-testid="redirect-dialog-button-cancel"
-          variant={ButtonVariant.TERNARYBRAND}
-        >
-          {cancelText}
-        </Button>
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.BRAND}
+          label={cancelText}
+        />
       </div>
     </Dialog>
   )

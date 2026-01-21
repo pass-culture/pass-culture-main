@@ -5,10 +5,10 @@ import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -134,12 +134,13 @@ export const UserPasswordForm = ({
         </FormLayout>
 
         <div className={styles['buttons-field']}>
-          <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-            Annuler
-          </Button>
-          <Button type="submit" isLoading={isSubmitting}>
-            Enregistrer
-          </Button>
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
         </div>
       </form>
     </BoxFormLayout.Fields>

@@ -1,8 +1,8 @@
 import type React from 'react'
 
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './ModalFilterLayout.module.scss'
 
@@ -30,20 +30,19 @@ export const ModalFilterLayout = ({
           <div className={styles['modal-content-footer']}>
             <Button
               icon={fullRefreshIcon}
-              variant={ButtonVariant.TERNARY}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
               onClick={onClean}
-            >
-              Réinitialiser
-            </Button>
+              label="Réinitialiser"
+            />
             <Button
               variant={ButtonVariant.PRIMARY}
               className={styles['search-button']}
               onClick={onSearch}
-              testId="search-button-modal"
+              data-testid="search-button-modal"
               type="submit"
-            >
-              Rechercher
-            </Button>
+              label="Rechercher"
+            />
           </div>
         </>
       )}

@@ -8,10 +8,10 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { isCollectiveOfferTemplate } from '@/commons/core/OfferEducational/types'
 import { ShareTemplateOfferLink } from '@/components/CollectiveOffer/ShareTemplateOfferLink/ShareTemplateOfferLink'
 import { RouteLeavingGuardCollectiveOfferCreation } from '@/components/RouteLeavingGuardCollectiveOfferCreation/RouteLeavingGuardCollectiveOfferCreation'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import fullWaitIcon from '@/icons/full-wait.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import {
@@ -173,20 +173,20 @@ const CollectiveOfferConfirmation = ({
           {confirmationData.icon}
           <div>{confirmationData.description}</div>
           <div className={styles['confirmation-actions']}>
-            <ButtonLink
+            <Button
+              as="a"
               variant={ButtonVariant.SECONDARY}
               className={styles['confirmation-action']}
               to={isShowcase ? '/offres/vitrines' : '/offres/collectives'}
-            >
-              Voir mes offres
-            </ButtonLink>
-            <ButtonLink
+              label="Voir mes offres"
+            />
+            <Button
+              as="a"
               variant={ButtonVariant.PRIMARY}
               className={styles['confirmation-action']}
               to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
-            >
-              Créer une nouvelle offre
-            </ButtonLink>
+              label="Créer une nouvelle offre"
+            />
           </div>
         </div>
       </div>

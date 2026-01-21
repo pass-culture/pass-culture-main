@@ -1,9 +1,10 @@
 import { useFormContext } from 'react-hook-form'
 
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 
 import styles from './FormContactTemplateCustomForm.module.scss'
 
@@ -29,15 +30,17 @@ export const FormContactTemplateCustomForm = ({
             label: 'Le formulaire standard',
             value: 'form',
             collapsed: (
-              <ButtonLink
+              <Button
+                as="a"
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
                 isExternal
                 to="https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine"
                 opensInNewTab
                 icon={fullLinkIcon}
                 className={styles['custom-form-radio-link']}
-              >
-                FAQ : À quoi ressemble le formulaire standard ?
-              </ButtonLink>
+                label="FAQ : À quoi ressemble le formulaire standard ?"
+              />
             ),
           },
           {

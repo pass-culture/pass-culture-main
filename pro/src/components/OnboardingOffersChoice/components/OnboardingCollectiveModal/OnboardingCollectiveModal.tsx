@@ -9,10 +9,9 @@ import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { updateUserAccess } from '@/commons/store/user/reducer'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullNextIcon from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import acceptationIcon from './assets/acceptation.svg'
@@ -93,29 +92,32 @@ export const OnboardingCollectiveModal = ({
         />
       </div>
       <div className={styles['onboarding-collective-actions']}>
-        <ButtonLink
+        <Button
+          as="a"
           isExternal
           opensInNewTab
           className={styles['onboarding-collective-button']}
           variant={ButtonVariant.PRIMARY}
+          color={ButtonColor.NEUTRAL}
           onClick={() =>
             logEvent(
               OnboardingDidacticEvents.HAS_CLICKED_SUBMIT_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
             )
           }
           to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
-        >
-          Déposer un dossier
-        </ButtonLink>
+          label="Déposer un dossier"
+        />
         <Button
           className={styles['onboarding-collective-button']}
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullNextIcon}
           onClick={checkEligibility}
           disabled={isLoading}
-        >
-          {isLoading ? 'Vérification en cours …' : 'J’ai déposé un dossier'}
-        </Button>
+          label={
+            isLoading ? 'Vérification en cours …' : 'J’ai déposé un dossier'
+          }
+        />
       </div>
       {errorMessage && (
         <div className={styles['error-message']}>{errorMessage}</div>

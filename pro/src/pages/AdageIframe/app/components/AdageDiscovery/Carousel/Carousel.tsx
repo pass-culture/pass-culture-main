@@ -2,11 +2,10 @@ import cn from 'classnames'
 import { createRef } from 'react'
 
 import { useIsElementVisible } from '@/commons/hooks/useIsElementVisible'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullArrowLeftIcon from '@/icons/full-arrow-left.svg'
 import fullArrowRightIcon from '@/icons/full-arrow-right.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { AdageSkeleton } from '../../Skeleton/AdageSkeleton'
 import styles from './Carousel.module.scss'
@@ -74,28 +73,22 @@ export function Carousel({
             <Button
               disabled={firstElementVisible}
               onClick={handleOnClickArrowLeft}
-              variant={ButtonVariant.TERNARYBRAND}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.BRAND}
               data-testid="carousel-arrow-left"
-            >
-              <SvgIcon
-                src={fullArrowLeftIcon}
-                alt="Faire défiler le carrousel vers la gauche"
-                width="24"
-              />
-            </Button>
+              icon={fullArrowLeftIcon}
+              iconAlt="Faire défiler le carrousel vers la gauche"
+            />
 
             <Button
               disabled={lastElementVisible}
               onClick={handleOnClickArrowRight}
-              variant={ButtonVariant.TERNARYBRAND}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.BRAND}
               data-testid="carousel-arrow-right"
-            >
-              <SvgIcon
-                src={fullArrowRightIcon}
-                alt="Faire défiler le carrousel vers la droite"
-                width="24"
-              />
-            </Button>
+              icon={fullArrowRightIcon}
+              iconAlt="Faire défiler le carrousel vers la droite"
+            />
           </div>
         )}
       </div>

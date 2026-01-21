@@ -13,10 +13,10 @@ import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { Tag, TagVariant } from '@/design-system/Tag/Tag'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { IndividualOfferNavigation } from './components/IndividualOfferNavigation/IndividualOfferNavigation'
 import { OfferHighlightBanner } from './components/OfferHighlightBanner/OfferHighlightBanner'
@@ -125,12 +125,12 @@ export const IndividualOfferLayout = ({
                 </p>
                 <Button
                   onClick={onDeleteOfferWithAlreadyExistingEan}
-                  variant={ButtonVariant.TERNARY}
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
                   icon={fullTrashIcon}
                   className={styles['ean-already-exists-callout-button']}
-                >
-                  Supprimer ce brouillon
-                </Button>
+                  label="Supprimer ce brouillon"
+                />
               </>
             }
           />

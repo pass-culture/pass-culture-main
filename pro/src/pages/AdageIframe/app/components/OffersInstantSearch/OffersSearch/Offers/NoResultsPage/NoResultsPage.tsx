@@ -1,7 +1,7 @@
 import type { VenueResponse } from '@/apiClient/adage'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './NoResultsPage.module.scss'
 
@@ -36,15 +36,16 @@ export const NoResultsPage = ({
         {!venue && noResultSuggestionText}
       </p>
       {venue?.adageId && (
-        <ButtonLink
+        <Button
+          as="a"
           isExternal
           to={`${document.referrer}adage/ressource/partenaires/id/${venue.adageId}`}
           opensInNewTab
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullLinkIcon}
-        >
-          Voir la fiche du partenaire
-        </ButtonLink>
+          label="Voir la fiche du partenaire"
+        />
       )}
     </div>
   )

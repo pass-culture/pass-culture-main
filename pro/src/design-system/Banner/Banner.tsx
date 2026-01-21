@@ -1,10 +1,9 @@
 import cx from 'classnames'
 
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import closeIcon from '@/icons/full-close.svg'
 import infosIcon from '@/icons/full-info.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Banner.module.scss'
@@ -79,11 +78,13 @@ export const Banner = ({
                 {actions.map((a) => (
                   <li key={a.label}>
                     {a.type === 'link' ? (
-                      <ButtonLink
+                      <Button
+                        as="a"
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.NEUTRAL}
                         className={cx(styles.link, {
                           [styles['link-large']]: size === 'large',
                         })}
-                        href={a.href}
                         target={a.isExternal ? '_blank' : '_self'}
                         rel={a.isExternal ? 'noopener noreferrer' : undefined}
                         to={a.href}
@@ -92,20 +93,19 @@ export const Banner = ({
                         isExternal={a.isExternal}
                         onClick={() => a.onClick?.()}
                         isSectionLink={a.href.startsWith('#')}
-                      >
-                        {a.label}
-                      </ButtonLink>
+                        label={a.label}
+                      />
                     ) : (
                       <Button
                         className={cx(styles.link, {
                           [styles['link-large']]: size === 'large',
                         })}
-                        variant={ButtonVariant.TERNARY}
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.NEUTRAL}
                         icon={a.icon}
                         onClick={() => a.onClick?.()}
-                      >
-                        {a.label}
-                      </Button>
+                        label={a.label}
+                      />
                     )}
                   </li>
                 ))}

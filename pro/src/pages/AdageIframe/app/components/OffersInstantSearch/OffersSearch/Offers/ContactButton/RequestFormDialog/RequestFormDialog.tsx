@@ -10,10 +10,9 @@ import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
@@ -195,16 +194,17 @@ export const RequestFormDialog = ({
           <li>
             <div className={styles['form-description-link']}>
               <i>via</i> son formulaire :
-              <ButtonLink
+              <Button
+                as="a"
                 onClick={logContactUrl}
-                variant={ButtonVariant.TERNARYBRAND}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.BRAND}
                 className={styles['form-description-link-text']}
                 to={contactUrl}
                 isExternal
                 opensInNewTab
-              >
-                Aller sur le site
-              </ButtonLink>
+                label="Aller sur le site"
+              />
             </div>
           </li>
         )}
@@ -242,16 +242,17 @@ export const RequestFormDialog = ({
       <div className={styles['form-description-link-site']}>
         Il vous propose de le faire <i>via</i> son formulaire :
       </div>
-      <ButtonLink
+      <Button
+        as="a"
         onClick={logContactUrl}
-        variant={ButtonVariant.TERNARYBRAND}
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.BRAND}
         className={styles['form-description-link-text']}
         to={contactUrl}
         isExternal
         opensInNewTab
-      >
-        Aller sur le site
-      </ButtonLink>
+        label="Aller sur le site"
+      />
     </div>
   )
 
@@ -377,20 +378,19 @@ export const RequestFormDialog = ({
             <Dialog.Close asChild>
               <Button
                 variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
                 onClick={onCancel}
                 type="button"
-              >
-                Annuler
-              </Button>
+                label="Annuler"
+              />
             </Dialog.Close>
             <Button
               type="submit"
               variant={ButtonVariant.PRIMARY}
               isLoading={isSubmitting}
               disabled={isPreview}
-            >
-              Envoyer ma demande
-            </Button>
+              label="Envoyer ma demande"
+            />
           </div>
         </DialogBuilder.Footer>
       </form>

@@ -20,11 +20,11 @@ import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowe
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { ActionsBarSticky } from '@/components/ActionsBarSticky/ActionsBarSticky'
 import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/ArchiveConfirmationModal'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullValidateIcon from '@/icons/full-validate.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { CollectiveDeactivationConfirmDialog } from './CollectiveDeactivationConfirmDialog'
 
@@ -313,16 +313,14 @@ export function CollectiveOffersActionsBar<
           icon={fullHideIcon}
           variant={ButtonVariant.SECONDARY}
           ref={deActivateButtonRef}
-        >
-          Mettre en pause
-        </Button>
+          label="Mettre en pause"
+        />
         <Button
           onClick={publishOffers}
           icon={fullValidateIcon}
           variant={ButtonVariant.SECONDARY}
-        >
-          Publier
-        </Button>
+          label="Publier"
+        />
       </>
     )
     if (areTemplateOffers) {
@@ -369,17 +367,16 @@ export function CollectiveOffersActionsBar<
           <Button
             onClick={clearSelectedOfferIds}
             variant={ButtonVariant.SECONDARY}
-          >
-            Annuler
-          </Button>
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
           <Button
             onClick={openArchiveOffersDialog}
             icon={strokeThingIcon}
             variant={ButtonVariant.SECONDARY}
             ref={archiveButtonRef}
-          >
-            Archiver
-          </Button>
+            label="Archiver"
+          />
           {getTemplateOffersCTAs()}
         </ActionsBarSticky.Right>
       </ActionsBarSticky>

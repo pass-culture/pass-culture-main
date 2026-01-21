@@ -2,11 +2,11 @@ import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import { NOTIFICATIONS_EMAIL_LABEL } from '../../constants/labels'
@@ -62,15 +62,15 @@ export const FormNotifications = ({
       ))}
       {!disableForm && fields.length <= 5 && (
         <Button
-          variant={ButtonVariant.TERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullMoreIcon}
           onClick={() => {
             append({ email: '' }, { shouldFocus: true })
           }}
           className={styles['add-notification-button']}
-        >
-          Ajouter un email de notification
-        </Button>
+          label="Ajouter un email de notification"
+        />
       )}
     </FormLayout.Section>
   )

@@ -6,10 +6,10 @@ import {
   getStoredFilterConfig,
   useStoredFilterConfig,
 } from '@/components/OffersTableSearch/utils'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { ButtonFilter } from '@/ui-kit/ButtonFilter/ButtonFilter'
 
 import styles from './OffersTableSearch.module.scss'
@@ -94,18 +94,21 @@ export const OffersTableSearch = ({
             icon={fullRefreshIcon}
             disabled={!hasActiveFilters}
             onClick={onResetFilters}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             className={styles['offers-table-search-reset-button']}
-          >
-            Réinitialiser les filtres
-          </Button>
+            label="Réinitialiser les filtres"
+          />
         </div>
       </div>
       <div className={styles['offers-table-search-separator-wrapper']}>
         <div className={styles['offers-table-search-separator-element']} />
-        <Button type="submit" disabled={isDisabled} ref={searchButtonRef}>
-          Rechercher
-        </Button>
+        <Button
+          type="submit"
+          disabled={isDisabled}
+          ref={searchButtonRef}
+          label="Rechercher"
+        />
         <div className={styles['offers-table-search-separator-element']} />
       </div>
     </form>

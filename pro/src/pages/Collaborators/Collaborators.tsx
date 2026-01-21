@@ -16,12 +16,12 @@ import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { validationSchema } from '@/pages/Collaborators/validationSchema'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './Collaborators.module.scss'
 
@@ -152,14 +152,16 @@ export const Collaborators = (): JSX.Element | null => {
             {members.length > MAX_COLLABORATORS && (
               <Button
                 onClick={() => setDisplayAllMembers(!displayAllMembers)}
-                variant={ButtonVariant.TERNARY}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
                 icon={displayAllMembers ? fullUpIcon : fullDownIcon}
                 className={styles['display-all-members-button']}
-              >
-                {displayAllMembers
-                  ? 'Voir moins de collaborateurs'
-                  : 'Voir plus de collaborateurs'}
-              </Button>
+                label={
+                  displayAllMembers
+                    ? 'Voir moins de collaborateurs'
+                    : 'Voir plus de collaborateurs'
+                }
+              />
             )}
           </div>
         )}
@@ -173,9 +175,8 @@ export const Collaborators = (): JSX.Element | null => {
               })
               setShowInvitationForm(true)
             }}
-          >
-            Ajouter un collaborateur
-          </Button>
+            label="Ajouter un collaborateur"
+          />
         ) : (
           <>
             <h3 className={styles['subtitle']}>Ajout de collaborateurs</h3>
@@ -205,9 +206,8 @@ export const Collaborators = (): JSX.Element | null => {
                           isLoading={isSubmitting}
                           className={styles['add-member-button']}
                           data-error={errors.email?.message ? 'true' : 'false'}
-                        >
-                          Inviter
-                        </Button>
+                          label="Inviter"
+                        />
                       }
                     />
                   </div>

@@ -19,6 +19,8 @@ import { unhumanizeSiret } from '@/commons/utils/siren'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { SIGNUP_JOURNEY_STEP_IDS } from '@/components/SignupJourneyStepper/constants'
 import { Banner } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullLinkIcon from '@/icons/full-link.svg'
 import {
@@ -27,8 +29,6 @@ import {
 } from '@/pages/Signup/SignupContainer/constants'
 import { MaybeAppUserDialog } from '@/pages/Signup/SignupContainer/MaybeAppUserDialog/MaybeAppUserDialog'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import { BannerInvisibleSiren } from './BannerInvisibleSiren/BannerInvisibleSiren'
@@ -223,8 +223,10 @@ export const Offerer = (): JSX.Element => {
               </div>
             </FormLayout.Row>
             <FormLayout.Row>
-              <ButtonLink
-                variant={ButtonVariant.TERNARY}
+              <Button
+                as="a"
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
                 to="https://annuaire-entreprises.data.gouv.fr/"
                 isExternal
                 opensInNewTab
@@ -236,7 +238,7 @@ export const Offerer = (): JSX.Element => {
               >
                 Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des
                 Entreprises.
-              </ButtonLink>
+              </Button>
             </FormLayout.Row>
           </FormLayout.Section>
           {showInvisibleBanner && <BannerInvisibleSiren />}

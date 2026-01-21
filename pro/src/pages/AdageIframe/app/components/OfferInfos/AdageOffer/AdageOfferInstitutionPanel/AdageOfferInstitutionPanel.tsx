@@ -68,9 +68,7 @@ export function AdageOfferInstitutionPanel({
           setInstitutionOfferCount={setInstitutionOfferCount}
           institutionOfferCount={institutionOfferCount}
           shouldDisablePrebookButton={!adageUser?.canPrebook && !isPreview}
-        >
-          Préréserver l’offre
-        </PrebookingButton>
+        />
       </div>
     </div>
   )

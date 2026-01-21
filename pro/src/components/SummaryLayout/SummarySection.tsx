@@ -2,8 +2,13 @@ import cn from 'classnames'
 import type React from 'react'
 import type { ReactNode } from 'react'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { Divider } from '@/ui-kit/Divider/Divider'
 
 import style from './SummaryLayout.module.scss'
@@ -44,14 +49,18 @@ export const SummarySection = ({
       </h2>
 
       {typeof editLink === 'string' ? (
-        <ButtonLink
+        <Button
+          as="a"
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
           to={editLink}
           aria-label={props['aria-label']}
           className={style['summary-layout-section-header-edit-link']}
           icon={fullEditIcon}
         >
           Modifier
-        </ButtonLink>
+        </Button>
       ) : (
         editLink
       )}

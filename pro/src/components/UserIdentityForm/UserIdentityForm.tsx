@@ -8,10 +8,10 @@ import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { updateUser } from '@/commons/store/user/reducer'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from '../UserPhoneForm/UserForm.module.scss'
 import type { UserIdentityFormValues } from './types'
@@ -89,12 +89,13 @@ export const UserIdentityForm = ({
           </div>
         </FormLayout>
         <div className={styles['buttons-field']}>
-          <Button onClick={onCancel} variant={ButtonVariant.SECONDARY}>
-            Annuler
-          </Button>
-          <Button type="submit" isLoading={isSubmitting}>
-            Enregistrer
-          </Button>
+          <Button
+            onClick={onCancel}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            label="Annuler"
+          />
+          <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
         </div>
       </form>
     </BoxFormLayout.Fields>

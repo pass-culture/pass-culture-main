@@ -6,8 +6,8 @@ import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { downloadBookableOffersFile } from '@/components/CollectiveOffersTable/utils/downloadBookableOffersFile'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
 import styles from './CollectiveOffersDownloadDrawer.module.scss'
@@ -47,9 +47,8 @@ export const CollectiveOffersDownloadDrawer = ({
         <Button
           variant={ButtonVariant.PRIMARY}
           disabled={isDisabled || isDownloading}
-        >
-          Télécharger
-        </Button>
+          label="Télécharger"
+        />
       }
     >
       <div className={styles['callout']}>
@@ -61,24 +60,26 @@ export const CollectiveOffersDownloadDrawer = ({
       <DialogBuilder.Footer>
         <div className={styles['actions']}>
           <Dialog.Close asChild>
-            <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              color={ButtonColor.NEUTRAL}
+              label="Annuler"
+            />
           </Dialog.Close>
           <Button
             variant={ButtonVariant.PRIMARY}
             onClick={async () => {
               await downloadHandler('CSV')
             }}
-          >
-            Télécharger format CSV
-          </Button>
+            label="Télécharger format CSV"
+          />
           <Button
             variant={ButtonVariant.PRIMARY}
             onClick={async () => {
               await downloadHandler('XLS')
             }}
-          >
-            Télécharger format Excel
-          </Button>
+            label="Télécharger format Excel"
+          />
         </div>
       </DialogBuilder.Footer>
     </DialogBuilder>

@@ -1,9 +1,13 @@
 import cn from 'classnames'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 interface DetailsButtonCellProps {
   controlledId: string
@@ -22,14 +26,14 @@ export const DetailsButtonCell = ({
     <div className={cn(className)}>
       <Button
         onClick={onClick}
-        variant={ButtonVariant.TERNARY}
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
         icon={isExpanded ? fullUpIcon : fullDownIcon}
         iconPosition={IconPositionEnum.RIGHT}
         aria-expanded={isExpanded}
         aria-controls={controlledId}
-      >
-        Détails
-      </Button>
+        label="Détails"
+      />
     </div>
   )
 }

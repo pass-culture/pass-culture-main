@@ -6,13 +6,16 @@ import { NavLink, useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullBurgerIcon from '@/icons/full-burger.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
@@ -49,20 +52,22 @@ export const Header = forwardRef(
       <header className={styles['top-menu']}>
         <div className={styles['top-menu-content']}>
           {!disableHomeLink && (
-            <Button
-              id="header-nav-toggle"
-              ref={openButtonRef}
-              aria-expanded={isLateralPanelOpen}
-              className={styles['burger-icon']}
-              variant={ButtonVariant.TERNARY}
-              onClick={() => {
-                onToggleLateralPanel?.(!isLateralPanelOpen)
-                focusCloseButton?.()
-              }}
-              aria-controls="lateral-panel"
-            >
-              <SvgIcon src={fullBurgerIcon} alt="Menu" width="24" />
-            </Button>
+            <div className={styles['burger-icon']}>
+              <Button
+                id="header-nav-toggle"
+                ref={openButtonRef}
+                aria-expanded={isLateralPanelOpen}
+                color={ButtonColor.NEUTRAL}
+                aria-controls="lateral-panel"
+                onClick={() => {
+                  onToggleLateralPanel?.(!isLateralPanelOpen)
+                  focusCloseButton?.()
+                }}
+                variant={ButtonVariant.TERTIARY}
+                icon={fullBurgerIcon}
+                iconAlt="Menu"
+              />
+            </div>
           )}
           <div className={styles['nav-brand']}>
             {disableHomeLink ? (
@@ -103,20 +108,26 @@ export const Header = forwardRef(
               </div>
             )}
             {withSwitchVenueFeature && (
-              <ButtonLink
-                variant={ButtonVariant.SECONDARY}
-                to={isAdminArea ? '/accueil' : '/remboursements'}
-                iconPosition={IconPositionEnum.LEFT}
-                icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
+              <div
                 className={cn(
                   styles['tablet-and-above'],
                   styles['is-switch-venue']
                 )}
               >
-                {isAdminArea
-                  ? 'Revenir à l’Espace Partenaire'
-                  : 'Espace administration'}
-              </ButtonLink>
+                <Button
+                  as="a"
+                  variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.BRAND}
+                  to={isAdminArea ? '/accueil' : '/remboursements'}
+                  iconPosition={IconPositionEnum.LEFT}
+                  icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
+                  label={
+                    isAdminArea
+                      ? "Revenir à l'Espace Partenaire"
+                      : 'Espace administration'
+                  }
+                />
+              </div>
             )}
             <HeaderDropdown />
           </div>
