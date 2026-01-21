@@ -145,3 +145,22 @@ class ArtistAliasDeltaQuery(BaseQuery):
             `{settings.BIG_QUERY_TABLE_BASENAME}.artist_alias_delta`
     """
     model = DeltaArtistAliasModel
+
+
+class ArtistScoresModel(BaseModelV2):
+    id: str
+    app_search_score: float
+    pro_search_score: float
+
+
+class ArtistScoresQuery(BaseQuery):
+    raw_query = f"""
+        SELECT
+            artist_id as id,
+            artist_app_search_score as app_search_score,
+            artist_pro_search_score as pro_search_score
+        FROM
+            `{settings.BIG_QUERY_TABLE_BASENAME}.artist_score`
+    """
+
+    model = ArtistScoresModel
