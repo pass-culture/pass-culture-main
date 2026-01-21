@@ -14,6 +14,7 @@ import styles from './FunnelLayout.module.scss'
 
 export interface FunnelLayoutProps {
   children?: React.ReactNode
+  isHubPage?: boolean
   /**
    * Name of the page to display in the main heading.
    * Make sure that only one heading is displayed per page.
@@ -25,12 +26,13 @@ export interface FunnelLayoutProps {
 
 export const FunnelLayout = ({
   children,
+  isHubPage = false,
   mainHeading,
   withFlexContent = false,
   tabIndex,
 }: FunnelLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
-  const [lateralPanelOpen, setLateralPanelOpen] = useState(false)
+  const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
   const openButtonRef = useRef<HTMLButtonElement>(null)
   const closeButtonRef = useRef<HTMLButtonElement>(null)
   const navPanel = useRef<HTMLDivElement>(null)
@@ -42,8 +44,8 @@ export const FunnelLayout = ({
         <ConnectedAsAside currentUser={currentUser} />
       )}
       <Header
-        lateralPanelOpen={lateralPanelOpen}
-        setLateralPanelOpen={setLateralPanelOpen}
+        isLateralPanelOpen={isLateralPanelOpen}
+        onToggleLateralPanel={setIsLateralPanelOpen}
         focusCloseButton={() => {
           setTimeout(() => {
             closeButtonRef.current?.focus()
@@ -54,8 +56,9 @@ export const FunnelLayout = ({
       />
       <div className={styles['tablet-and-above']}>
         <LateralPanel
-          lateralPanelOpen={lateralPanelOpen}
-          setLateralPanelOpen={setLateralPanelOpen}
+          isHubPage={isHubPage}
+          isOpen={isLateralPanelOpen}
+          onToggle={setIsLateralPanelOpen}
           openButtonRef={openButtonRef}
           closeButtonRef={closeButtonRef}
           navPanel={navPanel}

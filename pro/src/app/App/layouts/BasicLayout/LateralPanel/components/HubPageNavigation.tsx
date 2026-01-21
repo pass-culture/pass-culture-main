@@ -4,7 +4,7 @@ import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
-import styles from '../SideNavLinks/SideNavLinks.module.scss'
+import styles from './SideNavLinks.module.scss'
 
 interface HubPageNavigationProps {
   isLateralPanelOpen?: boolean

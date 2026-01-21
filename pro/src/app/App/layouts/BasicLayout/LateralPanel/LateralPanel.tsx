@@ -1,41 +1,38 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: LateralPanel is used once per page. There cannot be id duplications. */
 import classnames from 'classnames'
 import { useEffect } from 'react'
-import { useLocation } from 'react-router'
 
 import { noop } from '@/commons/utils/noop'
-import { HubPageNavigation } from '@/components/HubPageNavigation/HubPageNavigation'
-import { AdminSideNavLinks } from '@/components/SideNavLinks/AdminSideNavLinks'
-import { SideNavLinks } from '@/components/SideNavLinks/SideNavLinks'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeCloseIcon from '@/icons/stroke-close.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { AdminSideNavLinks } from './components/AdminSideNavLinks'
+import { HubPageNavigation } from './components/HubPageNavigation'
+import { SideNavLinks } from './components/SideNavLinks'
 import styles from './LateralPanel.module.scss'
 
 interface LateralPanelProps {
-  lateralPanelOpen: boolean
-  setLateralPanelOpen: (value: boolean) => void
-  openButtonRef: React.RefObject<HTMLButtonElement>
   closeButtonRef: React.RefObject<HTMLButtonElement>
-  navPanel: React.RefObject<HTMLDivElement>
   isAdminArea?: boolean
   isHubPage?: boolean
+  isOpen: boolean
+  navPanel: React.RefObject<HTMLDivElement>
+  openButtonRef: React.RefObject<HTMLButtonElement>
+  onToggle: (value: boolean) => void
 }
 
 export const LateralPanel = ({
-  lateralPanelOpen,
-  setLateralPanelOpen,
-  openButtonRef,
   closeButtonRef,
-  navPanel,
   isAdminArea = false,
-  isHubPage,
+  isHubPage = false,
+  isOpen,
+  navPanel,
+  openButtonRef,
+  onToggle,
 }: LateralPanelProps) => {
-  const { pathname } = useLocation()
-  const isActualHubPage = isHubPage ?? pathname === '/hub'
   useEffect(() => {
     const modalElement = navPanel.current
     if (!modalElement) {
@@ -60,21 +57,14 @@ export const LateralPanel = ({
       }
     }
 
-    if (lateralPanelOpen) {
+    if (isOpen) {
       modalElement.addEventListener('keydown', handleTabKeyPress)
     }
 
     return () => {
       modalElement.removeEventListener('keydown', handleTabKeyPress)
     }
-  }, [lateralPanelOpen, navPanel])
-
-  let Navigation = SideNavLinks
-  if (isActualHubPage) {
-    Navigation = HubPageNavigation
-  } else if (isAdminArea) {
-    Navigation = AdminSideNavLinks
-  }
+  }, [isOpen, navPanel])
 
   return (
     <nav
@@ -83,24 +73,24 @@ export const LateralPanel = ({
       tabIndex={-1}
       className={classnames({
         [styles['lateral-panel-wrapper']]: true,
-        [styles['lateral-panel-wrapper-open']]: lateralPanelOpen,
+        [styles['lateral-panel-wrapper-open']]: isOpen,
       })}
       ref={navPanel}
       aria-label="Menu principal"
     >
       <div className={styles['lateral-panel-menu']}>
-        {lateralPanelOpen && (
+        {isOpen && (
           <div
             className={classnames({
               [styles['lateral-panel-nav']]: true,
-              [styles['lateral-panel-nav-open']]: lateralPanelOpen,
+              [styles['lateral-panel-nav-open']]: isOpen,
             })}
           >
             <Button
-              aria-expanded={lateralPanelOpen}
+              aria-expanded={isOpen}
               variant={ButtonVariant.TERNARY}
               onClick={() => {
-                setLateralPanelOpen(!lateralPanelOpen)
+                onToggle(!isOpen)
                 openButtonRef.current?.focus()
               }}
               aria-label="Fermer"
@@ -119,7 +109,14 @@ export const LateralPanel = ({
             />
           </div>
         )}
-        <Navigation isLateralPanelOpen={lateralPanelOpen} />
+
+        {isHubPage && <HubPageNavigation isLateralPanelOpen={isOpen} />}
+        {!isHubPage && (
+          <>
+            {!isAdminArea && <SideNavLinks isLateralPanelOpen={isOpen} />}
+            {isAdminArea && <AdminSideNavLinks isLateralPanelOpen={isOpen} />}
+          </>
+        )}
       </div>
     </nav>
   )
