@@ -12,6 +12,7 @@ import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
+import styles from '@/pages/IndividualOffers/IndividualOffersContainer/IndividualOffersContainer.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
@@ -109,6 +110,7 @@ export const IndividualOffersSearchFilters = ({
           onChange={handleChange}
           disabled={disableAllFilters}
           options={individualFilterStatus}
+          className={styles['select-filter']}
         />
 
         <Select
@@ -119,6 +121,7 @@ export const IndividualOffersSearchFilters = ({
           name="offererAddressId"
           options={offererAddresses}
           value={selectedFilters.offererAddressId}
+          className={styles['select-filter']}
         />
 
         {categories && (
@@ -130,6 +133,7 @@ export const IndividualOffersSearchFilters = ({
             name="categoryId"
             options={categories}
             value={selectedFilters.categoryId}
+            className={styles['select-filter']}
           />
         )}
 
@@ -140,6 +144,7 @@ export const IndividualOffersSearchFilters = ({
           name="creationMode"
           options={CREATION_MODES_OPTIONS}
           value={selectedFilters.creationMode}
+          className={styles['select-filter']}
         />
       </FormLayout.Row>
 

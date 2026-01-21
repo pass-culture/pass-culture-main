@@ -1,5 +1,5 @@
 import cn from 'classnames'
-import { type ChangeEvent, useId } from 'react'
+import type { ChangeEvent } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -28,8 +28,6 @@ export const FilterByOmniSearch = ({
   updateFilters,
 }: FilterByOmniSearchProps) => {
   const { logEvent } = useAnalytics()
-
-  const criteriaSelectId = useId()
 
   const omnisearchFiltersOptions = INDIVIDUAL_OMNISEARCH_FILTERS
 

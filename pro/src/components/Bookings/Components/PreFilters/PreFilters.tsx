@@ -116,9 +116,9 @@ export const PreFilters = ({
               onChange={(event) =>
                 updateSelectedFilters({
                   offerEventDate:
-                    event.target.value !== ''
-                      ? event.target.value
-                      : DEFAULT_PRE_FILTERS.offerEventDate,
+                    event.target.value === ''
+                      ? DEFAULT_PRE_FILTERS.offerEventDate
+                      : event.target.value,
                 })
               }
               disabled={isFiltersDisabled}

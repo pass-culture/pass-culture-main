@@ -1,11 +1,12 @@
-import classNames from 'classnames'
+import cn from 'classnames'
 import { type ForwardedRef, forwardRef, useId } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FieldFooter } from '@/design-system/common/FieldFooter/FieldFooter'
 import { FieldHeader } from '@/design-system/common/FieldHeader/FieldHeader'
 import type { RequiredIndicator } from '@/design-system/common/types'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import fullDownIcon from '@/icons/full-down.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Select.module.scss'
 
@@ -32,18 +33,18 @@ export const Select = forwardRef(
   (
     {
       name,
-      defaultOption = null,
+      label,
       options,
-      className,
+      defaultOption = null,
       required = false,
       disabled,
-      label,
-      onChange,
-      onBlur,
       error,
       requiredIndicator = 'symbol',
-      value,
+      className,
       ariaLabel,
+      value,
+      onChange,
+      onBlur,
     }: SelectProps<string | number>,
     ref: ForwardedRef<HTMLSelectElement>
   ): JSX.Element => {
@@ -51,7 +52,7 @@ export const Select = forwardRef(
     const errorId = useId()
 
     return (
-      <div className={classNames(styles['select'], className)}>
+      <div className={cn(styles['select'], className)}>
         <div className={styles['select-field']}>
           <FieldHeader
             label={label}
@@ -59,22 +60,44 @@ export const Select = forwardRef(
             required={required}
             requiredIndicator={requiredIndicator}
           />
-          <SelectInput
-            disabled={disabled}
-            hasError={Boolean(error)}
-            options={options}
-            defaultOption={defaultOption}
-            aria-required={required}
-            onBlur={onBlur}
-            onChange={onChange}
-            name={name}
-            value={value}
-            aria-describedby={error ? errorId : undefined}
-            ref={ref}
-            id={fieldId}
-            aria-label={ariaLabel}
-          />
+
+          <div className={styles['select-input-wrapper']}>
+            <select
+              ref={ref}
+              id={fieldId}
+              name={name}
+              disabled={disabled}
+              value={value}
+              aria-label={ariaLabel}
+              aria-required={required}
+              aria-invalid={Boolean(error)}
+              aria-describedby={error ? errorId : undefined}
+              className={cn(styles['select-input'], {
+                [styles['has-error']]: Boolean(error),
+                [styles['select-input-placeholder']]: value === '',
+                [styles['has-value']]: !!value,
+              })}
+              onBlur={onBlur}
+              onChange={onChange}
+            >
+              {defaultOption && (
+                <option value={defaultOption.value}>
+                  {defaultOption.label}
+                </option>
+              )}
+              {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            <div className={styles['select-input-icon']}>
+              <SvgIcon src={fullDownIcon} alt="" />
+            </div>
+          </div>
         </div>
+
         <FieldFooter error={error} errorId={errorId} />
       </div>
     )
