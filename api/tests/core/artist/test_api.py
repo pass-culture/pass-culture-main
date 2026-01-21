@@ -1,3 +1,5 @@
+from unittest import mock
+
 import pytest
 
 import pcapi.core.artist.factories as artist_factories
@@ -6,6 +8,7 @@ from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.api import create_artist_offer_link
 from pcapi.core.artist.api import get_artist_image_url
+from pcapi.core.artist.api import upsert_artist_offer_links
 from pcapi.models import db
 from pcapi.routes.serialization import artist_serialize
 
@@ -156,3 +159,71 @@ class CreateArtistOfferLinkTest:
 
         with pytest.raises(artist_exceptions.InvalidArtistDataException):
             create_artist_offer_link(offer.id, link_data)
+
+
+@pytest.mark.usefixtures("db_session")
+class UpsertArtistOfferLinksTest:
+    def test_patch_offer_with_new_link(self):
+        offer = offers_factories.OfferFactory()
+        artist = artist_factories.ArtistFactory()
+
+        incoming_links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
+            )
+        ]
+
+        upsert_artist_offer_links(incoming_links, offer)
+
+        links = db.session.query(artist_models.ArtistOfferLink).all()
+        assert len(links) == 1
+        assert links[0].offer_id == offer.id
+        assert links[0].artist_id == artist.id
+        assert links[0].artist_type == artist_models.ArtistType.PERFORMER
+        assert links[0].custom_name is None
+
+    def test_patch_offer_without_link(self):
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory()
+        artist_factories.ArtistOfferLinkFactory(artist_id=artist.id, offer_id=offer.id)
+
+        upsert_artist_offer_links([], offer)
+
+        links = db.session.query(artist_models.ArtistOfferLink).all()
+        assert len(links) == 0
+
+    def test_patch_offer_with_existing_link(self):
+        artist = artist_factories.ArtistFactory()
+        offer = offers_factories.OfferFactory()
+        existing_link = artist_factories.ArtistOfferLinkFactory(artist_id=artist.id, offer_id=offer.id)
+        existing_link_id = existing_link.id
+
+        incoming_links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artistId=existing_link.artist_id,
+                artistType=existing_link.artist_type,
+                customName=None,
+            )
+        ]
+        upsert_artist_offer_links(incoming_links, offer)
+
+        links = db.session.query(artist_models.ArtistOfferLink).all()
+        assert len(links) == 1
+        assert links[0].id == existing_link_id
+
+    @mock.patch("pcapi.core.artist.api.create_artist_offer_link")
+    def test_patch_offer_with_duplicate_link(self, mock_create_artist_offer_link):
+        offer = offers_factories.OfferFactory()
+        artist = artist_factories.ArtistFactory()
+
+        incoming_links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
+            ),
+            artist_serialize.ArtistOfferResponseModel(
+                artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
+            ),
+        ]
+        upsert_artist_offer_links(incoming_links, offer)
+        mock_create_artist_offer_link.assert_called()
+        len(mock_create_artist_offer_link.call_args_list) == 2

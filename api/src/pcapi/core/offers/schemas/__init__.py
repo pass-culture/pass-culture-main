@@ -81,6 +81,7 @@ class UpdateOffer(BaseModel):
     motor_disability_compliant: bool | None = None
     visual_disability_compliant: bool | None = None
 
+    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel] | None = None
     location: offerers_schemas.LocationModel | offerers_schemas.LocationOnlyOnVenueModel | None = None
     booking_contact: EmailStr | None = None
     booking_email: EmailStr | None = None

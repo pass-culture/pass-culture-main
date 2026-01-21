@@ -474,6 +474,7 @@ def patch_offer(
                 "stock",
                 "venue",
                 "highlight_requests",
+                "artists",
             ],
         )
     except exceptions.OfferNotFound:
@@ -502,6 +503,7 @@ def patch_offer(
             "stock",
             "venue",
             "highlight_requests",
+            "artists",
         ],
     )
 

@@ -39,6 +39,7 @@ import pcapi.core.search.testing as search_testing
 import pcapi.core.users.factories as users_factories
 import pcapi.core.users.models as users_models
 from pcapi.core import search
+from pcapi.core.artist.api import ArtistOfferLinkKey
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.models import EacFormat
 from pcapi.core.offerers.schemas import VenueTypeCode
@@ -60,6 +61,7 @@ from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.notifications.push import testing as push_testing
+from pcapi.routes.serialization import artist_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.transaction_manager import atomic
@@ -2052,6 +2054,129 @@ class UpdateOfferTest:
         mock_check_withdrawal.assert_called_once()
         call_args = mock_check_withdrawal.call_args
         assert call_args[1]["subcategory_id"] == subcategories.SPECTACLE_REPRESENTATION.id
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=False)
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
+    def test_update_offer_with_artist_offer_links_when_feature_flag_disabled(self, mock_upsert_artist_offer_links):
+        offer = factories.OfferFactory()
+
+        artist_offer_links = [
+            {
+                "artistId": "any-id",
+                "artistType": artist_models.ArtistType.PERFORMER,
+                "customName": None,
+            }
+        ]
+        body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
+
+        api.update_offer(offer, body)
+
+        mock_upsert_artist_offer_links.assert_not_called()
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
+    def test_update_offer_without_artist_offer_links_when_feature_flag_enabled(self, mock_upsert_artist_offer_links):
+        offer = factories.OfferFactory()
+        body = offers_schemas.UpdateOffer(name="Updated Name")
+
+        api.update_offer(offer, body)
+
+        mock_upsert_artist_offer_links.assert_not_called()
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links", return_value=([], []))
+    def test_update_offer_with_artist_offer_links_when_feature_flag_enabled(self, mock_upsert_artist_offer_links):
+        offer = factories.OfferFactory()
+
+        artist_offer_links = [
+            {
+                "artistId": "any-id",
+                "artistType": artist_models.ArtistType.PERFORMER,
+                "customName": None,
+            }
+        ]
+        body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
+
+        api.update_offer(offer, body)
+
+        mock_upsert_artist_offer_links.assert_called_once_with(
+            [
+                artist_serialize.ArtistOfferResponseModel(
+                    artistId="any-id", artistType=artist_models.ArtistType.PERFORMER, customName=None
+                )
+            ],
+            offer,
+        )
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
+    def test_update_offer_log_deleted_artist_offer_links(self, mock_upsert_artist_offer_links, caplog):
+        offer = factories.OfferFactory()
+
+        deleted_key = ArtistOfferLinkKey("author", "artist-id", None)
+        mock_upsert_artist_offer_links.return_value = ([], [deleted_key])
+
+        artist_offer_links = [
+            {
+                "artistId": "any-id",
+                "artistType": artist_models.ArtistType.PERFORMER,
+                "customName": None,
+            }
+        ]
+        body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
+        api.update_offer(offer, body)
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer(offer, body)
+
+        deletion_logs = [
+            record for record in caplog.records if "Artist offer links have been deleted" in record.message
+        ]
+
+        assert len(deletion_logs) == 1
+
+        log_record = deletion_logs[0]
+        assert log_record.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "links": [str(ArtistOfferLinkKey(artist_type="author", artist_id="artist-id", custom_name=None))],
+        }
+        assert log_record.technical_message_id == "offer.artistOfferLinks.deleted"
+
+    @pytest.mark.features(WIP_OFFER_ARTISTS=True)
+    @mock.patch("pcapi.core.artist.api.upsert_artist_offer_links")
+    def test_update_offer_log_created_artist_offer_links(self, mock_upsert_artist_offer_links, caplog):
+        offer = factories.OfferFactory()
+
+        created_key = ArtistOfferLinkKey("author", "artist-id", None)
+        mock_upsert_artist_offer_links.return_value = ([created_key], [])
+
+        artist_offer_links = [
+            {
+                "artistId": "artist-id",
+                "artistType": artist_models.ArtistType.PERFORMER,
+                "customName": None,
+            }
+        ]
+        body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
+        api.update_offer(offer, body)
+
+        with caplog.at_level(logging.INFO):
+            api.update_offer(offer, body)
+
+        creation_logs = [
+            record for record in caplog.records if "Artist offer links have been created" in record.message
+        ]
+
+        assert len(creation_logs) == 1
+
+        log_record = creation_logs[0]
+        assert log_record.extra == {
+            "offer_id": offer.id,
+            "venue_id": offer.venueId,
+            "links": [str(ArtistOfferLinkKey(artist_type="author", artist_id="artist-id", custom_name=None))],
+        }
+        assert log_record.technical_message_id == "offer.artistOfferLinks.created"
 
 
 now_datetime_with_tz = datetime.now(timezone.utc)

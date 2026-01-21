@@ -318,6 +318,8 @@ def update_offer(
 ) -> models.Offer:
     aliases = set(body.dict(by_alias=True))
     fields = body.dict(by_alias=True, exclude_unset=True)
+    fields.pop("artistOfferLinks", None)
+    artist_offer_links = body.artist_offer_links
 
     # updated using the pro interface
     if body.location:
@@ -355,6 +357,29 @@ def update_offer(
 
     subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+
+    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links is not None:
+        created_links, deleted_links = artist_api.upsert_artist_offer_links(artist_offer_links, offer)
+        db.session.expire(offer, ["artistOfferLinks"])
+
+        if deleted_links:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Artist offer links have been deleted",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in deleted_links]},
+                    technical_message_id="offer.artistOfferLinks.deleted",
+                )
+            )
+        if created_links:
+            on_commit(
+                partial(
+                    logger.info,
+                    "Artist offer links have been created",
+                    extra={"offer_id": offer.id, "venue_id": offer.venueId, "links": [str(k) for k in created_links]},
+                    technical_message_id="offer.artistOfferLinks.created",
+                )
+            )
 
     if not updates:
         return offer

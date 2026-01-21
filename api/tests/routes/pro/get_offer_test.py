@@ -5,13 +5,13 @@ from datetime import timedelta
 import pytest
 import time_machine
 
+import pcapi.core.artist.factories as artist_factories
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.highlights.factories as highlights_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.core.users.factories as users_factories
 from pcapi.core import testing
-from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offers.models import WithdrawalTypeEnum
@@ -468,17 +468,17 @@ class Returns200Test:
         offer_id = offer.id
         artist = artist_factories.ArtistFactory()
         another_artist = artist_factories.ArtistFactory()
-        offers_factories.ArtistOfferLinkFactory(
-            offer_id=offer_id,
+        artist_factories.ArtistOfferLinkFactory(
+            offer_id=offer.id,
             artist_id=artist.id,
         )
-        offers_factories.ArtistOfferLinkFactory(
-            offer_id=offer_id,
+        artist_factories.ArtistOfferLinkFactory(
+            offer_id=offer.id,
             artist_id=another_artist.id,
         )
         custom_name = "Simone"
-        offers_factories.ArtistOfferLinkFactory(
-            offer_id=offer_id,
+        artist_factories.ArtistOfferLinkFactory(
+            offer_id=offer.id,
             custom_name=custom_name,
             artist_type=artist_models.ArtistType.AUTHOR,
         )
