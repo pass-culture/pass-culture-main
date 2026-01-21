@@ -35,7 +35,7 @@
     flex-shrink: 0;
   }
 
-  @media (min-width: size.$laptop) {
+  @media (min-width: size.$tablet) {
     .burger-icon {
       display: none;
     }
@@ -58,7 +58,7 @@
       width: rem.torem(80px);
     }
 
-    @media (min-width: size.$laptop) {
+    @media (min-width: size.$tablet) {
       margin-left: var(--size-spacing-l);
     }
 

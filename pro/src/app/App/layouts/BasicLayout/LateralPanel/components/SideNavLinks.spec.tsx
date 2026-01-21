@@ -432,7 +432,7 @@ describe('SideNavLinks', () => {
     })
 
     it('should display switch venue button with selected venue name', () => {
-      const selectedVenueName = 'Ma Super Structure'
+      const selectedVenuePublicName = 'Nom public de la structure'
 
       renderSideNavLinks({
         storeOverrides: {
@@ -442,18 +442,18 @@ describe('SideNavLinks', () => {
             },
           },
           user: {
-            selectedVenue: { id: 123, name: selectedVenueName },
+            selectedVenue: { id: 123, publicName: selectedVenuePublicName },
           },
         },
         features,
       })
 
       const switchVenueButton = screen.getByRole('link', {
-        name: `Changer de structure (actuellement sélectionnée : ${selectedVenueName})`,
+        name: `Changer de structure (actuellement sélectionnée : ${selectedVenuePublicName})`,
       })
       expect(switchVenueButton).toBeInTheDocument()
       expect(switchVenueButton).toHaveAttribute('href', '/hub')
-      expect(screen.getByText(selectedVenueName)).toBeInTheDocument()
+      expect(screen.getByText(selectedVenuePublicName)).toBeInTheDocument()
     })
 
     it('should not display switch venue button when no venue is selected', () => {
