@@ -14,10 +14,9 @@ export function HeadlineOffer() {
   const { logEvent } = useAnalytics()
   const { currentUser } = useCurrentUser()
 
-  const { isHeadlineOfferAllowedForOfferer, headlineOffer } =
-    useHeadlineOfferContext()
+  const { headlineOffer } = useHeadlineOfferContext()
 
-  if (!isHeadlineOfferAllowedForOfferer || !headlineOffer) {
+  if (!headlineOffer) {
     return
   }
 
