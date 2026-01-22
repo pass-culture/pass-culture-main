@@ -97,7 +97,9 @@ jobs:
   # As soon as we are confident in our staging automatic deployments
   deploy-ehp:
     name: "Deploy on EHP environnement"
-    needs: version
+    needs:
+      - version
+      - environment-short-name
     if: github.event.inputs.target_environment != 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
