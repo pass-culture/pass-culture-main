@@ -214,7 +214,7 @@ test.describe('Cookie banner', () => {
         .click()
       await expect(page.locator('.orejime-Modal')).not.toBeVisible()
 
-      await page.getByTestId('offerer-select').click()
+      await page.getByTestId('profile-button').click()
       await expect(page.getByTestId('header-dropdown-menu-div')).toBeVisible()
       await page.getByText('Se déconnecter').click()
       await expect(page).toHaveURL(/\/connexion/)
