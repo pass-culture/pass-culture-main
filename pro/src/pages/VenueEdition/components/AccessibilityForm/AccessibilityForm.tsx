@@ -13,14 +13,12 @@ import { AccessibilityCallout } from '../AccessibilityCallout/AccessibilityCallo
 import styles from './AccessibilityForm.module.scss'
 
 export interface AccessiblityFormProps {
-  isVenuePermanent?: boolean
   externalAccessibilityId: GetVenueResponseModel['externalAccessibilityId']
   externalAccessibilityData: GetVenueResponseModel['externalAccessibilityData']
   isSubSubSection?: boolean
 }
 
 export const AccessibilityForm = ({
-  isVenuePermanent,
   externalAccessibilityId,
   externalAccessibilityData,
   isSubSubSection,
@@ -79,9 +77,7 @@ export const AccessibilityForm = ({
               />
             </FormLayout.Row>
           )}
-          {isVenuePermanent && (
-            <AccessibilityCallout className={styles['callout']} />
-          )}
+          <AccessibilityCallout className={styles['callout']} />
         </>
       )}
     </FormLayoutSection>

@@ -81,13 +81,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
   )
   const isCaledonian = useIsCaledonian()
 
-  const permanentVenues =
-    selectedOfferer?.managedVenues?.filter((v) => v.isPermanent) ?? []
   const hasPartnerPageVenues =
     selectedOfferer?.managedVenues?.filter((v) => v.hasPartnerPage) ?? []
   const venueId = withSwitchVenueFeature
     ? selectedVenue?.id
-    : permanentVenues[0]?.id
+    : selectedOfferer?.managedVenues?.[0]?.id
 
   // Keep: this makes the “resize → auto-collapse to matching section” work.
   // biome-ignore lint/correctness/useExhaustiveDependencies: We do not want the changes if the state changes

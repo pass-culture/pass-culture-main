@@ -61,7 +61,7 @@ export const VenueEdition = (): JSX.Element | null => {
       : 'address'
 
   const venuesOptions: SelectOption[] = formatAndOrderVenues(
-    venues.filter((venue) => venue.hasCreatedOffer && venue.isPermanent) ?? []
+    venues.filter((venue) => venue.hasCreatedOffer) ?? []
   ).map((venue) => ({
     value: String(venue.value),
     label: venue.label,
@@ -139,16 +139,12 @@ export const VenueEdition = (): JSX.Element | null => {
           )}
           <VenueEditionHeader venue={venue} context={context} key={venue.id} />
 
-          {!venue.isPermanent && (
-            <NavLinkItems
-              links={tabs}
-              navLabel={`Sous menu - ${titleText}`}
-              selectedKey={
-                context === 'collective' ? 'collective' : 'individual'
-              }
-              className={styles['tabs']}
-            />
-          )}
+          <NavLinkItems
+            links={tabs}
+            navLabel={`Sous menu - ${titleText}`}
+            selectedKey={context === 'collective' ? 'collective' : 'individual'}
+            className={styles['tabs']}
+          />
 
           {context === 'collective' ? (
             <CollectiveDataEdition venue={venue} />

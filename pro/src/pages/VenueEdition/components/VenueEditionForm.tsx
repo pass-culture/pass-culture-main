@@ -256,7 +256,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                     </FormLayout.Row>
                   </FormLayout.SubSubSection>
                   <AccessibilityForm
-                    isVenuePermanent={!!venue.isPermanent}
                     externalAccessibilityId={venue.externalAccessibilityId}
                     externalAccessibilityData={venue.externalAccessibilityData}
                     isSubSubSection

@@ -59,8 +59,7 @@ export function HeadlineOfferContextProvider({
   const nonVirtualVenues =
     data?.venues?.filter((venue) => !venue.isVirtual) || []
 
-  const isHeadlineOfferAllowedForOfferer =
-    nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
+  const isHeadlineOfferAllowedForOfferer = nonVirtualVenues.length === 1
 
   const { data: rawHeadlineOffer, error } = useSWR(
     selectedOffererId && isHeadlineOfferAllowedForOfferer
