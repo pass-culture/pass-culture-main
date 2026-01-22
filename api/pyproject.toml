@@ -50,7 +50,7 @@ openpyxl = "^3.1.5"
 phonenumberslite = "9.0.21"
 pillow = "12.1.0"
 prometheus-flask-exporter = "^0.23.2"
-protobuf = "6.33.2"
+protobuf = "6.33.4"
 psycopg2 = "^2.9.11"
 py7zr = "^1.1.0"
 # required by schwifty upgraded manually because of setuptools
