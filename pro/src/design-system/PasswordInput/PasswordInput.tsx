@@ -71,11 +71,7 @@ export const PasswordInput = React.forwardRef(
       }
     }
 
-    const showPasswordIcon = disabled
-      ? ''
-      : isPasswordHidden
-        ? strokeHideIcon
-        : strokeShowIcon
+    const passwordIcon = isPasswordHidden ? strokeHideIcon : strokeShowIcon
 
     return (
       <>
@@ -99,7 +95,7 @@ export const PasswordInput = React.forwardRef(
             requiredIndicator={requiredIndicator}
             required={required}
             iconButton={{
-              icon: showPasswordIcon,
+              icon: disabled ? '' : passwordIcon,
               label: isPasswordHidden
                 ? 'Afficher le mot de passe'
                 : 'Cacher le mot de passe',
