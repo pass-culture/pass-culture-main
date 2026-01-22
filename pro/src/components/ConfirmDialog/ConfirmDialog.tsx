@@ -58,6 +58,7 @@ export const ConfirmDialog = ({
       isLoading={isLoading}
       disabled={isLoading || confirmButtonDisabled}
       label={confirmText}
+      data-testid="confirm-dialog-button-confirm"
     />
   )
 

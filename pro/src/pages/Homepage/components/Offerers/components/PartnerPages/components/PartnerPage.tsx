@@ -94,7 +94,6 @@ export const PartnerPage = ({
           hideActionButtons
           onClickButtonImageAdd={logButtonAddClick}
         />
-
         <div className={styles['venue']}>
           <div className={styles['venue-type']}>{venue.venueType.label}</div>
           <h3 className={styles['venue-name']}>{venue.publicName}</h3>

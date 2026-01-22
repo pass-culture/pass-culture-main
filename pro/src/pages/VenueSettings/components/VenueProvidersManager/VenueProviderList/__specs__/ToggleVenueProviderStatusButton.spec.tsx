@@ -107,7 +107,7 @@ describe('ToggleVenueProviderStatusButton', () => {
 
       // Confirm the action
       const confirmButton = screen.getByRole('button', {
-        name: 'Je confirme le changement',
+        name: 'Mettre en pause la synchronisation',
       })
       await userEvent.click(confirmButton)
 
@@ -157,7 +157,7 @@ describe('ToggleVenueProviderStatusButton', () => {
 
       // Confirm the action
       const confirmButton = screen.getByRole('button', {
-        name: 'Je confirme le changement',
+        name: 'Réactiver la synchronisation',
       })
       await userEvent.click(confirmButton)
 
@@ -204,7 +204,7 @@ describe('ToggleVenueProviderStatusButton', () => {
 
       // Confirm the action
       const confirmButton = screen.getByRole('button', {
-        name: 'Je confirme le changement',
+        name: 'Mettre en pause la synchronisation',
       })
       await userEvent.click(confirmButton)
 
