@@ -43,54 +43,43 @@ export const ActionBar = ({
       used: SignupJourneyAction.ActionBar,
     })
   }
-  const Left = () => {
-    if (!onClickPrevious) {
-      return null
-    }
-
-    return (
-      <Button
-        icon={fullLeftIcon}
-        onClick={() => {
-          onClickPrevious()
-          if (previousTo) {
-            logActionBarNavigation(previousTo)
-          }
-        }}
-        type="button"
-        variant={ButtonVariant.SECONDARY}
-        disabled={isDisabled}
-        label={previousStepTitle}
-      />
-    )
-  }
-
-  const Right = () => {
-    if (hideRightButton) {
-      return null
-    }
-
-    return (
-      <Button
-        type="submit"
-        icon={withRightIcon ? fullRightIcon : undefined}
-        iconPosition={IconPositionEnum.RIGHT}
-        disabled={isDisabled}
-        onClick={() => {
-          onClickNext?.()
-          if (nextTo) {
-            logActionBarNavigation(nextTo)
-          }
-        }}
-        label={nextStepTitle}
-      />
-    )
-  }
 
   return (
     <ActionsBarSticky hasSideNav={false}>
-      <ActionsBarSticky.Left>{Left()}</ActionsBarSticky.Left>
-      <ActionsBarSticky.Right>{Right()}</ActionsBarSticky.Right>
+      <ActionsBarSticky.Left>
+        {!!onClickPrevious && (
+          <Button
+            icon={fullLeftIcon}
+            onClick={() => {
+              onClickPrevious()
+              if (previousTo) {
+                logActionBarNavigation(previousTo)
+              }
+            }}
+            type="button"
+            variant={ButtonVariant.SECONDARY}
+            disabled={isDisabled}
+            label={previousStepTitle}
+          />
+        )}
+      </ActionsBarSticky.Left>
+      <ActionsBarSticky.Right>
+        {!hideRightButton && (
+          <Button
+            type="submit"
+            icon={withRightIcon ? fullRightIcon : undefined}
+            iconPosition={IconPositionEnum.RIGHT}
+            disabled={isDisabled}
+            onClick={() => {
+              onClickNext?.()
+              if (nextTo) {
+                logActionBarNavigation(nextTo)
+              }
+            }}
+            label={nextStepTitle}
+          />
+        )}
+      </ActionsBarSticky.Right>
     </ActionsBarSticky>
   )
 }

@@ -72,10 +72,9 @@ export const Offerers = (): JSX.Element => {
 
   useEffect(() => {
     if (venuesOfOffererError) {
-      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       navigate('/inscription/structure/recherche')
     }
-  }, [isLoadingVenues, venuesOfOffererError])
+  }, [venuesOfOffererError, navigate])
 
   if (isLoadingVenues || !offerer) {
     return <Spinner />
