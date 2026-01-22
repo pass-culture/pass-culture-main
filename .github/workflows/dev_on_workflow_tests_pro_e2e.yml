@@ -64,7 +64,7 @@ jobs:
         run: yarn build:${{ inputs.ENV }}
 
       - name: Save build folder
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: build
           if-no-files-found: error
