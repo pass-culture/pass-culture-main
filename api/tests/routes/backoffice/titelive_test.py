@@ -1,5 +1,4 @@
 import datetime
-import html
 from unittest.mock import patch
 
 import pytest
@@ -73,10 +72,7 @@ class SearchEanTest(GetEndpointHelper):
         assert "EAN-13 : " + BOOK_BY_SINGLE_EAN_FIXTURE["ean"] in card_text[0]
         assert "Lectorat : " + format_titelive_id_lectorat(article["id_lectorat"]) in card_text[0]
         assert (
-            "Prix HT : "
-            + str(article["prixpays"]["fr"]["value"])
-            + " "
-            + html.unescape(article["prixpays"]["fr"]["devise"])
+            "Prix HT : " + str(article["prixpays"]["fr"]["value"]) + " " + article["prixpays"]["fr"]["devise"]
             in card_text[0]
         )
         assert "Taux TVA : " + article["taux_tva"] + " %" in card_text[0]

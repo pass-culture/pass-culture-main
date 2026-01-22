@@ -15,17 +15,17 @@
                   {% if article.image %}
                     <img class="img-fluid rounded-start object-fit-contain"
                          src="{{ article.imagesUrl.recto }}"
-                         alt="Illustration pour {{ json.oeuvre.titre|unescape }}"
-                         title="Illustration pour {{ json.oeuvre.titre|unescape }}" />
+                         alt="Illustration pour {{ json.oeuvre.titre }}"
+                         title="Illustration pour {{ json.oeuvre.titre }}" />
                   {% endif %}
                 {% endfor %}
               </div>
               <div class="col-md-8">
                 <div class="card-body">
-                  <h5 class="card-title">{{ json.oeuvre.titre|unescape }}</h5>
+                  <h5 class="card-title">{{ json.oeuvre.titre }}</h5>
                   {% for article in json.oeuvre.article %}
                     <p class="card-text text-truncate"
-                       title="{{ article.resume|unescape }}">{{ article.resume|unescape }}</p>
+                       title="{{ article.resume }}">{{ article.resume }}</p>
                   {% endfor %}
                 </div>
                 <ul class="list-group list-group-flush">
@@ -42,7 +42,7 @@
                     {% if article.prixpays.fr %}
                       <li class="list-group-item">
                         <b>Prix HT
-                          :</b> {{ article.prixpays.fr.value }} {{ article.prixpays.fr.devise|unescape }}
+                          :</b> {{ article.prixpays.fr.value }} {{ article.prixpays.fr.devise }}
                         </li>
                       {% endif %}
                       <li class="list-group-item">
@@ -62,7 +62,7 @@
                           <ul class="mt-2">
                             {% for key, value in article.gtl.first.items() %}
                               <li>
-                                {{ value.libelle|unescape }} ({{ value.code|format_gtl_id }})
+                                {{ value.libelle }} ({{ value.code|format_gtl_id }})
                                 <ul class="mt-2">
                                   {% set csr = value.code|format_gtl_id|format_gtl_as_csr %}
                                   {% if csr %}<li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>{% endif %}

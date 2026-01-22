@@ -7,17 +7,17 @@
           {% if article.image %}
             <img class="img-fluid rounded-start object-fit-contain"
                  src="{{ article.imagesUrl.recto }}"
-                 alt="Illustration pour {{ titelive_data.oeuvre.titre|unescape }}"
-                 title="Illustration pour {{ titelive_data.oeuvre.titre|unescape }}" />
+                 alt="Illustration pour {{ titelive_data.oeuvre.titre }}"
+                 title="Illustration pour {{ titelive_data.oeuvre.titre }}" />
           {% endif %}
         {% endfor %}
       </div>
       <div class="col-md-8">
         <div class="card-body">
-          <h5 class="card-title">{{ titelive_data.oeuvre.titre|unescape }}</h5>
+          <h5 class="card-title">{{ titelive_data.oeuvre.titre }}</h5>
           {% for article in titelive_data.oeuvre.article %}
             <p class="card-text"
-               title="{{ article.resume|unescape }}">{{ article.resume|unescape }}</p>
+               title="{{ article.resume }}">{{ article.resume }}</p>
           {% endfor %}
         </div>
         <ul class="list-group list-group-flush">
@@ -66,7 +66,7 @@
                   <ul class="mt-2">
                     {% for key, value in article.gtl.first.items() %}
                       <li>
-                        {{ value.libelle|unescape }} ({{ value.code|format_gtl_id }})
+                        {{ value.libelle }} ({{ value.code|format_gtl_id }})
                         <ul class="mt-2">
                           {% set csr = value.code|format_gtl_id|format_gtl_as_csr %}
                           {% if csr %}<li>Rayon (CSR): {{ csr.label }} ({{ csr.csr_id }})</li>{% endif %}
