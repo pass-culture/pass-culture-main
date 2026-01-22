@@ -41,6 +41,26 @@ jobs:
       GCP_EHP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
+  environment-short-name:
+    name: "Environment short name"
+    needs: check-workflow-ref
+    # `deploy` is an artificial environment with protection rules, which allows a single required review instead of many
+    environment: ${{ fromJSON('["deploy", "testing"]')[github.event.inputs.target_environment == 'testing'] }}
+    runs-on: ubuntu-22.04
+    outputs:
+      ENVIRONMENT_SHORT_NAME: ${{ steps.environment-short-name.outputs.ENVIRONMENT_SHORT_NAME }}
+    steps:
+      - name: "Retrieve environment short name"
+        id: "environment-short-name"
+        run: |
+          if [ "${{ github.event.inputs.target_environment }}" == "staging" ]; then
+            echo "ENVIRONMENT_SHORT_NAME=stg" | tee -a $GITHUB_OUTPUT
+          elif [ "${{ github.event.inputs.target_environment }}" == "production" ]; then
+            echo "ENVIRONMENT_SHORT_NAME=prd" | tee -a $GITHUB_OUTPUT
+          else
+            echo "ENVIRONMENT_SHORT_NAME=tst" | tee -a $GITHUB_OUTPUT
+          fi
+
   version:
     name: "Version"
     needs: check-workflow-ref
@@ -77,11 +97,13 @@ jobs:
   # As soon as we are confident in our staging automatic deployments
   deploy-ehp:
     name: "Deploy on EHP environnement"
-    needs: version
+    needs:
+      - version
+      - environment-short-name
     if: github.event.inputs.target_environment != 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
-      environment: ${{ github.event.inputs.target_environment }}
+      environment: ${{ needs.environment-short-name.outputs.ENVIRONMENT_SHORT_NAME }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
       workflow_cluster_name: gke-infra-prd-eu9
       workflow_project_id: pc-infra-prd
