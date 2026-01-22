@@ -1,0 +1,1 @@
+import{r as o}from"./iframe-CoaiUx00.js";import{a as e}from"./store-DbzJj_LB.js";import{S as t}from"./SnackBar-D3pptlbX.js";import{u as p}from"./useAppDispatch-CrDdgpyY.js";const S=()=>{const s=p(),a=o.useCallback((r,c)=>{s(e({description:r,variant:c}))},[s]);return o.useMemo(()=>({success:r=>a(r,t.SUCCESS),error:r=>a(r,t.ERROR)}),[a])};export{S as u};
