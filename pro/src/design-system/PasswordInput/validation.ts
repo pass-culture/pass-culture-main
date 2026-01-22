@@ -7,7 +7,7 @@ export const isPasswordValid = (password: string | undefined): boolean => {
   }
   const hasUpperCase = /[A-Z]/.test(password)
   const hasLowerCase = /[a-z]/.test(password)
-  const hasNumber = /[0-9]/.test(password)
+  const hasNumber = /\d/.test(password)
   const hasSymbole = /[!"#$%&'()*+,-./:;<=>?@[\\^_`{|}~\]]/.test(password)
   if (hasUpperCase && hasLowerCase && hasNumber && hasSymbole) {
     return true
@@ -49,7 +49,7 @@ export const passwordValidationStatus = (
   errors[PasswordValidationCheck.UPPER_CASE] = !hasUpperCase
   const hasLowerCase = /[a-z]/.test(password)
   errors[PasswordValidationCheck.LOWER_CASE] = !hasLowerCase
-  const hasNumber = /[0-9]/.test(password)
+  const hasNumber = /\d/.test(password)
   errors[PasswordValidationCheck.NUMBER] = !hasNumber
   const hasSymbole = /[!"#$%&'()*+,-./:;<=>?@[\\^_`{|}~\]]/.test(password)
   errors[PasswordValidationCheck.SYMBOLE] = !hasSymbole
