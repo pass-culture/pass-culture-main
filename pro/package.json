@@ -45,7 +45,7 @@
     "@firebase/app": "0.14.7",
     "@firebase/remote-config": "0.7.0",
     "@hookform/resolvers": "5.2.2",
-    "@pass-culture/design-system": "0.5.2",
+    "@pass-culture/design-system": "0.6.0",
     "@radix-ui/react-dialog": "1.1.15",
     "@radix-ui/react-dropdown-menu": "2.1.16",
     "@reduxjs/toolkit": "2.11.2",
