@@ -104,7 +104,7 @@ export const HeaderDropdown = () => {
       <DropdownMenu.Trigger asChild>
         <button
           className={styles['dropdown-button']}
-          data-testid="offerer-select"
+          data-testid="profile-button"
           type="button"
         >
           <SvgIcon src={fullProfilIcon} alt="Profil" width="18" />
@@ -141,7 +141,7 @@ export const HeaderDropdown = () => {
                 />
               </button>
             </DropdownMenu.Item>
-            {offererOptions.length >= 1 && (
+            {!withSwitchVenueFeature && offererOptions.length >= 1 && (
               <>
                 {selectedOffererName && (
                   <div className={styles['menu-email']}>

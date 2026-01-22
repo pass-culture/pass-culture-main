@@ -35,7 +35,7 @@ const renderLogExtraProData = async () => {
   )
 
   await waitFor(() => {
-    expect(screen.queryByTestId('offerer-select')).toBeInTheDocument()
+    expect(screen.queryByTestId('profile-button')).toBeInTheDocument()
   })
 
   return rendered

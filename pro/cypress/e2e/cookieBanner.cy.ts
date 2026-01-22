@@ -183,7 +183,7 @@ describe('Cookie banner', () => {
       cy.findByText('Enregistrer mes choix').clickWithRetryIfStillVisible()
 
       cy.stepLog({ message: 'I disconnect of my account' })
-      cy.findByTestId('offerer-select').click()
+      cy.findByTestId('profile-button').click()
       cy.findByTestId('header-dropdown-menu-div').should('exist')
       cy.contains('Se déconnecter').click()
       cy.url().should('contain', '/connexion')

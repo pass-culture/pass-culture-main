@@ -35,7 +35,7 @@ describe('Switch Offerer and Venue', () => {
     cy.stepLog({
       message: 'I select offerer "Unonboarded Offerer"',
     })
-    cy.findByTestId('offerer-select').click()
+    cy.findByTestId('profile-button').click()
     cy.findByText(/Changer/).click()
     cy.findByTestId('offerers-selection-menu')
       .findByText('Unonboarded Offerer')
