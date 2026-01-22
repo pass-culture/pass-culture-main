@@ -147,21 +147,27 @@ def _is_managed_session() -> bool:
 def _finalize_managed_session() -> None:
     if not _is_managed_session():
         return
-    success = False
-    if g._session_to_commit:
-        db.session.commit()
-        success = True
-    else:
-        db.session.rollback()
 
-    g.pop("_session_to_commit", None)
-    g.pop("_managed_session", None)
-    if success:
-        on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
-        for callback in on_commit_callbacks:
-            if not callback():
-                break
-    g.pop("_on_commit_callbacks", None)
+    success = False
+    try:
+        if g._session_to_commit:
+            db.session.commit()
+            success = True
+        else:
+            db.session.rollback()
+    except:
+        db.session.rollback()
+        raise
+    finally:
+        g.pop("_session_to_commit", None)
+        g.pop("_managed_session", None)
+
+        if success:
+            on_commit_callbacks = getattr(g, "_on_commit_callbacks", [])
+            for callback in on_commit_callbacks:
+                if not callback():
+                    break
+        g.pop("_on_commit_callbacks", None)
 
 
 def on_commit(func: typing.Callable[[], typing.Any], *, robust: bool = False) -> None:
