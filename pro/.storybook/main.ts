@@ -1,4 +1,6 @@
+import path from 'node:path'
 import type { StorybookConfig } from '@storybook/react-vite'
+import { mergeConfig } from 'vite'
 
 const config: StorybookConfig = {
   stories: [
@@ -21,11 +23,25 @@ const config: StorybookConfig = {
   },
   // biome-ignore lint/suspicious/useAwait: TODO (igabriele, 2025-08-05): Suspicious indeed, not sure why it is needed.
   async viteFinal(config) {
-    if (config.build) {
-      //  Make sure that the <use> content in svgs is not inlined which is forbidden by some browsers
-      config.build.assetsInlineLimit = 0
+    const customConfig = mergeConfig(config, {
+      resolve: {
+        alias: [
+          {
+            find: '@/apiClient/api',
+            replacement: path.resolve(
+              __dirname,
+              '../src/apiClient/__mocks__/api.ts'
+            ),
+          },
+        ],
+      },
+    })
+
+    if (customConfig.build) {
+      customConfig.build.assetsInlineLimit = 0
     }
-    return config
+
+    return customConfig
   },
   docs: {
     defaultName: 'Documentation',
