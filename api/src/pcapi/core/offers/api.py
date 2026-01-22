@@ -278,7 +278,9 @@ def create_offer(
 
     db.session.flush()
 
-    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links:
+    if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links is not None:
+        validation.check_artist_offer_links(artist_offer_links, subcategory)
+
         for link_data in artist_offer_links:
             artist_api.create_artist_offer_link(offer.id, link_data)
 
@@ -359,6 +361,7 @@ def update_offer(
     subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
 
     if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links is not None:
+        validation.check_artist_offer_links(artist_offer_links, subcategory)
         created_links, deleted_links = artist_api.upsert_artist_offer_links(artist_offer_links, offer)
         db.session.expire(offer, ["artistOfferLinks"])
 

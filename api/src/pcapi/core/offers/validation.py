@@ -33,8 +33,10 @@ from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferStatus
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.routes.serialization import artist_serialize
 from pcapi.routes.serialization import stock_serialize as serialization
 from pcapi.utils import date
+from pcapi.utils.string import to_camelcase
 
 
 logger = logging.getLogger(__name__)
@@ -942,3 +944,15 @@ def check_offer_can_ask_for_highlight_request(offer: models.Offer) -> None:
         raise api_errors.ApiErrors(
             errors={"global": ["La sous catégorie de l'offre ne lui permet pas de participer à un temps fort"]}
         )
+
+
+def check_artist_offer_links(
+    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel], subcategory: subcategories.Subcategory
+) -> None:
+    for link in artist_offer_links:
+        # TODO (tpommellet-pass): refacto once artists are no longer stored in extradata
+        # Convert snake_case ArtistType values to camelCase to match conditional_fields keys (ArtistFieldEnum)
+        if to_camelcase(link.artist_type.value) not in subcategory.conditional_fields:
+            raise api_errors.ApiErrors(
+                errors={"artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]}
+            )
