@@ -149,6 +149,7 @@ export const PreFilters = ({
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
                 className={styles['reset-filters']}
+                type="button"
                 label="Réinitialiser les filtres"
               />
             </div>

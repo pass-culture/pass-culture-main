@@ -42,9 +42,8 @@ export const EducationalRedactorDetailsForBooking = ({
             isExternal
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
-          >
-            {contact.email}
-          </Button>
+            label={contact.email ?? ''}
+          />
         </dd>
       </div>
     </>

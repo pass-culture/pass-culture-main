@@ -58,9 +58,8 @@ export const SummarySection = ({
           aria-label={props['aria-label']}
           className={style['summary-layout-section-header-edit-link']}
           icon={fullEditIcon}
-        >
-          Modifier
-        </Button>
+          label="Modifier"
+        />
       ) : (
         editLink
       )}

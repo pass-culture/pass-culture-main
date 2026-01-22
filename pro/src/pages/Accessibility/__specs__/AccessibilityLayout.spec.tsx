@@ -47,7 +47,7 @@ describe('Accessibility layout', () => {
 
     expect(screen.getByTestId('logged-out-section')).toBeInTheDocument()
     expect(
-      screen.getByText('Retour à la page de connexion')
+      screen.getByRole('link', { name: 'Retour à la page de connexion' })
     ).toBeInTheDocument()
   })
 

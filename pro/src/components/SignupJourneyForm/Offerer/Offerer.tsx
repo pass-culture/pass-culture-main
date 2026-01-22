@@ -235,10 +235,8 @@ export const Offerer = (): JSX.Element => {
                     from: location.pathname,
                   })
                 }
-              >
-                Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des
-                Entreprises.
-              </Button>
+                label="Vous ne connaissez pas votre SIRET ? Consultez l'Annuaire des Entreprises."
+              />
             </FormLayout.Row>
           </FormLayout.Section>
           {showInvisibleBanner && <BannerInvisibleSiren />}

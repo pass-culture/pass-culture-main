@@ -7,9 +7,9 @@ describe('EndBanner', () => {
   it('should show edit link when canEditDiscount is true', () => {
     renderWithProviders(<EndBanner offerId={123} canEditDiscount={true} />)
 
-    const link = screen.getByText(
-      "Modifier à la baisse le prix ou le nombre d'élèves"
-    )
+    const link = screen.getByRole('link', {
+      name: "Modifier à la baisse le prix ou le nombre d'élèves",
+    })
 
     expect(link).toHaveAttribute('href', '/offre/123/collectif/stocks/edition')
   })

@@ -83,9 +83,9 @@ describe('AddressManual', () => {
 
     renderAddressManual({ coords })
 
-    const callout = screen.getByText(
-      'Contrôlez la précision de vos coordonnées GPS.'
-    )
+    const callout = screen.getByRole('link', {
+      name: /Contrôlez la précision de vos coordonnées GPS./,
+    })
 
     expect(callout).toBeInTheDocument()
     expect(callout).toBeInTheDocument()

@@ -52,7 +52,7 @@ describe('ConfirmDialog', () => {
       />
     )
 
-    const confirmButton = screen.getByText('Valider')
+    const confirmButton = screen.getByRole('button', { name: 'Valider' })
     expect(confirmButton).toBeDisabled()
   })
 })

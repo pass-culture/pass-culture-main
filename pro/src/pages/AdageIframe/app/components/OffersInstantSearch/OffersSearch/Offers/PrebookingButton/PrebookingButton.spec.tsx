@@ -70,7 +70,9 @@ describe('offer item', () => {
       shouldDisablePrebookButton: true,
     })
 
-    expect(screen.queryByText('Préréserver l’offre')).toBeDisabled()
+    expect(
+      screen.queryByRole('button', { name: 'Préréserver l’offre' })
+    ).toBeDisabled()
   })
 
   it('should display when prebooking is activated', () => {

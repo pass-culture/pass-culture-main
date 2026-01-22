@@ -258,7 +258,9 @@ describe('components | BookingsRecap | Pro user', () => {
     await userEvent.type(endingPeriodInput, '2019-02-01')
     await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
-    const resetButton = await screen.findByText('Réinitialiser les filtres')
+    const resetButton = await screen.findByRole('button', {
+      name: 'Réinitialiser les filtres',
+    })
     await userEvent.click(resetButton)
 
     expect(screen.getByLabelText('Localisation')).toHaveValue(
@@ -592,7 +594,7 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     const informationalMessage = await screen.findByText(
       'L’affichage des réservations a été limité à 5 000 réservations. Vous pouvez modifier les filtres pour affiner votre recherche.'
@@ -616,7 +618,7 @@ describe('components | BookingsRecap | Pro user', () => {
       screen.getByLabelText('Localisation'),
       offererAddress[0].id.toString()
     )
-    await userEvent.click(screen.getByText('Afficher', { selector: 'button' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Afficher' }))
 
     await waitFor(() => expect(api.getBookingsPro).toHaveBeenCalledTimes(5))
     const informationalMessage = screen.queryByText(

@@ -159,13 +159,14 @@ export const HeaderDropdown = () => {
                         }
                       }}
                     >
-                      <Button
-                        variant={ButtonVariant.TERTIARY}
-                        color={ButtonColor.NEUTRAL}
-                        icon={fullSwitchIcon}
-                        // className={styles['menu-item']}
-                        label="Changer"
-                      />
+                      <div className={styles['menu-item']}>
+                        <Button
+                          variant={ButtonVariant.TERTIARY}
+                          color={ButtonColor.NEUTRAL}
+                          icon={fullSwitchIcon}
+                          label="Changer"
+                        />
+                      </div>
                     </DropdownMenu.SubTrigger>
                   ) : (
                     <DropdownMenu.Item className={styles['menu-item']} asChild>

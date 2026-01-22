@@ -64,13 +64,12 @@ export const OfferHighlightBanner = ({
                 setIsOpen(true)
               }}
               icon={fullEditIcon}
-            >
-              {pluralizeFr(
+              label={pluralizeFr(
                 highlightRequests.length,
                 'Éditer le temps fort',
                 'Éditer les temps forts'
               )}
-            </Button>
+            />
           </OfferHighlightDialogBuilder>
         </div>
       ) : (

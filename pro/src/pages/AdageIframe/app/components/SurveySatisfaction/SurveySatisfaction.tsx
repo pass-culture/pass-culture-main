@@ -72,7 +72,7 @@ export const SurveySatisfaction = ({
           <Button
             onClick={onCloseSurvey}
             variant={ButtonVariant.SECONDARY}
-            label="J'ai déjà répondu"
+            label="J’ai déjà répondu"
           />
 
           <Button

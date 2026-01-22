@@ -57,6 +57,7 @@ export const ActionBar = ({
             logActionBarNavigation(previousTo)
           }
         }}
+        type="button"
         variant={ButtonVariant.SECONDARY}
         disabled={isDisabled}
         label={previousStepTitle}
