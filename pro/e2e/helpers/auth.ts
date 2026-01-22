@@ -1,4 +1,4 @@
-import type { Page } from '@playwright/test'
+import { expect, type Page } from '@playwright/test'
 
 const DEFAULT_PASSWORD = 'user@AZERTY123'
 
@@ -37,6 +37,7 @@ export async function login(
   await page.waitForResponse((response) =>
     response.url().includes('/offerers/names')
   )
+  await page.waitForResponse((response) => response.url().includes('/venues'))
 }
 
 export async function loginAndNavigate(
@@ -49,4 +50,7 @@ export async function loginAndNavigate(
 
   await page.goto(path)
   await page.waitForLoadState('networkidle')
+  await expect(
+    page.getByText('Bienvenue sur votre espace partenaire')
+  ).toBeVisible({ timeout: 15000 })
 }
