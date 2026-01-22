@@ -2,21 +2,22 @@ import classNames from 'classnames'
 import { type FormEvent, useCallback, useState } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
+import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MultiDownloadButtonsModal } from '@/components/MultiDownloadButtonsModal/MultiDownloadButtonsModal'
 import fullRefreshIcon from '@/icons/full-refresh.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
-import { FilterByEventDate } from './FilterByEventDate'
 import styles from './PreFilters.module.scss'
 import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBookingsCSVFile'
 import { downloadIndividualBookingsXLSFile } from './utils/downloadIndividualBookingsXLSFile'
@@ -93,29 +94,39 @@ export const PreFilters = ({
         onSubmit={requestFilteredBookings}
       >
         <div className={styles['pre-filters-form-filters']}>
-          <FormLayout.Row inline>
-            <FieldLayout
-              label="Localisation"
-              name="address"
+          <FormLayout.Row inline mdSpaceAfter>
+            <Select
               className={styles['venue-filter']}
-              required={false}
-            >
-              <SelectInput
-                defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-                onChange={(e) =>
-                  updateSelectedFilters({ offererAddressId: e.target.value })
-                }
-                disabled={isFiltersDisabled}
-                name="address"
-                options={offererAddresses}
-                value={selectedPreFilters.offererAddressId}
-              />
-            </FieldLayout>
+              label="Localisation"
+              defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+              onChange={(e) =>
+                updateSelectedFilters({ offererAddressId: e.target.value })
+              }
+              disabled={isFiltersDisabled}
+              name="address"
+              options={offererAddresses}
+              value={selectedPreFilters.offererAddressId}
+            />
 
-            <FilterByEventDate
-              isDisabled={isFiltersDisabled}
-              selectedOfferDate={selectedPreFilters.offerEventDate}
-              updateFilters={updateSelectedFilters}
+            <DatePicker
+              label="Date de l’évènement"
+              className={styles['offer-date-filter']}
+              required={false}
+              name="select-filter-date"
+              onChange={(event) =>
+                updateSelectedFilters({
+                  offerEventDate:
+                    event.target.value === ''
+                      ? DEFAULT_PRE_FILTERS.offerEventDate
+                      : event.target.value,
+                })
+              }
+              disabled={isFiltersDisabled}
+              value={
+                isDateValid(selectedPreFilters.offerEventDate)
+                  ? selectedPreFilters.offerEventDate
+                  : ''
+              }
             />
           </FormLayout.Row>
 

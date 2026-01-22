@@ -5,7 +5,7 @@ import { useState } from 'react'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { PreFilters, type PreFiltersProps } from '../PreFilters'
+import { PreFilters, type PreFiltersProps } from './PreFilters'
 
 const mockApplyNow = vi.fn()
 
@@ -160,5 +160,78 @@ describe('filter bookings by bookings period', () => {
       offererAddressId: '21',
       offererId: DEFAULT_PRE_FILTERS.offererId,
     })
+  })
+
+  it('should disable reset button when there are no prefilters', () => {
+    renderPreFilters({ ...props, hasPreFilters: false })
+
+    const resetButton = screen.getByRole('button', {
+      name: /réinitialiser les filtres/i,
+    })
+    expect(resetButton).toBeDisabled()
+  })
+
+  it('should enable reset button when there are prefilters and call resetPreFilters', async () => {
+    const resetPreFilters = vi.fn()
+    renderPreFilters({ ...props, hasPreFilters: true, resetPreFilters })
+
+    const resetButton = screen.getByRole('button', {
+      name: /réinitialiser les filtres/i,
+    })
+    expect(resetButton).toBeEnabled()
+
+    await userEvent.click(resetButton)
+    expect(resetPreFilters).toHaveBeenCalledTimes(1)
+  })
+
+  it('should display refresh-required message when isRefreshRequired is true', () => {
+    renderPreFilters({ ...props, isRefreshRequired: true })
+
+    expect(screen.getByTestId('refresh-required-message')).toBeInTheDocument()
+  })
+
+  it('should not display refresh-required message when isRefreshRequired is false', () => {
+    renderPreFilters({ ...props, isRefreshRequired: false })
+
+    expect(
+      screen.queryByTestId('refresh-required-message')
+    ).not.toBeInTheDocument()
+  })
+
+  it('should disable "Afficher" when table is loading', () => {
+    renderPreFilters({ ...props, isTableLoading: true })
+
+    expect(screen.getByRole('button', { name: 'Afficher' })).toBeDisabled()
+  })
+
+  it('should disable "Afficher" when local loading', () => {
+    renderPreFilters({ ...props, isLocalLoading: true })
+
+    expect(screen.getByRole('button', { name: 'Afficher' })).toBeDisabled()
+  })
+
+  it('should disable "Afficher" when filters are disabled', () => {
+    renderPreFilters({ ...props, isFiltersDisabled: true })
+
+    expect(screen.getByRole('button', { name: 'Afficher' })).toBeDisabled()
+  })
+
+  it('should reset offerEventDate to default when event date is cleared', async () => {
+    renderPreFilters(props)
+
+    const offerEventDateInput = screen.getByLabelText('Date de l’évènement')
+
+    await userEvent.clear(offerEventDateInput)
+    await userEvent.type(offerEventDateInput, '2020-12-13')
+
+    await userEvent.clear(offerEventDateInput)
+
+    await userEvent.click(screen.getByText('Afficher'))
+
+    expect(mockApplyNow).toHaveBeenCalledWith(
+      expect.objectContaining({
+        offerEventDate: DEFAULT_PRE_FILTERS.offerEventDate,
+      })
+    )
   })
 })

@@ -12,9 +12,9 @@ import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import type { SelectOption } from '@/commons/custom_types/form'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSearch'
-import styles from '@/components/OffersTableSearch/OffersTableSearch.module.scss'
+import styles from '@/pages/IndividualOffers/IndividualOffersContainer/IndividualOffersContainer.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import { Select } from '@/ui-kit/form/Select/Select'
 import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 interface IndividualOffersSearchFiltersProps {
@@ -102,76 +102,65 @@ export const IndividualOffersSearchFilters = ({
       onResetFilters={resetFilters}
       searchButtonRef={searchButtonRef}
     >
-      <FormLayout.Row inline>
-        <FieldLayout label="Statut" name="status" required={false}>
-          <SelectInput
-            value={selectedFilters.status as OfferStatus}
-            name="status"
-            onChange={handleChange}
-            disabled={disableAllFilters}
-            options={individualFilterStatus}
-          />
-        </FieldLayout>
+      <FormLayout.Row inline mdSpaceAfter>
+        <Select
+          label="Statut"
+          value={selectedFilters.status as OfferStatus}
+          name="status"
+          onChange={handleChange}
+          disabled={disableAllFilters}
+          options={individualFilterStatus}
+          className={styles['select-filter']}
+        />
 
-        <FieldLayout
+        <Select
           label="Localisation"
+          defaultOption={ALL_OFFERER_ADDRESS_OPTION}
+          onChange={handleChange}
+          disabled={offererAddresses.length === 0 || disableAllFilters}
           name="offererAddressId"
-          required={false}
-        >
-          <SelectInput
-            defaultOption={ALL_OFFERER_ADDRESS_OPTION}
-            onChange={handleChange}
-            disabled={offererAddresses.length === 0 || disableAllFilters}
-            name="offererAddressId"
-            options={offererAddresses}
-            data-testid="address-select"
-            value={selectedFilters.offererAddressId}
-          />
-        </FieldLayout>
+          options={offererAddresses}
+          value={selectedFilters.offererAddressId}
+          className={styles['select-filter']}
+        />
 
         {categories && (
-          <FieldLayout label="Catégorie" name="categoryId" required={false}>
-            <SelectInput
-              defaultOption={ALL_CATEGORIES_OPTION}
-              onChange={handleChange}
-              disabled={disableAllFilters}
-              name="categoryId"
-              options={categories}
-              value={selectedFilters.categoryId}
-            />
-          </FieldLayout>
-        )}
-
-        <FieldLayout
-          label="Mode de création"
-          name="creationMode"
-          hasLabelLineBreak={false}
-          required={false}
-        >
-          <SelectInput
+          <Select
+            label="Catégorie"
+            defaultOption={ALL_CATEGORIES_OPTION}
             onChange={handleChange}
             disabled={disableAllFilters}
-            name="creationMode"
-            options={CREATION_MODES_OPTIONS}
-            value={selectedFilters.creationMode}
+            name="categoryId"
+            options={categories}
+            value={selectedFilters.categoryId}
+            className={styles['select-filter']}
           />
-        </FieldLayout>
+        )}
 
-        <FieldLayout
-          label="Période de l’évènement"
-          name="period"
-          required={false}
-          className={styles['offers-table-search-filter-full-width']}
-        >
-          <PeriodSelector
-            onBeginningDateChange={handleDateChange('periodBeginningDate')}
-            onEndingDateChange={handleDateChange('periodEndingDate')}
-            isDisabled={disableAllFilters}
-            periodBeginningDate={selectedFilters.periodBeginningDate}
-            periodEndingDate={selectedFilters.periodEndingDate}
-          />
-        </FieldLayout>
+        <Select
+          label="Mode de création"
+          onChange={handleChange}
+          disabled={disableAllFilters}
+          name="creationMode"
+          options={CREATION_MODES_OPTIONS}
+          value={selectedFilters.creationMode}
+          className={styles['select-filter']}
+        />
       </FormLayout.Row>
+
+      <FieldLayout
+        label="Période de l’évènement"
+        name="period"
+        required={false}
+      >
+        <PeriodSelector
+          onBeginningDateChange={handleDateChange('periodBeginningDate')}
+          onEndingDateChange={handleDateChange('periodEndingDate')}
+          isDisabled={disableAllFilters}
+          periodBeginningDate={selectedFilters.periodBeginningDate}
+          periodEndingDate={selectedFilters.periodEndingDate}
+        />
+      </FieldLayout>
     </OffersTableSearch>
   )
 }

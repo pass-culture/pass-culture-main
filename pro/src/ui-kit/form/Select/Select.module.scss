@@ -1,8 +1,69 @@
-.label {
-  display: inline-block;
-  margin-bottom: var(--size-spacing-s);
-}
+@use "styles/mixins/_forms.scss" as formsM;
+@use "styles/variables/_forms.scss" as forms;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
 
-.error {
-  margin-top: var(--size-spacing-s);
+.select-input {
+  @include formsM.input-theme;
+
+  line-height: rem.torem(36px);
+  padding-right: rem.torem(forms.$input-right-icon-padding);
+
+  @include formsM.input-theme-nested;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @include fonts.body;
+
+  color: var(--color-text-default);
+  border-radius: var(--size-border-radius-m);
+  border: rem.torem(1px) solid var(--color-border-default);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-background-subtle);
+    box-shadow: none;
+  }
+
+  &.has-value {
+    border: solid size.$input-border-width var(--color-border-selected);
+  }
+
+  &:disabled {
+    border: rem.torem(1px) solid var(--color-border-disabled);
+    color: var(--color-text-disabled);
+    cursor: auto;
+  }
+
+  &.has-description {
+    display: inline-block;
+    width: auto;
+    margin-right: var(--size-spacing-s);
+  }
+
+  &.has-error {
+    @include formsM.input-theme-error;
+  }
+
+  &-icon {
+    @include formsM.input-icon-wrapper(16px);
+  }
+
+  &-wrapper {
+    position: relative;
+
+    &.has-description {
+      display: inline-block;
+      vertical-align: middle;
+    }
+  }
+
+  &-placeholder {
+    @include fonts.body-italic;
+
+    color: var(--color-text-subtle);
+  }
 }

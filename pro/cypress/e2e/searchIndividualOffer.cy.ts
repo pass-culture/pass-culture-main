@@ -109,10 +109,9 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'I select "Instrument de musique" in "Catégorie"' })
 
-    cy.findByTestId('wrapper-categoryId').within(() => {
-      cy.findByLabelText('Catégorie').select('Instrument de musique')
-      cy.get('#categoryId').should('have.value', 'INSTRUMENT')
-    })
+    cy.findByRole('combobox', { name: /Catégorie/ })
+      .select('Instrument de musique')
+      .should('have.value', 'INSTRUMENT')
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -139,10 +138,9 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
 
-    cy.findByTestId('wrapper-status').within(() => {
-      cy.findByLabelText('Statut').select('Publiée')
-      cy.get('#status').should('have.value', 'ACTIVE')
-    })
+    cy.findAllByRole('combobox', { name: 'Statut' })
+      .select('Publiée')
+      .should('have.value', 'ACTIVE')
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -230,9 +228,7 @@ describe('Search individual offers', () => {
     cy.stepLog({ message: 'I search with the text "Livre"' })
     cy.stepLog({ message: 'I open the filters' })
     cy.findByText('Filtrer').click()
-    cy.findByTestId('wrapper-offererAddressId').within(() => {
-      cy.get('select').select(1)
-    })
+    cy.findAllByRole('combobox', { name: 'Localisation' }).select(1)
     cy.findByText('Rechercher').click()
     cy.wait('@searchOffers').its('response.statusCode').should('eq', 200)
 
@@ -307,9 +303,7 @@ describe('Search individual offers', () => {
     )
 
     cy.stepLog({ message: 'I select "Publiée" in offer status' })
-    cy.findByTestId('wrapper-status').within(() => {
-      cy.get('select').select('Publiée')
-    })
+    cy.findAllByRole('combobox', { name: 'Statut' }).select('Publiée')
 
     cy.stepLog({ message: 'I validate my filters' })
     cy.findByText('Rechercher').click()
@@ -341,18 +335,22 @@ describe('Search individual offers', () => {
 
     cy.stepLog({ message: 'All filters are empty' })
     cy.findByRole('searchbox', { name: /Nom de l’offre/ }).should('be.empty')
-    cy.findByTestId('wrapper-offererAddressId').within(() => {
-      cy.get('select').invoke('val').should('eq', 'all')
-    })
-    cy.findByTestId('wrapper-categoryId').within(() => {
-      cy.get('select').invoke('val').should('eq', 'all')
-    })
-    cy.findByTestId('wrapper-creationMode').within(() => {
-      cy.get('select').invoke('val').should('eq', 'all')
-    })
-    cy.findByTestId('wrapper-status').within(() => {
-      cy.get('select').invoke('val').should('eq', 'all')
-    })
+    cy.findAllByRole('combobox', { name: 'Localisation' })
+      .invoke('val')
+      .should('eq', 'all')
+
+    cy.findByRole('combobox', { name: 'Catégorie' })
+      .invoke('val')
+      .should('eq', 'all')
+
+    cy.findByRole('combobox', { name: 'Mode de création' })
+      .invoke('val')
+      .should('eq', 'all')
+
+    cy.findAllByRole('combobox', { name: 'Statut' })
+      .invoke('val')
+      .should('eq', 'all')
+
     cy.findByLabelText('Début de la période').invoke('val').should('be.empty')
     cy.findByLabelText('Fin de la période').invoke('val').should('be.empty')
 

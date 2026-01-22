@@ -13,8 +13,7 @@ import { sortByLabel } from '@/commons/utils/strings'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonVariant } from '@/ui-kit/Button/types'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { Select } from '@/ui-kit/form/Select/Select'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { DEFAULT_PROVIDER_OPTION } from './utils/_constants'
@@ -122,17 +121,15 @@ export const AddVenueProviderButton = ({
 
   const VenueProviderSelection = (
     <>
-      <FieldLayout label="Logiciel" name="provider">
-        <SelectInput
-          defaultOption={DEFAULT_PROVIDER_OPTION}
-          onChange={(event) => setSelectedProviderId(event.target.value)}
-          name="provider"
-          options={providersOptions}
-          value={String(selectedProviderId)}
-          data-testid="provider-select"
-          ref={providerSelectRef}
-        />
-      </FieldLayout>
+      <Select
+        label="Logiciel"
+        defaultOption={DEFAULT_PROVIDER_OPTION}
+        onChange={(event) => setSelectedProviderId(event.target.value)}
+        name="provider"
+        options={providersOptions}
+        value={String(selectedProviderId)}
+        ref={providerSelectRef}
+      />
 
       {selectedProvider && (
         <VenueProviderForm

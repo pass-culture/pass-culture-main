@@ -1,10 +1,10 @@
 import cn from 'classnames'
-import { type ChangeEvent, useId } from 'react'
+import type { ChangeEvent } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { SearchInput } from '@/design-system/SearchInput/SearchInput'
-import { SelectInput } from '@/ui-kit/form/shared/BaseSelectInput/SelectInput'
+import { Select } from '@/ui-kit/form/Select/Select'
 
 import type { BookingsFilters } from '../types'
 import { EMPTY_FILTER_VALUE, INDIVIDUAL_OMNISEARCH_FILTERS } from './constants'
@@ -28,8 +28,6 @@ export const FilterByOmniSearch = ({
   updateFilters,
 }: FilterByOmniSearchProps) => {
   const { logEvent } = useAnalytics()
-
-  const criteriaSelectId = useId()
 
   const omnisearchFiltersOptions = INDIVIDUAL_OMNISEARCH_FILTERS
 
@@ -86,24 +84,16 @@ export const FilterByOmniSearch = ({
       </legend>
 
       <div className={styles['omnisearch-row']}>
-        <div>
-          <label
-            className={styles['omnisearch-criteria-label']}
-            htmlFor={criteriaSelectId}
-          >
-            Critère
-          </label>
-          <SelectInput
-            name="omnisearch-criteria"
-            className={styles['omnisearch-filter-select']}
-            disabled={isDisabled}
-            id={criteriaSelectId}
-            onBlur={handleOmniSearchCriteriaChange}
-            onChange={handleOmniSearchCriteriaChange}
-            value={selectedOmniSearchCriteria}
-            options={omnisearchFiltersOptions}
-          />
-        </div>
+        <Select
+          label="Critère"
+          name="omnisearch-criteria"
+          className={styles['omnisearch-filter-select']}
+          disabled={isDisabled}
+          onBlur={handleOmniSearchCriteriaChange}
+          onChange={handleOmniSearchCriteriaChange}
+          value={selectedOmniSearchCriteria}
+          options={omnisearchFiltersOptions}
+        />
 
         <div className={styles['omnisearch-search-input']}>
           <SearchInput

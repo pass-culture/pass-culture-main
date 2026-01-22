@@ -23,6 +23,12 @@
   }
 }
 
+.has-label {
+  .label {
+    margin-bottom: var(--size-spacing-xxs);
+  }
+}
+
 //  DESCRIPTION
 .has-description {
   .label {
