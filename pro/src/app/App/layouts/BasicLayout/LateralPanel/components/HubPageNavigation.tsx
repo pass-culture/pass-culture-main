@@ -15,10 +15,13 @@ export const HubPageNavigation = ({
 }: HubPageNavigationProps) => {
   return (
     <div
-      className={classnames({
-        [styles['nav-links']]: true,
-        [styles['nav-links-open']]: isLateralPanelOpen,
-      })}
+      className={classnames(
+        {
+          [styles['nav-links']]: true,
+          [styles['nav-links-open']]: isLateralPanelOpen,
+        },
+        styles['back-to-admin']
+      )}
     >
       <Button
         as="a"
@@ -26,7 +29,6 @@ export const HubPageNavigation = ({
         to="/remboursements"
         iconPosition={IconPositionEnum.LEFT}
         icon={strokeRepaymentIcon}
-        className={styles['back-to-admin']}
         label="Espace Administration"
       />
     </div>

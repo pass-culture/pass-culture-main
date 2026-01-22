@@ -148,7 +148,6 @@ export const PreFilters = ({
                 onClick={resetPreFilters}
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
-                className={styles['reset-filters']}
                 type="button"
                 label="Réinitialiser les filtres"
               />
@@ -170,16 +169,17 @@ export const PreFilters = ({
               isLocalLoading={isLocalLoading}
             />
 
-            <Button
-              className={styles['show-button']}
-              disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
-              variant={ButtonVariant.SECONDARY}
-              onClick={() => {
-                applyNow()
-                logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
-              }}
-              label="Afficher"
-            />
+            <div className={styles['show-button']}>
+              <Button
+                disabled={isTableLoading || isLocalLoading || isFiltersDisabled}
+                variant={ButtonVariant.SECONDARY}
+                onClick={() => {
+                  applyNow()
+                  logEvent('CLICKED_SHOW_BOOKINGS', { from: location.pathname })
+                }}
+                label="Afficher"
+              />
+            </div>
           </div>
         </div>
       </form>
