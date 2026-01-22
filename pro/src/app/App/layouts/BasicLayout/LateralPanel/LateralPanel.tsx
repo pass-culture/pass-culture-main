@@ -86,21 +86,19 @@ export const LateralPanel = ({
               [styles['lateral-panel-nav-open']]: isOpen,
             })}
           >
-            <div className={styles['lateral-panel-nav-button']}>
-              <Button
-                aria-expanded={isOpen}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                onClick={() => {
-                  onToggle(!isOpen)
-                  openButtonRef.current?.focus()
-                }}
-                aria-label="Fermer"
-                aria-controls="lateral-panel"
-                ref={closeButtonRef}
-                icon={strokeCloseIcon}
-              />
-            </div>
+            <Button
+              aria-expanded={isOpen}
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              onClick={() => {
+                onToggle(!isOpen)
+                openButtonRef.current?.focus()
+              }}
+              aria-label="Fermer"
+              aria-controls="lateral-panel"
+              ref={closeButtonRef}
+              icon={strokeCloseIcon}
+            />
             <SvgIcon
               alt="Pass Culture pro, l’espace des acteurs culturels"
               src={logoPassCultureProIcon}

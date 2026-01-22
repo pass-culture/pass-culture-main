@@ -39,7 +39,6 @@ export const ConfirmDialog = ({
   const cancelButton = (
     <Button
       onClick={leftButtonAction}
-      data-testid="confirm-dialog-button-cancel"
       variant={ButtonVariant.SECONDARY}
       color={
         // That's a Design-System rule for secondary buttons
@@ -58,7 +57,6 @@ export const ConfirmDialog = ({
       onClick={onConfirm}
       isLoading={isLoading}
       disabled={isLoading || confirmButtonDisabled}
-      data-testid="confirm-dialog-button-confirm"
       label={confirmText}
     />
   )

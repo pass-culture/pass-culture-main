@@ -43,14 +43,16 @@ describe('<UpdateWarningDialog />', () => {
   it('calls onCancel when clicking cancel button', async () => {
     const { onCancel } = setup()
 
-    await userEvent.click(screen.getByTestId('confirm-dialog-button-cancel'))
+    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
     expect(onCancel).toHaveBeenCalledTimes(1)
   })
 
   it('calls onConfirm with true when checkbox left checked', async () => {
     const { onConfirm } = setup()
 
-    await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Je confirme le changement' })
+    )
     expect(onConfirm).toHaveBeenCalledWith(true)
   })
 
@@ -64,7 +66,9 @@ describe('<UpdateWarningDialog />', () => {
 
     expect((checkbox as HTMLInputElement).checked).toBe(false)
 
-    await userEvent.click(screen.getByTestId('confirm-dialog-button-confirm'))
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Je confirme le changement' })
+    )
     expect(onConfirm).toHaveBeenCalledWith(false)
   })
 })

@@ -47,16 +47,6 @@
       border-right: rem.torem(1px) solid var(--color-border-subtle);
     }
 
-    &-button {
-      display: inline-flex;
-      width: rem.torem(50px);
-      height: rem.torem(50px);
-      justify-content: center;
-      align-items: center;
-      gap: 24px;
-      flex-shrink: 0;
-    }
-
     .logo {
       width: rem.torem(80px);
     }

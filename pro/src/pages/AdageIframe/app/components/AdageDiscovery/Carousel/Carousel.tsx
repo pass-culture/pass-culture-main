@@ -75,7 +75,6 @@ export function Carousel({
               onClick={handleOnClickArrowLeft}
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.BRAND}
-              data-testid="carousel-arrow-left"
               icon={fullArrowLeftIcon}
               iconAlt="Faire défiler le carrousel vers la gauche"
             />
@@ -85,7 +84,6 @@ export function Carousel({
               onClick={handleOnClickArrowRight}
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.BRAND}
-              data-testid="carousel-arrow-right"
               icon={fullArrowRightIcon}
               iconAlt="Faire défiler le carrousel vers la droite"
             />
