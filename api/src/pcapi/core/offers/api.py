@@ -352,6 +352,10 @@ def update_offer(
 
     updates = {key: value for key, value in fields.items() if getattr(offer, key) != value}
     updates_set = set(updates)
+
+    subcategory_id = updates.get("subcategoryId", offer.subcategoryId)
+    subcategory = subcategories.ALL_SUBCATEGORIES_DICT[subcategory_id]
+
     if not updates:
         return offer
 
@@ -374,14 +378,14 @@ def update_offer(
         )
 
     if "extraData" in updates or "ean" in updates:
-        formatted_extra_data = _format_extra_data(offer.subcategoryId, body.extra_data) or {}
+        formatted_extra_data = _format_extra_data(subcategory_id, body.extra_data) or {}
         validation.check_offer_extra_data(
-            offer.subcategoryId, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=body.ean
+            subcategory_id, formatted_extra_data, offer.venue, is_from_private_api, offer=offer, ean=body.ean
         )
 
     if "isDuo" in updates:
         is_duo = get_field(offer, updates, "isDuo", aliases=aliases)
-        validation.check_is_duo_compliance(is_duo, offer.subcategory)
+        validation.check_is_duo_compliance(is_duo, subcategory)
 
     if "idAtProvider" in updates:
         id_at_provider = get_field(offer, updates, "idAtProvider", aliases=aliases)
@@ -406,7 +410,7 @@ def update_offer(
         validation.check_offer_withdrawal(
             withdrawal_type=withdrawal_type,
             withdrawal_delay=withdrawal_delay,
-            subcategory_id=offer.subcategoryId,
+            subcategory_id=subcategory_id,
             booking_contact=booking_contact,
             provider=offer.lastProvider,
         )

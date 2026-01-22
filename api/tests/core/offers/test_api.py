@@ -2021,6 +2021,38 @@ class UpdateOfferTest:
         assert len(notify_users_offer_is_bookable_mock.mock_calls) == expected_calls_count
         assert updated_offer.bookingAllowedDatetime == bookingAllowedDatetime
 
+    @mock.patch("pcapi.core.offers.validation.check_offer_withdrawal")
+    @mock.patch("pcapi.core.offers.validation.check_is_duo_compliance")
+    @mock.patch("pcapi.core.offers.validation.check_offer_extra_data")
+    def test_update_draft_offer_with_subcategory_uses_new_subcategory_for_validation(
+        self, mock_check_extra_data, mock_check_is_duo, mock_check_withdrawal
+    ):
+        draft_offer = factories.OfferFactory(
+            subcategoryId=subcategories.SEANCE_CINE.id,
+            validation=models.OfferValidationStatus.DRAFT,
+        )
+
+        body = offers_schemas.UpdateOffer(
+            subcategoryId=subcategories.SPECTACLE_REPRESENTATION.id,
+            isDuo=True,
+            extraData={"showType": 200, "showSubType": 201},
+            withdrawalType=models.WithdrawalTypeEnum.IN_APP,
+        )
+
+        api.update_offer(draft_offer, body)
+
+        mock_check_is_duo.assert_called_once()
+        call_args = mock_check_is_duo.call_args
+        assert call_args[0][1].id == subcategories.SPECTACLE_REPRESENTATION.id
+
+        mock_check_extra_data.assert_called_once()
+        call_args = mock_check_extra_data.call_args
+        assert call_args[0][0] == subcategories.SPECTACLE_REPRESENTATION.id
+
+        mock_check_withdrawal.assert_called_once()
+        call_args = mock_check_withdrawal.call_args
+        assert call_args[1]["subcategory_id"] == subcategories.SPECTACLE_REPRESENTATION.id
+
 
 now_datetime_with_tz = datetime.now(timezone.utc)
 now_datetime_without_tz = now_datetime_with_tz.replace(tzinfo=None)
