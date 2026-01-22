@@ -211,6 +211,7 @@
   text-align: center;
   margin: var(--size-spacing-l);
   margin-bottom: 0;
+  border-right: none;
 
   @media (min-width: size.$tablet) {
     display: none;

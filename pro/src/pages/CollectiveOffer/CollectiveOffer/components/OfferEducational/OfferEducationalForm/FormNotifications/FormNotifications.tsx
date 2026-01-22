@@ -68,7 +68,6 @@ export const FormNotifications = ({
           onClick={() => {
             append({ email: '' }, { shouldFocus: true })
           }}
-          className={styles['add-notification-button']}
           label="Ajouter un email de notification"
         />
       )}

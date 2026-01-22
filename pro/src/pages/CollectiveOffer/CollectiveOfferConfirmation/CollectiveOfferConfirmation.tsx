@@ -176,14 +176,12 @@ const CollectiveOfferConfirmation = ({
             <Button
               as="a"
               variant={ButtonVariant.SECONDARY}
-              className={styles['confirmation-action']}
               to={isShowcase ? '/offres/vitrines' : '/offres/collectives'}
               label="Voir mes offres"
             />
             <Button
               as="a"
               variant={ButtonVariant.PRIMARY}
-              className={styles['confirmation-action']}
               to={`/offre/creation${offererId ? `?structure=${offererId}` : ''}`}
               label="Créer une nouvelle offre"
             />

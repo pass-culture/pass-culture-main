@@ -24,14 +24,6 @@
     justify-content: center;
   }
 
-  &-action {
-    text-align: center;
-
-    &:first-child {
-      margin-left: 0;
-    }
-  }
-
   &-title {
     @include fonts.title4;
 

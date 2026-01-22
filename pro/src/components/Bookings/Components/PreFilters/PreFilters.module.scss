@@ -85,16 +85,6 @@
   display: flex;
 }
 
-.reset-filters {
-  text-align: left;
-  margin-top: var(--size-spacing-xl);
-  max-height: rem.torem(24px);
-
-  @media (min-width: rem.torem(840px)) {
-    margin-top: rem.torem(0);
-  }
-}
-
 .show-button {
   z-index: 0;
   width: 100%;

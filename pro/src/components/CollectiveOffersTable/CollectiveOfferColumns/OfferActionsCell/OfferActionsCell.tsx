@@ -331,7 +331,6 @@ export const OfferActionsCell = ({
                 size={ButtonSize.SMALL}
                 to={editionOfferLink}
                 icon={fullPenIcon}
-                className={styles['button']}
                 onClick={handleEditOfferClick}
                 label="Modifier"
               />

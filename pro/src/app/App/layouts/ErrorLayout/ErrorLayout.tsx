@@ -39,18 +39,19 @@ export const ErrorLayout = ({
     <main className={styles['content-wrapper']}>
       <div className={styles['content']}>
         <SvgIcon className={styles['error-icon']} src={errorIcon} alt="" />
-        <h1 className={styles['title']}>{mainHeading}</h1>
+        <h1 className={styles['title']}>{mainHeading} OUPS</h1>
         <p className={styles.description}>{paragraph}</p>
-        {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
+        <div className={styles['nm-redirection-link']}>
+          {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
           rendered once per page, so there cannot be id duplications.> */}
-        <Button
-          as="a"
-          id="error-return-link"
-          className={styles['nm-redirection-link']}
-          variant={ButtonVariant.SECONDARY}
-          to={redirect}
-          label={isConnected ? "Retour à la page d'accueil" : 'Retour'}
-        />
+          <Button
+            as="a"
+            id="error-return-link"
+            variant={ButtonVariant.SECONDARY}
+            to={redirect}
+            label={isConnected ? "Retour à la page d'accueil" : 'Retour'}
+          />
+        </div>
       </div>
     </main>
   )
