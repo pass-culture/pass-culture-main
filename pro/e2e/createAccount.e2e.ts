@@ -1,12 +1,7 @@
 import { randomUUID } from 'node:crypto'
-import AxeBuilder from '@axe-core/playwright'
-import {
-  expect,
-  type Page,
-  request as playwrightRequest,
-  test,
-} from '@playwright/test'
+import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { checkAccessibility } from './helpers/accessibility'
 import { BASE_API_URL, sandboxCall } from './helpers/sandbox'
 
 interface EmailResponse {
@@ -14,13 +9,6 @@ interface EmailResponse {
   params: {
     EMAIL_VALIDATION_LINK: string
   }
-}
-
-async function checkAccessibility(page: Page) {
-  const axeBuilder = new AxeBuilder({ page })
-  axeBuilder.exclude('iframe[name^="a-"]')
-  const results = await axeBuilder.analyze()
-  expect(results.violations).toHaveLength(0)
 }
 
 test.describe('Account creation', () => {
@@ -50,22 +38,21 @@ test.describe('Account creation', () => {
 
     await checkAccessibility(page)
 
-    const [signupResponse] = await Promise.all([
-      page.waitForResponse(
-        (response) =>
-          response.url().includes('/users/signup') &&
-          response.request().method() === 'POST'
-      ),
-      page.getByRole('button', { name: 'S’inscrire' }).click(),
-    ])
+    const signupResponsePromise = page.waitForResponse(
+      (response) =>
+        response.url().includes('/users/signup') &&
+        response.request().method() === 'POST'
+    )
+    await page.getByRole('button', { name: 'S’inscrire' }).click()
+    const signupResponse = await signupResponsePromise
     expect(signupResponse.status()).toBe(204)
-
-    await checkAccessibility(page)
 
     await expect(page).toHaveURL(/\/inscription\/compte\/confirmation/)
     await expect(
       page.getByRole('heading', { name: 'Validez votre adresse email' })
     ).toBeVisible()
+
+    await checkAccessibility(page)
 
     const emailRequestContext = await playwrightRequest.newContext({
       baseURL: BASE_API_URL,
