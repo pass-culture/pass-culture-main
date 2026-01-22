@@ -178,15 +178,14 @@ export const Desk = (): JSX.Element => {
                   </Button>
                 )}
               </div>
-
-              {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
-              <div role="status" id={statusId}>
-                <DeskInputMessage
-                  message={message.message}
-                  variant={message.variant}
-                />
-              </div>
             </form>
+            {/** biome-ignore lint/a11y/useSemanticElements: We want a `role="status"` here, not an `<output />`. */}
+            <div role="status" id={statusId}>
+              <DeskInputMessage
+                message={message.message}
+                variant={message.variant}
+              />
+            </div>
           </div>
           <div className={`${styles['desk-callout']}`}>
             <Banner
