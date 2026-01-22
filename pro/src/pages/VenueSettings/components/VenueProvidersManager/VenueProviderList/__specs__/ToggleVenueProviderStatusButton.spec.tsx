@@ -81,7 +81,7 @@ describe('ToggleVenueProviderStatusButton', () => {
       })
 
       // Click on Cancel
-      const cancelButton = screen.getByTestId('confirm-dialog-button-cancel')
+      const cancelButton = screen.getByRole('button', { name: 'Annuler' })
       await userEvent.click(cancelButton)
 
       // Verify that the modal is closed
@@ -106,7 +106,9 @@ describe('ToggleVenueProviderStatusButton', () => {
       await userEvent.click(pauseButton)
 
       // Confirm the action
-      const confirmButton = screen.getByTestId('confirm-dialog-button-confirm')
+      const confirmButton = screen.getByRole('button', {
+        name: 'Je confirme le changement',
+      })
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
@@ -154,7 +156,9 @@ describe('ToggleVenueProviderStatusButton', () => {
       await userEvent.click(reactivateButton)
 
       // Confirm the action
-      const confirmButton = screen.getByTestId('confirm-dialog-button-confirm')
+      const confirmButton = screen.getByRole('button', {
+        name: 'Je confirme le changement',
+      })
       await userEvent.click(confirmButton)
 
       await waitFor(() => {
@@ -199,7 +203,9 @@ describe('ToggleVenueProviderStatusButton', () => {
       await userEvent.click(pauseButton)
 
       // Confirm the action
-      const confirmButton = screen.getByTestId('confirm-dialog-button-confirm')
+      const confirmButton = screen.getByRole('button', {
+        name: 'Je confirme le changement',
+      })
       await userEvent.click(confirmButton)
 
       await waitFor(() => {

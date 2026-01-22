@@ -37,8 +37,15 @@ describe('Carousel', () => {
   it('should have the left or right arrow enabled when respectively the first or last element is not fully visible', () => {
     render(<Carousel elements={mockCarouselElements} />)
 
-    expect(screen.getByTestId('carousel-arrow-left')).not.toBeDisabled()
-    expect(screen.getByTestId('carousel-arrow-right')).not.toBeDisabled()
+    const buttonLeft = screen.getByRole('button', {
+      name: 'Faire défiler le carrousel vers la gauche',
+    })
+    const buttonRight = screen.getByRole('button', {
+      name: 'Faire défiler le carrousel vers la droite',
+    })
+
+    expect(buttonLeft).not.toBeDisabled()
+    expect(buttonRight).not.toBeDisabled()
   })
 
   it('should have the left or right arrow disabled when respectively the first or last element is visible', () => {
@@ -53,17 +60,31 @@ describe('Carousel', () => {
 
     render(<Carousel elements={mockCarouselElements} />)
 
-    expect(screen.getByTestId('carousel-arrow-left')).toBeDisabled()
-    expect(screen.getByTestId('carousel-arrow-right')).toBeDisabled()
+    const buttonLeft = screen.getByRole('button', {
+      name: 'Faire défiler le carrousel vers la gauche',
+    })
+    const buttonRight = screen.getByRole('button', {
+      name: 'Faire défiler le carrousel vers la droite',
+    })
+
+    expect(buttonLeft).toBeDisabled()
+    expect(buttonRight).toBeDisabled()
   })
 
   it('should modify the list horizontal scroll when the arrows are clicked', async () => {
     render(<Carousel elements={mockCarouselElements} />)
 
+    const buttonLeft = screen.getByRole('button', {
+      name: 'Faire défiler le carrousel vers la gauche',
+    })
+    const buttonRight = screen.getByRole('button', {
+      name: 'Faire défiler le carrousel vers la droite',
+    })
+
     expect(screen.getByRole('list').scrollLeft).toEqual(0)
-    await userEvent.click(screen.getByTestId('carousel-arrow-right'))
+    await userEvent.click(buttonRight)
     expect(screen.getByRole('list').scrollLeft).toEqual(400)
-    await userEvent.click(screen.getByTestId('carousel-arrow-left'))
+    await userEvent.click(buttonLeft)
     expect(screen.getByRole('list').scrollLeft).toEqual(0)
   })
 
