@@ -91,6 +91,7 @@ export const OffersTableSearch = ({
         {children}
         <div className={styles['offers-table-search-reset-wrapper']}>
           <Button
+            type="button"
             icon={fullRefreshIcon}
             disabled={!hasActiveFilters}
             onClick={onResetFilters}

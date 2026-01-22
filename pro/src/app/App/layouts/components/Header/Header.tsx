@@ -123,7 +123,7 @@ export const Header = forwardRef(
                   icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}
                   label={
                     isAdminArea
-                      ? "Revenir à l'Espace Partenaire"
+                      ? 'Revenir à l’Espace Partenaire'
                       : 'Espace administration'
                   }
                 />

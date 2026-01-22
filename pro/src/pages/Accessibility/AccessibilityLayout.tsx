@@ -40,9 +40,8 @@ export const AccessibilityLayout = ({
             to="connexion"
             icon={fullBackIcon}
             className={styles['back-to-signin-button']}
-          >
-            Retour à la page de connexion
-          </Button>
+            label="Retour à la page de connexion"
+          />
         )}
       </section>
     </LoggedOutLayout>

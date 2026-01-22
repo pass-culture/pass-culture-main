@@ -103,35 +103,25 @@ describe('ActionsBar', () => {
   it('should have publish, hide, archive, cancel CTAs offers are template', () => {
     renderActionsBar({ ...props, areTemplateOffers: true })
 
+    expect(screen.getByRole('button', { name: 'Publier' })).toBeInTheDocument()
     expect(
-      screen.getByText('Publier', { selector: 'button' })
+      screen.getByRole('button', { name: 'Mettre en pause' })
     ).toBeInTheDocument()
-    expect(
-      screen.getByText('Mettre en pause', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Archiver', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Annuler', { selector: 'button' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Archiver' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
   })
 
   it('should have archive and cancel CTAs when and offers are bookable', () => {
     renderActionsBar({ ...props, areTemplateOffers: false })
 
     expect(
-      screen.queryByText('Publier', { selector: 'button' })
+      screen.queryByRole('button', { name: 'Publier' })
     ).not.toBeInTheDocument()
     expect(
-      screen.queryByText('Mettre en pause', { selector: 'button' })
+      screen.queryByRole('button', { name: 'Mettre en pause' })
     ).not.toBeInTheDocument()
-    expect(
-      screen.getByText('Archiver', { selector: 'button' })
-    ).toBeInTheDocument()
-    expect(
-      screen.getByText('Annuler', { selector: 'button' })
-    ).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Archiver' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Annuler' })).toBeInTheDocument()
   })
 
   it('should say how many offers are selected when only 1 offer is selected', () => {

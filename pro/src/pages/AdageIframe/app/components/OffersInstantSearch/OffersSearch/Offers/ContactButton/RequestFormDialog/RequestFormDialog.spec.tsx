@@ -91,7 +91,7 @@ describe('RequestFormDialog', () => {
       contactUrl: 'https://example.com',
     })
 
-    const buttonLink = screen.getByText('Aller sur le site')
+    const buttonLink = screen.getByRole('link', { name: 'Aller sur le site' })
 
     expect(buttonLink).toHaveAttribute('href', 'https://example.com')
   })
@@ -144,7 +144,7 @@ describe('RequestFormDialog', () => {
     expect(screen.getByText('test@example.com')).toBeInTheDocument()
     expect(screen.getByText('0600000000')).toBeInTheDocument()
 
-    const buttonLink = screen.getByText('Aller sur le site')
+    const buttonLink = screen.getByRole('link', { name: 'Aller sur le site' })
 
     expect(buttonLink).toHaveAttribute('href', 'https://example.com')
   })

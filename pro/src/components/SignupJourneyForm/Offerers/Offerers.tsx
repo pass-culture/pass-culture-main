@@ -185,11 +185,12 @@ export const Offerers = (): JSX.Element => {
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
               icon={isVenueListOpen ? fullUpIcon : fullDownIcon}
-            >
-              {isVenueListOpen
-                ? 'Afficher moins de structures'
-                : 'Afficher plus de structures'}
-            </Button>
+              label={
+                isVenueListOpen
+                  ? 'Afficher moins de structures'
+                  : 'Afficher plus de structures'
+              }
+            />
           )}
         </div>
         <Button

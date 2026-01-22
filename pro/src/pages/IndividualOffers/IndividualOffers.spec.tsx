@@ -900,7 +900,7 @@ describe('IndividualOffers', () => {
         offererAddressOption,
         firstOffererAddressOption
       )
-      await userEvent.click(screen.getByText('Rechercher'))
+      await userEvent.click(screen.getByRole('button', { name: /Rechercher/ }))
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledTimes(2)
@@ -917,7 +917,9 @@ describe('IndividualOffers', () => {
         )
       })
 
-      await userEvent.click(screen.getByText('Réinitialiser les filtres'))
+      await userEvent.click(
+        screen.getByRole('button', { name: /Réinitialiser les filtres/ })
+      )
 
       await waitFor(() => {
         expect(api.listOffers).toHaveBeenCalledTimes(3)

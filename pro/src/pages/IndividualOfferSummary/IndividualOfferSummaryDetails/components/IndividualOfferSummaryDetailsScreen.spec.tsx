@@ -83,7 +83,9 @@ describe('<IndividualOfferSummaryDetailsScreen />', () => {
       screen.getByText(MOCKED_SUBCATEGORY.NON_EVENT_OFFLINE_WITH_EAN.proLabel)
     ).toBeInTheDocument()
     expect(screen.getByText('1234567891234')).toBeInTheDocument()
-    expect(screen.getByText(LABELS.buttons.edit)).toBeInTheDocument()
+    expect(
+      screen.getByRole('link', { name: new RegExp(LABELS.buttons.edit) })
+    ).toBeInTheDocument()
   })
 
   describe('when the offer is product based', () => {

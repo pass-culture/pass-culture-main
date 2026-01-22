@@ -142,7 +142,9 @@ describe('OfferEducationalForm', () => {
       },
     })
 
-    const saveButton = await screen.findByText('Enregistrer et continuer')
+    const saveButton = await screen.findByRole('button', {
+      name: /Enregistrer et continuer/,
+    })
     expect(saveButton).toBeDisabled()
   })
 

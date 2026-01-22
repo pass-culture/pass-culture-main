@@ -181,7 +181,9 @@ describe('CollectiveOfferConfirmation', () => {
     const prebookingButton = await screen.findByText('Préréserver l’offre')
     await userEvent.click(prebookingButton)
 
-    const modalPrebookingButton = await screen.findByText('Préréserver')
+    const modalPrebookingButton = await screen.findByRole('button', {
+      name: 'Préréserver',
+    })
     expect(modalPrebookingButton).toBeDisabled()
   })
 
@@ -195,6 +197,8 @@ describe('CollectiveOfferConfirmation', () => {
     await userEvent.click(contactButton)
 
     expect(screen.getByLabelText(/Email/)).toBeDisabled()
-    expect(screen.getByText('Envoyer ma demande')).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: 'Envoyer ma demande' })
+    ).toBeDisabled()
   })
 })

@@ -98,9 +98,10 @@ export const StatusToggleButton = ({ offer }: StatusToggleButtonProps) => {
           offer.status === OfferStatus.INACTIVE ? strokeCheckIcon : fullHideIcon
         }
         ref={toggleButtonRef}
-      >
-        {offer.status === OfferStatus.INACTIVE ? 'Publier' : 'Mettre en pause'}
-      </Button>
+        label={
+          offer.status === OfferStatus.INACTIVE ? 'Publier' : 'Mettre en pause'
+        }
+      />
     </>
   )
 }

@@ -1,7 +1,7 @@
 import * as RadixDialog from '@radix-ui/react-dialog'
 
 import { Button } from '@/design-system/Button/Button'
-import { ButtonVariant } from '@/design-system/Button/types'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import strokeErrorIcon from '@/icons/stroke-error.svg'
 
 import { Dialog, type DialogProps } from '../Dialog/Dialog'
@@ -41,9 +41,16 @@ export const ConfirmDialog = ({
       onClick={leftButtonAction}
       data-testid="confirm-dialog-button-cancel"
       variant={ButtonVariant.SECONDARY}
-    >
-      {cancelText}
-    </Button>
+      color={
+        // That's a Design-System rule for secondary buttons
+        ['annuler', 'annuler et quitter', 'fermer'].includes(
+          cancelText.toLowerCase()
+        )
+          ? ButtonColor.NEUTRAL
+          : ButtonColor.BRAND
+      }
+      label={cancelText}
+    />
   )
 
   const confirmButton = (
@@ -52,9 +59,8 @@ export const ConfirmDialog = ({
       isLoading={isLoading}
       disabled={isLoading || confirmButtonDisabled}
       data-testid="confirm-dialog-button-confirm"
-    >
-      {confirmText}
-    </Button>
+      label={confirmText}
+    />
   )
 
   return (
