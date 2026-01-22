@@ -1,7 +1,7 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.box-form-layout {
-  margin-bottom: var(--size-spacing-xl);
+.box-form-layout:not(:last-child) {
+  margin-bottom: var(--size-spacing-l);
 }
 
 .box-form-layout-header-title {
