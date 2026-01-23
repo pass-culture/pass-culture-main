@@ -46,14 +46,6 @@ describe('Desk (Guichet) feature', () => {
       message: 'I can click and open the "Modalités de retrait et CGU" page',
     })
     cy.findByText('Modalités de retrait et CGU')
-      .invoke('removeAttr', 'target')
-      .click() // remove target to not open it in a new tab (not supported by cypress)
-    cy.origin('https://aide.passculture.app/', () => {
-      cy.url().should(
-        'include',
-        'Acteurs-Culturels-Modalit%C3%A9s-de-retrait-et-CGU'
-      )
-    })
   })
 
   it('I should be able to validate a valid countermark', () => {

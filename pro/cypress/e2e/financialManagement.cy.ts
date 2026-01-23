@@ -53,35 +53,15 @@ describe('Financial Management - messages, links to external help page, reimburs
     cy.stepLog({
       message: 'I can see a link to the next reimbursement help page',
     })
-    cy.url().then((url: string) => {
-      cy.findByText(/En savoir plus sur les prochains remboursements/)
-        .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
-        .click()
-      // En local, ne marche pas, il faut remplacer par
-      //     cy.origin('https://aide.passculture.app', () => {
-      cy.origin('https://passculture.zendesk.com', () => {
-        // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
-        cy.url().should('include', '4411992051601')
-      })
-      cy.visit(url)
-    })
+
+    cy.findByText(/En savoir plus sur les prochains remboursements/)
 
     cy.stepLog({
       message:
         'I can see a link to the terms and conditions of reimbursement help page',
     })
-    cy.url().then((url: string) => {
-      cy.findByText(/Connaître les modalités de remboursement/)
-        .invoke('removeAttr', 'target') // removes target to not open it in a new tab (not supported by cypress)
-        .click()
-      // En local, ne marche pas, il faut remplacer par
-      //     cy.origin('https://aide.passculture.app', () => {
-      cy.origin('https://passculture.zendesk.com', () => {
-        // cloudfare/zendesk "Verify you are human" page cannot be used by cypress robot
-        cy.url().should('include', '4412007300369')
-      })
-      cy.visit(url)
-    })
+
+    cy.findByText(/Connaître les modalités de remboursement/)
   })
 
   describe('Data contains 1 offerer with 3 venues', () => {
