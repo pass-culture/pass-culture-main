@@ -34,14 +34,21 @@
 
 .stat-block {
   display: flex;
+  align-items: center;
   padding: var(--size-spacing-l) var(--size-spacing-s);
   border-radius: var(--size-border-radius-m);
+
+  &-text {
+    display: flex;
+    flex-direction: column;
+    row-gap: var(--size-spacing-s);
+  }
 
   &-icon {
     width: rem.torem(48px);
     height: rem.torem(48px);
     color: var(--color-icon-brand-primary);
-    margin-right: var(--size-spacing-s);
+    margin-right: var(--size-spacing-l);
   }
 
   &-count {

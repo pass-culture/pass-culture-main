@@ -179,9 +179,6 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
           <div className={styles['nav-links-create-offer-wrapper']}>
             <DropdownButton
               name="Créer une offre"
-              triggerProps={{
-                className: styles['nav-links-create-offer-wrapper-trigger'],
-              }}
               options={[
                 {
                   element: (

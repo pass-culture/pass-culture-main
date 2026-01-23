@@ -1,12 +1,15 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-import classNames from 'classnames'
 import { useState } from 'react'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  type ButtonProps,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 
-import { Button, type ButtonProps } from '../Button/Button'
-import { SvgIcon } from '../SvgIcon/SvgIcon'
 import styles from './DropdownButton.module.scss'
 
 export type DropdownButtonProps = {
@@ -21,7 +24,7 @@ export type DropdownButtonProps = {
   /**
    * The dropdown trigger button props
    */
-  triggerProps?: Partial<ButtonProps>
+  triggerProps?: Partial<ButtonProps & { as: 'button' }>
 }
 
 export function DropdownButton({
@@ -38,32 +41,24 @@ export function DropdownButton({
         setIsOpen(open)
       }}
     >
-      <DropdownMenu.Trigger
-        className={classNames(styles.trigger)}
-        data-testid="dropdown-menu-trigger"
-        asChild
-      >
-        <Button className={styles['trigger-button']} {...triggerProps}>
-          <span className={styles['trigger-button-name']}>{name}</span>
-          <span className={styles['trigger-icon']}>
-            {isOpen ? (
-              <SvgIcon src={fullUpIcon} alt="" />
-            ) : (
-              <SvgIcon src={fullDownIcon} alt="" />
-            )}
-          </span>
-        </Button>
-      </DropdownMenu.Trigger>
+      <div className={styles['offer-button-wrapper']}>
+        <DropdownMenu.Trigger data-testid="dropdown-menu-trigger" asChild>
+          <Button
+            fullWidth
+            label={name}
+            variant={ButtonVariant.PRIMARY}
+            icon={isOpen ? fullUpIcon : fullDownIcon}
+            iconPosition={IconPositionEnum.RIGHT}
+            {...triggerProps}
+          />
+        </DropdownMenu.Trigger>
+      </div>
       <DropdownMenu.Portal>
         <DropdownMenu.Content align="start" className={styles.panel}>
           {options.map((option) => (
-            <DropdownMenu.Item
-              asChild
-              key={option.id}
-              className={styles.option}
-            >
-              {option.element}
-            </DropdownMenu.Item>
+            <div className={styles.option} key={option.id}>
+              <DropdownMenu.Item asChild>{option.element}</DropdownMenu.Item>
+            </div>
           ))}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

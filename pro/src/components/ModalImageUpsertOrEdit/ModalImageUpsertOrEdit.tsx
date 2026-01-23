@@ -15,11 +15,15 @@ import {
 } from '@/commons/utils/imageUploadTypes'
 import { ImageDragAndDrop } from '@/components/ImageDragAndDrop/ImageDragAndDrop'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import {
   DialogBuilder,
   type DialogBuilderProps,
@@ -305,18 +309,21 @@ export const ModalImageUpsertOrEdit = ({
                     <Button
                       icon={fullDownloadIcon}
                       onClick={onImageReplace}
-                      variant={ButtonVariant.TERNARY}
-                    >
-                      Remplacer l’image
-                    </Button>
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.NEUTRAL}
+                      size={ButtonSize.SMALL}
+                      label="Remplacer l’image"
+                    />
+
                     <Dialog.Close asChild>
                       <Button
                         icon={fullTrashIcon}
                         onClick={onImageDelete}
-                        variant={ButtonVariant.TERNARY}
-                      >
-                        Supprimer l’image
-                      </Button>
+                        variant={ButtonVariant.SECONDARY}
+                        color={ButtonColor.NEUTRAL}
+                        size={ButtonSize.SMALL}
+                        label="Supprimer l’image"
+                      />
                     </Dialog.Close>
                   </div>
                 </div>

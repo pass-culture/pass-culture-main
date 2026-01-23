@@ -2,22 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
 
-.trigger-button {
-  display: flex;
-  align-items: center;
-
-  &-name {
-    flex: 1;
-  }
-}
-
-.trigger-icon {
-  width: rem.torem(16px);
-  margin-left: var(--size-spacing-s);
-  display: flex;
-  align-items: center;
-}
-
 .panel {
   background: var(--color-background-default);
   border-radius: var(--size-border-radius-m);
@@ -44,4 +28,9 @@
     background: var(--color-background-subtle);
     outline: none;
   }
+}
+
+.offer-button-wrapper {
+  flex: 1;
+  margin: 0 var(--size-spacing-l);
 }

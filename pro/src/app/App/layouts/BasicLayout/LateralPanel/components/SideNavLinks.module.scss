@@ -77,6 +77,8 @@
   &-create-offer-wrapper {
     display: flex;
     z-index: 1;
+    flex: 1;
+    margin-bottom: var(--size-spacing-l);
 
     &-trigger {
       flex-grow: 1;

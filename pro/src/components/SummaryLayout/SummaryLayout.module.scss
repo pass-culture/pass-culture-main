@@ -37,11 +37,6 @@
       align-items: top;
       margin-bottom: var(--size-spacing-xl);
 
-      &-edit-link {
-        height: unset;
-        padding-left: var(--size-spacing-l);
-      }
-
       @media (min-width: size.$tablet) {
         align-items: center;
       }
@@ -102,8 +97,4 @@
   @include fonts.title2;
 
   padding-right: var(--size-spacing-l);
-
-  &.section-title-editable {
-    border-right: rem.torem(1px) solid var(--color-border-subtle);
-  }
 }

@@ -10,10 +10,14 @@ import {
   ModalImageUpsertOrEdit,
   type OnImageUploadArgs,
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import style from './ButtonImageEdit.module.scss'
@@ -24,7 +28,7 @@ export type ButtonImageEditProps = {
   initialValues?: UploadImageValues
   mode: UploaderModeEnum
   onClickButtonImage?: () => void
-  children?: React.ReactNode
+  label?: string
   disableForm?: boolean
 }
 
@@ -34,7 +38,7 @@ export const ButtonImageEdit = ({
   onImageUpload,
   onImageDelete,
   onClickButtonImage,
-  children,
+  label,
   disableForm,
 }: ButtonImageEditProps): JSX.Element => {
   const { croppedImageUrl, originalImageUrl } = initialValues
@@ -75,12 +79,13 @@ export const ButtonImageEdit = ({
         imageUrl ? (
           <Button
             onClick={onClickButtonImageAdd}
-            variant={ButtonVariant.TERNARY}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             aria-label="Modifier l’image"
             icon={fullEditIcon}
-          >
-            {children ?? 'Modifier'}
-          </Button>
+            label={label ?? 'Modifier'}
+          />
         ) : (
           <button
             className={cn(style['button-image-add'], {
