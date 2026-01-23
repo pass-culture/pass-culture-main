@@ -152,7 +152,6 @@ class Returns200Test:
                 "isValidated": venue.managingOfferer.isValidated,
                 "name": venue.managingOfferer.name,
                 "siren": venue.managingOfferer.siren,
-                "allowedOnAdage": venue.managingOfferer.allowedOnAdage,
             },
             "mentalDisabilityCompliant": venue.mentalDisabilityCompliant,
             "motorDisabilityCompliant": venue.motorDisabilityCompliant,

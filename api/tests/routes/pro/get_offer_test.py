@@ -207,7 +207,6 @@ class Returns200Test:
                 "managingOfferer": {
                     "id": offerer.id,
                     "name": "Test Offerer",
-                    "allowedOnAdage": offerer.allowedOnAdage,
                 },
                 "mentalDisabilityCompliant": False,
                 "motorDisabilityCompliant": False,

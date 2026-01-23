@@ -231,7 +231,6 @@ export const getCollectiveOfferManagingOffererFactory = (
     id: currentOffererId,
     name: `Nom de l'entité ${currentOffererId}`,
     siren: '123456789',
-    allowedOnAdage: true,
     ...customGetCollectiveOfferManagingOfferer,
   }
 }
@@ -280,7 +279,6 @@ export const defaultGetVenue: GetVenueResponseModel = {
     isValidated: true,
     name: 'Ma super structure',
     siren: '',
-    allowedOnAdage: true,
   },
   mentalDisabilityCompliant: true,
   motorDisabilityCompliant: false,

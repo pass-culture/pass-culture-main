@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetOfferManagingOffererResponseModel = {
-  allowedOnAdage: boolean;
   id: number;
   name: string;
 };

@@ -154,7 +154,7 @@ const renderUseFocusRoutes = (url = '/accueil', isConnected = true) => {
       initialRouterEntries: [url],
       storeOverrides: {
         offerer: {
-          offererNames: [{ id: 456, name: 'Offerer', allowedOnAdage: false }],
+          offererNames: [{ id: 456, name: 'Offerer' }],
         },
         user: {
           currentUser: isConnected ? { id: 123 } : null,

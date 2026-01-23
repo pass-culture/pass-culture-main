@@ -179,7 +179,6 @@ export const getOfferManagingOffererFactory = (
   return {
     id: 3,
     name: `Le nom de l'entité ${currentOffererId}`,
-    allowedOnAdage: true,
     ...customGetOfferManagingOfferer,
   }
 }
@@ -381,7 +380,6 @@ export function getOffererNameFactory(
   return {
     id: getOffererNameId++,
     name: 'Ma super structure',
-    allowedOnAdage: true,
     ...customGetOfferer,
   }
 }

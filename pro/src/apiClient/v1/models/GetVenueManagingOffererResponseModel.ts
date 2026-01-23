@@ -3,7 +3,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetVenueManagingOffererResponseModel = {
-  allowedOnAdage: boolean;
   id: number;
   isValidated: boolean;
   name: string;

@@ -166,7 +166,6 @@ class GetOffererResponseModel(BaseModel):
 class GetOffererNameResponseModel(BaseModel):
     id: int
     name: str
-    allowedOnAdage: bool
 
     class Config:
         orm_mode = True

@@ -202,7 +202,6 @@ class GetCollectiveOfferManagingOffererResponseModel(BaseModel):
     id: int
     name: str
     siren: str
-    allowedOnAdage: bool
 
     class Config:
         orm_mode = True

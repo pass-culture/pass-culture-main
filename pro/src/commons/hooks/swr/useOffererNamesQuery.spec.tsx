@@ -52,8 +52,8 @@ describe('useOffererNamesQuery', () => {
 
   it('should invoke API and dispatch if no data is present in the store', async () => {
     const mockOffererNames = [
-      { id: 1, name: 'Offerer 1', allowedOnAdage: false },
-      { id: 2, name: 'Offerer 2', allowedOnAdage: true },
+      { id: 1, name: 'Offerer 1' },
+      { id: 2, name: 'Offerer 2' },
     ]
 
     vi.mocked(api.listOfferersNames).mockResolvedValueOnce({
@@ -74,8 +74,8 @@ describe('useOffererNamesQuery', () => {
 
   it('should not invoke API and dispatch if data is present in the store', async () => {
     const mockOffererNames = [
-      { id: 3, name: 'Offerer 3', allowedOnAdage: true },
-      { id: 4, name: 'Offerer 4', allowedOnAdage: false },
+      { id: 3, name: 'Offerer 3' },
+      { id: 4, name: 'Offerer 4' },
     ]
 
     renderComponent({

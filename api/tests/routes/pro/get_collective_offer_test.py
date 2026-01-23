@@ -125,7 +125,6 @@ class Returns200Test:
                 "id": venue.id,
                 "imgUrl": "http://localhost/image.png",
                 "managingOfferer": {
-                    "allowedOnAdage": True,
                     "id": venue.managingOfferer.id,
                     "name": venue.managingOfferer.name,
                     "siren": venue.managingOfferer.siren,
