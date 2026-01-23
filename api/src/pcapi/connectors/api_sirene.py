@@ -10,6 +10,7 @@ Use Enterprise API instead to find:
 import datetime
 import json
 import logging
+import time
 from typing import TypedDict
 
 from pcapi import settings
@@ -21,6 +22,9 @@ from pcapi.utils import requests
 logger = logging.getLogger(__name__)
 
 CACHE_DURATION = datetime.timedelta(minutes=15)
+
+# INSEE Sirene API rate limit is 30 calls/minute. Keep less to be safe.
+RATE_LIMIT_PER_MINUTE = 25
 
 
 class InseeException(Exception):
@@ -142,7 +146,11 @@ class InseeBackend(BaseBackend):
     def get_siren_closed_at_date(self, date_closed: datetime.date) -> list[SirenClosureInfo]:
         results = []
         cursor = "*"
+        page = 0
         while True:
+            page += 1
+            if page % RATE_LIMIT_PER_MINUTE == 0:
+                time.sleep(61)
             subpath = (
                 f"/siren?q=(dateDernierTraitementUniteLegale:{date_closed.isoformat()}"
                 "+AND+periode(etatAdministratifUniteLegale:C+AND+changementEtatAdministratifUniteLegale:true))"
