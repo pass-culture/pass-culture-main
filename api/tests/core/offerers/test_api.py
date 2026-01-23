@@ -3805,29 +3805,41 @@ class OffererAddressTest:
     @pytest.mark.parametrize(
         "factory", [offerers_factories.OffererAddressFactory, offerers_factories.OfferLocationFactory]
     )
-    @pytest.mark.parametrize("same_label,same_address", [[True, False], [False, True], [True, True], [False, False]])
-    def test_get_or_create_offerer_address(self, same_label, same_address, factory):
-        offerer = offerers_factories.OffererFactory()
-        oa_1 = factory(offerer=offerer)
+    @pytest.mark.parametrize(
+        "same_label,same_address, same_venue,",
+        [
+            [True, False, True],
+            [True, False, False],
+            [False, True, True],
+            [False, True, False],
+            [True, True, True],
+            [True, True, False],
+            [False, False, True],
+            [False, False, False],
+        ],
+    )
+    def test_get_or_create_offer_location(self, same_label, same_address, same_venue, factory):
+        venue = offerers_factories.VenueFactory()
+        oa_1 = factory(offerer=venue.managingOfferer, venue=venue, address=venue.offererAddress.address)
         other_address = geography_factories.AddressFactory(
             street="1 rue de la paix",
         )
-        vl_1 = offerers_factories.VenueLocationFactory(offerer=offerer, address=oa_1.address, label=oa_1.label)
-        vl_2 = offerers_factories.VenueLocationFactory(
-            offerer=offerer, address=other_address, label="somethingdifferent"
-        )
+        other_venue = offerers_factories.VenueFactory()
+
+        oa_doppleganger = factory(offerer=venue.managingOfferer, address=other_address, label="somethingdifferent")
 
         oa_return = offerers_api.get_or_create_offer_location(
-            offerer_id=offerer.id,
+            offerer_id=venue.managingOfferer.id,
             address_id=oa_1.address.id if same_address else other_address.id,
+            venue_id=venue.id if same_venue else other_venue.id,
             label=oa_1.label if same_label else "somethingdifferent",
         )
-        if same_label and same_address:
+        if same_label and same_address and same_venue:
             assert oa_return == oa_1
         else:
-            assert oa_return.offerer == offerer
+            assert oa_return.offerer == venue.managingOfferer
             assert oa_return != oa_1
-        assert oa_return not in (vl_1, vl_2)
+        assert oa_return not in (venue.offererAddress, oa_doppleganger)
 
     @pytest.mark.parametrize("existant_address", [True, False])
     def test_get_or_create_address(self, existant_address):

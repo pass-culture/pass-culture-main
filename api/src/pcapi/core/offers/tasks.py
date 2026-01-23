@@ -382,6 +382,7 @@ def _create_or_update_ean_offers(
                 offerer_id=venue.managingOffererId,
                 address_id=address_id,
                 label=address_label,
+                venue_id=venue.id,
             )
         else:
             offerer_address = offers_api.get_or_create_offerer_address_from_address_body(

@@ -4812,6 +4812,7 @@ class MoveOfferTest:
         assert offer.venue == new_venue
         assert offer.offererAddress.addressId == initial_address_id
         assert offer.offererAddress.label == initial_oa_label
+        assert offer.offererAddress.venueId == new_venue.id
 
     def test_move_physical_offer_without_pricing_point_to_venue_with_pricing_point(self):
         """Moving an offer from a venue without pricing point to another venue
@@ -4834,20 +4835,20 @@ class MoveOfferTest:
 
     def test_move_physical_offer_that_has_a_dedicated_oa(self):
         """Moving an offer that has a custom location from a venue to another venue
-        should not change its location."""
+        should create a new oa with same address and label, but different venueid"""
         offerer = offerers_factories.OffererFactory()
         offer_oa = offerers_factories.OffererAddressFactory(offerer=offerer, label="Custom location")
         offer = factories.OfferFactory(venue__managingOfferer=offerer, offererAddress=offer_oa)
         new_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         assert new_venue.current_pricing_point is None
         assert offer.offererAddress != new_venue.offererAddress
-        initial_offerer_address_id = offer_oa.id
 
         api.move_offer(offer, new_venue)
 
         db.session.refresh(offer)
         assert offer.venue == new_venue
-        assert offer.offererAddressId == initial_offerer_address_id
+        assert offer.offererAddress.addressId == offer_oa.addressId
+        assert offer.offererAddress.venueId == new_venue.id
 
     def test_move_physical_offer_with_different_pricing_point(self):
         """Moving a physical offer from a venue to another venue without

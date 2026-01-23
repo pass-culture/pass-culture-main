@@ -11,6 +11,7 @@ from pcapi.core.educational import constants
 from pcapi.core.educational import models
 from pcapi.core.educational import utils
 from pcapi.core.factories import BaseFactory
+from pcapi.core.geography import factories as geography_factories
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
@@ -625,13 +626,17 @@ class CollectiveOfferOnAddressVenueLocationFactory(PublishedCollectiveOfferFacto
         offerers_factories.OffererAddressFactory,
         address=factory.SelfAttribute("..venue.offererAddress.address"),
         label=factory.SelfAttribute("..venue.publicName"),
+        venue=factory.SelfAttribute("..venue"),
     )
 
 
 class CollectiveOfferOnOtherAddressLocationFactory(PublishedCollectiveOfferFactory):
     locationType = models.CollectiveLocationType.ADDRESS
     offererAddress = factory.SubFactory(
-        offerers_factories.OffererAddressFactory, offerer=factory.SelfAttribute("..venue.managingOfferer")
+        offerers_factories.OffererAddressFactory,
+        offerer=factory.SelfAttribute("..venue.managingOfferer"),
+        venue=factory.SelfAttribute("..venue"),
+        address=factory.SubFactory(geography_factories.AddressFactory),
     )
 
 
@@ -648,13 +653,21 @@ class CollectiveOfferTemplateOnSchoolLocationFactory(CollectiveOfferTemplateFact
 
 class CollectiveOfferTemplateOnAddressVenueLocationFactory(CollectiveOfferTemplateFactory):
     locationType = models.CollectiveLocationType.ADDRESS
-    offererAddress = factory.SelfAttribute("venue.offererAddress")
+    offererAddress = factory.SubFactory(
+        offerers_factories.OffererAddressFactory,
+        address=factory.SelfAttribute("..venue.offererAddress.address"),
+        label=factory.SelfAttribute("..venue.publicName"),
+        venue=factory.SelfAttribute("..venue"),
+    )
 
 
 class CollectiveOfferTemplateOnOtherAddressLocationFactory(CollectiveOfferTemplateFactory):
     locationType = models.CollectiveLocationType.ADDRESS
     offererAddress = factory.SubFactory(
-        offerers_factories.OffererAddressFactory, offerer=factory.SelfAttribute("..venue.managingOfferer")
+        offerers_factories.OffererAddressFactory,
+        offerer=factory.SelfAttribute("..venue.managingOfferer"),
+        venue=factory.SelfAttribute("..venue"),
+        address=factory.SubFactory(geography_factories.AddressFactory),
     )
 
 
