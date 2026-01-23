@@ -122,10 +122,10 @@ describe('PartnerPages', () => {
       venue: {
         ...defaultGetVenue,
         collectiveDmsApplications: [],
+        allowedOnAdage: false,
       },
       offerer: {
         ...defaultGetOffererResponseModel,
-        allowedOnAdage: false,
       },
     })
 

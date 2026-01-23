@@ -116,7 +116,6 @@ class GetVenueManagingOffererResponseModel(BaseModel):
     isValidated: bool
     name: str
     siren: str
-    allowedOnAdage: bool
 
     class Config:
         orm_mode = True

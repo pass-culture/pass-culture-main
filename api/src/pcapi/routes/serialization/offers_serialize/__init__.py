@@ -370,7 +370,6 @@ class GetOfferStockResponseModel(BaseModel):
 class GetOfferManagingOffererResponseModel(BaseModel):
     id: int
     name: str
-    allowedOnAdage: bool
 
     class Config:
         orm_mode = True

@@ -49,7 +49,7 @@ export const CollectiveDataEdition = ({
       label: status.name,
     })) ?? []
 
-  const canCreateCollectiveOffer = venue?.managingOfferer.allowedOnAdage
+  const canCreateCollectiveOffer = venue?.allowedOnAdage
 
   const location = useLocation()
 
@@ -90,7 +90,7 @@ export const CollectiveDataEdition = ({
         venueName={venue.name}
         offererId={venue.managingOfferer.id}
         collectiveDmsApplications={venue.collectiveDmsApplications}
-        allowedOnAdage={venue.managingOfferer.allowedOnAdage}
+        allowedOnAdage={venue.allowedOnAdage}
       />
 
       {collectiveDmsApplication && (

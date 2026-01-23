@@ -49,9 +49,7 @@ class Returns200ForProUserTest:
             response = client.get("/offerers/names")
             assert response.status_code == 200
 
-        assert response.json == {
-            "offerersNames": [{"name": offerer.name, "id": offerer.id, "allowedOnAdage": offerer.allowedOnAdage}]
-        }
+        assert response.json == {"offerersNames": [{"name": offerer.name, "id": offerer.id}]}
 
     @pytest.mark.usefixtures("db_session")
     def test_get_offerers_names_for_id(self, client):

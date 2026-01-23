@@ -132,7 +132,7 @@ export const PartnerPage = ({
         venueId={venue.id}
         venueName={venue.name}
         offererId={offerer.id}
-        allowedOnAdage={offerer.allowedOnAdage}
+        allowedOnAdage={venue.allowedOnAdage}
         isDisplayedInHomepage
       />
     </Card>

@@ -20,7 +20,6 @@ export const offerVenueFactory = (
     isVirtual: false,
     managingOfferer: {
       id: 1,
-      allowedOnAdage: true,
       name: 'Le nom de l’offreur 1',
     },
     mentalDisabilityCompliant: true,
@@ -39,7 +38,6 @@ export const makeGetVenueManagingOffererResponseModel = <
 ): Omit<GetVenueManagingOffererResponseModel, keyof T> & T => {
   const fake: GetVenueManagingOffererResponseModel = {
     id: override.id,
-    allowedOnAdage: false,
     isValidated: false,
     name: `Entité ${override.id}`,
     siren: '123456789',

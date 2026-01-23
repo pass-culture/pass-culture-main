@@ -64,7 +64,6 @@ const baseOfferersNames = baseOfferers.map(
   (offerer): GetOffererNameResponseModel => ({
     id: offerer.id,
     name: offerer.name,
-    allowedOnAdage: true,
   })
 )
 const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
@@ -206,13 +205,11 @@ describe('Switch Offerer', () => {
             getOffererNameFactory({
               id: 1,
               name: 'Mon offerer',
-              allowedOnAdage: true,
             }),
           ],
           currentOffererName: getOffererNameFactory({
             id: 1,
             name: 'Mon offerer',
-            allowedOnAdage: true,
           }),
         },
       },

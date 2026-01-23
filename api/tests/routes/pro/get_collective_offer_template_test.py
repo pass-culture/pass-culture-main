@@ -42,7 +42,6 @@ class Returns200Test:
             "id": offer.venue.managingOffererId,
             "name": offer.venue.managingOfferer.name,
             "siren": offer.venue.managingOfferer.siren,
-            "allowedOnAdage": offer.venue.managingOfferer.allowedOnAdage,
         }
         assert "stock" not in response_json
         assert "dateCreated" in response_json

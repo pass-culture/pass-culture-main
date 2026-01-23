@@ -89,7 +89,6 @@ describe('Homepage', () => {
     (offerer): GetOffererNameResponseModel => ({
       id: offerer.id,
       name: offerer.name,
-      allowedOnAdage: true,
     })
   )
 
