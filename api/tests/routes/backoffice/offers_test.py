@@ -3034,7 +3034,7 @@ class EditOfferVenueTest(PostEndpointHelper):
         )
 
     @patch("pcapi.core.search.async_index_offer_ids")
-    def test_sould_keep_event_offerer_address(
+    def test_should_keep_event_offerer_address(
         self, mocked_async_index_offer_ids, authenticated_client, venues_in_same_offerer
     ):
         source_venue, destination_venue, _, _ = venues_in_same_offerer
@@ -3055,7 +3055,8 @@ class EditOfferVenueTest(PostEndpointHelper):
         )
 
         assert offer.venueId == destination_venue.id
-        assert offer.offererAddress == offerer_address
+        assert offer.offererAddress.addressId == offerer_address.addressId
+        assert offer.offererAddress.venueId == destination_venue.id
 
 
 class GetOfferStockEditFormTest(GetEndpointHelper):

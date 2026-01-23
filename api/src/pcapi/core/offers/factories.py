@@ -244,12 +244,13 @@ class OfferFactory(BaseFactory[models.Offer]):
                 )
         if "offererAddress" not in kwargs and "offererAddressId" not in kwargs:
             venue = kwargs.get("venue")
+            db.session.flush()  # Flush is needed otherwise venue.offererAddress will be empty.
             if venue:
-                db.session.flush()  # Flush is needed otherwise venue.offererAddress will be empty.
                 kwargs["offererAddress"] = offerers_api.get_or_create_offer_location(
                     offerer_id=venue.managingOffererId,
                     address_id=venue.offererAddress.addressId,
                     label=venue.publicName,
+                    venue_id=venue.id,
                 )
 
         kwargs.pop("isActive", None)

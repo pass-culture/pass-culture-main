@@ -179,7 +179,7 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
         assert created_offer.mentalDisabilityCompliant == venue.mentalDisabilityCompliant
         assert created_offer.motorDisabilityCompliant == venue.motorDisabilityCompliant
         assert created_offer.visualDisabilityCompliant == venue.visualDisabilityCompliant
-        assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+        assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert created_offer.offererAddress.addressId == venue.offererAddress.addressId
         assert created_offer.offererAddress.label == venue.publicName
         assert created_offer.publicationDatetime == datetime.datetime(2025, 7, 15, tzinfo=datetime.UTC)
@@ -692,10 +692,11 @@ class PostProductByEanTest(PublicAPIVenueEndpointHelper):
     def test_with_custom_address(self):
         address = geography_factories.AddressFactory()
         plain_api_key, venue_provider = self.setup_active_venue_provider()
-        offerer_address = offerers_factories.OffererAddressFactory(
+        offerer_address = offerers_factories.OfferLocationFactory(
             address=address,
             offerer=venue_provider.venue.managingOfferer,
             label="My beautiful address no one knows about",
+            venue=venue_provider.venue,
         )
         offerer_address_id = offerer_address.id
         ean, _ = self._get_base_product()

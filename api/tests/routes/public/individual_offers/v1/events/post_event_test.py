@@ -118,7 +118,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         assert created_offer.withdrawalType is None
         assert created_offer.withdrawalDelay is None
 
-        assert created_offer.offererAddress.type is None  # TODO: soon to be OFFER_LOCATION
+        assert created_offer.offererAddress.type is offerers_models.LocationType.OFFER_LOCATION
         assert created_offer.offererAddressId != created_offer.venue.offererAddress.id
         assert created_offer.offererAddress.addressId == created_offer.venue.offererAddress.addressId
         assert created_offer.offererAddress.label == created_offer.venue.publicName
@@ -542,6 +542,7 @@ class PostEventTest(PublicAPIVenueEndpointHelper):
         offerer_address = offerers_factories.OffererAddressFactory(
             address=address,
             offerer=venue_provider.venue.managingOfferer,
+            venue=venue_provider.venue,
             label="My beautiful address no one knows about",
         )
         payload["location"] = {
