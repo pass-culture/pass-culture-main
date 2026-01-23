@@ -7,73 +7,69 @@ from . import shared
 from .base import Base
 
 
-class ThingsBaseModel(Base):
-    pass
-
-
-class AboBibliothequeModel(ThingsBaseModel):
+class AboBibliothequeModel(Base):
     subcategory_id: Literal["ABO_BIBLIOTHEQUE"]
 
 
-class AboConcertModel(ThingsBaseModel):
+class AboConcertModel(Base):
     subcategory_id: Literal["ABO_CONCERT"]
     extra_data: shared.ExtraDataConcert
 
 
-class AboMediathequeModel(ThingsBaseModel):
+class AboMediathequeModel(Base):
     subcategory_id: Literal["ABO_MEDIATHEQUE"]
 
 
-class AboPratiqueArtModel(ThingsBaseModel):
+class AboPratiqueArtModel(Base):
     subcategory_id: Literal["ABO_PRATIQUE_ART"]
 
 
-class AchatInstrumentModel(ThingsBaseModel):
+class AchatInstrumentModel(Base):
     subcategory_id: Literal["ACHAT_INSTRUMENT"]
     extra_data: shared.ExtraDataEan
 
 
-class CarteCineIllimiteModel(ThingsBaseModel):
+class CarteCineIllimiteModel(Base):
     subcategory_id: Literal["CARTE_CINE_ILLIMITE"]
 
 
-class CarteCineUultiseancesModel(ThingsBaseModel):
+class CarteCineUultiseancesModel(Base):
     subcategory_id: Literal["CARTE_CINE_MULTISEANCES"]
 
 
-class CarteJeunesModel(ThingsBaseModel):
+class CarteJeunesModel(Base):
     subcategory_id: Literal["CARTE_JEUNES"]
 
 
-class CarteMuseeModel(ThingsBaseModel):
+class CarteMuseeModel(Base):
     subcategory_id: Literal["CARTE_MUSEE"]
 
 
-class EscapeGameModel(ThingsBaseModel):
+class EscapeGameModel(Base):
     subcategory_id: Literal["ESCAPE_GAME"]
 
 
-class LivreAudioPhysiqueModel(ThingsBaseModel):
+class LivreAudioPhysiqueModel(Base):
     subcategory_id: Literal["LIVRE_AUDIO_PHYSIQUE"]
     extra_data: shared.ExtraDataBook
 
 
-class LocationInstrumentModel(ThingsBaseModel):
+class LocationInstrumentModel(Base):
     subcategory_id: Literal["LOCATION_INSTRUMENT"]
     extra_data: shared.ExtraDataEan
 
 
-class MaterielArtCreatifModel(ThingsBaseModel):
+class MaterielArtCreatifModel(Base):
     subcategory_id: Literal["MATERIEL_ART_CREATIF"]
     extra_data: shared.ExtraDataEan
 
 
-class PartitionModel(ThingsBaseModel):
+class PartitionModel(Base):
     subcategory_id: Literal["PARTITION"]
     extra_data: shared.ExtraDataEan
 
 
-class SupportPhysiqueFilmModel(ThingsBaseModel):
+class SupportPhysiqueFilmModel(Base):
     subcategory_id: Literal["SUPPORT_PHYSIQUE_FILM"]
     extra_data: shared.ExtraDataEan
 
@@ -87,22 +83,23 @@ class ProviderData(pydantic_v2.BaseModel):
     provider_id: int
 
 
-class ThingsWithEan(ThingsBaseModel):
+class LivrePapierModel(Base):
     product: Product | None = None
     provider_data: ProviderData | None = None
-
-
-class LivrePapierModel(ThingsWithEan):
     subcategory_id: Literal["LIVRE_PAPIER"]
     extra_data: shared.ExtraDataBookWithGtl
 
 
-class SupportPhysiqueMusiqueVinyleModel(ThingsWithEan):
+class SupportPhysiqueMusiqueVinyleModel(Base):
+    product: Product | None = None
+    provider_data: ProviderData | None = None
     subcategory_id: Literal["SUPPORT_PHYSIQUE_MUSIQUE_VINYLE"]
     extra_data: shared.ExtraDataMusicWithEan
 
 
-class SupportPhysiqueMusiqueCDModel(ThingsWithEan):
+class SupportPhysiqueMusiqueCDModel(Base):
+    product: Product | None = None
+    provider_data: ProviderData | None = None
     subcategory_id: Literal["SUPPORT_PHYSIQUE_MUSIQUE_CD"]
     venue: shared.Venue
     extra_data: shared.ExtraDataMusicWithEan

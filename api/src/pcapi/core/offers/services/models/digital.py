@@ -6,89 +6,104 @@ from . import shared
 from .base import Base
 
 
-class DigitalBaseModel(Base):
+class TelechargementMusiqueModel(Base):
     url: HttpUrl
-
-
-class TelechargementMusiqueModel(DigitalBaseModel):
     subcategory_id: Literal["TELECHARGEMENT_MUSIQUE"]
     extra_data: shared.ExtraDataMusicWithEan
 
 
-class LivreNumeriqueModel(DigitalBaseModel):
+class LivreNumeriqueModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["LIVRE_NUMERIQUE"]
     extra_data: shared.ExtraDataBook
 
 
-class PlateformePratiqueArtistiqueModel(DigitalBaseModel):
+class PlateformePratiqueArtistiqueModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["PLATEFORME_PRATIQUE_ARTISTIQUE"]
 
 
-class AutreSupportNumeriqueModel(DigitalBaseModel):
+class AutreSupportNumeriqueModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["AUTRE_SUPPORT_NUMERIQUE"]
 
 
-class MuseeVenteDistanceModel(DigitalBaseModel):
+class MuseeVenteDistanceModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["MUSEE_VENTE_DISTANCE"]
 
 
-class VisiteVirtuelleModel(DigitalBaseModel):
+class VisiteVirtuelleModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["VISITE_VIRTUELLE"]
 
 
-class PratiqueArtVenteDistanceModel(DigitalBaseModel):
+class PratiqueArtVenteDistanceModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["PRATIQUE_ART_VENTE_DISTANCE"]
     extra_data: shared.ExtraDataSpeaker
 
 
-class AboPlateformeVideoModel(DigitalBaseModel):
+class AboPlateformeVideoModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["ABO_PLATEFORME_VIDEO"]
 
 
-class AboPresseEnLigneModel(DigitalBaseModel):
+class AboPresseEnLigneModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["ABO_PRESSE_EN_LIGNE"]
 
 
-class AppCulturelleModel(DigitalBaseModel):
+class AppCulturelleModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["APP_CULTURELLE"]
 
 
-class JeuEnLigneModel(DigitalBaseModel):
+class JeuEnLigneModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["JEU_EN_LIGNE"]
     extra_data: shared.ExtraDataEan
 
 
-class CineVenteDistanceModel(DigitalBaseModel):
+class CineVenteDistanceModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["CINE_VENTE_DISTANCE"]
     extra_data: shared.ExtraDataCine
 
 
-class AboLivreNumeriqueModel(DigitalBaseModel):
+class AboLivreNumeriqueModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["ABO_LIVRE_NUMERIQUE"]
 
 
-class AboJeuVideoModel(DigitalBaseModel):
+class AboJeuVideoModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["ABO_JEU_VIDEO"]
 
 
-class PodcastModel(DigitalBaseModel):
+class PodcastModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["PODCAST"]
 
 
-class TelechargementLivreAudioModel(DigitalBaseModel):
+class TelechargementLivreAudioModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["TELECHARGEMENT_LIVRE_AUDIO"]
     extra_data: shared.ExtraDataAuthor
 
 
-class AboPlateformeMusiqueModel(DigitalBaseModel):
+class AboPlateformeMusiqueModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["ABO_PLATEFORME_MUSIQUE"]
 
 
-class VODModel(DigitalBaseModel):
+class VODModel(Base):
+    url: HttpUrl
     subcategory_id: Literal["VOD"]
 
 
-class DigitalShowModel(DigitalBaseModel):
+class DigitalShowModel(Base):
+    url: HttpUrl
     extra_data: shared.ExtraDataDigitalShow
 
 

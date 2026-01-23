@@ -1,17 +1,12 @@
 from typing import Annotated
 from typing import Literal
 
-import pydantic as pydantic
+import pydantic
 from pydantic import EmailStr
 from pydantic import HttpUrl
 
 from . import shared
 from .base import Base
-
-
-class ActivityBaseModel(Base):
-    # optional for most of subcategories, but not these
-    booking_email: EmailStr
 
 
 class SpeakerExtraData(pydantic.BaseModel):
@@ -25,80 +20,114 @@ class CinemaExtraData(pydantic.BaseModel):
     author: Annotated[str, shared.NameString] | None = None
 
 
-class AtelierPratiqueArtModel(ActivityBaseModel):
+class AtelierPratiqueArtModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["ATELIER_PRATIQUE_ART"]
     extra_data: SpeakerExtraData | None = None
 
 
-class CinePleinAirModel(ActivityBaseModel):
+class CinePleinAirModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["CINE_PLEIN_AIR"]
     extra_data: CinemaExtraData | None = None
 
 
-class ConcoursModel(ActivityBaseModel):
+class ConcoursModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["CONCOURS"]
 
 
-class ConferenceModel(ActivityBaseModel):
+class ConferenceModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["CONFERENCE"]
     extra_data: SpeakerExtraData | None = None
 
 
-class EvenementCineModel(ActivityBaseModel):
+class EvenementCineModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["EVENEMENT_CINE"]
     extra_data: CinemaExtraData | None = None
 
 
-class EvenementJeuModel(ActivityBaseModel):
+class EvenementJeuModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["EVENEMENT_JEU"]
 
 
-class EvenementPatrimoineModel(ActivityBaseModel):
+class EvenementPatrimoineModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["EVENEMENT_PATRIMOINE"]
 
 
-class FestivalCineModel(ActivityBaseModel):
+class FestivalCineModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["FESTIVAL_CINE"]
     extra_data: CinemaExtraData | None = None
 
 
-class FestivalLivreModel(ActivityBaseModel):
+class FestivalLivreModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["FESTIVAL_LIVRE"]
 
 
-class RencontreModel(ActivityBaseModel):
+class RencontreModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["RENCONTRE"]
     extra_data: SpeakerExtraData | None = None
 
 
-class RencontreJeuModel(ActivityBaseModel):
+class RencontreJeuModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["RENCONTRE_JEU"]
 
 
-class SalonModel(ActivityBaseModel):
+class SalonModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["SALON"]
     extra_data: SpeakerExtraData | None = None
 
 
-class SeanceCineModel(ActivityBaseModel):
+class SeanceCineModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["SEANCE_CINE"]
     extra_data: CinemaExtraData | None = None
 
 
-class SeanceEssaiPratiqueArtModel(ActivityBaseModel):
+class SeanceEssaiPratiqueArtModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["SEANCE_ESSAI_PRATIQUE_ART"]
     extra_data: SpeakerExtraData | None = None
 
 
-class VisiteLibreModel(ActivityBaseModel):
+class VisiteLibreModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["VISITE"]
 
 
-class VisiteGuideeModel(ActivityBaseModel):
+class VisiteGuideeModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["VISITE_GUIDEE"]
 
 
-class ActivityOnline(ActivityBaseModel):
+class ActivityOnline(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     url: HttpUrl
 
 
@@ -117,18 +146,24 @@ class LivestreamPratiqueArtistiqueModel(ActivityOnline):
 
 
 # NOTICE(jbaudet - 12/2025): can be an event
-class LivestreamEvenementModel(ActivityBaseModel):
+class LivestreamEvenementModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     url: HttpUrl
     subcategory_id: Literal["LIVESTREAM_EVENEMENT"]
     extra_data: shared.ExtraDataEvent
 
 
-class AboSpectacleModel(ActivityBaseModel):
+class AboSpectacleModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     subcategory_id: Literal["ABO_SPECTACLE"]
     extra_data: shared.ExtraDataShow
 
 
-class ActivityWithTicketBaseModel(ActivityBaseModel):
+class ActivityWithTicketBaseModel(Base):
+    # optional for most of subcategories, but not here
+    booking_email: EmailStr
     withdrawal: shared.WithdrawalInfo = pydantic.Field(discriminator="kind")
 
 

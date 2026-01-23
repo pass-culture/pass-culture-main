@@ -10,16 +10,12 @@ class Legit(models.Base):
     subcategory_id: typing.Literal["LIVRE_PAPIER"]
 
 
-class Legit(models.Base):
-    subcategory_id: typing.Literal["LIVRE_PAPIER"]
-
-
 class WithUnknown(models.Base):
-    subcategory_id: "UNKNOWN"
+    subcategory_id: typing.Literal["UNKNOWN"]
 
 
 class WithoutStrLiteral(models.Base):
-    subcategory_id: "LIVRE_PAPIER"
+    subcategory_id: str = "LIVRE_PAPIER"
 
 
 class WithoutSubcategoryId(models.Base):
@@ -28,7 +24,7 @@ class WithoutSubcategoryId(models.Base):
 
 class ExtractSubcategoryTest:
     def test_model_with_a_subcategory_as_a_str_literal_works(self):
-        assert utils.extract_subcategory(Legit) == "LIVRE_PAPIER"
+        assert utils.extract_subcategory(Legit).id == "LIVRE_PAPIER"
 
     def test_model_with_an_unknown_subcategory_fails(self):
         with pytest.raises(IndexError):

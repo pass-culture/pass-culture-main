@@ -1,28 +1,28 @@
-from pcapi.core.offers.services import models
+import typing
 
-from . import tools
+import pydantic
+
 from . import types
 
 
-def build_model_fields(model: models.base.Base) -> set[types.Field]:
-    schema = model.model_json_schema()
-    defs = schema["$defs"]
-    properties = schema["properties"]
-    if not properties:
+def parse_model_fields(fields: dict[str, pydantic.fields.FieldInfo]) -> typing.Generator[types.Field, None, None]:
+    for name, info in fields.items():
+        # if it looks like a model, it should be a model
+        # -> dig and build a Field with its components
+        if hasattr(info.annotation, "model_fields"):
+            components = tuple(parse_model_fields(info.annotation.model_fields))  # type: ignore
+            yield types.Field.build(name=name, optional=not info.is_required(), components=components)
+        else:
+            yield types.Field.build(name=name, optional=not info.is_required())
+
+
+def build_model_fields(model: pydantic.BaseModel) -> set[types.Field]:
+    return set(parse_model_fields(model.model_fields))
+
+
+def build_model_extra_data_fields(model: pydantic.BaseModel) -> set[types.Field]:
+    fields = model.model_fields
+    extra_data_fields = fields.get("extra_data")
+    if not extra_data_fields:
         return set()
-
-    return set(tools.parse_properties(defs, properties))
-
-
-def build_model_extra_data_fields(model: models.base.Base) -> set[types.Field]:
-    schema = model.model_json_schema()
-    defs = schema["$defs"]
-    extra_data_properties = schema["properties"].get("extra_data")
-    if not extra_data_properties:
-        return set()
-
-    # `parse_properties` needs a dict as an input and will be return the
-    # whole extra_data `Field`. The thing is... we only care about its
-    # components
-    extra_data_field = tools.parse_properties(defs, {"extra_data": extra_data_properties})
-    return set(component for field in extra_data_field for component in field.components)
+    return set(parse_model_fields(extra_data_fields.annotation.model_fields))  # type: ignore
