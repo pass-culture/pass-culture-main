@@ -102,6 +102,7 @@ $info-box-margin-left: rem.torem(24px);
       display: flex;
       flex-flow: row wrap;
       flex-direction: row;
+      align-items: flex-end;
       gap: var(--size-spacing-l);
     }
   }

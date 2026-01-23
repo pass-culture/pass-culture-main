@@ -21,6 +21,15 @@ export const selectCurrentOfferer = (state: RootState) =>
 export const selectAdminCurrentOfferer = (state: RootState) =>
   state.offerer.adminCurrentOfferer
 
+export const ensureAdminCurrentOfferer = (state: RootState) => {
+  assertOrFrontendError(
+    state.offerer.adminCurrentOfferer,
+    '`state.offerer.adminCurrentOfferer` is null.'
+  )
+
+  return state.offerer.adminCurrentOfferer
+}
+
 /** @deprecated Use `ensureCurrentOfferer` or `selectCurrentOfferer`. */
 export const selectCurrentOffererId = (state: RootState) =>
   state.offerer.currentOfferer?.id ?? null

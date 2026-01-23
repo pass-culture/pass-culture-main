@@ -440,6 +440,18 @@ export const routes: CustomRouteObject[] = [
     children: routesReimbursements,
   },
   {
+    lazy: () => import('@/pages/Admin/Individuel/Individuel'),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
+    path: '/admin/individuel',
+    title: "Données d'activité - Individuel",
+  },
+  {
+    lazy: () => import('@/pages/Admin/Collectif/Collectif'),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
+    path: '/admin/collectif',
+    title: "Données d'activité - Collectif",
+  },
+  {
     lazy: () => import('@/pages/User/UserProfile'),
     loader: withUserPermissions(mustBeAuthenticated),
     path: '/profil',

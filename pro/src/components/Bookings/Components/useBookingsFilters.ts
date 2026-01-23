@@ -5,7 +5,10 @@ import { BookingStatusFilter } from '@/apiClient/v1'
 import { DEFAULT_PRE_FILTERS } from '@/commons/core/Bookings/constants'
 import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectAdminCurrentOfferer,
+  selectCurrentOffererId,
+} from '@/commons/store/offerer/selectors'
 import { isDateValid } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
 import { stringify } from '@/commons/utils/query-string'
@@ -19,17 +22,23 @@ function isBookingStatusFilter(
   )
 }
 
-export function useBookingsFilters() {
+export function useBookingsFilters({
+  basePath = '/reservations',
+}: {
+  basePath?: string
+} = {}) {
   const navigate = useNavigate()
   const location = useLocation()
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const currentOffererId = useAppSelector(selectCurrentOffererId)
+  const adminCurrentOfferer = useAppSelector(selectAdminCurrentOfferer)
+  const offererId = adminCurrentOfferer?.id ?? currentOffererId
 
   const initialAppliedFilters: PreFiltersParams = useMemo(
     () => ({
       ...DEFAULT_PRE_FILTERS,
-      offererId: selectedOffererId?.toString() ?? '',
+      offererId: offererId?.toString() ?? '',
     }),
-    [selectedOffererId]
+    [offererId]
   )
 
   const [appliedPreFilters, setAppliedPreFilters] = useState<PreFiltersParams>(
@@ -82,15 +91,15 @@ export function useBookingsFilters() {
         offerEventDate:
           params.get('offerEventDate') ?? initialAppliedFilters.offerEventDate,
         offererId:
-          selectedOffererId !== null
-            ? selectedOffererId.toString()
+          offererId !== null
+            ? offererId.toString()
             : DEFAULT_PRE_FILTERS.offererId,
       }
 
       setAppliedPreFilters(next)
       setSelectedPreFilters(next)
     }
-  }, [location.search, selectedOffererId, initialAppliedFilters])
+  }, [location.search, offererId, initialAppliedFilters])
 
   const hasPreFilters = useMemo(() => {
     let key: keyof PreFiltersParams
@@ -160,7 +169,7 @@ export function useBookingsFilters() {
 
     setUrlParams((prev) => ({ ...prev, ...partialUrlInfo }) as PreFiltersParams)
 
-    navigate(`/reservations?page=1&${stringify(partialUrlInfo)}`)
+    navigate(`${basePath}?page=1&${stringify(partialUrlInfo)}`)
   }
 
   const applyNow = () => {
