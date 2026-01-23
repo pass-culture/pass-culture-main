@@ -39,7 +39,7 @@ export const ErrorLayout = ({
     <main className={styles['content-wrapper']}>
       <div className={styles['content']}>
         <SvgIcon className={styles['error-icon']} src={errorIcon} alt="" />
-        <h1 className={styles['title']}>{mainHeading} OUPS</h1>
+        <h1 className={styles['title']}>{mainHeading}</h1>
         <p className={styles.description}>{paragraph}</p>
         <div className={styles['nm-redirection-link']}>
           {/** biome-ignore lint/correctness/useUniqueElementIds: This is always

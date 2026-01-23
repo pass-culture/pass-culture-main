@@ -30,7 +30,7 @@ export const OnboardingOffersChoice = () => {
             as="a"
             variant={ButtonVariant.PRIMARY}
             to="/onboarding/individuel"
-            aria-label="Commencer la création d'offre sur l'application mobile"
+            aria-label="Commencer la création d’offre sur l’application mobile"
             className={styles['button-getting-started']}
             label="Commencer"
           />
