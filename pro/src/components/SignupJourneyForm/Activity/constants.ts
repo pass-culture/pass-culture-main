@@ -1,5 +1,7 @@
-export const defaultActivityFormValues = {
-  venueTypeCode: undefined,
+import type { ActivityFormValues } from '@/components/SignupJourneyForm/Activity/ActivityForm'
+
+export const defaultActivityFormValues: ActivityFormValues = {
+  activity: undefined,
   socialUrls: [{ url: '' }],
   targetCustomer: {
     individual: false,

@@ -27,10 +27,7 @@ interface SocialUrl {
 }
 
 export interface ActivityFormValues {
-  venueTypeCode?:
-    | ActivityOpenToPublicType
-    | ActivityNotOpenToPublicType
-    | string
+  activity?: ActivityOpenToPublicType | ActivityNotOpenToPublicType
   socialUrls: SocialUrl[]
   targetCustomer: {
     individual: boolean
@@ -87,8 +84,8 @@ export const ActivityForm = (): JSX.Element => {
             },
             ...mainActivityOptions,
           ]}
-          {...register('venueTypeCode')}
-          error={formState.errors.venueTypeCode?.message}
+          {...register('activity')}
+          error={formState.errors.activity?.message}
           label="Activité principale"
           className={styles['venue-type-select']}
           required

@@ -4,7 +4,6 @@ import { FormProvider, useForm } from 'react-hook-form'
 import useSWR, { type SWRResponse } from 'swr'
 import { expect, vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
   type ActivityContext,
@@ -19,11 +18,6 @@ import { Button } from '@/ui-kit/Button/Button'
 
 import { ActivityForm, type ActivityFormValues } from '../ActivityForm'
 
-vi.mock('@/apiClient/api', () => ({
-  api: {
-    getVenueTypes: vi.fn(),
-  },
-}))
 vi.mock('swr', async (importOriginal) => ({
   ...(await importOriginal()),
   default: vi.fn(),
@@ -74,7 +68,6 @@ describe('screens:SignupJourney::ActivityForm', () => {
       initialAddress: null,
       setInitialAddress: noop,
     }
-    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     useSWRMock.mockReturnValue({
       isLoading: false,
       data: [
@@ -132,7 +125,7 @@ describe('screens:SignupJourney::ActivityForm', () => {
 
   it('should render activity form with initialValues', async () => {
     initialValues = {
-      venueTypeCode: 'MUSEUM',
+      activity: 'MUSEUM',
       socialUrls: [
         { url: 'https://example.com' },
         { url: 'https://exampleTwo.fr' },
@@ -223,13 +216,13 @@ describe('screens:SignupJourney::ActivityForm', () => {
     expect(publicTarget).not.toBeChecked()
   })
 
-  it('should change venueType', async () => {
+  it('should change activity', async () => {
     renderActivityForm(initialValues, contextValue)
 
-    const venueTypeSelect = screen.getByLabelText(/Activité principale/)
-    expect(venueTypeSelect).toHaveValue('')
+    const activity = screen.getByLabelText(/Activité principale/)
+    expect(activity).toHaveValue('')
 
-    await userEvent.click(venueTypeSelect)
+    await userEvent.click(activity)
     await userEvent.click(screen.getByText('Bibliothèque ou médiathèque'))
     await waitFor(() => {
       expect(

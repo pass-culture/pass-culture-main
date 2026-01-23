@@ -5,7 +5,7 @@ import { validationSchema } from '../validationSchema'
 
 describe('Activity validationSchema', () => {
   const validFormValues: ActivityFormValues = {
-    venueTypeCode: 'MUSEUM',
+    activity: 'MUSEUM',
     socialUrls: [{ url: 'https://passculture.pro' }],
     targetCustomer: {
       individual: true,
@@ -29,7 +29,7 @@ describe('Activity validationSchema', () => {
     },
     {
       description: 'no venue type code',
-      formValues: { ...validFormValues, venueTypeCode: undefined },
+      formValues: { ...validFormValues, activity: undefined },
       expectedErrors: ['Veuillez sélectionner une activité principale'],
       notOpenToPublic: false,
     },
@@ -108,7 +108,7 @@ describe('Activity validationSchema', () => {
       description: 'Right cultural domain',
       formValues: {
         ...validFormValues,
-        venueTypeCode: 'ART_GALLERY',
+        activity: 'ART_GALLERY',
       },
       expectedErrors: [],
       notOpenToPublic: false,
@@ -117,7 +117,7 @@ describe('Activity validationSchema', () => {
       description: 'Right cultural domain',
       formValues: {
         ...validFormValues,
-        venueTypeCode: 'FESTIVAL',
+        activity: 'FESTIVAL',
       },
       expectedErrors: [],
       notOpenToPublic: true,

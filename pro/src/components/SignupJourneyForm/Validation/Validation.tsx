@@ -69,13 +69,11 @@ export const Validation = (): JSX.Element | undefined => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer, navigate])
 
-  if (activity === null || offerer === null) {
+  if (!activity?.activity || offerer === null) {
     return
   }
 
-  const activityLabel = getActivityLabel(
-    activity.venueTypeCode as ActivityOpenToPublic | ActivityNotOpenToPublic
-  )
+  const activityLabel = getActivityLabel(activity.activity)
 
   const onSubmit = async () => {
     setLoading(true)
@@ -88,11 +86,9 @@ export const Validation = (): JSX.Element | undefined => {
         publicName: offerer.publicName || null,
         siret: offerer.siret.replaceAll(' ', ''),
         culturalDomains: activity.culturalDomains,
-        activity:
-          /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-          activity.venueTypeCode as
-            | ActivityOpenToPublic
-            | ActivityNotOpenToPublic,
+        activity: activity.activity as
+          | ActivityOpenToPublic
+          | ActivityNotOpenToPublic,
         webPresence: activity.socialUrls.join(', '),
         target:
           /* istanbul ignore next: the form validation already handles this */

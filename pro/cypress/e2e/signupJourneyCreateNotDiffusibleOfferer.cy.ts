@@ -23,11 +23,6 @@ describe('Signup journey with not diffusible offerer siret', () => {
       method: 'GET',
       url: `/venues/siret/**`,
     }).as('venuesSiret')
-    cy.intercept({
-      method: 'GET',
-      url: '/venue-types',
-      times: 1,
-    }).as('venue-types')
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
@@ -65,8 +60,6 @@ describe('Signup journey with not diffusible offerer siret', () => {
     cy.findByText('Étape précédente').click()
     cy.findByLabelText('Non').should('be.checked')
     cy.findByText('Étape suivante').click()
-
-    cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/inscription/structure/activite')
@@ -119,8 +112,6 @@ describe('Signup journey with not diffusible offerer siret', () => {
     cy.findByText('Étape précédente').click()
     cy.findByLabelText('Oui').click()
     cy.findByText('Étape suivante').click()
-
-    cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
     cy.stepLog({ message: 'I fill activity form without target audience' })
     cy.url().should('contain', '/inscription/structure/activite')

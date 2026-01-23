@@ -24,7 +24,6 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 vi.mock('@/apiClient/api', () => ({
   api: {
     getVenues: vi.fn(),
-    getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
@@ -108,10 +107,6 @@ describe('ValidationScreen', () => {
       initialAddress: null,
       setInitialAddress: noop,
     }
-    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
-      { value: 'MUSEUM', label: 'first venue label' },
-      { value: 'venue2', label: 'second venue label' },
-    ])
     setSelectedOffererByIdMock.mockReset()
   })
 
@@ -144,7 +139,7 @@ describe('ValidationScreen', () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
-        venueTypeCode: 'MUSEUM',
+        activity: 'MUSEUM',
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
         phoneNumber: '',
@@ -172,7 +167,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: 'MUSEUM',
+          activity: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -220,7 +215,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: 'MUSEUM',
+          activity: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -349,7 +344,6 @@ describe('ValidationScreen', () => {
       expect(saveNewOnboardingDataMock).toHaveBeenCalledTimes(1)
       const [[payload]] = saveNewOnboardingDataMock.mock.calls
       expect(payload.activity).toBe('MUSEUM')
-      expect(payload.venueTypeCode).toBeUndefined()
     })
 
     it('should see the data from the previous forms for validation without public name', async () => {
@@ -397,7 +391,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: 'MUSEUM',
+          activity: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -429,14 +423,6 @@ describe('ValidationScreen', () => {
       expect(
         await screen.findByText('Erreur lors de la création de votre structure')
       ).toBeInTheDocument()
-    })
-
-    it('should not render on venue types api error', () => {
-      vi.spyOn(api, 'getVenueTypes').mockRejectedValueOnce({})
-      renderValidationScreen(contextValue)
-      expect(
-        screen.queryByText('Informations structure')
-      ).not.toBeInTheDocument()
     })
 
     it('should not render when no activity', () => {

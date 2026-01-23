@@ -27,7 +27,7 @@ export const validationSchema = (
         .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
 
   return yup.object().shape({
-    venueTypeCode: typeCodeValidator.required(
+    activity: typeCodeValidator.required(
       'Veuillez sélectionner une activité principale'
     ),
     culturalDomains: yup
