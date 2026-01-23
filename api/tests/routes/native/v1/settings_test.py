@@ -1,5 +1,6 @@
 import pytest
 
+from pcapi.core.subscription.bonus.constants import QUOTIENT_FAMILIAL_THRESHOLD
 from pcapi.core.testing import assert_num_queries
 from pcapi.utils.postal_code import INELIGIBLE_POSTAL_CODES
 
@@ -25,7 +26,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": True,
-            "bonification": {"bonusAmount": 5000, "qfThreshold": 3000},
+            "bonification": {"bonusAmount": 5000, "qfThreshold": QUOTIENT_FAMILIAL_THRESHOLD},
             "depositAmountsByAge": {"age_15": 0, "age_16": 0, "age_17": 5000, "age_18": 15000},
             "displayDmsRedirection": True,
             "enableFrontImageResizing": True,
@@ -57,7 +58,7 @@ class SettingsTest:
         assert response.json == {
             "accountCreationMinimumAge": 15,
             "appEnableAutocomplete": False,
-            "bonification": {"bonusAmount": 5000, "qfThreshold": 3000},
+            "bonification": {"bonusAmount": 5000, "qfThreshold": QUOTIENT_FAMILIAL_THRESHOLD},
             "depositAmountsByAge": {"age_15": 0, "age_16": 0, "age_17": 5000, "age_18": 15000},
             "displayDmsRedirection": False,
             "enableFrontImageResizing": False,
