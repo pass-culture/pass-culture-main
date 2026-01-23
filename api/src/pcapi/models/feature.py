@@ -145,6 +145,7 @@ class FeatureToggle(enum.Enum):
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
     WIP_VENUE_CULTURAL_DOMAINS = "Active la nouvelle liste de domaines culturels pour les structures"
+    WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -206,6 +207,7 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
+    FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
     FeatureToggle.WIP_HIGHLIGHT,
     FeatureToggle.WIP_OFFER_ARTISTS,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
