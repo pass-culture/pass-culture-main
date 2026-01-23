@@ -43,7 +43,7 @@ def get_artist_image_url(artist: Artist) -> str | None:
     return image_url
 
 
-def create_artist_offer_link(offer_id: int, artist_offer_link: artist_serialize.ArtistOfferResponseModel) -> None:
+def create_artist_offer_link(offer_id: int, artist_offer_link: artist_serialize.ArtistOfferLinkBodyModel) -> None:
     artist_offer_link = models.ArtistOfferLink(
         offer_id=offer_id,
         artist_id=artist_offer_link.artist_id,
@@ -78,7 +78,7 @@ def _get_artist_offer_link_key(
 
 
 def upsert_artist_offer_links(
-    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel], offer: models.Offer
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel], offer: models.Offer
 ) -> tuple:
     """
     Update artist offer links for a specific offer based on a new list of artist offer links.

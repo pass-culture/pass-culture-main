@@ -81,7 +81,7 @@ class CategoryResponseModel(BaseModel):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
-    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel] | None
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel] | None
     location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None
@@ -689,7 +689,7 @@ class MinimalPostOfferBodyModel(ConfiguredBaseModel):
     subcategory_id: str
     duration_minutes: int | None
     extra_data: dict[str, typing.Any] | None
-    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel] | None
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel] | None
 
     audio_disability_compliant: bool
     mental_disability_compliant: bool

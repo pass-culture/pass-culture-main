@@ -21,7 +21,7 @@ class ArtistQueryModel(HttpQueryParamsModel):
     search: str
 
 
-class ArtistOfferResponseModel(ConfiguredBaseModel):
-    artist_id: str | None = Field(...)
+class ArtistOfferLinkBodyModel(ConfiguredBaseModel):
+    artist_id: str | None
     artist_type: artist_models.ArtistType
-    custom_name: str | None = Field(...)
+    custom_name: str | None

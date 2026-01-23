@@ -76,7 +76,7 @@ class CreateArtistOfferLinkTest:
         offer = offers_factories.OfferFactory()
         artist = artist_factories.ArtistFactory()
 
-        link_data = artist_serialize.ArtistOfferResponseModel(
+        link_data = artist_serialize.ArtistOfferLinkBodyModel(
             artist_id=artist.id,
             artist_type=artist_models.ArtistType.PERFORMER,
             custom_name=None,
@@ -94,7 +94,7 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_custom_name(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferResponseModel(
+        link_data = artist_serialize.ArtistOfferLinkBodyModel(
             artist_id=None,
             artist_type=artist_models.ArtistType.AUTHOR,
             custom_name="John Doe",
@@ -112,7 +112,7 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_missing_artist_data(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferResponseModel(
+        link_data = artist_serialize.ArtistOfferLinkBodyModel(
             artist_id=None,
             artist_type=artist_models.ArtistType.PERFORMER,
             custom_name=None,
@@ -125,7 +125,7 @@ class CreateArtistOfferLinkTest:
         offer = offers_factories.OfferFactory()
         artist = artist_factories.ArtistFactory()
 
-        link_data = artist_serialize.ArtistOfferResponseModel(
+        link_data = artist_serialize.ArtistOfferLinkBodyModel(
             artist_id=artist.id,
             artist_type=artist_models.ArtistType.PERFORMER,
             custom_name=None,
@@ -138,7 +138,7 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_duplicate_custom_name(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferResponseModel(
+        link_data = artist_serialize.ArtistOfferLinkBodyModel(
             artist_id=None,
             artist_type=artist_models.ArtistType.AUTHOR,
             custom_name="John Doe",
@@ -151,7 +151,7 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_invalid_artist_id(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferResponseModel(
+        link_data = artist_serialize.ArtistOfferLinkBodyModel(
             artist_id="invalid_artist_id",
             artist_type=artist_models.ArtistType.PERFORMER,
             custom_name=None,
@@ -168,7 +168,7 @@ class UpsertArtistOfferLinksTest:
         artist = artist_factories.ArtistFactory()
 
         incoming_links = [
-            artist_serialize.ArtistOfferResponseModel(
+            artist_serialize.ArtistOfferLinkBodyModel(
                 artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
             )
         ]
@@ -199,7 +199,7 @@ class UpsertArtistOfferLinksTest:
         existing_link_id = existing_link.id
 
         incoming_links = [
-            artist_serialize.ArtistOfferResponseModel(
+            artist_serialize.ArtistOfferLinkBodyModel(
                 artistId=existing_link.artist_id,
                 artistType=existing_link.artist_type,
                 customName=None,
@@ -217,10 +217,10 @@ class UpsertArtistOfferLinksTest:
         artist = artist_factories.ArtistFactory()
 
         incoming_links = [
-            artist_serialize.ArtistOfferResponseModel(
+            artist_serialize.ArtistOfferLinkBodyModel(
                 artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
             ),
-            artist_serialize.ArtistOfferResponseModel(
+            artist_serialize.ArtistOfferLinkBodyModel(
                 artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
             ),
         ]
