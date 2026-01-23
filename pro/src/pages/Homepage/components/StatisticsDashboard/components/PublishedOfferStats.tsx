@@ -91,7 +91,7 @@ export const PublishedOfferStats = ({
               count={stats.publishedPublicOffers}
               label="à destination du grand public"
               link={`/offres?structure=${offerer.id}&status=active`}
-              linkLabel="Voir les offres individuelles publiées"
+              linkLabel="Voir les offres individuelles"
             />
 
             <StatBlock
@@ -99,7 +99,7 @@ export const PublishedOfferStats = ({
               count={stats.publishedEducationalOffers}
               label="à destination de groupes scolaires"
               link={`/offres/collectives?structure=${offerer.id}&status=active`}
-              linkLabel="Voir les offres collectives publiées"
+              linkLabel="Voir les offres collectives"
             />
           </>
         )}

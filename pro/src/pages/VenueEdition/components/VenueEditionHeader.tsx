@@ -171,9 +171,8 @@ export const VenueEditionHeader = ({
               onImageUpload={handleOnImageUpload}
               onImageDelete={handleOnImageDelete}
               onClickButtonImage={logButtonAddClick}
-            >
-              Modifier l’image
-            </ButtonImageEdit>
+              label="Modifier l’image"
+            />
           )}
         </div>
       </div>

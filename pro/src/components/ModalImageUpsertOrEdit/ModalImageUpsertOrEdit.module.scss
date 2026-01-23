@@ -27,7 +27,8 @@
   &-editor {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    justify-content: space-between;
+    align-items: stretch;
     border: rem.torem(1px) solid var(--color-border-subtle);
     border-radius: var(--size-border-radius-s);
     max-width: rem.torem(410px);
@@ -48,11 +49,15 @@
 
   &-actions {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: space-between;
     gap: var(--size-spacing-l);
-    padding: var(--size-spacing-xl) rem.torem(16px) rem.torem(16px)
-      rem.torem(16px);
+    padding: var(--size-spacing-l);
     align-items: flex-start;
+
+    > * {
+      flex: 1;
+    }
   }
 
   &-right {

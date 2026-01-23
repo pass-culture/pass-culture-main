@@ -40,13 +40,7 @@ export const SummarySection = ({
     )}
   >
     <div className={style['summary-layout-section-header']}>
-      <h2
-        className={cn(style['section-title'], {
-          [style['section-title-editable']]: Boolean(editLink),
-        })}
-      >
-        {title}
-      </h2>
+      <h2 className={style['section-title']}>{title}</h2>
 
       {typeof editLink === 'string' ? (
         <Button
@@ -56,7 +50,6 @@ export const SummarySection = ({
           size={ButtonSize.SMALL}
           to={editLink}
           aria-label={props['aria-label']}
-          className={style['summary-layout-section-header-edit-link']}
           icon={fullEditIcon}
           label="Modifier"
         />
