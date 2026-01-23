@@ -103,7 +103,8 @@ jobs:
     if: github.event.inputs.target_environment != 'production'
     uses: ./.github/workflows/dev_on_workflow_deploy.yml
     with:
-      environment: ${{ needs.environment-short-name.outputs.ENVIRONMENT_SHORT_NAME }}
+      environment: ${{ github.event.inputs.target_environment }}
+      environment_short_name: ${{ needs.environment-short-name.outputs.ENVIRONMENT_SHORT_NAME }}
       app_version: ${{ needs.version.outputs.APP_VERSION }}
       workflow_cluster_name: gke-infra-prd-eu9
       workflow_project_id: pc-infra-prd
