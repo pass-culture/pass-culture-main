@@ -69,6 +69,7 @@ export const makeGetVenueResponseModel = <
     id: override.id,
     collectiveDmsApplications: [],
     audioDisabilityCompliant: false,
+    allowedOnAdage: false,
     collectiveDomains: [],
     dateCreated: new Date().toISOString(),
     hasActiveIndividualOffer: false,
