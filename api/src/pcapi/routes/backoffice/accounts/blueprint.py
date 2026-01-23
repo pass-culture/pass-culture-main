@@ -25,7 +25,6 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import deposit_api
 from pcapi.core.finance import exceptions as finance_exceptions
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud import exceptions as fraud_exceptions
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -1759,7 +1758,7 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
             review=subscription_models.FraudReviewStatus(form.status.data),
             reviewed_eligibility=eligibility,
         )
-    except (fraud_exceptions.FraudException, finance_exceptions.FinanceException, DisabledFeatureError) as exc:
+    except (subscription_exceptions.FraudException, finance_exceptions.FinanceException, DisabledFeatureError) as exc:
         mark_transaction_as_invalid()
         flash(
             Markup("Une erreur s'est produite : {message}").format(message=str(exc) or exc.__class__.__name__),
