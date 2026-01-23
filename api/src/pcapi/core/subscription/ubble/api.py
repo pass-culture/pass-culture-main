@@ -23,11 +23,11 @@ from pcapi.connectors.serialization import ubble_serializers
 from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.external.batch import track_ubble_ko_event
 from pcapi.core.finance import models as finance_models
-from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription import api as subscription_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
+from pcapi.core.subscription.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription.ubble import fraud_check_api as ubble_fraud_api
 from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import models as users_models

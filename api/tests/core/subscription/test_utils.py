@@ -1,6 +1,6 @@
 import pytest
 
-import pcapi.core.fraud.utils as fraud_utils
+import pcapi.core.subscription.utils as subscription_utils
 
 
 class UtilsUnitTest:
@@ -18,7 +18,7 @@ class UtilsUnitTest:
         ],
     )
     def test_is_latin(self, test_input, expected):
-        assert fraud_utils.is_latin(test_input, accepted_chars=[]) == expected
+        assert subscription_utils.is_latin(test_input, accepted_chars=[]) == expected
 
     @pytest.mark.parametrize(
         "test_input,expected",
@@ -35,10 +35,10 @@ class UtilsUnitTest:
     )
     def test_is_address_valid(self, test_input, expected):
         if expected:
-            fraud_utils.validate_address(test_input)
+            subscription_utils.validate_address(test_input)
         else:
             with pytest.raises(ValueError):
-                fraud_utils.validate_address(test_input)
+                subscription_utils.validate_address(test_input)
 
     @pytest.mark.parametrize(
         "test_input,expected",
@@ -53,10 +53,10 @@ class UtilsUnitTest:
     )
     def test_is_city_valid(self, test_input, expected):
         if expected:
-            fraud_utils.validate_city(test_input)
+            subscription_utils.validate_city(test_input)
         else:
             with pytest.raises(ValueError):
-                fraud_utils.validate_city(test_input)
+                subscription_utils.validate_city(test_input)
 
     @pytest.mark.parametrize(
         "test_input,expected",
@@ -77,7 +77,7 @@ class UtilsUnitTest:
     )
     def test_is_name_valid(self, test_input, expected):
         if expected:
-            fraud_utils.validate_name(test_input)
+            subscription_utils.validate_name(test_input)
         else:
             with pytest.raises(ValueError):
-                fraud_utils.validate_name(test_input)
+                subscription_utils.validate_name(test_input)

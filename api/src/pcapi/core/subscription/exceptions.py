@@ -18,3 +18,11 @@ class BeneficiaryFraudCheckMissingException(SubscriptionException):
 
 class CannotUpgradeBeneficiaryRole(SubscriptionException):
     pass
+
+
+class FraudException(Exception):
+    pass
+
+
+class IncompatibleFraudCheckStatus(FraudException):
+    pass

@@ -4,9 +4,9 @@ from pcapi.connectors.dms import api as dms_connector_api
 from pcapi.connectors.dms import utils as dms_utils
 from pcapi.connectors.serialization import dms_serializers
 from pcapi.connectors.serialization import ubble_serializers
-from pcapi.core.fraud.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.subscription.exceptions import BeneficiaryFraudCheckMissingException
+from pcapi.core.subscription.exceptions import IncompatibleFraudCheckStatus
 from pcapi.core.subscription.models import FraudCheckStatus
 from pcapi.core.subscription.ubble import api as ubble_subscription_api
 from pcapi.core.subscription.ubble import exceptions as ubble_exceptions
