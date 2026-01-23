@@ -21,6 +21,7 @@ PRO_FEATURES = (
     FeatureToggle.WIP_SWITCH_VENUE,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_VENUE_CULTURAL_DOMAINS,
+    FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
 )
 
 
