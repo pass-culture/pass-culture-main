@@ -1,6 +1,7 @@
 from datetime import date
 
 from pcapi.connectors import api_particulier
+from pcapi.core.subscription.bonus.constants import QUOTIENT_FAMILIAL_THRESHOLD
 from pcapi.core.users import models as users_models
 
 
@@ -35,7 +36,7 @@ QUOTIENT_FAMILIAL_FIXTURE = {
         },
         "quotient_familial": {
             "fournisseur": "CNAF",
-            "valeur": 2550,
+            "valeur": QUOTIENT_FAMILIAL_THRESHOLD,
             "annee": 2023,
             "mois": 6,
             "annee_calcul": 2024,

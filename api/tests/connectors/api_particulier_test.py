@@ -10,6 +10,7 @@ import pytest
 from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import factories as subscription_factories
+from pcapi.core.subscription.bonus.constants import QUOTIENT_FAMILIAL_THRESHOLD
 from pcapi.core.users import models as users_models
 
 from tests.core.subscription.bonus.bonus_fixtures import QUOTIENT_FAMILIAL_FIXTURE
@@ -67,7 +68,7 @@ def test_get_quotient_familial_for_french_household(requests_mock):
             ],
             quotient_familial=api_particulier.QuotientFamilial(
                 fournisseur="CNAF",
-                valeur=2550,
+                valeur=QUOTIENT_FAMILIAL_THRESHOLD,
                 annee=2023,
                 mois=6,
                 annee_calcul=2024,

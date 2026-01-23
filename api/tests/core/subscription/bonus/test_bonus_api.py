@@ -9,6 +9,7 @@ import pcapi.connectors.api_particulier as api_particulier
 import pcapi.core.finance.models as finance_models
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.subscription.bonus.api as bonus_api
+import pcapi.core.subscription.bonus.constants as bonus_constants
 import pcapi.core.subscription.bonus.schemas as bonus_schemas
 import pcapi.core.subscription.factories as subscription_factories
 import pcapi.core.subscription.models as subscription_models
@@ -25,7 +26,7 @@ import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 class GetQuotientFamilialTest:
     def test_apply_for_quotient_familial_bonus(self):
         user = _build_user_from_fixture(bonus_fixtures.QUOTIENT_FAMILIAL_FIXTURE)
-        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory.create(
             user=user,
             type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
             status=subscription_models.FraudCheckStatus.STARTED,
@@ -59,7 +60,12 @@ class GetQuotientFamilialTest:
                 birth_city_cog_code="08480",
             ),
             quotient_familial=bonus_schemas.QuotientFamilialContent(
-                provider="CNAF", value=2550, year=2023, month=6, computation_year=2024, computation_month=12
+                provider="CNAF",
+                value=bonus_constants.QUOTIENT_FAMILIAL_THRESHOLD,
+                year=2023,
+                month=6,
+                computation_year=2024,
+                computation_month=12,
             ),
             children=[
                 bonus_schemas.QuotientFamilialChild(
