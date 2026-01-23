@@ -20,7 +20,6 @@ import fullTrashIcon from '@/icons/full-trash.svg'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PhoneNumberInput } from '@/ui-kit/form/PhoneNumberInput/PhoneNumberInput'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import styles from './ActivityForm.module.scss'
 
@@ -171,15 +170,16 @@ export const ActivityForm = ({
                         formState.errors.socialUrls?.[index] ? 'true' : 'false'
                       }
                     >
-                      <ListIconButton
+                      <Button
+                        variant={ButtonVariant.SECONDARY}
+                        color={ButtonColor.NEUTRAL}
                         icon={fullTrashIcon}
                         onClick={() => {
                           remove(index)
                           setFocus(`socialUrls.${index - 1}.url`)
                         }}
                         disabled={watchSocialUrls.length <= 1}
-                        className={styles['delete-button']}
-                        tooltipContent={<>Supprimer l’url</>}
+                        tooltip={'Supprimer l’url'}
                       />
                     </div>
                   )
@@ -191,7 +191,6 @@ export const ActivityForm = ({
 
         <Button
           variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
           icon={fullMoreIcon}
           onClick={() => {
             append({ url: '' })

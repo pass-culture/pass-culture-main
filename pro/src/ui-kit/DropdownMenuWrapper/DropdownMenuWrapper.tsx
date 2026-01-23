@@ -1,9 +1,13 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullOtherIcon from '@/icons/full-other.svg'
-import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './DropdownMenuWrapper.module.scss'
 
@@ -62,7 +66,6 @@ export function DropdownMenuWrapper({
   triggerIcon,
   triggerTooltip,
   children,
-  triggerClassName,
   contentClassName,
   dropdownTriggerRef,
 }: DropdownMenuWrapperProps): JSX.Element {
@@ -71,20 +74,17 @@ export function DropdownMenuWrapper({
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        className={cn(styles['menu-button'], triggerClassName)}
         data-testid="dropdown-menu-trigger"
         {...(triggerTooltip ? { asChild: true } : {})}
         ref={dropdownTriggerRef}
       >
-        {triggerTooltip ? (
-          <ListIconButton icon={icon} tooltipContent={title} />
-        ) : (
-          <SvgIcon
-            src={icon}
-            alt={title}
-            className={styles['menu-button-icon']}
-          />
-        )}
+        <Button
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+          icon={icon}
+          tooltip={title}
+        />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content

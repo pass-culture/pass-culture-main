@@ -17,6 +17,12 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { FORMAT_DD_MM_YYYY, FORMAT_HH_mm } from '@/commons/utils/date'
 import { formatLocalTimeDateString } from '@/commons/utils/timezone'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
@@ -24,7 +30,6 @@ import strokeSearchIcon from '@/icons/stroke-search.svg'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { getPriceCategoryName } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
-import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './StocksCalendarTable.module.scss'
@@ -249,9 +254,12 @@ export function StocksCalendarTable({
                   <td className={styles['tbody-td']}>
                     <div className={styles['tbody-td-actions']}>
                       {canEditStock && (
-                        <ListIconButton
+                        <Button
+                          variant={ButtonVariant.SECONDARY}
+                          color={ButtonColor.NEUTRAL}
+                          size={ButtonSize.SMALL}
                           icon={fullEditIcon}
-                          tooltipContent="Modifier la date"
+                          tooltip="Modifier la date"
                           ref={
                             stock.id === stockOpenedInDialog?.id
                               ? openedStockTriggerRef
@@ -264,9 +272,12 @@ export function StocksCalendarTable({
                         />
                       )}
                       {canDeleteStock && (
-                        <ListIconButton
+                        <Button
+                          variant={ButtonVariant.SECONDARY}
+                          color={ButtonColor.NEUTRAL}
+                          size={ButtonSize.SMALL}
                           icon={fullTrashIcon}
-                          tooltipContent="Supprimer la date"
+                          tooltip="Supprimer la date"
                           onClick={() => setStockBeingDeleted(stock)}
                         />
                       )}

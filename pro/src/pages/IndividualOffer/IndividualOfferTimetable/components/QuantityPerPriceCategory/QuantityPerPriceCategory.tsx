@@ -8,7 +8,6 @@ import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import type { QuantityPerPriceCategoryForm } from '../StocksCalendar/form/types'
 import styles from './QuantityPerPriceCategory.module.scss'
@@ -73,10 +72,12 @@ export function QuantityPerPriceCategory({
 
           <div className={styles['trash']}>
             {watch('quantityPerPriceCategories').length > 1 && (
-              <ListIconButton
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
                 icon={fullTrashIcon}
                 onClick={() => remove(index)}
-                tooltipContent="Supprimer les places"
+                tooltip="Supprimer les places"
               />
             )}
           </div>
@@ -86,7 +87,6 @@ export function QuantityPerPriceCategory({
         priceCategoryOptions.length && (
         <Button
           variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.NEUTRAL}
           icon={fullMoreIcon}
           onClick={() => append({ priceCategory: '' })}
           label="Ajouter d’autres places et tarifs"

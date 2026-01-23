@@ -7,7 +7,6 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullMoreIcon from '@/icons/full-more.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import { NOTIFICATIONS_EMAIL_LABEL } from '../../constants/labels'
 import styles from './FormNotifications.module.scss'
@@ -46,13 +45,15 @@ export const FormNotifications = ({
               extension={
                 index > 0 &&
                 !disableForm && (
-                  <ListIconButton
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.NEUTRAL}
                     onClick={() => {
                       remove(index)
                       setFocus(`notificationEmails.${index - 1}.email`)
                     }}
                     icon={fullTrashIcon}
-                    tooltipContent="Supprimer l’email"
+                    tooltip="Supprimer l’email"
                   />
                 )
               }
