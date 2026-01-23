@@ -223,6 +223,7 @@ class Returns200Test:
             "hasNonFreeOffers": True,
             "isActive": True,
             "isValidated": True,
+            "allowedOnAdage": True,
             "hasPartnerPage": True,
         }
         db.session.expire_all()
@@ -247,7 +248,9 @@ class Returns200Test:
         assert response.json == expected_serialized_venue
 
     def when_user_has_rights_on_managing_offerer_with_no_adage_id(self, client):
-        user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
+        user_offerer = offerers_factories.UserOffererFactory(
+            user__email="user.pro@test.com", offerer__allowedOnAdage=False
+        )
         venue = offerers_factories.CollectiveVenueFactory(
             name="L'encre et la plume",
             managingOfferer=user_offerer.offerer,
@@ -274,6 +277,7 @@ class Returns200Test:
 
         assert response.json["adageInscriptionDate"] is None
         assert response.json["hasAdageId"] is False
+        assert response.json["allowedOnAdage"] is False
 
     def should_ignore_invalid_banner_metadata(self, client):
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")

@@ -19,6 +19,7 @@ import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespan
 export type GetVenueResponseModel = {
   activity?: DisplayableActivity | null;
   adageInscriptionDate?: string | null;
+  allowedOnAdage: boolean;
   audioDisabilityCompliant?: boolean | null;
   bankAccountStatus?: SimplifiedBankAccountStatus | null;
   bannerMeta?: BannerMetaModel | null;

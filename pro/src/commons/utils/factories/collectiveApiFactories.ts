@@ -292,6 +292,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   isCaledonian: false,
   isActive: true,
   isValidated: true,
+  allowedOnAdage: true,
   hasNonFreeOffers: true,
 }
 

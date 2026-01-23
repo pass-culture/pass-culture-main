@@ -269,6 +269,9 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
         if key == "isValidated":
             return venue.managingOfferer.isValidated
 
+        if key == "allowedOnAdage":
+            return venue.managingOfferer.allowedOnAdage
+
         if key == "bankAccountStatus":
             return parse_venue_bank_account_status(venue)
 
@@ -336,6 +339,7 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
     isActive: bool
     isValidated: bool
+    allowedOnAdage: bool
     bankAccountStatus: SimplifiedBankAccountStatus | None
     hasNonFreeOffers: bool
     hasPartnerPage: bool
