@@ -24,11 +24,11 @@ from pcapi.utils.human_ids import humanize
 class Returns403Test:
     # get user_session
     # get user
-    # get offer
+    # get offer + artists (2 queries)
     # check user_offerer exists
     # rollback
     # rollback
-    num_queries = 6
+    num_queries = 7
 
     def test_access_by_beneficiary(self, client):
         beneficiary = users_factories.BeneficiaryGrant18Factory()
@@ -57,6 +57,7 @@ class Returns200Test:
     num_queries += 1  # user
     num_queries += 1  # payload (joined query)
     num_queries += 1  # user offerer
+    num_queries += 1  # artists
 
     def test_access_by_pro_user(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -489,10 +490,12 @@ class Returns200Test:
         assert len(response.json["artistOfferLinks"]) == 3
 
         # to avoid flakiness
-        assert {"artistId": artist.id, "artistType": "performer", "customName": None} in response.json[
+        assert {"artistId": artist.id, "artistName": artist.name, "artistType": "performer"} in response.json[
             "artistOfferLinks"
         ]
-        assert {"artistId": another_artist.id, "artistType": "performer", "customName": None} in response.json[
-            "artistOfferLinks"
-        ]
-        assert {"artistId": None, "artistType": "author", "customName": "Simone"} in response.json["artistOfferLinks"]
+        assert {
+            "artistId": another_artist.id,
+            "artistName": another_artist.name,
+            "artistType": "performer",
+        } in response.json["artistOfferLinks"]
+        assert {"artistId": None, "artistName": "Simone", "artistType": "author"} in response.json["artistOfferLinks"]

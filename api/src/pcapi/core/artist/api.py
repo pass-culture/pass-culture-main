@@ -68,7 +68,7 @@ def create_artist_offer_link(offer_id: int, artist_offer_link: artist_serialize.
 
 
 def _get_artist_offer_link_key(
-    link: models.ArtistOfferLink | artist_serialize.ArtistOfferResponseModel,
+    link: models.ArtistOfferLink | artist_serialize.ArtistOfferLinkBodyModel,
 ) -> ArtistOfferLinkKey:
     return ArtistOfferLinkKey(
         artist_type=link.artist_type.value,

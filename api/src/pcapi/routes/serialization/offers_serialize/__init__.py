@@ -461,7 +461,7 @@ class VideoData(ConfiguredBaseModel):
 
 class GetIndividualOfferResponseModel(BaseModel, AccessibilityComplianceMixin):
     activeMediation: GetOfferMediationResponseModel | None
-    artistOfferLinks: list[artist_serialize.ArtistOfferResponseModel]
+    artistOfferLinks: list[artist_serialize.ArtistOfferLinkResponseModel]
     bookingContact: str | None
     bookingsCount: int | None
     bookingEmail: str | None

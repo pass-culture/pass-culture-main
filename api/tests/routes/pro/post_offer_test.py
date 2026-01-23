@@ -327,8 +327,8 @@ class CreateThingsTest(CreateOfferBase):
         shared_offer_checks(offer, payload)
 
         assert response.json["artistOfferLinks"] == [
-            {"artistId": artist.id, "artistType": "performer", "customName": None},
-            {"artistId": None, "artistType": "author", "customName": "Custom Artist Name"},
+            {"artistId": artist.id, "artistName": artist.name, "artistType": "performer"},
+            {"artistId": None, "artistName": "Custom Artist Name", "artistType": "author"},
         ]
 
     @pytest.mark.features(WIP_OFFER_ARTISTS=False)
@@ -788,8 +788,8 @@ class Returns200Test:
 
         assert "artistOfferLinks" in response.json
         assert response.json["artistOfferLinks"] == [
-            {"artistId": artist.id, "artistType": "performer", "customName": None},
-            {"artistId": None, "artistType": "author", "customName": "Custom Artist Name"},
+            {"artistId": artist.id, "artistName": artist.name, "artistType": "performer"},
+            {"artistId": None, "artistName": "Custom Artist Name", "artistType": "author"},
         ]
 
     @pytest.mark.features(WIP_OFFER_ARTISTS=False)
