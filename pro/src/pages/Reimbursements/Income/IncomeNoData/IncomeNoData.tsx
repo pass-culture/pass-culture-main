@@ -42,7 +42,7 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
                 }
                 label="Bonnes pratiques & Études"
               />
-            </span>
+            </span>{' '}
             pour optimiser la visibilité de vos offres.
           </div>
         </>
