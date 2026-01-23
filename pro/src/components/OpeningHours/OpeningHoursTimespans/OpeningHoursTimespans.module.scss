@@ -28,7 +28,7 @@
 .timespan-separator,
 .timespan-actions {
   display: flex;
-  gap: var(--size-spacing-s);
+  // gap: var(--size-spacing-s);
   align-items: center;
 }
 
@@ -49,7 +49,7 @@
 .timespan-actions {
   $action-button-height: rem.torem(32px);
 
-  margin-top: calc((#{size.$input-min-height} - #{$action-button-height}) / 2);
+  // margin-top: calc((#{size.$input-min-height} - #{$action-button-height}) / 2);
 
   &.first-timespan {
     margin-top: calc(

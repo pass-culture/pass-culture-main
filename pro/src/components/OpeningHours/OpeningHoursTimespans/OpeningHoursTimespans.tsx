@@ -4,8 +4,13 @@ import fullMoreIcon from 'icons/full-more.svg'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import type { WeekdayOpeningHoursTimespans } from '@/apiClient/v1'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
-import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import styles from './OpeningHoursTimespans.module.scss'
 
@@ -32,9 +37,12 @@ export function OpeningHoursTimespans({
     return (
       <div className={styles['no-timespans']}>
         <span>Fermé</span>
-        <ListIconButton
+        <Button
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
           icon={fullMoreIcon}
-          tooltipContent={`Ajouter une plage horaire le ${dayFrenchName.toLowerCase()}`}
+          tooltip={`Ajouter une plage horaire le ${dayFrenchName.toLowerCase()}`}
           onClick={() => timespans.append([['', '']])}
           aria-invalid={hasErrorBecauseOfEmptyOpeningHours}
         />
@@ -87,16 +95,22 @@ export function OpeningHoursTimespans({
           })}
         >
           {timespans.fields.length > 0 && (
-            <ListIconButton
+            <Button
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
               icon={fullLessIcon}
-              tooltipContent={`Supprimer la ${timespans.fields.length > 1 ? (i === 0 ? 'première ' : 'deuxième ') : ''}plage horaire du ${dayFrenchName.toLowerCase()}`}
+              tooltip={`Supprimer la ${timespans.fields.length > 1 ? (i === 0 ? 'première ' : 'deuxième ') : ''}plage horaire du ${dayFrenchName.toLowerCase()}`}
               onClick={() => timespans.remove(i)}
             />
           )}
           {timespans.fields.length < 2 && (
-            <ListIconButton
+            <Button
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
               icon={fullMoreIcon}
-              tooltipContent={`Ajouter une plage horaire le ${dayFrenchName.toLowerCase()}`}
+              tooltip={`Ajouter une plage horaire le ${dayFrenchName.toLowerCase()}`}
               onClick={() => timespans.append([['', '']])}
             />
           )}
