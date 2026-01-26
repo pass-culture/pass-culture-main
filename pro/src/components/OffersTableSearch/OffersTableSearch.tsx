@@ -97,7 +97,6 @@ export const OffersTableSearch = ({
             onClick={onResetFilters}
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
-            className={styles['offers-table-search-reset-button']}
             label="Réinitialiser les filtres"
           />
         </div>

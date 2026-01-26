@@ -8,15 +8,16 @@ import styles from './Declaration.module.scss'
 export const Declaration = () => {
   return (
     <AccessibilityLayout mainHeading="Déclaration d’accessibilité">
-      <Button
-        as="a"
-        variant={ButtonVariant.TERTIARY}
-        color={ButtonColor.NEUTRAL}
-        to="/accessibilite/"
-        icon={fullBackIcon}
-        className={styles['back-link']}
-        label="Retour vers la page Informations d’accessibilité"
-      />
+      <div className={styles['back-link']}>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          to="/accessibilite/"
+          icon={fullBackIcon}
+          label="Retour vers la page Informations d’accessibilité"
+        />
+      </div>
       <p className={styles['paragraph']}>
         Le pass Culture s’engage à rendre son site internet et ses applications
         mobiles accessibles conformément à l’article 47 de la loi n° 2005-102 du

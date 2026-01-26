@@ -44,7 +44,6 @@ export function DropdownButton({
       <div className={styles['offer-button-wrapper']}>
         <DropdownMenu.Trigger data-testid="dropdown-menu-trigger" asChild>
           <Button
-            fullWidth
             label={name}
             variant={ButtonVariant.PRIMARY}
             icon={isOpen ? fullUpIcon : fullDownIcon}

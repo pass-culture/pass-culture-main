@@ -12,7 +12,7 @@ export const HelpDropdownMenu = () => {
   const { logEvent } = useAnalytics()
   return (
     <>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
+      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
         <Button
           to="https://aide.passculture.app"
           as="a"
@@ -29,7 +29,7 @@ export const HelpDropdownMenu = () => {
           color={ButtonColor.NEUTRAL}
         />
       </DropdownMenu.Item>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
+      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
         <Button
           as="a"
           icon={fullLinkIcon}
@@ -46,7 +46,7 @@ export const HelpDropdownMenu = () => {
           color={ButtonColor.NEUTRAL}
         />
       </DropdownMenu.Item>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
+      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
         <Button
           as="a"
           icon={fullLinkIcon}
@@ -63,7 +63,7 @@ export const HelpDropdownMenu = () => {
           color={ButtonColor.NEUTRAL}
         />
       </DropdownMenu.Item>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']} asChild>
+      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
         <Button
           as="a"
           icon={fullLinkIcon}
