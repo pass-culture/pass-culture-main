@@ -58,7 +58,17 @@ export const OptionsList = ({
             role="option"
             tabIndex={-1}
           >
-            <span className={cx(styles['options-item'])}>{option.label}</span>
+            <span className={styles['options-item']}>
+              {option.thumbUrl && (
+                <img
+                  className={styles['options-img']}
+                  alt=""
+                  src={option.thumbUrl}
+                  aria-hidden={true}
+                />
+              )}
+              <span>{option.label}</span>
+            </span>
           </li>
         )
       })
