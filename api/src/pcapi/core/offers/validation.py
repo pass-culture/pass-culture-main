@@ -818,7 +818,7 @@ def check_offer_is_bookable_before_stock_booking_limit_datetime(
     booking_limit_datetime: datetime.datetime,
 ) -> None:
     """
-    :booking_limit_datetime: /!\ should be a timezone-aware datetime
+    :booking_limit_datetime: //!\\ should be a timezone-aware datetime
     """
     errors = []
     booking_limit_datetime = (
