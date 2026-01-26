@@ -78,16 +78,14 @@ export const InvoicesFilters = ({
             />
           )}
 
-          <fieldset>
-            <legend>Période</legend>
-            <PeriodSelector
-              onBeginningDateChange={setStartDateFilter}
-              onEndingDateChange={setEndDateFilter}
-              maxDateEnding={getToday()}
-              periodBeginningDate={filters.periodStart}
-              periodEndingDate={filters.periodEnd}
-            />
-          </fieldset>
+          <PeriodSelector
+            legend="Période"
+            onBeginningDateChange={setStartDateFilter}
+            onEndingDateChange={setEndDateFilter}
+            maxDateEnding={getToday()}
+            periodBeginningDate={filters.periodStart}
+            periodEndingDate={filters.periodEnd}
+          />
         </FormLayout.Row>
         <Button
           className={styles['reset-filters']}

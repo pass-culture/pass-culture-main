@@ -20,7 +20,6 @@ import { formatAndOrderAddresses } from '@/repository/venuesService'
 import { MultiSelect } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 import styles from '../TemplateCollectiveOffersScreen.module.scss'
 
@@ -187,7 +186,7 @@ export const TemplateOffersSearchFilters = ({
       }}
       onResetFilters={resetCollectiveFilters}
     >
-      <FormLayout.Row inline smSpaceAfter>
+      <FormLayout.Row inline mdSpaceAfter>
         <div className={styles['filter-container']}>
           <MultiSelect
             name="status"
@@ -244,19 +243,17 @@ export const TemplateOffersSearchFilters = ({
           value={selectedFilters.format}
         />
       </FormLayout.Row>
-      <FieldLayout
-        label="Période de l’évènement"
-        name="period"
-        required={false}
-      >
+
+      <FormLayout.Row mdSpaceAfter>
         <PeriodSelector
+          legend="Période de l’évènement"
           onBeginningDateChange={onBeginningDateChange}
           onEndingDateChange={onEndingDateChange}
           isDisabled={disableAllFilters}
           periodBeginningDate={selectedFilters.periodBeginningDate}
           periodEndingDate={selectedFilters.periodEndingDate}
         />
-      </FieldLayout>
+      </FormLayout.Row>
     </OffersTableSearch>
   )
 }

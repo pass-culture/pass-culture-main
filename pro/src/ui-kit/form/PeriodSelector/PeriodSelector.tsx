@@ -6,6 +6,7 @@ import { BaseDatePicker } from '@/ui-kit/form/shared/BaseDatePicker/BaseDatePick
 import styles from './PeriodSelector.module.scss'
 
 interface PeriodSelectorProps {
+  legend?: string
   className?: string
   onBeginningDateChange: (date: string) => void
   onEndingDateChange: (date: string) => void
@@ -17,6 +18,7 @@ interface PeriodSelectorProps {
 }
 
 export const PeriodSelector = ({
+  legend,
   className,
   onBeginningDateChange,
   onEndingDateChange,
@@ -29,14 +31,15 @@ export const PeriodSelector = ({
   const ariaId = useId()
 
   return (
-    <div className={styles['period-filter']}>
-      <div
-        className={cn(
-          styles['period-filter-inputs'],
-          { disabled: isDisabled },
-          className
-        )}
+    <fieldset className={styles['period-filter']} disabled={isDisabled}>
+      <legend
+        className={cn({
+          [styles['visually-hidden']]: legend === undefined,
+        })}
       >
+        {legend ?? 'Période'}
+      </legend>
+      <div className={cn(styles['period-filter-inputs'], className)}>
         <div className={styles['period-filter-begin-picker']}>
           <label
             htmlFor={`field-date-begin-${ariaId}`}
@@ -49,7 +52,6 @@ export const PeriodSelector = ({
               styles['period-filter-input'],
               styles['field-date-begin']
             )}
-            disabled={isDisabled}
             maxDate={new Date(periodEndingDate)}
             minDate={minDateBeginning}
             onChange={(event) => onBeginningDateChange(event.target.value)}
@@ -57,8 +59,6 @@ export const PeriodSelector = ({
             id={`field-date-begin-${ariaId}`}
           />
         </div>
-
-        <span className={styles['vertical-bar']} />
 
         <div className={styles['period-filter-end-picker']}>
           <label
@@ -72,7 +72,6 @@ export const PeriodSelector = ({
               styles['period-filter-input'],
               styles['field-date-end']
             )}
-            disabled={isDisabled}
             maxDate={maxDateEnding}
             minDate={new Date(periodBeginningDate)}
             onChange={(event) => onEndingDateChange(event.target.value)}
@@ -81,6 +80,6 @@ export const PeriodSelector = ({
           />
         </div>
       </div>
-    </div>
+    </fieldset>
   )
 }

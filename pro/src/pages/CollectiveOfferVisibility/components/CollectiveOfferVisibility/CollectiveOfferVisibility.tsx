@@ -364,7 +364,7 @@ export const CollectiveOfferVisibilityScreen = ({
                   L’établissement et l’enseignant renseignés sont les seuls à
                   pouvoir visualiser et préréserver votre offre sur ADAGE.
                 </p>
-                <FormLayout.Row className={styles['row-layout']}>
+                <FormLayout.Row className={styles['row-layout']} mdSpaceAfter>
                   {isLoadingInstitutions ? (
                     <Spinner />
                   ) : (

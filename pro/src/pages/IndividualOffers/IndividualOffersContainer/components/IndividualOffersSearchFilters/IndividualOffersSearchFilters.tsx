@@ -15,7 +15,6 @@ import { OffersTableSearch } from '@/components/OffersTableSearch/OffersTableSea
 import styles from '@/pages/IndividualOffers/IndividualOffersContainer/IndividualOffersContainer.module.scss'
 import { PeriodSelector } from '@/ui-kit/form/PeriodSelector/PeriodSelector'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
 
 interface IndividualOffersSearchFiltersProps {
   hasFilters: boolean
@@ -148,19 +147,16 @@ export const IndividualOffersSearchFilters = ({
         />
       </FormLayout.Row>
 
-      <FieldLayout
-        label="Période de l’évènement"
-        name="period"
-        required={false}
-      >
+      <FormLayout.Row mdSpaceAfter>
         <PeriodSelector
+          legend="Période de l’évènement"
           onBeginningDateChange={handleDateChange('periodBeginningDate')}
           onEndingDateChange={handleDateChange('periodEndingDate')}
           isDisabled={disableAllFilters}
           periodBeginningDate={selectedFilters.periodBeginningDate}
           periodEndingDate={selectedFilters.periodEndingDate}
         />
-      </FieldLayout>
+      </FormLayout.Row>
     </OffersTableSearch>
   )
 }
