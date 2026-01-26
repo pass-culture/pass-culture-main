@@ -124,13 +124,14 @@ class BuildDiffStatusTest:
 
 
 class BuildSubcategoriesDiffStatusTest:
-    def test_all_subcategories_are_valid(self):
+    def test_all_subcategories_are_known(self):
         status = api.build_subcategories_diff_status()
 
         found_subcategory_ids = {s.subcategory_id for s in status}
         known_subcategory_ids = set(subcategories.ALL_SUBCATEGORIES_DICT.keys())
         assert found_subcategory_ids == known_subcategory_ids
 
-        for s in status:
-            for diff_field in s.diff:
-                assert diff_field == diff_types.Same(diff_field.field)
+    @pytest.mark.parametrize("status", [pytest.param(s, id=s.subcategory_id) for s in api.build_subcategories_diff_status()])
+    def test_all_subcategories_are_valid(self, status):
+        for diff_field in status.diff:
+            assert diff_field == diff_types.Same(diff_field.field)

@@ -22,7 +22,21 @@ def build_model_fields(model: pydantic.BaseModel) -> set[types.Field]:
 
 def build_model_extra_data_fields(model: pydantic.BaseModel) -> set[types.Field]:
     fields = model.model_fields
-    extra_data_fields = fields.get("extra_data")
-    if not extra_data_fields:
+    extra_data = fields.get("extra_data")
+    if not extra_data:
         return set()
-    return set(parse_model_fields(extra_data_fields.annotation.model_fields))  # type: ignore
+
+    # either extra_data can be null and is defined as an union type
+    # or is it defined as a plain model.
+    if hasattr(extra_data.annotation, "model_fields"):
+        fields = extra_data.annotation.model_fields
+    else:
+        sub_models = typing.get_args(extra_data.annotation)
+        sub_model = [m for m in sub_models if m is not type(None)][0]
+        fields = sub_model.model_fields
+    
+    try:
+        return set(parse_model_fields(fields))  # type: ignore
+    except Exception:
+        breakpoint()
+        raise

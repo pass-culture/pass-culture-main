@@ -1,8 +1,8 @@
+import os
 import typing
 from contextlib import suppress
 from importlib import import_module
-
-import pydantic
+from pathlib import Path
 
 from pcapi.core.categories import subcategories
 
@@ -18,12 +18,8 @@ def _fetch_models() -> dict[str, models.Base]:
     def import_pkg(module_name: str) -> typing.Any:
         return import_module("." + module_name, "pcapi.core.offers.services.models")
 
-    modules = [
-        import_pkg("things"),
-        import_pkg("digital"),
-        import_pkg("activity"),
-        import_pkg("unselectable"),
-    ]
+    models_dir = Path(os.path.dirname(__file__)) / Path("models")
+    modules = [import_pkg(path.replace(".py", "")) for path in os.listdir(models_dir)]
 
     res = {}
     for module in modules:
@@ -36,8 +32,13 @@ def _fetch_models() -> dict[str, models.Base]:
                 #     this module, but imported by it
                 continue
 
-            # a couple of calls might crash because of intermedirate
-            # models that should be ignored
+            # we are only interested in models that define are linked to
+            # a specific subcategory. Others will generate errors but
+            # that's fine: we do not care about them. It is easier here
+            # to suppress error than to filter objects or to handle
+            # every possible failure.
+            # This is acceptable as long as a basic unit test checks
+            # that every known subcategory is mapped.
             with suppress(AttributeError, KeyError, IndexError):
                 res[extract_subcategory(obj).id] = obj
     return res

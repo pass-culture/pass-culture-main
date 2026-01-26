@@ -27,7 +27,7 @@ class ExtractSubcategoryTest:
         assert utils.extract_subcategory(Legit).id == "LIVRE_PAPIER"
 
     def test_model_with_an_unknown_subcategory_fails(self):
-        with pytest.raises(IndexError):
+        with pytest.raises(KeyError):
             utils.extract_subcategory(WithUnknown)
 
     def test_model_with_a_subcategory_that_is_not_a_literail_fails(self):

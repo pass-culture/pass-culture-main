@@ -54,7 +54,7 @@ class ExtraDataMusicWithEan(ExtraDataMusic, ExtraDataEan):
 
 
 class ExtraDataConcert(ExtraData):
-    music_type: constrained_types.MusicType | None
+    music_type: constrained_types.MusicType | None = None
     gtl_id: constrained_types.TiteliveMusicGenres | None = None
 
 
