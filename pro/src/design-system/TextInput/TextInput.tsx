@@ -126,6 +126,10 @@ export const TextInput = forwardRef(
             }}
             onBlur={onBlur}
             onKeyDown={onKeyDown}
+            onWheel={
+              // This is to prevent input value to change on some browsers like Chrome
+              type === 'number' ? (e) => e.currentTarget.blur() : undefined
+            }
             value={value}
             maxLength={maxCharactersCount}
             autoComplete={autoComplete}
