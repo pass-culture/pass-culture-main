@@ -299,7 +299,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       await screen.findByRole('heading', { name: 'À propos de votre offre' })
       expect(
         screen.queryByRole('heading', { name: 'Illustrez votre offre' })
-      ).not.toBeInTheDocument()
+      ).toBeFalsy()
     })
 
     it('should not call any image api on submit', async () => {
@@ -335,7 +335,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       await userFillsEverything()
 
       await userEvent.click(screen.getByText(DEFAULTS.submitButtonLabel))
-      expect(mockHandleImageOnSubmit).not.toHaveBeenCalled()
+      expect(mockHandleImageOnSubmit).toHaveBeenCalledTimes(0)
     })
   })
 
@@ -370,9 +370,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       contextValue,
     })
 
-    expect(
-      screen.queryByText(/Qui propose l’offre ? */)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
   })
 
   it('should show errors in the form when not all field has been filled', async () => {
@@ -752,7 +750,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
             mode: OFFER_WIZARD_MODE.CREATION,
           }),
         })
-        expect(screen.queryByText(eanSearchTitle)).not.toBeInTheDocument()
+        expect(screen.queryByText(eanSearchTitle)).toBeFalsy()
       })
 
       describe('when a local draft offer is being created', () => {
@@ -1100,7 +1098,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
 
       expect(
         screen.queryByText(/Scanner ou rechercher un produit par EAN/)
-      ).not.toBeInTheDocument()
+      ).toBeFalsy()
     })
 
     it('should display categories and subcategories as disabled', () => {
@@ -1156,9 +1154,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       contextValue,
     })
 
-    expect(
-      screen.queryByText(/Qui propose l’offre ? */)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
   })
 
   it('should not render venue field when there is just one physical venue', () => {
@@ -1173,9 +1169,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       contextValue,
     })
 
-    expect(
-      screen.queryByText(/Qui propose l’offre ? */)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
   })
 
   it('should not render venue field when there is one physical venue and one virtual venue', () => {
@@ -1193,9 +1187,7 @@ describe('<IndividualOfferDetailsScreen />', () => {
       contextValue,
     })
 
-    expect(
-      screen.queryByText(/Qui propose l’offre ? */)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
   })
 
   describe('onboarding', () => {

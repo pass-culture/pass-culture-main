@@ -27,7 +27,7 @@ describe('ExpiredBanner', () => {
       screen.getByText(
         'Pour qu’il puisse préréserver à nouveau, vous pouvez modifier la date limite de réservation, ce qui rendra automatiquement la préréservation disponible auprès de l’enseignant.'
       )
-    )
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: /Modifier la date limite de réservation/i,
@@ -51,7 +51,7 @@ describe('ExpiredBanner', () => {
       screen.getByText(
         'Pour qu’il puisse réserver à nouveau, vous pouvez modifier la date limite de réservation, ce qui rendra automatiquement la réservation disponible auprès de l’enseignant.'
       )
-    )
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('link', {
         name: /Modifier la date limite de réservation/i,
@@ -74,6 +74,6 @@ describe('ExpiredBanner', () => {
       screen.queryByRole('link', {
         name: /Modifier la date limite de réservation/i,
       })
-    ).not.toBeInTheDocument()
+    ).toBeFalsy()
   })
 })

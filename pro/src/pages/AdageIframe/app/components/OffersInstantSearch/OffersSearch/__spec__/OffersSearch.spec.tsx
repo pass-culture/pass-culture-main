@@ -341,7 +341,7 @@ describe('offersSearch component', () => {
       })[1]
     )
 
-    expect(setGeoRadiusMock).not.toHaveBeenCalled()
+    expect(setGeoRadiusMock).toHaveBeenCalledTimes(0)
   })
 
   it('should filters venue id on venue filter if provided', async () => {

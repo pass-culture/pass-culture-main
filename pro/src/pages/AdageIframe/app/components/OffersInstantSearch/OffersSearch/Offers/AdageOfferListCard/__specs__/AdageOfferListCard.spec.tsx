@@ -32,7 +32,7 @@ describe('AdageOfferListCard', () => {
 
     expect(
       screen.getByRole('heading', { name: defaultCollectiveTemplateOffer.name })
-    )
+    ).toBeInTheDocument()
   })
 
   it('should show the card image if it has one', () => {

@@ -17,7 +17,7 @@ describe('AdageDiscoveryBanner', () => {
       screen.getByRole('heading', {
         name: 'Découvrez la part collective du pass Culture',
       })
-    )
+    ).toBeInTheDocument()
   })
 
   it('should not reposition svg groups when the user scrolls when the user prefers reduced motion', () => {

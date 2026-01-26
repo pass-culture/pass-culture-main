@@ -114,9 +114,15 @@ describe('OfferEducationalForm', () => {
       isTemplate: true,
     })
 
-    expect(await screen.findByRole('checkbox', { name: 'Par email' }))
-    expect(await screen.findByRole('checkbox', { name: 'Par téléphone' }))
-    expect(await screen.findByRole('checkbox', { name: 'Via un formulaire' }))
+    expect(
+      await screen.findByRole('checkbox', { name: 'Par email' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('checkbox', { name: 'Par téléphone' })
+    ).toBeInTheDocument()
+    expect(
+      await screen.findByRole('checkbox', { name: 'Via un formulaire' })
+    ).toBeInTheDocument()
   })
 
   it('should have no custom contact checked initially', async () => {

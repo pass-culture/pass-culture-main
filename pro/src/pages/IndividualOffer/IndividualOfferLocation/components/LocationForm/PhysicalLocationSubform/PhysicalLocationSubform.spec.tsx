@@ -379,9 +379,7 @@ describe('<PhysicalLocationSubform />', () => {
     )
 
     // Other address fields should remain hidden
-    expect(
-      screen.queryByLabelText(/Intitulé de la localisation/i)
-    ).not.toBeInTheDocument()
+    expect(screen.queryByLabelText(/Intitulé de la localisation/i)).toBeFalsy()
   })
 
   it('should not enable manual edition when button is disabled', async () => {
