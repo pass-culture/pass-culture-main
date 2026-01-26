@@ -39,14 +39,20 @@ export const SearchInput = forwardRef(
                   icon: fullClearIcon,
                   label: 'Effacer',
                   onClick: () => {
-                    if (inputRef.current) {
-                      inputRef.current.value = ''
-                      if (props.onChange) {
-                        const event = {
-                          currentTarget: inputRef.current,
-                        } as React.ChangeEvent<HTMLInputElement>
+                    const input = inputRef.current
+                    if (input) {
+                      input.value = ''
 
-                        props.onChange(event)
+                      if (props.onChange) {
+                        const syntheticEvent: React.ChangeEvent<HTMLInputElement> =
+                          {
+                            ...({} as React.ChangeEvent<HTMLInputElement>),
+                            target: input,
+                            currentTarget: input,
+                            type: 'change',
+                          }
+
+                        props.onChange(syntheticEvent)
                       }
                     }
                   },
