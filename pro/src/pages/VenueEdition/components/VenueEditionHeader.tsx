@@ -145,7 +145,7 @@ export const VenueEditionHeader = ({
           >
             Paramètres généraux
           </ButtonLink>
-          {venue.isPermanent && context === 'partnerPage' && (
+          {context === 'partnerPage' && (
             <ButtonLink
               variant={ButtonVariant.TERNARY}
               icon={fullLinkIcon}

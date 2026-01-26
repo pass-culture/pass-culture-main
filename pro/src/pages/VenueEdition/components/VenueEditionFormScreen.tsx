@@ -15,7 +15,7 @@ export const VenueEditionFormScreen = ({
   venue,
 }: VenueEditionProps): JSX.Element => {
   const shouldDisplayAccessToPageWarning =
-    venue.isPermanent && venue.hasOffers && !venue.hasActiveIndividualOffer
+    venue.hasOffers && !venue.hasActiveIndividualOffer
 
   const location = useLocation()
 

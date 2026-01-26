@@ -131,13 +131,9 @@ export const IndividualOffersContainer = ({
       offer.status === OfferStatus.SOLD_OUT
   )
 
-  const { headlineOffer, isHeadlineOfferAllowedForOfferer } =
-    useHeadlineOfferContext()
+  const { headlineOffer } = useHeadlineOfferContext()
 
-  const columns = getIndividualOfferColumns(
-    headlineOffer,
-    isHeadlineOfferAllowedForOfferer
-  )
+  const columns = getIndividualOfferColumns(headlineOffer)
 
   const { contentWrapperRef, scrollToContentWrapper } = useAccessibleScroll({
     selector: '#content-wrapper',

@@ -13,11 +13,7 @@ export interface VenueListProps {
 
 export const VenueList = ({ offerer }: VenueListProps) => {
   const virtualVenue = getVirtualVenueFromOfferer(offerer)
-  const basePhysicalVenues = getPhysicalVenuesFromOfferer(offerer)
-
-  const physicalVenues = basePhysicalVenues.filter(
-    (venue) => !venue.isPermanent
-  )
+  const physicalVenues = getPhysicalVenuesFromOfferer(offerer)
 
   const indexLastPhysicalVenues = physicalVenues.length - 1
 

@@ -5,10 +5,7 @@ import useSWR, { useSWRConfig } from 'swr'
 import { api } from '@/apiClient/api'
 import type { HeadLineOfferResponseModel } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import {
-  GET_OFFERER_HEADLINE_OFFER_QUERY_KEY,
-  GET_VENUES_QUERY_KEY,
-} from '@/commons/config/swrQueryKeys'
+import { GET_OFFERER_HEADLINE_OFFER_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -27,14 +24,12 @@ type HeadlineOfferContextValues = {
   headlineOffer: HeadLineOfferResponseModel | null
   upsertHeadlineOffer: (params: UpsertHeadlineOfferParams) => Promise<void>
   removeHeadlineOffer: () => Promise<void>
-  isHeadlineOfferAllowedForOfferer: boolean
 }
 
 const HeadlineOfferContext = createContext<HeadlineOfferContextValues>({
   headlineOffer: null,
   upsertHeadlineOffer: async () => noopAsync(),
   removeHeadlineOffer: async () => noopAsync(),
-  isHeadlineOfferAllowedForOfferer: false,
 })
 
 export const useHeadlineOfferContext = () => {
@@ -52,18 +47,8 @@ export function HeadlineOfferContextProvider({
   const { logEvent } = useAnalytics()
   const location = useLocation()
 
-  const { data } = useSWR([GET_VENUES_QUERY_KEY, selectedOffererId], () =>
-    api.getVenues(null, null, selectedOffererId)
-  )
-
-  const nonVirtualVenues =
-    data?.venues?.filter((venue) => !venue.isVirtual) || []
-
-  const isHeadlineOfferAllowedForOfferer =
-    nonVirtualVenues.length === 1 && nonVirtualVenues[0].isPermanent
-
   const { data: rawHeadlineOffer, error } = useSWR(
-    selectedOffererId && isHeadlineOfferAllowedForOfferer
+    selectedOffererId
       ? [GET_OFFERER_HEADLINE_OFFER_QUERY_KEY, selectedOffererId]
       : null,
     ([, offererId]) => api.getOffererHeadlineOffer(offererId),
@@ -144,7 +129,6 @@ export function HeadlineOfferContextProvider({
         headlineOffer,
         upsertHeadlineOffer,
         removeHeadlineOffer,
-        isHeadlineOfferAllowedForOfferer,
       }}
     >
       {children}

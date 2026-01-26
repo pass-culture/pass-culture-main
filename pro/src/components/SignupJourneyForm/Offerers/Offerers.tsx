@@ -66,9 +66,8 @@ export const Offerers = (): JSX.Element => {
       api.getVenuesOfOffererFromSiret(offererSiret.replaceAll(' ', ''))
   )
 
-  const permanentVenues =
-    venuesOfOfferer?.venues.filter((venue) => venue.isPermanent) ?? []
-  const displayToggleVenueList = permanentVenues.length > 5
+  const venues = venuesOfOfferer?.venues ?? []
+  const displayToggleVenueList = venues.length > 5
 
   useEffect(() => {
     if (venuesOfOffererError) {
@@ -163,9 +162,9 @@ export const Offerers = (): JSX.Element => {
           <div className={styles['offerer-name-accent']}>
             {venuesOfOfferer?.offererName}
           </div>
-          {permanentVenues.length > 0 && (
+          {venues.length > 0 && (
             <ul className={styles['venue-list']}>
-              {permanentVenues.map((venue, index) => (
+              {venues.map((venue, index) => (
                 <li
                   key={venue.id}
                   hidden={

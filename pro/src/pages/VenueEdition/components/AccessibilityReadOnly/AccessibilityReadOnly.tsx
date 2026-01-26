@@ -16,7 +16,7 @@ export const AccessibilityReadOnly = ({
   if (!venue.externalAccessibilityData) {
     return (
       <InternalAccessibilitySummarySection
-        callout={venue.isPermanent ? <AccessibilityCallout /> : null}
+        callout={<AccessibilityCallout />}
         accessibleItem={venue}
         accessibleWording="Votre établissement est accessible aux publics en situation de handicap :"
         shouldShowDivider={false}
