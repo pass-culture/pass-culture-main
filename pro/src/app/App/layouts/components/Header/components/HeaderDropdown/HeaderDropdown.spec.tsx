@@ -29,7 +29,6 @@ const baseOfferers: GetOffererResponseModel[] = [
     id: 1,
     name: 'Offerer A',
     isActive: true,
-    hasDigitalVenueAtLeastOneOffer: true,
     managedVenues: [
       {
         ...defaultGetOffererVenueResponseModel,

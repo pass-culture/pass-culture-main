@@ -1,8 +1,5 @@
 import type { GetOffererResponseModel } from '@/apiClient/v1'
-import {
-  getPhysicalVenuesFromOfferer,
-  getVirtualVenueFromOfferer,
-} from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
+import { getPhysicalVenuesFromOfferer } from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 
 import { Venue } from './Venue'
 import styles from './Venue.module.scss'
@@ -12,7 +9,6 @@ export interface VenueListProps {
 }
 
 export const VenueList = ({ offerer }: VenueListProps) => {
-  const virtualVenue = getVirtualVenueFromOfferer(offerer)
   const basePhysicalVenues = getPhysicalVenuesFromOfferer(offerer)
 
   const physicalVenues = basePhysicalVenues.filter(
@@ -23,10 +19,6 @@ export const VenueList = ({ offerer }: VenueListProps) => {
 
   return (
     <div className={styles['venue-list']}>
-      {virtualVenue && (
-        <Venue venue={virtualVenue} offerer={offerer} isFirstVenue />
-      )}
-
       {physicalVenues.map((venue, index) => (
         <Venue
           key={`${offerer.id}-${venue.id}`}

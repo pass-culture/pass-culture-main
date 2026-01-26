@@ -52,13 +52,10 @@ describe('VenueList', () => {
   it('should display offerer venues informations', () => {
     const offerer = {
       ...defaultGetOffererResponseModel,
-      hasDigitalVenueAtLeastOneOffer: true,
       managedVenues: [virtualVenue, physicalVenue, physicalVenueWithPublicName],
     }
     renderVenueList({ offerer })
 
-    const virtualVenueTitle = screen.getByText('Offres numériques')
-    expect(virtualVenueTitle).toBeInTheDocument()
     const physicalVenueTitle = screen.getByText(physicalVenue.name)
     expect(physicalVenueTitle).toBeInTheDocument()
     const physicalVenueContainer = physicalVenueTitle.closest('div')

@@ -363,17 +363,6 @@ def find_venues_of_offerers_with_no_offer_and_at_least_one_physical_venue_and_va
     )
 
 
-def has_digital_venue_with_at_least_one_offer(offerer_id: int) -> bool:
-    return db.session.query(
-        db.session.query(models.Venue)
-        .join(offers_models.Offer, models.Venue.id == offers_models.Offer.venueId)
-        .filter(models.Venue.managingOffererId == offerer_id)
-        .filter(models.Venue.isVirtual.is_(True))
-        .filter(offers_models.Offer.status != offer_mixin.OfferStatus.DRAFT.name)
-        .exists()
-    ).scalar()
-
-
 def get_by_offer_id(offer_id: int) -> models.Offerer:
     offerer = (
         db.session.query(models.Offerer)
