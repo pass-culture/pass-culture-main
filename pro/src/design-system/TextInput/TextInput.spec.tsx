@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
@@ -95,5 +95,24 @@ describe('TextInput', () => {
     ).toBeDisabled()
 
     expect(screen.getByLabelText('Input label')).toBeDisabled()
+  })
+
+  describe('[type="number"] on mouse wheel behaviour', () => {
+    // Testing that the input doesn't change is not relevant since the input modification on scroll
+    // is a Chrome-only behaviour and vitest uses jsdom that doesn't implement it
+    // (so the test would always pass)
+
+    it('should remove focus after mouse wheel interaction', () => {
+      renderTextInput({ type: 'number' })
+
+      const input = screen.getByRole('spinbutton') as HTMLInputElement
+
+      input.focus()
+      expect(input).toBe(document.activeElement)
+
+      fireEvent.wheel(input)
+
+      expect(input).not.toBe(document.activeElement)
+    })
   })
 })
