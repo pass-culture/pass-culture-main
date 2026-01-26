@@ -8,6 +8,8 @@ import fullMoreIcon from '@/icons/full-more.svg'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { ApiSelect } from '@/ui-kit/form/ApiSelect/ApiSelect'
 
+import avatarPlaceholder from './assets/avatar_placeholder.png'
+
 const ARTIST_TYPE_LABELS: Record<ArtistType, string> = {
   [ArtistType.AUTHOR]: 'Auteur',
   [ArtistType.PERFORMER]: 'Interprète',
@@ -49,10 +51,10 @@ export function ArtistField({
 
         return (
           <div key={field.id}>
-            <ApiSelect
+            <ApiSelect<ArtistOption>
               name={name}
               label={ARTIST_TYPE_LABELS[artistType]}
-              onSelect={(artist: ArtistOption) => {
+              onSelect={(artist: ArtistOption | undefined) => {
                 if (artist) {
                   setValue(
                     `artistOfferLinks.${index}`,
@@ -83,6 +85,7 @@ export function ArtistField({
                   ...artist,
                   value: artist.id,
                   label: artist.name,
+                  thumbUrl: artist.thumbUrl ?? avatarPlaceholder,
                 }))
               }}
               error={errors?.artistOfferLinks?.[index]?.artistName?.message}

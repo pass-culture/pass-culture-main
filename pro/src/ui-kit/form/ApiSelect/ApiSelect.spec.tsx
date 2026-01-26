@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { ApiSelect, type ApiSelectProps } from './ApiSelect'
+import { type ApiOption, ApiSelect, type ApiSelectProps } from './ApiSelect'
 
 const name = 'any-name'
 const apiSelectLabel = 'any-label'
@@ -11,7 +11,7 @@ const mockOnSelect = vi.fn()
 const mockSearchApi = vi.fn()
 const mockOnSearch = vi.fn()
 
-const renderApiSelect = (props?: Partial<ApiSelectProps>) => {
+const renderApiSelect = (props?: Partial<ApiSelectProps<ApiOption>>) => {
   return render(
     <ApiSelect
       name={name}

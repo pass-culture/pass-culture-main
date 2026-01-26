@@ -27,24 +27,24 @@ const FormWrapper = ({ children }: PropsWithChildren) => {
 }
 
 const options: SelectOption[] = [
-  { value: '01', label: 'Ain' },
-  { value: '02', label: 'Aisne' },
-  { value: '03', label: 'Allier' },
+  { value: '01', label: 'Ain', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '02', label: 'Aisne'},
+  { value: '03', label: 'Allier', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
   {
     value: '04',
-    label: 'Alpes-de-Haute-Provence test de libellé très long',
+    label: 'Alpes-de-Haute-Provence test de libellé très long', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"
   },
-  { value: '05', label: 'Hautes-Alpes' },
-  { value: '06', label: 'Alpes-Maritimes' },
-  { value: '07', label: 'Ardèche' },
-  { value: '08', label: 'Ardennes' },
-  { value: '09', label: 'Ariège' },
-  { value: '10', label: 'Aube' },
-  { value: '11', label: 'Aude' },
-  { value: '12', label: 'Aveyron' },
-  { value: '13', label: 'Bouches-du-Rhône' },
-  { value: '14', label: 'Calvados' },
-  { value: '15', label: 'Cantal' },
+  { value: '05', label: 'Hautes-Alpes', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '06', label: 'Alpes-Maritimes' , thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '07', label: 'Ardèche', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '08', label: 'Ardennes', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '09', label: 'Ariège', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '10', label: 'Aube', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '11', label: 'Aude', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '12', label: 'Aveyron', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '13', label: 'Bouches-du-Rhône', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '14', label: 'Calvados', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
+  { value: '15', label: 'Cantal', thumbUrl: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/21/Arbre_%C3%A0.jpg/640px-Arbre_%C3%A0.jpg"},
 ]
 
 export default {
