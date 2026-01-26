@@ -2,6 +2,8 @@ import cx from 'classnames'
 import type { Ref } from 'react'
 
 import type { SelectOption } from '@/commons/custom_types/form'
+import strokeUserIcon from '@/icons/stroke-user.svg'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './OptionsList.module.scss'
 
@@ -58,7 +60,20 @@ export const OptionsList = ({
             role="option"
             tabIndex={-1}
           >
-            <span className={cx(styles['options-item'])}>{option.label}</span>
+            <span className={styles['options-item']}>
+              {option.thumbUrl ? (
+                <img
+                  className={styles['options-img']}
+                  alt=""
+                  src={option.thumbUrl}
+                />
+              ) : (
+                <span className={styles['options-placeholder-container']}>
+                  <SvgIcon src={strokeUserIcon} alt="" width="20" />
+                </span>
+              )}
+              <span>{option.label}</span>
+            </span>
           </li>
         )
       })
