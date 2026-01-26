@@ -681,6 +681,13 @@ def delete_venue(venue_id: int) -> utils.BackofficeResponse:
             "warning",
         )
         return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
+    except offerers_exceptions.CannotDeleteVenueLinkedToFinanceEventException:
+        mark_transaction_as_invalid()
+        flash(
+            "Impossible de supprimer un partenaire culturel référencé dans un événement finance",
+            "warning",
+        )
+        return redirect(url_for("backoffice_web.venue.get", venue_id=venue.id), code=303)
     except offerers_exceptions.CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule:
         mark_transaction_as_invalid()
         flash(

@@ -134,6 +134,14 @@ class CannotDeleteVenueUsedAsPricingPointException(ClientError):
         )
 
 
+class CannotDeleteVenueLinkedToFinanceEventException(ClientError):
+    def __init__(self) -> None:
+        super().__init__(
+            "cannotDeleteVenueLinkedToFinanceEventException",
+            "Partenaire culturel non supprimable car il est référencé dans un événement finance",
+        )
+
+
 class CannotDeleteVenueWithActiveOrFutureCustomReimbursementRule(ClientError):
     def __init__(self) -> None:
         super().__init__(
