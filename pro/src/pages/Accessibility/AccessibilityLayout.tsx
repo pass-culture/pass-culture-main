@@ -33,15 +33,16 @@ export const AccessibilityLayout = ({
       <section className={styles['layout']} data-testid="logged-out-section">
         <div className={styles['content']}>{children}</div>
         {showBackToSignInButton && (
-          <Button
-            as="a"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            to="connexion"
-            icon={fullBackIcon}
-            className={styles['back-to-signin-button']}
-            label="Retour à la page de connexion"
-          />
+          <div className={styles['back-to-signin-button']}>
+            <Button
+              as="a"
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              to="connexion"
+              icon={fullBackIcon}
+              label="Retour à la page de connexion"
+            />
+          </div>
         )}
       </section>
     </LoggedOutLayout>

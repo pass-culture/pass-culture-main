@@ -1,19 +1,5 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.prebooking-button {
-  @include fonts.button;
-
-  &-booking-limit {
-    @include fonts.body-accent-xs;
-
-    margin-top: var(--size-spacing-s);
-  }
-
-  &-limit-date {
-    color: var(--color-text-brand-primary);
-  }
-}
-
 .prebooking-button-container {
   display: flex;
   flex-direction: column;

@@ -96,9 +96,8 @@ export const OnboardingCollectiveModal = ({
           as="a"
           isExternal
           opensInNewTab
-          className={styles['onboarding-collective-button']}
           variant={ButtonVariant.PRIMARY}
-          color={ButtonColor.NEUTRAL}
+          color={ButtonColor.BRAND}
           onClick={() =>
             logEvent(
               OnboardingDidacticEvents.HAS_CLICKED_SUBMIT_COLLECTIVE_CASE_DIDACTIC_ONBOARDING
@@ -108,7 +107,6 @@ export const OnboardingCollectiveModal = ({
           label="Déposer un dossier"
         />
         <Button
-          className={styles['onboarding-collective-button']}
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
           icon={fullNextIcon}

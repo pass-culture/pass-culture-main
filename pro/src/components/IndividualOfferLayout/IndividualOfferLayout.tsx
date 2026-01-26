@@ -128,7 +128,6 @@ export const IndividualOfferLayout = ({
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.NEUTRAL}
                   icon={fullTrashIcon}
-                  className={styles['ean-already-exists-callout-button']}
                   label="Supprimer ce brouillon"
                 />
               </>

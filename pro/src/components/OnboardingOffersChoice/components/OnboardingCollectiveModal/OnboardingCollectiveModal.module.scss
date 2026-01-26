@@ -59,12 +59,10 @@
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-}
-
-.onboarding-collective-button {
-  margin-bottom: var(--size-spacing-xl);
+  gap: var(--size-spacing-xl);
 }
 
 .error-message {
+  margin-top: var(--size-spacing-xl);
   color: var(--color-text-error);
 }

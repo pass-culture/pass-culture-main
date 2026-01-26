@@ -80,7 +80,6 @@ export function AdageOfferPartnerPanel({
               opensInNewTab
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
-              className={styles['partner-panel-info-link']}
               icon={fullLinkIcon}
               label="Voir la page partenaire"
             />

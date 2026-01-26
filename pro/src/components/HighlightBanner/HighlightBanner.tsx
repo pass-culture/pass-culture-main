@@ -24,7 +24,6 @@ const HighlightBannerCloseButton = ({
 }) => {
   return variant === HighlightBannerVariant.DEFAULT ? (
     <Button
-      className={styles['close']}
       iconClassName={styles['close-svg']}
       variant={ButtonVariant.TERTIARY}
       color={ButtonColor.NEUTRAL}

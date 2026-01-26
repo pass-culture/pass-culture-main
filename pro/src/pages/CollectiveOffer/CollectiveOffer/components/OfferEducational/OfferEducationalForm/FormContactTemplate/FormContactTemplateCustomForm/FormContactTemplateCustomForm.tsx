@@ -30,17 +30,18 @@ export const FormContactTemplateCustomForm = ({
             label: 'Le formulaire standard',
             value: 'form',
             collapsed: (
-              <Button
-                as="a"
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                isExternal
-                to="https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine"
-                opensInNewTab
-                icon={fullLinkIcon}
-                className={styles['custom-form-radio-link']}
-                label="FAQ : À quoi ressemble le formulaire standard ?"
-              />
+              <div className={styles['custom-form-radio-link']}>
+                <Button
+                  as="a"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  isExternal
+                  to="https://aide.passculture.app/hc/fr/articles/12957173606940--Acteurs-Culturels-Comment-paramétrer-les-options-de-contact-pour-les-enseignants-dans-le-cadre-d-une-offre-vitrine"
+                  opensInNewTab
+                  icon={fullLinkIcon}
+                  label="FAQ : À quoi ressemble le formulaire standard ?"
+                />
+              </div>
             ),
           },
           {

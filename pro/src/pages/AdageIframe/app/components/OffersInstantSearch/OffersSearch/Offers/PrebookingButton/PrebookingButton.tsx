@@ -126,7 +126,6 @@ export const PrebookingButton = ({
           <div className={styles['prebooking-button-container']}>
             <Button
               icon={fullStockIcon}
-              className={styles['prebooking-button']}
               onClick={() => handleBookingModalButtonClick(stock.id)}
               disabled={shouldDisablePrebookButton}
               ref={prebookButtonRef}

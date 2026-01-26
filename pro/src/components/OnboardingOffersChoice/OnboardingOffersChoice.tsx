@@ -31,7 +31,7 @@ export const OnboardingOffersChoice = () => {
             variant={ButtonVariant.PRIMARY}
             to="/onboarding/individuel"
             aria-label="Commencer la création d’offre sur l’application mobile"
-            className={styles['button-getting-started']}
+            fullWidth
             label="Commencer"
           />
         }
@@ -65,7 +65,7 @@ export const OnboardingOffersChoice = () => {
                   )
                   setShowModal(true)
                 }}
-                className={styles['button-getting-started']}
+                fullWidth
                 label="Commencer"
               />
             }

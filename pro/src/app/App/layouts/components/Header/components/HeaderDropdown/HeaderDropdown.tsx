@@ -169,11 +169,12 @@ export const HeaderDropdown = () => {
                       </div>
                     </DropdownMenu.SubTrigger>
                   ) : (
-                    <DropdownMenu.Item className={styles['menu-item']} asChild>
+                    <DropdownMenu.Item className={styles['menu-item']}>
                       <Button
                         as="a"
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.NEUTRAL}
                         icon={fullMoreIcon}
-                        className={styles['menu-item']}
                         to="/inscription/structure/recherche"
                         label="Ajouter une structure"
                       />

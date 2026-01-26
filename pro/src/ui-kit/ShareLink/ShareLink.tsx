@@ -5,11 +5,11 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 
-import { Button } from '../Button/Button'
-import { ButtonVariant } from '../Button/types'
 import styles from './ShareLink.module.scss'
 
 export type ShareLinkProps = {
@@ -62,14 +62,14 @@ export const ShareLink = ({
           ref={inputRef}
         />
       </div>
-      <Button
-        onClick={handleCopy}
-        variant={ButtonVariant.PRIMARY}
-        className={styles['share-link-button']}
-        icon={fullCopyIcon}
-      >
-        Copier
-      </Button>
+      <div className={styles['share-link-button']}>
+        <Button
+          onClick={handleCopy}
+          variant={ButtonVariant.PRIMARY}
+          icon={fullCopyIcon}
+          label="Copier"
+        />
+      </div>
     </div>
   )
 }

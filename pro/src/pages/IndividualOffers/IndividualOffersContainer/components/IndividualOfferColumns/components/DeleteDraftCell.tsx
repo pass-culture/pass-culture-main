@@ -11,7 +11,7 @@ export const DeleteDraftCell = ({
   setIsConfirmDialogOpen,
 }: DeleteDraftOffersProps) => {
   return (
-    <DropdownItem onSelect={() => setIsConfirmDialogOpen(true)} asChild>
+    <DropdownItem onSelect={() => setIsConfirmDialogOpen(true)}>
       <Button
         icon={fullTrashIcon}
         variant={ButtonVariant.TERTIARY}
