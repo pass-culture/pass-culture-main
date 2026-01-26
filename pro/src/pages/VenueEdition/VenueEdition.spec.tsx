@@ -140,7 +140,6 @@ describe('VenueEdition', () => {
     vi.spyOn(api, 'getOfferer').mockResolvedValue(
       defaultGetOffererResponseModel
     )
-    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'fetchVenueLabels').mockResolvedValue([])
     vi.spyOn(api, 'listOffers').mockResolvedValue([])
     vi.spyOn(api, 'listEducationalDomains').mockResolvedValue([])

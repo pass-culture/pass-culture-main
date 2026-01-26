@@ -1,7 +1,6 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useEducationalDomains } from '@/commons/hooks/swr/useEducationalDomains'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getActivityLabel } from '@/commons/mappings/mappings'
 import { getVenuePagePathToNavigateTo } from '@/commons/utils/getVenuePagePathToNavigateTo'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
@@ -17,10 +16,6 @@ interface VenueEditionReadOnlyProps {
 }
 
 export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
-  const isCulturalDomainsEnabled = useActiveFeature(
-    'WIP_VENUE_CULTURAL_DOMAINS'
-  )
-
   const { data } = useEducationalDomains()
 
   const aboutSectionDescription = [
@@ -37,7 +32,7 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         ]
       : []),
   ]
-  if (isCulturalDomainsEnabled && data.length > 0) {
+  if (data.length > 0) {
     const venueDomains = venue.collectiveDomains.map((domain) => {
       const apiValue = data.find(
         (educationalDomain) => educationalDomain.id === domain.id
@@ -54,14 +49,6 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
       text: venueDomains?.join(', ') || 'Non renseignés',
     })
   }
-  const aboutSection = (
-    <SummarySubSection
-      title="À propos de votre activité"
-      shouldShowDivider={false}
-    >
-      <SummaryDescriptionList descriptions={aboutSectionDescription} />
-    </SummarySubSection>
-  )
 
   return (
     <SummarySection
@@ -72,7 +59,6 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
         '/edition'
       )}
     >
-      {!isCulturalDomainsEnabled && aboutSection}
       <SummarySubSection title="Accueil du public" shouldShowDivider={false}>
         <div className={styles['opentopublic-label']}>
           Accueil du public dans la structure :{' '}
@@ -89,7 +75,12 @@ export const VenueEditionReadOnly = ({ venue }: VenueEditionReadOnlyProps) => {
           </>
         )}
       </SummarySubSection>
-      {isCulturalDomainsEnabled && aboutSection}
+      <SummarySubSection
+        title="À propos de votre activité"
+        shouldShowDivider={false}
+      >
+        <SummaryDescriptionList descriptions={aboutSectionDescription} />
+      </SummarySubSection>
       <SummarySubSection
         title="Informations de contact"
         shouldShowDivider={false}

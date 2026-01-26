@@ -48,9 +48,6 @@ interface VenueFormProps {
 
 export const VenueEditionForm = ({ venue }: VenueFormProps) => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const isCulturalDomainsEnabled = useActiveFeature(
-    'WIP_VENUE_CULTURAL_DOMAINS'
-  )
 
   const navigate = useNavigate()
   const location = useLocation()
@@ -66,11 +63,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
 
   const methods = useForm<VenueEditionFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver(
-      getValidationSchema({
-        isCulturalDomainsEnabled,
-      })
-    ),
+    resolver: yupResolver(getValidationSchema()),
     mode: 'onBlur',
   })
 
@@ -193,10 +186,6 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
     }
   }
 
-  const showActivityField =
-    methods.watch('isOpenToPublic') === 'true' ||
-    (methods.watch('isOpenToPublic') === 'false' && isCulturalDomainsEnabled)
-
   return (
     <FormProvider {...methods}>
       <form onSubmit={methods.handleSubmit(onSubmit)}>
@@ -266,36 +255,33 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
             </FormLayout.SubSection>
 
             <FormLayout.SubSection title="À propos de votre activité">
-              {showActivityField && (
-                <FormLayout.Row key={methods.watch('activity')} mdSpaceAfter>
-                  <Select
-                    {...methods.register('activity')}
-                    options={[
-                      ...(methods.watch('activity') === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
-                        ? [
-                            {
-                              value: '',
-                              label: 'Sélectionnez votre activité principale',
-                            },
-                          ]
-                        : []),
-                      ...buildSelectOptions(
-                        getActivities(
-                          methods.watch('isOpenToPublic') === 'true'
-                            ? 'OPEN_TO_PUBLIC'
-                            : 'NOT_OPEN_TO_PUBLIC'
-                        )
-                      ),
-                    ]}
-                    label="Activité principale"
-                    disabled={venue.isVirtual}
-                    error={methods.formState.errors.activity?.message}
-                    required
-                  />
-                </FormLayout.Row>
-              )}
-
-              {isCulturalDomainsEnabled && !isLoadingEducationalDomains && (
+              <FormLayout.Row key={methods.watch('activity')} mdSpaceAfter>
+                <Select
+                  {...methods.register('activity')}
+                  options={[
+                    ...(methods.watch('activity') === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
+                      ? [
+                          {
+                            value: '',
+                            label: 'Sélectionnez votre activité principale',
+                          },
+                        ]
+                      : []),
+                    ...buildSelectOptions(
+                      getActivities(
+                        methods.watch('isOpenToPublic') === 'true'
+                          ? 'OPEN_TO_PUBLIC'
+                          : 'NOT_OPEN_TO_PUBLIC'
+                      )
+                    ),
+                  ]}
+                  label="Activité principale"
+                  disabled={venue.isVirtual}
+                  error={methods.formState.errors.activity?.message}
+                  required
+                />
+              </FormLayout.Row>
+              {!isLoadingEducationalDomains && (
                 <FormLayout.Row mdSpaceAfter>
                   <MultiSelect
                     name="culturalDomains"
