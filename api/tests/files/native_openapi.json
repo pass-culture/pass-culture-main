@@ -279,30 +279,59 @@
                 "type": "object"
             },
             "ArtistResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "description": {
-                        "nullable": true,
-                        "title": "Description",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
                     },
                     "descriptionCredit": {
-                        "nullable": true,
-                        "title": "Descriptioncredit",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Descriptioncredit"
                     },
                     "descriptionSource": {
-                        "nullable": true,
-                        "title": "Descriptionsource",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Descriptionsource"
                     },
                     "id": {
                         "title": "Id",
                         "type": "string"
                     },
                     "image": {
-                        "nullable": true,
-                        "title": "Image",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Image"
                     },
                     "name": {
                         "title": "Name",
