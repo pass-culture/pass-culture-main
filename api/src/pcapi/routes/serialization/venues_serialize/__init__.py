@@ -290,6 +290,9 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
                 return None
             return offerers_models.DisplayableActivity[venue.activity.name]
 
+        if key == "canDisplayHighlights":
+            return venue.can_display_highlights
+
         return super().get(key, default)
 
 
@@ -339,6 +342,7 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     bankAccountStatus: SimplifiedBankAccountStatus | None
     hasNonFreeOffers: bool
     hasPartnerPage: bool
+    canDisplayHighlights: bool
 
     class Config:
         orm_mode = True

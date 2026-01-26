@@ -293,6 +293,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   isActive: true,
   isValidated: true,
   hasNonFreeOffers: true,
+  canDisplayHighlights: true,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =

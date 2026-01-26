@@ -24,6 +24,7 @@ export type GetVenueResponseModel = {
   bannerMeta?: BannerMetaModel | null;
   bannerUrl?: string | null;
   bookingEmail?: string | null;
+  canDisplayHighlights: boolean;
   collectiveAccessInformation?: string | null;
   collectiveDescription?: string | null;
   collectiveDmsApplications: Array<DMSApplicationForEAC>;
