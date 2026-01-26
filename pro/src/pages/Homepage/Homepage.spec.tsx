@@ -20,6 +20,7 @@ const renderHomePage = (options?: RenderWithProvidersOptions) => {
     storeOverrides: {
       user: {
         currentUser: user,
+        selectedVenue: defaultGetOffererVenueResponseModel,
       },
       offerer: {
         currentOfferer: {
@@ -31,6 +32,10 @@ const renderHomePage = (options?: RenderWithProvidersOptions) => {
     ...options,
   })
 }
+
+vi.mock('./components/Offerers/Offerers', () => ({
+  Offerers: () => <div data-testid="mock-offerers" />,
+}))
 
 describe('Homepage', () => {
   beforeEach(() => {
@@ -53,7 +58,7 @@ describe('Homepage', () => {
       })
       expect(
         await screen.findByRole('heading', { level: 1 })
-      ).toHaveTextContent('Votre espace')
+      ).toHaveTextContent('Votre espace Nom public de la structure')
     })
   })
   describe('without WIP_ENABLE_NEW_PRO_HOME feature flag', () => {
