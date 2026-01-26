@@ -8,6 +8,7 @@ import pytest
 import time_machine
 
 import pcapi.core.mails.testing as mails_testing
+from pcapi import settings
 from pcapi import settings as pcapi_settings
 from pcapi.connectors.dms import api as dms_api
 from pcapi.connectors.dms import exceptions as dms_exceptions
@@ -450,7 +451,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier rejeté car l'email est déjà utilisé par un compte crédité",
                 }
@@ -491,7 +492,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier rejeté car le nouvel email et l'ancien sont identiques dans le formulaire",
                 }
@@ -531,7 +532,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier rejeté car le numéro de téléphone est déjà utilisé par un compte crédité",
                 }
@@ -572,7 +573,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier rejeté car le numéro de téléphone est déjà enregistré sur ton compte",
                 }
@@ -612,7 +613,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier rejeté car le prénom est déjà celui enregistré sur ton compte",
                 }
@@ -654,7 +655,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier rejeté car les nom et prénom sont déjà ceux enregistrés sur ton compte",
                 }
@@ -719,7 +720,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
                 }
@@ -779,7 +780,7 @@ class SyncUserAccountUpdateRequestsTest:
                 "variables": {
                     "input": {
                         "dossierId": uaur.dsTechnicalId,
-                        "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                        "instructeurId": settings.DMS_INSTRUCTOR_ID,
                         "disableNotification": False,
                         "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
                     }
@@ -828,7 +829,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": True,
                 }
             }
@@ -839,7 +840,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
                 }
@@ -879,7 +880,7 @@ class SyncUserAccountUpdateRequestsTest:
             "variables": {
                 "input": {
                     "dossierId": uaur.dsTechnicalId,
-                    "instructeurId": instructor.backoffice_profile.dsInstructorId,
+                    "instructeurId": settings.DMS_INSTRUCTOR_ID,
                     "disableNotification": False,
                     "motivation": "Dossier classé sans suite car pas de correction apportée au dossier depuis 30 jours",
                 }

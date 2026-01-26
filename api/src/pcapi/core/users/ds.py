@@ -219,7 +219,7 @@ def check_set_without_continuation(user_request: users_models.UserAccountUpdateR
             update_state(
                 user_request,
                 new_state=dms_models.GraphQLApplicationStates.without_continuation,
-                instructor=user_request.lastInstructor,
+                instructor=None,  # If set, lastInstructor may no longer have access, mark with default api user
                 motivation=f"Dossier classé sans suite car pas de correction apportée au dossier depuis {settings.DS_MARK_WITHOUT_CONTINUATION_UDPATE_REQUEST_DEADLINE} jours",
             )
         except (dms_exceptions.DmsGraphQLApiError, dms_exceptions.DmsGraphQLApiException):
@@ -294,7 +294,7 @@ def _reject_user_request_with_duplicates(user_request: users_models.UserAccountU
             update_state(
                 user_request,
                 new_state=dms_models.GraphQLApplicationStates.refused,
-                instructor=user_request.lastInstructor,
+                instructor=None,  # If set, lastInstructor may no longer have access, refuse with default api user
                 motivation=motivation,
             )
         except (dms_exceptions.DmsGraphQLApiError, dms_exceptions.DmsGraphQLApiException):
