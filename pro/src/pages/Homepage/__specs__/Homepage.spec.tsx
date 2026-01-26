@@ -95,7 +95,6 @@ describe('Homepage', () => {
 
   beforeEach(() => {
     vi.spyOn(api, 'getProfile')
-    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([])
     vi.spyOn(api, 'listOfferersNames').mockResolvedValue({
       offerersNames: baseOfferersNames,
     })

@@ -1,4 +1,4 @@
-import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
+import type { EditVenueBodyModel } from '@/apiClient/v1'
 
 import type {
   VenueSettingsFormContext,
@@ -55,7 +55,6 @@ describe('toBody', () => {
       street: '3 Rue de Valois',
       siret: '41816609600069',
       withdrawalDetails: 'Details for withdraw',
-      venueTypeCode: 'Centre culturel' as VenueTypeCode,
       isManualEdition: false,
     }
   })

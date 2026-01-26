@@ -1,4 +1,4 @@
-import type { EditVenueBodyModel, VenueTypeCode } from '@/apiClient/v1'
+import type { EditVenueBodyModel } from '@/apiClient/v1'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { unhumanizeRidet, unhumanizeSiret } from '@/commons/utils/siren'
 
@@ -28,7 +28,6 @@ export const toBody = (
       ? unhumanizeRidet(formValues.siret, true, true)
       : unhumanizeSiret(formValues.siret),
     withdrawalDetails: formValues.withdrawalDetails,
-    venueTypeCode: formValues.venueType as VenueTypeCode,
     isManualEdition: formValues.manuallySetAddress,
   }
 
