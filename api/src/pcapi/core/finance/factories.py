@@ -40,7 +40,7 @@ class BankAccountFactory(BaseFactory):
         lambda o, n: schwifty.IBAN.generate("FR", bank_code="10010", account_code=f"{n:010}").compact
     )
     status = models.BankAccountApplicationStatus.ACCEPTED
-    dsApplicationId = factory.Sequence(lambda n: n)
+    dsApplicationId = factory.Sequence(lambda n: 1000000 + n + 1)
 
 
 class CaledonianBankAccountFactory(BankAccountFactory):
