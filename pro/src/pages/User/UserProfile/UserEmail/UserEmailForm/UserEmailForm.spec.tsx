@@ -62,7 +62,7 @@ describe('components:UserEmailForm', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Enregistrer' }))
 
-    expect(screen.getByText('wrong email address'))
+    expect(screen.getByText('wrong email address')).toBeInTheDocument()
   })
 
   it('should reset the form when clicking on cancel', async () => {

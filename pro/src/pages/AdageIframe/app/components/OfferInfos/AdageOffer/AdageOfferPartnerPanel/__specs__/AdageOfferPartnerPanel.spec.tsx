@@ -65,7 +65,7 @@ describe('AdageOfferPartnerPanel', () => {
       screen.queryByRole('link', {
         name: 'Nouvelle fenêtre Voir la page partenaire',
       })
-    ).not.toBeInTheDocument()
+    ).toBeFalsy()
   })
 
   it('should show the partner city and postal code', () => {

@@ -35,8 +35,8 @@ describe('AdageOfferListCardContent', () => {
       },
     })
 
-    expect(screen.getByText('Concert'))
-    expect(screen.getByText('Conférence, rencontre'))
+    expect(screen.getByText('Concert')).toBeInTheDocument()
+    expect(screen.getByText('Conférence, rencontre')).toBeInTheDocument()
   })
 
   it('should not show a list of formats if there is only one element', () => {

@@ -40,7 +40,7 @@ describe('ActivationCodeFormDialog', () => {
       />
     )
 
-    expect(screen.queryByText(LABELS.title)).not.toBeInTheDocument()
+    expect(screen.queryByText(LABELS.title)).toBeFalsy()
   })
 
   it('should render initial upload form when open', () => {

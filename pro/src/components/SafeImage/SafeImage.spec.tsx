@@ -33,5 +33,5 @@ it('should render placeholder when image is broken', () => {
   expect(screen.queryByTestId('image')).not.toBeInTheDocument()
   expect(
     screen.getByText('Image corrompue, veuillez ajouter une nouvelle image')
-  )
+  ).toBeInTheDocument()
 })

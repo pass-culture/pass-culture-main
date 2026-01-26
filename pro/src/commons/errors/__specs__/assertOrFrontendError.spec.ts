@@ -43,7 +43,7 @@ describe('assertOrFrontendError', () => {
     // @ts-expect-no-error
     const _calculation = firstMixedArrayItem / 2
 
-    expect(handleUnexpectedError).not.toHaveBeenCalled()
+    expect(handleUnexpectedError).toHaveBeenCalledTimes(0)
 
     /* eslint-enable @typescript-eslint/no-unused-vars */
   })
@@ -66,7 +66,7 @@ describe('assertOrFrontendError', () => {
       assertOrFrontendError(123, 'This should not fail')
     ).not.toThrow()
 
-    expect(handleUnexpectedError).not.toHaveBeenCalled()
+    expect(handleUnexpectedError).toHaveBeenCalledTimes(0)
   })
 
   it('should call handleUnexpectedError() when condition is falsy', () => {

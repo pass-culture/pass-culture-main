@@ -154,7 +154,9 @@ describe('IndividualOfferMediaScreen', () => {
   it('should always render an image input', async () => {
     await renderIndividualOfferMediaScreen()
 
-    expect(screen.getByRole('heading', { name: LABELS.imageSubSection }))
+    expect(
+      screen.getByRole('heading', { name: LABELS.imageSubSection })
+    ).toBeInTheDocument()
     const input = screen.getByLabelText(LABELS.imageInput)
     expect(input).toBeInTheDocument()
     expect(input).toHaveAttribute('type', 'file')
@@ -163,8 +165,12 @@ describe('IndividualOfferMediaScreen', () => {
   it('should always render a video url button', async () => {
     await renderIndividualOfferMediaScreen()
 
-    expect(screen.getByRole('heading', { name: LABELS.videoSubSection }))
-    expect(screen.getByRole('button', { name: LABELS.videoButton }))
+    expect(
+      screen.getByRole('heading', { name: LABELS.videoSubSection })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: LABELS.videoButton })
+    ).toBeInTheDocument()
   })
 
   describe('about image (and credit)', () => {

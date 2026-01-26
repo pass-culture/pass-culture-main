@@ -33,7 +33,7 @@ describe('OffererBanners', () => {
       screen.queryByText(
         'Le rattachement à votre structure est en cours de traitement par les équipes du pass Culture'
       )
-    ).not.toBeInTheDocument()
+    ).toBeFalsy()
   })
 
   it('should warn user that offerer is being validated when offerer is not yet validated', () => {
