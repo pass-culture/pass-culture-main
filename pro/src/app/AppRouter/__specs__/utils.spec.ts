@@ -4,16 +4,17 @@ import {
   mustBeAuthenticated,
   mustBeUnauthenticated,
   mustHaveSelectedVenue,
-  mustNotBeOnboarded,
+  mustOnboard,
 } from '../utils'
 
 const makeUserPermissions = (
   overrides: Partial<UserPermissions> = {}
 ): UserPermissions => ({
-  isAuthenticated: false,
   hasSelectedVenue: false,
+  hasSomeOfferer: false,
+  isAuthenticated: false,
   isOnboarded: false,
-  isSelectedVenueAssociated: false,
+  isSelectedOffererAssociated: false,
   ...overrides,
 })
 
@@ -51,7 +52,7 @@ describe('utils', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: true,
-        isSelectedVenueAssociated: true,
+        isSelectedOffererAssociated: true,
       })
 
       expect(mustHaveSelectedVenue(permissions)).toBe(true)
@@ -61,7 +62,7 @@ describe('utils', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: false,
         isOnboarded: true,
-        isSelectedVenueAssociated: true,
+        isSelectedOffererAssociated: true,
       })
 
       expect(mustHaveSelectedVenue(permissions)).toBe(false)
@@ -71,7 +72,7 @@ describe('utils', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: false,
-        isSelectedVenueAssociated: true,
+        isSelectedOffererAssociated: true,
       })
 
       expect(mustHaveSelectedVenue(permissions)).toBe(false)
@@ -81,7 +82,7 @@ describe('utils', () => {
       const permissions = makeUserPermissions({
         isAuthenticated: true,
         isOnboarded: true,
-        isSelectedVenueAssociated: false,
+        isSelectedOffererAssociated: false,
       })
 
       expect(mustHaveSelectedVenue(permissions)).toBe(false)
@@ -95,7 +96,7 @@ describe('utils', () => {
         isOnboarded: false,
       })
 
-      expect(mustNotBeOnboarded(permissions)).toBe(true)
+      expect(mustOnboard(permissions)).toBe(true)
     })
 
     it('should return false when user is not authenticated', () => {
@@ -104,7 +105,7 @@ describe('utils', () => {
         isOnboarded: false,
       })
 
-      expect(mustNotBeOnboarded(permissions)).toBe(false)
+      expect(mustOnboard(permissions)).toBe(false)
     })
 
     it('should return false when user is onboarded', () => {
@@ -113,7 +114,7 @@ describe('utils', () => {
         isOnboarded: true,
       })
 
-      expect(mustNotBeOnboarded(permissions)).toBe(false)
+      expect(mustOnboard(permissions)).toBe(false)
     })
   })
 })

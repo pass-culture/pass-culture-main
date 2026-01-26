@@ -29,9 +29,10 @@ export const initializeUser = createAsyncThunk<
     )
 
     const offererNamesResponse = await api.listOfferersNames()
-    const venuesResponse = await api.getVenues(null, true) // only active venues
+    const venuesResponse = await api.getUnsafeVenues(null)
 
     dispatch(updateOffererNames(offererNamesResponse.offerersNames))
+
     dispatch(setVenues(venuesResponse.venues))
     dispatch(updateUser(user))
 

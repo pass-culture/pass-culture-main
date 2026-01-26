@@ -125,12 +125,13 @@ def get_filtered_venues(
     offerer_id: int | None = None,
     validated_offerer: bool | None = None,
     with_bank_account: bool = False,
+    include_unvalidated_user_offerers: bool = False,
 ) -> list[models.Venue]:
     query = (
         db.session.query(models.Venue)
         .filter(
             models.UserOfferer.userId == pro_user_id,
-            models.UserOfferer.isValidated,
+            models.UserOfferer.isValidated != include_unvalidated_user_offerers,
         )
         .join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
         .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
@@ -158,6 +159,24 @@ def get_filtered_venues(
         query = query.options(
             sa_orm.selectinload(models.Venue.bankAccountLinks).joinedload(models.VenueBankAccountLink.bankAccount)
         )
+
+    return query.order_by(models.Venue.name).all()
+
+
+def get_all_venues(
+    pro_user_id: int,
+) -> list[models.Venue]:
+    query = (
+        db.session.query(models.Venue)
+        .filter(
+            models.UserOfferer.userId == pro_user_id,
+        )
+        .join(models.Offerer, models.Offerer.id == models.Venue.managingOffererId)
+        .join(models.UserOfferer, models.UserOfferer.offererId == models.Offerer.id)
+        .options(sa_orm.joinedload(models.Venue.managingOfferer))
+        .options(sa_orm.joinedload(models.Venue.collectiveDomains))
+        .options(sa_orm.joinedload(models.Venue.offererAddress).joinedload(models.OffererAddress.address))
+    )
 
     return query.order_by(models.Venue.name).all()
 

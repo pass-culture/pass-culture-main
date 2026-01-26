@@ -140,7 +140,6 @@ export type { GetOfferVenueResponseModel } from './models/GetOfferVenueResponseM
 export type { GetProductInformations } from './models/GetProductInformations';
 export type { GetStocksResponseModel } from './models/GetStocksResponseModel';
 export type { GetVenueDomainResponseModel } from './models/GetVenueDomainResponseModel';
-export type { GetVenueListLiteResponseModel } from './models/GetVenueListLiteResponseModel';
 export type { GetVenueListResponseModel } from './models/GetVenueListResponseModel';
 export type { GetVenueManagingOffererResponseModel } from './models/GetVenueManagingOffererResponseModel';
 export type { GetVenueOffersStatsModel } from './models/GetVenueOffersStatsModel';
@@ -244,6 +243,8 @@ export type { ThingStockUpsertBodyModel } from './models/ThingStockUpsertBodyMod
 export type { TopOffersByConsultationModel } from './models/TopOffersByConsultationModel';
 export type { TopOffersResponseData } from './models/TopOffersResponseData';
 export type { TotalRevenue } from './models/TotalRevenue';
+export type { UnsafeVenueListItemResponseModel } from './models/UnsafeVenueListItemResponseModel';
+export type { UnsafeVenuesResponseModel } from './models/UnsafeVenuesResponseModel';
 export type { UserEmailValidationResponseModel } from './models/UserEmailValidationResponseModel';
 export type { UserHasBookingResponse } from './models/UserHasBookingResponse';
 export type { UserIdentityBodyModel } from './models/UserIdentityBodyModel';
@@ -257,7 +258,6 @@ export type { ValidationErrorElement } from './models/ValidationErrorElement';
 export type { VenueContactModel } from './models/VenueContactModel';
 export type { VenueLabelListResponseModel } from './models/VenueLabelListResponseModel';
 export type { VenueLabelResponseModel } from './models/VenueLabelResponseModel';
-export type { VenueListItemLiteResponseModel } from './models/VenueListItemLiteResponseModel';
 export type { VenueListItemResponseModel } from './models/VenueListItemResponseModel';
 export type { VenueListQueryModel } from './models/VenueListQueryModel';
 export type { VenueOfOffererFromSiretResponseModel } from './models/VenueOfOffererFromSiretResponseModel';

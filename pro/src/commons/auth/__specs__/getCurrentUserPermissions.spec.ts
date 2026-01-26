@@ -62,7 +62,7 @@ describe('getCurrentUserPermissions', () => {
         const result = getCurrentUserPermissions()
 
         expect(result.hasSelectedVenue).toBe(false)
-        expect(result.isSelectedVenueAssociated).toBe(false)
+        expect(result.isSelectedOffererAssociated).toBe(false)
         expect(result.isOnboarded).toBe(false)
       })
     })
@@ -98,7 +98,7 @@ describe('getCurrentUserPermissions', () => {
 
           const result = getCurrentUserPermissions()
 
-          expect(result.isSelectedVenueAssociated).toBe(false)
+          expect(result.isSelectedOffererAssociated).toBe(false)
           expect(result.isOnboarded).toBe(false)
         })
       })
@@ -117,7 +117,7 @@ describe('getCurrentUserPermissions', () => {
 
           const result = getCurrentUserPermissions()
 
-          expect(result.isSelectedVenueAssociated).toBe(true)
+          expect(result.isSelectedOffererAssociated).toBe(true)
           expect(result.isOnboarded).toBe(false)
         })
       })

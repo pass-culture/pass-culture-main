@@ -55,7 +55,6 @@ import type { GetOffererV2StatsResponseModel } from '../models/GetOffererV2Stats
 import type { GetOffersStatsResponseModel } from '../models/GetOffersStatsResponseModel';
 import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
-import type { GetVenueListLiteResponseModel } from '../models/GetVenueListLiteResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
 import type { GetVenueOffersStatsModel } from '../models/GetVenueOffersStatsModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
@@ -110,6 +109,7 @@ import type { StockStatsResponseModel } from '../models/StockStatsResponseModel'
 import type { StructureDataBodyModel } from '../models/StructureDataBodyModel';
 import type { SubmitReviewRequestModel } from '../models/SubmitReviewRequestModel';
 import type { ThingStocksBulkUpsertBodyModel } from '../models/ThingStocksBulkUpsertBodyModel';
+import type { UnsafeVenuesResponseModel } from '../models/UnsafeVenuesResponseModel';
 import type { UserEmailValidationResponseModel } from '../models/UserEmailValidationResponseModel';
 import type { UserHasBookingResponse } from '../models/UserHasBookingResponse';
 import type { UserIdentityBodyModel } from '../models/UserIdentityBodyModel';
@@ -1302,33 +1302,6 @@ export class DefaultService {
     });
   }
   /**
-   * get_venues_lite <GET>
-   * @param validated
-   * @param activeOfferersOnly
-   * @param offererId
-   * @returns GetVenueListLiteResponseModel OK
-   * @throws ApiError
-   */
-  public getVenuesLite(
-    validated?: boolean | null,
-    activeOfferersOnly?: boolean | null,
-    offererId?: number | null,
-  ): CancelablePromise<GetVenueListLiteResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/lite/venues',
-      query: {
-        'validated': validated,
-        'activeOfferersOnly': activeOfferersOnly,
-        'offererId': offererId,
-      },
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
    * create_offerer <POST>
    * @param requestBody
    * @returns PostOffererResponseModel Created
@@ -2270,6 +2243,21 @@ export class DefaultService {
       path: {
         'search_input': searchInput,
       },
+      errors: {
+        403: `Forbidden`,
+        422: `Unprocessable Content`,
+      },
+    });
+  }
+  /**
+   * get_unsafe_venues <GET>
+   * @returns UnsafeVenuesResponseModel OK
+   * @throws ApiError
+   */
+  public getUnsafeVenues(): CancelablePromise<UnsafeVenuesResponseModel> {
+    return this.httpRequest.request({
+      method: 'GET',
+      url: '/unsafe/venues',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

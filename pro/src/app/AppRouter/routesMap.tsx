@@ -19,7 +19,7 @@ import {
   mustBeAuthenticated,
   mustBeUnauthenticated,
   mustHaveSelectedVenue,
-  mustNotBeOnboarded,
+  mustOnboard,
 } from './utils'
 
 const NavigateToNewPasswordReset = ({ to, ...props }: NavigateProps) => {
@@ -423,7 +423,7 @@ export const routes: CustomRouteObject[] = [
   },
   {
     lazy: () => import('@/pages/IndividualOfferWizard/IndividualOfferWizard'),
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
     path: '/onboarding/offre/individuelle',
     title: 'Offre étape par étape',
     children: routesOnboardingIndividualOfferWizard,
@@ -502,7 +502,7 @@ export const routes: CustomRouteObject[] = [
       import(
         '@/pages/Onboarding/OnboardingOffersTypeChoice/OnboardingOffersTypeChoice'
       ),
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
     path: '/onboarding',
     title: 'Onboarding',
     meta: {
@@ -534,7 +534,7 @@ export const routes: CustomRouteObject[] = [
   {
     lazy: () => import('@/pages/NonAttached/NonAttached'),
     loader: withUserPermissions(
-      (userPermissions) => !userPermissions.isSelectedVenueAssociated
+      (userPermissions) => !userPermissions.isSelectedOffererAssociated
     ),
     path: '/rattachement-en-cours',
     title: 'Rattachement en cours de traitement',
