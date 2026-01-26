@@ -6,7 +6,7 @@ import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 import fullNextIcon from '@/icons/full-next.svg'
 
-import styles from '../../Homepage.module.scss'
+import styles from '../../OldHomepage.module.scss'
 
 interface AddBankAccountCalloutProps {
   offerer?: GetOffererResponseModel | null

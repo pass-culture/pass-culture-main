@@ -6,7 +6,7 @@ import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
 
-import styles from '../../Homepage.module.scss'
+import styles from '../../OldHomepage.module.scss'
 
 export interface LinkVenueCalloutProps {
   offerer?: GetOffererResponseModel | null
