@@ -557,6 +557,20 @@ def delete_venue(venue_id: int, allow_delete_last_venue: bool = False) -> None:
             offerers_models.VenuePricingPointLink.pricingPointId == venue_id,
         ).delete(synchronize_session=False)
 
+    # Because of regularization, FinanceEvent may still be linked to the venue even if the Booking has moved
+    venue_linked_to_finance_event = db.session.query(
+        db.session.query(finance_models.FinanceEvent)
+        .filter(
+            sa.or_(
+                finance_models.FinanceEvent.venueId == venue_id,
+                finance_models.FinanceEvent.pricingPointId == venue_id,
+            )
+        )
+        .exists()
+    ).scalar()
+    if venue_linked_to_finance_event:
+        raise exceptions.CannotDeleteVenueLinkedToFinanceEventException()
+
     venue_associated_with_reimbursement_rule = db.session.query(
         db.session.query(finance_models.CustomReimbursementRule)
         .filter(finance_models.CustomReimbursementRule.venueId == venue_id)

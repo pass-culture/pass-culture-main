@@ -398,6 +398,16 @@ class DeleteVenueTest:
         with pytest.raises(offerers_exceptions.CannotDeleteVenueUsedAsPricingPointException):
             offerers_api.delete_venue(venue_to_delete.id)
 
+    def test_delete_venue_should_abort_when_finance_event_is_linked_to_venue(self):
+        venue_to_delete = offerers_factories.VenueFactory(pricing_point="self")
+        finance_factories.FinanceEventFactory(
+            venue=venue_to_delete,
+            pricingPoint=offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer),
+        )
+
+        with pytest.raises(offerers_exceptions.CannotDeleteVenueLinkedToFinanceEventException):
+            offerers_api.delete_venue(venue_to_delete.id)
+
     def test_delete_venue_should_remove_offers_stocks_and_activation_codes(self):
         venue_to_delete = offerers_factories.VenueFactory()
         offers_factories.OfferFactory.create_batch(2, venue=venue_to_delete)
