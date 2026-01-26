@@ -1048,7 +1048,6 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         name=offerers_schemas.VenueName(form.public_name.data),
         publicName=offerers_schemas.VenuePublicName(form.public_name.data),
         venueLabelId=None,
-        venueTypeCode=attachment_venue.venueTypeCode.name,
         withdrawalDetails=None,
         description=None,
         contact=None,

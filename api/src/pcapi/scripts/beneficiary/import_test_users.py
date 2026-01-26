@@ -115,7 +115,6 @@ def _create_pro_user(row: dict) -> User:
     new_onboarding_info = offerers_api.NewOnboardingInfo(
         activity=offerers_models.Activity.NOT_ASSIGNED,
         target=offerers_models.Target.INDIVIDUAL_AND_EDUCATIONAL,
-        venueTypeCode=offerers_models.VenueTypeCode.OTHER.name,
         webPresence="https://www.example.com",
     )
     user_offerer = offerers_api.create_offerer(
@@ -163,7 +162,6 @@ def _create_pro_user(row: dict) -> User:
         publicName=None,
         siret=offerers_schemas.VenueSiret(siret),
         venueLabelId=None,
-        venueTypeCode=offerers_models.VenueTypeCode.OTHER.name,
         withdrawalDetails=None,
         description=None,
         contact=None,
