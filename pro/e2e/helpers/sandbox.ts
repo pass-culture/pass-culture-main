@@ -25,6 +25,12 @@ export async function sandboxCall<T = unknown>(
   )
 }
 
+export interface ProUserData {
+  user: {
+    email: string
+  }
+}
+
 export interface DeskBookingsData {
   user: {
     email: string
@@ -43,6 +49,16 @@ export async function createProUserWithBookings(
   return await sandboxCall<DeskBookingsData>(
     request,
     'GET',
-    'http://localhost:5001/sandboxes/pro/create_pro_user_with_bookings'
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_bookings`
+  )
+}
+
+export async function createRegularProUser(
+  request: APIRequestContext
+): Promise<ProUserData> {
+  return await sandboxCall<ProUserData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
   )
 }
