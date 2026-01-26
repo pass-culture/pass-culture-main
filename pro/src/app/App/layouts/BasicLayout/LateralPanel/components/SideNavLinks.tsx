@@ -211,6 +211,9 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   id: 'collective',
                 },
               ]}
+              triggerProps={{
+                fullWidth: true,
+              }}
             />
           </div>
         </div>

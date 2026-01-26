@@ -204,7 +204,6 @@ export const Collaborators = (): JSX.Element | null => {
                         <Button
                           type="submit"
                           isLoading={isSubmitting}
-                          className={styles['add-member-button']}
                           data-error={errors.email?.message ? 'true' : 'false'}
                           label="Inviter"
                         />

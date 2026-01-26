@@ -39,7 +39,7 @@ export function HeadlineOfferCell({
   }
 
   return (
-    <DropdownItem onSelect={onSelect} asChild>
+    <DropdownItem onSelect={onSelect}>
       <Button
         variant={ButtonVariant.TERTIARY}
         color={ButtonColor.NEUTRAL}

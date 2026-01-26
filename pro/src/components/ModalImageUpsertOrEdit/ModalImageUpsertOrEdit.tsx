@@ -379,7 +379,11 @@ export const ModalImageUpsertOrEdit = ({
         <DialogBuilder.Footer>
           <div className={style['modal-image-crop-footer']}>
             <Dialog.Close asChild>
-              <Button variant={ButtonVariant.SECONDARY}>Annuler</Button>
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                label="Annuler"
+              />
             </Dialog.Close>
             <Button
               type="submit"
@@ -388,9 +392,8 @@ export const ModalImageUpsertOrEdit = ({
                 onImageSave()
               }}
               disabled={!image}
-            >
-              Importer
-            </Button>
+              label="Importer"
+            />
           </div>
         </DialogBuilder.Footer>
       </form>

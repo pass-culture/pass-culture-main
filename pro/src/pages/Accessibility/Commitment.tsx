@@ -8,15 +8,16 @@ import styles from './Commitment.module.scss'
 export const Commitment = () => {
   return (
     <AccessibilityLayout mainHeading="Les engagements du pass Culture pour l’accessibilité numérique">
-      <Button
-        to="/accessibilite/"
-        as="a"
-        variant={ButtonVariant.TERTIARY}
-        color={ButtonColor.NEUTRAL}
-        icon={fullBackIcon}
-        className={styles['back-link']}
-        label="Retour vers la page Informations d’accessibilité"
-      />
+      <div className={styles['back-link']}>
+        <Button
+          to="/accessibilite/"
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullBackIcon}
+          label="Retour vers la page Informations d’accessibilité"
+        />
+      </div>
       <p className={styles['paragraph']}>
         <i>Date de publication : 21 mai 2024</i>
       </p>
