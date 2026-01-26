@@ -379,13 +379,11 @@ export const OfferActionsCell = ({
               <DropdownMenu.Item
                 className={cn(styles['menu-item'])}
                 onSelect={() => setIsCancelledBookingModalOpen(true)}
-                asChild
               >
                 <Button
                   icon={fullClearIcon}
                   variant={ButtonVariant.TERTIARY}
                   color={ButtonColor.BRAND}
-                  className={styles['button-cancel-booking']}
                   label="Annuler la réservation"
                 />
               </DropdownMenu.Item>

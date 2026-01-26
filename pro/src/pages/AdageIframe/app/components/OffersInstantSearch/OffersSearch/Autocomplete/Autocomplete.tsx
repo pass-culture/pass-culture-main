@@ -433,26 +433,29 @@ export const Autocomplete = ({
                   <div className={styles['dialog-panel-autocomplete']}>
                     <span className={styles['dialog-panel-autocomplete-text']}>
                       Recherches récentes
-                      <Button
+                      <div
                         className={
                           styles['dialog-panel-autocomplete-text-clean']
                         }
-                        variant={ButtonVariant.TERTIARY}
-                        color={ButtonColor.BRAND}
-                        icon={fullClearIcon}
-                        onClick={() => {
-                          if (storageAvailable('localStorage')) {
-                            localStorage.removeItem(
-                              AUTOCOMPLETE_LOCAL_STORAGE_KEY
-                            )
-                          }
-                          autocomplete.setIsOpen(false)
-                        }}
-                        onBlur={() => {
-                          autocomplete.setIsOpen(false)
-                        }}
-                        label="Effacer"
-                      />
+                      >
+                        <Button
+                          variant={ButtonVariant.TERTIARY}
+                          color={ButtonColor.BRAND}
+                          icon={fullClearIcon}
+                          onClick={() => {
+                            if (storageAvailable('localStorage')) {
+                              localStorage.removeItem(
+                                AUTOCOMPLETE_LOCAL_STORAGE_KEY
+                              )
+                            }
+                            autocomplete.setIsOpen(false)
+                          }}
+                          onBlur={() => {
+                            autocomplete.setIsOpen(false)
+                          }}
+                          label="Effacer"
+                        />
+                      </div>
                     </span>
                     <ul
                       className={styles['dialog-panel-autocomplete-list']}

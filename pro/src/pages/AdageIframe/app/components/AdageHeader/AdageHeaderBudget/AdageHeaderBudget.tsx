@@ -15,17 +15,18 @@ export const AdageHeaderBudget = ({
 }: AdageHeaderBudgetProps) => {
   return (
     <div className={styles['adage-header-budget']}>
-      <Button
-        as="a"
-        variant={ButtonVariant.TERTIARY}
-        color={ButtonColor.NEUTRAL}
-        to={`${document.referrer}adage/passculture/index`}
-        isExternal
-        opensInNewTab
-        className={styles['adage-header-budget-link']}
-        onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
-        label="Solde prévisionnel"
-      />
+      <div className={styles['adage-header-budget-link']}>
+        <Button
+          as="a"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          to={`${document.referrer}adage/passculture/index`}
+          isExternal
+          opensInNewTab
+          onClick={() => logAdageLinkClick(AdageHeaderLink.ADAGE_LINK)}
+          label="Solde prévisionnel"
+        />
+      </div>
       <div className={styles['adage-header-budget-value']}>
         {Intl.NumberFormat('fr-FR', {
           style: 'currency',

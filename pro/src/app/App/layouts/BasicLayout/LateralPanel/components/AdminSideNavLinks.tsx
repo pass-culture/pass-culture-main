@@ -6,6 +6,12 @@ import { NavLink } from 'react-router'
 import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
 import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullHelpIcon from '@/icons/full-help.svg'
@@ -15,9 +21,8 @@ import fullUpIcon from '@/icons/full-up.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeReportIcon from '@/icons/stroke-report.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
+import { Button as OldButton } from '@/ui-kit/Button/Button'
+import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './SideNavLinks.module.scss'
@@ -49,15 +54,16 @@ export const AdminSideNavLinks = ({
         [styles['nav-links-open']]: isLateralPanelOpen,
       })}
     >
-      <ButtonLink
-        variant={ButtonVariant.SECONDARY}
-        to="/accueil"
-        iconPosition={IconPositionEnum.LEFT}
-        icon={fullBackIcon}
-        className={styles['back-to-partner-space-button']}
-      >
-        Revenir à l’Espace Partenaire
-      </ButtonLink>
+      <div className={styles['back-to-partner-space-button']}>
+        <Button
+          as="a"
+          variant={ButtonVariant.SECONDARY}
+          to="/accueil"
+          iconPosition={IconPositionEnum.LEFT}
+          icon={fullBackIcon}
+          label="Revenir à l’Espace Partenaire"
+        />
+      </div>
 
       <div className={styles['nav-links-header']}>Espace Administration</div>
       <ul className={styles['nav-links-group']}>
@@ -179,15 +185,15 @@ export const AdminSideNavLinks = ({
             <UserReviewDialog
               dialogTrigger={
                 <Button
-                  variant={ButtonVariant.TERNARY}
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
                   icon={fullSmsIcon}
                   className={classnames(
                     styles['nav-links-item'],
                     styles['nav-links-item-feedback']
                   )}
-                >
-                  Donner mon avis
-                </Button>
+                  label="Donner mon avis"
+                />
               }
             />
           </li>
@@ -195,8 +201,8 @@ export const AdminSideNavLinks = ({
             <div>
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
-                  <Button
-                    variant={ButtonVariant.TERNARY}
+                  <OldButton
+                    variant={OldButtonVariant.TERNARY}
                     className={styles['nav-links-item']}
                   >
                     <SvgIcon src={fullHelpIcon} alt="" width="18" />
@@ -204,7 +210,7 @@ export const AdminSideNavLinks = ({
                       Centre d’aide
                     </span>
                     <SvgIcon src={fullRightIcon} alt="" width="18" />
-                  </Button>
+                  </OldButton>
                 </DropdownMenu.Trigger>
                 <DropdownMenu.Content
                   side={isMobileScreen ? 'top' : 'right'}

@@ -194,17 +194,18 @@ export const RequestFormDialog = ({
           <li>
             <div className={styles['form-description-link']}>
               <i>via</i> son formulaire :
-              <Button
-                as="a"
-                onClick={logContactUrl}
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.BRAND}
-                className={styles['form-description-link-text']}
-                to={contactUrl}
-                isExternal
-                opensInNewTab
-                label="Aller sur le site"
-              />
+              <div className={styles['form-description-link-text']}>
+                <Button
+                  as="a"
+                  onClick={logContactUrl}
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.BRAND}
+                  to={contactUrl}
+                  isExternal
+                  opensInNewTab
+                  label="Aller sur le site"
+                />
+              </div>
             </div>
           </li>
         )}
@@ -242,17 +243,19 @@ export const RequestFormDialog = ({
       <div className={styles['form-description-link-site']}>
         Il vous propose de le faire <i>via</i> son formulaire :
       </div>
-      <Button
-        as="a"
-        onClick={logContactUrl}
-        variant={ButtonVariant.TERTIARY}
-        color={ButtonColor.BRAND}
-        className={styles['form-description-link-text']}
-        to={contactUrl}
-        isExternal
-        opensInNewTab
-        label="Aller sur le site"
-      />
+      <div className={styles['form-description-link-text']}>
+        {' '}
+        <Button
+          as="a"
+          onClick={logContactUrl}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.BRAND}
+          to={contactUrl}
+          isExternal
+          opensInNewTab
+          label="Aller sur le site"
+        />
+      </div>
     </div>
   )
 

@@ -201,11 +201,9 @@
   text-align: center;
   margin: var(--size-spacing-l);
   margin-bottom: 0;
-  padding: var(--size-spacing-m);
 
   @media (min-width: size.$tablet) {
     display: none;
-    padding: var(--size-spacing-s);
   }
 }
 

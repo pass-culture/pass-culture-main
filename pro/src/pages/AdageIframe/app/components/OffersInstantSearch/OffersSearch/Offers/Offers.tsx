@@ -294,7 +294,6 @@ export const Offers = ({
                         isExternal
                         opensInNewTab
                         icon={fullLinkIcon}
-                        className={styles['highlight-banner-button']}
                         onClick={() => logOpenHighlightBanner('TFD-2025')}
                         label="en savoir plus"
                       />

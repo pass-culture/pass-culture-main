@@ -37,7 +37,6 @@ export const ModalFilterLayout = ({
             />
             <Button
               variant={ButtonVariant.PRIMARY}
-              className={styles['search-button']}
               onClick={onSearch}
               data-testid="search-button-modal"
               type="submit"
