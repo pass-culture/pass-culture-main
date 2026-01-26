@@ -282,7 +282,7 @@ class CreateOffererQueryModel(BaseModel):
 
 
 class SaveNewOnboardingDataQueryModel(BaseModel):
-    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic
     address: address_serialize.LocationBodyModel
     culturalDomains: list[str] | None = pydantic_v1.Field(min_items=1)
     createVenueWithoutSiret: bool = False
@@ -291,7 +291,6 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     siret: str
     target: Target
     token: str
-    venueTypeCode: str | None
     webPresence: str
     phoneNumber: str | None
 
@@ -300,15 +299,6 @@ class SaveNewOnboardingDataQueryModel(BaseModel):
     class Config:
         extra = "forbid"
         anystr_strip_whitespace = True
-
-    @pydantic_v1.root_validator
-    def check_activity_and_venue_type_code(cls: "SaveNewOnboardingDataQueryModel", values: dict) -> dict:
-        activity = values.get("activity")
-        venue_type_code = values.get("venueTypeCode")
-
-        if not activity and not venue_type_code:
-            raise ValueError("Either activity or venueTypeCode are required")
-        return values
 
 
 class InviteMemberQueryModel(BaseModel):

@@ -85,7 +85,6 @@ class PostVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     publicName: offerers_schemas.VenuePublicName | None
     siret: offerers_schemas.VenueSiret | None
     venueLabelId: int | None
-    venueTypeCode: str | None
     withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
     description: offerers_schemas.VenueDescription | None
     contact: offerers_schemas.VenueContactModel | None
@@ -408,7 +407,6 @@ class EditVenueBodyModel(BaseModel, AccessibilityComplianceMixin):
     city: offerers_schemas.VenueCity | None
     publicName: offerers_schemas.VenuePublicName | None
     comment: offerers_schemas.VenueComment | None
-    venueTypeCode: offerers_models.VenueTypeCode | None
     venueLabelId: int | None
     withdrawalDetails: offerers_schemas.VenueWithdrawalDetails | None
     isAccessibilityAppliedOnAllOffers: bool | None

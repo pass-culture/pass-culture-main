@@ -111,7 +111,6 @@ DMS_TOKEN_REGEX = r"^(?:PRO-)?([a-fA-F0-9]{12})$"
 def link_cultural_domains_to_venue(
     cultural_domains: list[str] | None,
     venue: offerers_models.Venue | None,
-    venue_type_code: str | None,
 ) -> None:
     if cultural_domains is None:
         return
@@ -184,7 +183,7 @@ def update_venue(
         }
         venue_snapshot.trace_update_raw(raw_trace_data)
 
-    link_cultural_domains_to_venue(cultural_domains, venue, modifications.get("venueTypeCode"))
+    link_cultural_domains_to_venue(cultural_domains, venue)
 
     if external_accessibility_url is not offerers_constants.UNCHANGED:
         external_accessibility_id = external_accessibility_url.split("/")[-2] if external_accessibility_url else None
@@ -223,9 +222,7 @@ def update_venue(
         return venue
     venue_snapshot.add_action()
 
-    if modifications.get("venueTypeCode", None) and not modifications.get("activity", None):
-        venue.activity = offerers_utils.get_venue_activity_from_type_code(venue.isOpenToPublic, venue.venueTypeCode)
-    if modifications.get("activity", None) and not modifications.get("venueTypeCode", None):
+    if modifications.get("activity", None):
         assert venue.activity  # helps mypy, activity has been modified, is not null if we are here and set above
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(venue.activity)
 
@@ -479,11 +476,7 @@ def create_venue(
         venue.adageInscriptionDate = date_utils.get_naive_utc_now()
 
     assert data.get("venueTypeCode") or data.get("activity") or data.get("culturalDomains")
-    if not data.get("activity") and data.get("venueTypeCode"):
-        venue.activity = offerers_utils.get_venue_activity_from_type_code(
-            data.get("isOpenToPublic"), data.get("venueTypeCode")
-        )
-    if not data.get("venueTypeCode") and data.get("activity"):
+    if data.get("activity"):
         venue.venueTypeCode = offerers_utils.get_venue_type_code_from_activity(data["activity"])
 
     db.session.add(venue)
@@ -492,7 +485,7 @@ def create_venue(
     db.session.flush()
 
     # Deal with cultural domains
-    link_cultural_domains_to_venue(venue_data.culturalDomains, venue, venue_data.venueTypeCode)
+    link_cultural_domains_to_venue(venue_data.culturalDomains, venue)
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
@@ -979,14 +972,13 @@ def auto_tag_new_offerer(
 class NewOnboardingInfo:
     activity: models.Activity | None
     target: models.Target
-    venueTypeCode: str | None
     webPresence: str | None
 
 
 def _add_new_onboarding_info_to_extra_data(new_onboarding_info: NewOnboardingInfo | None, extra_data: dict) -> None:
     if new_onboarding_info:
         extra_data["target"] = new_onboarding_info.target
-        extra_data["venue_type_code"] = new_onboarding_info.venueTypeCode
+        extra_data["activity"] = new_onboarding_info.activity
         extra_data["web_presence"] = new_onboarding_info.webPresence
 
 
@@ -2215,7 +2207,7 @@ def create_from_onboarding_data(
     else:
         name = siret_info.name
 
-    link_cultural_domains_to_venue(onboarding_data.culturalDomains, None, None)
+    link_cultural_domains_to_venue(onboarding_data.culturalDomains, None)
 
     # Create Offerer or attach user to existing Offerer
     offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
@@ -2232,7 +2224,6 @@ def create_from_onboarding_data(
     new_onboarding_info = NewOnboardingInfo(
         activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,
         target=onboarding_data.target,
-        venueTypeCode=onboarding_data.venueTypeCode,
         webPresence=onboarding_data.webPresence,
     )
     user_offerer = create_offerer(user, offerer_creation_info, new_onboarding_info, insee_data=siret_info)
@@ -2263,7 +2254,6 @@ def create_from_onboarding_data(
             name=name,
             publicName=onboarding_data.publicName,
             venueLabelId=None,
-            venueTypeCode=onboarding_data.venueTypeCode,
             withdrawalDetails=None,
             audioDisabilityCompliant=None,
             mentalDisabilityCompliant=None,

@@ -5134,7 +5134,7 @@ class CreateVenueTest(PostEndpointHelper):
         )
         assert new_venue.name == form_data["public_name"]
         assert new_venue.publicName == form_data["public_name"]
-        assert new_venue.venueTypeCode == venue.venueTypeCode
+        assert new_venue.activity == venue.activity
         assert new_venue.isOpenToPublic is False
         assert new_venue.isPermanent is True
         assert new_venue.offererAddress.address == venue.offererAddress.address

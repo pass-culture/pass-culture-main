@@ -98,25 +98,19 @@ class Returns200Test:
         assert "culturalDomains" in response.json
 
     @pytest.mark.parametrize(
-        "venueTypeCode, activity, expected_venueTypeCode, expected_activity",
+        "activity, expected_venueTypeCode, expected_activity",
         [
-            ("MOVIE", None, offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
-            (None, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
-            ("BOOKSTORE", "CINEMA", offerers_models.VenueTypeCode.BOOKSTORE, offerers_models.Activity.CINEMA),
+            ("CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
         ],
     )
     @patch("pcapi.connectors.api_adresse.TestingBackend.get_single_address_result")
     def test_nominal_with_varing_venueTypeCode_and_activity(
-        self, mocked_get_address, client, venueTypeCode, activity, expected_venueTypeCode, expected_activity
+        self, mocked_get_address, client, activity, expected_venueTypeCode, expected_activity
     ):
         user = users_factories.UserFactory(email="pro@example.com")
 
         client = client.with_session_auth(user.email)
         request_body = copy.deepcopy(REQUEST_BODY)
-        if venueTypeCode:
-            request_body["venueTypeCode"] = venueTypeCode
-        else:
-            request_body["venueTypeCode"] = None
         if activity:
             request_body["activity"] = activity
         else:
@@ -341,19 +335,18 @@ class Returns400Test:
         response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 400
-        assert response.json == {"__root__": ["Either activity or venueTypeCode are required"]}
+        assert response.json == {"activity": ["Ce champ est obligatoire"]}
 
     def test_venuetypecode_none_no_activity(self, client):
         user = users_factories.UserFactory()
 
         client = client.with_session_auth(user.email)
         request_body = copy.deepcopy(REQUEST_BODY)
-        request_body["venueTypeCode"] = None
         request_body["activity"] = None
         response = client.post("/offerers/new", json=request_body)
 
         assert response.status_code == 400
-        assert response.json == {"__root__": ["Either activity or venueTypeCode are required"]}
+        assert response.json == {"activity": ["Ce champ ne peut pas être nul"]}
 
 
 class Returns500Test:

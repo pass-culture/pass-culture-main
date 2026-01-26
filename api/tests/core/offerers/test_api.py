@@ -180,7 +180,7 @@ class CreateVenueTest:
             },
             "managingOffererId": offerer.id,
             "name": "La Venue",
-            "venueTypeCode": "VISUAL_ARTS",
+            "activity": "CINEMA",
             "bookingEmail": "venue@example.com",
             "siret": offerer.siren + "00000",
             "isOpenToPublic": False,
@@ -279,26 +279,26 @@ class CreateVenueTest:
         assert venue.current_pricing_point_id is None
 
     @pytest.mark.parametrize(
-        "cultural_domains,venue_type_code,expected_venue_type_code",
+        "cultural_domains,activity,expected_activity_code",
         (
-            (("Architecture",), offerers_models.VenueTypeCode.VISUAL_ARTS, offerers_models.VenueTypeCode.VISUAL_ARTS),
-            (("Architecture",), None, offerers_models.VenueTypeCode.OTHER),
-            (("Média et information", "Bande dessinée"), None, offerers_models.VenueTypeCode.OTHER),
+            (("Architecture",), offerers_models.Activity.ART_GALLERY, offerers_models.Activity.ART_GALLERY),
+            (("Architecture",), None, None),
+            (("Média et information", "Bande dessinée"), None, None),
         ),
     )
-    def test_venue_with_cultural_domains(self, cultural_domains, venue_type_code, expected_venue_type_code):
+    def test_venue_with_cultural_domains(self, cultural_domains, activity, expected_activity_code):
         user_offerer = offerers_factories.UserOffererFactory()
         for domain_name in ["Architecture", "Média et information", "Bande dessinée", "Musique"]:
             educational_factories.EducationalDomainFactory(name=domain_name)
         data = self.base_data(user_offerer.offerer) | {"culturalDomains": cultural_domains}
-        if venue_type_code:
-            data["venueTypeCode"] = venue_type_code.name
+        if activity:
+            data["activity"] = activity.name
         else:
-            del data["venueTypeCode"]
+            del data["activity"]
         offerers_api.create_venue(venues_serialize.PostVenueBodyModel(**data), user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
-        assert venue.venueTypeCode == expected_venue_type_code
+        assert venue.activity == expected_activity_code
         assert {domain.name for domain in venue.collectiveDomains} == set(cultural_domains)
 
 
@@ -2664,7 +2664,7 @@ class CreateFromOnboardingDataTest:
         assert venue.name == "MINISTERE DE LA CULTURE"
         assert venue.offererAddress.address.postalCode == "75001"
         assert venue.publicName == "Nom public de mon lieu"
-        assert venue.venueTypeCode == offerers_models.VenueTypeCode.MOVIE
+        assert venue.activity == offerers_models.Activity.CINEMA
         assert venue.audioDisabilityCompliant is None
         assert venue.mentalDisabilityCompliant is None
         assert venue.motorDisabilityCompliant is None
@@ -2672,7 +2672,7 @@ class CreateFromOnboardingDataTest:
 
     def assert_common_action_history_extra_data(self, action: history_models.ActionHistory) -> None:
         assert action.extraData["target"] == offerers_models.Target.INDIVIDUAL.name
-        assert action.extraData["venue_type_code"] == offerers_models.VenueTypeCode.MOVIE.name
+        assert action.extraData["activity"] == offerers_models.Activity.CINEMA.name
         assert (
             action.extraData["web_presence"]
             == "https://www.example.com, https://instagram.com/example, https://mastodon.social/@example"
@@ -2709,7 +2709,7 @@ class CreateFromOnboardingDataTest:
             publicName="Nom public de mon lieu",
             createVenueWithoutSiret=create_venue_without_siret,
             target=offerers_models.Target.INDIVIDUAL,
-            venueTypeCode=offerers_models.VenueTypeCode.MOVIE.name,
+            activity=offerers_models.Activity.CINEMA.name,
             webPresence="https://www.example.com, https://instagram.com/example, https://mastodon.social/@example",
             token="token",
         )
