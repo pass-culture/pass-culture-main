@@ -106,6 +106,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
     "fraude_conformite": [
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.READ_PRO_ENTITY,
         perm_models.Permissions.READ_PRO_ENTREPRISE_INFO,
@@ -128,6 +129,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
     ],
     "daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,

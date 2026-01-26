@@ -7,7 +7,7 @@
       <div class="d-flex">
         {{ build_booking_toggle_extra_row_button(booking) }}
         <div class="mx-2 dropdown">
-          {% if has_permission("PRO_FRAUD_ACTIONS") %}
+          {% if has_permission("MANAGE_FRAUDULENT_BOOKING_INFO") %}
             <button type="button"
                     data-bs-toggle="dropdown"
                     aria-expanded="false"
@@ -15,20 +15,18 @@
               <i class="bi bi-three-dots-vertical"></i>
             </button>
             <ul class="dropdown-menu">
-              {% if has_permission("PRO_FRAUD_ACTIONS") %}
-                {% if booking.fraudulentBookingTag %}
-                  <li class="dropdown-item p-0">
-                    <a class="btn btn-sm d-block w-100 text-start px-3"
-                       data-bs-toggle="modal"
-                       data-bs-target="#pc-remove-fraudulent-booking-modal-{{ booking.id }}">Réservation non frauduleuse</a>
-                  </li>
-                {% else %}
-                  <li class="dropdown-item p-0">
-                    <a class="btn btn-sm d-block w-100 text-start px-3"
-                       data-bs-toggle="modal"
-                       data-bs-target="#pc-fraudulent-booking-modal-{{ booking.id }}">Réservation frauduleuse</a>
-                  </li>
-                {% endif %}
+              {% if booking.fraudulentBookingTag %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#pc-remove-fraudulent-booking-modal-{{ booking.id }}">Réservation non frauduleuse</a>
+                </li>
+              {% else %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-bs-target="#pc-fraudulent-booking-modal-{{ booking.id }}">Réservation frauduleuse</a>
+                </li>
               {% endif %}
             </ul>
           {% endif %}

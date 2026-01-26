@@ -2064,7 +2064,7 @@ def _render_individual_bookings(bookings_ids: list[int] | None = None) -> utils.
 
 
 @public_accounts_blueprint.route("/bookings/<int:booking_id>/mark-as-fraudulent", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO)
 def mark_booking_as_fraudulent(booking_id: int) -> utils.BackofficeResponse:
     form = account_forms.TagFraudulentBookingsForm()
     if not form.validate():
@@ -2077,7 +2077,7 @@ def mark_booking_as_fraudulent(booking_id: int) -> utils.BackofficeResponse:
 
 
 @public_accounts_blueprint.route("/bookings/<int:booking_id>/mark-as-not-fraudulent", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+@utils.permission_required(perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO)
 def mark_booking_as_not_fraudulent(booking_id: int) -> utils.BackofficeResponse:
     form = empty_forms.EmptyForm()
 

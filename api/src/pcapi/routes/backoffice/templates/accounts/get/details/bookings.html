@@ -27,7 +27,7 @@
     {% endset %}
     {% set after_table %}
       {% for booking in bookings %}
-        {% if has_permission("PRO_FRAUD_ACTIONS") %}
+        {% if has_permission("MANAGE_FRAUDULENT_BOOKING_INFO") %}
           {{ booking_modal(booking, "Marquer la réservation " + booking.token + " comme frauduleuse", "pc-fraudulent-booking-modal-" + booking.id |string, booking_fraudulent_form, url_for('backoffice_web.public_accounts.mark_booking_as_fraudulent', booking_id=booking.id) , table_id) }}
           {{ booking_modal(booking, "Supprimer le tag frauduleux sur la réservation " + booking.token, "pc-remove-fraudulent-booking-modal-" + booking.id |string, booking_remove_fraudulent_form, url_for('backoffice_web.public_accounts.mark_booking_as_not_fraudulent', booking_id=booking.id) , table_id) }}
         {% endif %}

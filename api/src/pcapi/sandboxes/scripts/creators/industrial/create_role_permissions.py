@@ -90,6 +90,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.CREATE_INCIDENTS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
     ],
     "fraude_jeunes": [
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
@@ -99,6 +100,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.MANAGE_BOOKINGS,
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
     ],
     "daf": [
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
@@ -171,6 +173,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,
@@ -222,6 +225,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.FEATURE_FLIPPING,
         perm_models.Permissions.PRO_FRAUD_ACTIONS,
         perm_models.Permissions.READ_FRAUDULENT_BOOKING_INFO,
+        perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO,
         perm_models.Permissions.BENEFICIARY_FRAUD_ACTIONS,
         perm_models.Permissions.READ_PUBLIC_ACCOUNT,
         perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT,

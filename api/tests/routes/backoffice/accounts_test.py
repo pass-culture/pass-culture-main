@@ -5201,7 +5201,7 @@ class TagPublicAccountTest(PostEndpointHelper):
 class MarkBookingAsFraudulentTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.mark_booking_as_fraudulent"
     endpoint_kwargs = {"booking_id": 1}
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO
 
     def test_mark_as_fraudulent(self, authenticated_client):
         booking = bookings_factories.BookingFactory()
@@ -5217,7 +5217,7 @@ class MarkBookingAsFraudulentTest(PostEndpointHelper):
 class MarkBookingAsNotFraudulentTest(PostEndpointHelper):
     endpoint = "backoffice_web.public_accounts.mark_booking_as_not_fraudulent"
     endpoint_kwargs = {"booking_id": 1}
-    needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
+    needed_permission = perm_models.Permissions.MANAGE_FRAUDULENT_BOOKING_INFO
 
     def test_mark_as_not_fraudulent(self, authenticated_client):
         fraudulent_tag = bookings_factories.FraudulentBookingTagFactory()
