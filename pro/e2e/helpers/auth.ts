@@ -5,18 +5,21 @@ const DEFAULT_PASSWORD = 'user@AZERTY123'
 export async function login(
   page: Page,
   email: string,
-  password: string = DEFAULT_PASSWORD
+  password: string = DEFAULT_PASSWORD,
+  setCookieConsent: boolean = true
 ): Promise<void> {
   await page.goto('/connexion')
 
-  await page.context().addCookies([
-    {
-      name: 'pc-orejime',
-      value: '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}',
-      domain: 'localhost',
-      path: '/',
-    },
-  ])
+  if (setCookieConsent) {
+    await page.context().addCookies([
+      {
+        name: 'pc-orejime',
+        value: '{"firebase":false,"hotjar":false,"beamer":false,"sentry":true}',
+        domain: 'localhost',
+        path: '/',
+      },
+    ])
+  }
 
   await page.getByRole('textbox', { name: /adresse email/i }).fill(email)
   await page.getByRole('textbox', { name: /mot de passe/i }).fill(password)
@@ -44,9 +47,10 @@ export async function loginAndNavigate(
   page: Page,
   email: string,
   path: string,
-  password: string = DEFAULT_PASSWORD
+  password: string = DEFAULT_PASSWORD,
+  setCookieConsent: boolean = true
 ): Promise<void> {
-  await login(page, email, password)
+  await login(page, email, password, setCookieConsent)
 
   await page.goto(path)
   await page.waitForLoadState('networkidle')
