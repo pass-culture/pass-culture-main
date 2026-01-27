@@ -1,4 +1,5 @@
-import pydantic as pydantic_v2
+from pydantic import Field
+from pydantic import field_validator
 
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.utils import to_camel
@@ -11,7 +12,7 @@ class SimilarOffersRequestQuery(HttpBodyModel):
     subcategories: list[str] | None = None
     search_group_names: list[str] | None = None
 
-    @pydantic_v2.field_validator("categories", "subcategories", "search_group_names", mode="before")
+    @field_validator("categories", "subcategories", "search_group_names", mode="before")
     def validate_categories(cls, v: list[str] | str | None) -> list[str] | None:
         if isinstance(v, list):
             return v
@@ -33,7 +34,7 @@ class RecommendationApiParams(HttpBodyModel):
 
 
 class SimilarOffersResponse(HttpBodyModel):
-    results: list[str] = pydantic_v2.Field(default_factory=list)
+    results: list[str] = Field(default_factory=list)
     params: RecommendationApiParams
 
     class Config:
