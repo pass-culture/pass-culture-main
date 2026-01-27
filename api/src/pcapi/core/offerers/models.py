@@ -920,6 +920,22 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             .exists()
         )
 
+    @property
+    def can_display_highlights(self) -> bool:
+        import pcapi.core.offers.models as offers_models
+
+        return db.session.query(
+            sa.select(1)
+            .select_from(offers_models.Offer)
+            .where(
+                sa.and_(
+                    offers_models.Offer.venueId == self.id,
+                    offers_models.Offer.isEvent,
+                )
+            )
+            .exists()
+        ).scalar()
+
 
 class GooglePlacesInfo(PcObject, Model):
     __tablename__ = "google_places_info"
