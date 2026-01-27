@@ -12,10 +12,7 @@ import {
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
-import {
-  selectAdminCurrentOfferer,
-  selectCurrentOffererId,
-} from '@/commons/store/offerer/selectors'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FORMAT_ISO_DATE_ONLY, getToday } from '@/commons/utils/date'
 import { isEqual } from '@/commons/utils/isEqual'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -31,7 +28,9 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const adminSelectedOfferer = useAppSelector(selectAdminCurrentOfferer)
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.offerer.adminCurrentOfferer
+  )
   const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
 
   const offererId = withSwitchVenueFeature

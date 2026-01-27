@@ -18,9 +18,6 @@ export const selectOffererNames = (state: RootState) =>
 export const selectCurrentOfferer = (state: RootState) =>
   state.offerer.currentOfferer
 
-export const selectAdminCurrentOfferer = (state: RootState) =>
-  state.offerer.adminCurrentOfferer
-
 /** @deprecated Use `ensureCurrentOfferer` or `selectCurrentOfferer`. */
 export const selectCurrentOffererId = (state: RootState) =>
   state.offerer.currentOfferer?.id ?? null

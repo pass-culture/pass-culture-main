@@ -2,35 +2,31 @@ import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { setAdminCurrentOfferer } from '@/commons/store/offerer/dispatchers/setAdminCurrentOfferer'
-import {
-  selectAdminCurrentOfferer,
-  selectOffererNames,
-} from '@/commons/store/offerer/selectors'
-import { sortByLabel } from '@/commons/utils/strings'
+import { selectOffererNames } from '@/commons/store/offerer/selectors'
 import { Select } from '@/ui-kit/form/Select/Select'
 
-import styles from './LegalEntitySelect.module.scss'
+import styles from './OffererSelect.module.scss'
 
-export const LegalEntitySelect = (): JSX.Element | null => {
+export const OffererSelect = (): JSX.Element | null => {
   const dispatch = useAppDispatch()
   const { isLoading } = useOffererNamesQuery()
   const offererNames = useAppSelector(selectOffererNames)
 
-  const adminCurrentOfferer = useAppSelector(selectAdminCurrentOfferer)
+  const adminCurrentOfferer = useAppSelector(
+    (store) => store.offerer.adminCurrentOfferer
+  )
 
   const value = adminCurrentOfferer?.id?.toString()
 
   const offererOptions =
-    sortByLabel(
-      offererNames?.map((item) => ({
-        value: item['id'].toString(),
-        label: item['name'],
-      })) ?? []
-    ) ?? []
+    offererNames?.map((item) => ({
+      value: item['id'].toString(),
+      label: item['name'],
+    })) ?? []
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const offererId = Number(event.target.value)
-    dispatch(setAdminCurrentOfferer(offererId))
+    dispatch(setAdminCurrentOfferer({ offererId }))
   }
 
   return (

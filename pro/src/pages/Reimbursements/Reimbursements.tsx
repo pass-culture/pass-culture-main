@@ -8,7 +8,7 @@ import {
   selectCurrentOfferer,
   selectOffererNames,
 } from '@/commons/store/offerer/selectors'
-import { LegalEntitySelect } from '@/components/LegalEntitySelect/LegalEntitySelect'
+import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
 
 import styles from './Reimbursement.module.scss'
@@ -28,7 +28,7 @@ export const Reimbursements = (): JSX.Element => {
       isAdminArea={withSwitchVenueFeature}
     >
       {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
-        <LegalEntitySelect />
+        <OffererSelect />
       )}
       <div className={styles['reimbursements-container']}>
         <div>

@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 
 import { api } from '@/apiClient/api'
+import type { GetOffererResponseModel } from '@/apiClient/v1'
 import {
   LOCAL_STORAGE_KEY,
   localStorageManager,
@@ -11,24 +12,26 @@ import { updateAdminCurrentOfferer } from '../reducer'
 
 export const setAdminCurrentOfferer = createAsyncThunk<
   void,
-  number | null,
+  { offererId: number; offerer?: GetOffererResponseModel | null },
   AppThunkApiConfig
->('offerer/setAdminCurrentOfferer', async (offererId, { dispatch }) => {
-  if (offererId === null) {
-    dispatch(updateAdminCurrentOfferer(null))
-    localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
-    return
+>(
+  'offerer/setAdminCurrentOfferer',
+  async ({ offererId, offerer }, { dispatch }) => {
+    try {
+      let offererToSet = offerer ?? null
+      if (!offererToSet) {
+        offererToSet = await api.getOfferer(offererId)
+      }
+      dispatch(updateAdminCurrentOfferer(offererToSet))
+      localStorageManager.setItem(
+        LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID,
+        String(offererId)
+      )
+    } catch {
+      dispatch(updateAdminCurrentOfferer(null))
+      localStorageManager.removeItem(
+        LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID
+      )
+    }
   }
-
-  try {
-    const offerer = await api.getOfferer(offererId)
-    dispatch(updateAdminCurrentOfferer(offerer))
-    localStorageManager.setItem(
-      LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID,
-      String(offererId)
-    )
-  } catch {
-    dispatch(updateAdminCurrentOfferer(null))
-    localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
-  }
-})
+)

@@ -13,7 +13,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { LegalEntitySelect } from './LegalEntitySelect'
+import { OffererSelect } from './OffererSelect'
 
 vi.mock('@/commons/hooks/swr/useOffererNamesQuery')
 vi.mock('@/apiClient/api', () => ({
@@ -22,11 +22,11 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderLegalEntitySelect = (options: RenderWithProvidersOptions = {}) => {
-  return renderWithProviders(<LegalEntitySelect />, options)
+const renderOffererSelect = (options: RenderWithProvidersOptions = {}) => {
+  return renderWithProviders(<OffererSelect />, options)
 }
 
-describe('LegalEntitySelect', () => {
+describe('OffererSelect', () => {
   beforeEach(() => {
     vi.resetAllMocks()
     vi.spyOn(
@@ -52,7 +52,7 @@ describe('LegalEntitySelect', () => {
       name: 'Offerer A',
     }
 
-    renderLegalEntitySelect({
+    renderOffererSelect({
       storeOverrides: {
         offerer: {
           offererNames: offerers,
@@ -76,7 +76,7 @@ describe('LegalEntitySelect', () => {
       name: 'Zebra Offerer',
     }
 
-    renderLegalEntitySelect({
+    renderOffererSelect({
       storeOverrides: {
         offerer: {
           offererNames: offerers,
@@ -90,9 +90,9 @@ describe('LegalEntitySelect', () => {
       select.querySelectorAll('option')
     ) as HTMLOptionElement[]
 
-    expect(options[0].textContent).toBe('Alpha Offerer')
-    expect(options[1].textContent).toBe('Beta Offerer')
-    expect(options[2].textContent).toBe('Zebra Offerer')
+    expect(options[0].textContent).toBe('Zebra Offerer')
+    expect(options[1].textContent).toBe('Alpha Offerer')
+    expect(options[2].textContent).toBe('Beta Offerer')
   })
 
   it('should display the currently selected offerer', () => {
@@ -106,7 +106,7 @@ describe('LegalEntitySelect', () => {
       name: 'Offerer B',
     }
 
-    renderLegalEntitySelect({
+    renderOffererSelect({
       storeOverrides: {
         offerer: {
           offererNames: offerers,
@@ -139,7 +139,7 @@ describe('LegalEntitySelect', () => {
 
     vi.mocked(api.getOfferer).mockResolvedValue(fullOfferer2)
 
-    const { store } = renderLegalEntitySelect({
+    const { store } = renderOffererSelect({
       storeOverrides: {
         offerer: {
           offererNames: offerers,
@@ -169,7 +169,7 @@ describe('LegalEntitySelect', () => {
       name: 'Offerer A',
     }
 
-    renderLegalEntitySelect({
+    renderOffererSelect({
       storeOverrides: {
         offerer: {
           offererNames: offerers,

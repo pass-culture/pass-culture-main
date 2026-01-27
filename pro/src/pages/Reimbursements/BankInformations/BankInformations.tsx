@@ -14,7 +14,6 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
-  selectAdminCurrentOfferer,
   selectCurrentOffererId,
 } from '@/commons/store/offerer/selectors'
 import { ReimbursementBankAccount } from '@/components/ReimbursementBankAccount/ReimbursementBankAccount'
@@ -35,7 +34,9 @@ export const BankInformations = (): JSX.Element => {
   const { mutate } = useSWRConfig()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const adminSelectedOfferer = useAppSelector(selectAdminCurrentOfferer)
+  const adminSelectedOfferer = useAppSelector(
+      (store) => store.offerer.adminCurrentOfferer
+    )
 
   const offererId = withSwitchVenueFeature
     ? adminSelectedOfferer?.id

@@ -25,5 +25,5 @@ export const getInitialAdminOffererId = (
     }
   }
 
-  return offererNames[0].id
+  return offererNames.at(0)?.id ?? null
 }

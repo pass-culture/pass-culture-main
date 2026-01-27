@@ -64,7 +64,9 @@ export const initializeUser = createAsyncThunk<
       )
 
       if (initialAdminOffererId) {
-        await dispatch(setAdminCurrentOfferer(initialAdminOffererId))
+        await dispatch(
+          setAdminCurrentOfferer({ offererId: initialAdminOffererId })
+        )
       }
 
       return

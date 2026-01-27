@@ -117,7 +117,7 @@ export const routes: CustomRouteObject[] = [
   },
   {
     element: <Navigate to="/collaborateurs" />,
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
     path: '/structures/:offererId',
     title: 'Détails de la structure',
   },
