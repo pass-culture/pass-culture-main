@@ -1,4 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import cn from 'classnames'
 import { useRef } from 'react'
 
@@ -7,10 +8,7 @@ import { DialogBuilderCloseButton } from './DialogBuilderCloseButton'
 
 type DialogVariant = 'default' | 'drawer'
 
-/**
- * Props for the DialogBuilder component.
- */
-export type DialogBuilderProps = {
+export interface DialogBuilderProps {
   /**
    * The trigger element that opens the dialog.
    */
@@ -19,6 +17,12 @@ export type DialogBuilderProps = {
    * The heading title of the dialog.
    */
   title?: string
+  /**
+   * Determines if the title is visually hidden.
+   *
+   * When the title is visually hidden, it is still accessible to screen readers.
+   */
+  isTitleHidden?: boolean
   /**
    * An image for the title.
    */
@@ -64,9 +68,6 @@ export type DialogBuilderProps = {
  * **Important: Use the `trigger` prop to specify the element that should open the dialog.**
  * ---
  *
- * @param {DialogBuilderProps} props - The props for the DialogBuilder component.
- * @returns {JSX.Element} The rendered DialogBuilder component.
- *
  * @example
  * <DialogBuilder trigger={<button>Open Dialog</button>}>
  *   <p>This is the content inside the dialog.</p>
@@ -76,9 +77,10 @@ export type DialogBuilderProps = {
  * - Make sure that after closing the dialog, the focus is re-positionned to a coherent position.
  * Most of the time, the focus should be re-placed on the trigger element.
  */
-export function DialogBuilder({
+const DialogBuilderBase = ({
   trigger,
   title,
+  isTitleHidden = false,
   imageTitle = null,
   children,
   defaultOpen = false,
@@ -88,8 +90,18 @@ export function DialogBuilder({
   className,
   variant = 'default',
   refToFocusOnClose,
-}: DialogBuilderProps) {
+}: Readonly<DialogBuilderProps>) => {
   const contentRef = useRef<HTMLDivElement>(null)
+
+  const titleElement = title ? (
+    <Dialog.Title asChild>
+      <div className={styles['dialog-builder-title-container']}>
+        <h1 className={styles['dialog-builder-title']}>{title}</h1>
+        {imageTitle}
+      </div>
+    </Dialog.Title>
+  ) : null
+
   return (
     <Dialog.Root
       defaultOpen={defaultOpen}
@@ -142,14 +154,12 @@ export function DialogBuilder({
               closeButtonClassName={closeButtonClassName}
             />
             <section className={styles['dialog-builder-section']}>
-              {title && (
-                <Dialog.Title asChild>
-                  <div className={styles['dialog-builder-title-container']}>
-                    <h1 className={styles['dialog-builder-title']}>{title}</h1>
-                    {imageTitle}
-                  </div>
-                </Dialog.Title>
-              )}
+              {titleElement &&
+                (isTitleHidden ? (
+                  <VisuallyHidden asChild>{titleElement}</VisuallyHidden>
+                ) : (
+                  titleElement
+                ))}
               {children}
             </section>
           </Dialog.Content>
@@ -159,8 +169,21 @@ export function DialogBuilder({
   )
 }
 
-function DialogBuilderFooter({ children }: { children: React.ReactNode }) {
-  return <div className={styles['dialog-builder-footer']}>{children}</div>
+interface DialogBuilderFooterProps {
+  children: React.ReactNode
+  className?: string
+}
+const Footer = ({
+  children,
+  className,
+}: Readonly<DialogBuilderFooterProps>) => {
+  return (
+    <div className={cn(styles['dialog-builder-footer'], className)}>
+      {children}
+    </div>
+  )
 }
 
-DialogBuilder.Footer = DialogBuilderFooter
+export const DialogBuilder = Object.assign(DialogBuilderBase, {
+  Footer,
+})
