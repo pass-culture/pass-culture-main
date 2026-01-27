@@ -50,10 +50,11 @@
 }
 
 .days-error {
-  @include formsM.field-layout-footer;
+  @include fonts.body-accent-s;
 
-  justify-content: initial;
-  margin-bottom: var(--size-spacing-s);
+  display: flex;
+  color: var(--color-text-error);
+  margin-bottom: var(--size-spacing-m);
 }
 
 .beginning-time-list {

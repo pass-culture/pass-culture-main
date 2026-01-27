@@ -1,28 +1,17 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
-
-$input-height: rem.torem(40px);
+@use "styles/mixins/_forms.scss" as form;
 
 .period-filter {
   .period-filter-inputs {
     display: flex;
-    height: $input-height;
-    margin-top: var(--size-spacing-s);
-  }
-
-  .period-filter-inputs .field-date {
-    height: $input-height;
-  }
-
-  .field-date-begin,
-  .field-date-end {
-    height: $input-height;
+    height: var(--input-height-m);
+    margin-top: var(--size-spacing-xs);
   }
 
   .field-date-begin {
     border-bottom-right-radius: 0;
-    border-right: none;
     border-top-right-radius: 0;
     padding-right: var(--size-spacing-s);
   }
@@ -35,13 +24,7 @@ $input-height: rem.torem(40px);
   }
 
   .period-filter-input {
-    width: rem.torem(150px);
-  }
-
-  .vertical-bar {
-    background-color: var(--color-border-subtle);
-    height: rem.torem(40px);
-    width: rem.torem(1px);
+    width: rem.torem(145px);
   }
 }
 

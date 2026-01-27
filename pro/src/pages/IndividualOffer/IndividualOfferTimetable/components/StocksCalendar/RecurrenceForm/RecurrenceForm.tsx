@@ -19,6 +19,7 @@ import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullClearIcon from '@/icons/full-clear.svg'
+import fullErrorIcon from '@/icons/full-error.svg'
 import fullMoreIcon from '@/icons/full-more.svg'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { Button } from '@/ui-kit/Button/Button'
@@ -27,7 +28,6 @@ import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { DayCheckbox } from '@/ui-kit/form/DayCheckbox/DayCheckbox'
 import { Select } from '@/ui-kit/form/Select/Select'
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
@@ -236,7 +236,6 @@ export const RecurrenceForm = ({
       >
         <div className={styles['form-content']}>
           <MandatoryInfo />
-
           <div className={styles['recurrence-section']}>
             <RadioButtonGroup
               label={
@@ -258,7 +257,6 @@ export const RecurrenceForm = ({
               onChange={onRecurrenceTypeChange}
             />
           </div>
-
           <fieldset>
             <div className={styles['section']}>
               {recurrenceType === RecurrenceType.WEEKLY && (
@@ -287,10 +285,11 @@ export const RecurrenceForm = ({
                     })}
                   </div>
                   {methods.formState.errors.days && (
-                    <div className={styles['days-error']}>
-                      <FieldError name="days">
+                    <div role="alert" className={styles['days-error']}>
+                      <SvgIcon src={fullErrorIcon} alt="" width="16" />
+                      <span data-testid={`error-days`}>
                         {methods.formState.errors.days.message}
-                      </FieldError>
+                      </span>
                     </div>
                   )}
                 </>
@@ -359,11 +358,8 @@ export const RecurrenceForm = ({
               )}
             </div>
           </fieldset>
-
           <BeginningTimesForm />
-
           <PriceCategoriesForm priceCategoryOptions={priceCategoryOptions} />
-
           <fieldset>
             <div className={styles['section']}>
               <h2 className={styles['legend']}>Date limite de réservation</h2>

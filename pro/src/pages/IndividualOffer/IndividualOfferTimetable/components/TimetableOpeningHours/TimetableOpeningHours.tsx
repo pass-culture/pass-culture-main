@@ -7,9 +7,10 @@ import { MandatoryInfo } from '@/components/FormLayout/FormLayoutMandatoryInfo'
 import { OpeningHours } from '@/components/OpeningHours/OpeningHours'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
+import fullErrorIcon from '@/icons/full-error.svg'
 import { getPriceCategoryOptions } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
-import { FieldError } from '@/ui-kit/form/shared/FieldError/FieldError'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import {
   HasDateEnum,
@@ -117,13 +118,16 @@ export function TimetableOpeningHours({
         <OpeningHours
           hasErrorBecauseOfEmptyOpeningHours={Boolean(openingHoursError)}
         />
-        <div id={openingHoursErrorId} role="alert">
-          {openingHoursError && (
-            <FieldError className={styles['error']}>
-              {openingHoursError}
-            </FieldError>
-          )}
-        </div>
+        {openingHoursError && (
+          <div
+            role="alert"
+            id={openingHoursErrorId}
+            className={styles['error']}
+          >
+            <SvgIcon src={fullErrorIcon} alt="" width="16" />
+            <span>{openingHoursError}</span>
+          </div>
+        )}
       </fieldset>
       <fieldset className={styles['price-categories']}>
         <legend>

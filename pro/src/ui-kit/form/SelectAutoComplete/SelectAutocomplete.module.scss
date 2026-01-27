@@ -1,18 +1,19 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_forms.scss" as forms;
+@use "styles/mixins/_fonts.scss" as fonts;
 
-.multi-select-autocomplete-container {
+.select-autocomplete-container {
   box-sizing: border-box;
   position: relative;
   width: 100%;
 }
 
-.multi-select-autocomplete-input-container {
+.select-autocomplete-input-container {
   cursor: pointer;
 }
 
-.multi-select-autocomplete-placeholder-input {
+.select-autocomplete-placeholder-input {
   @include forms.input-theme;
   @include forms.input-theme-nested;
 
@@ -52,6 +53,43 @@
 .field-overlay {
   position: relative;
   height: 0;
+}
+
+.field-layout-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--size-spacing-s);
+}
+
+.field-header-right {
+  @include fonts.body-accent-xs;
+
+  color: var(--color-text-subtle);
+}
+
+.field-error {
+  @include fonts.body-accent-xs;
+
+  display: flex;
+  align-items: center;
+  margin-top: var(--size-spacing-xs);
+  color: var(--color-text-error);
+
+  &-icon {
+    width: var(--typography-body-font-size);
+    height: var(--typography-body-font-size);
+    margin-right: var(--size-spacing-xs);
+  }
+}
+
+.field-layout-input-description {
+  @include fonts.body-accent-xs;
+
+  display: block;
+  color: var(--color-text-subtle);
+  margin-top: var(--size-spacing-xs);
+  margin-bottom: var(--size-spacing-s);
 }
 
 .visually-hidden {

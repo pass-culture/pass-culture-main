@@ -1,4 +1,5 @@
 import classNames from 'classnames'
+import fullErrorIcon from 'icons/full-error.svg'
 import {
   type ForwardedRef,
   forwardRef,
@@ -12,7 +13,7 @@ import {
 import type { SelectOption } from '@/commons/custom_types/form'
 import { noop } from '@/commons/utils/noop'
 import type { RequiredIndicator } from '@/design-system/common/types'
-import { FieldLayout } from '@/ui-kit/form/shared/FieldLayout/FieldLayout'
+import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { OptionsList } from './OptionsList/OptionsList'
 import styles from './SelectAutocomplete.module.scss'
@@ -226,19 +227,30 @@ export const SelectAutocomplete = forwardRef(
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
 
     return (
-      <FieldLayout
-        className={className}
-        error={error}
-        required={required}
-        requiredIndicator={requiredIndicator}
-        label={label}
-        name={name}
-        showError={!!error}
-        description={description}
-      >
+      <div>
+        <label
+          className={classNames(styles['field-layout-label'])}
+          htmlFor={name}
+        >
+          {label}
+          {required && requiredIndicator === 'symbol' && <>&nbsp;*</>}
+          {required && requiredIndicator === 'explicit' && (
+            <span className={styles['field-header-right']}>Obligatoire</span>
+          )}
+        </label>
+        {description && (
+          <span
+            id={`description-${name}`}
+            data-testid={`description-${name}`}
+            className={styles['field-layout-input-description']}
+          >
+            {description}
+          </span>
+        )}
+
         <div
           className={classNames(
-            styles['multi-select-autocomplete-container'],
+            styles['select-autocomplete-container'],
             className
           )}
           ref={containerRef}
@@ -246,7 +258,7 @@ export const SelectAutocomplete = forwardRef(
           {/* Search field */}
           <div
             className={classNames(
-              styles['multi-select-autocomplete-input-container']
+              styles['select-autocomplete-input-container']
             )}
           >
             <input
@@ -255,7 +267,7 @@ export const SelectAutocomplete = forwardRef(
               })}
               onClick={openDropdown}
               className={classNames(
-                styles['multi-select-autocomplete-placeholder-input'],
+                styles['select-autocomplete-placeholder-input'],
                 {
                   [styles['has-error']]: Boolean(error),
                 }
@@ -316,7 +328,28 @@ export const SelectAutocomplete = forwardRef(
             )}
           </div>
         </div>
-      </FieldLayout>
+
+        {error && (
+          <div
+            role="alert"
+            id={`error-details-${name}`}
+            className={styles['field-error']}
+          >
+            <SvgIcon
+              src={fullErrorIcon}
+              className={styles['field-error-icon']}
+              alt=""
+              width="16"
+            />
+            <span
+              className={styles['field-error-text']}
+              data-testid={`error-${name}`}
+            >
+              {error}
+            </span>
+          </div>
+        )}
+      </div>
     )
   }
 )

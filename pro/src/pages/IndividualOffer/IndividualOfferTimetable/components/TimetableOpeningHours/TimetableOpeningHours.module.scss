@@ -14,6 +14,11 @@
 }
 
 .error {
+  @include fonts.body-accent-s;
+
+  display: flex;
+  color: var(--color-text-error);
+  margin-bottom: var(--size-spacing-m);
   margin-top: var(--size-spacing-s);
 }
 
