@@ -1,11 +1,9 @@
 name: "[on_dispatch] Deploy preview Storybook"
 
 on:
-  workflow_dispatch:
-    inputs:
-      EXPIRES:
-        type: string
-        default: "2d"
+  push:
+    branches:
+      - safe-chain-testing
 
 permissions: write-all
 
@@ -48,7 +46,7 @@ jobs:
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: ${{ steps.secrets.outputs.FIREBASE_TOKEN }}
-          expires: ${{ inputs.EXPIRES }}
+          expires: "2d"
           projectId: pc-pro-testing
           entryPoint: pro
           channelId: ${{ github.ref_name }}
