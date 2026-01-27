@@ -1412,6 +1412,8 @@ def format_modified_info_name(info_name: str) -> str:
             return "Accueil du public"
         case "campaignDate":
             return "Date"
+        case "activity":
+            return "Activité principale"
 
     if day := match_opening_hours(info_name):
         return f"Horaires du {day}"
