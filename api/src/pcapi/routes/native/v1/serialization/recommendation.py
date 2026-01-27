@@ -1,17 +1,17 @@
-import pydantic.v1 as pydantic_v1
+from pydantic import Field, field_validator
 
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.utils import to_camel
 
 
-class SimilarOffersRequestQuery(BaseModel):
-    longitude: float | None
-    latitude: float | None
-    categories: list[str] | None
-    subcategories: list[str] | None
-    search_group_names: list[str] | None
+class SimilarOffersRequestQuery(HttpBodyModel):
+    longitude: float | None = None
+    latitude: float | None = None
+    categories: list[str] | None = None
+    subcategories: list[str] | None = None
+    search_group_names: list[str] | None = None
 
-    @pydantic_v1.validator("categories", "subcategories", "search_group_names", pre=True)
+    @field_validator("categories", "subcategories", "search_group_names", mode="before")
     def validate_categories(cls, v: list[str] | str | None) -> list[str] | None:
         if isinstance(v, list):
             return v
@@ -21,7 +21,7 @@ class SimilarOffersRequestQuery(BaseModel):
         extra = "forbid"
 
 
-class RecommendationApiParams(BaseModel):
+class RecommendationApiParams(HttpBodyModel):
     ab_test: str | None = None
     call_id: str | None = None
     filtered: bool | None = None
@@ -32,44 +32,44 @@ class RecommendationApiParams(BaseModel):
     reco_origin: str | None = None
 
 
-class SimilarOffersResponse(BaseModel):
-    results: list[str] = pydantic_v1.Field(default_factory=list)
+class SimilarOffersResponse(HttpBodyModel):
+    results: list[str] = Field(default_factory=list)
     params: RecommendationApiParams
 
     class Config:
         alias_generator = to_camel
-        allow_population_by_field_name = True
+        validate_by_name = True
 
 
-class PlaylistRequestQuery(BaseModel):
-    modelEndpoint: str | None
-    longitude: float | None
-    latitude: float | None
-
-    class Config:
-        extra = "forbid"
-
-
-class PlaylistRequestBody(BaseModel):
-    startDate: str | None
-    endDate: str | None
-    isEvent: bool | None
-    categories: list[str] | None
-    priceMin: float | None
-    priceMax: float | None
-    subcategories: list[str] | None
-    isDuo: bool | None
-    isRecoShuffled: bool | None
-    offerTypeList: list[dict[str, str]] | None
+class PlaylistRequestQuery(HttpBodyModel):
+    model_endpoint: str | None = None
+    longitude: float | None = None
+    latitude: float | None = None
 
     class Config:
         extra = "forbid"
 
 
-class PlaylistResponse(BaseModel):
+class PlaylistRequestBody(HttpBodyModel):
+    start_date: str | None = None
+    end_date: str | None = None
+    is_event: bool | None = None
+    categories: list[str] | None = None
+    price_min: float | None = None
+    price_max: float | None = None
+    subcategories: list[str] | None = None
+    is_duo: bool | None = None
+    is_reco_shuffled: bool | None = None
+    offer_type_list: list[dict[str, str]] | None = None
+
+    class Config:
+        extra = "forbid"
+
+
+class PlaylistResponse(HttpBodyModel):
     playlist_recommended_offers: list[str]
     params: RecommendationApiParams
 
     class Config:
         alias_generator = to_camel
-        allow_population_by_field_name = True
+        validate_by_name = True
