@@ -152,13 +152,23 @@ def check_deposit_csv(path: str) -> None:
 
 
 @blueprint.cli.command("synchronize_adage_cultural_partners")
+@click.option("--apply", is_flag=True, help="Apply the changes")
 @cron_decorators.log_cron
-def synchronize_adage_cultural_partners() -> None:
+def synchronize_adage_cultural_partners(apply: bool = False) -> None:
     since_date = date_utils.get_naive_utc_now() - datetime.timedelta(days=2)
     adage_cultural_partners = adage_api.get_cultural_partners(since_date=since_date)
 
+    logger.info(
+        "Adage partners sync - start",
+        extra={
+            "since_date": since_date.isoformat(),
+            "number_of_partners": len(adage_cultural_partners.partners),
+            "apply": apply,
+        },
+    )
+
     activated_offerers, deactivated_offerers = adage_api.synchronize_adage_partners(
-        adage_partners=adage_cultural_partners.partners
+        adage_partners=adage_cultural_partners.partners, apply=apply
     )
 
     # for now we rollback the session and set the result in redis, so that we can compare with the current sync logic
