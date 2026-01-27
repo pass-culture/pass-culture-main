@@ -1124,8 +1124,7 @@
                         "type": "string"
                     },
                     "subcategoryId": {
-                        "title": "Subcategoryid",
-                        "type": "string"
+                        "$ref": "#/components/schemas/SubcategoryIdEnum"
                     },
                     "url": {
                         "nullable": true,
@@ -2461,7 +2460,6 @@
                         "items": {
                             "$ref": "#/components/schemas/ExpenseDomain"
                         },
-                        "title": "Expensedomains",
                         "type": "array"
                     },
                     "externalTicketOfficeUrl": {
@@ -4059,48 +4057,71 @@
                 "type": "object"
             },
             "OfferResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessibility": {
-                        "$ref": "#/components/schemas/OfferAccessibilityResponseV2"
+                        "$ref": "#/components/schemas/OfferAccessibilityResponse"
                     },
                     "address": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferAddressResponseV2"
+                                "$ref": "#/components/schemas/OfferAddressResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferAddressResponseV2"
+                        "default": null
                     },
                     "artists": {
                         "items": {
-                            "$ref": "#/components/schemas/OfferArtistV2"
+                            "$ref": "#/components/schemas/OfferArtist"
                         },
                         "title": "Artists",
                         "type": "array"
                     },
                     "bookingAllowedDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Bookingalloweddatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bookingalloweddatetime"
                     },
                     "chronicles": {
                         "items": {
-                            "$ref": "#/components/schemas/ChroniclePreviewV2"
+                            "$ref": "#/components/schemas/ChroniclePreview"
                         },
                         "title": "Chronicles",
                         "type": "array"
                     },
                     "chroniclesCount": {
-                        "nullable": true,
-                        "title": "Chroniclescount",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Chroniclescount"
                     },
                     "description": {
-                        "nullable": true,
-                        "title": "Description",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
                     },
                     "expenseDomains": {
                         "items": {
@@ -4116,31 +4137,46 @@
                         "type": "array"
                     },
                     "externalTicketOfficeUrl": {
-                        "nullable": true,
-                        "title": "Externalticketofficeurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalticketofficeurl"
                     },
                     "extraData": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferExtraDataResponseV2"
+                                "$ref": "#/components/schemas/OfferExtraDataResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferExtraDataResponseV2"
+                        "default": null
                     },
                     "id": {
                         "title": "Id",
                         "type": "integer"
                     },
-                    "image": {
+                    "images": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferImageResponseV2"
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/OfferImageResponse"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferImageResponseV2"
+                        "default": null,
+                        "title": "Images"
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -4183,11 +4219,23 @@
                         "type": "boolean"
                     },
                     "last30DaysBookings": {
-                        "nullable": true,
-                        "title": "Last30Daysbookings",
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Last30Daysbookings"
+                    },
+                    "likesCount": {
+                        "title": "Likescount",
                         "type": "integer"
                     },
                     "metadata": {
+                        "additionalProperties": true,
                         "title": "Metadata",
                         "type": "object"
                     },
@@ -4195,71 +4243,152 @@
                         "title": "Name",
                         "type": "string"
                     },
-                    "openingHours": {
+                    "publicationDate": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/WeekdayOpeningHoursTimespans"
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "WeekdayOpeningHoursTimespans"
-                    },
-                    "publicationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Publicationdate",
-                        "type": "string"
-                    },
-                    "reactionsCount": {
-                        "$ref": "#/components/schemas/ReactionCount"
+                        "title": "Publicationdate"
                     },
                     "stocks": {
                         "items": {
-                            "$ref": "#/components/schemas/OfferStockResponseV2"
+                            "$ref": "#/components/schemas/OfferStockResponse"
                         },
                         "title": "Stocks",
                         "type": "array"
                     },
                     "subcategoryId": {
-                        "$ref": "#/components/schemas/SubcategoryIdEnum"
+                        "description": "An enumeration.",
+                        "enum": [
+                            "ABO_BIBLIOTHEQUE",
+                            "ABO_CONCERT",
+                            "ABO_JEU_VIDEO",
+                            "ABO_LIVRE_NUMERIQUE",
+                            "ABO_LUDOTHEQUE",
+                            "ABO_MEDIATHEQUE",
+                            "ABO_PLATEFORME_MUSIQUE",
+                            "ABO_PLATEFORME_VIDEO",
+                            "ABO_PRATIQUE_ART",
+                            "ABO_PRESSE_EN_LIGNE",
+                            "ABO_SPECTACLE",
+                            "ACHAT_INSTRUMENT",
+                            "ACTIVATION_EVENT",
+                            "ACTIVATION_THING",
+                            "APP_CULTURELLE",
+                            "ATELIER_PRATIQUE_ART",
+                            "AUTRE_SUPPORT_NUMERIQUE",
+                            "BON_ACHAT_INSTRUMENT",
+                            "CAPTATION_MUSIQUE",
+                            "CARTE_CINE_ILLIMITE",
+                            "CARTE_CINE_MULTISEANCES",
+                            "CARTE_JEUNES",
+                            "CARTE_MUSEE",
+                            "CINE_PLEIN_AIR",
+                            "CINE_VENTE_DISTANCE",
+                            "CONCERT",
+                            "CONCOURS",
+                            "CONFERENCE",
+                            "DECOUVERTE_METIERS",
+                            "ESCAPE_GAME",
+                            "EVENEMENT_CINE",
+                            "EVENEMENT_JEU",
+                            "EVENEMENT_MUSIQUE",
+                            "EVENEMENT_PATRIMOINE",
+                            "FESTIVAL_ART_VISUEL",
+                            "FESTIVAL_CINE",
+                            "FESTIVAL_LIVRE",
+                            "FESTIVAL_MUSIQUE",
+                            "FESTIVAL_SPECTACLE",
+                            "JEU_EN_LIGNE",
+                            "JEU_SUPPORT_PHYSIQUE",
+                            "LIVESTREAM_EVENEMENT",
+                            "LIVESTREAM_MUSIQUE",
+                            "LIVESTREAM_PRATIQUE_ARTISTIQUE",
+                            "LIVRE_AUDIO_PHYSIQUE",
+                            "LIVRE_NUMERIQUE",
+                            "LIVRE_PAPIER",
+                            "LOCATION_INSTRUMENT",
+                            "MATERIEL_ART_CREATIF",
+                            "MUSEE_VENTE_DISTANCE",
+                            "OEUVRE_ART",
+                            "PARTITION",
+                            "PLATEFORME_PRATIQUE_ARTISTIQUE",
+                            "PRATIQUE_ART_VENTE_DISTANCE",
+                            "PODCAST",
+                            "RENCONTRE_EN_LIGNE",
+                            "RENCONTRE_JEU",
+                            "RENCONTRE",
+                            "SALON",
+                            "SEANCE_CINE",
+                            "SEANCE_ESSAI_PRATIQUE_ART",
+                            "SPECTACLE_ENREGISTRE",
+                            "SPECTACLE_REPRESENTATION",
+                            "SPECTACLE_VENTE_DISTANCE",
+                            "SUPPORT_PHYSIQUE_FILM",
+                            "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "SUPPORT_PHYSIQUE_MUSIQUE_VINYLE",
+                            "TELECHARGEMENT_LIVRE_AUDIO",
+                            "TELECHARGEMENT_MUSIQUE",
+                            "VISITE_GUIDEE",
+                            "VISITE_VIRTUELLE",
+                            "VISITE",
+                            "VOD"
+                        ],
+                        "title": "SubcategoryIdEnum"
                     },
                     "venue": {
-                        "$ref": "#/components/schemas/OfferVenueResponseV2"
+                        "$ref": "#/components/schemas/OfferVenueResponse"
                     },
                     "video": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferVideoV2"
+                                "$ref": "#/components/schemas/OfferVideo"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferVideoV2"
+                        "default": null
                     },
                     "withdrawalDetails": {
-                        "nullable": true,
-                        "title": "Withdrawaldetails",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Withdrawaldetails"
                     }
                 },
                 "required": [
                     "id",
                     "accessibility",
                     "artists",
+                    "bookingAllowedDatetime",
                     "chronicles",
                     "expenseDomains",
-                    "isExpired",
-                    "isExternalBookingsDisabled",
-                    "isEvent",
-                    "isHeadline",
-                    "isForbiddenToUnderage",
-                    "isReleased",
-                    "isSoldOut",
                     "isDigital",
                     "isDuo",
                     "isEducational",
+                    "isEvent",
+                    "isExpired",
+                    "isExternalBookingsDisabled",
+                    "isForbiddenToUnderage",
+                    "isHeadline",
+                    "isReleased",
+                    "isSoldOut",
+                    "likesCount",
                     "metadata",
                     "name",
-                    "reactionsCount",
+                    "publicationDate",
                     "stocks",
                     "subcategoryId",
                     "venue"
@@ -4315,7 +4444,6 @@
                         "items": {
                             "$ref": "#/components/schemas/ExpenseDomain"
                         },
-                        "title": "Expensedomains",
                         "type": "array"
                     },
                     "externalTicketOfficeUrl": {
@@ -4458,264 +4586,6 @@
                     "venue"
                 ],
                 "title": "OfferResponseV2",
-                "type": "object"
-            },
-            "OfferResponseV3": {
-                "additionalProperties": false,
-                "properties": {
-                    "accessibility": {
-                        "$ref": "#/components/schemas/OfferAccessibilityResponse"
-                    },
-                    "address": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferAddressResponse"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    },
-                    "artists": {
-                        "items": {
-                            "$ref": "#/components/schemas/OfferArtist"
-                        },
-                        "title": "Artists",
-                        "type": "array"
-                    },
-                    "bookingAllowedDatetime": {
-                        "anyOf": [
-                            {
-                                "format": "date-time",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Bookingalloweddatetime"
-                    },
-                    "chronicles": {
-                        "items": {
-                            "$ref": "#/components/schemas/ChroniclePreview"
-                        },
-                        "title": "Chronicles",
-                        "type": "array"
-                    },
-                    "chroniclesCount": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Chroniclescount"
-                    },
-                    "description": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Description"
-                    },
-                    "expenseDomains": {
-                        "items": {
-                            "$ref": "#/components/schemas/ExpenseDomain"
-                        },
-                        "title": "Expensedomains",
-                        "type": "array"
-                    },
-                    "externalTicketOfficeUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Externalticketofficeurl"
-                    },
-                    "extraData": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferExtraDataResponse"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    },
-                    "id": {
-                        "title": "Id",
-                        "type": "integer"
-                    },
-                    "images": {
-                        "anyOf": [
-                            {
-                                "additionalProperties": {
-                                    "$ref": "#/components/schemas/OfferImageResponse"
-                                },
-                                "type": "object"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Images"
-                    },
-                    "isDigital": {
-                        "title": "Isdigital",
-                        "type": "boolean"
-                    },
-                    "isDuo": {
-                        "title": "Isduo",
-                        "type": "boolean"
-                    },
-                    "isEducational": {
-                        "title": "Iseducational",
-                        "type": "boolean"
-                    },
-                    "isEvent": {
-                        "title": "Isevent",
-                        "type": "boolean"
-                    },
-                    "isExpired": {
-                        "title": "Isexpired",
-                        "type": "boolean"
-                    },
-                    "isExternalBookingsDisabled": {
-                        "title": "Isexternalbookingsdisabled",
-                        "type": "boolean"
-                    },
-                    "isForbiddenToUnderage": {
-                        "title": "Isforbiddentounderage",
-                        "type": "boolean"
-                    },
-                    "isHeadline": {
-                        "title": "Isheadline",
-                        "type": "boolean"
-                    },
-                    "isReleased": {
-                        "title": "Isreleased",
-                        "type": "boolean"
-                    },
-                    "isSoldOut": {
-                        "title": "Issoldout",
-                        "type": "boolean"
-                    },
-                    "last30DaysBookings": {
-                        "anyOf": [
-                            {
-                                "type": "integer"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Last30Daysbookings"
-                    },
-                    "likesCount": {
-                        "title": "Likescount",
-                        "type": "integer"
-                    },
-                    "metadata": {
-                        "additionalProperties": true,
-                        "title": "Metadata",
-                        "type": "object"
-                    },
-                    "name": {
-                        "title": "Name",
-                        "type": "string"
-                    },
-                    "publicationDate": {
-                        "anyOf": [
-                            {
-                                "format": "date-time",
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Publicationdate"
-                    },
-                    "stocks": {
-                        "items": {
-                            "$ref": "#/components/schemas/OfferStockResponse"
-                        },
-                        "title": "Stocks",
-                        "type": "array"
-                    },
-                    "subcategoryId": {
-                        "$ref": "#/components/schemas/SubcategoryIds"
-                    },
-                    "venue": {
-                        "$ref": "#/components/schemas/OfferVenueResponse"
-                    },
-                    "video": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/OfferVideo"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    },
-                    "withdrawalDetails": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Withdrawaldetails"
-                    }
-                },
-                "required": [
-                    "id",
-                    "accessibility",
-                    "artists",
-                    "chronicles",
-                    "expenseDomains",
-                    "isDigital",
-                    "isDuo",
-                    "isEducational",
-                    "isEvent",
-                    "isExpired",
-                    "isExternalBookingsDisabled",
-                    "isForbiddenToUnderage",
-                    "isHeadline",
-                    "isReleased",
-                    "isSoldOut",
-                    "likesCount",
-                    "metadata",
-                    "name",
-                    "stocks",
-                    "subcategoryId",
-                    "venue"
-                ],
-                "title": "OfferResponseV3",
                 "type": "object"
             },
             "OfferStockActivationCodeResponse": {
@@ -11281,7 +11151,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/OfferResponseV3"
+                                    "$ref": "#/components/schemas/OfferResponse"
                                 }
                             }
                         },

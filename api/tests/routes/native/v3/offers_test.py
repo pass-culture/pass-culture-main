@@ -35,7 +35,6 @@ class OffersV3Test:
     base_num_queries = 1  # select offer with joins
     base_num_queries += 1  # select mediations (selectinload)
     base_num_queries += 1  # select stocks (selectinload)
-    base_num_queries += 1  # select opening hours (selectinload)
     base_num_queries += 1  # select chronicles (selectinload)
 
     num_queries_with_product = 1  # select artists (selectinload)

@@ -363,6 +363,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
             .joinedload(models.Product.productMediations)
         )
         .options(sa_orm.joinedload(models.Offer.metaData))
+        .options(sa_orm.joinedload(models.Offer.artistOfferLinks).joinedload(artist_models.ArtistOfferLink.artist))
         .options(sa_orm.joinedload(models.Offer.product).selectinload(models.Product.artists))
         .options(sa_orm.joinedload(models.Offer.headlineOffers))
         .outerjoin(models.Offer.lastProvider)
@@ -371,7 +372,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
             models.Offer.id.in_(offer_ids),
             models.Offer.validation == models.OfferValidationStatus.APPROVED,
         )
-        .options(sa_orm.selectinload(models.Offer.openingHours))
     )
 
 

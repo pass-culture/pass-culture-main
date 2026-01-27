@@ -277,7 +277,7 @@ class ChroniclePreview(HttpBodyModel):
 
 
 class OfferArtist(HttpBodyModel):
-    id: str
+    id: str | None
     image: str | None
     name: str
 
@@ -362,11 +362,15 @@ class OfferResponse(HttpBodyModel):
             visual_disability=offer.visualDisabilityCompliant,
         )
 
-        artists = (
-            [OfferArtist.model_validate(artist) for artist in product.artists if not artist.is_blacklisted]
-            if product
-            else []
-        )
+        if product:
+            artists = [OfferArtist.model_validate(artist) for artist in product.artists if not artist.is_blacklisted]
+        else:
+            artists = []
+            for artist_link in offer.artistOfferLinks:
+                if artist_link.artist and not artist_link.artist.is_blacklisted:
+                    artists.append(OfferArtist.model_validate(artist_link.artist))
+                elif artist_link.custom_name:
+                    artists.append(OfferArtist(id=None, image=None, name=artist_link.custom_name))
 
         is_external_bookings_disabled = False
         if offer.lastProvider and offer.lastProvider.localClass in provider_constants.PROVIDER_LOCAL_CLASS_TO_FF:
@@ -427,7 +431,7 @@ class OfferResponse(HttpBodyModel):
             chronicles=[ChroniclePreview.build(c) for c in published_chronicles[:MAX_PREVIEW_CHRONICLES]],
             chronicles_count=product.chroniclesCount if product and product.chroniclesCount else offer.chroniclesCount,
             description=offer.description,
-            expense_domains=get_expense_domains(offer),
+            expense_domains=map(lambda domain: domain.value, get_expense_domains(offer)),
             external_ticket_office_url=offer.externalTicketOfficeUrl,
             extra_data=extra_data,
             images=offer.images,
