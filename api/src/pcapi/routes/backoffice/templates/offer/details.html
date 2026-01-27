@@ -21,13 +21,16 @@
 {% endblock %}
 {% block action_buttons %}
   {% if action.DEACTIVATE in allowed_actions.inline_actions %}
-    {{ action_bar_button("x-circle", "Mettre en pause", modal_id="#deactivate-offer-modal-" + offer.id|string) }}
+    {{ action_bar_button("pause-circle", "Mettre en pause", modal_id="#deactivate-offer-modal-" + offer.id|string) }}
   {% endif %}
   {% if action.ACTIVATE in allowed_actions.inline_actions %}
     {{ action_bar_button("check-circle", "Publier", modal_id="#activate-offer-modal-" + offer.id|string) }}
   {% endif %}
   {% if action.VALIDATE in allowed_actions.inline_actions %}
     {{ action_bar_button("hand-thumbs-up", "Valider", modal_id="#validate-offer-modal-" + offer.id|string) }}
+  {% endif %}
+  {% if action.PENDING in allowed_actions.inline_actions %}
+    {{ action_bar_button("x-circle", "Annuler la validation", modal_id="#pending-offer-modal-" + offer.id|string) }}
   {% endif %}
   {% if action.REJECT in allowed_actions.inline_actions %}
     {{ action_bar_button("hand-thumbs-down", "Rejeter", modal_id="#reject-offer-modal-" + offer.id|string) }}
@@ -45,7 +48,7 @@
   {% if allowed_actions.additional_actions %}
     <ul class="dropdown-menu">
       {% if action.DEACTIVATE in allowed_actions.additional_actions %}
-        <li>{{ action_bar_additional_button("x-circle", "Mettre en pause", modal_id="#deactivate-offer-modal-" + offer.id|string) }}</li>
+        <li>{{ action_bar_additional_button("pause-circle", "Mettre en pause", modal_id="#deactivate-offer-modal-" + offer.id|string) }}</li>
       {% endif %}
       {% if action.ACTIVATE in allowed_actions.additional_actions %}
         <li>{{ action_bar_additional_button("check-circle", "Publier", modal_id="#activate-offer-modal-" + offer.id|string) }}</li>
@@ -441,12 +444,14 @@
     {% endif %}
     {% if offer.lastValidationDate or offer.lastValidationAuthor %}<hr />{% endif %}
     {% if offer.lastValidationDate %}
-      {% call description_detail_vertical("Date de la dernière validation") %}
+      {% set last_action_name_date_title = offer.validation | format_last_validation_action_name("Date") %}
+      {% call description_detail_vertical(last_action_name_date_title) %}
         {{ offer.lastValidationDate | format_date_time }}
       {% endcall %}
     {% endif %}
     {% if offer.lastValidationAuthor %}
-      {% call description_detail_vertical("Utilisateur de la dernière validation") %}
+      {% set last_action_name_user_title = offer.validation | format_last_validation_action_name("Utilisateur") %}
+      {% call description_detail_vertical(last_action_name_user_title) %}
         {{ offer.lastValidationAuthor.full_name }}
       {% endcall %}
     {% endif %}
@@ -467,6 +472,9 @@
   {% endif %}
   {% if action.VALIDATE in allowed_actions %}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_validate_offer_form', offer_id=offer.id) , "validate-offer-modal-" + offer.id|string, ajax_submit = False) }}
+  {% endif %}
+  {% if action.PENDING in allowed_actions %}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_pending_offer_form', offer_id=offer.id) , "pending-offer-modal-" + offer.id|string, ajax_submit = False) }}
   {% endif %}
   {% if action.REJECT in allowed_actions %}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_reject_offer_form', offer_id=offer.id) , "reject-offer-modal-" + offer.id|string, ajax_submit = False) }}

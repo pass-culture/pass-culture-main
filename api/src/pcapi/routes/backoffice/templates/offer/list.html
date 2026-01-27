@@ -164,6 +164,14 @@
               class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
               data-use-dynamic-modal="true"
               data-bs-toggle="modal"
+              data-bs-target="#batch-pending-offer-modal">
+        Annuler la validation<i class="bi bi-x-circle ps-2"></i>
+      </button>
+      <button disabled
+              type="button"
+              class="btn border-end rounded-0 border-top-0 border-bottom-0 text-nowrap"
+              data-use-dynamic-modal="true"
+              data-bs-toggle="modal"
               data-bs-target="#batch-reject-offer-modal">
         Rejeter<i class="bi bi-hand-thumbs-down ps-2"></i>
       </button>
@@ -189,7 +197,7 @@
               data-use-dynamic-modal="true"
               data-bs-toggle="modal"
               data-bs-target="#batch-deactivate-offer-modal">
-        Mettre en pause<i class="bi bi-x-circle ps-2"></i>
+        Mettre en pause<i class="bi bi-pause-circle ps-2"></i>
       </button>
     </div>
   {% endif %}
@@ -213,11 +221,13 @@
     {% set offer = row.Offer %}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_edit_offer_form', offer_id=offer.id) , "edit-offer-modal-" + offer.id|string) }}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_validate_offer_form', offer_id=offer.id) , "validate-offer-modal-" + offer.id|string) }}
+    {{ build_dynamic_modal(url_for('backoffice_web.offer.get_pending_offer_form', offer_id=offer.id) , "pending-offer-modal-" + offer.id|string) }}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_reject_offer_form', offer_id=offer.id) , "reject-offer-modal-" + offer.id|string) }}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_deactivate_offer_form', offer_id=offer.id) , "deactivate-offer-modal-" + offer.id|string) }}
     {{ build_dynamic_modal(url_for('backoffice_web.offer.get_activate_offer_form', offer_id=offer.id) , "activate-offer-modal-" + offer.id|string) }}
   {% endfor %}
   {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_validate_offers_form") , "batch-validate-offer-modal", method="post", form="form-ids-" + table_name) }}
+  {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_pending_offers_form") , "batch-pending-offer-modal", method="post", form="form-ids-" + table_name) }}
   {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_reject_offers_form") , "batch-reject-offer-modal", method="post", form="form-ids-" + table_name) }}
   {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_activate_offers_form") , "batch-activate-offer-modal", method="post", form="form-ids-" + table_name) }}
   {{ build_dynamic_modal(url_for("backoffice_web.offer.get_batch_deactivate_offers_form") , "batch-deactivate-offer-modal", method="post", form="form-ids-" + table_name) }}
