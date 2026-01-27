@@ -368,6 +368,7 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
             .selectinload(models.Product.artistLinks)
             .joinedload(artist_models.ArtistProductLink.artist)
         )
+        .options(sa_orm.joinedload(models.Offer.artistOfferLinks).joinedload(artist_models.ArtistOfferLink.artist))
         .options(sa_orm.joinedload(models.Offer.headlineOffers))
         .outerjoin(models.Offer.lastProvider)
         .options(sa_orm.contains_eager(models.Offer.lastProvider).load_only(providers_models.Provider.localClass))

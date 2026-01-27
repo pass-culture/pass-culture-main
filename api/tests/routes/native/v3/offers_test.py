@@ -778,6 +778,27 @@ class OffersV3Test:
             key=lambda a: a["id"],
         )
 
+    def test_get_offer_artists_without_product(self, client):
+        offer = offers_factories.OfferFactory()
+        artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, custom_name="Alex")
+        artist_2 = artists_factories.ArtistFactory(name="Billy")
+        artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist_2.id)
+        artist_3 = artists_factories.ArtistFactory(name="Claude", is_blacklisted=True)
+        artists_factories.ArtistOfferLinkFactory(offer_id=offer.id, artist_id=artist_3.id)
+
+        offer_id = offer.id
+        with assert_num_queries(self.base_num_queries):
+            response = client.get(f"/native/v3/offer/{offer_id}")
+
+        assert response.status_code == 200
+        assert sorted(response.json["artists"], key=lambda a: a["name"]) == sorted(
+            [
+                {"id": None, "name": "Alex", "image": None, "role": None},
+                {"id": artist_2.id, "name": artist_2.name, "image": artist_2.image, "role": None},
+            ],
+            key=lambda a: a["name"],
+        )
+
     def test_get_headline_offer(self, client):
         offer = offers_factories.OfferFactory()
         offer_id = offer.id
