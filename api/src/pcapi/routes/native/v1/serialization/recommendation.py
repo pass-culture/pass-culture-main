@@ -2,7 +2,6 @@ from pydantic import Field
 from pydantic import field_validator
 
 from pcapi.routes.serialization import HttpBodyModel
-from pcapi.serialization.utils import to_camel
 
 
 class SimilarOffersRequestQuery(HttpBodyModel):
@@ -17,9 +16,6 @@ class SimilarOffersRequestQuery(HttpBodyModel):
         if isinstance(v, list):
             return v
         return v.split(",") if v else None
-
-    class Config:
-        extra = "forbid"
 
 
 class RecommendationApiParams(HttpBodyModel):
@@ -37,18 +33,11 @@ class SimilarOffersResponse(HttpBodyModel):
     results: list[str] = Field(default_factory=list)
     params: RecommendationApiParams
 
-    class Config:
-        alias_generator = to_camel
-        validate_by_name = True
-
 
 class PlaylistRequestQuery(HttpBodyModel):
     model_endpoint: str | None = None
     longitude: float | None = None
     latitude: float | None = None
-
-    class Config:
-        extra = "forbid"
 
 
 class PlaylistRequestBody(HttpBodyModel):
@@ -63,14 +52,7 @@ class PlaylistRequestBody(HttpBodyModel):
     is_reco_shuffled: bool | None = None
     offer_type_list: list[dict[str, str]] | None = None
 
-    class Config:
-        extra = "forbid"
-
 
 class PlaylistResponse(HttpBodyModel):
     playlist_recommended_offers: list[str]
     params: RecommendationApiParams
-
-    class Config:
-        alias_generator = to_camel
-        validate_by_name = True
