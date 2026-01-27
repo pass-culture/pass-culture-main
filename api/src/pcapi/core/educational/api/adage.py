@@ -92,7 +92,9 @@ def get_venue_by_id_for_adage_iframe(
     return venue, relative
 
 
-def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner]) -> tuple[set[str], set[str]]:
+def synchronize_adage_partners(
+    adage_partners: list[schemas.AdageCulturalPartner], apply: bool = False
+) -> tuple[set[str], set[str]]:
     from pcapi.core.external.attributes.api import update_external_pro
 
     adage_id_by_venue_id: dict[int, str] = {}
@@ -166,10 +168,12 @@ def synchronize_adage_partners(adage_partners: list[schemas.AdageCulturalPartner
     for venue in active_venues:
         # update the external user in case of previous adageId being None
         # this is because we track if the user has an adageId, not the value of the adageId
-        if not venue.adageId:
+        if apply and not venue.adageId:
             emails = offerers_repository.get_emails_by_venue(venue)
+
             for email in emails:
                 update_external_pro(email)
+
             if venue.managingOfferer.isValidated:
                 send_eac_offerer_activation_email(venue, list(emails))
 
