@@ -54,6 +54,7 @@ if typing.TYPE_CHECKING:
 
     from pcapi.core.artist.models import Artist
     from pcapi.core.artist.models import ArtistOfferLink
+    from pcapi.core.artist.models import ArtistProductLink
     from pcapi.core.bookings.models import Booking
     from pcapi.core.chronicles.models import Chronicle
     from pcapi.core.criteria.models import Criterion
@@ -248,6 +249,8 @@ class Product(PcObject, Model, HasThumbMixin):
     artists: sa_orm.Mapped[list["Artist"]] = sa_orm.relationship(
         "Artist", back_populates="products", secondary="artist_product_link"
     )
+
+    artistLinks: sa_orm.Mapped[list["ArtistProductLink"]] = sa_orm.relationship("ArtistProductLink")
     offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", back_populates="product", order_by="Offer.id", foreign_keys="Offer.productId"
     )
