@@ -76,15 +76,17 @@ export const Banner = ({
             {actions.length > 0 && (
               <ul className={styles['actions-list']}>
                 {actions.map((a) => (
-                  <li key={a.label}>
+                  <li
+                    key={a.label}
+                    className={cx(styles.link, {
+                      [styles['link-large']]: size === 'large',
+                    })}
+                  >
                     {a.type === 'link' ? (
                       <Button
                         as="a"
                         variant={ButtonVariant.TERTIARY}
                         color={ButtonColor.NEUTRAL}
-                        className={cx(styles.link, {
-                          [styles['link-large']]: size === 'large',
-                        })}
                         target={a.isExternal ? '_blank' : '_self'}
                         rel={a.isExternal ? 'noopener noreferrer' : undefined}
                         to={a.href}
@@ -97,9 +99,6 @@ export const Banner = ({
                       />
                     ) : (
                       <Button
-                        className={cx(styles.link, {
-                          [styles['link-large']]: size === 'large',
-                        })}
                         variant={ButtonVariant.TERTIARY}
                         color={ButtonColor.NEUTRAL}
                         icon={a.icon}

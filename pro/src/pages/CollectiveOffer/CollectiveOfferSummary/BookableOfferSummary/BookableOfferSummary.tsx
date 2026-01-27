@@ -273,6 +273,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 <li>
                   <Button
                     as="a"
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.NEUTRAL}
+                    size={ButtonSize.SMALL}
                     to={`/offre/${offer.id}/collectif/apercu`}
                     icon={fullShowIcon}
                     ref={adagePreviewButtonRef}
@@ -284,8 +287,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
               {canDuplicateOffer && (
                 <li>
                   <Button
-                    variant={ButtonVariant.TERTIARY}
+                    variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}
+                    size={ButtonSize.SMALL}
                     icon={fullCopyIcon}
                     onClick={async () => {
                       logEvent(Events.CLICKED_DUPLICATE_BOOKABLE_OFFER, {
@@ -307,8 +311,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                   <Button
                     onClick={() => setIsArchiveModalOpen(true)}
                     icon={fullArchiveIcon}
-                    variant={ButtonVariant.TERTIARY}
+                    variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}
+                    size={ButtonSize.SMALL}
                     ref={archiveButtonRef}
                     label="Archiver"
                   />
@@ -318,8 +323,9 @@ export const BookableOfferSummary = ({ offer }: BookableOfferSummaryProps) => {
                 <li>
                   <Button
                     icon={fullClearIcon}
-                    variant={ButtonVariant.TERTIARY}
+                    variant={ButtonVariant.SECONDARY}
                     color={ButtonColor.NEUTRAL}
+                    size={ButtonSize.SMALL}
                     onClick={() => setIsCancelBookingModalOpen(true)}
                     ref={cancelBookingButtonRef}
                     label="Annuler la réservation"

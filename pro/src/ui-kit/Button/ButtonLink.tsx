@@ -65,6 +65,8 @@ export type ButtonLinkProps = LinkProps &
  * >
  *   Learn More
  * </ButtonLink>
+ *
+ * @deprecated Use `<Button as="a" />` from `@/design-system/` instead
  */
 export const ButtonLink = forwardRef(
   (

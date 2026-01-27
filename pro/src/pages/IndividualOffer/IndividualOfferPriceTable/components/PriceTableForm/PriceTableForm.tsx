@@ -389,7 +389,6 @@ export const PriceTableForm = ({
           </div>
         )
       })}
-
       {offer.isEvent &&
         !areAllFieldsDisabled &&
         !areAllFieldsDisabledButQuantity && (

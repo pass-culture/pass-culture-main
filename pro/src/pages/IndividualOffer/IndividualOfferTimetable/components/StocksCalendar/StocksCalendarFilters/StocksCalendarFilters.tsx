@@ -119,7 +119,6 @@ export const StocksCalendarFilters = ({
           onClick={() => onUpdateFilters({})}
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
-          className={styles['reset-button']}
           label="Réinitialiser les filtres"
         />
       )}

@@ -155,8 +155,9 @@ export const PhysicalLocationSubform = ({
             />
           </FormLayout.Row>
 
-          <FormLayout.Row>
+          <FormLayout.Row className={styles['manual-address-button']}>
             <Button
+              type="button"
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
               icon={isManualEdition ? fullBackIcon : fullNextIcon}

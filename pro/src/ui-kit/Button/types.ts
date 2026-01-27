@@ -1,3 +1,4 @@
+/** @deprecated Use `ButtonVariant` from `@/design-system/` instead **/
 export enum ButtonVariant {
   PRIMARY = 'primary',
   SECONDARY = 'secondary',
@@ -7,12 +8,14 @@ export enum ButtonVariant {
   BOX = 'box',
 }
 
+/** @deprecated Use `IconPositionEnum` from `@/design-system/` instead **/
 export enum IconPositionEnum {
   RIGHT = 'right',
   LEFT = 'left',
   CENTER = 'center',
 }
 
+/** @deprecated Use `ButtonProps` from `@/design-system/` instead **/
 export type SharedButtonProps = {
   /**
    * The icon to display within the button (or button-link).

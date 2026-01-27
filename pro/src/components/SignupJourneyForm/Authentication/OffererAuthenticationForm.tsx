@@ -5,11 +5,11 @@ import type { Address } from '@/commons/core/shared/types'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OpenToPublicToggle } from '@/components/OpenToPublicToggle/OpenToPublicToggle'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 
@@ -151,14 +151,17 @@ export const OffererAuthenticationForm = (): JSX.Element => {
             }}
           />
           <Button
-            variant={ButtonVariant.QUATERNARY}
+            type="button"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
             onClick={toggleManuallySetAddress}
-          >
-            {manuallySetAddress
-              ? 'Revenir à la sélection automatique'
-              : 'Vous ne trouvez pas votre adresse ?'}
-          </Button>
+            label={
+              manuallySetAddress
+                ? 'Revenir à la sélection automatique'
+                : 'Vous ne trouvez pas votre adresse ?'
+            }
+          />
           {manuallySetAddress && <AddressManual />}
         </FormLayout.Row>
       )}

@@ -8,10 +8,8 @@
 
 .buttons-field {
   margin-top: var(--size-spacing-xl);
-
-  & > button:nth-child(2) {
-    margin-left: var(--size-spacing-s);
-  }
+  display: flex;
+  gap: var(--size-spacing-l);
 }
 
 .text-input {

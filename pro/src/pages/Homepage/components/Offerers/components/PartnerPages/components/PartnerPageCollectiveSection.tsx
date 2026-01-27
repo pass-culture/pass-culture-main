@@ -76,14 +76,14 @@ export function PartnerPageCollectiveSection({
         <div className={styles['details-link']}>
           <Button
             as="a"
-            variant={ButtonVariant.TERTIARY}
+            variant={ButtonVariant.SECONDARY}
             color={ButtonColor.NEUTRAL}
             icon={fullLinkIcon}
             to="https://demarche.numerique.gouv.fr/commencer/demande-de-referencement-sur-adage"
             isExternal
             opensInNewTab
             onClick={logDMSApplicationLinkClick}
-            label="Faire une demande de référencement ADAGE"
+            label="Déposer un dossier ADAGE"
           />
         </div>
 

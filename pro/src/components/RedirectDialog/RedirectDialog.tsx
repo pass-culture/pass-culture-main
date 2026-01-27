@@ -52,7 +52,6 @@ export const RedirectDialog = ({
           data-testid="redirect-dialog-link"
           {...redirectLink}
           variant={ButtonVariant.PRIMARY}
-          color={ButtonColor.NEUTRAL}
           onClick={onRedirect}
           icon={withRedirectLinkIcon ? fullLinkIcon : undefined}
           label={redirectText}
@@ -65,7 +64,7 @@ export const RedirectDialog = ({
           }}
           data-testid="redirect-dialog-button-cancel"
           variant={ButtonVariant.TERTIARY}
-          color={ButtonColor.BRAND}
+          color={ButtonColor.NEUTRAL}
           label={cancelText}
         />
       </div>

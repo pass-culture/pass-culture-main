@@ -66,9 +66,11 @@ export const IndividualOfferConfirmationScreen = ({
 
       {!isPublishedInTheFuture && (
         <div className={styles['display-in-app-link']}>
-          <DisplayOfferInAppLink id={offer.id} icon={fullLinkIcon}>
-            Visualiser l’offre dans l’application
-          </DisplayOfferInAppLink>
+          <DisplayOfferInAppLink
+            id={offer.id}
+            icon={fullLinkIcon}
+            label="Visualiser l’offre dans l’application"
+          />
         </div>
       )}
 
