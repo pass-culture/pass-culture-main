@@ -10,6 +10,7 @@ export const DEFAULT_DETAILS_FORM_VALUES = {
   showSubType: '',
   speaker: '',
   author: '',
+  artists: [],
   visa: '',
   stageDirector: '',
   performer: '',

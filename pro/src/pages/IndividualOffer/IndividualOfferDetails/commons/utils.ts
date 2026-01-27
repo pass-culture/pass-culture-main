@@ -1,8 +1,10 @@
 import { computeVenueDisplayName } from 'repository/venuesService'
 
 import {
+  ArtistType,
   type CategoryResponseModel,
   type GetIndividualOfferResponseModel,
+  type OfferArtistsResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
@@ -80,6 +82,26 @@ export const buildShowSubTypeOptions = (showType?: string): SelectOption[] => {
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
+const buildArtistPlaceholders = (artists: OfferArtistsResponseModel[]) => {
+  const ArtistTypeFieldMap: [ArtistType, string][] = [
+    [ArtistType.AUTHOR, 'author'],
+    [ArtistType.PERFORMER, 'performer'],
+    [ArtistType.STAGE_DIRECTOR, 'stageDirector'],
+  ]
+
+  const existingArtistTypes = new Set(artists.map((a) => a.artistType))
+
+  const placeholders = ArtistTypeFieldMap.filter(
+    ([type]) => !existingArtistTypes.has(type)
+  ).map(([artistType]) => ({
+    artistId: null,
+    artistName: '',
+    artistType,
+  }))
+
+  return [...artists, ...placeholders]
+}
+
 export const completeSubcategoryConditionalFields = (
   subcategory?: SubcategoryResponseModel
 ) =>
@@ -124,6 +146,7 @@ export function getInitialValuesFromVenues(
   if (isNewOfferCreationFlowFeatureActive) {
     return {
       ...DEFAULT_DETAILS_FORM_VALUES,
+      artists: buildArtistPlaceholders([]),
       venueId,
       accessibility: getAccessibilityInfoFromVenue(onlyVenue).accessibility,
     }
@@ -172,6 +195,7 @@ export function getInitialValuesFromOffer({
     gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
     speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
     author: offer.extraData?.author ?? DEFAULT_DETAILS_FORM_VALUES.author,
+    artists: buildArtistPlaceholders(offer.artists),
     performer:
       offer.extraData?.performer ?? DEFAULT_DETAILS_FORM_VALUES.performer,
     stageDirector:
