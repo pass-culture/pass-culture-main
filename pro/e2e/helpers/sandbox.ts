@@ -62,3 +62,13 @@ export async function createRegularProUser(
     `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
   )
 }
+
+export async function createNewProUser(
+  request: APIRequestContext
+): Promise<ProUserData> {
+  return await sandboxCall<ProUserData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_new_pro_user`
+  )
+}
