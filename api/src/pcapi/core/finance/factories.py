@@ -26,7 +26,11 @@ class RecreditFactory(BaseFactory):
         model = models.Recredit
 
     deposit = factory.SubFactory(users_factories.DepositGrantFactory)
-    amount = factory.LazyAttribute(lambda recredit: conf.RECREDIT_TYPE_AMOUNT_MAPPING[recredit.recreditType])
+    amount = factory.LazyAttribute(
+        lambda recredit: conf.BONUS_CREDIT_AMOUNT
+        if recredit.recreditType == models.RecreditType.BONUS_CREDIT
+        else conf.RECREDIT_TYPE_AMOUNT_MAPPING[recredit.recreditType]
+    )
     recreditType = models.RecreditType.RECREDIT_16
 
 

@@ -8,6 +8,7 @@ from pydantic import field_validator
 from pcapi import settings
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
+from pcapi.utils import countries as countries_utils
 from pcapi.utils import requests
 
 
@@ -15,8 +16,6 @@ logger = logging.getLogger(__name__)
 
 
 QUOTIENT_FAMILIAL_ENDPOINT = f"{settings.PARTICULIER_API_URL}/v3/dss/quotient_familial/identite"
-
-FRANCE_INSEE_CODE = "99100"
 
 
 class ParticulierApiException(Exception):
@@ -88,10 +87,10 @@ def get_quotient_familial(
     """
     country_insee_code = custodian.birth_country_cog_code
     city_insee_code = custodian.birth_city_cog_code
-    if country_insee_code == FRANCE_INSEE_CODE and not city_insee_code:
+    if country_insee_code == countries_utils.FRANCE_INSEE_CODE and not city_insee_code:
         raise ValueError("City INSEE code is mandatory when the custodian is born in France")
 
-    if country_insee_code != FRANCE_INSEE_CODE:
+    if country_insee_code != countries_utils.FRANCE_INSEE_CODE:
         city_insee_code = None
 
     computation_year = at_date.year if at_date else None

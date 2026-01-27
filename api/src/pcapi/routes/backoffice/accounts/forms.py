@@ -14,6 +14,7 @@ from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
 from pcapi.routes.backoffice.forms import utils
+from pcapi.utils import countries as countries_utils
 from pcapi.utils import string as string_utils
 
 
@@ -92,6 +93,39 @@ class ManualReviewForm(FlaskForm):
         choices=utils.choices_from_enum(users_models.EligibilityType, formatter=filters.format_eligibility_type),
     )
     reason = fields.PCOptCommentField("Raison du changement")
+
+
+class BonusCreditRequestForm(FlaskForm):
+    civility = fields.PCSelectWithPlaceholderValueField(
+        "Civilité du représentant légal",
+        choices=utils.choices_from_enum(users_models.GenderEnum, formatter=filters.format_gender, sort=True),
+    )
+    first_names = fields.PCStringField("Prénoms du représentant légal")
+    last_name = fields.PCStringField("Nom de naissance du représentant légal")
+    common_name = fields.PCOptStringField("Nom d'usage du représentant légal")
+    birth_date = fields.PCDateField("Date de naissance du représentant légal")
+    birth_country = fields.PCSelectWithPlaceholderValueField(
+        "Pays de naissance du représentant légal", choices=countries_utils.INSEE_COUNTRIES
+    )
+    birth_city = fields.PCTomSelectField(
+        "Ville de naissance du représentant légal (s'il est né en France)",
+        multiple=False,
+        choices=[],
+        validate_choice=False,
+        endpoint="backoffice_web.autocomplete_cities",
+    )
+
+    def validate(self, extra_validators: dict | None = None) -> bool:
+        country_data = self.birth_country.data
+        city_data = self.birth_city.single_data
+        if country_data == countries_utils.FRANCE_INSEE_CODE:
+            if not city_data:
+                self.birth_city.errors = ["obligatoire lorsque le représentant légal est né en France"]
+                return False
+        elif city_data:
+            self.birth_city.errors = ["doit rester vide lorsque le représentant légal n'est pas né en France"]
+            return False
+        return super().validate(extra_validators)
 
 
 class CommentForm(FlaskForm):

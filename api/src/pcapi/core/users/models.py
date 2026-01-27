@@ -545,6 +545,15 @@ class User(PcObject, Model, DeactivableMixin):
         return RecreditType.RECREDIT_18 in [r.recreditType for r in self.deposit.recredits] if self.deposit else False
 
     @property
+    def received_bonus_credit(self) -> bool:
+        from pcapi.core.finance.models import RecreditType
+
+        if not self.received_pass_17_18:
+            return False
+
+        return RecreditType.BONUS_CREDIT in [r.recreditType for r in self.deposit.recredits] if self.deposit else False
+
+    @property
     def deposit_version(self) -> int | None:
         return self.deposit.version if self.deposit else None
 

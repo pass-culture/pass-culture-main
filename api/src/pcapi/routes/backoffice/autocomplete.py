@@ -6,6 +6,7 @@ from flask import request
 from flask_login import login_required
 
 from pcapi.connectors import api_adresse
+from pcapi.connectors import api_geo
 from pcapi.core.artist import models as artist_models
 from pcapi.core.criteria import models as criteria_models
 from pcapi.core.educational import models as educational_models
@@ -19,6 +20,7 @@ from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_datespan
 from pcapi.routes.serialization import HttpBodyModel
 from pcapi.serialization.decorator import spectree_serialize
+from pcapi.utils import regions as regions_utils
 from pcapi.utils import siren as siren_utils
 from pcapi.utils import string as string_utils
 from pcapi.utils.clean_accents import clean_accents
@@ -580,4 +582,33 @@ def autocomplete_artists() -> AutocompleteResponse:
 
     return AutocompleteResponse(
         items=[AutocompleteStrIdItem(id=artist.id, text=f"{artist.name} (ID: {artist.id})") for artist in results]
+    )
+
+
+def _get_city_choice_label(result: api_geo.GeoCity) -> str:
+    return f"{result.name} ({regions_utils.get_department_code_from_city_code(result.insee_code)})"
+
+
+def prefill_cities_choice(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        autocomplete_field.choices = []
+        for city_code in autocomplete_field.data:
+            if cities := api_geo.search_city(insee_code=city_code, limit=1):  # uses cache
+                autocomplete_field.choices.append((cities[0].insee_code, _get_city_choice_label(cities[0])))
+            else:
+                autocomplete_field.choices.append((city_code, f"Code INSEE inconnu : {city_code}"))
+
+
+@blueprint.backoffice_web.route("/autocomplete/cities", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_cities() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    if not query_string:
+        return AutocompleteResponse(items=[])
+
+    results = api_geo.search_city(name=query_string, limit=NUM_RESULTS)
+    return AutocompleteResponse(
+        items=[AutocompleteItem(id=result.insee_code, text=_get_city_choice_label(result)) for result in results]
     )
