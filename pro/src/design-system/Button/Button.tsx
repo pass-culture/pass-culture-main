@@ -32,6 +32,7 @@ export const Button = forwardRef<
       transparent = false,
       fullWidth = false,
       tooltip,
+      type = 'button',
       /***** Icon props *****/
       icon,
       iconAlt,
@@ -67,6 +68,7 @@ export const Button = forwardRef<
     const Component = getComponentType(as, isExternal, isSectionLink)
     const componentProps = getComponentProps(
       Component,
+      type,
       absoluteUrl,
       disabled,
       isLoading,

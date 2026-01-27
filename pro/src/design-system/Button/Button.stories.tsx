@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import React from 'react'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
+import fullNextIcon from '@/icons/full-next.svg'
+import { fullIcons } from '@/ui-kit/Icons/iconsList'
 import { Button as ButtonComponent } from './Button'
 import { ButtonColor, ButtonProps, ButtonSize, ButtonVariant, IconPositionEnum } from './types'
-import { fullIcons } from '@/ui-kit/Icons/iconsList'
-import fullNextIcon from '@/icons/full-next.svg'
 
 const iconOptions = {
   none: null,
@@ -27,6 +27,7 @@ const meta: Meta<typeof ButtonComponent> = {
   decorators: [withRouter],
   args: {
     as: 'button',
+    type: 'button',
     color: ButtonColor.BRAND,
     variant: ButtonVariant.PRIMARY,
     size: ButtonSize.DEFAULT,
@@ -46,6 +47,11 @@ const meta: Meta<typeof ButtonComponent> = {
     as: {
       control: 'select',
       options: ['button', 'a'],
+    },
+    type: {
+      control: 'select',
+      options: ['button', 'submit', 'reset'],
+      if: { arg: 'as', eq: 'button' },
     },
     size: {
       control: 'select',

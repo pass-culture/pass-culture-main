@@ -1,5 +1,7 @@
 import { Link } from 'react-router'
 
+import type { ButtonTypeAttribute } from '../types'
+
 /**
  * Get the component type.
  * @param as - The component type.
@@ -27,8 +29,12 @@ export const getComponentType = (
  * @param isLoading - If true, the button will be loading.
  * @returns The props for the button.
  */
-export const getButtonProps = (disabled?: boolean, isLoading?: boolean) => {
-  return { disabled: disabled || isLoading }
+export const getButtonProps = (
+  type: ButtonTypeAttribute,
+  disabled?: boolean,
+  isLoading?: boolean
+) => {
+  return { type, disabled: disabled || isLoading }
 }
 
 /**
@@ -80,6 +86,7 @@ export const getLinkProps = (
  */
 export const getComponentProps = (
   Component: React.ElementType,
+  type: ButtonTypeAttribute,
   absoluteUrl: string,
   disabled?: boolean,
   isLoading?: boolean,
@@ -87,7 +94,7 @@ export const getComponentProps = (
 ) => {
   switch (Component) {
     case 'button':
-      return getButtonProps(disabled, isLoading)
+      return getButtonProps(type, disabled, isLoading)
     case 'a':
       return getAnchorProps(absoluteUrl, disabled, opensInNewTab)
     default:
