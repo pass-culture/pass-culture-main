@@ -8,15 +8,12 @@ from datetime import timedelta
 from typing import Any
 from typing import Callable
 from typing import TypeVar
-from typing import cast
 
 import pydantic as pydantic_v2
 from pydantic.v1.class_validators import validator
 from pydantic.v1.fields import Field
 from pydantic.v1.utils import GetterDict
 
-import pcapi.core.opening_hours.api as opening_hours_api
-import pcapi.core.opening_hours.schemas as opening_hours_schemas
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres.movie import get_movie_label
@@ -50,14 +47,14 @@ from pcapi.utils.date import format_into_utc_date
 logger = logging.getLogger(__name__)
 
 
-class OfferOffererResponse(BaseModel):
+class OfferOffererResponseV2(BaseModel):
     name: str
 
     class Config:
         orm_mode = True
 
 
-class OfferStockActivationCodeResponse(BaseModel):
+class OfferStockActivationCodeResponseV2(BaseModel):
     expirationDate: datetime | None
 
 
@@ -85,7 +82,7 @@ class OfferStockResponseGetterDict(GetterDict):
         return super().get(key, default)
 
 
-class OfferStockResponse(ConfiguredBaseModel):
+class OfferStockResponseV2(ConfiguredBaseModel):
     id: int
     beginningDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -96,7 +93,7 @@ class OfferStockResponse(ConfiguredBaseModel):
     isSoldOut: bool
     isExpired: bool
     price: int
-    activationCode: OfferStockActivationCodeResponse | None
+    activationCode: OfferStockActivationCodeResponseV2 | None
     priceCategoryLabel: str | None
     remainingQuantity: int | None
 
@@ -133,11 +130,11 @@ class OfferVenueResponseGetterDict(GetterDict):
         return super().get(key, default)
 
 
-class OfferVenueResponse(BaseModel):
+class OfferVenueResponseV2(BaseModel):
     id: int
     address: str | None
     city: str | None
-    managingOfferer: OfferOffererResponse = Field(..., alias="offerer")
+    managingOfferer: OfferOffererResponseV2 = Field(..., alias="offerer")
     name: str
     postalCode: str | None
     publicName: str
@@ -166,7 +163,7 @@ def get_id_converter(labels_by_id: dict, field_name: str) -> Callable[[str | Non
     return convert_id_into_label
 
 
-class GtlLabels(BaseModel):
+class GtlLabelsV2(BaseModel):
     label: str
     level01Label: str | None
     level02Label: str | None
@@ -174,7 +171,7 @@ class GtlLabels(BaseModel):
     level04Label: str | None
 
 
-class OfferExtraDataResponse(BaseModel):
+class OfferExtraDataResponseV2(BaseModel):
     allocineId: int | None
     author: str | None
     durationMinutes: int | None
@@ -192,7 +189,7 @@ class OfferExtraDataResponse(BaseModel):
     bookFormat: str | None
     cast: list[str] | None
     editeur: str | None
-    gtlLabels: GtlLabels | None
+    gtlLabels: GtlLabelsV2 | None
     genres: list[str] | None
 
     @validator("genres", pre=True, allow_reuse=True)
@@ -220,14 +217,14 @@ class OfferExtraDataResponse(BaseModel):
     )
 
 
-class OfferAccessibilityResponse(BaseModel):
+class OfferAccessibilityResponseV2(BaseModel):
     audioDisability: bool | None
     mentalDisability: bool | None
     motorDisability: bool | None
     visualDisability: bool | None
 
 
-class OfferImageResponse(BaseModel):
+class OfferImageResponseV2(BaseModel):
     url: str
     credit: str | None
 
@@ -235,13 +232,13 @@ class OfferImageResponse(BaseModel):
         orm_mode = True
 
 
-def get_gtl_labels(gtl_id: str) -> GtlLabels | None:
+def get_gtl_labels(gtl_id: str) -> GtlLabelsV2 | None:
     if gtl_id not in GTLS:
         return None
     gtl_infos = GTLS[gtl_id]
     label = gtl_infos.get("label")
     if label:
-        return GtlLabels(
+        return GtlLabelsV2(
             label=label,
             level01Label=gtl_infos.get("level_01_label"),
             level02Label=gtl_infos.get("level_02_label"),
@@ -284,7 +281,7 @@ class BaseOfferResponseGetterDict(GetterDict):
 
         if key == "artists":
             return (
-                [OfferArtist.from_orm(artist) for artist in product.artists if not artist.is_blacklisted]
+                [OfferArtistV2.from_orm(artist) for artist in product.artists if not artist.is_blacklisted]
                 if product
                 else []
             )
@@ -311,11 +308,11 @@ class BaseOfferResponseGetterDict(GetterDict):
             return offer.product.last_30_days_booking if offer.product else None
 
         if key == "stocks":
-            return [OfferStockResponse.from_orm(stock) for stock in offer.activeStocks]
+            return [OfferStockResponseV2.from_orm(stock) for stock in offer.activeStocks]
 
         if key == "extraData":
             raw_extra_data = (product.extraData if product else offer.extraData) or {}
-            extra_data = OfferExtraDataResponse.parse_obj(raw_extra_data)
+            extra_data = OfferExtraDataResponseV2.parse_obj(raw_extra_data)
 
             extra_data.durationMinutes = offer.durationMinutes
 
@@ -340,7 +337,7 @@ class BaseOfferResponseGetterDict(GetterDict):
             address: Address = offerer_address.address
             label = offerer_address.label
 
-            return OfferAddressResponse(
+            return OfferAddressResponseV2(
                 street=address.street,
                 postalCode=address.postalCode,
                 city=address.city,
@@ -371,23 +368,17 @@ class BaseOfferResponseGetterDict(GetterDict):
             if not (offer.metaData and offer.metaData.videoExternalId):
                 return None
 
-            return OfferVideo(
+            return OfferVideoV2(
                 id=offer.metaData.videoExternalId,
                 title=offer.metaData.videoTitle,
                 thumbUrl=offer.metaData.videoThumbnailUrl,
                 durationSeconds=offer.metaData.videoDuration,
             )
 
-        if key == "openingHours":
-            opening_hours = offer.openingHours
-            if opening_hours and isinstance(opening_hours, list):
-                return opening_hours_api.format_opening_hours(opening_hours)
-            return cast(opening_hours_schemas.WeekdayOpeningHoursTimespans | None, opening_hours)
-
         return super().get(key, default)
 
 
-class OfferAddressResponse(ConfiguredBaseModel):
+class OfferAddressResponseV2(ConfiguredBaseModel):
     street: str | None
     postalCode: str
     city: str
@@ -399,12 +390,12 @@ class OfferAddressResponse(ConfiguredBaseModel):
         orm_mode = True
 
 
-class ChronicleGetterDict(GetterDict):
+class ChroniclePreviewGetterDict(GetterDict):
     def get(self, key: str, default: Any = None) -> Any:
         chronicle = self._obj
         if key == "author":
             if chronicle.isIdentityDiffusible:
-                return ChronicleAuthor(
+                return ChroniclePreviewAuthorV2(
                     first_name=chronicle.firstName,
                     age=chronicle.age,
                     city=chronicle.city,
@@ -416,40 +407,66 @@ class ChronicleGetterDict(GetterDict):
         return super().get(key, default)
 
 
-class ChronicleAuthor(ConfiguredBaseModel):
+class ChroniclePreviewAuthorV2(ConfiguredBaseModel):
     first_name: str | None
     age: int | None
     city: str | None
 
 
-class BaseChronicle(ConfiguredBaseModel):
+class ChroniclePreviewV2(ConfiguredBaseModel):
     id: int
+    author: ChroniclePreviewAuthorV2 | None
+    content_preview: str
     date_created: datetime
-    author: ChronicleAuthor | None
 
     class Config:
-        getter_dict = ChronicleGetterDict
+        getter_dict = ChroniclePreviewGetterDict
 
 
-class ChroniclePreview(BaseChronicle):
-    content_preview: str
+class OfferChronicleGetterDict(GetterDict):
+    def get(self, key: str, default: Any = None) -> Any:
+        chronicle = self._obj
+        if key == "author":
+            if chronicle.isIdentityDiffusible:
+                return OfferChronicleAuthor(
+                    first_name=chronicle.firstName,
+                    age=chronicle.age,
+                    city=chronicle.city,
+                )
+            return None
+        if key == "content_preview":
+            return textwrap.shorten(chronicle.content, width=255, placeholder="…")
+
+        return super().get(key, default)
 
 
-class OfferChronicle(BaseChronicle):
+class OfferChronicleAuthor(ConfiguredBaseModel):
+    first_name: str | None
+    age: int | None
+    city: str | None
+
+
+class OfferChronicle(ConfiguredBaseModel):
+    id: int
+    author: OfferChronicleAuthor | None
     content: str
+    date_created: datetime
+
+    class Config:
+        getter_dict = OfferChronicleGetterDict
 
 
 class OfferChronicles(ConfiguredBaseModel):
     chronicles: list[OfferChronicle]
 
 
-class OfferArtist(ConfiguredBaseModel):
+class OfferArtistV2(ConfiguredBaseModel):
     id: str
     image: str | None
     name: str
 
 
-class OfferVideo(ConfiguredBaseModel):
+class OfferVideoV2(ConfiguredBaseModel):
     id: str
     title: str | None
     thumbUrl: str | None
@@ -458,15 +475,15 @@ class OfferVideo(ConfiguredBaseModel):
 
 class BaseOfferResponse(ConfiguredBaseModel):
     id: int
-    accessibility: OfferAccessibilityResponse
-    address: OfferAddressResponse | None
-    artists: list[OfferArtist]
-    chronicles: list[ChroniclePreview]
+    accessibility: OfferAccessibilityResponseV2
+    address: OfferAddressResponseV2 | None
+    artists: list[OfferArtistV2]
+    chronicles: list[ChroniclePreviewV2]
     chronicles_count: int | None
     description: str | None
     expense_domains: list[ExpenseDomain]
     externalTicketOfficeUrl: str | None
-    extraData: OfferExtraDataResponse | None
+    extraData: OfferExtraDataResponseV2 | None
     isExpired: bool
     isExternalBookingsDisabled: bool
     isEvent: bool
@@ -483,23 +500,22 @@ class BaseOfferResponse(ConfiguredBaseModel):
     publicationDate: datetime | None
     bookingAllowedDatetime: datetime | None
     reactions_count: ReactionCount
-    stocks: list[OfferStockResponse]
+    stocks: list[OfferStockResponseV2]
     subcategoryId: subcategories.SubcategoryIdEnum
-    venue: OfferVenueResponse
-    video: OfferVideo | None
+    venue: OfferVenueResponseV2
+    video: OfferVideoV2 | None
     withdrawalDetails: str | None
-    openingHours: opening_hours_schemas.WeekdayOpeningHoursTimespans | None
 
     class Config:
         getter_dict = BaseOfferResponseGetterDict
 
 
 class OfferResponse(BaseOfferResponse):
-    image: OfferImageResponse | None
+    image: OfferImageResponseV2 | None
 
 
 class OfferResponseV2(BaseOfferResponse):
-    images: dict[str, OfferImageResponse] | None
+    images: dict[str, OfferImageResponseV2] | None
 
 
 class OffersStocksResponseV2(BaseModel):

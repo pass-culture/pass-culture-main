@@ -43,7 +43,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class OffersTest:
     nb_queries = 1  # select offer
     nb_queries += 1  # select stocks
-    nb_queries += 1  # select opening hours
     nb_queries += 1  # select mediations
     nb_queries += 1  # select chronicles
 
@@ -82,7 +81,6 @@ class OffersTest:
             venue__name="il est venu le temps des names",
         )
         offers_factories.MediationFactory(id=111, offer=offer, thumbCount=1, credit="street credit")
-        offerers_factories.OpeningHoursFactory(offer=offer, venue=None)
 
         bookable_stock = offers_factories.EventStockFactory(
             offer=offer,
@@ -141,15 +139,6 @@ class OffersTest:
             "mentalDisability": False,
             "motorDisability": False,
             "visualDisability": True,
-        }
-        assert response.json["openingHours"] == {
-            "MONDAY": [["10:00", "13:00"], ["14:00", "19:30"]],
-            "TUESDAY": None,
-            "WEDNESDAY": None,
-            "THURSDAY": None,
-            "FRIDAY": None,
-            "SATURDAY": None,
-            "SUNDAY": None,
         }
         assert sorted(response.json["stocks"], key=lambda stock: stock["id"]) == sorted(
             [
@@ -517,7 +506,6 @@ class OffersV2Test:
     base_num_queries = 1  # select offer with joins
     base_num_queries += 1  # select mediations (selectinload)
     base_num_queries += 1  # select stocks (selectinload)
-    base_num_queries += 1  # select opening hours (selectinload)
     base_num_queries += 1  # select chronicles (selectinload)
 
     num_queries_with_product = 1  # select artists (selectinload)
@@ -1986,7 +1974,6 @@ class OffersStocksV2Test:
 
         nb_queries = 1  # select offer
         nb_queries += 1  # select stocks
-        nb_queries += 1  # select opening hours
         nb_queries += 1  # select mediations
         nb_queries += 1  # select chronicles
         with assert_num_queries(nb_queries):
