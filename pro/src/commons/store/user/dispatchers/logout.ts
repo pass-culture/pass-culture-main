@@ -8,6 +8,7 @@ import {
 export const logout = async () => {
   localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_OFFERER_ID)
   localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_VENUE_ID)
+  localStorageManager.removeItem(LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID)
 
   try {
     // we use fetch directly to avoid a circular import with request.ts

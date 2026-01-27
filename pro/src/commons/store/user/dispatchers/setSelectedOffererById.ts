@@ -13,7 +13,6 @@ import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleError } from '@/commons/errors/handleError'
 
-import { setAdminCurrentOfferer } from '../../offerer/dispatchers/setAdminCurrentOfferer'
 import {
   setCurrentOffererName,
   updateCurrentOfferer,
@@ -77,7 +76,6 @@ export const setSelectedOffererById = createAsyncThunk<
       const nextCurrentOfferer = await api.getOfferer(nextSelectedOffererId)
 
       dispatch(updateCurrentOfferer(nextCurrentOfferer))
-      await dispatch(setAdminCurrentOfferer(nextSelectedOffererId))
 
       const nextSelectedVenueListItem = venues.find(
         (venue) => venue.managingOffererId === nextSelectedOffererId
@@ -107,8 +105,6 @@ export const setSelectedOffererById = createAsyncThunk<
         dispatch(updateUserAccess('unattached'))
         // Users cannot neither fetch unattached venues nor their offerer details, so we just clear it from the store
         dispatch(updateCurrentOfferer(null))
-        // Clear admin offerer for admin pages
-        await dispatch(setAdminCurrentOfferer(null))
         // but we need the offerer name to show it in the header dropdown
         dispatch(setCurrentOffererName(nextCurrentOffererName))
         dispatch(setSelectedVenue(null))

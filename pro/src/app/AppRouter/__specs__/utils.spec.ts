@@ -7,6 +7,7 @@ import {
   hasNewHomepage,
   mustBeAuthenticated,
   mustBeUnauthenticated,
+  mustHaveSelectedAdminOfferer,
   mustHaveSelectedVenue,
   mustNotBeOnboarded,
 } from '../utils'
@@ -119,6 +120,35 @@ describe('utils', () => {
       })
 
       expect(mustNotBeOnboarded(permissions)).toBe(false)
+    })
+  })
+
+  describe('mustHaveSelectedAdminOfferer', () => {
+    it('should return true when user is authenticated and has selected admin offerer', () => {
+      const permissions = makeUserPermissions({
+        isAuthenticated: true,
+        hasSelectedAdminOfferer: true,
+      })
+
+      expect(mustHaveSelectedAdminOfferer(permissions)).toBe(true)
+    })
+
+    it('should return false when user does not have selected admin offerer', () => {
+      const permissions = makeUserPermissions({
+        isAuthenticated: true,
+        hasSelectedAdminOfferer: false,
+      })
+
+      expect(mustHaveSelectedAdminOfferer(permissions)).toBe(false)
+    })
+
+    it('should return false when user is not authenticated', () => {
+      const permissions = makeUserPermissions({
+        isAuthenticated: false,
+        hasSelectedAdminOfferer: true,
+      })
+
+      expect(mustHaveSelectedAdminOfferer(permissions)).toBe(false)
     })
   })
 

@@ -11,7 +11,7 @@ export type PriceTableEntryModel = Partial<
 >
 
 export interface PriceTableFormContext {
-  isCaledonian: boolean
+  isCaledonian: boolean | undefined
   mode: OFFER_WIZARD_MODE
   offer: GetIndividualOfferWithAddressResponseModel
 }

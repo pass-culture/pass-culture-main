@@ -5,10 +5,10 @@ import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import {
+  ensureOffererNames,
   selectCurrentOfferer,
-  selectOffererNames,
 } from '@/commons/store/offerer/selectors'
-import { LegalEntitySelect } from '@/components/LegalEntitySelect/LegalEntitySelect'
+import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { ReimbursementsTabs } from '@/components/ReimbursementsTabs/ReimbursementsTabs'
 
 import styles from './Reimbursement.module.scss'
@@ -20,7 +20,7 @@ export type ReimbursementsContextProps = {
 export const Reimbursements = (): JSX.Element => {
   const selectedOfferer = useAppSelector(selectCurrentOfferer)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-  const offererNames = useAppSelector(selectOffererNames)
+  const offererNames = useAppSelector(ensureOffererNames)
 
   return (
     <BasicLayout
@@ -28,7 +28,7 @@ export const Reimbursements = (): JSX.Element => {
       isAdminArea={withSwitchVenueFeature}
     >
       {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
-        <LegalEntitySelect />
+        <OffererSelect />
       )}
       <div className={styles['reimbursements-container']}>
         <div>

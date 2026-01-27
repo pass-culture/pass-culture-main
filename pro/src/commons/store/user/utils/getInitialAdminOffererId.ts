@@ -7,10 +7,6 @@ import {
 export const getInitialAdminOffererId = (
   offererNames: GetOffererNameResponseModel[]
 ): number | null => {
-  if (!offererNames || offererNames.length === 0) {
-    return null
-  }
-
   const savedAdminOffererId = localStorageManager.getItem(
     LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID
   )
@@ -25,5 +21,5 @@ export const getInitialAdminOffererId = (
     }
   }
 
-  return offererNames[0].id
+  return offererNames.at(0)?.id ?? null
 }

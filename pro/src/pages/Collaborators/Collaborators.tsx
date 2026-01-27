@@ -15,14 +15,13 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import {
-  selectAdminCurrentOfferer,
+  ensureOffererNames,
   selectCurrentOffererId,
-  selectOffererNames,
 } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
-import { LegalEntitySelect } from '@/components/LegalEntitySelect/LegalEntitySelect'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
@@ -46,8 +45,10 @@ export const Collaborators = (): JSX.Element | null => {
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
   const [showInvitationForm, setShowInvitationForm] = useState(false)
 
-  const adminSelectedOfferer = useAppSelector(selectAdminCurrentOfferer)
-  const offererNames = useAppSelector(selectOffererNames)
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.offerer.adminCurrentOfferer
+  )
+  const offererNames = useAppSelector(ensureOffererNames)
   const offererId = withSwitchVenueFeature
     ? adminSelectedOfferer?.id
     : currentOffererId
@@ -112,7 +113,7 @@ export const Collaborators = (): JSX.Element | null => {
       isAdminArea={withSwitchVenueFeature}
     >
       {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
-        <LegalEntitySelect />
+        <OffererSelect />
       )}
       <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>

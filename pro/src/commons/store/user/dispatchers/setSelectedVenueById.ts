@@ -57,7 +57,7 @@ export const setSelectedVenueById = createAsyncThunk<
       dispatch(updateUserAccess(nextUserAccess))
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
       if (!shouldSkipAdminOffererId) {
-        await dispatch(setAdminCurrentOfferer(nextSelectedOfferer.id))
+        await dispatch(setAdminCurrentOfferer(nextSelectedOfferer))
       }
       // TODO (igabriele, 2025-10-28): Handle that case properly before the end of `WIP_SWITCH_VENUE`.
       dispatch(setCurrentOffererName(nextSelectedOffererName))

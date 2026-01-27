@@ -1,13 +1,11 @@
-import {
-  selectAdminCurrentOfferer,
-  selectCurrentOfferer,
-} from 'commons/store/offerer/selectors'
+import { selectCurrentOfferer } from 'commons/store/offerer/selectors'
 
 import { useAppSelector } from './useAppSelector'
 
 export const useIsCaledonian = (isAdmin = false) => {
-  const offerer = useAppSelector(
-    isAdmin ? selectAdminCurrentOfferer : selectCurrentOfferer
+  const offerer = useAppSelector(selectCurrentOfferer)
+  const isAdminOfferer = useAppSelector(
+    (store) => store.offerer.adminCurrentOfferer
   )
-  return offerer?.isCaledonian ?? false
+  return isAdmin ? isAdminOfferer?.isCaledonian : offerer?.isCaledonian
 }

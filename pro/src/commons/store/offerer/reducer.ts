@@ -4,7 +4,7 @@ import type { GetOffererNameResponseModel } from '@/apiClient/v1'
 import type { GetOffererResponseModel } from '@/apiClient/v1/models/GetOffererResponseModel'
 
 export type OffererState = {
-  offererNames: null | GetOffererNameResponseModel[]
+  offererNames: GetOffererNameResponseModel[] | null
   currentOfferer: GetOffererResponseModel | null
   /**
    * Used to display the offerer name in the header when the user is still "unattached" to this offerer
@@ -14,7 +14,7 @@ export type OffererState = {
   adminCurrentOfferer: GetOffererResponseModel | null
 }
 
-const initialState: OffererState = {
+export const initialState: OffererState = {
   offererNames: null,
   currentOfferer: null,
   currentOffererName: null,
