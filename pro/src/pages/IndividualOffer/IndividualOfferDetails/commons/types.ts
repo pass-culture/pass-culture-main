@@ -1,5 +1,6 @@
 import type {
   GetIndividualOfferResponseModel,
+  OfferArtistsResponseModel,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
@@ -15,6 +16,7 @@ export type DetailsFormValues = {
   showSubType?: string
   gtl_id?: string
   author?: string
+  artists: Array<OfferArtistsResponseModel>
   performer?: string
   ean?: string
   eanSearch?: string
