@@ -46,6 +46,7 @@ from pcapi.core.search import search_offer_ids
 from pcapi.core.search.models import IndexationReason
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.models.offer_mixin import OfferValidationType
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.filters import format_amount
@@ -423,6 +424,7 @@ class OfferDetailsActionType(enum.StrEnum):
     ACTIVATE = enum.auto()
     DEACTIVATE = enum.auto()
     VALIDATE = enum.auto()
+    PENDING = enum.auto()
     REJECT = enum.auto()
     TAG_WEIGHT = enum.auto()
     RESYNC = enum.auto()
@@ -957,6 +959,35 @@ def batch_validate_offers() -> utils.BackofficeResponse:
     return _render_offer_rows(form.object_ids_list)
 
 
+@list_offers_blueprint.route("/batch/pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_batch_pending_offers_form() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id="#offers-table",
+        form=form,
+        dst=url_for("backoffice_web.offer.batch_pending_offers"),
+        div_id="batch-pending-offer-modal",
+        title="Voulez-vous mettre en attente les offres sélectionnées ?",
+        button_text="Valider",
+    )
+
+
+@list_offers_blueprint.route("/batch-pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def batch_pending_offers() -> utils.BackofficeResponse:
+    form = empty_forms.BatchForm()
+    if not form.validate():
+        mark_transaction_as_invalid()
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(request.referrer, 400)
+
+    _batch_pending_offers(form.object_ids_list)
+    flash("Les offres repasseront en instruction et ne seront plus réservables. Les réservations en cours ne seront pas annulées.", "success")
+    return _render_offer_rows(form.object_ids_list)
+
+
 @list_offers_blueprint.route("/batch/reject", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_batch_reject_offers_form() -> utils.BackofficeResponse:
@@ -1159,6 +1190,39 @@ def validate_offer(offer_id: int) -> utils.BackofficeResponse:
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
 
 
+@list_offers_blueprint.route("/<int:offer_id>/pending", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def get_pending_offer_form(offer_id: int) -> utils.BackofficeResponse:
+    offer = db.session.query(offers_models.Offer).filter_by(id=offer_id).one_or_none()
+
+    if not offer:
+        raise NotFound()
+
+    form = empty_forms.DynamicForm(utils.get_query_params())
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id=f"#offer-row-{offer_id}",
+        form=form,
+        dst=url_for("backoffice_web.offer.pending_offer", offer_id=offer.id),
+        div_id=f"pending-offer-modal-{offer.id}",
+        title=f"Mettre en attente l'offre {offer.name}",
+        button_text="Mettre l'offre en attente",
+        ajax_submit=not form.redirect.data,
+    )
+
+
+@list_offers_blueprint.route("/<int:offer_id>/pending", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
+def pending_offer(offer_id: int) -> utils.BackofficeResponse:
+    _batch_pending_offers([offer_id])
+    flash("L’offre repassera en instruction et ne sera plus réservable. Les réservations en cours ne seront pas annulées", "success")
+
+    if utils.is_request_from_htmx():
+        return _render_offer_rows([offer_id])
+    return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
+
+
 @list_offers_blueprint.route("/<int:offer_id>/reject", methods=["GET"])
 @utils.permission_required(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 def get_reject_offer_form(offer_id: int) -> utils.BackofficeResponse:
@@ -1245,6 +1309,8 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
 
     for offer, max_price in offers:
         if offer.validation != new_validation:
+            was_manually_pending = offer.validation == OfferValidationStatus.PENDING and offer.lastValidationType == OfferValidationType.MANUAL
+
             old_validation = offer.validation
             offer.validation = new_validation
             offer.lastValidationDate = date_utils.get_naive_utc_now()
@@ -1261,6 +1327,10 @@ def _batch_validate_offers(offer_ids: list[int]) -> None:
                 offer.lastValidationPrice = max_price
 
             db.session.add(offer)
+
+            if was_manually_pending:
+                # the admin will handle the communication with the offerer manually
+                continue
 
             # TODO(jbaudet-pass): this might trigger some extra queries
             # -> add missing load option to the offers query
@@ -1335,6 +1405,25 @@ def _batch_reject_offers(offer_ids: list[int]) -> None:
         )
 
 
+def _batch_pending_offers(offer_ids: list[int]) -> None:
+    db.session.query(offers_models.Offer).filter(offers_models.Offer.id.in_(offer_ids)).update(
+        {
+            "validation": OfferValidationStatus.PENDING,
+            "lastValidationType": OfferValidationType.MANUAL,
+            "lastValidationAuthorUserId": None,
+            "lastValidationDate": date_utils.get_naive_utc_now(),
+        },
+        synchronize_session=False,
+    )
+    on_commit(
+        functools.partial(
+            search.async_index_offer_ids,
+            offer_ids,
+            reason=IndexationReason.OFFER_BATCH_VALIDATION,
+        )
+    )
+
+
 def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> OfferDetailsActions:
     offer_details_actions = OfferDetailsActions(threshold)
     if offer.isActive and utils.has_current_user_permission(perm_models.Permissions.ADVANCED_PRO_SUPPORT):
@@ -1343,6 +1432,7 @@ def _get_offer_details_actions(offer: offers_models.Offer, threshold: int) -> Of
         offer_details_actions.add_action(OfferDetailsActionType.ACTIVATE)
     if utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         offer_details_actions.add_action(OfferDetailsActionType.VALIDATE)
+        offer_details_actions.add_action(OfferDetailsActionType.PENDING)
         offer_details_actions.add_action(OfferDetailsActionType.REJECT)
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS):
         offer_details_actions.add_action(OfferDetailsActionType.TAG_WEIGHT)
@@ -1937,7 +2027,7 @@ def batch_activate_offers() -> utils.BackofficeResponse:
 @utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
 def deactivate_offer(offer_id: int) -> utils.BackofficeResponse:
     _batch_update_activation_offers([offer_id], is_active=False)
-    flash("L'offre a été mise en pause", "success")
+    flash("L'offre a été mise en pause, l’acteur pourra la réactiver", "success")
     if utils.is_request_from_htmx():
         return _render_offer_rows([offer_id])
     return redirect(request.referrer or url_for("backoffice_web.offer.list_offers"), 303)
@@ -1953,5 +2043,5 @@ def batch_deactivate_offers() -> utils.BackofficeResponse:
         return redirect(request.referrer, 400)
 
     _batch_update_activation_offers(form.object_ids_list, is_active=False)
-    flash("Les offres ont été mises en pause", "success")
+    flash("Les offres ont été mises en pause, l’acteur pourra les réactiver", "success")
     return _render_offer_rows(form.object_ids_list)
