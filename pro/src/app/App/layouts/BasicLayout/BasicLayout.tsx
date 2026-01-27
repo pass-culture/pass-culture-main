@@ -36,6 +36,10 @@ interface BasicLayoutProps {
    * Optional: configure the back button in the header
    */
   isAdminArea?: boolean
+  /**
+   * Optional: display the Lateral Panel
+   */
+  displayLateralPanel?: boolean
 }
 
 export const BasicLayout = ({
@@ -44,6 +48,7 @@ export const BasicLayout = ({
   mainSubHeading,
   isStickyActionBarInChild = false,
   isAdminArea = false,
+  displayLateralPanel = true,
 }: BasicLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
@@ -57,7 +62,7 @@ export const BasicLayout = ({
       className={styles['main-heading']}
       mainHeading={mainHeading}
       mainSubHeading={mainSubHeading}
-      shouldDisplayBackToNavLink
+      shouldDisplayBackToNavLink={displayLateralPanel}
     />
   )
 
@@ -78,23 +83,30 @@ export const BasicLayout = ({
         ref={openButtonRef}
         isAdminArea={isAdminArea}
       />
+
       <div
         className={cn(styles['page-layout'], {
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
-        <LateralPanel
-          isOpen={isLateralPanelOpen}
-          onToggle={setIsLateralPanelOpen}
-          openButtonRef={openButtonRef}
-          closeButtonRef={closeButtonRef}
-          navPanel={navPanel}
-          isAdminArea={isAdminArea}
-        />
+        {displayLateralPanel && (
+          <LateralPanel
+            isOpen={isLateralPanelOpen}
+            onToggle={setIsLateralPanelOpen}
+            openButtonRef={openButtonRef}
+            closeButtonRef={closeButtonRef}
+            navPanel={navPanel}
+            isAdminArea={isAdminArea}
+          />
+        )}
         <div id="content-wrapper" className={styles['content-wrapper']}>
           <div className={styles['content-container']}>
             <main id="content">
-              <div className={styles.content}>
+              <div
+                className={cn(styles.content, {
+                  [styles['content-no-lateral-panel']]: !displayLateralPanel,
+                })}
+              >
                 {mainHeadingWrapper}
                 {children}
               </div>

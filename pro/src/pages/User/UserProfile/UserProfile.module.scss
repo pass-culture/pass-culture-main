@@ -1,9 +1,9 @@
 @use "styles/mixins/_rem.scss" as rem;
 
 .profil-container {
-  max-width: rem.torem(810px);
-}
-
-.banner {
-  margin-bottom: var(--size-spacing-l);
+  display: flex;
+  flex-direction: column;
+  width: rem.torem(826px);
+  gap: 32px;
+  margin-bottom: 32px;
 }

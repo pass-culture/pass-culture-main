@@ -53,6 +53,10 @@ $connect-as-header-height: rem.torem(52px);
   max-width: 100%;
   border: none;
   margin: 0;
+
+  &-no-lateral-panel {
+    justify-self: center;
+  }
 }
 
 .main-heading {
