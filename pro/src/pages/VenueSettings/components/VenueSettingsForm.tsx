@@ -11,13 +11,13 @@ import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFie
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
 import { ReimbursementFields } from '@/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
@@ -29,7 +29,6 @@ import type {
 import { SiretOrCommentFields } from './SiretOrCommentFields/SiretOrCommentFields'
 import { OffersSynchronization } from './VenueProvidersManager/OffersSynchronization/OffersSynchronization'
 import { WithdrawalDetails } from './WithdrawalDetails/WithdrawalDetails'
-
 export interface VenueSettingsFormProps {
   offerer: GetOffererResponseModel
   venueProviders: VenueProviderResponse[]
@@ -120,14 +119,17 @@ export const VenueSettingsForm = ({
 
               <FormLayout.Row>
                 <Button
-                  variant={ButtonVariant.QUATERNARY}
+                  type="button"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
                   icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
                   onClick={toggleManuallySetAddress}
-                >
-                  {manuallySetAddress
-                    ? 'Revenir à la sélection automatique'
-                    : 'Vous ne trouvez pas votre adresse ?'}
-                </Button>
+                  label={
+                    manuallySetAddress
+                      ? 'Revenir à la sélection automatique'
+                      : 'Vous ne trouvez pas votre adresse ?'
+                  }
+                />
               </FormLayout.Row>
               {manuallySetAddress && <AddressManual />}
             </>

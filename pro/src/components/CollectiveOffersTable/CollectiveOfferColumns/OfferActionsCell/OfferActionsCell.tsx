@@ -40,11 +40,7 @@ import { ArchiveConfirmationModal } from '@/components/ArchiveConfirmationModal/
 import { CancelCollectiveBookingModal } from '@/components/CancelCollectiveBookingModal/CancelCollectiveBookingModal'
 import { ShareLinkDrawer } from '@/components/CollectiveOffer/ShareLinkDrawer/ShareLinkDrawer'
 import { Button } from '@/design-system/Button/Button'
-import {
-  ButtonColor,
-  ButtonSize,
-  ButtonVariant,
-} from '@/design-system/Button/types'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullClearIcon from '@/icons/full-clear.svg'
 import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
@@ -323,12 +319,11 @@ export const OfferActionsCell = ({
             </DropdownMenu.Item>
           )}
           {canEditOffer && (
-            <DropdownMenu.Item className={styles['menu-item']} asChild>
+            <DropdownMenu.Item className={styles['menu-item']}>
               <Button
                 as="a"
-                variant={ButtonVariant.SECONDARY}
+                variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
-                size={ButtonSize.SMALL}
                 to={editionOfferLink}
                 icon={fullPenIcon}
                 onClick={handleEditOfferClick}

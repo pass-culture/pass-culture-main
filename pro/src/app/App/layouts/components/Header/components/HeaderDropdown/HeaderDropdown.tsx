@@ -235,11 +235,12 @@ export const HeaderDropdown = () => {
                         <DropdownMenu.Separator
                           className={styles['separator']}
                         />
-                        <DropdownMenu.Item asChild>
+                        <DropdownMenu.Item className={styles['menu-item']}>
                           <Button
                             as="a"
                             icon={fullMoreIcon}
-                            className={styles['menu-item']}
+                            variant={ButtonVariant.TERTIARY}
+                            color={ButtonColor.NEUTRAL}
                             to="/inscription/structure/recherche"
                             label="Ajouter une structure"
                           />

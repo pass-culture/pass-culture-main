@@ -2,12 +2,9 @@
 @use "styles/mixins/_size.scss" as size;
 
 .action-bar {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap-reverse;
   grid-template-columns: 1fr;
   gap: var(--size-spacing-l);
   max-width: rem.torem(486px);
-
-  @media (min-width: size.$tablet) {
-    grid-template-columns: 1fr 1fr;
-  }
 }

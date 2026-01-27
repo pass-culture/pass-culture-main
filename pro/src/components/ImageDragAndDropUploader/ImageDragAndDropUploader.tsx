@@ -14,11 +14,14 @@ import {
 } from '@/components/ModalImageUpsertOrEdit/ModalImageUpsertOrEdit'
 import { ImagePlaceholder } from '@/components/SafeImage/ImagePlaceholder/ImagePlaceholder'
 import { SafeImage } from '@/components/SafeImage/SafeImage'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ImageDragAndDropUploader.module.scss'
 export interface ImageDragAndDropUploaderProps {
@@ -138,12 +141,13 @@ export const ImageDragAndDropUploader = ({
             shouldDisplayActions && (
               <Button
                 ref={updateImageRef}
-                variant={ButtonVariant.TERNARY}
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                size={ButtonSize.SMALL}
                 aria-label="Modifier l’image"
                 icon={fullEditIcon}
-              >
-                Modifier
-              </Button>
+                label="Modifier"
+              />
             )
           }
           refToFocusOnClose={refToFocusOnClose}
@@ -151,15 +155,12 @@ export const ImageDragAndDropUploader = ({
         {shouldDisplayActions && (
           <Button
             onClick={onImageDeleteHandler}
-            variant={ButtonVariant.TERNARY}
-          >
-            <SvgIcon
-              alt=""
-              className={styles['button-image-delete-icon']}
-              src={fullTrashIcon}
-            />
-            Supprimer
-          </Button>
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
+            icon={fullTrashIcon}
+            label="Supprimer"
+          />
         )}
       </div>
       {!hasImage && (

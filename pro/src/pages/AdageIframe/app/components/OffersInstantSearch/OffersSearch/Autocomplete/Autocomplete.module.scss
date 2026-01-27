@@ -19,6 +19,7 @@
       justify-content: center;
       z-index: 2;
       padding: 0 var(--size-spacing-l);
+      gap: var(--size-spacing-l);
     }
 
     &-input {
@@ -31,11 +32,7 @@
     @include forms.input-theme;
 
     position: relative;
-    min-height: rem.torem(48px);
-    border-radius: var(--size-border-radius-xl);
-    border-bottom-right-radius: 0;
-    border-top-right-radius: 0;
-    padding-left: rem.torem(36px);
+    padding-left: rem.torem(42px);
 
     @include forms.input-theme-nested;
 
@@ -49,12 +46,6 @@
       align-items: center;
       justify-content: center;
     }
-  }
-
-  &-search-button {
-    border-bottom-left-radius: 0;
-    border-top-left-radius: 0;
-    min-height: rem.torem(48px);
   }
 }
 

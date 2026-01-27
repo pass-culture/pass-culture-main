@@ -1,33 +1,33 @@
-import type React from 'react'
 import type { FunctionComponent } from 'react'
 
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { WEBAPP_URL } from '@/commons/utils/config'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import type { SharedButtonProps } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import type { ButtonProps } from '@/design-system/Button/types'
 
-interface DisplayOfferInAppLinkProps extends SharedButtonProps {
+type ButtonLinkProps = Partial<Omit<ButtonProps, 'id'>>
+interface DisplayOfferInAppLinkProps extends ButtonLinkProps {
   id: number
-  children: React.ReactNode
   onClick?: () => void
   className?: string
 }
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, icon, iconAlt, children, variant, onClick, className }) => {
+> = ({ id, label, icon, iconAlt, variant, onClick }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
   const { logEvent } = useAnalytics()
 
   return (
-    <ButtonLink
+    <Button
+      as="a"
+      label={label}
       to={offerPreviewUrl}
       isExternal
       variant={variant}
       icon={icon}
       iconAlt={iconAlt}
-      className={className}
       onClick={(event) => {
         event.preventDefault()
         logEvent(Events.CLICKED_VIEW_APP_OFFER, {
@@ -46,8 +46,6 @@ export const DisplayOfferInAppLink: FunctionComponent<
 
         return false
       }}
-    >
-      {children}
-    </ButtonLink>
+    />
   )
 }

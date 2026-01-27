@@ -21,9 +21,9 @@ import { SummaryLayout } from '@/components/SummaryLayout/SummaryLayout'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { Banner } from '@/design-system/Banner/Banner'
+import { ButtonVariant } from '@/design-system/Button/types'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './IndividualOfferSummaryDetailsScreen.module.scss'
@@ -208,10 +208,8 @@ export function IndividualOfferSummaryDetailsScreen({
             <DisplayOfferInAppLink
               id={offer.id}
               variant={ButtonVariant.SECONDARY}
-              className={styles['app-link']}
-            >
-              Visualiser dans l’app
-            </DisplayOfferInAppLink>
+              label="Visualiser dans l’app"
+            />
           </div>
         )}
       </SummaryAside>

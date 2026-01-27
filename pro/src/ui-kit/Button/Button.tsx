@@ -44,6 +44,8 @@ export interface ButtonProps
  * @accessibility
  * - Use descriptive labels.
  * - When using an icon as content for the button, provide a tooltip describing the action.
+ *
+ * @deprecated Use `<Button as="button" />` from `@/design-system/` instead
  */
 export const Button = forwardRef(
   (

@@ -413,7 +413,6 @@ export const Autocomplete = ({
                   // avoids onfocus code when "Rechercher" is clicked
                   e.preventDefault()
                 }}
-                className={styles['form-search-button']}
                 label="Rechercher"
               />
             </div>

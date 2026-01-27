@@ -45,7 +45,7 @@ export const CollectiveOffersDownloadDrawer = ({
       title="Télécharger les offres"
       trigger={
         <Button
-          variant={ButtonVariant.PRIMARY}
+          variant={ButtonVariant.SECONDARY}
           disabled={isDisabled || isDownloading}
           label="Télécharger"
         />

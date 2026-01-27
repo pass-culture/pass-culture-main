@@ -58,7 +58,7 @@ export const BoxRounded = ({
         {displayEditButton && (
           <div className={styles['modify-button-container']}>
             <Button
-              variant={ButtonVariant.TERTIARY}
+              variant={ButtonVariant.SECONDARY}
               color={ButtonColor.NEUTRAL}
               size={ButtonSize.SMALL}
               onClick={onClickModify}

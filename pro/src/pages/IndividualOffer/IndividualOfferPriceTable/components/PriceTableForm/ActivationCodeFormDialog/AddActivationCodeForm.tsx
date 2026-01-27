@@ -48,7 +48,7 @@ export const AddActivationCodeForm = ({
           as="a"
           isExternal
           to="/csvtemplates/CodesActivations-Gabarit.csv"
-          type="text/csv"
+          // type="text/csv" // TODO: jclery-pass: Refactor <Button as="a"> polymorphic component to accept "string | undefined"
           opensInNewTab
           icon={fullDownloadIcon}
           label="Gabarit CSV(.csv, 50 ko)"

@@ -9,12 +9,12 @@ import {
 import type { OfferEducationalFormValues } from '@/commons/core/OfferEducational/types'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
 import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -141,15 +141,18 @@ export const FormLocation = ({
                     }
                   />
                   <Button
-                    variant={ButtonVariant.QUATERNARY}
+                    type="button"
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
                     icon={isManualEdition ? fullBackIcon : fullNextIcon}
                     onClick={toggleManualAddressForm}
                     disabled={disableForm}
-                  >
-                    {isManualEdition
-                      ? 'Revenir à la sélection automatique'
-                      : 'Vous ne trouvez pas votre adresse ?'}
-                  </Button>
+                    label={
+                      isManualEdition
+                        ? 'Revenir à la sélection automatique'
+                        : 'Vous ne trouvez pas votre adresse ?'
+                    }
+                  />
                   {isManualEdition && (
                     <AddressManual
                       gpsCalloutMessage={
