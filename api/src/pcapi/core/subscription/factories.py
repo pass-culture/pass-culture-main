@@ -23,6 +23,7 @@ from pcapi.core.subscription.ubble import schemas as ubble_schemas
 from pcapi.core.users import constants as users_constants
 from pcapi.core.users import models as users_models
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import countries as countries_utils
 from pcapi.utils import date as date_utils
 
 
@@ -155,7 +156,7 @@ class QuotientFamilialCustodianFactory(factory.Factory):
     common_name: str | None = None
     birth_date = factory.Faker("date_of_birth", minimum_age=20)
     gender = users_models.GenderEnum.F
-    birth_country_cog_code = "99100"
+    birth_country_cog_code = countries_utils.FRANCE_INSEE_CODE
     birth_city_cog_code = "08480"
 
 

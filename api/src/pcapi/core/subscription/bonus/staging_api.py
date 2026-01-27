@@ -12,6 +12,7 @@ from pcapi.connectors import api_particulier
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription.bonus import schemas as bonus_schemas
 from pcapi.core.users import models as users_models
+from pcapi.utils import countries as countries_utils
 
 
 NOT_FOUND_CUSTODIAN = bonus_schemas.QuotientFamilialCustodian(
@@ -20,7 +21,7 @@ NOT_FOUND_CUSTODIAN = bonus_schemas.QuotientFamilialCustodian(
     first_names=["alexis"],
     birth_date=datetime.date(1982, 12, 7),
     gender=users_models.GenderEnum.F,
-    birth_country_cog_code=api_particulier.FRANCE_INSEE_CODE,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
 CUSTODIAN_WITH_CHILDREN = bonus_schemas.QuotientFamilialCustodian(
@@ -29,7 +30,7 @@ CUSTODIAN_WITH_CHILDREN = bonus_schemas.QuotientFamilialCustodian(
     first_names=["aleixs", "gréôme", "jean-philippe"],
     birth_date=datetime.date(1982, 12, 27),
     gender=users_models.GenderEnum.F,
-    birth_country_cog_code=api_particulier.FRANCE_INSEE_CODE,
+    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
     birth_city_cog_code="08480",
 )
 

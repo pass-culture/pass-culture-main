@@ -11,6 +11,7 @@ from pcapi import settings
 from pcapi.connectors import api_particulier
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.users import models as users_models
+from pcapi.utils import countries as countries_utils
 
 from tests.core.subscription.bonus.bonus_fixtures import QUOTIENT_FAMILIAL_FIXTURE
 
@@ -22,7 +23,7 @@ def test_get_quotient_familial_for_french_household(requests_mock):
         first_names=["aleixs", "gréôme", "jean-philippe"],
         birth_date=date(1982, 12, 27),
         gender=users_models.GenderEnum.F,
-        birth_country_cog_code="99100",
+        birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
         birth_city_cog_code="08480",
     )
     requests_mock.get(
@@ -41,7 +42,7 @@ def test_get_quotient_familial_for_french_household(requests_mock):
         "moisDateNaissance": ["12"],
         "jourDateNaissance": ["27"],
         "sexeEtatCivil": ["F"],
-        "codeCogInseePaysNaissance": [api_particulier.FRANCE_INSEE_CODE],
+        "codeCogInseePaysNaissance": [countries_utils.FRANCE_INSEE_CODE],
         "codeCogInseeCommuneNaissance": ["08480"],
         "annee": ["2023"],
         "mois": ["6"],
@@ -79,7 +80,7 @@ def test_get_quotient_familial_for_french_household(requests_mock):
 
 def test_get_quotient_familial_for_french_born_custodian_without_city_code(requests_mock):
     custodian = subscription_factories.QuotientFamilialCustodianFactory(
-        birth_country_cog_code="99100", birth_city_cog_code=""
+        birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE, birth_city_cog_code=""
     )
     requests_mock.get(
         api_particulier.QUOTIENT_FAMILIAL_ENDPOINT,

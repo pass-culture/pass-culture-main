@@ -422,6 +422,14 @@ class PCTomSelectField(PCSelectMultipleField):
     def tomselect_items(self) -> str:
         return json.dumps([str(choice_value) for choice_value, _ in self.choices])
 
+    @property
+    def single_data(self) -> str | None:
+        if self.multiple:
+            raise AttributeError("single_data")
+        if not self.data or not self.data[0]:
+            return None
+        return self.data[0]
+
     def pre_validate(self, form: wtforms.Form) -> None:
         if self.data and not self.validate_choice:
             # validate_choice is set to False when choices are not pre-loaded, in case of database search.

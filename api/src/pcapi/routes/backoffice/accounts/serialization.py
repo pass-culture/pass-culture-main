@@ -11,6 +11,7 @@ from pcapi import settings
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import utils as finance_utils
 from pcapi.core.history import models as history_models
+from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
 from pcapi.core.subscription.dms import schemas as dms_schemas
@@ -191,8 +192,11 @@ class EmailChangeAction(AccountAction):
 
 
 class FraudCheckAction(AccountAction):
-    def __init__(self, fraud_check: subscription_models.BeneficiaryFraudCheck):
+    def __init__(
+        self, fraud_check: subscription_models.BeneficiaryFraudCheck, bo_user: users_models.User | None = None
+    ):
         self._fraud_check = fraud_check
+        self._bo_user = bo_user
 
     @property
     def actionType(self) -> history_models.ActionType | str:
@@ -204,10 +208,21 @@ class FraudCheckAction(AccountAction):
 
     @property
     def comment(self) -> str | None:
+        if self._fraud_check.reasonCodes:
+            if self._fraud_check.type != subscription_models.FraudCheckType.QF_BONUS_CREDIT or (
+                self._bo_user
+                and perm_models.Permissions.READ_BENEFICIARY_BONUS_CREDIT
+                in self._bo_user.backoffice_profile.permissions
+            ):
+                reason_codes = [getattr(reason, "value", str(reason)) for reason in self._fraud_check.reasonCodes]
+            else:
+                reason_codes = ["raison confidentielle"]
+        else:
+            reason_codes = ["raison inconnue"]
         return (
             f"{self._fraud_check.type.value}, {getattr(self._fraud_check.eligibilityType, 'value', '[éligibilité inconnue]')}, "
             f"{self._fraud_check.status.value if self._fraud_check.status else 'Statut inconnu'}, "
-            f"{getattr(self._fraud_check.reasonCodes, 'value', '[raison inconnue]')}, {self._fraud_check.reason}"
+            f"{' + '.join(reason_codes)}, {self._fraud_check.reason}"
         )
 
 

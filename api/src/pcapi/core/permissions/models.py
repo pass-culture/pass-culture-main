@@ -33,6 +33,8 @@ class Permissions(enum.Enum):
     BENEFICIARY_FRAUD_ACTIONS = "actions exclusives à l'équipe Fraude (jeune)"
     BENEFICIARY_MANUAL_REVIEW = "effectuer une revue manuelle d'obtention de crédit"
     READ_FRAUDULENT_BOOKING_INFO = "visualiser les informations sur les réservations frauduleuses"
+    READ_BENEFICIARY_BONUS_CREDIT = "visualiser les détails des demandes de bonification"
+    REQUEST_BENEFICIARY_BONUS_CREDIT = "demander la bonification pour un bénéficiaire"
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"
