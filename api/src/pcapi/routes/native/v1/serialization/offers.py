@@ -17,6 +17,7 @@ from pydantic.v1.utils import GetterDict
 
 import pcapi.core.opening_hours.api as opening_hours_api
 import pcapi.core.opening_hours.schemas as opening_hours_schemas
+from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings.api import compute_booking_cancellation_limit_date
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres.movie import get_movie_label
@@ -283,12 +284,19 @@ class BaseOfferResponseGetterDict(GetterDict):
             }
 
         if key == "artists":
-            return (
-                [OfferArtist.from_orm(artist) for artist in product.artists if not artist.is_blacklisted]
-                if product
-                else []
-            )
+            if not product:
+                return []
 
+            return [
+                OfferArtist(
+                    id=artist_link.artist.id,
+                    image=artist_link.artist.image,
+                    name=artist_link.artist.name,
+                    role=artist_link.artist_type if artist_link.artist_type else None,
+                )
+                for artist_link in product.artistLinks
+                if not artist_link.artist.is_blacklisted
+            ]
         if key == "expense_domains":
             return get_expense_domains(offer)
 
@@ -447,6 +455,7 @@ class OfferArtist(ConfiguredBaseModel):
     id: str
     image: str | None
     name: str
+    role: ArtistType | None
 
 
 class OfferVideo(ConfiguredBaseModel):

@@ -345,6 +345,15 @@
                 "title": "ArtistResponse",
                 "type": "object"
             },
+            "ArtistType": {
+                "description": "A link Artist <> Product also bears a type\nAn artist can be an author or a musician for different products",
+                "enum": [
+                    "author",
+                    "performer",
+                    "stage_director"
+                ],
+                "title": "ArtistType"
+            },
             "AudioDisability": {
                 "additionalProperties": false,
                 "properties": {
@@ -3231,6 +3240,14 @@
                     "name": {
                         "title": "Name",
                         "type": "string"
+                    },
+                    "role": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ArtistType"
+                            }
+                        ],
+                        "nullable": true
                     }
                 },
                 "required": [
