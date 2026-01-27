@@ -279,7 +279,7 @@ def get_offers_data_from_top_offers(top_offers: list[dict]) -> list[dict]:
     return sorted_data_list
 
 
-def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
+def get_offers_details(offer_ids: list[int]) -> sa_orm.Query[models.Offer]:
     return (
         db.session.query(models.Offer)
         .options(
@@ -375,7 +375,6 @@ def get_offers_details(offer_ids: list[int]) -> sa_orm.Query:
             models.Offer.id.in_(offer_ids),
             models.Offer.validation == models.OfferValidationStatus.APPROVED,
         )
-        .options(sa_orm.selectinload(models.Offer.openingHours))
     )
 
 
