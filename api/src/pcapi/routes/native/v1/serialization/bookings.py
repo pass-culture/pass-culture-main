@@ -12,7 +12,7 @@ from pcapi.core.offers.models import Stock
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.routes.native.v1.serialization.common_models import Coordinates
-from pcapi.routes.native.v1.serialization.offers import OfferImageResponse
+from pcapi.routes.native.v1.serialization.offers import OfferImageResponseV2
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.shared.price import convert_to_cent
 from pcapi.serialization.utils import to_camel
@@ -104,7 +104,7 @@ class BookingOfferResponse(BaseModel):
     bookingContact: str | None
     name: str
     extraData: BookingOfferExtraData | None
-    image: OfferImageResponse | None
+    image: OfferImageResponseV2 | None
     isDigital: bool
     isPermanent: bool
     subcategoryId: SubcategoryIdEnum
