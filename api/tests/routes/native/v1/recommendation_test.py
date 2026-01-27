@@ -116,9 +116,9 @@ class PlaylistTest:
             response = client.post("/native/v1/recommendation/playlist?modelEndpoint=dummy", json={"isEvent": True})
             assert response.status_code == 200
         query = dict(urllib.parse.parse_qsl(mocked.last_request.query))
-        assert query["modelEndpoint"] == "dummy"
+        assert query["model_endpoint"] == "dummy"
         body = json.loads(mocked.last_request.body)
-        assert body["isEvent"] is True
+        assert body["is_event"] is True
 
     @pytest.mark.settings(
         RECOMMENDATION_BACKEND="pcapi.connectors.recommendation.HttpBackend",
