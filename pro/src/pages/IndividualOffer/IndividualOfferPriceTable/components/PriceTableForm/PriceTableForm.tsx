@@ -42,7 +42,7 @@ import { makeFieldConstraints } from '../../commons/utils/makeFieldConstraints'
 import styles from './PriceTableForm.module.scss'
 
 export interface PriceTableFormProps {
-  isCaledonian: boolean
+  isCaledonian: boolean | undefined
   isReadOnly?: boolean
   mode: OFFER_WIZARD_MODE
   offer: GetIndividualOfferWithAddressResponseModel

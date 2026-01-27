@@ -7,10 +7,7 @@ import { api } from '@/apiClient/api'
 import { GET_VENUES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import {
-  selectAdminCurrentOfferer,
-  selectCurrentOffererId,
-} from '@/commons/store/offerer/selectors'
+import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { noop } from '@/commons/utils/noop'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { useIncome } from '@/pages/Reimbursements/Income/useIncome'
@@ -37,7 +34,9 @@ export const Income = () => {
   const [activeYear, setActiveYear] = useState<number>()
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const adminSelectedOfferer = useAppSelector(selectAdminCurrentOfferer)
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.offerer.adminCurrentOfferer
+  )
 
   const offererId = withSwitchVenueFeature
     ? adminSelectedOfferer?.id

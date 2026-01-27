@@ -8,7 +8,7 @@ import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectOffererNames } from '@/commons/store/offerer/selectors'
+import { ensureOffererNames } from '@/commons/store/offerer/selectors'
 import { logout } from '@/commons/store/user/dispatchers/logout'
 import { setSelectedOffererById } from '@/commons/store/user/dispatchers/setSelectedOffererById'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
@@ -38,7 +38,7 @@ export const HeaderDropdown = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const currentUser = useAppSelector(selectCurrentUser)
-  const offererNames = useAppSelector(selectOffererNames)
+  const offererNames = useAppSelector(ensureOffererNames)
   const selectedOffererName = useAppSelector(
     (state) => state.offerer.currentOffererName
   )

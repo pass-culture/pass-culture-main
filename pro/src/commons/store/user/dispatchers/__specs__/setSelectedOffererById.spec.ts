@@ -141,7 +141,7 @@ describe('setSelectedOffererById', () => {
     expect(api.getVenues).toHaveBeenCalledTimes(1)
     expect(api.listOfferersNames).toHaveBeenCalledTimes(1)
     expect(api.getVenue).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(2)
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.offerer.offererNames).toEqual(
@@ -196,7 +196,7 @@ describe('setSelectedOffererById', () => {
     expect(apiListOfferersNamesSpy).not.toHaveBeenCalled()
     expect(apiGetVenuesSpy).not.toHaveBeenCalled()
     expect(api.getVenue).toHaveBeenCalledTimes(1)
-    expect(api.getOfferer).toHaveBeenCalledTimes(2)
+    expect(api.getOfferer).toHaveBeenCalledTimes(1)
 
     const state = store.getState()
     expect(state.offerer.currentOfferer?.id).toBe(200)
