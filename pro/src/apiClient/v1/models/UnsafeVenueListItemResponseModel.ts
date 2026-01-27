@@ -2,8 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type VenueListItemLiteResponseModel = {
+export type UnsafeVenueListItemResponseModel = {
   id: number;
-  name: string;
+  isValidForCurrentUser: boolean;
+  publicName: string;
 };
 

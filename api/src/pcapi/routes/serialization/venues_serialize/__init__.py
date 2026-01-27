@@ -470,13 +470,22 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
         return shared_offers.validate_students(students)
 
 
-class VenueListItemLiteResponseModel(BaseModel):
+class UnsafeVenueListItemResponseModel(HttpBodyModel):
     id: int
-    name: str
+    isValidForCurrentUser: bool
+    publicName: str
+
+    @classmethod
+    def from_venue(cls, venue: offerers_models.Venue) -> "UnsafeVenueListItemResponseModel":
+        return cls(id=venue.id, isValidForCurrentUser=venue.isValidForCurrentUser, publicName=venue.public_name)
 
 
-class GetVenueListLiteResponseModel(BaseModel):
-    venues: list[VenueListItemLiteResponseModel]
+class UnsafeVenuesResponseModel(HttpBodyModel):
+    venues: list[UnsafeVenueListItemResponseModel]
+
+    @classmethod
+    def from_venues(cls, venues: list[offerers_models.Venue]) -> "UnsafeVenuesResponseModel":
+        return cls(venues=[UnsafeVenueListItemResponseModel.from_venue(venue) for venue in venues])
 
 
 class VenueListQueryModel(BaseModel):

@@ -18,17 +18,21 @@ export const withUserPermissions = (
     }
 
     const userPermissions = getCurrentUserPermissions()
+    console.log({ userPermissions })
 
     if (!requireUserPermissions(userPermissions)) {
       switch (true) {
         case !userPermissions.isAuthenticated:
           return redirect('/connexion')
 
+        case !userPermissions.hasSomeOfferer:
+          return redirect('/inscription/structure/recherche')
+
+        case !userPermissions.isSelectedOffererAssociated:
+          return redirect('/rattachement-en-cours')
+
         case !userPermissions.hasSelectedVenue:
           return redirect('/hub')
-
-        case !userPermissions.isSelectedVenueAssociated:
-          return redirect('/rattachement-en-cours')
 
         case !userPermissions.isOnboarded:
           return redirect('/onboarding')

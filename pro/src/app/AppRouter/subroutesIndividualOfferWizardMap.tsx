@@ -3,7 +3,7 @@
 import { withUserPermissions } from '@/commons/auth/withUserPermissions'
 
 import type { CustomRouteObject } from './types'
-import { mustHaveSelectedVenue, mustNotBeOnboarded } from './utils'
+import { mustHaveSelectedVenue, mustOnboard } from './utils'
 
 export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
@@ -263,7 +263,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   {
     lazy: () =>
@@ -275,7 +275,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   {
     lazy: () =>
@@ -287,7 +287,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   //  Localisation
   {
@@ -300,7 +300,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   {
     lazy: () =>
@@ -312,7 +312,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   {
     lazy: () =>
@@ -324,7 +324,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   {
     lazy: () =>
@@ -336,7 +336,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   //  Stocks
   {
@@ -349,7 +349,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   //  Timetable
   {
@@ -362,7 +362,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
   {
     lazy: () =>
@@ -374,6 +374,6 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
     meta: {
       onboardingOnly: true,
     },
-    loader: withUserPermissions(mustNotBeOnboarded),
+    loader: withUserPermissions(mustOnboard),
   },
 ]

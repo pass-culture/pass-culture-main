@@ -18,6 +18,7 @@ def install_routes(app: Flask) -> None:
     from . import statistics
     from . import stocks
     from . import structure_data
+    from . import unsafe
     from . import users
     from . import venue_labels
     from . import venue_providers
