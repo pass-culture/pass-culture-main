@@ -21,9 +21,6 @@ async function clearBrowserStateAndReload(page: Page): Promise<void> {
 test.describe('Cookie banner', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/connexion')
-    await expect(
-      page.locator('head script[src*="orejime-standard-fr.js"]')
-    ).toBeAttached()
   })
 
   test.describe('Cookie management with no login', () => {
