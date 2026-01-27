@@ -34,7 +34,7 @@ test.describe('Switch Offerer and Venue', () => {
       page.getByRole('heading', { level: 1, name: 'Offres individuelles' })
     ).toBeVisible()
 
-    await page.getByTestId('offerer-select').click()
+    await page.getByTestId('profile-button').click()
     await page.getByText(/Changer/).click()
     await page
       .getByTestId('offerers-selection-menu')

@@ -92,7 +92,7 @@ test.describe('Financial Management - messages, links to external help page, rei
 
       await login(page, userData.user.email)
       await page.goto('/remboursements/informations-bancaires')
-      await expect(page.getByTestId('offerer-select')).toBeVisible()
+      await expect(page.getByTestId('profile-button')).toBeVisible()
       await expect(page.getByTestId('spinner')).toHaveCount(0)
     })
 

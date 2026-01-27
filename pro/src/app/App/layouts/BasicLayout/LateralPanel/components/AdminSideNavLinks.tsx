@@ -14,6 +14,7 @@ import fullSmsIcon from '@/icons/full-sms.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
+import strokeReportIcon from '@/icons/stroke-report.svg'
 import { Button } from '@/ui-kit/Button/Button'
 import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
 import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
@@ -95,7 +96,7 @@ export const AdminSideNavLinks = ({
             id={dataId}
           >
             <SvgIcon
-              src={strokeRepaymentIcon}
+              src={strokeReportIcon}
               alt=""
               width={NAV_ITEM_ICON_SIZE}
               className={styles.icon}

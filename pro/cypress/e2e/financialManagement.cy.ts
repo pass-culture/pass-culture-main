@@ -103,7 +103,7 @@ describe('Financial Management - messages, links to external help page, reimburs
     })
 
     it('I should be able to attach and unattach a few venues', () => {
-      cy.findByTestId('offerer-select')
+      cy.findByTestId('profile-button')
       cy.findAllByTestId('spinner').should('not.exist')
 
       cy.stepLog({
@@ -155,7 +155,7 @@ describe('Financial Management - messages, links to external help page, reimburs
       )
     })
     it('I should be able to attach and unattach all venues', () => {
-      cy.findByTestId('offerer-select')
+      cy.findByTestId('profile-button')
       cy.findAllByTestId('spinner').should('not.exist')
 
       cy.stepLog({

@@ -112,6 +112,7 @@ import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokePictureIcon from '@/icons/stroke-picture.svg'
 import strokePriceIcon from '@/icons/stroke-price.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
+import strokeReportIcon from '@/icons/stroke-report.svg'
 import strokeRightIcon from '@/icons/stroke-right.svg'
 import strokeSearchIcon from '@/icons/stroke-search.svg'
 import strokeShareIcon from '@/icons/stroke-share.svg'
@@ -211,6 +212,7 @@ export const strokeIcons: IconListItem[] = [
   { src: strokeDoubleCheckIcon },
   { src: strokeOfferIcon },
   { src: strokeRepaymentIcon },
+  { src: strokeReportIcon },
   { src: strokeEuroIcon },
   { src: strokeFrancIcon },
   { src: strokePriceIcon },

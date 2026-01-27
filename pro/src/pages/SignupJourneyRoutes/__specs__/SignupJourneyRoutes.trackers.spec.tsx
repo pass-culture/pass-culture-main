@@ -46,7 +46,7 @@ describe('SignupJourneyRoutes::trackers', () => {
 
     renderSignupJourneyRoutes()
 
-    await userEvent.click(screen.getByTestId('offerer-select'))
+    await userEvent.click(screen.getByTestId('profile-button'))
     await userEvent.click(screen.getByText('Se déconnecter'))
 
     expect(logoutSpy).toHaveBeenCalledTimes(1)

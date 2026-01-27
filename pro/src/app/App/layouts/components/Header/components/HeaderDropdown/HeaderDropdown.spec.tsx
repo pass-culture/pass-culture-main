@@ -67,7 +67,6 @@ const baseOfferersNames = baseOfferers.map(
     allowedOnAdage: true,
   })
 )
-
 const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
   if (!options?.storeOverrides?.offerer) {
     options = {
@@ -82,114 +81,148 @@ const renderHeaderDropdown = (options?: RenderWithProvidersOptions) => {
           venues: baseVenues,
         },
       },
+      features: [],
     }
   }
   renderWithProviders(<HeaderDropdown />, options)
 }
 
 describe('App', () => {
-  it('should display structure name in alphabetical order', async () => {
-    renderHeaderDropdown()
+  describe('without WIP_SWITCH_VENUE feature flag', () => {
+    it('should display structure name in alphabetical order', async () => {
+      renderHeaderDropdown()
 
-    await userEvent.click(screen.getByTestId('offerer-select'))
-    await userEvent.click(screen.getByText(/Changer/))
-
-    const offererList = screen.getByTestId('offerers-selection-menu')
-    const offerers = within(offererList).getAllByRole('menuitemradio')
-
-    expect(offerers[0].textContent).toEqual('Offerer A')
-    expect(offerers[1].textContent).toEqual('Offerer B')
-  })
-
-  describe('Switch Offerer', () => {
-    beforeEach(() => {
-      vi.mock('@/apiClient/api', () => ({
-        api: {
-          getOfferer: vi.fn(),
-          signout: vi.fn(),
-        },
-      }))
-
-      vi.spyOn(api, 'getOfferer').mockResolvedValue(
-        defaultGetOffererResponseModel
-      )
-    })
-
-    it('should reset url query parameters & stored search filters', async () => {
-      vi.spyOn(console, 'error').mockImplementation(() => {})
-      // Mock sessionStorage state to simulate previously stored search filters.
-      const filtersVisibilityForAll = true
-      Object.values(locallyStoredFilterConfig).forEach((key) => {
-        sessionStorage.setItem(
-          key,
-          JSON.stringify({
-            filtersVisibility: filtersVisibilityForAll,
-            storedFilters: {
-              categoryId: 1,
-              venueId: 1,
-            },
-          })
-        )
-      })
-
-      renderHeaderDropdown({
-        initialRouterEntries: ['/offres?categorie=CINEMA&offererAddressId=1'],
-      })
-
-      // Opens main menu
-      await userEvent.click(screen.getByTestId('offerer-select'))
-
-      // Opens sub-menu
+      await userEvent.click(screen.getByTestId('profile-button'))
+      screen.debug()
       await userEvent.click(screen.getByText(/Changer/))
 
-      // Get structures list
       const offererList = screen.getByTestId('offerers-selection-menu')
       const offerers = within(offererList).getAllByRole('menuitemradio')
 
-      // Clic on one structure
-      await userEvent.click(offerers[0])
+      expect(offerers[0].textContent).toEqual('Offerer A')
+      expect(offerers[1].textContent).toEqual('Offerer B')
+    })
+  })
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    it('should display not display the switch button', async () => {
+      const features = ['WIP_SWITCH_VENUE']
+      const renderHeaderDropdownWithSwitchVenue = (
+        options?: RenderWithProvidersOptions
+      ) => {
+        if (!options?.storeOverrides?.offerer) {
+          options = {
+            ...options,
+            storeOverrides: {
+              ...options?.storeOverrides,
+              offerer: currentOffererFactory({
+                offererNames: baseOfferersNames,
+              }),
+              user: {
+                ...options?.storeOverrides?.user,
+                venues: baseVenues,
+              },
+            },
+            features: features,
+          }
+        }
+        renderWithProviders(<HeaderDropdown />, options)
+      }
 
-      // Stored search filters should be reset, while filters
-      // visibility must be remembered.
-      Object.values(locallyStoredFilterConfig).forEach((key) => {
-        const storedConfiguration = JSON.parse(
-          sessionStorage.getItem(key) || '{}'
-        )
-        const { filtersVisibility, storedFilters } = storedConfiguration
+      renderHeaderDropdownWithSwitchVenue()
+      await userEvent.click(screen.getByTestId('profile-button'))
 
-        expect(storedFilters).toEqual({})
-        expect(filtersVisibility).toEqual(filtersVisibilityForAll)
-      })
+      expect(screen.queryByText(/Changer/)).toBeNull()
+    })
+  })
+})
+describe('Switch Offerer', () => {
+  beforeEach(() => {
+    vi.mock('@/apiClient/api', () => ({
+      api: {
+        getOfferer: vi.fn(),
+        signout: vi.fn(),
+      },
+    }))
 
-      sessionStorage.clear()
+    vi.spyOn(api, 'getOfferer').mockResolvedValue(
+      defaultGetOffererResponseModel
+    )
+  })
+
+  it('should reset url query parameters & stored search filters', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    // Mock sessionStorage state to simulate previously stored search filters.
+    const filtersVisibilityForAll = true
+    Object.values(locallyStoredFilterConfig).forEach((key) => {
+      sessionStorage.setItem(
+        key,
+        JSON.stringify({
+          filtersVisibility: filtersVisibilityForAll,
+          storedFilters: {
+            categoryId: 1,
+            venueId: 1,
+          },
+        })
+      )
     })
 
-    it('should display add a venue button when only one offerer', async () => {
-      const options = {
-        storeOverrides: {
-          offerer: {
-            offererNames: [
-              getOffererNameFactory({
-                id: 1,
-                name: 'Mon offerer',
-                allowedOnAdage: true,
-              }),
-            ],
-            currentOffererName: getOffererNameFactory({
+    renderHeaderDropdown({
+      initialRouterEntries: ['/offres?categorie=CINEMA&offererAddressId=1'],
+    })
+
+    // Opens main menu
+    await userEvent.click(screen.getByTestId('profile-button'))
+
+    // Opens sub-menu
+    await userEvent.click(screen.getByText(/Changer/))
+
+    // Get structures list
+    const offererList = screen.getByTestId('offerers-selection-menu')
+    const offerers = within(offererList).getAllByRole('menuitemradio')
+
+    // Clic on one structure
+    await userEvent.click(offerers[0])
+
+    // Stored search filters should be reset, while filters
+    // visibility must be remembered.
+    Object.values(locallyStoredFilterConfig).forEach((key) => {
+      const storedConfiguration = JSON.parse(
+        sessionStorage.getItem(key) || '{}'
+      )
+      const { filtersVisibility, storedFilters } = storedConfiguration
+
+      expect(storedFilters).toEqual({})
+      expect(filtersVisibility).toEqual(filtersVisibilityForAll)
+    })
+
+    sessionStorage.clear()
+  })
+
+  it('should display add a venue button when only one offerer', async () => {
+    const options = {
+      storeOverrides: {
+        offerer: {
+          offererNames: [
+            getOffererNameFactory({
               id: 1,
               name: 'Mon offerer',
               allowedOnAdage: true,
             }),
-          },
+          ],
+          currentOffererName: getOffererNameFactory({
+            id: 1,
+            name: 'Mon offerer',
+            allowedOnAdage: true,
+          }),
         },
-      }
-      renderWithProviders(<HeaderDropdown />, options)
+      },
+    }
+    renderWithProviders(<HeaderDropdown />, options)
 
-      // Opens main menu
-      await userEvent.click(screen.getByTestId('offerer-select'))
+    // Opens main menu
+    await userEvent.click(screen.getByTestId('profile-button'))
 
-      expect(screen.getByText(/Mon offerer/)).toBeInTheDocument()
-      expect(screen.getByText(/Ajouter une structure/)).toBeInTheDocument()
-    })
+    expect(screen.getByText(/Mon offerer/)).toBeInTheDocument()
+    expect(screen.getByText(/Ajouter une structure/)).toBeInTheDocument()
   })
 })
