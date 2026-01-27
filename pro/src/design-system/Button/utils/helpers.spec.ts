@@ -28,19 +28,19 @@ describe('getComponentType', () => {
 
 describe('getButtonProps', () => {
   it('should return disabled true when disabled is true', () => {
-    expect(getButtonProps(true, false)).toEqual({ disabled: true })
+    expect(getButtonProps('button', true, false)).toEqual({ disabled: true })
   })
 
   it('should return disabled true when isLoading is true', () => {
-    expect(getButtonProps(false, true)).toEqual({ disabled: true })
+    expect(getButtonProps('button', false, true)).toEqual({ disabled: true })
   })
 
   it('should return disabled true when both disabled and isLoading are true', () => {
-    expect(getButtonProps(true, true)).toEqual({ disabled: true })
+    expect(getButtonProps('button', true, true)).toEqual({ disabled: true })
   })
 
   it('should return disabled false when both disabled and isLoading are false', () => {
-    expect(getButtonProps(false, false)).toEqual({ disabled: false })
+    expect(getButtonProps('button', false, false)).toEqual({ disabled: false })
   })
 })
 
@@ -95,12 +95,26 @@ describe('getLinkProps', () => {
 
 describe('getComponentProps', () => {
   it('should return button props when Component is "button"', () => {
-    const result = getComponentProps('button', '/test', true, false, false)
+    const result = getComponentProps(
+      'button',
+      'button',
+      '/test',
+      true,
+      false,
+      false
+    )
     expect(result).toEqual({ disabled: true })
   })
 
   it('should return anchor props when Component is "a"', () => {
-    const result = getComponentProps('a', '/test', false, false, true)
+    const result = getComponentProps(
+      'a',
+      undefined,
+      '/test',
+      false,
+      false,
+      true
+    )
     expect(result).toEqual({
       href: '/test',
       rel: 'noopener noreferrer',
@@ -110,7 +124,14 @@ describe('getComponentProps', () => {
   })
 
   it('should return link props when Component is Link', () => {
-    const result = getComponentProps(Link, '/test', false, false, true)
+    const result = getComponentProps(
+      Link,
+      undefined,
+      '/test',
+      false,
+      false,
+      true
+    )
     expect(result).toEqual({
       to: '/test',
       target: '_blank',

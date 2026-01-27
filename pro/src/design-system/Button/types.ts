@@ -92,6 +92,10 @@ type ButtonAsButtonProps = ButtonBaseProps & {
    * The type of component
    */
   as?: 'button'
+  /**
+   * The type of the button
+   */
+  type?: ButtonTypeAttribute
   to?: never
   opensInNewTab?: never
   isExternal?: never
@@ -103,10 +107,14 @@ type ButtonAsButtonProps = ButtonBaseProps & {
  */
 type ButtonAsLinkProps = ButtonBaseProps & {
   as: 'a'
+  type?: never
   to: string
   opensInNewTab?: boolean
   isExternal?: boolean
   isSectionLink?: boolean
 } & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, 'href'>
+
+export type ButtonTypeAttribute =
+  React.ButtonHTMLAttributes<HTMLButtonElement>['type']
 
 export type ButtonProps = ButtonAsButtonProps | ButtonAsLinkProps
