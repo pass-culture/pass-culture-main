@@ -7,6 +7,7 @@ import type { PreFiltersParams } from '@/commons/core/Bookings/types'
 import { ALL_OFFERER_ADDRESS_OPTION } from '@/commons/core/Offers/constants'
 import { GET_DATA_ERROR_MESSAGE } from '@/commons/core/shared/constants'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isDateValid } from '@/commons/utils/date'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -17,6 +18,7 @@ import { ButtonVariant } from '@/ui-kit/Button/types'
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { Select } from '@/ui-kit/form/Select/Select'
 
+import { MovedBookingDownloadWarningModal } from '../MovedBookingDownloadWarningModal/MovedBookingDownloadWarningModal'
 import { FilterByBookingStatusPeriod } from './FilterByBookingStatusPeriod/FilterByBookingStatusPeriod'
 import styles from './PreFilters.module.scss'
 import { downloadIndividualBookingsCSVFile } from './utils/downloadIndividualBookingsCSVFile'
@@ -53,6 +55,8 @@ export const PreFilters = ({
   resetPreFilters,
   offererAddresses,
 }: PreFiltersProps): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const snackBar = useSnackBar()
   const { logEvent } = useAnalytics()
   const [isDownloadingCSV, setIsDownloadingCSV] = useState(false)
@@ -159,15 +163,18 @@ export const PreFilters = ({
           <div className={styles['button-group-buttons']}>
             <span className={styles['button-group-separator']} />
 
-            <MultiDownloadButtonsModal
-              downloadFunction={(filters, type) =>
-                downloadBookingsCSV(filters, type)
-              }
-              filters={downloadBookingsFilters}
-              isDownloading={isDownloadingCSV}
-              isFiltersDisabled={isFiltersDisabled}
-              isLocalLoading={isLocalLoading}
-            />
+            {!withSwitchVenueFeature && (
+              <MultiDownloadButtonsModal
+                downloadFunction={(filters, type) =>
+                  downloadBookingsCSV(filters, type)
+                }
+                filters={downloadBookingsFilters}
+                isDownloading={isDownloadingCSV}
+                isFiltersDisabled={isFiltersDisabled}
+                isLocalLoading={isLocalLoading}
+              />
+            )}
+            {withSwitchVenueFeature && <MovedBookingDownloadWarningModal />}
 
             <Button
               className={styles['show-button']}
