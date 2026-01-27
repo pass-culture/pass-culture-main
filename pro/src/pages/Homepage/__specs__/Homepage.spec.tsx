@@ -17,7 +17,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { OldHomepage } from '../OldHomepage'
+import { Homepage } from '../Homepage'
 
 vi.mock('@firebase/remote-config', () => ({
   getValue: () => ({ asString: () => 'GE' }),
@@ -70,7 +70,7 @@ const baseOfferers: GetOffererResponseModel[] = [
 
 const renderHomePage = (options?: RenderWithProvidersOptions) => {
   const user = sharedCurrentUserFactory()
-  renderWithProviders(<OldHomepage />, {
+  renderWithProviders(<Homepage />, {
     user,
     storeOverrides: {
       user: {

@@ -16,6 +16,7 @@ import { routesSignupJourney } from './subroutesSignupJourneyMap'
 import { routesSignup } from './subroutesSignupMap'
 import type { CustomRouteObject } from './types'
 import {
+  hasNewHomepage,
   mustBeAuthenticated,
   mustBeUnauthenticated,
   mustHaveSelectedVenue,
@@ -83,7 +84,10 @@ export const routes: CustomRouteObject[] = [
     isErrorPage: true,
   },
   {
-    lazy: () => import('@/pages/Homepage/Homepage'),
+    lazy: () =>
+      hasNewHomepage()
+        ? import('@/pages/Homepage/NewHomepage')
+        : import('@/pages/Homepage/Homepage'),
     loader: withUserPermissions(mustHaveSelectedVenue),
     path: '/accueil',
     title: 'Espace acteurs culturels',

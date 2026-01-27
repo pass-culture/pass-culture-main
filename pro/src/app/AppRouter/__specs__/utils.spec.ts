@@ -1,6 +1,10 @@
+import type { FeatureResponseModel } from '@/apiClient/v1'
 import type { UserPermissions } from '@/commons/auth/types'
+import * as storeModule from '@/commons/store/store'
+import { configureTestStore } from '@/commons/store/testUtils'
 
 import {
+  hasNewHomepage,
   mustBeAuthenticated,
   mustBeUnauthenticated,
   mustHaveSelectedVenue,
@@ -114,6 +118,30 @@ describe('utils', () => {
       })
 
       expect(mustNotBeOnboarded(permissions)).toBe(false)
+    })
+  })
+
+  describe('hasNewHomepage', () => {
+    it.each([
+      [false, undefined],
+      [false, ['WIP_SWITCH_VENUE']],
+      [false, ['WIP_ENABLE_NEW_PRO_HOME']],
+      [true, ['WIP_ENABLE_NEW_PRO_HOME', 'WIP_SWITCH_VENUE']],
+    ])('should return %s with features=%j', (expectedRes, features) => {
+      const store = configureTestStore({
+        features: {
+          list: (features ?? []).map(
+            (feature, index): FeatureResponseModel => ({
+              id: index,
+              isActive: true,
+              name: feature,
+            })
+          ),
+          lastLoaded: 0,
+        },
+      })
+      vi.spyOn(storeModule, 'rootStore', 'get').mockReturnValue(store)
+      expect(hasNewHomepage()).toBe(expectedRes)
     })
   })
 })
