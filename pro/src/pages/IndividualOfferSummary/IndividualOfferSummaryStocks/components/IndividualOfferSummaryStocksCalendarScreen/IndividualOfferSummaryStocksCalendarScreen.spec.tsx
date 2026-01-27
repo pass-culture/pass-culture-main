@@ -26,6 +26,6 @@ describe('IndividualOfferSummaryStocksCalendarScreen', () => {
       await screen.findByRole('link', {
         name: /Comment reporter ou annuler un évènement ?/,
       })
-    )
+    ).toBeInTheDocument()
   })
 })

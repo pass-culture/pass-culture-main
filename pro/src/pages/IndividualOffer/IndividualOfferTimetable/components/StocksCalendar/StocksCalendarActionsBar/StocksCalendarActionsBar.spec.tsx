@@ -148,7 +148,9 @@ describe('StocksCalendarActionsBar', () => {
       screen.getByRole('button', { name: 'Enregistrer les modifications' })
     )
 
-    expect(screen.getByText('Veuillez renseigner au moins une date'))
+    expect(
+      screen.getByText('Veuillez renseigner au moins une date')
+    ).toBeInTheDocument()
   })
 
   it('should show an error message in handleNextStep when hasStocks is false', async () => {

@@ -170,9 +170,15 @@ describe('OfferInfos', () => {
   it('should render the new offer info page sections', () => {
     renderOfferInfos(defaultAdageUser)
 
-    expect(screen.getByRole('heading', { name: 'Détails de l’offre' }))
-    expect(screen.getByRole('heading', { name: 'Informations pratiques' }))
-    expect(screen.getByRole('heading', { name: 'Public concerné' }))
+    expect(
+      screen.getByRole('heading', { name: 'Détails de l’offre' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Informations pratiques' })
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole('heading', { name: 'Public concerné' })
+    ).toBeInTheDocument()
   })
 
   it('should fetch a bookable offer if the id in url is prefixed with "B-"', async () => {

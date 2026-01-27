@@ -125,7 +125,7 @@ describe('OffersSuggestions', () => {
       screen.getByText(
         'Découvrez des propositions de sorties scolaires à proximité de votre établissement'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should show the nearby (< 100km) offers of cultural partners coming to the institution when no results in initial search with no filters', () => {
@@ -169,7 +169,7 @@ describe('OffersSuggestions', () => {
       screen.getByText(
         'Découvrez les offres de partenaires culturels locaux prêts à intervenir dans votre classe'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should show the result independently of the intervention type filter when the intervention type filter was set', () => {
@@ -195,7 +195,7 @@ describe('OffersSuggestions', () => {
       screen.getByText(
         'Découvrez des offres qui relèvent d’autres types d’intervention'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should show the result independently of domains filter when the domains filter was set', () => {
@@ -221,7 +221,7 @@ describe('OffersSuggestions', () => {
       screen.getByText(
         'Découvrez des offres qui relèvent d’autres domaines artistiques'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should show the result independently of formats filter when the format filter was set', () => {
@@ -245,7 +245,7 @@ describe('OffersSuggestions', () => {
     )
     expect(
       screen.getByText('Découvrez des offres qui relèvent d’autres formats')
-    )
+    ).toBeInTheDocument()
   })
 
   it('should not show suggestions header if no offer could be suggested', () => {

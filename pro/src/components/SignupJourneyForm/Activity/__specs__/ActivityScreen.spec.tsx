@@ -118,7 +118,7 @@ describe('screens:SignupJourney::Activity', () => {
     renderActivityScreen(contextValue)
 
     await waitFor(() => {
-      expect(screen.queryByText('Activité')).not.toBeInTheDocument()
+      expect(screen.queryByText('Activité')).toBeFalsy()
     })
   })
 

@@ -337,7 +337,7 @@ describe('ActionsBar', () => {
       screen.getByText(
         'Une erreur est survenue lors de l’activation des offres'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should show an error message when an error occurs after clicking on "Publier" button when some offers are selected', async () => {
@@ -351,7 +351,7 @@ describe('ActionsBar', () => {
       screen.getByText(
         'Une erreur est survenue lors de l’activation des offres'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should show an error message when an error occurs after clicking on "Supprimer" button when some offers are selected', async () => {
@@ -367,7 +367,7 @@ describe('ActionsBar', () => {
       screen.getByText(
         'Une erreur est survenue lors de la suppression des brouillon'
       )
-    )
+    ).toBeInTheDocument()
   })
 
   it('should not display actions when selected offers have the wrong status', () => {

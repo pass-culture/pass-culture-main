@@ -74,7 +74,7 @@ describe('UserAnonymization', () => {
 
       expect(
         screen.queryByRole('button', { name: 'Supprimer mon compte' })
-      ).not.toBeInTheDocument()
+      ).toBeFalsy()
     })
   })
 
@@ -92,7 +92,7 @@ describe('UserAnonymization', () => {
 
       expect(
         screen.queryByRole('button', { name: 'Supprimer mon compte' })
-      ).not.toBeInTheDocument()
+      ).toBeFalsy()
     })
   })
 
@@ -320,7 +320,7 @@ describe('UserAnonymization', () => {
       await userEvent.click(submitButton!)
 
       await waitFor(() => {
-        expect(api.anonymize).not.toHaveBeenCalled()
+        expect(api.anonymize).toHaveBeenCalledTimes(0)
       })
     })
   })

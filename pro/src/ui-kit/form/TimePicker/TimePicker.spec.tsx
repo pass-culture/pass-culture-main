@@ -32,7 +32,7 @@ describe('TimePicker', () => {
       />
     )
 
-    expect(screen.getByLabelText('input label'))
+    expect(screen.getByLabelText('input label')).toBeInTheDocument()
   })
 
   it('should display an asterisk if the picker is required', () => {
@@ -46,7 +46,7 @@ describe('TimePicker', () => {
       />
     )
 
-    expect(screen.getByLabelText(/input label/))
+    expect(screen.getByLabelText(/input label/)).toBeInTheDocument()
   })
 
   it('should not display an asterisk if the picker is required but we chose to hide it', () => {
@@ -61,7 +61,7 @@ describe('TimePicker', () => {
       />
     )
 
-    expect(screen.getByLabelText('input label'))
+    expect(screen.getByLabelText('input label')).toBeInTheDocument()
   })
 
   it('should display an error message', () => {
@@ -75,6 +75,6 @@ describe('TimePicker', () => {
       />
     )
 
-    expect(screen.getByText('Error message'))
+    expect(screen.getByText('Error message')).toBeInTheDocument()
   })
 })

@@ -30,7 +30,7 @@ describe('DatePicker', () => {
       />
     )
 
-    expect(screen.getByLabelText('input label'))
+    expect(screen.getByLabelText('input label')).toBeInTheDocument()
   })
 
   it('should display an asterisk if the picker is required', () => {
@@ -44,7 +44,7 @@ describe('DatePicker', () => {
       />
     )
 
-    expect(screen.getByLabelText('input label *'))
+    expect(screen.getByLabelText('input label *')).toBeInTheDocument()
   })
 
   it('should not display an asterisk if the picker is required but we chose to hide it', () => {
@@ -59,7 +59,7 @@ describe('DatePicker', () => {
       />
     )
 
-    expect(screen.getByLabelText('input label'))
+    expect(screen.getByLabelText('input label')).toBeInTheDocument()
   })
 
   it('should display an error message', () => {
@@ -73,6 +73,6 @@ describe('DatePicker', () => {
       />
     )
 
-    expect(screen.getByText('Error message'))
+    expect(screen.getByText('Error message')).toBeInTheDocument()
   })
 })

@@ -71,11 +71,13 @@ describe('AddressManual', () => {
     await userEvent.clear(coordsInput)
     await userEvent.type(coordsInput, '48.853320, 2.348979')
     await userEvent.tab() // blur
+    expect(coordsInput).toHaveValue('48.853320, 2.348979')
 
     // Type DMS and trigger blur
     await userEvent.clear(coordsInput)
     await userEvent.type(coordsInput, `48°51'12.0"N 2°20'56.3"E`)
     await userEvent.tab() // blur
+    expect(coordsInput).toHaveValue(`48°51'12.0"N 2°20'56.3"E`)
   })
 
   it('should render Callout and ButtonLink when coords is provided', () => {
@@ -107,6 +109,6 @@ describe('AddressManual', () => {
 
     expect(
       screen.queryByText('Contrôlez la précision de vos coordonnées GPS')
-    ).not.toBeInTheDocument()
+    ).toBeFalsy()
   })
 })
