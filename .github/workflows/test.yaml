@@ -1,7 +1,9 @@
 name: "3 [on_workflow/PRO] Storybook"
 
 on:
-  workflow_call
+  push:
+    branches:
+        - safe-chain-testing
 
 jobs:
   build-and-deploy-storybook:
