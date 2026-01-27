@@ -20,29 +20,30 @@ if (SENTRY_SERVER_URL) {
 // included in the bundle instead of <script> tag in index.html
 // to avoid the need of 'insafe-inline' in Content Security Policy
 if (!isAdageIframe) {
-  // biome-ignore lint/suspicious/noExplicitAny: Hotjar script.
-  ;((h: any, o, t, j, a?: any, r?: any, tmpl?: any) => {
-    h.hj =
-      h.hj ||
-      (() => {
-        // @ts-expect-error
-        // biome-ignore lint: Dubious (`arguments` doesn't exist in arrow functions) but this an external library.
-        ;(h.hj.q = h.hj.q || []).push(arguments)
-      })
-    h._hjSettings = {
-      hjid: 2925982,
-      hjsv: 6,
-    }
-    a = o.getElementsByTagName('head')[0]
-    tmpl = o.createElement('template')
-    tmpl.setAttribute('data-purpose', 'hotjar')
-    r = o.createElement('script')
-    r.async = 1
-    r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
-    tmpl.content.appendChild(r)
-    a.appendChild(tmpl)
-  })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
-
+  if (import.meta.env.MODE !== 'development') {
+    // biome-ignore lint/suspicious/noExplicitAny: Hotjar script.
+    ;((h: any, o, t, j, a?: any, r?: any, tmpl?: any) => {
+      h.hj =
+        h.hj ||
+        (() => {
+          // @ts-expect-error
+          // biome-ignore lint: Dubious (`arguments` doesn't exist in arrow functions) but this an external library.
+          ;(h.hj.q = h.hj.q || []).push(arguments)
+        })
+      h._hjSettings = {
+        hjid: 2925982,
+        hjsv: 6,
+      }
+      a = o.getElementsByTagName('head')[0]
+      tmpl = o.createElement('template')
+      tmpl.setAttribute('data-purpose', 'hotjar')
+      r = o.createElement('script')
+      r.async = 1
+      r.src = t + h._hjSettings.hjid + j + h._hjSettings.hjsv
+      tmpl.content.appendChild(r)
+      a.appendChild(tmpl)
+    })(window, document, 'https://static.hotjar.com/c/hotjar-', '.js?sv=')
+  }
   // We do the same thing for orejime scripts
   ;((d, v, prefix) => {
     const head = d.getElementsByTagName('head')[0]
