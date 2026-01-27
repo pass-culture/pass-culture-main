@@ -81,6 +81,7 @@ class CategoryResponseModel(BaseModel):
 
 
 class PatchOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
+    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel] | None
     location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
     bookingContact: EmailStr | None
     bookingEmail: EmailStr | None

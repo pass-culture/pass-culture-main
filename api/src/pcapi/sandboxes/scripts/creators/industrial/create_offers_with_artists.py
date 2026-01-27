@@ -1,7 +1,7 @@
 import logging
 
+import pcapi.core.artist.factories as artist_factories
 import pcapi.core.offers.factories as offers_factories
-from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist import models as artist_models
 from pcapi.core.categories import subcategories
 from pcapi.core.offerers import models as offerers_models
@@ -40,7 +40,7 @@ def create_offers_with_artists() -> None:
 
         # Book offer, just 1 artist link, linked to an Artist()
         author_artist = artist_factories.ArtistFactory()
-        offers_factories.ArtistOfferLinkFactory(
+        artist_factories.ArtistOfferLinkFactory(
             artist_id=author_artist.id,
             offer_id=book_offer.id,
             artist_type=artist_models.ArtistType.AUTHOR,
@@ -49,24 +49,24 @@ def create_offers_with_artists() -> None:
         # Theater offer, several links: 1 author link to an Artist()
         # + 1 stage director not linked to an Artist
         # + 2 performers, 1 linked to an Artist, 1 not linked
-        offers_factories.ArtistOfferLinkFactory(
+        artist_factories.ArtistOfferLinkFactory(
             artist_id=author_artist.id,
             offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.AUTHOR,
         )
         stage_director_artist = artist_factories.ArtistFactory()
-        offers_factories.ArtistOfferLinkFactory(
+        artist_factories.ArtistOfferLinkFactory(
             artist_id=stage_director_artist.id,
             offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.STAGE_DIRECTOR,
         )
         performer_artist = artist_factories.ArtistFactory()
-        offers_factories.ArtistOfferLinkFactory(
+        artist_factories.ArtistOfferLinkFactory(
             artist_id=performer_artist.id,
             offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.PERFORMER,
         )
-        offers_factories.ArtistOfferLinkFactory(
+        artist_factories.ArtistOfferLinkFactory(
             custom_name="Michelle Vedette",
             offer_id=theater_offer.id,
             artist_type=artist_models.ArtistType.PERFORMER,

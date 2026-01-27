@@ -65,6 +65,12 @@ class ExtraDataFieldEnum(Enum):
     GTL_ID = "gtl_id"
 
 
+class ArtistFieldEnum(Enum):
+    AUTHOR = "author"
+    PERFORMER = "performer"
+    STAGE_DIRECTOR = "stageDirector"
+
+
 @dataclass
 class FieldCondition:
     is_required_in_external_form: bool = False

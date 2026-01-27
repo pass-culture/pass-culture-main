@@ -42,3 +42,10 @@ class ArtistProductLinkFactory(BaseFactory):
 
     artist_id = factory.SubFactory(models.Artist)
     product_id = factory.SubFactory(offers_models.Product)
+
+
+class ArtistOfferLinkFactory(BaseFactory):
+    class Meta:
+        model = models.ArtistOfferLink
+
+    artist_type = models.ArtistType.PERFORMER

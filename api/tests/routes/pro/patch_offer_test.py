@@ -701,9 +701,8 @@ class Returns200Test:
         # update offer
         # select stock
         # select mediation (1 query)
-        # select artist_offer_link
         # select price category
-        with assert_num_queries(11):
+        with assert_num_queries(10):
             response = http_client.patch(self.endpoint.format(offer_id=offer_id), json=data)
         get_address_mock.assert_not_called()
 

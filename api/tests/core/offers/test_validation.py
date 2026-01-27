@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 
 import pytest
 
+import pcapi.core.artist.models as artist_models
 import pcapi.core.providers.factories as providers_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.educational import factories as educational_factories
@@ -16,6 +17,7 @@ from pcapi.core.offers.models import OfferValidationStatus
 from pcapi.core.offers.models import WithdrawalTypeEnum
 from pcapi.core.providers.repository import get_provider_by_local_class
 from pcapi.models.api_errors import ApiErrors
+from pcapi.routes.serialization import artist_serialize
 from pcapi.utils import date as date_utils
 
 import tests
@@ -1139,3 +1141,30 @@ class CheckOfferNameIsValidTest:
 
         # The the following should not raise
         validation.check_offer_name_length_is_valid(offer_title_less_than_90_characters)
+
+
+class CheckArtistOfferLinksTest:
+    def test_check_artist_offer_links_should_not_raise(self):
+        artist_offer_links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id="any-id",
+                artist_type=artist_models.ArtistType.AUTHOR,
+                custom_name=None,
+            )
+        ]
+        validation.check_artist_offer_links(artist_offer_links, subcategories.SEANCE_CINE)
+
+    def test_check_artist_offer_links_should_raise(self):
+        artist_offer_links = [
+            artist_serialize.ArtistOfferResponseModel(
+                artist_id="any-id",
+                artist_type=artist_models.ArtistType.PERFORMER,
+                custom_name=None,
+            )
+        ]
+        with pytest.raises(ApiErrors) as exc:
+            validation.check_artist_offer_links(artist_offer_links, subcategories.SEANCE_CINE)
+
+        assert exc.value.errors == {
+            "artistOfferLinks": ["Le type d'artiste n'est pas autorisé pour cette sous catégorie"]
+        }

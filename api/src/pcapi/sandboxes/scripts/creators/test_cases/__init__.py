@@ -6,12 +6,12 @@ import random
 from dateutil.relativedelta import relativedelta
 from factory.faker import faker
 
+import pcapi.core.artist.factories as artist_factories
 import pcapi.sandboxes.thumbs.generic_pictures as generic_picture_thumbs
 from pcapi import settings
 from pcapi.connectors import thumb_storage
 from pcapi.core.achievements import factories as achievements_factories
 from pcapi.core.achievements import models as achievements_models
-from pcapi.core.artist import factories as artist_factories
 from pcapi.core.artist.models import ArtistType
 from pcapi.core.bookings import factories as bookings_factories
 from pcapi.core.categories import subcategories
@@ -310,7 +310,7 @@ def create_artists() -> None:
         )
 
         offer_without_product = offers_factories.OfferFactory.create(venue=venue)
-        offers_factories.ArtistOfferLinkFactory.create(
+        artist_factories.ArtistOfferLinkFactory.create(
             artist_id=artist_1.id, offer_id=offer_without_product.id, artist_type=ArtistType.AUTHOR
         )
     artist_factories.ArtistAliasFactory.create(
@@ -336,7 +336,7 @@ def create_artists() -> None:
         )
 
         offer_without_product = offers_factories.OfferFactory.create(venue=venue)
-        offers_factories.ArtistOfferLinkFactory.create(
+        artist_factories.ArtistOfferLinkFactory.create(
             artist_id=artist_2.id, offer_id=offer_without_product.id, artist_type=ArtistType.PERFORMER
         )
     for alias_index in range(20):
@@ -468,7 +468,7 @@ def _create_library_with_writers() -> None:
                 artist_id=artist.id, product_id=product.id, artist_type=ArtistType.AUTHOR
             )
             offer = offers_factories.OfferFactory.create(product=product, venue=venue)
-            offers_factories.ArtistOfferLinkFactory.create(
+            artist_factories.ArtistOfferLinkFactory.create(
                 artist_id=artist.id, offer_id=offer.id, artist_type=ArtistType.AUTHOR
             )
 
