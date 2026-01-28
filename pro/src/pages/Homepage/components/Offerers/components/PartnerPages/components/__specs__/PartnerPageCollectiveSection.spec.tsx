@@ -32,9 +32,7 @@ describe('PartnerPages', () => {
     })
 
     expect(screen.getByText('Non référencé dans ADAGE')).toBeInTheDocument()
-    expect(
-      screen.getByText('Faire une demande de référencement ADAGE')
-    ).toBeInTheDocument()
+    expect(screen.getByText('Déposer un dossier ADAGE')).toBeInTheDocument()
   })
 
   it('should display the EAC section when no adage but allowed on ADAGE', () => {

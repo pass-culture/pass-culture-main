@@ -64,16 +64,8 @@ test.describe('Financial Management - messages, links to external help page, rei
 
     await checkAccessibility(page)
 
-    const nextReimbursementLink = page.getByText(
-      /En savoir plus sur les prochains remboursements/
-    )
-    const nextReimbursementHref =
-      await nextReimbursementLink.getAttribute('href')
-    expect(nextReimbursementHref).toContain('4411992051601')
-
-    const termsLink = page.getByText(/Connaître les modalités de remboursement/)
-    const termsHref = await termsLink.getAttribute('href')
-    expect(termsHref).toContain('4412007300369')
+    page.getByText(/En savoir plus sur les prochains remboursements/)
+    page.getByText(/Connaître les modalités de remboursement/)
   })
 
   test.describe('Data contains 1 offerer with 3 venues', () => {

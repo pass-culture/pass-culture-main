@@ -27,20 +27,32 @@ describe('getComponentType', () => {
 })
 
 describe('getButtonProps', () => {
-  it('should return disabled true when disabled is true', () => {
-    expect(getButtonProps('button', true, false)).toEqual({ disabled: true })
+  it('should return disabled true and a reset type', () => {
+    expect(getButtonProps('reset', true, false)).toEqual({
+      type: 'reset',
+      disabled: true,
+    })
   })
 
   it('should return disabled true when isLoading is true', () => {
-    expect(getButtonProps('button', false, true)).toEqual({ disabled: true })
+    expect(getButtonProps('button', false, true)).toEqual({
+      type: 'button',
+      disabled: true,
+    })
   })
 
   it('should return disabled true when both disabled and isLoading are true', () => {
-    expect(getButtonProps('button', true, true)).toEqual({ disabled: true })
+    expect(getButtonProps('button', true, true)).toEqual({
+      type: 'button',
+      disabled: true,
+    })
   })
 
   it('should return disabled false when both disabled and isLoading are false', () => {
-    expect(getButtonProps('button', false, false)).toEqual({ disabled: false })
+    expect(getButtonProps('button', false, false)).toEqual({
+      type: 'button',
+      disabled: false,
+    })
   })
 })
 
@@ -103,7 +115,19 @@ describe('getComponentProps', () => {
       false,
       false
     )
-    expect(result).toEqual({ disabled: true })
+    expect(result).toEqual({ disabled: true, type: 'button' })
+  })
+
+  it('should return submit button props when Component is "button"', () => {
+    const result = getComponentProps(
+      'button',
+      'submit',
+      '/test',
+      true,
+      false,
+      false
+    )
+    expect(result).toEqual({ disabled: true, type: 'submit' })
   })
 
   it('should return anchor props when Component is "a"', () => {

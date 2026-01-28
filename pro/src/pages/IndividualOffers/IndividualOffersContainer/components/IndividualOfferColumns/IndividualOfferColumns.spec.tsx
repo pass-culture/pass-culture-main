@@ -174,7 +174,7 @@ describe('getIndividualOfferColumns', () => {
       screen.getByRole('button', { name: 'Voir les actions' })
     )
 
-    expect(screen.getByRole('menuitem', { name: 'Stocks' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Stocks' })).toHaveAttribute(
       'href',
       expect.stringContaining('/edition/tarifs')
     )
@@ -198,7 +198,7 @@ describe('getIndividualOfferColumns', () => {
     )
 
     expect(
-      screen.getByRole('menuitem', { name: 'Dates et capacités' })
+      screen.getByRole('link', { name: 'Dates et capacités' })
     ).toHaveAttribute('href', expect.stringContaining('/edition/horaires'))
   })
 })

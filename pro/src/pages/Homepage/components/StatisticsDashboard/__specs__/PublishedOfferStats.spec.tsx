@@ -39,13 +39,13 @@ describe('OfferStats', () => {
       screen.queryByText('Vos offres en instruction')
     ).not.toBeInTheDocument()
     const publishedIndividualOffers = await screen.findByText(
-      'Voir les offres individuelles publiées'
+      'Voir les offres individuelles'
     )
     expect(
       publishedIndividualOffers.parentElement?.parentElement?.textContent
     ).toContain('0 à destination du grand public')
     const publishedCollectiveOffers = await screen.findByText(
-      'Voir les offres collectives publiées'
+      'Voir les offres collectives'
     )
     expect(
       publishedCollectiveOffers.parentElement?.parentElement?.textContent
@@ -67,13 +67,13 @@ describe('OfferStats', () => {
       screen.queryByText('Vos offres en instruction')
     ).not.toBeInTheDocument()
     const publishedIndividualOffers = await screen.findByText(
-      'Voir les offres individuelles publiées'
+      'Voir les offres individuelles'
     )
     expect(
       publishedIndividualOffers.parentElement?.parentElement?.textContent
     ).toContain('10 à destination du grand public')
     const publishedCollectiveOffers = await screen.findByText(
-      'Voir les offres collectives publiées'
+      'Voir les offres collectives'
     )
     expect(
       publishedCollectiveOffers.parentElement?.parentElement?.textContent

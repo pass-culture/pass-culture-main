@@ -28,7 +28,7 @@ describe('DisplayOfferInAppLink', () => {
     const offerId = 123
 
     renderWithProviders(
-      <DisplayOfferInAppLink id={offerId}>View in app</DisplayOfferInAppLink>
+      <DisplayOfferInAppLink id={offerId} label="View in app" />
     )
 
     const link = screen.getByRole('link', { name: 'View in app' })
@@ -41,7 +41,7 @@ describe('DisplayOfferInAppLink', () => {
     const originalPathname = window.location.pathname
 
     renderWithProviders(
-      <DisplayOfferInAppLink id={offerId}>View in app</DisplayOfferInAppLink>
+      <DisplayOfferInAppLink id={offerId} label="View in app" />
     )
 
     const link = screen.getByRole('link', { name: 'View in app' })
@@ -57,7 +57,7 @@ describe('DisplayOfferInAppLink', () => {
     const offerId = 789
 
     renderWithProviders(
-      <DisplayOfferInAppLink id={offerId}>View in app</DisplayOfferInAppLink>
+      <DisplayOfferInAppLink id={offerId} label="View in app" />
     )
 
     const link = screen.getByRole('link', { name: 'View in app' })
