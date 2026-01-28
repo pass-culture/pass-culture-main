@@ -52,7 +52,7 @@ pillow = "12.1.0"
 prometheus-flask-exporter = "^0.23.2"
 protobuf = "6.33.4"
 psycopg2 = "^2.9.11"
-py7zr = "^1.1.0"
+py7zr = "^1.1.2"
 # required by schwifty upgraded manually because of setuptools
 pycountry = "24.6.1"
 pydantic = { version = "2.12.5", extras = ["email"] }

@@ -4191,6 +4191,9 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
+[package.dependencies]
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
+
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -4319,14 +4322,14 @@ tests = ["pytest"]
 
 [[package]]
 name = "py7zr"
-version = "1.1.0"
+version = "1.1.2"
 description = "Pure python 7-zip library"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "py7zr-1.1.0-py3-none-any.whl", hash = "sha256:5921bc30fb72b5453aafe3b2183664c08ef508cde2655988d5e9bd6078353ef7"},
-    {file = "py7zr-1.1.0.tar.gz", hash = "sha256:087b1a94861ad9eb4d21604f6aaa0a8986a7e00580abd79fedd6f82fecf0592c"},
+    {file = "py7zr-1.1.2-py3-none-any.whl", hash = "sha256:6482470a2bde69a955cc6ecd48ef31d5b166dd7fb3e6056b99e4cb2ff0518c12"},
+    {file = "py7zr-1.1.2.tar.gz", hash = "sha256:2aee212c5516ddcbeb76874dc3ece38b4566fc003f51600032c723cfea89ac56"},
 ]
 
 [package.dependencies]
@@ -6590,7 +6593,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\""}
+markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
 name = "tzlocal"
@@ -7316,4 +7319,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "68a10580373cc10a16139ee84720764ac179191e360e40a931c87f868baff32f"
+content-hash = "5a6f498027518ea19781052beab4769d40c92920b5341eeed91ee7e861cdd4d6"
