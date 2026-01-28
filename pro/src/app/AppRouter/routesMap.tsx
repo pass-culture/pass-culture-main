@@ -75,6 +75,13 @@ export const routes: CustomRouteObject[] = [
     children: routesSignup,
   },
   {
+    lazy: () => import('@/pages/PokeTodo/PokeTodoPage'),
+    loader: noop,
+    path: '/poke-todo',
+    title: 'Poke Todo',
+    meta: { public: true, canBeLoggedIn: true },
+  },
+  {
     lazy: () => import('@/pages/Errors/Unavailable/Unavailable'),
     loader: noop,
     path: '/erreur/indisponible',

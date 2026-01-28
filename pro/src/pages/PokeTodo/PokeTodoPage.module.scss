@@ -1,0 +1,36 @@
+.page-container {
+  max-width: 48rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.page-header {
+  h1 {
+    margin: 0;
+    font-size: 1.75rem;
+  }
+}
+
+.page-subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--color-grey-dark, #666);
+  font-size: 0.9375rem;
+}
+
+.error-banner {
+  padding: 0.75rem 1rem;
+  background-color: var(--color-error-light, #ffe5e5);
+  color: var(--color-error, #c00);
+  border: 1px solid var(--color-error, #c00);
+  border-radius: 0.25rem;
+}
+
+.list-section {
+  h2 {
+    margin: 0 0 0.75rem;
+    font-size: 1.25rem;
+  }
+}
