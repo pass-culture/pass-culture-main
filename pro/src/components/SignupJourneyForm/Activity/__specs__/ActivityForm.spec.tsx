@@ -16,7 +16,7 @@ import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { defaultActivityFormValues } from '@/components/SignupJourneyForm/Activity/constants'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 
 import {
   ActivityForm,
@@ -55,9 +55,11 @@ function renderActivityForm(
       <FormProvider {...methods}>
         <form onSubmit={methods.handleSubmit(onSubmit)}>
           <ActivityForm {...props} />
-          <Button type="submit" isLoading={false}>
-            Étape suivante
-          </Button>
+          <Button
+            type="submit"
+            label="Étape suivante"
+            isLoading={false}
+          ></Button>
         </form>
       </FormProvider>
     )

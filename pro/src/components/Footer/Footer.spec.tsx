@@ -24,14 +24,6 @@ describe('Footer', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not render footer if ff is not active', () => {
-    renderFooter()
-
-    expect(
-      screen.queryByRole('link', { name: 'CGU professionnels' })
-    ).not.toBeInTheDocument()
-  })
-
   it('should render footer accessibility link', () => {
     renderFooter(true)
 

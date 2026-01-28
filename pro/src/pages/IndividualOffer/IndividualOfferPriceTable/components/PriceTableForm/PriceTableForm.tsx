@@ -384,7 +384,7 @@ export const PriceTableForm = ({
                       color={ButtonColor.NEUTRAL}
                       icon={fullTrashIcon}
                       onClick={() => askForRemovalConfirmationOrRemove(index)}
-                      tooltipContent={
+                      tooltip={
                         fields.length > 1
                           ? 'Supprimer ce tarif'
                           : 'Réinitialiser les valeurs de ce tarif'

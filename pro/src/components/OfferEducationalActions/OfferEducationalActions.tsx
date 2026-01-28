@@ -15,10 +15,10 @@ import { Mode } from '@/commons/core/OfferEducational/types'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { CollectiveStatusLabel } from '@/components/CollectiveStatusLabel/CollectiveStatusLabel'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullHideIcon from '@/icons/full-hide.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import style from './OfferEducationalActions.module.scss'
 
@@ -95,21 +95,19 @@ export const OfferEducationalActions = ({
             <Button
               icon={fullHideIcon}
               onClick={() => setIsOfferActive(false)}
-              variant={ButtonVariant.TERNARY}
-              className={style['button-link']}
-            >
-              Mettre en pause
-            </Button>
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              label="Mettre en pause"
+            />
           )}
           {canPublishOffer && (
             <Button
               icon={strokeCheckIcon}
               onClick={() => setIsOfferActive(true)}
-              variant={ButtonVariant.TERNARY}
-              className={style['button-link']}
-            >
-              Publier
-            </Button>
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              label="Publier"
+            />
           )}
           <CollectiveStatusLabel offerDisplayedStatus={offer.displayedStatus} />
         </div>

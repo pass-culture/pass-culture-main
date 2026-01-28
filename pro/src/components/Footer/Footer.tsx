@@ -3,10 +3,9 @@ import classNames from 'classnames'
 import { orejime } from '@/app/App/analytics/orejime'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './Footer.module.scss'
 
@@ -32,46 +31,56 @@ export const Footer = ({ layout }: FooterProps) => {
     >
       <ul className={styles['footer-list']}>
         <li className={styles['footer-list-item']}>
-          <ButtonLink
-            variant={ButtonVariant.QUATERNARY}
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             to="https://pass.culture.fr/cgu-professionnels/"
             isExternal
             opensInNewTab
             icon={fullLinkIcon}
-          >
-            CGU professionnels
-          </ButtonLink>
+            label="CGU professionnels"
+          />
         </li>
         <li className={styles['footer-list-item']}>
-          <ButtonLink
-            variant={ButtonVariant.QUATERNARY}
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             to="https://pass.culture.fr/donnees-personnelles/"
             isExternal
             opensInNewTab
             icon={fullLinkIcon}
-          >
-            Charte des Données Personnelles
-          </ButtonLink>
+            label="Charte des Données Personnelles"
+          />
         </li>
         <li className={styles['footer-list-item']}>
-          <ButtonLink variant={ButtonVariant.QUATERNARY} to="/accessibilite">
-            Accessibilité : non conforme
-          </ButtonLink>
+          <Button
+            as="a"
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            to="/accessibilite"
+            label="Accessibilité : non conforme"
+          />
         </li>
         {currentUser && (
           <li className={styles['footer-list-item']}>
-            <ButtonLink variant={ButtonVariant.QUATERNARY} to="/plan-du-site">
-              Plan du site
-            </ButtonLink>
+            <Button
+              as="a"
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              to="/plan-du-site"
+              label="Plan du site"
+            />
           </li>
         )}
         <li className={styles['footer-list-item']}>
           <Button
-            variant={ButtonVariant.QUATERNARY}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
             onClick={() => orejime?.prompt()}
-          >
-            Gestion des cookies
-          </Button>
+            label="Gestion des cookies"
+          />
         </li>
       </ul>
     </footer>

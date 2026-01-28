@@ -16,8 +16,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
-import { Button as OldButton } from '@/ui-kit/Button/Button'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import {
   IconRadioGroup,
@@ -36,9 +34,12 @@ export interface UserReviewDialogFormValues {
 
 export const UserReviewDialog = ({
   dialogTrigger = (
-    <OldButton variant={OldButtonVariant.QUATERNARY} icon={fullSmsIcon}>
-      Donner mon avis
-    </OldButton>
+    <Button
+      variant={ButtonVariant.TERTIARY}
+      color={ButtonColor.NEUTRAL}
+      icon={fullSmsIcon}
+      label="Donner mon avis"
+    />
   ),
 }: {
   dialogTrigger?: React.ReactNode

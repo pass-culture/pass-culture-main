@@ -1,6 +1,10 @@
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import strokeRigthIcon from '@/icons/stroke-right.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import { AccessibilityLayout } from './AccessibilityLayout'
 import styles from './AccessibilityMenu.module.scss'
@@ -12,33 +16,33 @@ export function AccessibilityMenu() {
       showBackToSignInButton
     >
       <div className={styles['menu-accessibility']}>
-        <ButtonLink
+        <Button
+          as="a"
           to="/accessibilite/engagements"
-          variant={ButtonVariant.BOX}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
           icon={strokeRigthIcon}
           iconPosition={IconPositionEnum.RIGHT}
-          className={styles['button-link']}
-        >
-          Les engagements du pass Culture
-        </ButtonLink>
-        <ButtonLink
+          label="Les engagements du pass Culture"
+        />
+        <Button
+          as="a"
           to="/accessibilite/declaration"
-          variant={ButtonVariant.BOX}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
           icon={strokeRigthIcon}
-          className={styles['button-link']}
           iconPosition={IconPositionEnum.RIGHT}
-        >
-          Déclaration d’accessibilité
-        </ButtonLink>
-        <ButtonLink
+          label="Déclaration d’accessibilité"
+        />
+        <Button
+          as="a"
           to="/accessibilite/schema-pluriannuel"
-          variant={ButtonVariant.BOX}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
           icon={strokeRigthIcon}
-          className={styles['button-link']}
           iconPosition={IconPositionEnum.RIGHT}
-        >
-          Schéma pluriannuel
-        </ButtonLink>
+          label="Schéma pluriannuel"
+        />
       </div>
     </AccessibilityLayout>
   )

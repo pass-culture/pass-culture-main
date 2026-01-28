@@ -2,6 +2,8 @@
   flex-grow: 1;
 }
 
-h1 {
-  margin-right: var(--size-spacing-xxl);
+.share-link-container {
+  display: flex;
+  align-items: center;
+  gap: var(--size-spacing-s);
 }

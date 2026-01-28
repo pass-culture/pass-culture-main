@@ -14,7 +14,7 @@ import { sharedCurrentUserFactory } from '@/commons/utils/factories/storeFactori
 import { noop } from '@/commons/utils/noop'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import { DEFAULT_OFFERER_FORM_VALUES } from '@/components/SignupJourneyForm/Offerer/constants'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 
 import {
   OffererAuthenticationForm,

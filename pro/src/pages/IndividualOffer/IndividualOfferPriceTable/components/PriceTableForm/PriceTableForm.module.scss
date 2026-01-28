@@ -57,11 +57,7 @@ $icon-button-height: rem.torem(32px);
     }
 
     .button-action {
-      margin-top: calc(
-        #{var(--typography-body-line-height)} +
-          #{forms.$label-space-before-ds-input} +
-          (#{size.$input-min-height} - $icon-button-height) / 2
-      );
+      margin-top: rem.torem(30px);
     }
   }
 }

@@ -9,7 +9,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { Button } from '@/ui-kit/Button/Button'
+import { Button } from '@/design-system/Button/Button'
 
 import { UserReviewDialog } from './UserReviewDialog'
 
@@ -26,7 +26,7 @@ const renderUserReviewDialog = () => {
     <Dialog.Root defaultOpen>
       <Dialog.Content aria-describedby={undefined}>
         <Dialog.Title>Title</Dialog.Title>
-        <UserReviewDialog dialogTrigger={<Button>Trigger</Button>} />
+        <UserReviewDialog dialogTrigger={<Button label="Trigger"></Button>} />
       </Dialog.Content>
     </Dialog.Root>,
     { storeOverrides }

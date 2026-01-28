@@ -41,7 +41,7 @@ $animation-timing-function: ease-in-out;
   @include fonts.title3;
 
   margin-bottom: var(--size-spacing-l);
-  padding-right: var(--size-spacing-l);
+  padding-right: rem.torem(36px);
 }
 
 .dialog-builder-section {
