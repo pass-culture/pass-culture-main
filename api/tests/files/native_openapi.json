@@ -4173,66 +4173,136 @@
                 "additionalProperties": false,
                 "properties": {
                     "categories": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Categories",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Categories"
                     },
                     "endDate": {
-                        "nullable": true,
-                        "title": "Enddate",
-                        "type": "string"
-                    },
-                    "isDuo": {
-                        "nullable": true,
-                        "title": "Isduo",
-                        "type": "boolean"
-                    },
-                    "isEvent": {
-                        "nullable": true,
-                        "title": "Isevent",
-                        "type": "boolean"
-                    },
-                    "isRecoShuffled": {
-                        "nullable": true,
-                        "title": "Isrecoshuffled",
-                        "type": "boolean"
-                    },
-                    "offerTypeList": {
-                        "items": {
-                            "additionalProperties": {
+                        "anyOf": [
+                            {
                                 "type": "string"
                             },
-                            "type": "object"
-                        },
-                        "nullable": true,
-                        "title": "Offertypelist",
-                        "type": "array"
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Enddate"
+                    },
+                    "isDuo": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Isduo"
+                    },
+                    "isEvent": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Isevent"
+                    },
+                    "isRecoShuffled": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Isrecoshuffled"
+                    },
+                    "offerTypeList": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    },
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Offertypelist"
                     },
                     "priceMax": {
-                        "nullable": true,
-                        "title": "Pricemax",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Pricemax"
                     },
                     "priceMin": {
-                        "nullable": true,
-                        "title": "Pricemin",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Pricemin"
                     },
                     "startDate": {
-                        "nullable": true,
-                        "title": "Startdate",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Startdate"
                     },
                     "subcategories": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Subcategories",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Subcategories"
                     }
                 },
                 "title": "PlaylistRequestBody",
@@ -4242,25 +4312,47 @@
                 "additionalProperties": false,
                 "properties": {
                     "latitude": {
-                        "nullable": true,
-                        "title": "Latitude",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
                     },
                     "longitude": {
-                        "nullable": true,
-                        "title": "Longitude",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
                     },
                     "modelEndpoint": {
-                        "nullable": true,
-                        "title": "Modelendpoint",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Modelendpoint"
                     }
                 },
                 "title": "PlaylistRequestQuery",
                 "type": "object"
             },
             "PlaylistResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "params": {
                         "$ref": "#/components/schemas/RecommendationApiParams"
@@ -4466,46 +4558,103 @@
                 "type": "object"
             },
             "RecommendationApiParams": {
+                "additionalProperties": false,
                 "properties": {
-                    "ab_test": {
-                        "nullable": true,
-                        "title": "Ab Test",
-                        "type": "string"
+                    "abTest": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Abtest"
                     },
-                    "call_id": {
-                        "nullable": true,
-                        "title": "Call Id",
-                        "type": "string"
+                    "callId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Callid"
                     },
                     "filtered": {
-                        "nullable": true,
-                        "title": "Filtered",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Filtered"
                     },
-                    "geo_located": {
-                        "nullable": true,
-                        "title": "Geo Located",
-                        "type": "boolean"
+                    "geoLocated": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Geolocated"
                     },
-                    "model_endpoint": {
-                        "nullable": true,
-                        "title": "Model Endpoint",
-                        "type": "string"
+                    "modelEndpoint": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Modelendpoint"
                     },
-                    "model_name": {
-                        "nullable": true,
-                        "title": "Model Name",
-                        "type": "string"
+                    "modelName": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Modelname"
                     },
-                    "model_version": {
-                        "nullable": true,
-                        "title": "Model Version",
-                        "type": "string"
+                    "modelVersion": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Modelversion"
                     },
-                    "reco_origin": {
-                        "nullable": true,
-                        "title": "Reco Origin",
-                        "type": "string"
+                    "recoOrigin": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Recoorigin"
                     }
                 },
                 "title": "RecommendationApiParams",
@@ -4921,44 +5070,80 @@
                 "additionalProperties": false,
                 "properties": {
                     "categories": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Categories",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Categories"
                     },
                     "latitude": {
-                        "nullable": true,
-                        "title": "Latitude",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Latitude"
                     },
                     "longitude": {
-                        "nullable": true,
-                        "title": "Longitude",
-                        "type": "number"
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Longitude"
                     },
-                    "search_group_names": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Search Group Names",
-                        "type": "array"
+                    "searchGroupNames": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Searchgroupnames"
                     },
                     "subcategories": {
-                        "items": {
-                            "type": "string"
-                        },
-                        "nullable": true,
-                        "title": "Subcategories",
-                        "type": "array"
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Subcategories"
                     }
                 },
                 "title": "SimilarOffersRequestQuery",
                 "type": "object"
             },
             "SimilarOffersResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "params": {
                         "$ref": "#/components/schemas/RecommendationApiParams"
@@ -8589,9 +8774,16 @@
                         "name": "modelEndpoint",
                         "required": false,
                         "schema": {
-                            "nullable": true,
-                            "title": "Modelendpoint",
-                            "type": "string"
+                            "anyOf": [
+                                {
+                                    "type": "string"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Modelendpoint"
                         }
                     },
                     {
@@ -8600,9 +8792,16 @@
                         "name": "longitude",
                         "required": false,
                         "schema": {
-                            "nullable": true,
-                            "title": "Longitude",
-                            "type": "number"
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Longitude"
                         }
                     },
                     {
@@ -8611,9 +8810,16 @@
                         "name": "latitude",
                         "required": false,
                         "schema": {
-                            "nullable": true,
-                            "title": "Latitude",
-                            "type": "number"
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Latitude"
                         }
                     }
                 ],
@@ -8682,9 +8888,16 @@
                         "name": "longitude",
                         "required": false,
                         "schema": {
-                            "nullable": true,
-                            "title": "Longitude",
-                            "type": "number"
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Longitude"
                         }
                     },
                     {
@@ -8693,9 +8906,16 @@
                         "name": "latitude",
                         "required": false,
                         "schema": {
-                            "nullable": true,
-                            "title": "Latitude",
-                            "type": "number"
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Latitude"
                         }
                     },
                     {
@@ -8704,12 +8924,19 @@
                         "name": "categories",
                         "required": false,
                         "schema": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "nullable": true,
-                            "title": "Categories",
-                            "type": "array"
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Categories"
                         }
                     },
                     {
@@ -8718,26 +8945,40 @@
                         "name": "subcategories",
                         "required": false,
                         "schema": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "nullable": true,
-                            "title": "Subcategories",
-                            "type": "array"
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Subcategories"
                         }
                     },
                     {
                         "description": "",
                         "in": "query",
-                        "name": "search_group_names",
+                        "name": "searchGroupNames",
                         "required": false,
                         "schema": {
-                            "items": {
-                                "type": "string"
-                            },
-                            "nullable": true,
-                            "title": "Search Group Names",
-                            "type": "array"
+                            "anyOf": [
+                                {
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "type": "array"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ],
+                            "default": null,
+                            "title": "Searchgroupnames"
                         }
                     }
                 ],
