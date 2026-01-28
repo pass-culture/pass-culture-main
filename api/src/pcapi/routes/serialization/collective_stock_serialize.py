@@ -3,6 +3,8 @@ from datetime import datetime
 from datetime import timezone
 
 import pydantic as pydantic_v2
+from pydantic.experimental.missing_sentinel import MISSING
+from pydantic.json_schema import SkipJsonSchema
 
 from pcapi import settings
 from pcapi.routes.serialization import HttpBodyModel
@@ -78,11 +80,20 @@ class CollectiveStockCreationBodyModel(HttpBodyModel):
 
 
 class CollectiveStockEditionBodyModel(HttpBodyModel):
+    # startDatetime -> non-required, nullable
+    # frontend -> startDatetime?: (string | null);
     startDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_start_datetime)] = None
-    endDatetime: typing.Annotated[datetime | None, pydantic_v2.AfterValidator(validate_end_datetime)] = None
-    bookingLimitDatetime: typing.Annotated[
-        datetime | None, pydantic_v2.AfterValidator(validate_booking_limit_datetime)
+    # endDatetime -> non-required, non-nullable (in schema only)
+    # frontend -> endDatetime?: string;
+    endDatetime: typing.Annotated[
+        datetime | SkipJsonSchema[None], pydantic_v2.AfterValidator(validate_end_datetime)
     ] = None
+    # bookingLimitDatetime -> non-required, non-nullable
+    # mypy error, experimental feature
+    # frontend -> bookingLimitDatetime?: string;
+    bookingLimitDatetime: typing.Annotated[
+        datetime | MISSING, pydantic_v2.AfterValidator(validate_booking_limit_datetime)
+    ] = MISSING
     price: typing.Annotated[float | None, pydantic_v2.AfterValidator(validate_price)] = pydantic_v2.Field(
         alias="totalPrice", default=None
     )
@@ -91,10 +102,14 @@ class CollectiveStockEditionBodyModel(HttpBodyModel):
 
 
 class CollectiveStockResponseModel(HttpBodyModel):
+    # id -> required, non-nullable
+    # frontend -> id: number;
     id: int
     startDatetime: datetime
     endDatetime: datetime
     bookingLimitDatetime: datetime
     price: float
     numberOfTickets: int
+    # priceDetail -> required, nullable
+    # frontend -> educationalPriceDetail: (string | null);
     priceDetail: str | None = pydantic_v2.Field(alias="educationalPriceDetail")
