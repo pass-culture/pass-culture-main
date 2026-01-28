@@ -1,4 +1,5 @@
 import datetime
+import itertools
 import logging
 import typing
 from collections import abc
@@ -947,60 +948,63 @@ def get_last_x_days_bookings_for_movies(days: int = 30) -> dict[int, int]:
 
 
 def update_products_last_30_days_booking_count(batch_size: int = 1000) -> None:
-    updated_products = update_booking_count_by_product()
-    if not updated_products:
+    updated_product_ids = update_booking_count_by_product()
+    if not updated_product_ids:
         return
 
-    offer_ids_to_reindex_query = (
-        db.session.query(offers_models.Offer)
-        .filter(offers_models.Offer.productId.in_([product.id for product in updated_products]))
-        .with_entities(offers_models.Offer.id)
+    offer_ids_to_reindex_query = db.session.scalars(
+        sa.select(offers_models.Offer.id)
+        .where(offers_models.Offer.productId.in_(updated_product_ids))
+        .execution_options(yield_per=batch_size)
     )
 
-    logger.info("Starting to reindex offers with product booked recently. Product count: %s", len(updated_products))
+    logger.info(
+        "Starting to reindex offers for which last 30 days booking number changed.",
+        extra={"product_count": len(updated_product_ids)},
+    )
+    total_offers_to_reindex = 0
+    print(offer_ids_to_reindex_query)
+    for batch in itertools.batched(offer_ids_to_reindex_query, batch_size):
+        async_index_offer_ids(batch, reason=IndexationReason.BOOKING_COUNT_CHANGE)
+        total_offers_to_reindex += len(batch)
 
-    offer_ids_to_reindex: set[int] = set()
-    for (offer_id,) in offer_ids_to_reindex_query.yield_per(batch_size):
-        offer_ids_to_reindex.add(offer_id)
-        if len(offer_ids_to_reindex) == batch_size:
-            logger.info("Reindexing offers with product booked recently. Batch count: %s", len(offer_ids_to_reindex))
-            async_index_offer_ids(
-                offer_ids_to_reindex,
-                reason=IndexationReason.BOOKING_COUNT_CHANGE,
-            )
-            offer_ids_to_reindex = set()
-    if offer_ids_to_reindex:
-        async_index_offer_ids(
-            offer_ids_to_reindex,
-            reason=IndexationReason.BOOKING_COUNT_CHANGE,
-        )
+    logger.info("Added offers to indexation queue.", extra={"offers_count": total_offers_to_reindex})
 
 
 def update_last_30_days_bookings_for_eans() -> list[offers_models.Product]:
     booking_count_by_ean = get_last_30_days_bookings_for_eans()
-    updated_products = []
-    current_product_batch = []
+    updated_product_ids = []
 
     batch_size = 100
     eans = list(booking_count_by_ean.keys())
-    for batch in range(0, len(booking_count_by_ean), batch_size):
-        ean_batch = eans[batch : batch + batch_size]
-        for product in db.session.query(offers_models.Product).filter(offers_models.Product.ean.in_(ean_batch)):
+    print(f"{eans = }")
+    for ean_batch in itertools.batched(eans, batch_size):
+        product_batch = db.session.scalars(
+            sa.select(offers_models.Product)
+            .options(
+                sa_orm.load_only(
+                    offers_models.Product.id,
+                    offers_models.Product.ean,
+                    offers_models.Product.last_30_days_booking,
+                )
+            )
+            .where(offers_models.Product.ean.in_(ean_batch))
+        )
+        current_product_batch = []
+        for product in product_batch:
             assert product.ean
-            ean = product.ean
-            old_last_x_days_booking = product.last_30_days_booking
-            updated_last_x_days_booking = booking_count_by_ean.get(ean)
-
-            if old_last_x_days_booking != updated_last_x_days_booking:
-                product.last_30_days_booking = updated_last_x_days_booking
-                updated_products.append(product)
+            old_value = product.last_30_days_booking
+            new_value = booking_count_by_ean.get(product.ean)
+            if old_value != new_value:
+                product.last_30_days_booking = new_value
+                updated_product_ids.append(product)
                 current_product_batch.append(product)
+
         db.session.add_all(current_product_batch)
         db.session.commit()
-        logger.info("Updated %s products", len(current_product_batch))
-        current_product_batch = []
 
-    return updated_products
+    logger.info("Updated last 30 days bookings for products", extra={"product_count": len(updated_product_ids)})
+    return updated_product_ids
 
 
 def update_last_30_days_bookings_for_movies() -> list[offers_models.Product]:
@@ -1031,15 +1035,16 @@ def update_last_30_days_bookings_for_movies() -> list[offers_models.Product]:
     return updated_products
 
 
-def update_booking_count_by_product() -> list[offers_models.Product]:
-    updated_ean_products = update_last_30_days_bookings_for_eans()
-    updated_movie_products = update_last_30_days_bookings_for_movies()
+def update_booking_count_by_product() -> list[int]:
+    breakpoint()
+    updated_ean_product_ids = update_last_30_days_bookings_for_eans()
+    updated_movie_product_ids = update_last_30_days_bookings_for_movies()
 
     if settings.ALGOLIA_OFFERS_INDEX_MAX_SIZE >= 0:
-        updated_ean_products = updated_ean_products[:100]
-        updated_movie_products = updated_movie_products[:100]
+        updated_ean_product_ids = updated_ean_product_ids[:100]
+        updated_movie_product_ids = updated_movie_product_ids[:100]
 
-    return updated_ean_products + updated_movie_products
+    return updated_ean_product_ids + updated_movie_product_ids
 
 
 def clean_processing_queues() -> None:
