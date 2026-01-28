@@ -11,12 +11,7 @@ from pcapi.utils import siren as siren_utils
 from tests.test_utils import run_command
 
 
-pytestmark = pytest.mark.usefixtures("clean_database")
-
-
-@pytest.fixture(name="siren_caduc_tag")
-def siren_caduc_tag_fixture():
-    return offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc")
+pytestmark = pytest.mark.usefixtures("db_session")
 
 
 class CheckActiveOfferersTest:
@@ -60,9 +55,9 @@ class CheckClosedOfferersTest:
         mock_siren_closed_at_date,
         mock_close_offerer,
         client,
-        siren_caduc_tag,
         app,
     ):
+        siren_caduc_tag = offerers_factories.OffererTagFactory(name="siren-caduc", label="SIREN caduc")
         # SIREN makes offerer inactive (because of 99), late for taxes (third digit is 9), SARL (fourth digit is 5)
         offerer1 = offerers_factories.OffererFactory(siren="109599001")
         offerer2 = offerers_factories.OffererFactory(siren="109599002")
