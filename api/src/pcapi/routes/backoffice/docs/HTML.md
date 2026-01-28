@@ -84,14 +84,3 @@ This is :heavy_check_mark::
   Items in the trash will be permanently removed after 30 days.
 </p>
 ```
-
-#### Required by Turbo Frame
-
-You can use the attribute `id` to identify `<turbo-frame />`, this is the only case where you don't want to generate the `id` with, ex:
-
-```html
-<turbo-frame id="some_frame">
-  <!-- your frame content -->
-</turbo-frame>
-```
-
