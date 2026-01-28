@@ -5,6 +5,7 @@ import { storageAvailable } from './storageAvailable'
  */
 export enum LOCAL_STORAGE_KEY {
   SELECTED_VENUE_ID = 'PASS_CULTURE_SELECTED_VENUE_ID',
+  SELECTED_ADMIN_OFFERER_ID = 'PASS_CULTURE_SELECTED_ADMIN_OFFERER_ID',
 
   // Legacy keys (will be removed in the future)
   /** @deprecated Will be removed in the future in favor of `SELECTED_VENUE_ID`. */

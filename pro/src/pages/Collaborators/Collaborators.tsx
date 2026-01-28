@@ -14,8 +14,12 @@ import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import {
+  selectCurrentOffererId,
+  selectOffererNames,
+} from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
+import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
@@ -33,14 +37,21 @@ type UserEmailFormValues = {
 }
 
 export const Collaborators = (): JSX.Element | null => {
-  const offererId = useAppSelector(selectCurrentOffererId)
+  const currentOffererId = useAppSelector(selectCurrentOffererId)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const { logEvent } = useAnalytics()
   const snackBar = useSnackBar()
   const [displayAllMembers, setDisplayAllMembers] = useState(false)
-
   const [showInvitationForm, setShowInvitationForm] = useState(false)
+
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.offerer.adminCurrentOfferer
+  )
+  const offererNames = useAppSelector(selectOffererNames)
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : currentOffererId
 
   const { data } = useSWR(
     [GET_MEMBERS_QUERY_KEY, offererId],
@@ -101,6 +112,9 @@ export const Collaborators = (): JSX.Element | null => {
       mainHeading="Collaborateurs"
       isAdminArea={withSwitchVenueFeature}
     >
+      {withSwitchVenueFeature && offererNames && offererNames.length > 1 && (
+        <OffererSelect />
+      )}
       <section className={styles['section']}>
         <h2 className={styles['main-list-title']}>Liste des collaborateurs</h2>
 

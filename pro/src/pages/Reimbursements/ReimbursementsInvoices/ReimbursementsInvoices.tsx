@@ -9,6 +9,7 @@ import {
   GET_INVOICES_QUERY_KEY,
   GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
 } from '@/commons/config/swrQueryKeys'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useIsCaledonian } from '@/commons/hooks/useIsCaledonian'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
@@ -26,7 +27,15 @@ import { InvoiceTable } from './InvoiceTable/InvoiceTable'
 export const ReimbursementsInvoices = (): JSX.Element => {
   const [, setSearchParams] = useSearchParams()
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
-  const isCaledonian = useIsCaledonian()
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+  const adminSelectedOfferer = useAppSelector(
+    (store) => store.offerer.adminCurrentOfferer
+  )
+  const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
+
+  const offererId = withSwitchVenueFeature
+    ? adminSelectedOfferer?.id
+    : selectedOffererId
 
   const INITIAL_FILTERS = useMemo(() => {
     const today = getToday()
@@ -50,16 +59,16 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   }, [filters, setSearchParams])
 
   const hasInvoiceQuery = useSWR(
-    selectedOffererId ? [GET_HAS_INVOICE_QUERY_KEY, selectedOffererId] : null,
-    ([, selectedOffererId]) => api.hasInvoice(selectedOffererId),
+    offererId ? [GET_HAS_INVOICE_QUERY_KEY, offererId] : null,
+    ([, offererId]) => api.hasInvoice(offererId),
     { fallbackData: { hasInvoice: false } }
   )
 
   const hasInvoice = Boolean(hasInvoiceQuery.data.hasInvoice)
 
   const getInvoicesQuery = useSWR(
-    selectedOffererId && hasInvoice
-      ? [GET_INVOICES_QUERY_KEY, selectedOffererId, searchFilters]
+    offererId && hasInvoice
+      ? [GET_INVOICES_QUERY_KEY, offererId, searchFilters]
       : null,
     async () => {
       const { periodStart, periodEnd, reimbursementPoint } = searchFilters
@@ -69,7 +78,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         reimbursementPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
           ? parseInt(reimbursementPoint, 10)
           : undefined,
-        selectedOffererId
+        offererId
       )
 
       return invoices
@@ -80,11 +89,8 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   )
 
   const getOffererBankAccountsAndAttachedVenuesQuery = useSWR(
-    selectedOffererId
-      ? [
-          GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY,
-          selectedOffererId,
-        ]
+    offererId
+      ? [GET_OFFERER_BANK_ACCOUNTS_AND_ATTACHED_VENUES_QUERY_KEY, offererId]
       : null,
     ([, selectedOffererId]) =>
       api.getOffererBankAccountsAndAttachedVenues(selectedOffererId)

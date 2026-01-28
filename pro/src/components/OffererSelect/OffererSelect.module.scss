@@ -1,0 +1,6 @@
+@use "styles/mixins/_rem.scss" as rem;
+
+.legal-entity-select {
+  width: rem.torem(248px);
+  margin-bottom: var(--size-spacing-xl);
+}

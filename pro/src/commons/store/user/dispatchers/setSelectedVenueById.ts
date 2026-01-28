@@ -10,6 +10,7 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
+import { setAdminCurrentOfferer } from '../../offerer/dispatchers/setAdminCurrentOfferer'
 import {
   setCurrentOffererName,
   updateCurrentOfferer,
@@ -20,11 +21,14 @@ import { logout } from './logout'
 
 export const setSelectedVenueById = createAsyncThunk<
   UserAccess | null,
-  number,
+  { nextSelectedVenueId: number; shouldSkipAdminOffererId?: boolean },
   AppThunkApiConfig
 >(
   'user/setSelectedVenueById',
-  async (nextSelectedVenueId, { dispatch, getState }) => {
+  async (
+    { nextSelectedVenueId, shouldSkipAdminOffererId = false },
+    { dispatch, getState }
+  ) => {
     try {
       const state = getState()
 
@@ -52,6 +56,14 @@ export const setSelectedVenueById = createAsyncThunk<
         : 'no-onboarding'
       dispatch(updateUserAccess(nextUserAccess))
       dispatch(updateCurrentOfferer(nextSelectedOfferer))
+      if (!shouldSkipAdminOffererId) {
+        await dispatch(
+          setAdminCurrentOfferer({
+            offererId: nextSelectedOfferer.id,
+            offerer: nextSelectedOfferer,
+          })
+        )
+      }
       // TODO (igabriele, 2025-10-28): Handle that case properly before the end of `WIP_SWITCH_VENUE`.
       dispatch(setCurrentOffererName(nextSelectedOffererName))
       dispatch(setSelectedVenue(nextSelectedVenue))

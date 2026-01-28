@@ -9,31 +9,31 @@ import { Income } from '@/pages/Reimbursements/Income/Income'
 import { ReimbursementsInvoices } from '@/pages/Reimbursements/ReimbursementsInvoices/ReimbursementsInvoices'
 
 import type { CustomRouteObject } from './types'
-import { mustHaveSelectedVenue } from './utils'
+import { mustHaveSelectedAdminOfferer } from './utils'
 
 export const routesReimbursements: CustomRouteObject[] = [
   {
     element: <ReimbursementsInvoices />,
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
     path: '/remboursements',
     title: 'Gestion financière - justificatifs',
   },
   // We keep a redirection here in case this link is still used in mail
   {
     element: <Navigate to="/remboursements" />,
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
     path: '/remboursements/justificatifs',
     title: 'Gestion financière',
   },
   {
     element: <BankInformations />,
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
     path: '/remboursements/informations-bancaires',
     title: 'Informations bancaires',
   },
   {
     element: <Income />,
-    loader: withUserPermissions(mustHaveSelectedVenue),
+    loader: withUserPermissions(mustHaveSelectedAdminOfferer),
     path: '/remboursements/revenus',
     title: 'Chiffre d’affaires',
   },

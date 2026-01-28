@@ -11,12 +11,14 @@ export type OffererState = {
    * because they won't be allowed to access this offerer's details.
    */
   currentOffererName: GetOffererNameResponseModel | null
+  adminCurrentOfferer: GetOffererResponseModel | null
 }
 
 const initialState: OffererState = {
   offererNames: null,
   currentOfferer: null,
   currentOffererName: null,
+  adminCurrentOfferer: null,
 }
 
 // TODO (igabriele, 2025-10-16): Merge that into user slice (it's user-dependent).
@@ -44,6 +46,13 @@ const offererSlice = createSlice({
     ) => {
       state.currentOfferer = action.payload
     },
+
+    updateAdminCurrentOfferer: (
+      state: OffererState,
+      action: PayloadAction<GetOffererResponseModel | null>
+    ) => {
+      state.adminCurrentOfferer = action.payload
+    },
   },
 })
 
@@ -53,4 +62,5 @@ export const {
   setCurrentOffererName,
   updateOffererNames,
   updateCurrentOfferer,
+  updateAdminCurrentOfferer,
 } = offererSlice.actions

@@ -63,7 +63,7 @@ export const Hub = () => {
     nextSelectedVenueId: number
   ) => {
     setIsLoading(true)
-    await dispatch(setSelectedVenueById(nextSelectedVenueId)).unwrap()
+    await dispatch(setSelectedVenueById({ nextSelectedVenueId })).unwrap()
 
     navigate('/accueil')
   }
