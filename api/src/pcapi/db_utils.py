@@ -129,6 +129,7 @@ tables_to_clean: list[type[Model]] = [
     offers_models.PriceCategory,
     offers_models.PriceCategoryLabel,
     offers_models.Product,
+    offers_models.OfferQuality,
     providers_models.CDSCinemaDetails,
     providers_models.BoostCinemaDetails,
     providers_models.CGRCinemaDetails,
