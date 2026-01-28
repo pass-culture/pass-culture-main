@@ -41,6 +41,9 @@ jobs:
           cache-dependency-path: "**/yarn.lock"
           node-version-file: "pro/package.json"
 
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+        if: inputs.ENV == 'testing'
+
       - name: Install dependencies
         run: yarn install --immutable
 
@@ -111,6 +114,9 @@ jobs:
           cache: "yarn"
           cache-dependency-path: "**/yarn.lock"
           node-version-file: "pro/package.json"
+
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+        if: inputs.ENV == 'testing'
 
       - name: Install dependencies
         run: yarn install --immutable

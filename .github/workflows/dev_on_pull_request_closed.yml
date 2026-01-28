@@ -25,6 +25,8 @@ jobs:
         with:
           node-version-file: "pro/package.json"
 
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+
       - name: "Setup firebase tools"
         run: npm install -g firebase-tools
 
