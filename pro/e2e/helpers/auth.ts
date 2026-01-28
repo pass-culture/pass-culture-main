@@ -2,11 +2,12 @@ import { expect, type Page } from '@playwright/test'
 
 const DEFAULT_PASSWORD = 'user@AZERTY123'
 
-export async function login(
+async function doLogin(
   page: Page,
   email: string,
-  password: string = DEFAULT_PASSWORD,
-  setCookieConsent: boolean = true
+  password: string,
+  setCookieConsent: boolean,
+  retry: boolean = true
 ): Promise<void> {
   await page.goto('/connexion')
 
@@ -34,6 +35,10 @@ export async function login(
   ])
 
   if (!signinResponse.ok()) {
+    if (retry) {
+      await page.waitForTimeout(5000)
+      return doLogin(page, email, password, setCookieConsent, false)
+    }
     throw new Error(`Login failed: ${signinResponse.status()}`)
   }
 
@@ -41,6 +46,17 @@ export async function login(
     response.url().includes('/offerers/names')
   )
   await page.waitForResponse((response) => response.url().includes('/venues'))
+
+  await page.waitForURL((url) => !url.pathname.includes('/connexion'))
+}
+
+export async function login(
+  page: Page,
+  email: string,
+  password: string = DEFAULT_PASSWORD,
+  setCookieConsent: boolean = true
+): Promise<void> {
+  await doLogin(page, email, password, setCookieConsent, true)
 }
 
 export async function loginAndNavigate(
@@ -53,8 +69,14 @@ export async function loginAndNavigate(
   await login(page, email, password, setCookieConsent)
 
   await page.goto(path)
-  await page.waitForLoadState('networkidle')
-  await expect(
-    page.getByText('Bienvenue sur votre espace partenaire')
-  ).toBeVisible({ timeout: 15000 })
+
+  if (path === '/accueil') {
+    await expect(page.getByTestId('spinner')).not.toBeVisible()
+    await expect(
+      page.getByText('Bienvenue sur votre espace partenaire')
+    ).toBeVisible()
+  } else {
+    await expect(page).toHaveURL(new RegExp(path))
+    await expect(page.getByTestId('spinner')).not.toBeVisible()
+  }
 }

@@ -31,6 +31,21 @@ export interface ProUserData {
   }
 }
 
+export interface ProUserWithActiveCollectiveOfferResponse {
+  user: {
+    email: string
+  }
+  offer: {
+    id: number
+    name: string
+    venueName: string
+  }
+  stock: {
+    startDatetime: string
+  }
+  providerApiKey: string
+}
+
 export interface DeskBookingsData {
   user: {
     email: string
@@ -70,5 +85,15 @@ export async function createNewProUser(
     request,
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_new_pro_user`
+  )
+}
+
+export async function createProUserWithActiveCollectiveOffer(
+  request: APIRequestContext
+): Promise<ProUserWithActiveCollectiveOfferResponse> {
+  return await sandboxCall<ProUserWithActiveCollectiveOfferResponse>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_active_collective_offer`
   )
 }
