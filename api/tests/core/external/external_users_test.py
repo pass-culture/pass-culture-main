@@ -622,7 +622,7 @@ def test_get_most_favorite_subcategories_two_equal():
     }
 
 
-def test_get_user_attributes_with_achievements():
+def test_get_user_attributes_with_achievements(db_session):
     user = BeneficiaryFactory()
     booking = BookingFactory(user=user)
     AchievementFactory(
