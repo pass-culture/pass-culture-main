@@ -213,6 +213,7 @@ def get_active_venue_page_data(venue_id: int) -> models.Venue | None:
             .options(
                 sa_orm.joinedload(models.Venue.accessibilityProvider).load_only(
                     models.AccessibilityProvider.externalAccessibilityData,
+                    models.AccessibilityProvider.externalAccessibilityId,
                     models.AccessibilityProvider.externalAccessibilityUrl,
                 )
             )
@@ -239,6 +240,8 @@ def get_active_venue_page_data(venue_id: int) -> models.Venue | None:
                 .joinedload(models.OffererAddress.address)
                 .load_only(
                     geography_models.Address.city,
+                    geography_models.Address.latitude,
+                    geography_models.Address.longitude,
                     geography_models.Address.postalCode,
                     geography_models.Address.street,
                     geography_models.Address.timezone,

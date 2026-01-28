@@ -48,6 +48,7 @@ class VenueResponse(HttpBodyModel):
     id: int
     activity: offerers_models.Activity | None
     accessibility_data: AccessibilityData | None = None
+    accessibility_id: str | None = None
     accessibility_url: str | None = None
     banner_credit: str | None = None
     banner_is_from_google: bool = False
@@ -57,6 +58,8 @@ class VenueResponse(HttpBodyModel):
     description: str | None
     is_open_to_public: bool
     is_permanent: bool
+    latitude: float | None
+    longitude: float | None
     name: str
     opening_hours: dict | None
     postal_code: str | None
@@ -67,6 +70,7 @@ class VenueResponse(HttpBodyModel):
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> "VenueResponse":
         accessibility_data = None
+        accessibility_id = None
         accessibility_url = None
         banner_credit = None
         banner_is_from_google = False
@@ -76,15 +80,20 @@ class VenueResponse(HttpBodyModel):
                     venue.accessibilityProvider.externalAccessibilityData
                 ),
             )
+            accessibility_id = venue.accessibilityProvider.externalAccessibilityId
             accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
 
         if venue.bannerMeta:
             banner_credit = venue.bannerMeta.get("image_credit")
             banner_is_from_google = venue.bannerMeta.get("is_from_google", False)
 
+        latitude = float(venue.offererAddress.address.latitude)
+        longitude = float(venue.offererAddress.address.longitude)
+
         return cls(
             id=venue.id,
             accessibility_data=accessibility_data,
+            accessibility_id=accessibility_id,
             accessibility_url=accessibility_url,
             activity=venue.activity,
             banner_credit=banner_credit,
@@ -95,6 +104,8 @@ class VenueResponse(HttpBodyModel):
             description=venue.description,
             is_open_to_public=venue.isOpenToPublic,
             is_permanent=venue.isPermanent,
+            latitude=latitude,
+            longitude=longitude,
             name=venue.common_name,
             opening_hours=venue.opening_hours,
             postal_code=venue.offererAddress.address.postalCode,
