@@ -261,7 +261,6 @@ def get_venue(venue_id: int) -> sa.engine.Row:
 
 def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVirtualVenueForm | None = None) -> str:
     venue = venue_row.Venue
-    region = regions_utils.get_region_name_from_postal_code(venue.offererAddress.address.postalCode)
 
     if not edit_venue_form:
         if venue.isVirtual:
@@ -270,33 +269,35 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
                 phone_number=venue.contact.phone_number if venue.contact else None,
             )
         else:
-            assert venue.offererAddress  # physical venues should have an address
-            edit_venue_form = forms.EditVenueForm(
-                venue=venue,
-                name=venue.name,
-                public_name=venue.publicName,
-                siret=venue.siret,
-                city=venue.offererAddress.address.city,
-                postal_address_autocomplete=(
-                    f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
-                    if venue.offererAddress.address.street is not None
-                    and venue.offererAddress.address.city is not None
-                    and venue.offererAddress.address.postalCode is not None
-                    else None
-                ),
-                postal_code=venue.offererAddress.address.postalCode,
-                street=venue.offererAddress.address.street,
-                ban_id=venue.offererAddress.address.banId,
-                insee_code=venue.offererAddress.address.inseeCode,
-                acceslibre_url=venue.external_accessibility_url,
-                booking_email=venue.bookingEmail,
-                phone_number=venue.contact.phone_number if venue.contact else None,
-                is_permanent=venue.isPermanent,
-                latitude=venue.offererAddress.address.latitude,
-                longitude=venue.offererAddress.address.longitude,
-                venue_type_code=venue.venueTypeCode.name,
-            )
-            edit_venue_form.siret.flags.disabled = not _can_edit_siret()
+            edit_prefill = {
+                "name": venue.name,
+                "public_name": venue.publicName,
+                "siret": venue.siret,
+                "booking_email": venue.bookingEmail,
+                "phone_number": venue.contact.phone_number if venue.contact else None,
+                "acceslibre_url": venue.external_accessibility_url,
+                "is_permanent": venue.isPermanent,
+            }
+            # physical venues should have an address, but sometimes missing (e.g. rollback from soft-deleted)
+            if venue.offererAddress:
+                edit_prefill |= {
+                    "postal_address_autocomplete": (
+                        f"{venue.offererAddress.address.street}, {venue.offererAddress.address.postalCode} {venue.offererAddress.address.city}"
+                        if venue.offererAddress.address.street is not None
+                        and venue.offererAddress.address.city is not None
+                        and venue.offererAddress.address.postalCode is not None
+                        else None
+                    ),
+                    "street": venue.offererAddress.address.street,
+                    "postal_code": venue.offererAddress.address.postalCode,
+                    "city": venue.offererAddress.address.city,
+                    "ban_id": venue.offererAddress.address.banId,
+                    "insee_code": venue.offererAddress.address.inseeCode,
+                    "latitude": venue.offererAddress.address.latitude,
+                    "longitude": venue.offererAddress.address.longitude,
+                }
+            edit_venue_form = forms.EditVenueForm(venue=venue, **edit_prefill)
+        edit_venue_form.siret.flags.disabled = not _can_edit_siret()
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
     delete_form = empty_forms.EmptyForm()
@@ -329,9 +330,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
         search_dst=url_for("backoffice_web.pro.search_pro"),
         venue=venue,
         has_fraudulent_booking=venue_row.has_fraudulent_booking,
-        address=venue.offererAddress.address,
         edit_venue_form=edit_venue_form,
-        region=region,
         delete_form=delete_form,
         fraud_form=fraud_form,
         active_tab=request.args.get("active_tab", "history"),
@@ -343,6 +342,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
             and utils.has_current_user_permission(perm_models.Permissions.MANAGE_PRO_ENTITY)
             else None
         ),
+        get_region_name_from_postal_code=regions_utils.get_region_name_from_postal_code,
     )
 
 
@@ -825,7 +825,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     location_modifications = {
         field: value
         for field, value in update_location_attrs.items()
-        if venue.offererAddress.address.field_exists_and_has_changed(field, value)
+        if not venue.offererAddress or venue.offererAddress.address.field_exists_and_has_changed(field, value)
     }
     criteria = (
         db.session.query(criteria_models.Criterion).filter(criteria_models.Criterion.id.in_(form.tags.data)).all()

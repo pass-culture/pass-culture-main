@@ -856,9 +856,8 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_caledonian(self) -> bool:
-        return (
-            siren_utils.is_ridet(self.siret)
-            or self.offererAddress.address.departmentCode == NEW_CALEDONIA_DEPARTMENT_CODE
+        return siren_utils.is_ridet(self.siret) or (
+            self.offererAddress and self.offererAddress.address.departmentCode == NEW_CALEDONIA_DEPARTMENT_CODE
         )
 
     @property
