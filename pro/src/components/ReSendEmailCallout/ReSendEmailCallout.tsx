@@ -1,7 +1,7 @@
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { Banner } from '@/design-system/Banner/Banner'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant } from '@/ui-kit/Button/types'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 
 import styles from './ReSendEmailCallout.module.scss'
 
@@ -39,12 +39,11 @@ export const ReSendEmailCallout = ({
               {' '}
               ou{' '}
               <Button
-                variant={ButtonVariant.QUATERNARY}
-                className={styles['re-send-callout-button']}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.BRAND}
                 onClick={onClick}
-              >
-                cliquez ici
-              </Button>{' '}
+                label="cliquez ici"
+              />{' '}
               pour le recevoir à nouveau.
             </>
           )}

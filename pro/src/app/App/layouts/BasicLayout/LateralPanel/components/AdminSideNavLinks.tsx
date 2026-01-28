@@ -1,9 +1,7 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import classnames from 'classnames'
 import { useId, useState } from 'react'
 import { NavLink } from 'react-router'
 
-import { HelpDropdownMenu } from '@/app/App/layouts/components/Header/components/HeaderHelpDropdown/HelpDropdownMenu'
 import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { Button } from '@/design-system/Button/Button'
@@ -14,17 +12,14 @@ import {
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullDownIcon from '@/icons/full-down.svg'
-import fullHelpIcon from '@/icons/full-help.svg'
-import fullRightIcon from '@/icons/full-right.svg'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeReportIcon from '@/icons/stroke-report.svg'
-import { Button as OldButton } from '@/ui-kit/Button/Button'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import styles from './SideNavLinks.module.scss'
 
 const NAV_ITEM_ICON_SIZE = '20'
@@ -173,55 +168,29 @@ export const AdminSideNavLinks = ({
           </NavLink>
         </li>
       </ul>
+      <div
+        className={styles['nav-links-last-group-separator']}
+        aria-hidden="true"
+      >
+        <div className={styles['separator-line']} />
+      </div>
       <ul className={styles['nav-links-footer']}>
-        <div className={styles['nav-links-group']}>
-          <div
-            className={styles['nav-links-last-group-separator']}
-            aria-hidden="true"
-          >
-            <div className={styles['separator-line']} />
-          </div>
-          <li>
-            <UserReviewDialog
-              dialogTrigger={
-                <Button
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  icon={fullSmsIcon}
-                  className={classnames(
-                    styles['nav-links-item'],
-                    styles['nav-links-item-feedback']
-                  )}
-                  label="Donner mon avis"
-                />
-              }
-            />
-          </li>
-          <li>
-            <div>
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger asChild>
-                  <OldButton
-                    variant={OldButtonVariant.TERNARY}
-                    className={styles['nav-links-item']}
-                  >
-                    <SvgIcon src={fullHelpIcon} alt="" width="18" />
-                    <span className={styles['nav-section-title']}>
-                      Centre d’aide
-                    </span>
-                    <SvgIcon src={fullRightIcon} alt="" width="18" />
-                  </OldButton>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content
-                  side={isMobileScreen ? 'top' : 'right'}
-                  className={styles['help-dropdown-content']}
-                >
-                  <HelpDropdownMenu />
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            </div>
-          </li>
-        </div>
+        <li>
+          <UserReviewDialog
+            dialogTrigger={
+              <Button
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                icon={fullSmsIcon}
+                className={classnames(styles['nav-links-item'])}
+                label="Donner mon avis"
+              />
+            }
+          />
+        </li>
+        <li>
+          <HelpDropdownNavItem isMobileScreen={isMobileScreen ?? false} />
+        </li>
       </ul>
     </nav>
   )

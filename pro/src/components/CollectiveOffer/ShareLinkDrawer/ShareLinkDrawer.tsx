@@ -3,16 +3,17 @@ import { forwardRef, useState } from 'react'
 
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import { Tag, TagVariant } from '@/design-system/Tag/Tag'
+import connectStrokeIcon from '@/icons/stroke-connect.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 
-import { ShareLinkButton } from '../ShareLinkButton/ShareLinkButton'
 import { ShareTemplateOfferLink } from '../ShareTemplateOfferLink/ShareTemplateOfferLink'
 import styles from './ShareLinkDrawer.module.scss'
 
 export const ShareLinkDrawer = forwardRef<
   HTMLButtonElement,
   { offerId: number } & React.ComponentPropsWithoutRef<'button'>
->(({ offerId, ...props }, ref) => {
+>(({ offerId }, ref) => {
   const [isOpenDialog, setIsOpenDialog] = useState(false)
 
   return (
@@ -21,7 +22,18 @@ export const ShareLinkDrawer = forwardRef<
       onOpenChange={setIsOpenDialog}
       open={isOpenDialog}
       title="Aidez les enseignants à retrouver votre offre plus facilement sur ADAGE"
-      trigger={<ShareLinkButton ref={ref} {...props} />}
+      trigger={
+        <div className={styles['share-link-container']}>
+          <Button
+            ref={ref}
+            icon={connectStrokeIcon}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            label="Partager l’offre"
+          />
+          <Tag label="Nouveau" variant={TagVariant.NEW} aria-hidden="true" />
+        </div>
+      }
       className={styles['drawer']}
     >
       <div className={styles['drawer-content']}>

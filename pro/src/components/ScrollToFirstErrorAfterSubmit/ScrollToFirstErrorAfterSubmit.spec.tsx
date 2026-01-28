@@ -4,8 +4,8 @@ import { userEvent } from '@testing-library/user-event'
 import { FormProvider, useForm } from 'react-hook-form'
 import * as yup from 'yup'
 
+import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { Button } from '@/ui-kit/Button/Button'
 
 import { ScrollToFirstHookFormErrorAfterSubmit } from './ScrollToFirstErrorAfterSubmit'
 
@@ -38,7 +38,7 @@ function renderScrollToFirstErrorAfterSubmit() {
             {...form.register('firstName')}
             error={form.formState.errors.firstName?.message}
           />
-          <Button type="submit">Enregistrer</Button>
+          <Button type="submit" label="Enregistrer"></Button>
         </form>
       </FormProvider>
     )

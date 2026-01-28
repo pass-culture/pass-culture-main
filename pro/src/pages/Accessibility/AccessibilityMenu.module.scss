@@ -1,11 +1,7 @@
+@use "styles/mixins/_rem.scss" as rem;
+
 .menu-accessibility {
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-s);
-}
-
-.button-link {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
