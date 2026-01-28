@@ -25,6 +25,7 @@ class RecommendationApiParams(HttpBodyModel):
     geo_located: bool | None = None
     model_endpoint: str | None = None
     model_name: str | None = None
+    model_origin: str | None = None
     model_version: str | None = None
     reco_origin: str | None = None
 

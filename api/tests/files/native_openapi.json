@@ -4667,6 +4667,18 @@
                         "default": null,
                         "title": "Modelname"
                     },
+                    "modelOrigin": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Modelorigin"
+                    },
                     "modelVersion": {
                         "anyOf": [
                             {

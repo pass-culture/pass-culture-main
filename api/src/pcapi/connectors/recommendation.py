@@ -56,14 +56,25 @@ class BaseBackend:
 class TestingBackend:
     def get_similar_offers(self, offer_id: int, user: users_models.User | None, params: dict) -> bytes:
         offers = [i + 10 * offer_id + 100 * (user.id if user else 0) for i in range(3)]
-        response = {"results": [str(id_) for id_ in offers], "params": {}}
+        response = {
+            "results": [str(id_) for id_ in offers],
+            "params": {
+                "reco_origin": "unknown",
+                "model_origin": "default",
+                "call_id": "956bd070-cbb1-42d3-bea4-89855bf3b11c",
+            },
+        }
         return bytes(json.dumps(response), encoding="utf-8")
 
     def get_playlist(self, user: users_models.User, params: dict, body: dict) -> bytes:
         offers = [i + 100 * user.id for i in range(3)]
         response = {
             "playlist_recommended_offers": [str(id_) for id_ in offers],
-            "params": {},
+            "params": {
+                "reco_origin": "unknown",
+                "model_origin": "default",
+                "call_id": "1dc4c5f2-303c-4d8a-94c3-77c0085c0c70",
+            },
         }
         return bytes(json.dumps(response), encoding="utf-8")
 
