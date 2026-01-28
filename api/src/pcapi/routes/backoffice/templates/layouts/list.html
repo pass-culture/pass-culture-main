@@ -18,6 +18,9 @@
 {% if self.after_table %}
   {% set after_table = self.after_table() %}
 {% endif %}
+{% if self.empty %}
+  {% set empty = self.empty() %}
+{% endif %}
 {% block page %}
   <div class="pt-3 px-5">
     <div class="d-flex justify-content-between">

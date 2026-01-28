@@ -92,6 +92,16 @@ ALGOLIA_OPERATOR_DICT: dict[str, typing.Any] = {
     ),
 }
 
+LLM_OPERATOR_DICT: dict[str, str] = {
+    "IN": "in",
+    "NOT_IN": "in",
+    "EQUALS": "=",
+    "GREATER_THAN": ">",
+    "GREATER_THAN_OR_EQUAL_TO": ">=",
+    "LESS_THAN": "<",
+    "LESS_THAN_OR_EQUAL_TO": "=<",
+}
+
 
 class AdvancedSearchOperators(enum.Enum):
     EQUALS = "est égal à"
@@ -482,6 +492,39 @@ def generate_algolia_search_string(
             filter_dict["facetFilters"].extend(result)
 
     return filter_dict, warnings
+
+
+def generate_llm_search_dict(
+    search_parameters: typing.Iterable[dict[str, typing.Any]],
+    fields_definition: dict[str, dict[str, typing.Any]],
+) -> tuple[list, set[str]]:
+    filters = []
+    warnings: set[str] = set()
+    for search_data in search_parameters:
+        operator = search_data.get("operator", "")
+        if operator not in LLM_OPERATOR_DICT:
+            continue
+
+        search_field = search_data.get("search_field")
+        if not search_field:
+            continue
+
+        meta_field = fields_definition.get(search_field)
+        if not meta_field:
+            warnings.add(f"La règle de recherche '{search_field}' n'est pas supportée, merci de prévenir les devs")
+            continue
+        field_value = meta_field.get("llm_special", lambda x: x)(search_data.get(meta_field["field"]))
+        operator_string = LLM_OPERATOR_DICT[operator]
+        field_name = meta_field["llm_filter"]
+        filters.append(
+            {
+                "column": field_name,
+                "operator": operator_string,
+                "value": field_value,
+            }
+        )
+
+    return filters, warnings
 
 
 def format_response_error_messages(errors: dict) -> list[str]:
