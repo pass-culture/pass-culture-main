@@ -457,7 +457,16 @@ def index_offers_of_artists_in_queue() -> None:
                     artist_id=artist_id, chunk_size=settings.ALGOLIA_OFFERS_BY_ARTIST_CHUNK_SIZE
                 )
                 for offer_ids in offer_ids_iterator:
-                    reindex_offer_ids(offer_ids, from_error_queue=False)
+                    if FeatureToggle.ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING:
+                        async_index_offer_ids(
+                            offer_ids,
+                            reason=IndexationReason.ARTIST_EDITION,
+                        )
+                    else:
+                        reindex_offer_ids(
+                            offer_ids,
+                            from_error_queue=False,
+                        )
                 logger.info("Finished indexing offers of artist", extra={"artist": artist_id})
     except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:
@@ -479,7 +488,16 @@ def index_offers_of_venues_in_queue() -> None:
                 )
 
                 for offer_ids in offer_ids_iterator:
-                    reindex_offer_ids(offer_ids, from_error_queue=False)
+                    if FeatureToggle.ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING:
+                        async_index_offer_ids(
+                            offer_ids,
+                            reason=IndexationReason.VENUE_UPDATE,
+                        )
+                    else:
+                        reindex_offer_ids(
+                            offer_ids,
+                            from_error_queue=False,
+                        )
                 logger.info("Finished indexing offers of venue", extra={"venue": venue_id})
     except Exception:
         if not settings.CATCH_INDEXATION_EXCEPTIONS:

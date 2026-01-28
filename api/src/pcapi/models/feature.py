@@ -119,6 +119,9 @@ class FeatureToggle(enum.Enum):
     LOG_EMS_CINEMAS_AVAILABLE_FOR_SYNC = "Stocker dans Google Drive les cinémas EMS activables"
     ENABLE_PRO_FEEDBACK = "Activer l'envoi des commentaires du portail pro vers Harvestr"
     ENABLE_MOVIE_FESTIVAL_RATE = "Activer les tarifs spéciaux pour un festival cinéma"
+    ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING = (
+        "Activer l'indexation asynchrone des offres pour les lieux et les artistes"
+    )
     USE_UNIVERSAL_LINKS = (
         "Utiliser les Universal Links au lieu des Firebase dynamic links (déprécié à partir du 25/08/2025)"
     )

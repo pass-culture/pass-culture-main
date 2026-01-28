@@ -109,8 +109,9 @@ def test_async_index_venue_ids(app, clear_redis):
     assert enqueued_ids == {permanent_venue.id, other_venue.id}
 
 
+@pytest.mark.features(ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING=0)
 @pytest.mark.settings(REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE=1)
-def test_index_offers_of_venues_in_queue(app, clear_redis):
+def test_index_offers_of_venues_in_queue_legacy(app, clear_redis):
     bookable_offer = make_bookable_offer()
     venue1 = bookable_offer.venue
     unbookable_offer = make_unbookable_offer()
@@ -134,6 +135,33 @@ def test_index_offers_of_venues_in_queue(app, clear_redis):
     assert bookable_offer.id in search_testing.search_store["offers"]
     assert unbookable_offer.id not in search_testing.search_store["offers"]
     assert closed_offer.id not in search_testing.search_store["offers"]
+
+
+@pytest.mark.features(ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING=1)
+@pytest.mark.settings(REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE=1)
+def test_index_offers_of_venues_in_queue(app, clear_redis):
+    bookable_offer = make_bookable_offer()
+    venue1 = bookable_offer.venue
+    unbookable_offer = make_unbookable_offer()
+    venue2 = unbookable_offer.venue
+    venue3 = offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
+    closed_offer = make_bookable_offer(venue3)
+    app.redis_client.sadd(redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME, venue1.id, venue2.id, venue3.id)
+
+    # `index_offers_of_venues_in_queue` pops 1 venue from the queue
+    # (REDIS_VENUE_IDS_FOR_OFFERS_CHUNK_SIZE).
+    search.index_offers_of_venues_in_queue()
+    assert app.redis_client.scard(redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME) == 2
+
+    search.index_offers_of_venues_in_queue()
+    assert app.redis_client.scard(redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME) == 1
+
+    search.index_offers_of_venues_in_queue()
+    assert app.redis_client.scard(redis_queues.REDIS_VENUE_IDS_FOR_OFFERS_NAME) == 0
+
+    assert app.redis_client.sismember(redis_queues.REDIS_OFFER_IDS_NAME, bookable_offer.id)
+    assert app.redis_client.sismember(redis_queues.REDIS_OFFER_IDS_NAME, unbookable_offer.id)
+    assert app.redis_client.sismember(redis_queues.REDIS_OFFER_IDS_NAME, closed_offer.id)
 
 
 @pytest.mark.settings(REDIS_VENUE_IDS_CHUNK_SIZE=1)
@@ -241,6 +269,23 @@ class ReindexOfferIdsTest:
         error_queue = redis_queues.REDIS_OFFER_IDS_IN_ERROR_NAME
         assert app.redis_client.smembers(error_queue) == {str(offer.id)}
 
+    @pytest.mark.features(ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING=0)
+    def test_reindex_artists_after_reindexing_offers_legacy(self, app, clear_redis):
+        offer = make_bookable_offer()
+        artist = artists_factories.ArtistFactory()
+        offer.product = offers_factories.ProductFactory()
+        offer.product.artists.append(artist)
+
+        assert search_testing.search_store["offers"] == {}
+
+        search.reindex_offer_ids([offer.id])
+        assert offer.id in search_testing.search_store["offers"]
+
+        artist_queue = redis_queues.REDIS_ARTIST_IDS_TO_INDEX
+        artist_ids = app.redis_client.smembers(artist_queue)
+        assert artist_ids == {artist.id for artist in offer.product.artists}
+
+    @pytest.mark.features(ENABLE_EXPERIMENTAL_ASYNC_OFFER_INDEXING=1)
     def test_reindex_artists_after_reindexing_offers(self, app, clear_redis):
         offer = make_bookable_offer()
         artist = artists_factories.ArtistFactory()
