@@ -1,5 +1,4 @@
 import datetime
-import html
 from copy import deepcopy
 
 import pytest
@@ -61,7 +60,7 @@ class TiteliveTest:
         product = titelive_data.product
 
         assert product.ean == ean
-        assert product.description == html.unescape(article["resume"])
+        assert product.description == article["resume"]
         assert product.thumbCount == article["image"]
         assert product.name == oeuvre["titre"]
         assert product.subcategoryId == subcategories.LIVRE_PAPIER.id

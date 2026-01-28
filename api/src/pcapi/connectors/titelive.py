@@ -1,7 +1,6 @@
 import dataclasses
 import datetime
 import enum
-import html
 import logging
 import typing
 
@@ -199,8 +198,8 @@ def get_new_product_from_ean13(ean: str) -> TiteliveProductData:
 
     product = offers_models.Product(
         lastProvider=provider,
-        description=html.unescape(article["resume"]) if "resume" in article else None,
-        name=html.unescape(oeuvre["titre"]) if len(oeuvre["titre"]) <= 140 else oeuvre["titre"][:139] + "…",
+        description=article["resume"] if "resume" in article else None,
+        name=oeuvre["titre"] if len(oeuvre["titre"]) <= 140 else oeuvre["titre"][:139] + "…",
         ean=ean,
         subcategoryId=subcategories.LIVRE_PAPIER.id,
         thumbCount=article.get("image", 0),  # 0 or 1
