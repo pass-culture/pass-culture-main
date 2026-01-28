@@ -15,17 +15,18 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v6
-      - name: "Authentification to Google"
-        uses: "google-github-actions/auth@v3"
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       - uses: actions/setup-node@v6
         with:
           node-version-file: "pro/package.json"
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+
+      - name: "Authentification to Google"
+        uses: "google-github-actions/auth@v3"
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
 
       - name: "Setup firebase tools"
         run: npm install -g firebase-tools
