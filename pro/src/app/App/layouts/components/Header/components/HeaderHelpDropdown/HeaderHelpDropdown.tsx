@@ -1,9 +1,13 @@
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullDownIcon from '@/icons/full-down.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import dropdownStyles from '../HeaderDropdown/HeaderDropdown.module.scss'
 import styles from './HeaderHelpDropdown.module.scss'
@@ -14,12 +18,12 @@ export const HeaderHelpDropdown = () => {
     <DropdownMenu.Root>
       <DropdownMenu.Trigger asChild>
         <Button
-          variant={ButtonVariant.QUATERNARY}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
           icon={fullDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
-        >
-          Centre d’aide
-        </Button>
+          label="Centre d’aide"
+        />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
         <DropdownMenu.Content

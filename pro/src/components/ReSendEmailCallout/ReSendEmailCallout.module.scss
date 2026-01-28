@@ -1,15 +1,10 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
 
 .re-send-callout {
-  @include fonts.body-s;
+  @include fonts.body-accent;
 
   color: var(--color-text-subtle);
-
-  &-button {
-    @include fonts.body-s;
-
-    color: var(--color-text-brand-secondary);
-    margin: 0;
-  }
+  line-height: rem.torem(24px);
 }

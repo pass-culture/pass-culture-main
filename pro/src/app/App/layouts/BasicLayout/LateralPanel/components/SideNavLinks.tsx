@@ -339,14 +339,14 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
       </ul>
 
       {withSwitchVenueFeature ? (
-        <ul>
-          <div className={styles['nav-links-group']}>
-            <div
-              className={styles['nav-links-last-group-separator']}
-              aria-hidden="true"
-            >
-              <div className={styles['separator-line']} />
-            </div>
+        <div className={styles['nav-links-group']}>
+          <div
+            className={styles['nav-links-last-group-separator']}
+            aria-hidden="true"
+          >
+            <div className={styles['separator-line']} />
+          </div>
+          <ul>
             <li>
               <UserReviewDialog
                 dialogTrigger={
@@ -363,8 +363,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             <li>
               <HelpDropdownNavItem isMobileScreen={isMobileScreen ?? false} />
             </li>
-          </div>
-        </ul>
+          </ul>
+        </div>
       ) : (
         <div className={styles['nav-links-group']}>
           <div

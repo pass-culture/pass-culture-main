@@ -4,9 +4,13 @@ import { useNavigate } from 'react-router'
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { BannerRGS } from '@/components/BannerRGS/BannerRGS'
 import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
-import { Button } from '@/ui-kit/Button/Button'
-import { ButtonVariant, IconPositionEnum } from '@/ui-kit/Button/types'
 
 import { Forms } from './constants'
 import { UserAnonymization } from './UserAnonymization/UserAnonymization'
@@ -34,12 +38,12 @@ export const UserProfile = ({
     <div className={styles['profil-container']}>
       <Button
         onClick={() => navigate(-1)}
-        variant={ButtonVariant.TERNARY}
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
         icon={fullBackIcon}
         iconPosition={IconPositionEnum.LEFT}
-      >
-        Retour
-      </Button>
+        label="Retour"
+      />
       <BannerRGS />
       <div>
         <UserIdentity

@@ -14,7 +14,11 @@ import { isDateValid } from '@/commons/utils/date'
 import { getDepartmentCode } from '@/commons/utils/getDepartmentCode'
 import { toNumberOrNull } from '@/commons/utils/toNumberOrNull'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCodeIcon from '@/icons/full-code.svg'
 import fulleMoreIcon from '@/icons/full-more.svg'
@@ -24,7 +28,6 @@ import { ActivationCodeFormDialog } from '@/pages/IndividualOffer/IndividualOffe
 import { DatePicker } from '@/ui-kit/form/DatePicker/DatePicker'
 import { PriceInput } from '@/ui-kit/form/PriceInput/PriceInput'
 import { QuantityInput } from '@/ui-kit/form/QuantityInput/QuantityInput'
-import { ListIconButton } from '@/ui-kit/ListIconButton/ListIconButton'
 
 import {
   DEFAULT_PRICE_TABLE_ENTRY_LABEL_WHEN_SINGLE,
@@ -355,11 +358,14 @@ export const PriceTableForm = ({
               !areAllFieldsDisabled &&
               !areAllFieldsDisabledButQuantity && (
                 <div className={styles['button-action']}>
-                  <ListIconButton
+                  <Button
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.NEUTRAL}
+                    size={ButtonSize.SMALL}
                     icon={fullCodeIcon}
                     onClick={() => setActivationCodeEntryIndexToUpload(index)}
                     ref={activationCodeButtonRef}
-                    tooltipContent={
+                    tooltip={
                       entry.hasActivationCode
                         ? "Remplacer les codes d'activation"
                         : "Ajouter des codes d'activation"
@@ -373,11 +379,12 @@ export const PriceTableForm = ({
                 !areAllFieldsDisabled &&
                 !areAllFieldsDisabledButQuantity && (
                   <div className={styles['button-action']}>
-                    <ListIconButton
-                      dataTestid={`remove-price-table-entry-button-${index}`}
+                    <Button
+                      variant={ButtonVariant.SECONDARY}
+                      color={ButtonColor.NEUTRAL}
                       icon={fullTrashIcon}
                       onClick={() => askForRemovalConfirmationOrRemove(index)}
-                      tooltipContent={
+                      tooltip={
                         fields.length > 1
                           ? 'Supprimer ce tarif'
                           : 'Réinitialiser les valeurs de ce tarif'
