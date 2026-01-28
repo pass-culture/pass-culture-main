@@ -40,11 +40,6 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: ${{ github.head_ref }}
-      - name: "Authentification to Google"
-        uses: 'google-github-actions/auth@v3'
-        with:
-          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Should run cache"
         id: "evaluate-variables"
         run: |
@@ -60,6 +55,11 @@ jobs:
           node-version-file: "pro/package.json"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+      - name: "Authentification to Google"
+        uses: 'google-github-actions/auth@v3'
+        with:
+          workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
       - name: "Compute docker image name:tag"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: compute-image-name
