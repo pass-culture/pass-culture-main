@@ -92,7 +92,6 @@ describe('App', () => {
       renderHeaderDropdown()
 
       await userEvent.click(screen.getByTestId('profile-button'))
-      screen.debug()
       await userEvent.click(screen.getByText(/Changer/))
 
       const offererList = screen.getByTestId('offerers-selection-menu')

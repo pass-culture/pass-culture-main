@@ -88,8 +88,8 @@ describe('IndividualOfferConfirmation', () => {
     renderOffer(contextOverride)
     expect(screen.getByText('Offre en cours de validation')).toBeInTheDocument()
     expect(
-      screen.getByText('Visualiser l’offre dans l’application', {
-        selector: 'a',
+      screen.getByRole('link', {
+        name: /Visualiser l’offre dans l’application/,
       })
     ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
@@ -122,8 +122,8 @@ describe('IndividualOfferConfirmation', () => {
     renderOffer(contextOverride)
     expect(screen.getByText('Offre créée avec succès !')).toBeInTheDocument()
     expect(
-      screen.getByText('Visualiser l’offre dans l’application', {
-        selector: 'a',
+      screen.getByRole('link', {
+        name: /Visualiser l’offre dans l’application/,
       })
     ).toHaveAttribute('href', `https://localhost/offre/${offer.id}`)
     expect(
