@@ -11,7 +11,6 @@ from pcapi.utils.date import default_timezone_to_local_datetime
 from pcapi.utils.date import format_time_in_second_to_human_readable
 from pcapi.utils.date import get_date_formatted_for_email
 from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import get_time_formatted_for_email
 from pcapi.utils.date import local_datetime_to_default_timezone
 
@@ -71,14 +70,6 @@ class GetDepartmentTimezoneTest:
     def test_all_custom_timezones_are_valid(self):
         for timezone in CUSTOM_TIMEZONES.values():
             assert dateutil.tz.gettz(timezone) is not None, f"{timezone} is not a valid timezone"
-
-
-class GetPostalCodeTimezoneTest:
-    def test_should_return_paris_as_default_timezone(self):
-        assert get_postal_code_timezone("75000") == "Europe/Paris"
-
-    def test_should_return_custom_timezones(self):
-        assert get_postal_code_timezone("97300") == "America/Cayenne"
 
 
 class FrenchParserInfoTest:

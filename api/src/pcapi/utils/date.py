@@ -10,8 +10,6 @@ from babel.dates import format_date
 from dateutil.parser import parserinfo
 from psycopg2.extras import NumericRange
 
-import pcapi.utils.postal_code as postal_code_utils
-
 
 DATE_ISO_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DATETIME_FIELD_FORMAT = "%Y-%m-%dT%H:%M"
@@ -79,11 +77,6 @@ class FrenchParserInfo(parserinfo):
         ("nov.", "Novembre"),
         ("déc.", "Décembre"),
     ]
-
-
-def get_postal_code_timezone(postal_code: str | None) -> str:
-    department_code = postal_code_utils.PostalCode(postal_code).get_departement_code() if postal_code else None
-    return get_department_timezone(department_code)
 
 
 def get_department_timezone(departement_code: str | None) -> str:
