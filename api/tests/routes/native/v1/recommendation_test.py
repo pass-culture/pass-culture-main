@@ -9,6 +9,23 @@ from pcapi.utils import requests
 
 
 class SimilarOffersTest:
+    def test_get_recommendation_playlist(self, requests_mock, client):
+        response = client.get("/native/v1/recommendation/similar_offers/2")
+
+        assert response.status_code == 200
+        assert response.json["params"] == {
+            "abTest": None,
+            "callId": "956bd070-cbb1-42d3-bea4-89855bf3b11c",
+            "filtered": None,
+            "geoLocated": None,
+            "modelEndpoint": None,
+            "modelName": None,
+            "modelOrigin": "default",
+            "modelVersion": None,
+            "recoOrigin": "unknown",
+        }
+        assert response.json["results"]
+
     def test_anonymous(self, client):
         with testing.assert_num_queries(0):
             response = client.get("/native/v1/recommendation/similar_offers/2")
@@ -85,6 +102,25 @@ class SimilarOffersTest:
 
 
 class PlaylistTest:
+    def test_post_recommendation_playlist(self, requests_mock, client):
+        user = users_factories.UserFactory()
+
+        response = client.with_token(user.email).post("/native/v1/recommendation/playlist", json={})
+
+        assert response.status_code == 200
+        assert response.json["params"] == {
+            "abTest": None,
+            "callId": "1dc4c5f2-303c-4d8a-94c3-77c0085c0c70",
+            "filtered": None,
+            "geoLocated": None,
+            "modelEndpoint": None,
+            "modelName": None,
+            "modelOrigin": "default",
+            "modelVersion": None,
+            "recoOrigin": "unknown",
+        }
+        assert response.json["playlistRecommendedOffers"]
+
     def test_anonymous(self, client):
         with testing.assert_num_queries(0):
             response = client.post("/native/v1/recommendation/playlist", json={})
