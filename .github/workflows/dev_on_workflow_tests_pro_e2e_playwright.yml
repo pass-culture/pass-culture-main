@@ -51,7 +51,7 @@ jobs:
         run: yarn build:${{ inputs.ENV }}
 
       - name: Save build folder
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: build-playwright
           if-no-files-found: error
@@ -202,7 +202,7 @@ jobs:
         run: yarn playwright test -c ./config/playwright.config.ts --project=chromium
 
       - name: "Upload Playwright report"
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         if: always()
         with:
           name: playwright-report-chromium
