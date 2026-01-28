@@ -54,6 +54,12 @@ jobs:
             echo "should-run-cache=false" | tee -a $GITHUB_OUTPUT
           fi
         shell: bash
+      - uses: actions/setup-node@v6
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
+        with:
+          node-version-file: "pro/package.json"
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
       - name: "Compute docker image name:tag"
         if: steps.evaluate-variables.outputs.should-run-cache == 'true'
         id: compute-image-name
@@ -108,11 +114,6 @@ jobs:
         with:
           resource: http://localhost:5001/health/api
           timeout: 120000
-      - uses: actions/setup-node@v6
-        if: steps.evaluate-variables.outputs.should-run-cache == 'true'
-        with:
-          node-version-file: "pro/package.json"
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
 
       - name: "Cache node dependencies"
         uses: pass-culture-github-actions/cache@v1.0.0
