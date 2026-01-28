@@ -27,7 +27,6 @@ describe('extractInitialVisibilityValues', () => {
       bookingLimitDatetime: '2023-02-28T10:46:20Z',
       educationalPriceDetail: 'test',
       id: 1,
-      isBooked: false,
       numberOfTickets: 20,
       price: 1200,
     }

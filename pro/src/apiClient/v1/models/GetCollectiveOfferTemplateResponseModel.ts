@@ -28,13 +28,10 @@ export type GetCollectiveOfferTemplateResponseModel = {
   durationMinutes?: number | null;
   educationalPriceDetail?: string | null;
   formats: Array<EacFormat>;
-  hasBookingLimitDatetimesPassed: boolean;
   id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;
   interventionArea: Array<string>;
-  isActive: boolean;
-  isNonFreeOffer?: boolean | null;
   isTemplate?: boolean;
   location: GetCollectiveOfferLocationModel;
   mentalDisabilityCompliant?: boolean | null;

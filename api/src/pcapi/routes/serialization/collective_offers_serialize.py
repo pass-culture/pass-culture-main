@@ -272,7 +272,6 @@ class PriceDetail(ConstrainedStr):
 
 class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
     id: int
-    isSoldOut: bool = Field(alias="isBooked")
     startDatetime: datetime | None
     endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
@@ -330,9 +329,6 @@ class GetCollectiveOfferBaseResponseGetterDict(pydantic_utils.GetterDict):
         if key == "history":
             return collective_history_serialize.get_collective_offer_history(offer)
 
-        if key == "hasBookingLimitDatetimesPassed" and isinstance(offer, educational_models.CollectiveOfferTemplate):
-            return False
-
         return super().get(key, default)
 
 
@@ -345,8 +341,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     location: GetCollectiveOfferLocationModel
     contactEmail: str | None
     contactPhone: str | None
-    hasBookingLimitDatetimesPassed: bool
-    isActive: bool
     id: int
     name: str
     venue: GetCollectiveOfferVenueResponseModel
@@ -357,7 +351,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[EacFormat]
-    isNonFreeOffer: bool | None
 
     class Config:
         allow_population_by_field_name = True
@@ -414,7 +407,6 @@ class GetCollectiveOfferProviderResponseModel(BaseModel):
 
 
 class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
-    isBookable: bool
     collectiveStock: GetCollectiveOfferCollectiveStockResponseModel | None
     lastBooking: GetCollectiveOfferBookingResponseModel | None = Field(alias="booking")
     institution: EducationalInstitutionResponseModel | None

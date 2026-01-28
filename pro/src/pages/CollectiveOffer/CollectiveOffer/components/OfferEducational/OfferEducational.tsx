@@ -52,8 +52,6 @@ export interface OfferEducationalProps {
 
   userOfferer: GetEducationalOffererResponseModel | null
   mode: Mode
-  isOfferBooked?: boolean
-  isOfferActive?: boolean
   domainsOptions: DomainOption[]
   isTemplate: boolean
   isOfferCreated?: boolean

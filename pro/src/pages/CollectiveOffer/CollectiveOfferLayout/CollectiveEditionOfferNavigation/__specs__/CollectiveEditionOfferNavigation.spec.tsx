@@ -39,9 +39,7 @@ import {
 
 const templateOffer:
   | GetCollectiveOfferTemplateResponseModel
-  | GetCollectiveOfferResponseModel = getCollectiveOfferTemplateFactory({
-  isTemplate: true,
-})
+  | GetCollectiveOfferResponseModel = getCollectiveOfferTemplateFactory({})
 const offerId = 1
 const props: CollectiveEditionOfferNavigationProps = {
   activeStep: CollectiveOfferStep.DETAILS,
@@ -256,7 +254,7 @@ describe('CollectiveEditionOfferNavigation', () => {
 
   it('should show an error notification when the duplication failed', async () => {
     vi.spyOn(api, 'getCollectiveOfferTemplate').mockResolvedValueOnce(
-      getCollectiveOfferTemplateFactory({ isTemplate: true, isActive: true })
+      getCollectiveOfferTemplateFactory()
     )
     vi.spyOn(api, 'createCollectiveOffer').mockRejectedValueOnce(
       new ApiError({} as ApiRequestOptions, { status: 400 } as ApiResult, '')
@@ -444,7 +442,6 @@ describe('CollectiveEditionOfferNavigation', () => {
       ...props,
       isTemplate: true,
       offer: getCollectiveOfferTemplateFactory({
-        isTemplate: true,
         allowedActions: [CollectiveOfferTemplateAllowedAction.CAN_SHARE],
       }),
     })

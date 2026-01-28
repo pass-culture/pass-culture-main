@@ -32,16 +32,12 @@ export type GetCollectiveOfferResponseModel = {
   domains: Array<OfferDomain>;
   durationMinutes?: number | null;
   formats: Array<EacFormat>;
-  hasBookingLimitDatetimesPassed: boolean;
   history: CollectiveOfferHistory;
   id: number;
   imageCredit?: string | null;
   imageUrl?: string | null;
   institution?: EducationalInstitutionResponseModel | null;
   interventionArea: Array<string>;
-  isActive: boolean;
-  isBookable: boolean;
-  isNonFreeOffer?: boolean | null;
   isPublicApi: boolean;
   isTemplate?: boolean;
   location: GetCollectiveOfferLocationModel;

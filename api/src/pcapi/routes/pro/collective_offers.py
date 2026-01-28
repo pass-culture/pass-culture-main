@@ -489,7 +489,7 @@ def patch_collective_offers_educational_institution(
     response_model=collective_offers_serialize.GetCollectiveOfferResponseModel,
 )
 def patch_collective_offer_publication(offer_id: int) -> collective_offers_serialize.GetCollectiveOfferResponseModel:
-    offer = repository.get_collective_offer_and_extra_data(offer_id)
+    offer = repository.get_collective_offer_and_confidence_rules(offer_id)
     if offer is None:
         raise ApiErrors({"offerer": ["Aucune offre trouvée pour cet id"]}, status_code=404)
 

@@ -174,7 +174,6 @@ describe('offers', () => {
         id: 826,
         startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-        isBookable: true,
         price: 80000,
       },
       venue: {
@@ -215,7 +214,6 @@ describe('offers', () => {
         id: 827,
         startDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
         bookingLimitDatetime: new Date('2021-09-25T22:00:00Z').toISOString(),
-        isBookable: true,
         price: 3000,
       },
       venue: {

@@ -137,7 +137,6 @@ export const getCollectiveOfferFactory = (
     ...sharedCollectiveOfferData,
     id: currentOfferId,
     venue: getCollectiveOfferVenueFactory(),
-    isBookable: true,
     isTemplate: false,
     allowedActions: [CollectiveOfferAllowedAction.CAN_ARCHIVE],
     collectiveStock: getCollectiveOfferCollectiveStockFactory(),
@@ -176,7 +175,6 @@ export const getCollectiveOfferCollectiveStockFactory = (
     startDatetime: add(Date.now(), { days: 2 }).toISOString(),
     endDatetime: add(Date.now(), { days: 3 }).toISOString(),
     bookingLimitDatetime: add(Date.now(), { days: 1 }).toISOString(),
-    isBooked: false,
     ...customGetCollectiveOfferCollectiveStock,
   }
 }

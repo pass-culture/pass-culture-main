@@ -96,8 +96,11 @@ export const CollectiveOfferPreviewCreationScreen = ({
         { revalidate: false }
       )
 
+      const isNonFreeOffer =
+        newOffer.collectiveStock && newOffer.collectiveStock.price > 0
+
       const shouldDisplayRedirectDialog =
-        newOffer.isNonFreeOffer &&
+        isNonFreeOffer &&
         offerer &&
         !offerer.hasNonFreeOffer &&
         !offerer.hasValidBankAccount &&

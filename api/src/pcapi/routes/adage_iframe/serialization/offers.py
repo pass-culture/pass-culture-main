@@ -35,7 +35,6 @@ class OfferStockResponse(BaseModel):
     startDatetime: datetime | None
     endDatetime: datetime | None
     bookingLimitDatetime: datetime | None
-    isBookable: bool
     price: int
     numberOfTickets: int | None
     priceDetail: str | None = Field(alias="educationalPriceDetail")

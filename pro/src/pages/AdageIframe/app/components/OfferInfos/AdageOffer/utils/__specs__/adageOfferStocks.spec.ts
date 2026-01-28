@@ -9,7 +9,6 @@ describe('adageOfferStocks', () => {
         ...defaultCollectiveOffer,
         stock: {
           id: 1,
-          isBookable: true,
           price: 100,
           numberOfTickets: 20,
         },

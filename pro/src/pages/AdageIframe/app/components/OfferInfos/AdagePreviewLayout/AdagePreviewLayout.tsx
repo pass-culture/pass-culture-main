@@ -74,7 +74,6 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
         ...offer.collectiveStock,
         price: Number(offer.collectiveStock?.price) * 100,
         id: Number(offer.collectiveStock?.id),
-        isBookable: offer.isBookable,
       },
     }),
   }
