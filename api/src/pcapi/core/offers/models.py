@@ -879,6 +879,9 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     product: sa_orm.Mapped["Product | None"] = sa_orm.relationship(
         Product, foreign_keys=[productId], back_populates="offers"
     )
+    quality: sa_orm.Mapped["OfferQuality | None"] = sa_orm.relationship(
+        "OfferQuality", foreign_keys="OfferQuality.offerId", back_populates="offer", uselist=False
+    )
     rankingWeight: sa_orm.Mapped[int | None] = sa_orm.mapped_column(sa.Integer, nullable=True)
     subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, index=True)
     url: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.String(255), nullable=True)
@@ -1874,3 +1877,16 @@ class OfferCompliance(PcObject, Model):
         db_utils.MagicEnum(ComplianceValidationStatusPrediction), nullable=True
     )
     validation_status_prediction_reason: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
+
+
+class OfferQuality(PcObject, Model):
+    __tablename__ = "offer_quality"
+
+    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("offer.id", ondelete="CASCADE"), index=True, nullable=False, unique=True
+    )
+    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="quality")
+    completion_score: sa_orm.Mapped[float] = sa_orm.mapped_column(sa.Float, nullable=False)
+    last_updated_at: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
+        sa.DateTime, nullable=False, server_default=sa.func.now(), onupdate=sa.func.now()
+    )
