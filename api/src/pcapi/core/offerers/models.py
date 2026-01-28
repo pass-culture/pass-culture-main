@@ -26,7 +26,6 @@ from sqlalchemy.sql.sqltypes import LargeBinary
 
 import pcapi.core.finance.models as finance_models
 import pcapi.utils.db as db_utils
-import pcapi.utils.postal_code as postal_code_utils
 from pcapi import settings
 from pcapi.connectors.big_query.queries.offerer_stats import OffererViewsModel
 from pcapi.connectors.big_query.queries.offerer_stats import TopOffersData
@@ -49,8 +48,6 @@ from pcapi.models.validation_status_mixin import ValidationStatusMixin
 from pcapi.utils import crypto
 from pcapi.utils import date as date_utils
 from pcapi.utils import siren as siren_utils
-from pcapi.utils.date import get_department_timezone
-from pcapi.utils.date import get_postal_code_timezone
 from pcapi.utils.date import numranges_to_timespan_str
 from pcapi.utils.human_ids import humanize
 from pcapi.utils.regions import NEW_CALEDONIA_DEPARTMENT_CODE
@@ -631,18 +628,6 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
             and self.managingOfferer.isActive
             and self.managingOfferer.isValidated
             and bool(self.hasAtLeastOneBookableOffer)
-        )
-
-    def store_departement_code(self) -> None:
-        if not self.postalCode:
-            return
-        self.departementCode = postal_code_utils.PostalCode(self.postalCode).get_departement_code()
-
-    def store_timezone(self) -> None:
-        self.timezone = (
-            get_department_timezone(self.departementCode)
-            if self.departementCode
-            else get_postal_code_timezone(self.offererAddress.address.postalCode)
         )
 
     @property
