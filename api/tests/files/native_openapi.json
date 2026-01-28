@@ -6138,6 +6138,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Email"
                     },
                     "phoneNumber": {
@@ -6149,6 +6150,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Phonenumber"
                     },
                     "socialMedias": {
@@ -6174,6 +6176,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Socialmedias"
                     },
                     "website": {
@@ -6185,15 +6188,10 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Website"
                     }
                 },
-                "required": [
-                    "email",
-                    "phoneNumber",
-                    "socialMedias",
-                    "website"
-                ],
                 "title": "VenueContact",
                 "type": "object"
             },
@@ -6314,6 +6312,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Bannerurl"
                     },
                     "city": {
@@ -6325,6 +6324,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "City"
                     },
                     "contact": {
@@ -6335,7 +6335,8 @@
                             {
                                 "type": "null"
                             }
-                        ]
+                        ],
+                        "default": null
                     },
                     "description": {
                         "anyOf": [
@@ -6346,6 +6347,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Description"
                     },
                     "id": {
@@ -6369,6 +6371,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Latitude"
                     },
                     "longitude": {
@@ -6380,6 +6383,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Longitude"
                     },
                     "name": {
@@ -6396,6 +6400,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Openinghours"
                     },
                     "postalCode": {
@@ -6407,6 +6412,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Postalcode"
                     },
                     "street": {
@@ -6418,6 +6424,7 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Street"
                     },
                     "timezone": {
@@ -6433,26 +6440,17 @@
                                 "type": "null"
                             }
                         ],
+                        "default": null,
                         "title": "Withdrawaldetails"
                     }
                 },
                 "required": [
                     "id",
                     "activity",
-                    "bannerUrl",
-                    "contact",
-                    "city",
-                    "description",
                     "isOpenToPublic",
                     "isPermanent",
-                    "latitude",
-                    "longitude",
                     "name",
-                    "openingHours",
-                    "postalCode",
-                    "street",
-                    "timezone",
-                    "withdrawalDetails"
+                    "timezone"
                 ],
                 "title": "VenueResponse",
                 "type": "object"
@@ -9952,6 +9950,7 @@
         },
         "/native/v1/venue/{venue_id}": {
             "get": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v1_venue_{venue_id}",
                 "parameters": [

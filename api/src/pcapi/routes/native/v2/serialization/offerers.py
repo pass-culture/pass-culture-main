@@ -7,10 +7,10 @@ from pcapi.routes.serialization import HttpBodyModel
 
 
 class VenueContact(HttpBodyModel):
-    email: str | None
-    phone_number: str | None
-    social_medias: dict[SocialMedia, pydantic_v2.HttpUrl] | None
-    website: str | None
+    email: str | None = None
+    phone_number: str | None = None
+    social_medias: dict[SocialMedia, pydantic_v2.HttpUrl] | None = None
+    website: str | None = None
 
 
 class MotorDisability(HttpBodyModel):
@@ -52,20 +52,20 @@ class VenueResponse(HttpBodyModel):
     accessibility_url: str | None = None
     banner_credit: str | None = None
     banner_is_from_google: bool = False
-    banner_url: pydantic_v2.HttpUrl | None
-    contact: VenueContact | None
-    city: str | None
-    description: str | None
+    banner_url: pydantic_v2.HttpUrl | None = None
+    contact: VenueContact | None = None
+    city: str | None = None
+    description: str | None = None
     is_open_to_public: bool
     is_permanent: bool
-    latitude: float | None
-    longitude: float | None
+    latitude: float | None = None
+    longitude: float | None = None
     name: str
-    opening_hours: dict | None
-    postal_code: str | None
-    street: str | None
+    opening_hours: dict | None = None
+    postal_code: str | None = None
+    street: str | None = None
     timezone: str
-    withdrawal_details: str | None
+    withdrawal_details: str | None = None
 
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> "VenueResponse":
