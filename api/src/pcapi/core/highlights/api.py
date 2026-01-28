@@ -66,5 +66,6 @@ def update_highlight(
 
 def send_email_for_highlight_with_communication_date_set_to_today() -> None:
     requests_for_today_highlights = highlights_repository.get_today_highlight_requests()
+    logger.info("Found %s highlight requests for today communcation", len(requests_for_today_highlights))
     for highlight_request in requests_for_today_highlights:
         transactional_mails.send_highlight_communication_email_to_pro(highlight_request.offer)
