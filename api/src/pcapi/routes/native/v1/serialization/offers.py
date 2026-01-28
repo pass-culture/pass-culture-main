@@ -283,12 +283,19 @@ class BaseOfferResponseGetterDict(GetterDict):
             }
 
         if key == "artists":
-            return (
-                [OfferArtist.from_orm(artist) for artist in product.artists if not artist.is_blacklisted]
-                if product
-                else []
-            )
+            if not product:
+                return []
 
+            return [
+                OfferArtist(
+                    id=artist_link.artist.id,
+                    image=artist_link.artist.image,
+                    name=artist_link.artist.name,
+                    role=artist_link.artist_type.value if artist_link.artist_type else None,
+                )
+                for artist_link in product.artistLinks
+                if not artist_link.artist.is_blacklisted
+            ]
         if key == "expense_domains":
             return get_expense_domains(offer)
 
@@ -447,6 +454,7 @@ class OfferArtist(ConfiguredBaseModel):
     id: str
     image: str | None
     name: str
+    role: str | None
 
 
 class OfferVideo(ConfiguredBaseModel):

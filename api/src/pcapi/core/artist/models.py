@@ -73,6 +73,7 @@ class ArtistProductLink(PcObject, Model):
     artist_id: sa_orm.Mapped[str] = sa_orm.mapped_column(
         sa.Text, sa.ForeignKey("artist.id", ondelete="CASCADE"), nullable=False, index=True
     )
+    artist: sa_orm.Mapped["Artist"] = sa_orm.relationship("Artist", foreign_keys=[artist_id])
     product_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True
     )
