@@ -21,8 +21,7 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 @pytest.mark.settings(USE_FAST_AND_INSECURE_PASSWORD_HASHING_ALGORITHM=True)
 class Returns200Test:
-    num_queries = 1  # select user_session
-    num_queries += 1  # select user
+    num_queries = 1  # select user_session + user
     num_queries += 1  # select booking, stock, offer, venue, address
     num_queries += 1  # check user has rights on offerer
     num_queries += 1  # check if a pricing processed or invoiced exists for this booking
@@ -105,8 +104,7 @@ class Returns403Test:
 
         url = f"/bookings/token/{booking.token}"
         client = client.with_session_auth(another_pro_user.email)
-        num_queries = 1  # select user_session
-        num_queries += 1  # select user
+        num_queries = 1  # select user_session + user
         num_queries += 1  # select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # rollback atomic
@@ -126,8 +124,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=booking.offerer)
 
         url = f"/bookings/token/{booking.token}"
-        num_queries = 1  # select user_session
-        num_queries += 1  # select user
+        num_queries = 1  # select user_session + user
         num_queries += 1  # select booking, stock, offer, venue, address
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
@@ -155,8 +152,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=booking.offerer)
 
         url = f"/bookings/token/{booking.token}"
-        num_queries = 1  # select user_session
-        num_queries += 1  # select user
+        num_queries = 1  # select user_session + user
         num_queries += 1  # Select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # rollback atomic
@@ -175,8 +171,7 @@ class Returns403Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=booking.offerer)
 
         url = f"/bookings/token/{booking.token}"
-        num_queries = 1  # Select user session
-        num_queries += 1  # Select user
+        num_queries = 1  # Select user session + user
         num_queries += 1  # Select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
@@ -200,8 +195,7 @@ class Returns404Test:
     def test_basic_auth_but_unknown_token(self, client):
         pro = users_factories.ProFactory()
         client = client.with_session_auth(pro.email)
-        num_queries = 1  # Select user session
-        num_queries += 1  # Select user
+        num_queries = 1  # Select user session + user
         num_queries += 1  # select booking
         num_queries += 1  # rollback atomic
         num_queries += 1  # rollback atomic
@@ -221,8 +215,7 @@ class Returns410Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=booking.offerer)
 
         client = client.with_session_auth(pro.email)
-        num_queries = 1  # Select user session
-        num_queries += 1  # Select user
+        num_queries = 1  # Select user session + user
         num_queries += 1  # Select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking
@@ -241,8 +234,7 @@ class Returns410Test:
         offerers_factories.UserOffererFactory(user=pro, offerer=booking.offerer)
 
         url = f"/bookings/token/{booking.token}"
-        num_queries = 1  # Select user session
-        num_queries += 1  # Select user
+        num_queries = 1  # Select user session + user
         num_queries += 1  # Select booking
         num_queries += 1  # check user has rights on offerer
         num_queries += 1  # check if a pricing processed or invoiced exists for this booking

@@ -2158,7 +2158,7 @@ class SendOfferWebAppLinkTest:
 
     def test_send_offer_webapp_link_by_email_not_found(self, client):
         user = users_factories.UserFactory()
-        client = client.with_token(user.email)
+        client = client.with_token(user)
 
         with assert_no_duplicated_queries():
             response = client.post("/native/v1/send_offer_webapp_link_by_email/98765432123456789")
@@ -2170,7 +2170,7 @@ class SendOfferWebAppLinkTest:
     )
     def test_send_non_approved_offer_webapp_link_by_email(self, client, validation):
         user = users_factories.UserFactory()
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         offer_id = offers_factories.OfferFactory(validation=validation).id
 
         with assert_no_duplicated_queries():
@@ -2181,7 +2181,7 @@ class SendOfferWebAppLinkTest:
     def send_request(self, client):
         offer_id = offers_factories.OfferFactory().id
         user = users_factories.BeneficiaryGrant18Factory()
-        test_client = client.with_token(user.email)
+        test_client = client.with_token(user)
 
         with assert_no_duplicated_queries():
             response = test_client.post(f"/native/v1/send_offer_webapp_link_by_email/{offer_id}")
@@ -2207,7 +2207,7 @@ class SendOfferLinkNotificationTest:
         offer_id = offer.id
 
         user = users_factories.UserFactory()
-        client = client.with_token(user.email)
+        client = client.with_token(user)
 
         with assert_no_duplicated_queries():
             response = client.post(f"/native/v1/send_offer_link_by_push/{offer_id}")
@@ -2223,7 +2223,7 @@ class SendOfferLinkNotificationTest:
     def test_send_offer_link_notification_not_found(self, client):
         """Test that no push notification is sent when offer is not found"""
         user = users_factories.UserFactory()
-        client = client.with_token(user.email)
+        client = client.with_token(user)
 
         with assert_no_duplicated_queries():
             response = client.post("/native/v1/send_offer_link_by_push/9999999999")
@@ -2236,7 +2236,7 @@ class SendOfferLinkNotificationTest:
     )
     def test_send_non_approved_offer_link_notification(self, client, validation):
         user = users_factories.UserFactory()
-        client = client.with_token(user.email)
+        client = client.with_token(user)
         offer_id = offers_factories.OfferFactory(validation=validation).id
 
         with assert_no_duplicated_queries():
@@ -2249,7 +2249,7 @@ class SendOfferLinkNotificationTest:
 class OfferReportReasonsTest:
     def test_get_reasons(self, app, client):
         user = UserFactory()
-        response = client.with_token(user.email).get("/native/v1/offer/report/reasons")
+        response = client.with_token(user).get("/native/v1/offer/report/reasons")
 
         assert response.status_code == 200
         assert response.json["reasons"] == {

@@ -227,10 +227,10 @@ class ListTagsTest(GetEndpointHelper):
     endpoint_kwargs = {"tag_id": 1}
     needed_permission = perm_models.Permissions.READ_TAGS
 
-    # - fetch session and user (2 queries)
+    # - fetch session and user (1 query)
     # - fetch tags: rows and count (2 queries)
     # - fetch categories (1 query)
-    expected_num_queries = 5
+    expected_num_queries = 4
 
     def test_list_tags(self, authenticated_client):
         categories = criteria_factories.CriterionCategoryFactory.create_batch(2)

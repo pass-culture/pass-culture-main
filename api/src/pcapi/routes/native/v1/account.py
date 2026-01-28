@@ -4,6 +4,7 @@ import flask
 import pydantic.v1 as pydantic_v1
 import sqlalchemy.orm as sa_orm
 from flask import current_app as app
+from flask_login import current_user
 
 import pcapi.core.bookings.exceptions as bookings_exceptions
 import pcapi.core.mails.transactional as transactional_mails
@@ -51,8 +52,8 @@ logger = logging.getLogger(__name__)
     api=blueprint.api,
 )
 @authenticated_and_active_user_required
-def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse:
-    return serializers.UserProfileResponse.from_orm(user)
+def get_user_profile() -> serializers.UserProfileResponse:
+    return serializers.UserProfileResponse.from_orm(current_user)
 
 
 @blueprint.native_route("/profile", methods=["POST", "PATCH"])
@@ -63,16 +64,14 @@ def get_user_profile(user: users_models.User) -> serializers.UserProfileResponse
 )
 @authenticated_and_active_user_required
 @atomic()
-def patch_user_profile(
-    user: users_models.User, body: serializers.UserProfilePatchRequest
-) -> serializers.UserProfileResponse:
+def patch_user_profile(body: serializers.UserProfilePatchRequest) -> serializers.UserProfileResponse:
     profile_update_dict = body.dict(exclude_unset=True)
 
     if profile_update_dict.get("postal_code") in postal_code_utils.INELIGIBLE_POSTAL_CODES:
         raise api_errors.ApiErrors({"code": "INELIGIBLE_POSTAL_CODE"})
 
     if "subscriptions" in profile_update_dict:
-        api.update_notification_subscription(user, body.subscriptions, body.origin)
+        api.update_notification_subscription(current_user, body.subscriptions, body.origin)
         profile_update_dict.pop("subscriptions", None)
         profile_update_dict.pop("origin", None)
 
@@ -87,7 +86,9 @@ def patch_user_profile(
         else:
             try:
                 phone_data = phone_number_utils.ParsedPhoneNumber(phone_number)
-                phone_validation_api.check_phone_number_is_legit(user, phone_data.phone_number, phone_data.country_code)
+                phone_validation_api.check_phone_number_is_legit(
+                    current_user, phone_data.phone_number, phone_data.country_code
+                )
             except phone_validation_exceptions.InvalidCountryCode:
                 error = {"code": "INVALID_COUNTRY_CODE", "message": "L'indicatif téléphonique n'est pas accepté"}
                 logger.warning("Failed to update phone number", extra={"number": phone_number, "code": error["code"]})
@@ -99,12 +100,12 @@ def patch_user_profile(
 
             phone_number = phone_data.phone_number
 
-        if phone_number != user.phoneNumber:
+        if phone_number != current_user.phoneNumber:
             profile_update_dict["phone_validation_status"] = None
 
-    api.update_user_info(user, author=user, **profile_update_dict)
+    api.update_user_info(current_user, author=current_user, **profile_update_dict)
 
-    return serializers.UserProfileResponse.from_orm(user)
+    return serializers.UserProfileResponse.from_orm(current_user)
 
 
 @blueprint.native_route("/reset_recredit_amount_to_show", methods=["POST"])
@@ -168,8 +169,8 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
 @blueprint.native_route("/profile/token_expiration", methods=["GET"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UpdateEmailTokenExpiration)
 @authenticated_and_active_user_required
-def get_email_update_token_expiration_date(user: users_models.User) -> serializers.UpdateEmailTokenExpiration:
-    return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(user))
+def get_email_update_token_expiration_date() -> serializers.UpdateEmailTokenExpiration:
+    return serializers.UpdateEmailTokenExpiration(expiration=email_api.get_active_token_expiration(current_user))
 
 
 @blueprint.native_route("/account", methods=["POST"])
@@ -334,9 +335,9 @@ def _log_phone_validation_code_failure(phone_number: str, code: str) -> None:
 @blueprint.native_route("/send_phone_validation_code", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
-def send_phone_validation_code(user: users_models.User, body: serializers.SendPhoneValidationRequest) -> None:
+def send_phone_validation_code(body: serializers.SendPhoneValidationRequest) -> None:
     try:
-        phone_validation_api.send_phone_validation_code(user, body.phoneNumber)
+        phone_validation_api.send_phone_validation_code(current_user, body.phoneNumber)
 
     except phone_validation_exceptions.SMSSendingLimitReached:
         error = {"code": "TOO_MANY_SMS_SENT", "message": "Nombre de tentatives maximal dépassé"}
@@ -378,9 +379,9 @@ def send_phone_validation_code(user: users_models.User, body: serializers.SendPh
 @spectree_serialize(api=blueprint.api, on_success_status=204, raw_response=True)
 @authenticated_and_active_user_required
 @atomic()
-def validate_phone_number(user: users_models.User, body: serializers.ValidatePhoneNumberRequest) -> flask.Response:
+def validate_phone_number(body: serializers.ValidatePhoneNumberRequest) -> flask.Response:
     try:
-        phone_validation_api.validate_phone_number(user, body.code)
+        phone_validation_api.validate_phone_number(current_user, body.code)
     except phone_validation_exceptions.PhoneValidationAttemptsLimitReached:
         raise api_errors.ApiErrors(
             {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
@@ -390,7 +391,7 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
         if error.remaining_attempts == 0:
             # when failing the phone validation, we store a new fraud check that should not be rolled back by atomic
             # to avoid rolling back, we manually return a raw 400 response instead of raising an ApiError
-            fraud_check_api.handle_phone_validation_attempts_limit_reached(user, error.attempts)
+            fraud_check_api.handle_phone_validation_attempts_limit_reached(current_user, error.attempts)
             return flask.make_response(
                 {"message": "Le nombre de tentatives maximal est dépassé", "code": "TOO_MANY_VALIDATION_ATTEMPTS"},
                 400,
@@ -411,9 +412,9 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
             {"message": "L'envoi du code a échoué", "code": "CODE_SENDING_FAILURE"}, status_code=400
         )
 
-    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+    is_activated = subscription_api.activate_beneficiary_if_no_missing_step(current_user)
     if not is_activated:
-        external_attributes_api.update_external_user(user)
+        external_attributes_api.update_external_user(current_user)
 
     return flask.make_response("", 204)
 
@@ -421,9 +422,9 @@ def validate_phone_number(user: users_models.User, body: serializers.ValidatePho
 @blueprint.native_route("/phone_validation/remaining_attempts", methods=["GET"])
 @spectree_serialize(api=blueprint.api, response_model=serializers.PhoneValidationRemainingAttemptsRequest)
 @authenticated_and_active_user_required
-def phone_validation_remaining_attempts(user: users_models.User) -> serializers.PhoneValidationRemainingAttemptsRequest:
-    remaining_attempts = sending_limit.get_remaining_sms_sending_attempts(app.redis_client, user)
-    expiration_time = sending_limit.get_attempt_limitation_expiration_time(app.redis_client, user)
+def phone_validation_remaining_attempts() -> serializers.PhoneValidationRemainingAttemptsRequest:
+    remaining_attempts = sending_limit.get_remaining_sms_sending_attempts(app.redis_client, current_user)
+    expiration_time = sending_limit.get_attempt_limitation_expiration_time(app.redis_client, current_user)
     return serializers.PhoneValidationRemainingAttemptsRequest(
         remainingAttempts=remaining_attempts, counterResetDatetime=expiration_time
     )
@@ -433,21 +434,23 @@ def phone_validation_remaining_attempts(user: users_models.User) -> serializers.
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
 @atomic()
-def suspend_account(user: users_models.User) -> None:
+def suspend_account() -> None:
     try:
-        api.suspend_account(user, reason=constants.SuspensionReason.UPON_USER_REQUEST, actor=user)
+        api.suspend_account(current_user, reason=constants.SuspensionReason.UPON_USER_REQUEST, actor=current_user)
     except bookings_exceptions.BookingIsAlreadyCancelled:
         raise api_errors.ResourceGoneError()
     except bookings_exceptions.BookingIsAlreadyRefunded:
         raise api_errors.ForbiddenError()
-    transactional_mails.send_user_request_to_delete_account_reception_email(user)
+    transactional_mails.send_user_request_to_delete_account_reception_email(current_user)
 
 
 @blueprint.native_route("/account/suspend_for_hack_suspicion", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_and_active_user_required
-def suspend_account_for_hack_suspicion(user: users_models.User) -> None:
-    api.suspend_account(user, reason=constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=user)
+def suspend_account_for_hack_suspicion() -> None:
+    api.suspend_account(
+        current_user, reason=constants.SuspensionReason.SUSPICIOUS_LOGIN_REPORTED_BY_USER, actor=current_user
+    )
 
 
 @blueprint.native_route("/account/suspend_for_suspicious_login", methods=["POST"])
@@ -478,47 +481,47 @@ def account_suspension_token_validation(token: str) -> None:
 @spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
 @authenticated_and_active_user_required
 @atomic()
-def anonymize_account(user: users_models.User) -> None:
-    if gdpr_api.has_unprocessed_extract(user):
+def anonymize_account() -> None:
+    if gdpr_api.has_unprocessed_extract(current_user):
         raise api_errors.ApiErrors({"code": "EXISTING_UNPROCESSED_GDPR_EXTRACT"})
 
-    if not gdpr_api.is_beneficiary_anonymizable(user):
+    if not gdpr_api.is_beneficiary_anonymizable(current_user):
         raise api_errors.ApiErrors({"code": "NOT_ANONYMIZABLE_BENEFICIARY"})
 
     try:
-        gdpr_api.pre_anonymize_user(user, author=user)
+        gdpr_api.pre_anonymize_user(current_user, author=current_user)
     except exceptions.UserAlreadyHasPendingAnonymization:
         raise api_errors.ApiErrors({"code": "ALREADY_HAS_PENDING_ANONYMIZATION"})
 
-    send_beneficiary_pre_anonymization_email(user)
+    send_beneficiary_pre_anonymization_email(current_user)
 
 
 @blueprint.native_route("/account/suspension_date", methods=["GET"])
 @spectree_serialize(response_model=serializers.UserSuspensionDateResponse, api=blueprint.api, on_success_status=200)
 @authenticated_maybe_inactive_user_required
-def get_account_suspension_date(user: users_models.User) -> serializers.UserSuspensionDateResponse:
-    reason = user.suspension_reason
+def get_account_suspension_date() -> serializers.UserSuspensionDateResponse:
+    reason = current_user.suspension_reason
     if reason != constants.SuspensionReason.UPON_USER_REQUEST:
         # If the account has not been suspended upon user request, it
         # has no reason to ask for its suspension date.
         raise api_errors.ForbiddenError()
 
-    return serializers.UserSuspensionDateResponse(date=user.suspension_date)
+    return serializers.UserSuspensionDateResponse(date=current_user.suspension_date)
 
 
 @blueprint.native_route("/account/suspension_status", methods=["GET"])
 @spectree_serialize(response_model=serializers.UserSuspensionStatusResponse, api=blueprint.api, on_success_status=200)
 @authenticated_maybe_inactive_user_required
-def get_account_suspension_status(user: users_models.User) -> serializers.UserSuspensionStatusResponse:
-    return serializers.UserSuspensionStatusResponse(status=user.account_state)
+def get_account_suspension_status() -> serializers.UserSuspensionStatusResponse:
+    return serializers.UserSuspensionStatusResponse(status=current_user.account_state)
 
 
 @blueprint.native_route("/account/unsuspend", methods=["POST"])
 @spectree_serialize(api=blueprint.api, on_success_status=204)
 @authenticated_maybe_inactive_user_required
-def unsuspend_account(user: users_models.User) -> None:
+def unsuspend_account() -> None:
     try:
-        api.check_can_unsuspend(user)
+        api.check_can_unsuspend(current_user)
     except exceptions.NotSuspended:
         raise api_errors.ForbiddenError({"code": "ALREADY_UNSUSPENDED"})
     except exceptions.CantAskForUnsuspension:
@@ -526,4 +529,4 @@ def unsuspend_account(user: users_models.User) -> None:
     except exceptions.UnsuspensionTimeLimitExceeded:
         raise api_errors.ForbiddenError({"code": "UNSUSPENSION_LIMIT_REACHED"})
 
-    api.unsuspend_account(user, actor=user, send_email=True)
+    api.unsuspend_account(current_user, actor=current_user, send_email=True)

@@ -40,8 +40,8 @@ class SearchProductTest(search_helpers.SearchHelper, GetEndpointHelper):
     endpoint = "backoffice_web.product.search_product"
     needed_permission = perm_models.Permissions.READ_OFFERS
 
-    # session + user + product
-    expected_num_queries = 3
+    # session + product
+    expected_num_queries = 2
 
     @pytest.mark.parametrize("ean", ["1234567891234", "1234 5678 9123 4", "1234-5678-9123-4"])
     def test_search_by_ean_existing_product(self, ean, authenticated_client):
@@ -277,8 +277,8 @@ class GetImportProductFromTiteliveFormTest(GetEndpointHelper):
     endpoint_kwargs = {"ean": 1}
     needed_permission = perm_models.Permissions.PRO_FRAUD_ACTIONS
 
-    # session + current_user
-    expected_num_queries = 2
+    # session
+    expected_num_queries = 1
 
     def test_confirm_import_eligible_product_from_titelive_form(self, authenticated_client):
         url = url_for(self.endpoint, ean="1234567899999", is_ineligible=False, _external=True)

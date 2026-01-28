@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 
 import pcapi.core.users.factories as users_factories
@@ -32,8 +34,9 @@ def authenticated_maybe_inactive_user_required_route(*args, **kwargs) -> None:
 def test_get_active_user(client, path):
     user = users_factories.UserFactory(isActive=True)
 
-    client.with_token(user.email)
-    response = client.get(path)
+    client.with_token(user)
+    with patch("pcapi.core.users.sessions._common.NATIVE_FOLDERS", ["/test-blueprint/"]):
+        response = client.get(path)
     assert response.status_code == 204
 
 
@@ -45,7 +48,9 @@ def test_get_active_user(client, path):
     ],
 )
 def test_get_unauthenticated_active_user(client, path):
-    response = client.get(path)
+    with patch("pcapi.core.users.sessions._common.NATIVE_FOLDERS", ["/test-blueprint/"]):
+        client.auth_header = {}
+        response = client.get(path)
     assert response.status_code == 401
 
 
@@ -53,8 +58,9 @@ def test_inactive_user_when_active_required(client):
     user = users_factories.UserFactory(isActive=False)
     path = "/test-blueprint/authenticated_and_active_user_required"
 
-    client.with_token(user.email)
-    response = client.get(path)
+    client.with_token(user)
+    with patch("pcapi.core.users.sessions._common.NATIVE_FOLDERS", ["/test-blueprint/"]):
+        response = client.get(path)
     assert response.status_code == 403
 
 
@@ -62,6 +68,7 @@ def test_inactive_user_when_may_be_inactive(client):
     user = users_factories.UserFactory(isActive=False)
     path = "/test-blueprint/authenticated_maybe_inactive_user_required"
 
-    client.with_token(user.email)
-    response = client.get(path)
+    client.with_token(user)
+    with patch("pcapi.core.users.sessions._common.NATIVE_FOLDERS", ["/test-blueprint/"]):
+        response = client.get(path)
     assert response.status_code == 204

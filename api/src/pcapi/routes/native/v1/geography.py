@@ -1,6 +1,5 @@
 import logging
 
-from pcapi.core.users import models as users_models
 from pcapi.routes.native import blueprint
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.serialization import geography as serialization
@@ -16,7 +15,7 @@ logger = logging.getLogger(__name__)
 @spectree_serialize(api=blueprint.api, response_model=serialization.InseeCountries)
 @authenticated_and_active_user_required
 @atomic()
-def get_countries(user: users_models.User) -> serialization.InseeCountries:
+def get_countries() -> serialization.InseeCountries:
     countries = [
         serialization.InseeCountry(cog=int(cog), libcog=libcog) for (cog, libcog) in countries_utils.INSEE_COUNTRIES
     ]

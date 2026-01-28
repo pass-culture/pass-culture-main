@@ -4,6 +4,7 @@ from urllib.parse import urlencode
 from flask import current_app as app
 from flask import redirect
 from flask import request
+from flask_login import current_user
 from werkzeug.wrappers import Response
 
 import pcapi.routes.serialization.educonnect as educonnect_serializers
@@ -44,19 +45,19 @@ def _log_for_educonnect_supervision(log_message: str, user_id: int) -> None:
 
 @blueprint.saml_blueprint.route("educonnect/login", methods=["GET"])
 @authenticated_and_active_user_required
-def login_educonnect(user: users_models.User) -> Response:
+def login_educonnect() -> Response:
     should_redirect = str(request.args.get("redirect", "true")).lower() == "true"
-    redirect_url = educonnect_connector.get_login_redirect_url(user)
+    redirect_url = educonnect_connector.get_login_redirect_url(current_user)
     response = Response()
 
     if not should_redirect:
         response.status_code = 204
         response.headers["educonnect-redirect"] = redirect_url
         response.headers["Access-Control-Expose-Headers"] = "educonnect-redirect"
-        _log_for_educonnect_supervision("Sending redirect url (webapp)", user.id)
+        _log_for_educonnect_supervision("Sending redirect url (webapp)", current_user.id)
     else:
         response = redirect(redirect_url, code=302)
-        _log_for_educonnect_supervision("Redirecting to educonnect (app)", user.id)
+        _log_for_educonnect_supervision("Redirecting to educonnect (app)", current_user.id)
 
     response.headers["Cache-Control"] = "no-cache, no-store"
     response.headers["Pragma"] = "no-cache"
@@ -68,26 +69,26 @@ def login_educonnect(user: users_models.User) -> Response:
 @spectree_serialize(json_format=False)
 @authenticated_and_active_user_required
 @atomic()
-def login_educonnect_e2e(user: users_models.User, body: educonnect_serializers.EduconnectUserE2ERequest) -> Response:
+def login_educonnect_e2e(body: educonnect_serializers.EduconnectUserE2ERequest) -> Response:
     if not settings.IS_E2E_TESTS:
         return redirect(ERROR_PAGE_URL, code=302)
 
-    mocked_saml_request_id = f"saml-request-id_e2e-test_{user.id}"
+    mocked_saml_request_id = f"saml-request-id_e2e-test_{current_user.id}"
     key = educonnect_connector.build_saml_request_id_key(mocked_saml_request_id)
-    app.redis_client.set(name=key, value=user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
+    app.redis_client.set(name=key, value=current_user.id, ex=constants.EDUCONNECT_SAML_REQUEST_ID_TTL)
 
     educonnect_user = users_factories.EduconnectUserFactory.create(
         birth_date=body.birth_date,
         civility=users_models.GenderEnum.F,
         connection_datetime=date_utils.get_naive_utc_now(),
-        educonnect_id=f"educonnect-id_e2e-test_{user.id}",
+        educonnect_id=f"educonnect-id_e2e-test_{current_user.id}",
         first_name=body.first_name,
-        ine_hash=f"inehash_e2e-test_{user.id}",
+        ine_hash=f"inehash_e2e-test_{current_user.id}",
         last_name=body.last_name,
         saml_request_id=mocked_saml_request_id,
     )
 
-    return _get_educonnect_user_response(user, educonnect_user)
+    return _get_educonnect_user_response(current_user, educonnect_user)
 
 
 @blueprint.saml_blueprint.route("acs", methods=["POST"])
