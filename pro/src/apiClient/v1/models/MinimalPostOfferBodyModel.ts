@@ -2,9 +2,9 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { ArtistOfferResponseModel } from './ArtistOfferResponseModel';
+import type { ArtistOfferLinkBodyModel } from './ArtistOfferLinkBodyModel';
 export type MinimalPostOfferBodyModel = {
-  artistOfferLinks?: Array<ArtistOfferResponseModel> | null;
+  artistOfferLinks?: Array<ArtistOfferLinkBodyModel> | null;
   audioDisabilityCompliant: boolean;
   description?: string | null;
   durationMinutes?: number | null;

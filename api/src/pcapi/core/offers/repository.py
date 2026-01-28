@@ -1103,7 +1103,14 @@ def get_offer_by_id(offer_id: int, load_options: OFFER_LOAD_OPTIONS = ()) -> mod
                 ),
             )
         if "artists" in load_options:
-            query = query.options(sa_orm.joinedload(models.Offer.artistOfferLinks))
+            query = query.options(
+                sa_orm.selectinload(models.Offer.artistOfferLinks)
+                .joinedload(artist_models.ArtistOfferLink.artist)
+                .load_only(
+                    artist_models.Artist.id,
+                    artist_models.Artist.name,
+                )
+            )
         return query.one()
     except sa_orm.exc.NoResultFound:
         raise exceptions.OfferNotFound(offer_id=offer_id)
@@ -1136,7 +1143,14 @@ def get_offer_and_extradata(offer_id: int) -> models.Offer | None:
         )
         .options(sa_orm.joinedload(models.Offer.venue))
         .options(sa_orm.joinedload(models.Offer.metaData))
-        .options(sa_orm.joinedload(models.Offer.artistOfferLinks))
+        .options(
+            sa_orm.selectinload(models.Offer.artistOfferLinks)
+            .joinedload(artist_models.ArtistOfferLink.artist)
+            .load_only(
+                artist_models.Artist.id,
+                artist_models.Artist.name,
+            )
+        )
         .one_or_none()
     )
 

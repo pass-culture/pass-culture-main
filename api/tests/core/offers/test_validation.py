@@ -1146,7 +1146,7 @@ class CheckOfferNameIsValidTest:
 class CheckArtistOfferLinksTest:
     def test_check_artist_offer_links_should_not_raise(self):
         artist_offer_links = [
-            artist_serialize.ArtistOfferResponseModel(
+            artist_serialize.ArtistOfferLinkBodyModel(
                 artist_id="any-id",
                 artist_type=artist_models.ArtistType.AUTHOR,
                 custom_name=None,
@@ -1156,7 +1156,7 @@ class CheckArtistOfferLinksTest:
 
     def test_check_artist_offer_links_should_raise(self):
         artist_offer_links = [
-            artist_serialize.ArtistOfferResponseModel(
+            artist_serialize.ArtistOfferLinkBodyModel(
                 artist_id="any-id",
                 artist_type=artist_models.ArtistType.PERFORMER,
                 custom_name=None,

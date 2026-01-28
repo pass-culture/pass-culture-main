@@ -947,7 +947,7 @@ def check_offer_can_ask_for_highlight_request(offer: models.Offer) -> None:
 
 
 def check_artist_offer_links(
-    artist_offer_links: list[artist_serialize.ArtistOfferResponseModel], subcategory: subcategories.Subcategory
+    artist_offer_links: list[artist_serialize.ArtistOfferLinkBodyModel], subcategory: subcategories.Subcategory
 ) -> None:
     for link in artist_offer_links:
         # TODO (tpommellet-pass): refacto once artists are no longer stored in extradata

@@ -2130,7 +2130,7 @@ class UpdateOfferTest:
 
         mock_upsert_artist_offer_links.assert_called_once_with(
             [
-                artist_serialize.ArtistOfferResponseModel(
+                artist_serialize.ArtistOfferLinkBodyModel(
                     artistId="any-id", artistType=artist_models.ArtistType.AUTHOR, customName=None
                 )
             ],

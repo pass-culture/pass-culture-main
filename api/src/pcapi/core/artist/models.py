@@ -62,6 +62,10 @@ class ArtistOfferLink(PcObject, Model):
         ),
     )
 
+    @property
+    def artist_name(self) -> str:
+        return self.artist.name if self.artist else self.custom_name  # type: ignore[return-value]
+
 
 class ArtistProductLink(PcObject, Model):
     __tablename__ = "artist_product_link"
