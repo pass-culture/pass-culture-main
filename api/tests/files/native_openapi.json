@@ -6239,6 +6239,18 @@
                         ],
                         "default": null
                     },
+                    "accessibilityId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Accessibilityid"
+                    },
                     "accessibilityUrl": {
                         "anyOf": [
                             {
@@ -6336,6 +6348,28 @@
                         "title": "Ispermanent",
                         "type": "boolean"
                     },
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Longitude"
+                    },
                     "name": {
                         "title": "Name",
                         "type": "string"
@@ -6399,6 +6433,8 @@
                     "description",
                     "isOpenToPublic",
                     "isPermanent",
+                    "latitude",
+                    "longitude",
                     "name",
                     "openingHours",
                     "postalCode",
