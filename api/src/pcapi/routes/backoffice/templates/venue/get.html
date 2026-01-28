@@ -117,13 +117,14 @@
             <div class="col-4">
               <h4 class="mb-2">Adresse :</h4>
               <div class="fs-6 d-grid gap-1">
-                {% if region %}
-                  <p class="m-0">
-                    <span class="fw-bold">Région :</span>
-                    {{ region }}
-                  </p>
-                {% endif %}
+                {% set address = venue.offererAddress.address %}
                 {% if address %}
+                  {% if address.postalCode %}
+                    <p class="m-0">
+                      <span class="fw-bold">Région :</span>
+                      {{ get_region_name_from_postal_code(address.postalCode) }}
+                    </p>
+                  {% endif %}
                   {% if address.street %}
                     <p class="m-0">
                       <span class="fw-bold">Adresse :</span>

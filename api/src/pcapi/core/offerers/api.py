@@ -157,7 +157,6 @@ def update_venue(
     )
     venue_snapshot = history_api.ObjectUpdateSnapshot(venue, author)
     if not venue.isVirtual:
-        assert venue.offererAddress.address is not None  # helps mypy
         is_venue_location_updated = any(
             field in location_modifications
             for field in ("banId", "street", "city", "inseeCode", "postalCode", "latitude", "longitude")
@@ -166,7 +165,6 @@ def update_venue(
         if is_venue_location_updated:
             _update_venue_location(
                 venue,
-                modifications,
                 location_modifications,
                 venue_snapshot=venue_snapshot,
                 is_manual_edition=is_manual_edition,
@@ -294,7 +292,6 @@ def update_venue(
 
 def _update_venue_location(
     venue: models.Venue,
-    modifications: dict,
     location_modifications: dict,
     venue_snapshot: history_api.ObjectUpdateSnapshot,
     is_manual_edition: bool = False,
@@ -306,15 +303,25 @@ def _update_venue_location(
     On the other side, BO users might want to force a location to a venue, for example if the address is unknown
     for the API.
     """
-    assert venue.offererAddress is not None
+    offerer_address = venue.offererAddress
+    if not offerer_address:
+        # In case of missing OA, backoffice user should be able to set an address
+        offerer_address = offerers_models.OffererAddress(
+            offererId=venue.managingOffererId,
+            venueId=venue.id,
+            type=offerers_models.LocationType.VENUE_LOCATION,
+            address=geography_models.Address(),  # not saved, only used for comparison
+            label=None,
+        )
+
     # When street is cleared from the BO, location_modifications contains: {'street': None}
-    street = location_modifications.get("street", venue.offererAddress.address.street)
-    city = location_modifications.get("city", venue.offererAddress.address.city)
-    insee_code = location_modifications.get("inseeCode", venue.offererAddress.address.inseeCode)
-    postal_code = location_modifications.get("postalCode", venue.offererAddress.address.postalCode)
-    latitude = location_modifications.get("latitude", venue.offererAddress.address.latitude)
-    longitude = location_modifications.get("longitude", venue.offererAddress.address.longitude)
-    ban_id = location_modifications.get("banId", venue.offererAddress.address.banId)
+    street = location_modifications.get("street", offerer_address.address.street)
+    city = location_modifications.get("city", offerer_address.address.city)
+    insee_code = location_modifications.get("inseeCode", offerer_address.address.inseeCode)
+    postal_code = location_modifications.get("postalCode", offerer_address.address.postalCode)
+    latitude = location_modifications.get("latitude", offerer_address.address.latitude)
+    longitude = location_modifications.get("longitude", offerer_address.address.longitude)
+    ban_id = location_modifications.get("banId", offerer_address.address.banId)
     logger.info(
         "Updating venue location",
         extra={"venue_id": venue.id, "venue_street": street, "venue_city": city, "venue_postalCode": postal_code},
@@ -352,13 +359,13 @@ def _update_venue_location(
     if not is_manual_edition:
         snapshot_location_data["banId"] = address.banId
 
-    venue_snapshot.trace_update(snapshot_location_data, venue.offererAddress.address, "offererAddress.address.{}")
+    venue_snapshot.trace_update(snapshot_location_data, offerer_address.address, "offererAddress.address.{}")
 
-    assert venue.offererAddress.type == offerers_models.LocationType.VENUE_LOCATION  # should never raise
-    venue_snapshot.trace_update({"addressId": address.id}, venue.offererAddress, "offererAddress.{}")
-    venue.offererAddress.address = address
+    assert offerer_address.type == offerers_models.LocationType.VENUE_LOCATION  # should never raise
+    venue_snapshot.trace_update({"addressId": address.id}, offerer_address, "offererAddress.{}")
+    offerer_address.address = address
 
-    db.session.add(venue)
+    db.session.add(offerer_address)
     db.session.flush()
 
 

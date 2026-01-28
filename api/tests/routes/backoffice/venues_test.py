@@ -416,6 +416,19 @@ class GetVenueTest(GetEndpointHelper):
         assert f"Email : {venue.bookingEmail}" in response_text
         assert "Numéro de téléphone :" not in response_text
 
+    def test_get_venue_with_no_address(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(offererAddress=None)
+
+        venue_id = venue.id
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, venue_id=venue_id))
+            assert response.status_code == 200
+
+        response_text = html_parser.content_as_text(response.data)
+        assert venue.common_name in response_text
+        for field in ("Région", "Code postal", "Ville", "Coordonnées"):
+            assert f"{field} :" not in response_text
+
     def test_get_venue_with_provider(self, authenticated_client):
         venue_provider = providers_factories.AllocineVenueProviderFactory(lastSyncDate=datetime(2024, 1, 5, 12, 0))
         venue_id = venue_provider.venue.id
@@ -1396,6 +1409,49 @@ class UpdateVenueTest(PostEndpointHelper):
         assert address.longitude == Decimal("55.45101")
         assert address.isManualEdition is True
         assert address.banId is None
+
+    def test_update_venue_set_address_when_missing(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(contact=None, offererAddress=None)
+
+        data = {
+            "name": venue.name,
+            "public_name": venue.publicName,
+            "siret": venue.siret,
+            "street": "55 Chemin des Remparts",
+            "postal_code": "50170",
+            "city": "Le Mont-Saint-Michel",
+            "ban_id": "50353_0080_00055",
+            "insee_code": "50353",
+            "latitude": "48.636446",
+            "longitude": "-1.510842",
+            "is_manual_address": "",  # autocompletion used
+            "booking_email": venue.bookingEmail,
+            "phone_number": "",
+            "acceslibre_url": "",
+            "is_permanent": False,
+        }
+
+        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data, follow_redirects=True)
+        assert response.status_code == 200
+
+        db.session.refresh(venue)
+        offerer_address = db.session.query(offerers_models.OffererAddress).one()
+        assert venue.offererAddress == offerer_address
+        assert len(venue.action_history) == 1
+        action = venue.action_history[0]
+        assert action.actionType == history_models.ActionType.INFO_MODIFIED
+        assert action.venue == venue
+        assert action.extraData["modified_info"] == {
+            "offererAddress.address.banId": {"new_info": "50353_0080_00055", "old_info": None},
+            "offererAddress.address.city": {"new_info": "Le Mont-Saint-Michel", "old_info": None},
+            "offererAddress.address.inseeCode": {"new_info": "50353", "old_info": None},
+            "offererAddress.address.isManualEdition": {"new_info": False, "old_info": None},
+            "offererAddress.address.latitude": {"new_info": "48.63645", "old_info": None},
+            "offererAddress.address.longitude": {"new_info": "-1.51084", "old_info": None},
+            "offererAddress.address.postalCode": {"new_info": "50170", "old_info": None},
+            "offererAddress.address.street": {"new_info": "55 Chemin des Remparts", "old_info": None},
+            "offererAddress.addressId": {"new_info": offerer_address.addressId, "old_info": None},
+        }
 
     def test_update_venue_contact_only(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
