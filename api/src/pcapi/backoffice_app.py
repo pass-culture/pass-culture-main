@@ -50,8 +50,6 @@ def handle_csrf_error(error: typing.Any) -> tuple[str, int]:
 def generate_error_response(errors: dict, backoffice_template_name: str = "errors/generic.html") -> Response:
     from pcapi.routes.backoffice import utils
 
-    # If the error happens inside a turbo-frame, it's id is reused to insert the error in the correct place
-    turbo_frame_id = request.headers.get("Turbo-Frame")
     content = ""
     # In case of a request coming from htmx, display errors as flash messages
     if utils.is_request_from_htmx():
@@ -61,7 +59,6 @@ def generate_error_response(errors: dict, backoffice_template_name: str = "error
         content = render_template(
             backoffice_template_name,
             errors=errors,
-            turbo_frame_id=turbo_frame_id,
             static_hashes=static_utils.get_hashes(),
         )
     return make_response(content)
