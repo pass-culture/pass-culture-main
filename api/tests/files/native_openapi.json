@@ -935,11 +935,11 @@
                     "image": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferImageResponse"
+                                "$ref": "#/components/schemas/OfferImageResponseV2"
                             }
                         ],
                         "nullable": true,
-                        "title": "OfferImageResponse"
+                        "title": "OfferImageResponseV2"
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -1105,11 +1105,11 @@
                     "image": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferImageResponse"
+                                "$ref": "#/components/schemas/OfferImageResponseV2"
                             }
                         ],
                         "nullable": true,
-                        "title": "OfferImageResponse"
+                        "title": "OfferImageResponseV2"
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -1765,36 +1765,62 @@
                 "type": "object"
             },
             "ChronicleAuthor": {
+                "additionalProperties": false,
                 "properties": {
                     "age": {
-                        "nullable": true,
-                        "title": "Age",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Age"
                     },
                     "city": {
-                        "nullable": true,
-                        "title": "City",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "City"
                     },
                     "firstName": {
-                        "nullable": true,
-                        "title": "Firstname",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Firstname"
                     }
                 },
+                "required": [
+                    "age",
+                    "firstName",
+                    "city"
+                ],
                 "title": "ChronicleAuthor",
                 "type": "object"
             },
             "ChroniclePreview": {
+                "additionalProperties": false,
                 "properties": {
                     "author": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/ChronicleAuthor"
+                            },
+                            {
+                                "type": "null"
                             }
-                        ],
-                        "nullable": true,
-                        "title": "ChronicleAuthor"
+                        ]
                     },
                     "contentPreview": {
                         "title": "Contentpreview",
@@ -1812,10 +1838,65 @@
                 },
                 "required": [
                     "id",
-                    "dateCreated",
-                    "contentPreview"
+                    "author",
+                    "contentPreview",
+                    "dateCreated"
                 ],
                 "title": "ChroniclePreview",
+                "type": "object"
+            },
+            "ChroniclePreviewAuthorV2": {
+                "properties": {
+                    "age": {
+                        "nullable": true,
+                        "title": "Age",
+                        "type": "integer"
+                    },
+                    "city": {
+                        "nullable": true,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "firstName": {
+                        "nullable": true,
+                        "title": "Firstname",
+                        "type": "string"
+                    }
+                },
+                "title": "ChroniclePreviewAuthorV2",
+                "type": "object"
+            },
+            "ChroniclePreviewV2": {
+                "properties": {
+                    "author": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ChroniclePreviewAuthorV2"
+                            }
+                        ],
+                        "nullable": true,
+                        "title": "ChroniclePreviewAuthorV2"
+                    },
+                    "contentPreview": {
+                        "title": "Contentpreview",
+                        "type": "string"
+                    },
+                    "dateCreated": {
+                        "format": "date-time",
+                        "title": "Datecreated",
+                        "type": "string"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    }
+                },
+                "required": [
+                    "id",
+                    "contentPreview",
+                    "dateCreated"
+                ],
+                "title": "ChroniclePreviewV2",
                 "type": "object"
             },
             "Consent": {
@@ -2711,6 +2792,68 @@
                 "type": "object"
             },
             "GtlLabels": {
+                "additionalProperties": false,
+                "properties": {
+                    "label": {
+                        "title": "Label",
+                        "type": "string"
+                    },
+                    "level01Label": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Level01Label"
+                    },
+                    "level02Label": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Level02Label"
+                    },
+                    "level03Label": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Level03Label"
+                    },
+                    "level04Label": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Level04Label"
+                    }
+                },
+                "required": [
+                    "label",
+                    "level01Label",
+                    "level02Label",
+                    "level03Label",
+                    "level04Label"
+                ],
+                "title": "GtlLabels",
+                "type": "object"
+            },
+            "GtlLabelsV2": {
                 "properties": {
                     "label": {
                         "title": "Label",
@@ -2740,7 +2883,7 @@
                 "required": [
                     "label"
                 ],
-                "title": "GtlLabels",
+                "title": "GtlLabelsV2",
                 "type": "object"
             },
             "HomepageLabelResponseModelv2": {
@@ -3190,6 +3333,63 @@
                 "type": "object"
             },
             "OfferAccessibilityResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "audioDisability": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Audiodisability"
+                    },
+                    "mentalDisability": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Mentaldisability"
+                    },
+                    "motorDisability": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Motordisability"
+                    },
+                    "visualDisability": {
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Visualdisability"
+                    }
+                },
+                "required": [
+                    "audioDisability",
+                    "mentalDisability",
+                    "motorDisability",
+                    "visualDisability"
+                ],
+                "title": "OfferAccessibilityResponse",
+                "type": "object"
+            },
+            "OfferAccessibilityResponseV2": {
                 "properties": {
                     "audioDisability": {
                         "nullable": true,
@@ -3212,10 +3412,62 @@
                         "type": "boolean"
                     }
                 },
-                "title": "OfferAccessibilityResponse",
+                "title": "OfferAccessibilityResponseV2",
                 "type": "object"
             },
             "OfferAddressResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "city": {
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "coordinates": {
+                        "$ref": "#/components/schemas/OfferVenueCoordinates"
+                    },
+                    "label": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Label"
+                    },
+                    "postalCode": {
+                        "title": "Postalcode",
+                        "type": "string"
+                    },
+                    "street": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Street"
+                    },
+                    "timezone": {
+                        "title": "Timezone",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "city",
+                    "coordinates",
+                    "label",
+                    "postalCode",
+                    "street",
+                    "timezone"
+                ],
+                "title": "OfferAddressResponse",
+                "type": "object"
+            },
+            "OfferAddressResponseV2": {
                 "properties": {
                     "city": {
                         "title": "City",
@@ -3249,10 +3501,48 @@
                     "coordinates",
                     "timezone"
                 ],
-                "title": "OfferAddressResponse",
+                "title": "OfferAddressResponseV2",
                 "type": "object"
             },
             "OfferArtist": {
+                "additionalProperties": false,
+                "properties": {
+                    "id": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Id"
+                    },
+                    "image": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Image"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "image",
+                    "name"
+                ],
+                "title": "OfferArtist",
+                "type": "object"
+            },
+            "OfferArtistV2": {
                 "properties": {
                     "id": {
                         "title": "Id",
@@ -3272,7 +3562,7 @@
                     "id",
                     "name"
                 ],
-                "title": "OfferArtist",
+                "title": "OfferArtistV2",
                 "type": "object"
             },
             "OfferChronicle": {
@@ -3280,11 +3570,11 @@
                     "author": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/ChronicleAuthor"
+                                "$ref": "#/components/schemas/OfferChronicleAuthor"
                             }
                         ],
                         "nullable": true,
-                        "title": "ChronicleAuthor"
+                        "title": "OfferChronicleAuthor"
                     },
                     "content": {
                         "title": "Content",
@@ -3302,10 +3592,31 @@
                 },
                 "required": [
                     "id",
-                    "dateCreated",
-                    "content"
+                    "content",
+                    "dateCreated"
                 ],
                 "title": "OfferChronicle",
+                "type": "object"
+            },
+            "OfferChronicleAuthor": {
+                "properties": {
+                    "age": {
+                        "nullable": true,
+                        "title": "Age",
+                        "type": "integer"
+                    },
+                    "city": {
+                        "nullable": true,
+                        "title": "City",
+                        "type": "string"
+                    },
+                    "firstName": {
+                        "nullable": true,
+                        "title": "Firstname",
+                        "type": "string"
+                    }
+                },
+                "title": "OfferChronicleAuthor",
                 "type": "object"
             },
             "OfferChronicles": {
@@ -3325,6 +3636,246 @@
                 "type": "object"
             },
             "OfferExtraDataResponse": {
+                "properties": {
+                    "allocineId": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Allocineid"
+                    },
+                    "author": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Author"
+                    },
+                    "bookFormat": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Bookformat"
+                    },
+                    "cast": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Cast"
+                    },
+                    "certificate": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Certificate"
+                    },
+                    "durationMinutes": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Durationminutes"
+                    },
+                    "ean": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Ean"
+                    },
+                    "editeur": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Editeur"
+                    },
+                    "genres": {
+                        "anyOf": [
+                            {
+                                "items": {
+                                    "type": "string"
+                                },
+                                "type": "array"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Genres"
+                    },
+                    "gtlLabels": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/GtlLabels"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "musicSubType": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Musicsubtype"
+                    },
+                    "musicType": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Musictype"
+                    },
+                    "performer": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Performer"
+                    },
+                    "releaseDate": {
+                        "anyOf": [
+                            {
+                                "format": "date",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Releasedate"
+                    },
+                    "showSubType": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Showsubtype"
+                    },
+                    "showType": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Showtype"
+                    },
+                    "speaker": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Speaker"
+                    },
+                    "stageDirector": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Stagedirector"
+                    },
+                    "visa": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Visa"
+                    }
+                },
+                "title": "OfferExtraDataResponse",
+                "type": "object"
+            },
+            "OfferExtraDataResponseV2": {
                 "properties": {
                     "allocineId": {
                         "nullable": true,
@@ -3380,11 +3931,11 @@
                     "gtlLabels": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/GtlLabels"
+                                "$ref": "#/components/schemas/GtlLabelsV2"
                             }
                         ],
                         "nullable": true,
-                        "title": "GtlLabels"
+                        "title": "GtlLabelsV2"
                     },
                     "musicSubType": {
                         "nullable": true,
@@ -3433,7 +3984,7 @@
                         "type": "string"
                     }
                 },
-                "title": "OfferExtraDataResponse",
+                "title": "OfferExtraDataResponseV2",
                 "type": "object"
             },
             "OfferImage": {
@@ -3454,6 +4005,32 @@
                 "type": "object"
             },
             "OfferImageResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "credit": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Credit"
+                    },
+                    "url": {
+                        "title": "Url",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "credit",
+                    "url"
+                ],
+                "title": "OfferImageResponse",
+                "type": "object"
+            },
+            "OfferImageResponseV2": {
                 "properties": {
                     "credit": {
                         "nullable": true,
@@ -3468,10 +4045,11 @@
                 "required": [
                     "url"
                 ],
-                "title": "OfferImageResponse",
+                "title": "OfferImageResponseV2",
                 "type": "object"
             },
             "OfferOffererResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "name": {
                         "title": "Name",
@@ -3482,6 +4060,19 @@
                     "name"
                 ],
                 "title": "OfferOffererResponse",
+                "type": "object"
+            },
+            "OfferOffererResponseV2": {
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "OfferOffererResponseV2",
                 "type": "object"
             },
             "OfferReportReasons": {
@@ -3501,6 +4092,7 @@
                 "type": "object"
             },
             "OfferResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "accessibility": {
                         "$ref": "#/components/schemas/OfferAccessibilityResponse"
@@ -3509,10 +4101,12 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferAddressResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferAddressResponse"
+                        "default": null
                     },
                     "artists": {
                         "items": {
@@ -3522,10 +4116,16 @@
                         "type": "array"
                     },
                     "bookingAllowedDatetime": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Bookingalloweddatetime",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bookingalloweddatetime"
                     },
                     "chronicles": {
                         "items": {
@@ -3535,47 +4135,83 @@
                         "type": "array"
                     },
                     "chroniclesCount": {
-                        "nullable": true,
-                        "title": "Chroniclescount",
-                        "type": "integer"
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Chroniclescount"
                     },
                     "description": {
-                        "nullable": true,
-                        "title": "Description",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Description"
                     },
                     "expenseDomains": {
                         "items": {
-                            "$ref": "#/components/schemas/ExpenseDomain"
+                            "description": "An enumeration.",
+                            "enum": [
+                                "all",
+                                "digital",
+                                "physical"
+                            ],
+                            "title": "ExpenseDomain"
                         },
+                        "title": "Expensedomains",
                         "type": "array"
                     },
                     "externalTicketOfficeUrl": {
-                        "nullable": true,
-                        "title": "Externalticketofficeurl",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalticketofficeurl"
                     },
                     "extraData": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferExtraDataResponse"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferExtraDataResponse"
+                        "default": null
                     },
                     "id": {
                         "title": "Id",
                         "type": "integer"
                     },
-                    "image": {
+                    "images": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferImageResponse"
+                                "additionalProperties": {
+                                    "$ref": "#/components/schemas/OfferImageResponse"
+                                },
+                                "type": "object"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferImageResponse"
+                        "default": null,
+                        "title": "Images"
                     },
                     "isDigital": {
                         "title": "Isdigital",
@@ -3618,11 +4254,23 @@
                         "type": "boolean"
                     },
                     "last30DaysBookings": {
-                        "nullable": true,
-                        "title": "Last30Daysbookings",
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Last30Daysbookings"
+                    },
+                    "likesCount": {
+                        "title": "Likescount",
                         "type": "integer"
                     },
                     "metadata": {
+                        "additionalProperties": true,
                         "title": "Metadata",
                         "type": "object"
                     },
@@ -3630,23 +4278,17 @@
                         "title": "Name",
                         "type": "string"
                     },
-                    "openingHours": {
+                    "publicationDate": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/WeekdayOpeningHoursTimespans"
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "WeekdayOpeningHoursTimespans"
-                    },
-                    "publicationDate": {
-                        "format": "date-time",
-                        "nullable": true,
-                        "title": "Publicationdate",
-                        "type": "string"
-                    },
-                    "reactionsCount": {
-                        "$ref": "#/components/schemas/ReactionCount"
+                        "title": "Publicationdate"
                     },
                     "stocks": {
                         "items": {
@@ -3656,7 +4298,83 @@
                         "type": "array"
                     },
                     "subcategoryId": {
-                        "$ref": "#/components/schemas/SubcategoryIdEnum"
+                        "description": "An enumeration.",
+                        "enum": [
+                            "ABO_BIBLIOTHEQUE",
+                            "ABO_CONCERT",
+                            "ABO_JEU_VIDEO",
+                            "ABO_LIVRE_NUMERIQUE",
+                            "ABO_LUDOTHEQUE",
+                            "ABO_MEDIATHEQUE",
+                            "ABO_PLATEFORME_MUSIQUE",
+                            "ABO_PLATEFORME_VIDEO",
+                            "ABO_PRATIQUE_ART",
+                            "ABO_PRESSE_EN_LIGNE",
+                            "ABO_SPECTACLE",
+                            "ACHAT_INSTRUMENT",
+                            "ACTIVATION_EVENT",
+                            "ACTIVATION_THING",
+                            "APP_CULTURELLE",
+                            "ATELIER_PRATIQUE_ART",
+                            "AUTRE_SUPPORT_NUMERIQUE",
+                            "BON_ACHAT_INSTRUMENT",
+                            "CAPTATION_MUSIQUE",
+                            "CARTE_CINE_ILLIMITE",
+                            "CARTE_CINE_MULTISEANCES",
+                            "CARTE_JEUNES",
+                            "CARTE_MUSEE",
+                            "CINE_PLEIN_AIR",
+                            "CINE_VENTE_DISTANCE",
+                            "CONCERT",
+                            "CONCOURS",
+                            "CONFERENCE",
+                            "DECOUVERTE_METIERS",
+                            "ESCAPE_GAME",
+                            "EVENEMENT_CINE",
+                            "EVENEMENT_JEU",
+                            "EVENEMENT_MUSIQUE",
+                            "EVENEMENT_PATRIMOINE",
+                            "FESTIVAL_ART_VISUEL",
+                            "FESTIVAL_CINE",
+                            "FESTIVAL_LIVRE",
+                            "FESTIVAL_MUSIQUE",
+                            "FESTIVAL_SPECTACLE",
+                            "JEU_EN_LIGNE",
+                            "JEU_SUPPORT_PHYSIQUE",
+                            "LIVESTREAM_EVENEMENT",
+                            "LIVESTREAM_MUSIQUE",
+                            "LIVESTREAM_PRATIQUE_ARTISTIQUE",
+                            "LIVRE_AUDIO_PHYSIQUE",
+                            "LIVRE_NUMERIQUE",
+                            "LIVRE_PAPIER",
+                            "LOCATION_INSTRUMENT",
+                            "MATERIEL_ART_CREATIF",
+                            "MUSEE_VENTE_DISTANCE",
+                            "OEUVRE_ART",
+                            "PARTITION",
+                            "PLATEFORME_PRATIQUE_ARTISTIQUE",
+                            "PRATIQUE_ART_VENTE_DISTANCE",
+                            "PODCAST",
+                            "RENCONTRE_EN_LIGNE",
+                            "RENCONTRE_JEU",
+                            "RENCONTRE",
+                            "SALON",
+                            "SEANCE_CINE",
+                            "SEANCE_ESSAI_PRATIQUE_ART",
+                            "SPECTACLE_ENREGISTRE",
+                            "SPECTACLE_REPRESENTATION",
+                            "SPECTACLE_VENTE_DISTANCE",
+                            "SUPPORT_PHYSIQUE_FILM",
+                            "SUPPORT_PHYSIQUE_MUSIQUE_CD",
+                            "SUPPORT_PHYSIQUE_MUSIQUE_VINYLE",
+                            "TELECHARGEMENT_LIVRE_AUDIO",
+                            "TELECHARGEMENT_MUSIQUE",
+                            "VISITE_GUIDEE",
+                            "VISITE_VIRTUELLE",
+                            "VISITE",
+                            "VOD"
+                        ],
+                        "title": "SubcategoryIdEnum"
                     },
                     "venue": {
                         "$ref": "#/components/schemas/OfferVenueResponse"
@@ -3665,36 +4383,47 @@
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferVideo"
+                            },
+                            {
+                                "type": "null"
                             }
                         ],
-                        "nullable": true,
-                        "title": "OfferVideo"
+                        "default": null
                     },
                     "withdrawalDetails": {
-                        "nullable": true,
-                        "title": "Withdrawaldetails",
-                        "type": "string"
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Withdrawaldetails"
                     }
                 },
                 "required": [
                     "id",
                     "accessibility",
                     "artists",
+                    "bookingAllowedDatetime",
                     "chronicles",
                     "expenseDomains",
-                    "isExpired",
-                    "isExternalBookingsDisabled",
-                    "isEvent",
-                    "isHeadline",
-                    "isForbiddenToUnderage",
-                    "isReleased",
-                    "isSoldOut",
                     "isDigital",
                     "isDuo",
                     "isEducational",
+                    "isEvent",
+                    "isExpired",
+                    "isExternalBookingsDisabled",
+                    "isForbiddenToUnderage",
+                    "isHeadline",
+                    "isReleased",
+                    "isSoldOut",
+                    "likesCount",
                     "metadata",
                     "name",
-                    "reactionsCount",
+                    "publicationDate",
                     "stocks",
                     "subcategoryId",
                     "venue"
@@ -3705,20 +4434,20 @@
             "OfferResponseV2": {
                 "properties": {
                     "accessibility": {
-                        "$ref": "#/components/schemas/OfferAccessibilityResponse"
+                        "$ref": "#/components/schemas/OfferAccessibilityResponseV2"
                     },
                     "address": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferAddressResponse"
+                                "$ref": "#/components/schemas/OfferAddressResponseV2"
                             }
                         ],
                         "nullable": true,
-                        "title": "OfferAddressResponse"
+                        "title": "OfferAddressResponseV2"
                     },
                     "artists": {
                         "items": {
-                            "$ref": "#/components/schemas/OfferArtist"
+                            "$ref": "#/components/schemas/OfferArtistV2"
                         },
                         "title": "Artists",
                         "type": "array"
@@ -3731,7 +4460,7 @@
                     },
                     "chronicles": {
                         "items": {
-                            "$ref": "#/components/schemas/ChroniclePreview"
+                            "$ref": "#/components/schemas/ChroniclePreviewV2"
                         },
                         "title": "Chronicles",
                         "type": "array"
@@ -3760,11 +4489,11 @@
                     "extraData": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferExtraDataResponse"
+                                "$ref": "#/components/schemas/OfferExtraDataResponseV2"
                             }
                         ],
                         "nullable": true,
-                        "title": "OfferExtraDataResponse"
+                        "title": "OfferExtraDataResponseV2"
                     },
                     "id": {
                         "title": "Id",
@@ -3772,7 +4501,7 @@
                     },
                     "images": {
                         "additionalProperties": {
-                            "$ref": "#/components/schemas/OfferImageResponse"
+                            "$ref": "#/components/schemas/OfferImageResponseV2"
                         },
                         "nullable": true,
                         "title": "Images",
@@ -3831,15 +4560,6 @@
                         "title": "Name",
                         "type": "string"
                     },
-                    "openingHours": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/WeekdayOpeningHoursTimespans"
-                            }
-                        ],
-                        "nullable": true,
-                        "title": "WeekdayOpeningHoursTimespans"
-                    },
                     "publicationDate": {
                         "format": "date-time",
                         "nullable": true,
@@ -3851,7 +4571,7 @@
                     },
                     "stocks": {
                         "items": {
-                            "$ref": "#/components/schemas/OfferStockResponse"
+                            "$ref": "#/components/schemas/OfferStockResponseV2"
                         },
                         "title": "Stocks",
                         "type": "array"
@@ -3860,16 +4580,16 @@
                         "$ref": "#/components/schemas/SubcategoryIdEnum"
                     },
                     "venue": {
-                        "$ref": "#/components/schemas/OfferVenueResponse"
+                        "$ref": "#/components/schemas/OfferVenueResponseV2"
                     },
                     "video": {
                         "anyOf": [
                             {
-                                "$ref": "#/components/schemas/OfferVideo"
+                                "$ref": "#/components/schemas/OfferVideoV2"
                             }
                         ],
                         "nullable": true,
-                        "title": "OfferVideo"
+                        "title": "OfferVideoV2"
                     },
                     "withdrawalDetails": {
                         "nullable": true,
@@ -3904,6 +4624,28 @@
                 "type": "object"
             },
             "OfferStockActivationCodeResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "expirationDate": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Expirationdate"
+                    }
+                },
+                "required": [
+                    "expirationDate"
+                ],
+                "title": "OfferStockActivationCodeResponse",
+                "type": "object"
+            },
+            "OfferStockActivationCodeResponseV2": {
                 "properties": {
                     "expirationDate": {
                         "format": "date-time",
@@ -3912,19 +4654,140 @@
                         "type": "string"
                     }
                 },
-                "title": "OfferStockActivationCodeResponse",
+                "title": "OfferStockActivationCodeResponseV2",
                 "type": "object"
             },
             "OfferStockResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "activationCode": {
                         "anyOf": [
                             {
                                 "$ref": "#/components/schemas/OfferStockActivationCodeResponse"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "beginningDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Beginningdatetime"
+                    },
+                    "bookingLimitDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bookinglimitdatetime"
+                    },
+                    "cancellationLimitDatetime": {
+                        "anyOf": [
+                            {
+                                "format": "date-time",
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Cancellationlimitdatetime"
+                    },
+                    "features": {
+                        "items": {
+                            "type": "string"
+                        },
+                        "title": "Features",
+                        "type": "array"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "isBookable": {
+                        "title": "Isbookable",
+                        "type": "boolean"
+                    },
+                    "isExpired": {
+                        "title": "Isexpired",
+                        "type": "boolean"
+                    },
+                    "isForbiddenToUnderage": {
+                        "title": "Isforbiddentounderage",
+                        "type": "boolean"
+                    },
+                    "isSoldOut": {
+                        "title": "Issoldout",
+                        "type": "boolean"
+                    },
+                    "price": {
+                        "title": "Price",
+                        "type": "integer"
+                    },
+                    "priceCategoryLabel": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Pricecategorylabel"
+                    },
+                    "remainingQuantity": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Remainingquantity"
+                    }
+                },
+                "required": [
+                    "id",
+                    "activationCode",
+                    "beginningDatetime",
+                    "bookingLimitDatetime",
+                    "cancellationLimitDatetime",
+                    "features",
+                    "isBookable",
+                    "isExpired",
+                    "isForbiddenToUnderage",
+                    "isSoldOut",
+                    "price",
+                    "priceCategoryLabel",
+                    "remainingQuantity"
+                ],
+                "title": "OfferStockResponse",
+                "type": "object"
+            },
+            "OfferStockResponseV2": {
+                "properties": {
+                    "activationCode": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/OfferStockActivationCodeResponseV2"
                             }
                         ],
                         "nullable": true,
-                        "title": "OfferStockActivationCodeResponse"
+                        "title": "OfferStockActivationCodeResponseV2"
                     },
                     "beginningDatetime": {
                         "format": "date-time",
@@ -3995,10 +4858,138 @@
                     "isExpired",
                     "price"
                 ],
-                "title": "OfferStockResponse",
+                "title": "OfferStockResponseV2",
+                "type": "object"
+            },
+            "OfferVenueCoordinates": {
+                "additionalProperties": false,
+                "properties": {
+                    "latitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Latitude"
+                    },
+                    "longitude": {
+                        "anyOf": [
+                            {
+                                "type": "number"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Longitude"
+                    }
+                },
+                "required": [
+                    "latitude",
+                    "longitude"
+                ],
+                "title": "OfferVenueCoordinates",
                 "type": "object"
             },
             "OfferVenueResponse": {
+                "additionalProperties": false,
+                "properties": {
+                    "address": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Address"
+                    },
+                    "bannerUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Bannerurl"
+                    },
+                    "city": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "City"
+                    },
+                    "coordinates": {
+                        "$ref": "#/components/schemas/OfferVenueCoordinates"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "integer"
+                    },
+                    "isOpenToPublic": {
+                        "title": "Isopentopublic",
+                        "type": "boolean"
+                    },
+                    "isPermanent": {
+                        "title": "Ispermanent",
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "offerer": {
+                        "$ref": "#/components/schemas/OfferOffererResponse"
+                    },
+                    "postalCode": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Postalcode"
+                    },
+                    "publicName": {
+                        "title": "Publicname",
+                        "type": "string"
+                    },
+                    "timezone": {
+                        "title": "Timezone",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "address",
+                    "bannerUrl",
+                    "city",
+                    "coordinates",
+                    "isOpenToPublic",
+                    "isPermanent",
+                    "offerer",
+                    "name",
+                    "postalCode",
+                    "publicName",
+                    "timezone"
+                ],
+                "title": "OfferVenueResponse",
+                "type": "object"
+            },
+            "OfferVenueResponseV2": {
                 "properties": {
                     "address": {
                         "nullable": true,
@@ -4035,7 +5026,7 @@
                         "type": "string"
                     },
                     "offerer": {
-                        "$ref": "#/components/schemas/OfferOffererResponse"
+                        "$ref": "#/components/schemas/OfferOffererResponseV2"
                     },
                     "postalCode": {
                         "nullable": true,
@@ -4061,10 +5052,60 @@
                     "isOpenToPublic",
                     "timezone"
                 ],
-                "title": "OfferVenueResponse",
+                "title": "OfferVenueResponseV2",
                 "type": "object"
             },
             "OfferVideo": {
+                "additionalProperties": false,
+                "properties": {
+                    "durationSeconds": {
+                        "anyOf": [
+                            {
+                                "type": "integer"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Durationseconds"
+                    },
+                    "id": {
+                        "title": "Id",
+                        "type": "string"
+                    },
+                    "thumbUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Thumburl"
+                    },
+                    "title": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "title": "Title"
+                    }
+                },
+                "required": [
+                    "id",
+                    "durationSeconds",
+                    "thumbUrl",
+                    "title"
+                ],
+                "title": "OfferVideo",
+                "type": "object"
+            },
+            "OfferVideoV2": {
                 "properties": {
                     "durationSeconds": {
                         "nullable": true,
@@ -4089,7 +5130,7 @@
                 "required": [
                     "id"
                 ],
-                "title": "OfferVideo",
+                "title": "OfferVideoV2",
                 "type": "object"
             },
             "OffererHeadLineOfferResponseModel": {
@@ -6548,139 +7589,6 @@
                     }
                 },
                 "title": "VoucherResponse",
-                "type": "object"
-            },
-            "WeekdayOpeningHoursTimespans": {
-                "additionalProperties": false,
-                "properties": {
-                    "FRIDAY": {
-                        "items": {
-                            "items": {
-                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
-                                "type": "string"
-                            },
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "maxItems": 2,
-                        "minItems": 1,
-                        "nullable": true,
-                        "title": "Friday",
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "MONDAY": {
-                        "items": {
-                            "items": {
-                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
-                                "type": "string"
-                            },
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "maxItems": 2,
-                        "minItems": 1,
-                        "nullable": true,
-                        "title": "Monday",
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "SATURDAY": {
-                        "items": {
-                            "items": {
-                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
-                                "type": "string"
-                            },
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "maxItems": 2,
-                        "minItems": 1,
-                        "nullable": true,
-                        "title": "Saturday",
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "SUNDAY": {
-                        "items": {
-                            "items": {
-                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
-                                "type": "string"
-                            },
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "maxItems": 2,
-                        "minItems": 1,
-                        "nullable": true,
-                        "title": "Sunday",
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "THURSDAY": {
-                        "items": {
-                            "items": {
-                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
-                                "type": "string"
-                            },
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "maxItems": 2,
-                        "minItems": 1,
-                        "nullable": true,
-                        "title": "Thursday",
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "TUESDAY": {
-                        "items": {
-                            "items": {
-                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
-                                "type": "string"
-                            },
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "maxItems": 2,
-                        "minItems": 1,
-                        "nullable": true,
-                        "title": "Tuesday",
-                        "type": "array",
-                        "uniqueItems": true
-                    },
-                    "WEDNESDAY": {
-                        "items": {
-                            "items": {
-                                "pattern": "^(([0-1][0-9])|(2[0-3])):[0-5][0-9]$",
-                                "type": "string"
-                            },
-                            "maxItems": 2,
-                            "minItems": 2,
-                            "type": "array",
-                            "uniqueItems": true
-                        },
-                        "maxItems": 2,
-                        "minItems": 1,
-                        "nullable": true,
-                        "title": "Wednesday",
-                        "type": "array",
-                        "uniqueItems": true
-                    }
-                },
-                "title": "WeekdayOpeningHoursTimespans",
                 "type": "object"
             },
             "WithdrawalResponse": {
@@ -10214,6 +11122,7 @@
         },
         "/native/v2/offer/{offer_id}": {
             "get": {
+                "deprecated": true,
                 "description": "",
                 "operationId": "get__native_v2_offer_{offer_id}",
                 "parameters": [
@@ -10582,6 +11491,54 @@
                     }
                 },
                 "summary": "get_venue_v2 <GET>",
+                "tags": []
+            }
+        },
+        "/native/v3/offer/{offer_id}": {
+            "get": {
+                "description": "",
+                "operationId": "get__native_v3_offer_{offer_id}",
+                "parameters": [
+                    {
+                        "description": "",
+                        "in": "path",
+                        "name": "offer_id",
+                        "required": true,
+                        "schema": {
+                            "format": "int32",
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/OfferResponse"
+                                }
+                            }
+                        },
+                        "description": "OK"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "422": {
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationError"
+                                }
+                            }
+                        },
+                        "description": "Unprocessable Content"
+                    }
+                },
+                "summary": "get_offer_v3 <GET>",
                 "tags": []
             }
         }

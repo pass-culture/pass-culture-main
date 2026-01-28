@@ -42,7 +42,9 @@ def get_offer(offer_id: str) -> serializers.OfferResponse:
 
 
 @blueprint.native_route("/offer/<int:offer_id>", version="v2", methods=["GET"])
-@spectree_serialize(response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404])
+@spectree_serialize(
+    response_model=serializers.OfferResponseV2, api=blueprint.api, on_error_statuses=[404], deprecated=True
+)
 @atomic()
 def get_offer_v2(offer_id: int) -> serializers.OfferResponseV2:
     query = repository.get_offers_details([int(offer_id)])
