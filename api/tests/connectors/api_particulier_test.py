@@ -12,12 +12,13 @@ from pcapi.connectors import api_particulier
 from pcapi.core.subscription import factories as subscription_factories
 from pcapi.core.subscription.bonus.constants import QUOTIENT_FAMILIAL_THRESHOLD
 from pcapi.core.users import models as users_models
+from pcapi.utils import countries as countries_utils
 
 from tests.core.subscription.bonus.bonus_fixtures import QUOTIENT_FAMILIAL_FIXTURE
 
 
 def test_get_quotient_familial_for_french_household(requests_mock):
-    custodian = subscription_factories.QuotientFamilialCustodianFactory(
+    custodian = subscription_factories.QuotientFamilialCustodianFactory.create(
         last_name="lefebvre",
         common_name=None,
         first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -42,7 +43,7 @@ def test_get_quotient_familial_for_french_household(requests_mock):
         "moisDateNaissance": ["12"],
         "jourDateNaissance": ["27"],
         "sexeEtatCivil": ["F"],
-        "codeCogInseePaysNaissance": [api_particulier.FRANCE_INSEE_CODE],
+        "codeCogInseePaysNaissance": [countries_utils.FRANCE_INSEE_CODE],
         "codeCogInseeCommuneNaissance": ["08480"],
         "annee": ["2023"],
         "mois": ["6"],
@@ -79,7 +80,7 @@ def test_get_quotient_familial_for_french_household(requests_mock):
 
 
 def test_get_quotient_familial_for_french_born_custodian_without_city_code(requests_mock):
-    custodian = subscription_factories.QuotientFamilialCustodianFactory(
+    custodian = subscription_factories.QuotientFamilialCustodianFactory.create(
         birth_country_cog_code="99100", birth_city_cog_code=""
     )
     requests_mock.get(
@@ -94,7 +95,7 @@ def test_get_quotient_familial_for_french_born_custodian_without_city_code(reque
 
 
 def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(requests_mock):
-    custodian = subscription_factories.QuotientFamilialCustodianFactory(
+    custodian = subscription_factories.QuotientFamilialCustodianFactory.create(
         last_name="lefebvre",
         common_name=None,
         first_names=["aleixs", "gréôme", "jean-philippe"],
@@ -135,7 +136,7 @@ def test_get_quotient_familial_for_abroad_born_custodian_ignores_city_code(reque
     ],
 )
 def test_quotient_familial_error(requests_mock, status_code, exception):
-    custodian = subscription_factories.QuotientFamilialCustodianFactory()
+    custodian = subscription_factories.QuotientFamilialCustodianFactory.create()
     requests_mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=status_code)
 
     with pytest.raises(exception):
