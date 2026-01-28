@@ -1604,3 +1604,78 @@ class IdentityTheftTest(PostEndpointHelper):
     def test_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
         assert response.status_code == 404
+
+
+class GetSelectUserFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.account_update.get_select_user_form"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    # authenticated user + user session + update request
+    expected_num_queries = 3
+    # one additional query to prefill user
+    expected_num_queries_with_prefill = expected_num_queries + 1
+
+    def test_get_form_when_no_user_is_linked(self, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(user=None)
+        ds_application_id = update_request.dsApplicationId
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            assert response.status_code == 200
+
+        assert html_parser.extract_tom_select_options(response.data, "user", True) == {}
+
+    def test_get_form_when_user_is_linked(self, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory()
+        ds_application_id = update_request.dsApplicationId
+
+        with assert_num_queries(self.expected_num_queries_with_prefill):
+            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            assert response.status_code == 200
+
+        assert html_parser.extract_tom_select_options(response.data, "user", True) == {
+            str(update_request.user.id): f"{update_request.user.full_name} ({update_request.user.id})"
+        }
+
+    def test_not_found(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint, ds_application_id=1))
+        assert response.status_code == 404
+
+
+class SelectUserTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_update.select_user"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    def _test_select_user(self, authenticated_client, initial_user):
+        update_request = users_factories.UserAccountUpdateRequestFactory(user=initial_user)
+        beneficiary = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"user": beneficiary.id},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
+        assert str(update_request.dsApplicationId) in cells[1]
+        assert beneficiary.full_name in cells[6]
+        assert beneficiary.email in cells[6]
+        assert "Compte jeune sélectionné manuellement" in cells[6]
+
+        db.session.refresh(update_request)
+        assert update_request.user == beneficiary
+        assert update_request.is_user_set_manually
+
+    def test_select_user(self, authenticated_client):
+        self._test_select_user(authenticated_client, initial_user=None)
+
+    def test_replace_user(self, authenticated_client):
+        self._test_select_user(authenticated_client, initial_user=users_factories.UserFactory())
+
+    def test_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
+        assert response.status_code == 404
