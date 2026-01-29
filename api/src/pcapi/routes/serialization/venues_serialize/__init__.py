@@ -11,6 +11,7 @@ from pydantic.v1 import validator
 
 from pcapi.connectors.serialization import acceslibre_serializers
 from pcapi.core.educational import models as educational_models
+from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import utils as geography_utils
 from pcapi.core.geography.constants import MAX_LATITUDE
@@ -475,6 +476,13 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
         if not students:
             return []
         return shared_offers.validate_students(students)
+
+    @validator("collectiveInterventionArea")
+    def validate_intervention_area(cls, intervention_area: list[str] | None) -> list[str] | None:
+        if intervention_area and any(area not in ALL_INTERVENTION_AREA for area in intervention_area):
+            raise ValueError("One or more element is not a valid area")
+
+        return intervention_area
 
 
 class VenueListItemLiteResponseModel(BaseModel):

@@ -12,7 +12,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 
 class Returns200Test:
     def test_should_update_venue_with_no_empty_data(self, client) -> None:
-        # given
         user_offerer = offerers_factories.UserOffererFactory()
         venue = offerers_factories.VenueFactory(
             managingOfferer=user_offerer.offerer,
@@ -33,7 +32,6 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
 
-        # when
         venue_data = {
             "collectiveDomains": [domain.id],
             "collectiveStudents": [educational_models.StudentLevels.COLLEGE4.value],
@@ -48,7 +46,6 @@ class Returns200Test:
 
         response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
-        # then
         assert response.status_code == 200
         venue = db.session.get(offerers_models.Venue, venue_id)
         assert venue.collectiveDomains == [domain]
@@ -62,7 +59,6 @@ class Returns200Test:
         assert venue.collectiveEmail == "john@doe.com"
 
     def test_should_update_venue_with_empty_data(self, client) -> None:
-        # given
         user_offerer = offerers_factories.UserOffererFactory()
         domain = educational_factories.EducationalDomainFactory(name="pouet")
         educational_status_1 = offerers_factories.VenueEducationalStatusFactory()
@@ -83,7 +79,6 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
 
-        # when
         venue_data = {
             "collectiveDomains": [],
             "collectiveStudents": [],
@@ -98,7 +93,6 @@ class Returns200Test:
 
         response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
-        # then
         assert response.status_code == 200
         venue = db.session.get(offerers_models.Venue, venue_id)
         assert venue.collectiveDomains == []
@@ -112,7 +106,6 @@ class Returns200Test:
         assert venue.collectiveEmail is None
 
     def test_should_update_venue_when_specifying_some_data(self, client) -> None:
-        # given
         domain = educational_factories.EducationalDomainFactory(name="pouet")
         user_offerer = offerers_factories.UserOffererFactory()
         educational_status_1 = offerers_factories.VenueEducationalStatusFactory()
@@ -134,7 +127,6 @@ class Returns200Test:
         client = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
 
-        # when
         venue_data = {
             "collectiveNetwork": ["network3"],
             "collectiveDescription": "Une autre description",
@@ -143,7 +135,6 @@ class Returns200Test:
 
         response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
-        # then
         assert response.status_code == 200
         venue = db.session.get(offerers_models.Venue, venue_id)
         assert venue.collectiveDomains == [domain]
@@ -154,3 +145,21 @@ class Returns200Test:
         assert venue.venueEducationalStatusId == educational_status_2.id
         assert venue.collectivePhone == "0600000000"
         assert venue.collectiveEmail == "john@doe.com"
+
+
+class Returns400Test:
+    def test_collective_intervention_area_invalid(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer, collectiveInterventionArea=["01", "02"]
+        )
+
+        venue_data = {"collectiveInterventionArea": ["01", "invalid"]}
+        client = client.with_session_auth(email=user_offerer.user.email)
+        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
+
+        assert response.status_code == 400
+        assert response.json == {"collectiveInterventionArea": ["One or more element is not a valid area"]}
+
+        db.session.refresh(venue)
+        assert venue.collectiveInterventionArea == ["01", "02"]
