@@ -43,10 +43,8 @@ export const RedirectToBankAccountDialog = ({
       }}
       title="Félicitations, vous avez créé votre offre !"
       redirectText="Ajouter un compte bancaire"
-      redirectLink={{
-        to: `/remboursements/informations-bancaires?structure=${offerId}`,
-        isExternal: false,
-      }}
+      to={`/remboursements/informations-bancaires?structure=${offerId}`}
+      isExternal={false}
       onRedirect={() => {
         logEvent(VenueEvents.CLICKED_VENUE_ADD_RIB_BUTTON, {
           venue_id: venueId,

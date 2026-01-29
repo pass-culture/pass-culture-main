@@ -1,3 +1,6 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_outline.scss" as outline;
 
 .base-file-input-container {
@@ -16,4 +19,58 @@
   background-color: transparent;
   border: none;
   outline: none;
+}
+
+.button {
+  @include fonts.button;
+
+  margin: 0;
+  border: rem.torem(2px) solid;
+  border-radius: var(--size-border-radius-xl);
+  display: inline-flex;
+  vertical-align: top;
+  justify-content: center;
+  padding: 0 rem.torem(16px);
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  &:disabled,
+  &.button-disabled {
+    cursor: default;
+  }
+
+  &.button-disabled {
+    pointer-events: none;
+  }
+
+  &:focus-visible {
+    @include outline.focus-outline;
+  }
+
+  &-primary {
+    min-height: rem.torem(40px);
+    align-items: center;
+    color: var(--color-text-inverted);
+    background-color: var(--color-background-brand-primary);
+    border-color: var(--color-border-brand-primary);
+
+    &:hover {
+      background-color: var(--color-background-brand-primary-hover);
+      border-color: var(--color-border-brand-primary-hover);
+      color: var(--color-text-locked-inverted);
+
+      .button-icon {
+        color: var(--color-text-locked-inverted);
+      }
+    }
+
+    &:disabled,
+    &.button-disabled {
+      background-color: var(--color-background-disabled);
+      color: var(--color-text-disabled);
+      border-color: var(--color-border-disabled);
+    }
+  }
 }

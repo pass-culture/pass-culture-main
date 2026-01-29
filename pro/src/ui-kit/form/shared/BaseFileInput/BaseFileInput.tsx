@@ -1,7 +1,5 @@
 import cn from 'classnames'
 
-import buttonStyle from '@/ui-kit/Button/Button.module.scss'
-
 import style from './BaseFileInput.module.scss'
 
 interface BaseFileInputProps {
@@ -24,8 +22,8 @@ export const BaseFileInput = ({
 }: BaseFileInputProps): JSX.Element => (
   <label
     className={cn(
-      buttonStyle['button'],
-      buttonStyle['button-primary'],
+      style['button'],
+      style['button-primary'],
       style['base-file-input-container']
     )}
   >

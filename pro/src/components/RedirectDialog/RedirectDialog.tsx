@@ -2,14 +2,14 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import type { LinkProps } from '@/ui-kit/Button/ButtonLink'
 
 import { Dialog, type DialogProps } from '../Dialog/Dialog'
 import styles from './RedirectDialog.module.scss'
 
 type RedirectDialogProps = DialogProps & {
   redirectText: string
-  redirectLink: LinkProps
+  to: string
+  isExternal: boolean
   cancelText: string
   onCancel: () => void
   onRedirect?: () => void
@@ -25,7 +25,8 @@ export const RedirectDialog = ({
   hideIcon = false,
   extraClassNames,
   redirectText,
-  redirectLink,
+  to,
+  isExternal,
   cancelIcon,
   onRedirect,
   cancelText,
@@ -49,8 +50,9 @@ export const RedirectDialog = ({
       <div className={styles['redirect-dialog-actions']}>
         <Button
           as="a"
+          to={to}
           data-testid="redirect-dialog-link"
-          {...redirectLink}
+          isExternal={isExternal}
           variant={ButtonVariant.PRIMARY}
           onClick={onRedirect}
           icon={withRedirectLinkIcon ? fullLinkIcon : undefined}

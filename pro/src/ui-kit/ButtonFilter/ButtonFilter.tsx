@@ -3,7 +3,6 @@ import type React from 'react'
 
 import fullDownIcon from '@/icons/full-down.svg'
 import fullUpIcon from '@/icons/full-up.svg'
-import type { SharedButtonProps } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './ButtonFilter.module.scss'
@@ -14,8 +13,7 @@ import styles from './ButtonFilter.module.scss'
  * @extends SharedButtonProps, React.ButtonHTMLAttributes<HTMLButtonElement>
  */
 interface ButtonFilterProps
-  extends SharedButtonProps,
-    React.ButtonHTMLAttributes<HTMLButtonElement> {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   /**
    * Whether the button is open.
    */
@@ -53,7 +51,6 @@ export const ButtonFilter = ({
   isOpen = false,
   isActive = false,
   type = 'button',
-  testId,
   ...buttonAttrs
 }: ButtonFilterProps): JSX.Element => {
   return (
@@ -65,7 +62,6 @@ export const ButtonFilter = ({
         className
       )}
       type={type}
-      data-testid={testId}
       {...buttonAttrs}
     >
       {children}

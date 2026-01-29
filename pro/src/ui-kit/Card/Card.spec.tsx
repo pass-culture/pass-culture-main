@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/react'
 import { axe } from 'vitest-axe'
 
-import { Button } from '../Button/Button'
+import { Button } from '@/design-system/Button/Button'
+
 import { Card } from './Card'
 
 describe('Card', () => {
@@ -10,7 +11,7 @@ describe('Card', () => {
       <Card
         imageSrc={'img'}
         title={<h1>My card</h1>}
-        actions={<Button>Action</Button>}
+        actions={<Button label="Action"></Button>}
       >
         Hello
       </Card>
@@ -20,7 +21,11 @@ describe('Card', () => {
 
   it('should render content', () => {
     render(
-      <Card imageSrc={'img'} title="My card" actions={<Button>Action</Button>}>
+      <Card
+        imageSrc={'img'}
+        title="My card"
+        actions={<Button label="Action"></Button>}
+      >
         Hello
       </Card>
     )

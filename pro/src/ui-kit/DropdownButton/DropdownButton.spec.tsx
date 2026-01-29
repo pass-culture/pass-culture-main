@@ -2,14 +2,18 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { axe } from 'vitest-axe'
 
-import { Button } from '../Button/Button'
+import { Button } from '@/design-system/Button/Button'
+
 import { DropdownButton, type DropdownButtonProps } from './DropdownButton'
 
 const defaultProps: DropdownButtonProps = {
   name: 'Trigger',
   options: [
-    { id: '1', element: <Button onClick={() => {}}>Button 1</Button> },
-    { id: '2', element: <Button onClick={() => {}}>Button 2</Button> },
+    { id: '1', element: <Button label="Button 1" onClick={() => {}}></Button> },
+    {
+      id: '2',
+      element: <Button label="Button 2" onClick={() => {}}></Button>,
+    },
   ],
 }
 

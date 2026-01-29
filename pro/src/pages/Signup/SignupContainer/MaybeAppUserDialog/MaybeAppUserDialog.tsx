@@ -16,10 +16,8 @@ export const MaybeAppUserDialog = ({
     <RedirectDialog
       icon={strokeFraudIcon}
       redirectText="S’inscrire sur l’application pass Culture"
-      redirectLink={{
-        to: 'https://passculture.app/',
-        isExternal: true,
-      }}
+      to="https://passculture.app/"
+      isExternal={true}
       cancelText="Continuer vers le pass Culture Pro"
       title={
         isHigherEducation

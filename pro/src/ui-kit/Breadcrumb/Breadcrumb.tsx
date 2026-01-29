@@ -1,14 +1,13 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import rightIcon from '@/icons/stroke-right.svg'
-import type { LinkProps } from '@/ui-kit/Button/ButtonLink'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Breadcrumb.module.scss'
 
 export type Crumb = {
   title: string
-  link: LinkProps
+  link: { to: string; isExternal: boolean }
   icon?: string
 }
 

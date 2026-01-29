@@ -1,8 +1,9 @@
 import type { StoryObj } from '@storybook/react-vite'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
-import { Button } from '../Button/Button'
-import { ButtonVariant } from '../Button/types'
+
+import { Button } from '@/design-system/Button/Button'
+import { ButtonVariant } from '@/design-system/Button/types'
 import { DropdownButton } from './DropdownButton'
 
 export default {
@@ -17,11 +18,11 @@ export const Default: StoryObj<typeof DropdownButton> = {
     options: [
       {
         id: '1',
-        element: <Button variant={ButtonVariant.TERNARY}>Option 1</Button>,
+        element: <Button variant={ButtonVariant.TERTIARY}>Option 1</Button>,
       },
       {
         id: '2',
-        element: <Button variant={ButtonVariant.TERNARY}>Option 2</Button>,
+        element: <Button variant={ButtonVariant.TERTIARY}>Option 2</Button>,
       },
     ],
   },

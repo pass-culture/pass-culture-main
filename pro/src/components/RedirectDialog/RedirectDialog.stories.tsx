@@ -12,10 +12,8 @@ export const Default: StoryObj<typeof RedirectDialog> = {
     open: true,
     title: 'title',
     redirectText: 'Go to ...',
-    redirectLink: {
-      to: 'https://aide.passculture.app',
-      isExternal: true,
-    },
+    to: 'https://aide.passculture.app',
+    isExternal: true,
     cancelText: 'cancel',
     children: 'lorem ipsum dolor sit amet',
   },

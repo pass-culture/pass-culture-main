@@ -3,8 +3,7 @@
 
 .actions-column {
   display: flex;
-  align-items: center;
-  justify-items: center;
+  place-items: center center;
   gap: var(--size-spacing-xs);
   place-self: center;
 }
