@@ -4,7 +4,11 @@ import { orejime } from '@/app/App/analytics/orejime'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentUser } from '@/commons/store/user/selectors'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 
 import styles from './Footer.module.scss'
@@ -35,6 +39,7 @@ export const Footer = ({ layout }: FooterProps) => {
             as="a"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             to="https://pass.culture.fr/cgu-professionnels/"
             isExternal
             opensInNewTab
@@ -47,6 +52,7 @@ export const Footer = ({ layout }: FooterProps) => {
             as="a"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             to="https://pass.culture.fr/donnees-personnelles/"
             isExternal
             opensInNewTab
@@ -59,6 +65,7 @@ export const Footer = ({ layout }: FooterProps) => {
             as="a"
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             to="/accessibilite"
             label="Accessibilité : non conforme"
           />
@@ -69,6 +76,7 @@ export const Footer = ({ layout }: FooterProps) => {
               as="a"
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
+              size={ButtonSize.SMALL}
               to="/plan-du-site"
               label="Plan du site"
             />
@@ -78,6 +86,7 @@ export const Footer = ({ layout }: FooterProps) => {
           <Button
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
             onClick={() => orejime?.prompt()}
             label="Gestion des cookies"
           />

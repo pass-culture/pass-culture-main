@@ -4,6 +4,7 @@ import cn from 'classnames'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
+  ButtonSize,
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
@@ -20,6 +21,7 @@ export const HeaderHelpDropdown = () => {
         <Button
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
           icon={fullDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
           label="Centre d’aide"

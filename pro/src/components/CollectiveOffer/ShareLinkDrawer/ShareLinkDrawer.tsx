@@ -34,7 +34,6 @@ export const ShareLinkDrawer = forwardRef<
           <Tag label="Nouveau" variant={TagVariant.NEW} aria-hidden="true" />
         </div>
       }
-      className={styles['drawer']}
     >
       <div className={styles['drawer-content']}>
         <ShareTemplateOfferLink offerId={offerId} />

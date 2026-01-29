@@ -46,12 +46,14 @@
     display: flex;
     flex-flow: row wrap;
     margin: var(--size-spacing-xl);
-    gap: 0 rem.torem(16px);
+    gap: var(--size-spacing-m);
     justify-content: flex-start;
   }
 
   .footer-list-item {
     white-space: nowrap;
+    display: flex;
+    align-items: center;
   }
 
   @media (min-width: size.$laptop) {

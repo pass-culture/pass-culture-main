@@ -347,7 +347,6 @@ export const OfferActionsCell = ({
           {!isCollectiveOfferBookable(offer) && canShareOffer && (
             <DropdownMenu.Item
               className={styles['menu-item']}
-              asChild
               onSelect={(e) => e.preventDefault()}
             >
               <ShareLinkDrawer offerId={offer.id} />

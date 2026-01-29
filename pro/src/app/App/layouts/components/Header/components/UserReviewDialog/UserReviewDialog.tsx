@@ -13,7 +13,11 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import fullSmsIcon from '@/icons/full-sms.svg'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
@@ -34,12 +38,15 @@ export interface UserReviewDialogFormValues {
 
 export const UserReviewDialog = ({
   dialogTrigger = (
-    <Button
-      variant={ButtonVariant.TERTIARY}
-      color={ButtonColor.NEUTRAL}
-      icon={fullSmsIcon}
-      label="Donner mon avis"
-    />
+    <div className={styles['item-review']}>
+      <Button
+        variant={ButtonVariant.TERTIARY}
+        color={ButtonColor.NEUTRAL}
+        size={ButtonSize.SMALL}
+        icon={fullSmsIcon}
+        label="Donner mon avis"
+      />
+    </div>
   ),
 }: {
   dialogTrigger?: React.ReactNode
