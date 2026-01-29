@@ -96,7 +96,7 @@
     "@types/react-instantsearch-dom": "6.12.9",
     "@types/react-redux": "7.1.34",
     "@vitejs/plugin-react": "5.1.2",
-    "@vitest/coverage-istanbul": "4.0.16",
+    "@vitest/coverage-istanbul": "4.0.17",
     "@vitest/runner": "4.0.17",
     "allure-js-commons": "3.4.5",
     "allure-vitest": "3.4.5",
