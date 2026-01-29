@@ -48,6 +48,7 @@
     position: relative;
     gap: var(--size-spacing-s);
     flex-wrap: nowrap;
+    z-index: 1;
   }
 
   &-separator {
@@ -57,6 +58,12 @@
     top: 50%;
     bottom: initial;
     width: 100%;
+  }
+
+  @media screen and (min-width: size.$tablet) {
+    &-buttons {
+      gap: var(--size-spacing-xl);
+    }
   }
 }
 
@@ -71,15 +78,4 @@
   align-items: center;
   min-height: size.$input-min-height;
   display: flex;
-}
-
-.show-button {
-  z-index: 0;
-}
-
-@media screen and (min-width: size.$tablet) {
-  .show-button {
-    margin: 0 rem.torem(8px);
-    width: rem.torem(148px);
-  }
 }

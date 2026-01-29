@@ -234,4 +234,28 @@ describe('filter bookings by bookings period', () => {
       })
     )
   })
+
+  describe('download buttons feature toggle', () => {
+    it('should show MultiDownloadButtonsModal when WIP_SWITCH_VENUE feature is disabled', () => {
+      renderPreFilters(props, [])
+
+      expect(
+        screen.getByRole('button', { name: 'Télécharger' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Où les télécharger ?' })
+      ).not.toBeInTheDocument()
+    })
+
+    it('should show MovedBookingDownloadWarningModal when WIP_SWITCH_VENUE feature is enabled', () => {
+      renderPreFilters(props, ['WIP_SWITCH_VENUE'])
+
+      expect(
+        screen.getByRole('button', { name: 'Où les télécharger ?' })
+      ).toBeInTheDocument()
+      expect(
+        screen.queryByRole('button', { name: 'Télécharger' })
+      ).not.toBeInTheDocument()
+    })
+  })
 })

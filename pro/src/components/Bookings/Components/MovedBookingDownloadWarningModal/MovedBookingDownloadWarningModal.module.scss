@@ -1,0 +1,26 @@
+@use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
+
+.dialog {
+  margin: rem.torem(16px);
+
+  @media screen and (min-width: size.$tablet) {
+    max-width: rem.torem(600px);
+  }
+}
+
+.header-image {
+  margin-top: rem.torem(40px);
+  max-width: 100%;
+}
+
+.catchline {
+  @include fonts.title2;
+}
+
+.dialog-footer {
+  border-top: 0;
+  display: flex;
+  justify-content: center;
+}

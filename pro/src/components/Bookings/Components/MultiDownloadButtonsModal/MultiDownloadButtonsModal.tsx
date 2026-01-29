@@ -6,8 +6,6 @@ import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
 
-import styles from './MultiDownloadButtonsModal.module.scss'
-
 type MultiDownloadButtonsModalType = {
   isDownloading: boolean
   isLocalLoading: boolean
@@ -29,7 +27,7 @@ export const MultiDownloadButtonsModal = ({
   const { logEvent } = useAnalytics()
 
   return (
-    <div className={styles['download-button']}>
+    <div>
       <DropdownButton
         name="Télécharger"
         triggerProps={{
