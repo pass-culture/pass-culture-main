@@ -31,6 +31,7 @@ export const Button = forwardRef<
       size = ButtonSize.DEFAULT,
       transparent = false,
       fullWidth = false,
+      fullHeight = false,
       tooltip,
       type = 'button',
       /***** Icon props *****/
@@ -59,6 +60,7 @@ export const Button = forwardRef<
         [styles['btn-loading']]: isLoading,
         [styles['btn-transparent']]: transparent,
         [styles['btn-full-width']]: fullWidth,
+        [styles['btn-full-height']]: fullHeight,
       }
     )
 

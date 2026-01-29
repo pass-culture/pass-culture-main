@@ -6,24 +6,13 @@
   height: 0;
   position: absolute;
   background-color: var(--color-background-brand-primary);
-  top: rem.torem(-32px);
+  top: rem.torem(-36px);
 
   &:focus-within {
-    height: rem.torem(32px);
+    height: rem.torem(36px);
     position: relative;
     z-index: zIndex.$cookies-popup-z-index;
     top: 0;
-  }
-
-  .skip-list {
-    display: flex;
-    gap: var(--size-spacing-l);
-    align-items: center;
-
-    &-button {
-      color: var(--color-text-inverted);
-      outline-color: var(--color-border-default);
-    }
   }
 }
 

@@ -60,6 +60,10 @@ interface ButtonBaseProps {
    */
   fullWidth?: boolean
   /**
+   * If the button is full height
+   */
+  fullHeight?: boolean
+  /**
    * The tooltip of the button
    */
   tooltip?: string

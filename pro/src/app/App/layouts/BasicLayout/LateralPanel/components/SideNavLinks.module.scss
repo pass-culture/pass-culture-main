@@ -148,22 +148,11 @@
 
       padding-left: rem.torem(28px);
     }
-
-    svg {
-      margin-right: 0;
-    }
   }
 
   &-switch-venue-button {
-    align-items: center;
-    background-color: var(--color-background-default);
-    border: solid 1px var(--color-border-subtle);
-    border-radius: var(--size-border-radius-m);
-    display: flex;
     height: rem.torem(64px);
-    line-height: rem.torem(64px);
     margin: var(--size-spacing-l);
-    padding: 0 var(--size-spacing-s);
   }
 
   &-header {
