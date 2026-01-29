@@ -1,4 +1,5 @@
 {% from "components/forms.html" import build_form_fields_group with context %}
+{% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/generic_modal.html" import build_modal_form with context %}
 {% import "components/badges.html" as badges with context %}
 {% import "components/clipboard.html" as clipboard %}
@@ -184,6 +185,15 @@
             {% if manual_review_form %}
               <div>
                 {{ build_modal_form("review-public-account", manual_review_dst, manual_review_form, "Revue manuelle", "Revue manuelle", "Enregistrer") }}
+              </div>
+            {% endif %}
+            {% if can_request_bonus_credit %}
+              <div>
+                <a data-bs-toggle="modal"
+                   data-bs-target="#request-bonus-credit">
+                  <button class="btn btn-outline-primary mt-2">Demander la bonification</button>
+                </a>
+                {{ build_dynamic_modal(url_for('backoffice_web.public_accounts.get_request_bonus_credit_form', user_id=user.id) , "request-bonus-credit") }}
               </div>
             {% endif %}
             {% if anonymize_form %}

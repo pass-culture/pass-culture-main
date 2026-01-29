@@ -38,6 +38,7 @@ from pcapi.core.users import constants as users_constants
 from pcapi.core.users import exceptions as users_exceptions
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
+from pcapi.core.users.backoffice import api as backoffice_api
 from pcapi.core.users.models import EligibilityType
 from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImportSources
@@ -53,6 +54,7 @@ from pcapi.routes.backoffice.accounts.blueprint import _get_status
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_for_tunnel
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_age18
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_age18_old
+from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_bonus_credit
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_underage
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_underage_age18
 from pcapi.routes.backoffice.accounts.blueprint import _get_steps_tunnel_underage_age18_old
@@ -64,6 +66,7 @@ from pcapi.routes.backoffice.accounts.blueprint import _set_steps_with_active_an
 from pcapi.routes.backoffice.accounts.blueprint import get_eligibility_history
 from pcapi.routes.backoffice.accounts.blueprint import get_public_account_history
 from pcapi.routes.backoffice.forms import search as search_forms
+from pcapi.utils import countries as countries_utils
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 
@@ -176,7 +179,7 @@ def assert_user_equals(result_card_text: str, expected_user: users_models.User):
 
 
 def user_id_from_card(card_text: str) -> int | None:
-    match = re.search("User ID : (?P<user_id>\d+)", card_text)
+    match = re.search(r"User ID : (?P<user_id>\d+)", card_text)
     return match.groupdict().get("user_id") if match else None
 
 
@@ -790,6 +793,48 @@ class GetPublicAccountTest(GetEndpointHelper):
             user = users_factories.UserFactory()
             return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
 
+    class BonusCreditButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
+        button_label = "Demander la bonification"
+
+        @property
+        def path(self):
+            user = users_factories.BeneficiaryFactory()
+            return url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+
+        @pytest.mark.parametrize(
+            "user_factory",
+            [
+                users_factories.UnderageBeneficiaryFactory,
+                users_factories.FreeBeneficiaryFactory,
+                users_factories.UserFactory,
+                users_factories.ProFactory,
+            ],
+        )
+        def test_no_button_when_not_eligible(self, authenticated_client, user_factory):
+            user = user_factory()
+
+            response = authenticated_client.get(
+                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            )
+
+            assert response.status_code == 200
+            assert self.button_label not in response.data.decode("utf-8")
+
+        def test_no_button_when_bonus_granted(self, authenticated_client):
+            user = users_factories.BeneficiaryFactory()
+            subscription_factories.BonusFraudCheckFactory(user=user)
+            finance_factories.RecreditFactory(
+                deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT
+            )
+
+            response = authenticated_client.get(
+                url_for("backoffice_web.public_accounts.get_public_account", user_id=user.id)
+            )
+
+            assert response.status_code == 200
+            assert self.button_label not in response.data.decode("utf-8")
+
     class InvalidatePasswordButtonTest(button_helpers.ButtonHelper):
         needed_permission = perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT
         button_label = "Invalider le mot de passe"
@@ -1276,22 +1321,22 @@ class GetPublicAccountTest(GetEndpointHelper):
 
         assert history_rows[0]["Type"] == "Étape de vérification"
         assert history_rows[0]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
-        assert history_rows[0]["Commentaire"] == "honor_statement, age-17-18, ok, [raison inconnue], None"
+        assert history_rows[0]["Commentaire"] == "honor_statement, age-17-18, ok, raison inconnue, None"
         assert not history_rows[0]["Auteur"]
 
         assert history_rows[1]["Type"] == "Étape de vérification"
         assert history_rows[1]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
-        assert history_rows[1]["Commentaire"] == "ubble, age-17-18, ok, [raison inconnue], None"
+        assert history_rows[1]["Commentaire"] == "ubble, age-17-18, ok, raison inconnue, None"
         assert not history_rows[1]["Auteur"]
 
         assert history_rows[2]["Type"] == "Étape de vérification"
         assert history_rows[2]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
-        assert history_rows[2]["Commentaire"] == "profile_completion, age-17-18, ok, [raison inconnue], None"
+        assert history_rows[2]["Commentaire"] == "profile_completion, age-17-18, ok, raison inconnue, None"
         assert not history_rows[2]["Auteur"]
 
         assert history_rows[3]["Type"] == "Étape de vérification"
         assert history_rows[3]["Date/Heure"].startswith(datetime.date.today().strftime("%d/%m/%Y à"))
-        assert history_rows[3]["Commentaire"] == "phone_validation, age-17-18, ok, [raison inconnue], None"
+        assert history_rows[3]["Commentaire"] == "phone_validation, age-17-18, ok, raison inconnue, None"
         assert not history_rows[3]["Auteur"]
 
         assert history_rows[4]["Type"] == "Modification des informations"
@@ -1328,6 +1373,47 @@ class GetPublicAccountTest(GetEndpointHelper):
         assert not history_rows[8]["Date/Heure"]  # Empty date, at the end of the list
         assert history_rows[8]["Commentaire"].startswith("Fraude suspicion")
         assert history_rows[8]["Auteur"] == legit_user.full_name
+
+    @pytest.mark.parametrize(
+        "bo_role, expected_bonus_code, has_bonus_details",
+        [
+            (perm_models.Roles.SUPPORT_N2, subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH.value, True),
+            (perm_models.Roles.SUPPORT_N1, "", False),
+            (perm_models.Roles.LECTURE_SEULE, "", False),
+        ],
+    )
+    def test_get_public_account_subscription_table(
+        self, legit_user, client, bo_role, expected_bonus_code, has_bonus_details
+    ):
+        bo_user = users_factories.AdminFactory()
+        backoffice_api.upsert_roles(bo_user, [bo_role])
+
+        user = users_factories.BeneficiaryFactory(dateCreated=date_utils.get_naive_utc_now() - relativedelta(days=40))
+        subscription_factories.BonusFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.QUOTIENT_FAMILIAL_TOO_HIGH],
+        )
+        user_id = user.id
+
+        client = client.with_bo_session_auth(bo_user)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert response.status_code == 200
+        rows = html_parser.extract_table_rows(response.data, parent_class="registration-workflow-tab-pane")
+        assert len(rows) == 5
+
+        assert rows[0]["Type"] == subscription_models.FraudCheckType.QF_BONUS_CREDIT.value
+        assert rows[0]["Statut"] == "KO"
+        assert rows[0]["Explication"] == ""
+        assert rows[0]["Code d'erreur"] == expected_bonus_code
+        assert bool(rows[0]["Détails techniques"]) is has_bonus_details
+
+        assert rows[2]["Type"] == subscription_models.FraudCheckType.UBBLE.value
+        assert rows[2]["Statut"] == "OK"
+        assert "reference_data_check_score" in rows[2]["Détails techniques"]
 
     def test_get_public_account_anonymized_user(self, authenticated_client):
         user = users_factories.UserFactory(roles=[users_models.UserRole.ANONYMIZED])
@@ -2192,6 +2278,224 @@ class ReviewPublicAccountTest(PostEndpointHelper):
         assert would_be_beneficiary.is_beneficiary
 
 
+class GetBonusCreditRequestFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.get_request_bonus_credit_form"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
+
+    # - authenticated user and session (1 query)
+    # - user and joined deposits and recredis (1 query)
+    expected_num_queries = 2
+    # - beneficiary fraud checks (1 query: lazyload)
+    expected_num_queries_when_eligible = expected_num_queries + 1
+
+    def test_get_bonus_credit_request_form(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        user_id = user.id
+
+        with assert_num_queries(self.expected_num_queries_when_eligible):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert "Vous pouvez demander la bonification" in html_parser.content_as_text(response.data)
+
+    @pytest.mark.parametrize("num_fraud_checks", [1, users_constants.MAX_QF_BONUS_RETRIES])
+    def test_get_bonus_credit_request_form_already_tried(self, authenticated_client, num_fraud_checks):
+        user = users_factories.BeneficiaryFactory()
+        subscription_factories.BonusFraudCheckFactory.create_batch(
+            size=num_fraud_checks - 1, user=user, status=subscription_models.FraudCheckStatus.KO
+        )
+        subscription_factories.BonusFraudCheckFactory(
+            user=user,
+            status=subscription_models.FraudCheckStatus.KO,
+            resultContent=subscription_factories.QuotientFamilialBonusCreditContentFactory(
+                custodian=subscription_factories.QuotientFamilialCustodianFactory(
+                    gender=users_models.GenderEnum.F,
+                    first_names=["Augustine", "Pauline", "Henriette"],
+                    last_name="Lansot",
+                    common_name="Pagnol",
+                    birth_date="1973-09-11",
+                    birth_country_cog_code=countries_utils.FRANCE_INSEE_CODE,
+                    birth_city_cog_code="13055",
+                )
+            ).model_dump(),
+        )
+        user_id = user.id
+
+        with assert_num_queries(self.expected_num_queries_when_eligible):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert "Vous pouvez demander la bonification" in html_parser.content_as_text(response.data)
+
+        assert html_parser.extract_select_options(response.data, "civility", selected_only=True) == {
+            users_models.GenderEnum.F.name: "Madame"
+        }
+        assert html_parser.extract_input_value(response.data, "first_names") == "Augustine, Pauline, Henriette"
+        assert html_parser.extract_input_value(response.data, "last_name") == "Lansot"
+        assert html_parser.extract_input_value(response.data, "common_name") == "Pagnol"
+        assert html_parser.extract_input_value(response.data, "birth_date") == "1973-09-11"
+        assert html_parser.extract_select_options(response.data, "birth_country", selected_only=True) == {
+            countries_utils.FRANCE_INSEE_CODE: "France"
+        }
+        assert html_parser.extract_tom_select_options(response.data, "birth_city", selected_only=True) == {
+            "13055": "Ville (13)"
+        }
+
+    @pytest.mark.parametrize(
+        "user_factory",
+        [
+            users_factories.UserFactory,
+            users_factories.UnderageBeneficiaryFactory,
+            users_factories.FreeBeneficiaryFactory,
+            users_factories.ProFactory,
+        ],
+    )
+    def test_not_eligible_to_bonus(self, authenticated_client, user_factory):
+        user_id = user_factory().id
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, user_id=user_id))
+            assert response.status_code == 200
+
+        assert (
+            html_parser.content_as_text(response.data)
+            == "Demande de bonification Ce compte n'est pas éligible à une bonification. Annuler"
+        )
+
+    def test_user_does_not_exist(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint, user_id=99999))
+        assert response.status_code == 404
+
+
+class BonusCreditRequestTest(PostEndpointHelper):
+    endpoint = "backoffice_web.public_accounts.request_bonus_credit"
+    endpoint_kwargs = {"user_id": 1}
+    needed_permission = perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
+
+    form_data = {
+        "civility": users_models.GenderEnum.M.name,
+        "first_names": "Joseph, André",
+        "last_name": "Pagnol",
+        "common_name": "",
+        "birth_date": "1969-10-25",
+        "birth_country": countries_utils.FRANCE_INSEE_CODE,
+        "birth_city": ["84137"],
+    }
+
+    def test_request_bonus_credit(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        user_id = user.id
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            user_id=user_id,
+            form=self.form_data,
+            follow_redirects=False,
+            # - select authenticated user and session (1 query)
+            # - select user and joined deposits and recredis (1 query)
+            # - select beneficiary fraud checks (1 query: lazyload)
+            # - insert beneficiary fraud check (1 query)
+            expected_num_queries=4,
+        )
+        assert response.status_code == 303
+
+        qf_fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+        assert len(qf_fraud_checks) == 1
+        qf_fraud_check = qf_fraud_checks[0]
+        assert qf_fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        assert qf_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert qf_fraud_check.resultContent
+        custodian = qf_fraud_check.resultContent["custodian"]
+        assert custodian["gender"] == "M."
+        assert custodian["first_names"] == ["Joseph", "André"]
+        assert custodian["last_name"] == "Pagnol"
+        assert custodian["common_name"] is None
+        assert custodian["birth_date"] == "1969-10-25"
+        assert custodian["birth_country_cog_code"] == countries_utils.FRANCE_INSEE_CODE
+        assert custodian["birth_city_cog_code"] == "84137"
+
+        assert (
+            html_parser.extract_alert(authenticated_client.get(response.location).data)
+            == "La demande de bonification est en cours."
+        )
+
+    def test_birth_country_is_not_france(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        user_id = user.id
+
+        form_data = self.form_data.copy()
+        form_data["birth_country"] = "99101"
+        form_data["birth_city"] = ""
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == "La demande de bonification est en cours."
+
+        qf_fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+        assert len(qf_fraud_checks) == 1
+        qf_fraud_check = qf_fraud_checks[0]
+        assert qf_fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        assert qf_fraud_check.status == subscription_models.FraudCheckStatus.STARTED
+        assert qf_fraud_check.resultContent
+        custodian = qf_fraud_check.resultContent["custodian"]
+        assert custodian["birth_country_cog_code"] == "99101"
+        assert custodian["birth_city_cog_code"] is None
+
+    def test_city_is_missing(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        user_id = user.id
+
+        form_data = self.form_data.copy()
+        form_data["birth_city"] = ""
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == (
+            "Les données envoyées comportent des erreurs. Ville de naissance du représentant légal (s'il est né en France) : "
+            "obligatoire lorsque le représentant légal est né en France ;"
+        )
+        assert not users_api.get_qf_bonus_credit_fraud_checks(user)
+
+    def test_city_is_set_but_country_is_not_france(self, authenticated_client):
+        user = users_factories.BeneficiaryFactory()
+        user_id = user.id
+
+        form_data = self.form_data.copy()
+        form_data["birth_country"] = "99101"
+
+        response = self.post_to_endpoint(authenticated_client, user_id=user_id, form=form_data, follow_redirects=True)
+        assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == (
+            "Les données envoyées comportent des erreurs. Ville de naissance du représentant légal (s'il est né en France) : "
+            "doit rester vide lorsque le représentant légal n'est pas né en France ;"
+        )
+        assert not users_api.get_qf_bonus_credit_fraud_checks(user)
+
+    @pytest.mark.parametrize(
+        "user_factory",
+        [users_factories.UserFactory, users_factories.UnderageBeneficiaryFactory, users_factories.ProFactory],
+    )
+    def test_not_eligible_to_bonus(self, authenticated_client, user_factory):
+        user_id = user_factory().id
+
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=user_id, form=self.form_data, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == "Ce compte n'est pas éligible à une bonification"
+
+    def test_user_does_not_exist(self, authenticated_client):
+        response = self.post_to_endpoint(
+            authenticated_client, user_id=99999, form=self.form_data, follow_redirects=True
+        )
+        assert response.status_code == 404
+
+
 class GetPublicAccountHistoryTest:
     def test_history_contains_creation_date(self):
         user = users_factories.UserFactory()
@@ -2255,48 +2559,73 @@ class GetPublicAccountHistoryTest:
         assert history[0] == unsuspension_action
         assert history[1] == suspension_action
 
-    def test_history_contains_fraud_checks(self):
-        user = users_factories.UserFactory(dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=1))
+    @pytest.mark.parametrize(
+        "bo_role, expected_bonus_reason",
+        [
+            (perm_models.Roles.SUPPORT_N2, subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD.value),
+            (perm_models.Roles.SUPPORT_N1, "raison confidentielle"),
+            (perm_models.Roles.SUPPORT_PRO, "raison confidentielle"),
+        ],
+    )
+    def test_history_contains_fraud_checks(self, roles_with_permissions, bo_role, expected_bonus_reason):
+        bo_user = users_factories.AdminFactory()
+        backoffice_api.upsert_roles(bo_user, [bo_role])
+
+        now = date_utils.get_naive_utc_now()
+        user = users_factories.UserFactory(dateCreated=now - datetime.timedelta(days=1))
         dms = subscription_factories.BeneficiaryFraudCheckFactory(
             user=user,
             type=subscription_models.FraudCheckType.DMS,
-            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=15),
+            dateCreated=now - datetime.timedelta(minutes=20),
         )
-        phone = subscription_factories.BeneficiaryFraudCheckFactory(
+        phone = subscription_factories.PhoneValidationFraudCheckFactory(
             user=user,
-            type=subscription_models.FraudCheckType.PHONE_VALIDATION,
-            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=10),
+            dateCreated=now - datetime.timedelta(minutes=15),
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED],
         )
-        honor = subscription_factories.BeneficiaryFraudCheckFactory(
+        honor = subscription_factories.HonorStatementFraudCheckFactory(
             user=user,
-            type=subscription_models.FraudCheckType.HONOR_STATEMENT,
-            dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(minutes=5),
+            dateCreated=now - datetime.timedelta(minutes=10),
             status=None,
         )
+        bonus = subscription_factories.BonusFraudCheckFactory(
+            user=user,
+            dateCreated=now - datetime.timedelta(minutes=5),
+            status=subscription_models.FraudCheckStatus.KO,
+            reasonCodes=[subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD],
+        )
 
-        history = get_public_account_history(user)
+        history = get_public_account_history(user, bo_user)
 
-        assert len(history) >= 3
+        assert len(history) >= 4
+
+        assert history[3].actionType == "Étape de vérification"
+        assert history[3].actionDate == dms.dateCreated
+        assert (
+            history[3].comment
+            == f"{dms.type.value}, {dms.eligibilityType.value}, {dms.status.value}, raison inconnue, {dms.reason}"
+        )
 
         assert history[2].actionType == "Étape de vérification"
-        assert history[2].actionDate == dms.dateCreated
+        assert history[2].actionDate == phone.dateCreated
         assert (
             history[2].comment
-            == f"{dms.type.value}, {dms.eligibilityType.value}, {dms.status.value}, [raison inconnue], {dms.reason}"
+            == f"{phone.type.value}, {phone.eligibilityType.value}, {phone.status.value}, {subscription_models.FraudReasonCode.PHONE_VALIDATION_ATTEMPTS_LIMIT_REACHED.value}, {phone.reason}"
         )
 
         assert history[1].actionType == "Étape de vérification"
-        assert history[1].actionDate == phone.dateCreated
+        assert history[1].actionDate == honor.dateCreated
         assert (
             history[1].comment
-            == f"{phone.type.value}, {phone.eligibilityType.value}, {phone.status.value}, [raison inconnue], {phone.reason}"
+            == f"{honor.type.value}, {honor.eligibilityType.value}, Statut inconnu, raison inconnue, {honor.reason}"
         )
 
         assert history[0].actionType == "Étape de vérification"
-        assert history[0].actionDate == honor.dateCreated
+        assert history[0].actionDate == bonus.dateCreated
         assert (
             history[0].comment
-            == f"{honor.type.value}, {honor.eligibilityType.value}, Statut inconnu, [raison inconnue], {honor.reason}"
+            == f"{bonus.type.value}, {honor.eligibilityType.value}, ko, {expected_bonus_reason}, {bonus.reason}"
         )
 
     def test_history_contains_reviews(self):
@@ -4296,6 +4625,37 @@ class RegistrationStepTest:
         steps_to_compare = _get_steps_tunnel_underage(user, item_status_15_17)
         _set_steps_with_active_and_disabled(steps_to_compare)
         assert steps == steps_to_compare
+
+    def test_get_steps_for_tunnel_bonus_credit_not_started(self):
+        user = users_factories.BeneficiaryFactory()
+        bonus_steps = _get_steps_tunnel_bonus_credit(user)
+        assert bonus_steps == []
+
+    def test_get_steps_for_tunnel_bonus_credit_ok(self):
+        user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_17_18)
+        subscription_factories.BonusFraudCheckFactory(user=user)
+        finance_factories.RecreditFactory(deposit=user.deposit, recreditType=finance_models.RecreditType.BONUS_CREDIT)
+        bonus_steps = _get_steps_tunnel_bonus_credit(user)
+        assert len(bonus_steps) == 2
+        assert bonus_steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.OK.value
+        assert bonus_steps[1].subscription_item_status == subscription_schemas.SubscriptionItemStatus.OK.value
+
+    def test_get_steps_for_tunnel_bonus_credit_ko(self):
+        user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_17_18)
+        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
+        bonus_steps = _get_steps_tunnel_bonus_credit(user)
+        assert len(bonus_steps) == 2
+        assert bonus_steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.KO.value
+        assert bonus_steps[1].subscription_item_status == subscription_schemas.SubscriptionItemStatus.VOID.value
+
+    def test_get_steps_for_tunnel_bonus_credit_ko_then_started(self):
+        user = users_factories.BeneficiaryFactory(deposit__type=finance_models.DepositType.GRANT_17_18)
+        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.KO)
+        subscription_factories.BonusFraudCheckFactory(user=user, status=subscription_models.FraudCheckStatus.STARTED)
+        bonus_steps = _get_steps_tunnel_bonus_credit(user)
+        assert len(bonus_steps) == 2
+        assert bonus_steps[0].subscription_item_status == subscription_schemas.SubscriptionItemStatus.PENDING.value
+        assert bonus_steps[1].subscription_item_status == subscription_schemas.SubscriptionItemStatus.VOID.value
 
     @pytest.mark.settings(CREDIT_V3_DECREE_DATETIME=date_utils.get_naive_utc_now() + relativedelta(years=1))
     def test_get_steps_for_tunnel_age18_old(self):

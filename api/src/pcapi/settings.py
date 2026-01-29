@@ -610,6 +610,9 @@ OFFERER_INVITATION_EXPIRATION_DELAY = int(os.environ.get("OFFERER_INVITATION_EXP
 # ADRESSE
 ADRESSE_BACKEND = os.environ.get("ADRESSE_BACKEND")
 
+# GEO API (Découpage administratif)
+GEO_API_BACKEND = os.environ.get("GEO_API_BACKEND", "pcapi.connectors.api_geo.GeoApiBackend")
+
 # GOOGLE BIG QUERY
 BIG_QUERY_TABLE_BASENAME = os.environ.get("BIG_QUERY_TABLE_BASENAME", "")
 

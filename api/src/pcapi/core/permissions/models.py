@@ -36,6 +36,8 @@ class Permissions(enum.Enum):
     BENEFICIARY_MANUAL_REVIEW = "effectuer une revue manuelle d'obtention de crédit"
     MANAGE_FRAUDULENT_BOOKING_INFO = "marquer les réservations comme frauduleuses ou non frauduleuses"
     READ_FRAUDULENT_BOOKING_INFO = "visualiser les informations sur les réservations frauduleuses"
+    READ_BENEFICIARY_BONUS_CREDIT = "visualiser les détails des demandes de bonification"
+    REQUEST_BENEFICIARY_BONUS_CREDIT = "demander la bonification pour un bénéficiaire"
 
     READ_PUBLIC_ACCOUNT = "visualiser un compte bénéficiaire/grand public"
     MANAGE_PUBLIC_ACCOUNT = "gérer un compte bénéficiaire/grand public"

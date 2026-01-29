@@ -401,6 +401,16 @@ def genderize(text: str, civility: str | None) -> str:
     return text + "(e)"
 
 
+def format_gender(gender: users_models.GenderEnum) -> str:
+    match gender:
+        case users_models.GenderEnum.M:
+            return "Monsieur"
+        case users_models.GenderEnum.F:
+            return "Madame"
+        case _:
+            return gender.value
+
+
 def format_reason_label(reason: str | None) -> str:
     if reason:
         return users_constants.SUSPENSION_REASON_CHOICES.get(

@@ -23,8 +23,12 @@ def choices_from_enum(
     enum_cls: type[enum.Enum],
     formatter: typing.Callable[[typing.Any], str] | None = None,
     exclude_opts: typing.Iterable[enum.Enum] = (),
+    sort: bool = False,
 ) -> list[tuple]:
-    return [(opt.name, formatter(opt) if formatter else opt.value) for opt in enum_cls if opt not in exclude_opts]
+    choices = [(opt.name, formatter(opt) if formatter else opt.value) for opt in enum_cls if opt not in exclude_opts]
+    if sort:
+        return sorted(choices, key=lambda x: x[1])
+    return choices
 
 
 def values_from_enum(enum_cls: typing.Type[enum.Enum]) -> list[tuple]:

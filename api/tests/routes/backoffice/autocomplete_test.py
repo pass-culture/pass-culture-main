@@ -6,6 +6,7 @@ import pytest
 from flask import url_for
 
 from pcapi.connectors import api_adresse
+from pcapi.connectors import api_geo
 from pcapi.core.criteria import factories as criteria_factories
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.geography import factories as geography_factories
@@ -441,3 +442,29 @@ class AutocompleteOffererTagTest(AutocompleteTestBase):
         offerers_factories.OffererTagFactory(name="no-labelcom")
 
         self._test_autocomplete(authenticated_client, search_query, expected_texts)
+
+
+class AutocompleteCitiesTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_cities"
+    expected_num_queries = 1  # only authenticated user
+
+    @pytest.mark.parametrize(
+        "search_query, search_city_response, expected_texts",
+        [
+            ("", [], set()),
+            (" ", [], set()),
+            (
+                "Toulo",
+                [
+                    api_geo.GeoCity(insee_code="31555", name="Toulouse"),
+                    api_geo.GeoCity(insee_code="83137", name="Toulon"),
+                ],
+                {"Toulouse (31)", "Toulon (83)"},
+            ),
+        ],
+    )
+    def test_autocomplete_cities(self, authenticated_client, search_query, search_city_response, expected_texts):
+        with mock.patch("pcapi.connectors.api_geo.search_city", return_value=search_city_response):
+            self._test_autocomplete(
+                authenticated_client, search_query, expected_texts, expected_num_queries=self.expected_num_queries
+            )

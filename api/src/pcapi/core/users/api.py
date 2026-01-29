@@ -41,6 +41,7 @@ from pcapi.core.finance import deposit_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.subscription import models as subscription_models
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.subscription.dms import api as dms_subscription_api
 from pcapi.core.users import constants
 from pcapi.core.users import exceptions
@@ -1485,13 +1486,27 @@ def _get_current_profile_refresh_campaign_date() -> datetime.datetime | None:
     )
 
 
-def get_user_is_eligible_for_bonification(user: models.User) -> bool:
-    return deposit_api.can_receive_bonus_credit(user) and get_user_qf_bonification_status(user) not in (
-        subscription_models.QFBonificationStatus.TOO_MANY_RETRIES,
-        subscription_models.QFBonificationStatus.STARTED,
+def get_user_is_eligible_for_bonification(user: models.User, *, is_from_backoffice: bool = False) -> bool:
+    excluded_statuses = {
         subscription_models.QFBonificationStatus.GRANTED,
         subscription_models.QFBonificationStatus.NOT_ELIGIBLE,
-    )
+    }
+    if not is_from_backoffice:
+        excluded_statuses |= {
+            subscription_models.QFBonificationStatus.TOO_MANY_RETRIES,
+            subscription_models.QFBonificationStatus.STARTED,
+        }
+    return deposit_api.can_receive_bonus_credit(user) and get_user_qf_bonification_status(user) not in excluded_statuses
+
+
+def get_qf_bonus_credit_fraud_checks(user: models.User) -> list[subscription_models.BeneficiaryFraudCheck]:
+    # `user.beneficiaryFraudChecks` are ordered by creation date
+    return [
+        fraud_check
+        for fraud_check in user.beneficiaryFraudChecks
+        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
+        and fraud_check.status != subscription_models.FraudCheckStatus.MOCK_CONFIG
+    ]
 
 
 def get_user_qf_bonification_status(user: models.User) -> subscription_models.QFBonificationStatus:
@@ -1501,13 +1516,7 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
     if not is_18_years_old or not user.is_beneficiary or not has_v3_credit:
         return subscription_models.QFBonificationStatus.NOT_ELIGIBLE
 
-    qf_bonus_credit_fraud_checks = [
-        fraud_check
-        for fraud_check in user.beneficiaryFraudChecks
-        if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
-        and fraud_check.status != subscription_models.FraudCheckStatus.MOCK_CONFIG
-    ]
-    # Get the latest BeneficiaryFraudCheck because `user.beneficiaryFraudChecks` are ordered by creation date
+    qf_bonus_credit_fraud_checks = get_qf_bonus_credit_fraud_checks(user)
     bonus_fraud_check = qf_bonus_credit_fraud_checks[-1] if qf_bonus_credit_fraud_checks else None
     bonus_fraud_check_status = bonus_fraud_check.status if bonus_fraud_check is not None else None
 
@@ -1532,7 +1541,14 @@ def get_user_qf_bonification_status(user: models.User) -> subscription_models.QF
     if bonus_fraud_check_status == subscription_models.FraudCheckStatus.KO:
         reason_codes = (bonus_fraud_check.reasonCodes if bonus_fraud_check else None) or []
 
-        if len(qf_bonus_credit_fraud_checks) >= constants.MAX_QF_BONUS_RETRIES:
+        if (
+            sum(
+                1
+                for fraud_check in qf_bonus_credit_fraud_checks
+                if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
+            )
+            >= constants.MAX_QF_BONUS_RETRIES
+        ):
             return subscription_models.QFBonificationStatus.TOO_MANY_RETRIES
 
         if subscription_models.FraudReasonCode.NOT_IN_TAX_HOUSEHOLD in reason_codes:
@@ -1566,5 +1582,6 @@ def get_user_remaining_bonus_attempts(user: models.User) -> int:
         for fraud_check in user.beneficiaryFraudChecks
         if fraud_check.type == subscription_models.FraudCheckType.QF_BONUS_CREDIT
         and fraud_check.status == subscription_models.FraudCheckStatus.KO
+        if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
     ]
     return constants.MAX_QF_BONUS_RETRIES - len(ko_qf_bonus_credit_fraud_checks)

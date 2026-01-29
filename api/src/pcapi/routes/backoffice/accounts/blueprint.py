@@ -39,6 +39,10 @@ from pcapi.core.subscription import exceptions as subscription_exceptions
 from pcapi.core.subscription import fraud_check_api as fraud_api
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.subscription import schemas as subscription_schemas
+from pcapi.core.subscription.bonus import constants as bonus_constants
+from pcapi.core.subscription.bonus import fraud_check_api as bonus_fraud_api
+from pcapi.core.subscription.bonus import schemas as bonus_schemas
+from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.phone_validation import api as phone_validation_api
 from pcapi.core.subscription.phone_validation import exceptions as phone_validation_exceptions
 from pcapi.core.users import api as users_api
@@ -54,6 +58,7 @@ from pcapi.models import db
 from pcapi.models.beneficiary_import import BeneficiaryImport
 from pcapi.models.beneficiary_import_status import BeneficiaryImportStatus
 from pcapi.models.feature import DisabledFeatureError
+from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import search_utils
 from pcapi.routes.backoffice import utils
 from pcapi.routes.backoffice.bookings import helpers as booking_helpers
@@ -63,6 +68,7 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils.transaction_manager import atomic
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
+from pcapi.utils.transaction_manager import on_commit
 
 from . import forms as account_forms
 from . import serialization
@@ -400,7 +406,7 @@ def render_public_account_details(
     domains_credit = (
         users_api.get_domains_credit(user, user_bookings=user.userBookings) if user.is_beneficiary else None
     )
-    history = get_public_account_history(user)
+    history = get_public_account_history(user, bo_user=current_user)
     duplicate_user_id = None
     eligibility_history = get_eligibility_history(user)
     user_current_eligibility = eligibility_api.get_eligibility_at_date(user.birth_date, date_utils.get_naive_utc_now())
@@ -459,12 +465,17 @@ def render_public_account_details(
         if utils.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW):
             manual_review_form = account_forms.ManualReviewForm()
 
+        can_request_bonus_credit = utils.has_current_user_permission(
+            perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
+        ) and users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True)
+
         kwargs.update(
             {
                 "edit_account_form": edit_account_form,
                 "edit_account_dst": url_for(".update_public_account", user_id=user.id),
                 "manual_review_form": manual_review_form,
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
+                "can_request_bonus_credit": can_request_bonus_credit,
                 "send_validation_code_form": empty_forms.EmptyForm(),
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
                 "extract_user_form": extract_user_form,
@@ -843,6 +854,8 @@ def _get_steps_for_tunnel(
             steps = _get_steps_tunnel_underage_age17_18(user, item_status_15_17, item_status_17_18)
         case _:
             steps = _get_steps_tunnel_unspecified(item_status_15_17, item_status_18, item_status_17_18)
+
+    steps += _get_steps_tunnel_bonus_credit(user)
 
     if tunnel_type == TunnelType.NOT_ELIGIBLE:
         return steps
@@ -1440,6 +1453,42 @@ def _get_steps_tunnel_underage(user: users_models.User, item_status_15_17: dict)
     return steps
 
 
+def _get_steps_tunnel_bonus_credit(user: users_models.User) -> list[RegistrationStep]:
+    bonus_fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+    if not bonus_fraud_checks:
+        return []
+
+    bonus_fraud_check = bonus_fraud_checks[-1]
+    match bonus_fraud_check.status:
+        case subscription_models.FraudCheckStatus.OK:
+            status = subscription_schemas.SubscriptionItemStatus.OK
+        case subscription_models.FraudCheckStatus.KO:
+            status = subscription_schemas.SubscriptionItemStatus.KO
+        case subscription_models.FraudCheckStatus.STARTED | subscription_models.FraudCheckStatus.PENDING:
+            status = subscription_schemas.SubscriptionItemStatus.PENDING
+        case _:
+            status = subscription_schemas.SubscriptionItemStatus.TODO
+
+    return [
+        RegistrationStep(
+            step_id=11,
+            description="Demande de bonification",
+            subscription_item_status=status.value,
+            icon="bi-envelope-paper",
+        ),
+        RegistrationStep(
+            step_id=12,
+            description="Bonification",
+            subscription_item_status=(
+                subscription_schemas.SubscriptionItemStatus.OK.value
+                if user.received_bonus_credit
+                else subscription_schemas.SubscriptionItemStatus.VOID.value
+            ),
+            icon="bi-patch-plus",
+        ),
+    ]
+
+
 def _get_tunnel(
     user: users_models.User,
     eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
@@ -1739,6 +1788,103 @@ def review_public_account(user_id: int) -> utils.BackofficeResponse:
     return redirect(get_public_account_link(user_id), code=303)
 
 
+def _fetch_user_for_bonus(user_id: int) -> users_models.User:
+    user = (
+        db.session.query(users_models.User)
+        .filter_by(id=user_id)
+        .options(
+            sa_orm.joinedload(users_models.User.deposits).joinedload(finance_models.Deposit.recredits),
+            sa_orm.lazyload(users_models.User.beneficiaryFraudChecks),
+        )
+        .one_or_none()
+    )
+    if not user:
+        raise NotFound()
+    return user
+
+
+@public_accounts_blueprint.route("/<int:user_id>/bonus", methods=["GET"])
+@utils.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
+def get_request_bonus_credit_form(user_id: int) -> utils.BackofficeResponse:
+    user = _fetch_user_for_bonus(user_id)
+
+    if not users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
+        # This should not happen because button should not be displayed, except if the credit is granted in the meantime
+        return render_template(
+            "components/dynamic/modal_form.html",
+            div_id="request-bonus-credit",
+            title="Demande de bonification",
+            information="Ce compte n'est pas éligible à une bonification.",
+        )
+
+    try:
+        fraud_checks = users_api.get_qf_bonus_credit_fraud_checks(user)
+        content = fraud_checks[-1].source_data()
+        assert isinstance(content, bonus_schemas.QuotientFamilialBonusCreditContent)
+        custodian = content.custodian
+        form = account_forms.BonusCreditRequestForm(
+            civility=custodian.gender.name,
+            first_names=", ".join(custodian.first_names),
+            last_name=custodian.last_name,
+            common_name=custodian.common_name,
+            birth_date=custodian.birth_date,
+            birth_country=custodian.birth_country_cog_code,
+            birth_city=[custodian.birth_city_cog_code] if custodian.birth_city_cog_code else None,
+        )
+        autocomplete.prefill_cities_choice(form.birth_city)
+    except Exception:
+        # No fraud check or any error => empty form
+        form = account_forms.BonusCreditRequestForm()
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        title="Demande de bonification",
+        information=Markup(
+            "Vous pouvez demander la bonification à la place du jeune. "
+            "Il faut remplir l'information sur son <b>parent</b>, <b>tuteur légal</b> ou l'<b>organisme qui le prend en charge</b>."
+        ),
+        form=form,
+        dst=url_for("backoffice_web.public_accounts.request_bonus_credit", user_id=user_id),
+        div_id="request-bonus-credit",
+        button_text="Faire la demande",
+        ajax_submit=False,
+    )
+
+
+@public_accounts_blueprint.route("/<int:user_id>/bonus", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT)
+def request_bonus_credit(user_id: int) -> utils.BackofficeResponse:
+    user = _fetch_user_for_bonus(user_id)
+
+    if not users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
+        # This should not happen because form should not be displayed, except if the credit is granted in the meantime
+        flash("Ce compte n'est pas éligible à une bonification", "warning")
+        return redirect(get_public_account_link(user_id), code=303)
+
+    form = account_forms.BonusCreditRequestForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return redirect(get_public_account_link(user_id), code=303)
+
+    fraud_check = bonus_fraud_api.create_bonus_credit_fraud_check(
+        user,
+        gender=users_models.GenderEnum[form.civility.data],
+        first_names=list(filter(None, re.split(",|;| ", form.first_names.data))),
+        last_name=form.last_name.data,
+        common_name=form.common_name.data,
+        birth_date=form.birth_date.data,
+        birth_country_cog_code=form.birth_country.data,
+        birth_city_cog_code=form.birth_city.single_data,
+        origin=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User ID {current_user.id}",
+    )
+
+    payload = bonus_tasks.GetQuotientFamilialTaskPayload(fraud_check_id=fraud_check.id).model_dump()
+    on_commit(partial(bonus_tasks.apply_for_quotient_familial_bonus_task.delay, payload))
+
+    flash("La demande de bonification est en cours.", "success")
+    return redirect(get_public_account_link(user_id), code=303)
+
+
 @public_accounts_blueprint.route("/<int:user_id>/comment", methods=["POST"])
 @utils.permission_required(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT)
 def comment_public_account(user_id: int) -> utils.BackofficeResponse:
@@ -1886,7 +2032,7 @@ def _get_duplicate_fraud_history(
 
 
 def get_public_account_history(
-    user: users_models.User,
+    user: users_models.User, bo_user: users_models.User | None = None
 ) -> list[serialization.AccountAction | history_models.ActionHistory]:
     # All data should have been joinloaded with user
     history: list[history_models.ActionHistory | serialization.AccountAction] = list(user.action_history)
@@ -1898,7 +2044,7 @@ def get_public_account_history(
         history.append(serialization.EmailChangeAction(change))
 
     for fraud_check in user.beneficiaryFraudChecks:
-        history.append(serialization.FraudCheckAction(fraud_check))
+        history.append(serialization.FraudCheckAction(fraud_check, bo_user))
 
     for review in user.beneficiaryFraudReviews:
         history.append(serialization.ReviewAction(review))

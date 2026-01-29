@@ -1,4 +1,5 @@
 {% macro build_idcheck_histories(fraud_actions) %}
+  {% set can_see_bonus_credit_details = has_permission("READ_BENEFICIARY_BONUS_CREDIT") %}
   <div class="table-responsive">
     <table class="table table-hover">
       <thead class="table-light">
@@ -62,9 +63,13 @@
                 {% endif %}
               </td>
               <td>{{ fraud_action['reason'] | empty_string_if_null | pc_backoffice_public_account_link_in_comment | safe }}</td>
-              <td>{{ fraud_action['errorCode'] | format_string_list }}</td>
               <td>
-                {% if fraud_action['technicalDetails'] %}
+                {% if fraud_action['type'] != "qf_bonus_credit" or can_see_bonus_credit_details %}
+                  {{ fraud_action['errorCode'] | format_string_list }}
+                {% endif %}
+              </td>
+              <td>
+                {% if fraud_action['technicalDetails'] and (fraud_action['type'] != "qf_bonus_credit" or can_see_bonus_credit_details) %}
                   {% set idcheck_history_random_id = random_hash() %}
                   <button class="btn btn-light"
                           type="button"

@@ -34,6 +34,7 @@ from pcapi.core.finance import deposit_api
 from pcapi.core.history import factories as history_factories
 from pcapi.core.history import models as history_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.core.subscription.bonus import constants as bonus_constants
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
 from pcapi.core.users import models as users_models
@@ -685,6 +686,12 @@ class AccountTest:
             reasonCodes=None,
             dateCreated=date_utils.get_naive_utc_now() - timedelta(days=7),
             user=user,
+        )
+        subscription_factories.BonusFraudCheckFactory(
+            # This one should not be taken into account in remaining attempts
+            status=subscription_models.FraudCheckStatus.KO,
+            user=user,
+            reason=f"{bonus_constants.BACKOFFICE_ORIGIN_START}, User 123",
         )
         response = client.with_token(user).get("/native/v1/me")
         assert response.status_code == 200
