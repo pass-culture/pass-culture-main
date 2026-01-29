@@ -8,7 +8,6 @@ import {
 } from '@/apiClient/v1'
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { OFFER_WIZARD_MODE } from '@/commons/core/Offers/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { SynchronizedProviderInformation } from '@/components/SynchronisedProviderInformation/SynchronizedProviderInformation'
@@ -37,7 +36,6 @@ export const IndividualOfferLayout = ({
 }: IndividualOfferLayoutProps) => {
   const { hasPublishedOfferWithSameEan } = useIndividualOfferContext()
   const mode = useOfferWizardMode()
-  const isHighlightFeatureActive = useActiveFeature('WIP_HIGHLIGHT')
 
   // All offer's publication dates can be manually edited except for:
   // - rejected offers
@@ -57,7 +55,6 @@ export const IndividualOfferLayout = ({
 
   const shouldDisplayHighlightsBanner =
     !!offer &&
-    isHighlightFeatureActive &&
     offer.isEvent &&
     ![OfferStatus.PENDING, OfferStatus.REJECTED, OfferStatus.DRAFT].includes(
       offer.status

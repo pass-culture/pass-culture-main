@@ -185,7 +185,6 @@ describe('IndividualOfferLayout', () => {
 
       // When
       renderIndividualOfferLayout({
-        options: { features: ['WIP_HIGHLIGHT'] },
         props: { offer },
       })
 
@@ -193,21 +192,6 @@ describe('IndividualOfferLayout', () => {
       expect(
         screen.queryByRole('button', { name: 'Choisir un temps fort' })
       ).toBeInTheDocument()
-    })
-
-    it('should not display highlight banner if the WIP_HIGHLIGHT feature is not active', () => {
-      // Given
-      const offer = getIndividualOfferFactory({
-        status: OfferStatus.ACTIVE,
-        isEvent: true,
-      })
-
-      // When
-      renderIndividualOfferLayout({ props: { offer } })
-
-      expect(
-        screen.queryByRole('button', { name: 'Choisir un temps fort' })
-      ).not.toBeInTheDocument()
     })
 
     it('should not display highlight banner if the offer is not an event', () => {
@@ -219,7 +203,6 @@ describe('IndividualOfferLayout', () => {
 
       // When
       renderIndividualOfferLayout({
-        options: { features: ['WIP_HIGHLIGHT'] },
         props: { offer },
       })
 
@@ -238,7 +221,6 @@ describe('IndividualOfferLayout', () => {
 
       // When
       renderIndividualOfferLayout({
-        options: { features: ['WIP_HIGHLIGHT'] },
         props: { offer },
       })
 
@@ -256,7 +238,6 @@ describe('IndividualOfferLayout', () => {
       })
 
       renderIndividualOfferLayout({
-        options: { features: ['WIP_HIGHLIGHT'] },
         props: { offer },
       })
 
@@ -274,7 +255,6 @@ describe('IndividualOfferLayout', () => {
       })
 
       renderIndividualOfferLayout({
-        options: { features: ['WIP_HIGHLIGHT'] },
         props: { offer },
       })
 

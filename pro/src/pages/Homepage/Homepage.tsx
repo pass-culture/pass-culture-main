@@ -53,8 +53,7 @@ export const Homepage = (): JSX.Element => {
 
   const isNotReady = offererNamesQuery.isLoading || !offererNames
 
-  const areHighlightsEnable =
-    useActiveFeature('WIP_HIGHLIGHT') && selectedOfferer?.canDisplayHighlights
+  const areHighlightsEnable = selectedOfferer?.canDisplayHighlights
 
   return (
     <BasicLayout mainHeading="Bienvenue sur votre espace partenaire">

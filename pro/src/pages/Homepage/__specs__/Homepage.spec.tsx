@@ -207,26 +207,15 @@ describe('Homepage', () => {
 
   describe('render highlights', () => {
     it('should display highlights when selected offerer can display highlights', async () => {
-      renderHomePage({ features: ['WIP_HIGHLIGHT'] })
+      renderHomePage()
 
       expect(
         await screen.findByText('Parcourir les temps forts')
       ).toBeInTheDocument()
     })
 
-    it('should not display highlights when the WIP_HIGHLIGHT feature is not active', async () => {
-      renderHomePage()
-
-      await waitForElementToBeRemoved(() => screen.queryByTestId('spinner'))
-
-      expect(
-        screen.queryByText('Parcourir les temps forts')
-      ).not.toBeInTheDocument()
-    })
-
     it('should not display highlights when selected offerer cannot display highlights', async () => {
       renderHomePage({
-        features: ['WIP_HIGHLIGHT'],
         storeOverrides: {
           offerer: {
             currentOfferer: baseOfferers[2],
