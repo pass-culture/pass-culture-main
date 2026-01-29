@@ -50,6 +50,12 @@ def update_ubble_workflow_task(payload: ubble_schemas.UpdateWorkflowPayload) -> 
             extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
         )
 
+    if fraud_check.status == subscription_models.FraudCheckStatus.STARTED:
+        logger.error(
+            "Started ubble application still started after 12 hours. This is a problem on our side.",
+            extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
+        )
+
 
 def update_ubble_workflow_if_needed(
     fraud_check: subscription_models.BeneficiaryFraudCheck, status: ubble_schemas.UbbleIdentificationStatus
