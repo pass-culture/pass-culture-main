@@ -75,7 +75,7 @@ sentry-sdk = { version = "2.50.0", extras = ["flask", "celery"] }
 shapely = "^2.1.2"      # Used for iris importation
 slack-sdk = "3.39.0"
 spectree = "1.5.8"
-sqlalchemy = { version = "2.0.45", extras = ["mypy"] }
+sqlalchemy = { version = "2.0.46", extras = ["mypy"] }
 sqlalchemy-easy-softdelete = { git = "https://github.com/pass-culture/sqlalchemy-easy-softdelete.git" }
 time-machine = "3.2.0"
 transitions = "^0.9.3"

@@ -450,9 +450,10 @@ def get_tag_offers_form(product_id: int) -> utils.BackofficeResponse:
         unlinked_offers_query = unlinked_offers_query.filter(offers_models.Offer.ean == product.ean)
         identifier_string = " cet EAN-13"
     # The allocineId data exists only for products. We need to find offers that have the visa of this product.
-    elif (
-        identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
-    ) or identifier_type == offers_models.ProductIdentifierType.VISA:
+    elif product.extraData and (
+        (identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa"))
+        or identifier_type == offers_models.ProductIdentifierType.VISA
+    ):
         unlinked_offers_query = unlinked_offers_query.filter(
             offers_models.Offer._extraData["visa"].astext == product.extraData["visa"]
         )
@@ -500,9 +501,10 @@ def add_criteria_to_offers(product_id: int) -> utils.BackofficeResponse:
     if identifier_type == offers_models.ProductIdentifierType.EAN:
         success = offers_api.add_criteria_to_offers(form.criteria.data, ean=product.ean)
     # The allocineId data exists only for products. We need to find offers that have the visa of this product.
-    elif (
-        identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa")
-    ) or identifier_type == offers_models.ProductIdentifierType.VISA:
+    elif product.extraData and (
+        (identifier_type == offers_models.ProductIdentifierType.ALLOCINE_ID and product.extraData.get("visa"))
+        or identifier_type == offers_models.ProductIdentifierType.VISA
+    ):
         success = offers_api.add_criteria_to_offers(form.criteria.data, visa=product.extraData["visa"])
 
     if success:
