@@ -1,7 +1,11 @@
 import cx from 'classnames'
 
 import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import closeIcon from '@/icons/full-close.svg'
 import infosIcon from '@/icons/full-info.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -87,6 +91,7 @@ export const Banner = ({
                         as="a"
                         variant={ButtonVariant.TERTIARY}
                         color={ButtonColor.NEUTRAL}
+                        size={ButtonSize.SMALL}
                         target={a.isExternal ? '_blank' : '_self'}
                         rel={a.isExternal ? 'noopener noreferrer' : undefined}
                         to={a.href}

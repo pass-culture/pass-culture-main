@@ -172,7 +172,11 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                 color={ButtonColor.NEUTRAL}
                 icon={fullLeftIcon}
                 to="/hub"
-                label={`${selectedVenue.publicName.substring(0, 19)}...`}
+                label={
+                  selectedVenue.publicName.length > 20
+                    ? `${selectedVenue.publicName.substring(0, 19)}...`
+                    : selectedVenue.publicName
+                }
                 fullWidth
                 fullHeight
               />
