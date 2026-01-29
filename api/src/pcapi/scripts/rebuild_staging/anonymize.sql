@@ -276,6 +276,20 @@ SET "resultContent" = CASE
     THEN "resultContent" || (
         '{"account_email": "user' || "userId" || '@anonymized.email"}'
       )::text::jsonb
+  WHEN ("type" = 'QF_BONUS_CREDIT')
+    THEN  jsonb_set_lax(
+        jsonb_set_lax(
+            jsonb_set("resultContent", '{children}', case when "resultContent" ->>'children' is null then 'null'::jsonb else (select jsonb_agg(child || '{"first_names": ["Jane", "John"], "common_name": null, "last_name": "Doe", "birth_date": "2010-01-01"}') from jsonb_array_elements("resultContent" -> 'children') as child) end, false),
+            '{custodian}',
+            (case when "resultContent" ->>'custodian' is null then 'null'::jsonb else "resultContent" -> 'custodian' || '{"last_name": "Georges", "birth_date": "1990-01-01", "common_name": null, "first_names": ["Joe", "Joey"], "birth_city_cog_code": "75120", "birth_country_cog_code": "99100"}' end),
+            false,
+            'return_target'
+        ),
+        '{quotient_familial}',
+        (case when "resultContent" ->>'quotient_familial' is null then 'null'::jsonb else "resultContent" -> 'quotient_familial' || '{"value": -1}' end),
+        false,
+        'return_target'
+    )
   ELSE "resultContent"
 END
 ;

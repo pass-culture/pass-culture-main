@@ -5,6 +5,7 @@ from unittest.mock import patch
 
 import pytest
 import requests_mock
+import sentry_sdk
 
 import pcapi.connectors.api_particulier as api_particulier
 import pcapi.core.finance.models as finance_models
@@ -19,6 +20,7 @@ import pcapi.core.users.models as users_models
 import pcapi.notifications.push.testing as push_testing
 import pcapi.notifications.push.trigger_events as trigger_events
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
+from pcapi.utils.sentry import before_send
 
 import tests.core.subscription.bonus.bonus_fixtures as bonus_fixtures
 
@@ -220,6 +222,68 @@ class GetQuotientFamilialTest:
         assert len(mails_testing.outbox) == 1
         out_mail = mails_testing.outbox[0]
         assert out_mail["template"] == TransactionalEmail.BONUS_DECLINED.value.__dict__
+
+    def test_sentry_error_filtered(self):
+        captured_events = []
+
+        def mock_transport(event):
+            nonlocal captured_events
+
+            captured_events.append(event)
+
+        client = sentry_sdk.Client(
+            dsn="http://public@sentry.local/1", before_send=before_send, transport=mock_transport
+        )
+
+        user = users_factories.BeneficiaryFactory()
+        bonus_fraud_check = subscription_factories.BeneficiaryFraudCheckFactory(
+            user=user,
+            type=subscription_models.FraudCheckType.QF_BONUS_CREDIT,
+            status=subscription_models.FraudCheckStatus.STARTED,
+            resultContent={
+                "custodian": {
+                    "last_name": "LEFEBVRE",
+                    "first_names": ["ALEIXS", "GRÉÔME", "JEAN-PHILIPPE"],
+                    "birth_date": datetime.date(1982, 12, 27),
+                    "gender": users_models.GenderEnum.F.value,
+                    "birth_country_cog_code": "99243",
+                    "birth_city_cog_code": "08480",
+                },
+                "quotient_familial": None,
+            },
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=500)
+
+            with sentry_sdk.Hub(client):
+                try:
+                    bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+                except api_particulier.ParticulierApiUnavailable as exc:
+                    sentry_sdk.capture_exception(exc)
+
+        assert len(captured_events) == 1
+        event = captured_events[0]
+        stacktrace_frames = event["exception"]["values"][0]["stacktrace"]["frames"]
+        assert stacktrace_frames[1]["vars"]["quotient_familial_response"] == "[REDACTED]"
+        assert stacktrace_frames[1]["vars"]["source_data"] == "[REDACTED]"
+
+        assert stacktrace_frames[2]["vars"]["all_quotient_familial_responses"] == "[REDACTED]"
+        assert stacktrace_frames[2]["vars"]["custodian"] == "[REDACTED]"
+
+        assert stacktrace_frames[3]["vars"]["custodian"] == "[REDACTED]"
+        assert stacktrace_frames[3]["vars"]["query_params"] == {
+            "anneeDateNaissance": "[REDACTED]",
+            "codeCogInseeCommuneNaissance": "[REDACTED]",
+            "codeCogInseePaysNaissance": "[REDACTED]",
+            "jourDateNaissance": "[REDACTED]",
+            "moisDateNaissance": "[REDACTED]",
+            "nomNaissance": "[REDACTED]",
+            "nomUsage": "[REDACTED]",
+            "prenoms[]": "[REDACTED]",
+            "recipient": "[REDACTED]",
+            "sexeEtatCivil": "[REDACTED]",
+        }
 
 
 def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_models.User:

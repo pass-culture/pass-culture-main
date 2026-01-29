@@ -32,6 +32,25 @@ NO_SAMPLE_RATE = 0.0
 
 SCRUBBED_INFO_PLACEHOLDER = "[REDACTED]"
 
+SCRUBBED_KEYS = (
+    "anneeDateNaissance",
+    "all_quotient_familial_responses",
+    "codeCogInseeCommuneNaissance",
+    "codeCogInseePaysNaissance",
+    "custodian",
+    "jourDateNaissance",
+    "moisDateNaissance",
+    "nomNaissance",
+    "nomUsage",
+    "prenoms[]",
+    "recipient",
+    "sexeEtatCivil",
+    "quotient_familial_response",
+    "recipient",
+)
+
+SCRUBBED_VALUE_PREFIXES = ("QuotientFamilialBonusCreditContent(",)
+
 
 class SpecificPath(enum.Enum):
     BACKOFFICE_HOME = f"{backoffice_blueprint.BACKOFFICE_WEB_BLUEPRINT_NAME}.home"
@@ -46,6 +65,23 @@ def scrub_token_from_url_in_event(event: "Event") -> "Event":
     return event
 
 
+def recursive_scrub_vars_dict(vars_dict: dict) -> dict:
+    r"""
+    Recursively obfuscate values inside `vars_dict` if their associated key is in `redacted_fields` list.
+
+    /!\ This function does modify values of source `vars_dict`
+    """
+    for key in list(vars_dict):
+        value = vars_dict[key]
+        if key in SCRUBBED_KEYS:
+            vars_dict[key] = SCRUBBED_INFO_PLACEHOLDER
+        elif isinstance(value, str) and any(value.startswith(prefix) for prefix in SCRUBBED_VALUE_PREFIXES):
+            vars_dict[key] = SCRUBBED_INFO_PLACEHOLDER
+        if isinstance(value, dict):
+            vars_dict[key] = recursive_scrub_vars_dict(value)
+    return vars_dict
+
+
 def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
     if _is_flask_shell_event():
         return None
@@ -54,6 +90,13 @@ def before_send(event: "Event", _hint: dict[str, typing.Any]) -> "Event | None":
 
     if custom_fingerprint := get_custom_fingerprint(_hint):
         event["fingerprint"] = ["{{ default }}", custom_fingerprint]
+
+    # Scrub exceptions vars
+    for exception_values in event.get("exception", {}).get("values", []):
+        for frame in exception_values.get("stacktrace", {}).get("frames", []):
+            if frame_vars := frame.get("vars"):
+                recursive_scrub_vars_dict(frame_vars)
+
     return event
 
 

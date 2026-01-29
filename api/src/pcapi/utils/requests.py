@@ -61,10 +61,27 @@ class ExternalAPIException(Exception):
 def _redact_url(url: str | None) -> str | None:
     if not url:
         return url
-    # Allociné and Cine Digital Service (CDS) want authentication token to appear in GET
-    # requests. We don't want to log them.
-    # For Allociné, the query param name is 'token'. For CDS, the name is 'api_token'
-    return re.sub("token=[^&^$]+", "token=[REDACTED]", url)
+    fields_to_redact = "|".join(  # Fields used in Particulier API queries
+        [
+            "recipient",
+            "nomNaissance",
+            "prenoms%5B%5D",  # prenoms%5B%5D unquoted ⇒ prenoms[]
+            "nomUsage",
+            "anneeDateNaissance",
+            "moisDateNaissance",
+            "jourDateNaissance",
+            "sexeEtatCivil",
+            "codeCogInseePaysNaissance",
+            "codeCogInseeCommuneNaissance",
+            "annee",
+            "mois",
+            # Allociné and Cine Digital Service (CDS) want authentication token to appear in GET
+            # requests. We don't want to log them.
+            # For Allociné, the query param name is 'token'. For CDS, the name is 'api_token'
+            "token",
+        ]
+    )
+    return re.sub(f"((?:{fields_to_redact})=)[^&]+", r"\1[REDACTED]", url)
 
 
 def _wrapper(
