@@ -7,19 +7,10 @@ import {
 } from './fixtures/searchCollectiveOffer'
 import { checkAccessibility } from './helpers/accessibility'
 import { expectCollectiveOffersAreFound } from './helpers/assertions'
+import { BOOKABLE_OFFERS_COLUMNS } from './helpers/constants'
 
 const INSTITUTION_NAME = 'COLLEGE 123'
 const FORMAT_NAME = 'Concert'
-
-const BOOKABLE_OFFERS_COLUMNS = [
-  '',
-  'Nom de l’offre',
-  'Dates',
-  'Prix et participants',
-  'Établissement',
-  'Localisation',
-  'Statut',
-]
 
 function collectiveFormatEventDate(date: string): string {
   return new Intl.DateTimeFormat('fr-FR', {
