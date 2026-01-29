@@ -2142,14 +2142,14 @@ tracing = ["opentelemetry-api (>=1.1.0,<2.0.0)"]
 
 [[package]]
 name = "google-cloud-tasks"
-version = "2.20.0"
+version = "2.21.0"
 description = "Google Cloud Tasks API client library"
 optional = false
 python-versions = ">=3.7"
 groups = ["main"]
 files = [
-    {file = "google_cloud_tasks-2.20.0-py3-none-any.whl", hash = "sha256:3d261a8d1f3ab90454b3e2780f484373031b0b6061506571190dc5c300768422"},
-    {file = "google_cloud_tasks-2.20.0.tar.gz", hash = "sha256:733cf440a25d34fe1cdb4e6c946d173bd83a2c22c3d7b2c76a24591f3c160412"},
+    {file = "google_cloud_tasks-2.21.0-py3-none-any.whl", hash = "sha256:4bf288876892a0afac30658fc42925ccb732d3c4433a8ea568de1d67fde738f2"},
+    {file = "google_cloud_tasks-2.21.0.tar.gz", hash = "sha256:d28f33248553faf0ff029e1981aab56cd13bd933635c3bc33aa187675e7e14d1"},
 ]
 
 [package.dependencies]
@@ -4190,6 +4190,9 @@ files = [
     {file = "psycopg-3.2.10-py3-none-any.whl", hash = "sha256:ab5caf09a9ec42e314a21f5216dbcceac528e0e05142e42eea83a3b28b320ac3"},
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
+
+[package.dependencies]
+tzdata = {version = "*", markers = "sys_platform == \"win32\""}
 
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6606,7 +6609,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\""}
+markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
 
 [[package]]
 name = "tzlocal"
@@ -7332,4 +7335,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "7eab5fff46e2fda32d95bc24182b6676ca32c551b62b76a3e813b4f730eacbf1"
+content-hash = "b081bbcf4a383e3700cdea940329b5d5367efc5078b079908d2a81bca2d5b4b2"

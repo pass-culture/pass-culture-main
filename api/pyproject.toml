@@ -36,7 +36,7 @@ google-api-python-client = "2.188.0"
 google-auth = "2.47.0"
 google-cloud-bigquery = "3.40.0"
 google-cloud-storage = "3.8.0"
-google-cloud-tasks = "2.20.0"
+google-cloud-tasks = "2.21.0"
 googleapis-common-protos = "^1.72.0"
 googlemaps = "^4.10.0"
 gql = { version = "4.0.0", extras = ["requests"] }
