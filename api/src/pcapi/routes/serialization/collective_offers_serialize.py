@@ -161,7 +161,6 @@ class ListCollectiveOffersResponseModel(ConfiguredBaseModel):
 
 class CollectiveOfferTemplateResponseModel(BaseCollectiveOfferResponseModel):
     allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
-    dates: CollectiveOfferDatesModel | None
 
     @classmethod
     def build(
@@ -351,6 +350,7 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[EacFormat]
+    dates: CollectiveOfferDatesModel | None
 
     class Config:
         allow_population_by_field_name = True
@@ -362,7 +362,6 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
 
 class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseModel):
     priceDetail: PriceDetail | None = Field(alias="educationalPriceDetail")
-    dates: CollectiveOfferDatesModel | None
     isTemplate: bool = True
     contactEmail: str | None
     contactPhone: str | None
@@ -415,7 +414,6 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     isPublicApi: bool
     provider: GetCollectiveOfferProviderResponseModel | None
     isTemplate: bool = False
-    dates: CollectiveOfferDatesModel | None
     allowedActions: list[educational_models.CollectiveOfferAllowedAction]
     history: collective_history_serialize.CollectiveOfferHistory
 
