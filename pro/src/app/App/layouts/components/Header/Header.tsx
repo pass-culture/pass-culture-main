@@ -9,6 +9,7 @@ import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
+  ButtonSize,
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
@@ -118,6 +119,7 @@ export const Header = forwardRef(
                   as="a"
                   variant={ButtonVariant.SECONDARY}
                   color={ButtonColor.BRAND}
+                  size={ButtonSize.SMALL}
                   to={isAdminArea ? '/accueil' : '/remboursements'}
                   iconPosition={IconPositionEnum.LEFT}
                   icon={isAdminArea ? fullBackIcon : strokeRepaymentIcon}

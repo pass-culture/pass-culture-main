@@ -105,6 +105,8 @@ export const ModalHighlight = ({
             logEvent(HighlightEvents.HAS_CLICKED_MORE_INFO_HIGHLIGHT)
           }
           label="En savoir plus sur les temps forts"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
         />
         <Button
           as="a"
@@ -116,6 +118,8 @@ export const ModalHighlight = ({
             logEvent(HighlightEvents.HAS_CLICKED_CALENDAR_HIGHLIGHT)
           }
           label="Voir tout le calendrier"
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
         />
       </div>
       <DialogBuilder.Footer>

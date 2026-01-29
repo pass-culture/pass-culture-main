@@ -91,7 +91,11 @@ export const Banner = ({
                         as="a"
                         variant={ButtonVariant.TERTIARY}
                         color={ButtonColor.NEUTRAL}
-                        size={ButtonSize.SMALL}
+                        size={
+                          size === 'default'
+                            ? ButtonSize.SMALL
+                            : ButtonSize.DEFAULT
+                        }
                         target={a.isExternal ? '_blank' : '_self'}
                         rel={a.isExternal ? 'noopener noreferrer' : undefined}
                         to={a.href}

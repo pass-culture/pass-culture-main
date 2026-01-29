@@ -129,41 +129,45 @@ export const OffererAuthenticationForm = (): JSX.Element => {
         />
       </FormLayout.Row>
       {shouldDisplayAddress && (
-        <FormLayout.Row>
-          <AddressSelect
-            {...register('addressAutocomplete')}
-            label={'Adresse postale'}
-            description={
-              watch('isOpenToPublic') === 'true'
-                ? 'Cette adresse postale sera visible.'
-                : 'Cette adresse postale ne sera pas visible.'
-            }
-            disabled={manuallySetAddress}
-            error={getFieldState('addressAutocomplete').error?.message}
-            onAddressChosen={(addressData) => {
-              setValue('street', addressData.address)
-              setValue('postalCode', addressData.postalCode)
-              setValue('city', addressData.city)
-              setValue('latitude', addressData.latitude)
-              setValue('longitude', addressData.longitude)
-              setValue('banId', addressData.id)
-              setValue('inseeCode', addressData.inseeCode)
-            }}
-          />
-          <Button
-            type="button"
-            variant={ButtonVariant.TERTIARY}
-            color={ButtonColor.NEUTRAL}
-            icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
-            onClick={toggleManuallySetAddress}
-            label={
-              manuallySetAddress
-                ? 'Revenir à la sélection automatique'
-                : 'Vous ne trouvez pas votre adresse ?'
-            }
-          />
-          {manuallySetAddress && <AddressManual />}
-        </FormLayout.Row>
+        <>
+          <FormLayout.Row>
+            <AddressSelect
+              {...register('addressAutocomplete')}
+              label={'Adresse postale'}
+              description={
+                watch('isOpenToPublic') === 'true'
+                  ? 'Cette adresse postale sera visible.'
+                  : 'Cette adresse postale ne sera pas visible.'
+              }
+              disabled={manuallySetAddress}
+              error={getFieldState('addressAutocomplete').error?.message}
+              onAddressChosen={(addressData) => {
+                setValue('street', addressData.address)
+                setValue('postalCode', addressData.postalCode)
+                setValue('city', addressData.city)
+                setValue('latitude', addressData.latitude)
+                setValue('longitude', addressData.longitude)
+                setValue('banId', addressData.id)
+                setValue('inseeCode', addressData.inseeCode)
+              }}
+            />
+          </FormLayout.Row>
+          <FormLayout.Row className={styles['manual-address-button']}>
+            <Button
+              type="button"
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
+              onClick={toggleManuallySetAddress}
+              label={
+                manuallySetAddress
+                  ? 'Revenir à la sélection automatique'
+                  : 'Vous ne trouvez pas votre adresse ?'
+              }
+            />
+            {manuallySetAddress && <AddressManual />}
+          </FormLayout.Row>
+        </>
       )}
     </FormLayout.Section>
   )

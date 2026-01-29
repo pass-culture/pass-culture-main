@@ -204,13 +204,12 @@ export function IndividualOfferSummaryDetailsScreen({
         <OfferAppPreview offer={offer} />
 
         {mode === OFFER_WIZARD_MODE.READ_ONLY && (
-          <div>
-            <DisplayOfferInAppLink
-              id={offer.id}
-              variant={ButtonVariant.SECONDARY}
-              label="Visualiser dans l’app"
-            />
-          </div>
+          <DisplayOfferInAppLink
+            id={offer.id}
+            variant={ButtonVariant.SECONDARY}
+            label="Visualiser dans l’app"
+            fullWidth
+          />
         )}
       </SummaryAside>
     </SummaryLayout>

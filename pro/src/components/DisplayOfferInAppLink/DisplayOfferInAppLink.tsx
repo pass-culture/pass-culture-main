@@ -15,7 +15,7 @@ interface DisplayOfferInAppLinkProps extends ButtonLinkProps {
 
 export const DisplayOfferInAppLink: FunctionComponent<
   DisplayOfferInAppLinkProps
-> = ({ id, label, icon, iconAlt, variant, onClick }) => {
+> = ({ id, label, icon, iconAlt, variant, onClick, fullWidth }) => {
   const offerPreviewUrl = `${WEBAPP_URL}/offre/${id}`
   const { logEvent } = useAnalytics()
 
@@ -46,6 +46,7 @@ export const DisplayOfferInAppLink: FunctionComponent<
 
         return false
       }}
+      fullWidth={fullWidth}
     />
   )
 }
