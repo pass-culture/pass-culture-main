@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
@@ -39,6 +40,11 @@ def apply_for_quotient_familial_bonus(quotient_familial_fraud_check: subscriptio
         quotient_familial_response = _get_user_quotient_familial_response(source_data.custodian, user)
     except api_particulier.ParticulierApiQuotientFamilialNotFound:
         reason_codes = [subscription_models.FraudReasonCode.CUSTODIAN_NOT_FOUND]
+    except Exception:
+        with atomic():
+            quotient_familial_fraud_check.updatedAt = datetime.datetime.now(tz=None)
+
+        raise
     else:
         status, reason_codes = _get_credit_bonus_status(user, quotient_familial_response.data)
 

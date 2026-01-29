@@ -10,6 +10,7 @@ import pcapi.core.users.models as users_models
 import pcapi.utils.cron as cron_decorators
 from pcapi import settings
 from pcapi.core.mails.transactional.users.ubble import reminder_emails
+from pcapi.core.subscription.bonus import tasks as bonus_tasks
 from pcapi.core.subscription.ubble.api import recover_pending_ubble_applications
 from pcapi.core.subscription.ubble.archive_past_identification_pictures import archive_past_identification_pictures
 from pcapi.models import db
@@ -122,3 +123,8 @@ def ubble_archive_past_identifications_automation() -> None:
     start_date = end_date - datetime.timedelta(days=186)
     archive_past_identification_pictures(start_date, end_date, picture_storage_status=None)
     archive_past_identification_pictures(start_date, end_date, picture_storage_status=False)
+
+
+@blueprint.cli.command("recover_started_quotient_familial_applications")
+def recover_started_quotient_familial_applications() -> None:
+    bonus_tasks.recover_started_quotient_familial_application()
