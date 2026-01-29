@@ -307,6 +307,20 @@ class GetQuotientFamilialTest:
             "sexeEtatCivil": "[REDACTED]",
         }
 
+    def test_touch_fraud_check_despite_error(self):
+        twelve_hours_ago = datetime.datetime.now(tz=None) - relativedelta(hours=12)
+        bonus_fraud_check = subscription_factories.BonusFraudCheckFactory.create(
+            status=subscription_models.FraudCheckStatus.STARTED, updatedAt=twelve_hours_ago
+        )
+
+        with requests_mock.Mocker() as mock:
+            mock.get(api_particulier.QUOTIENT_FAMILIAL_ENDPOINT, status_code=422)
+
+            with pytest.raises(api_particulier.ParticulierApiQueryError):
+                bonus_api.apply_for_quotient_familial_bonus(bonus_fraud_check)
+
+        assert bonus_fraud_check.updatedAt > twelve_hours_ago
+
 
 def _build_user_from_fixture(quotient_familial_json_response: dict) -> users_models.User:
     child_data = quotient_familial_json_response["data"]["enfants"][0]
