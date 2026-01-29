@@ -710,10 +710,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-5.0.0.tgz#037817b574262134cabd68fc4ec1a454f168407b"
   integrity sha512-PCqQV3c4CoVm3kdPhyeZ07VmBRdH2EpMFA/pd9OASpOEC3aXNGoqPDAZ80D0cLpMBxnmk0+yNhGsEx31hq7Gtw==
 
-"@cypress/grep@5.0.1":
-  version "5.0.1"
-  resolved "https://registry.yarnpkg.com/@cypress/grep/-/grep-5.0.1.tgz#5265d91c94a2759a2699fa999f49a1c2005365f4"
-  integrity sha512-4oyOiggHnjzIPadH7EQ9C96VDTpk0YPrvB3Jz6oER3VofHkJq4YJ9lIUT7w9gUdQ06nUfSRJ4iva5ex2y4gcEw==
+"@cypress/grep@5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@cypress/grep/-/grep-5.1.0.tgz#9ca3565f51fde6721e3c00a6bdddfbf34b42378a"
+  integrity sha512-n/8m5g2AuZf4thHhuo+rp7Fgkfm06k0uM9NlP0GrfWE5vaIJJ+8U10SOtjVj9bapjYI7l9RZiT87XSBU3wBFOA==
   dependencies:
     debug "^4.3.4"
     find-test-names "^1.28.18"
