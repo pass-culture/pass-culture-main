@@ -35,7 +35,7 @@
     flex-shrink: 0;
   }
 
-  @media (min-width: size.$tablet) {
+  @media (min-width: size.$laptop) {
     .burger-icon {
       display: none;
     }

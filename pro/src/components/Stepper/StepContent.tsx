@@ -6,28 +6,18 @@ import styles from './Stepper.module.scss'
 interface StepContentProps {
   step: Step
   stepIndex: number
-  stepsCount: number
-  stepperWidth?: number
 }
 
 export const StepContent = ({
   step,
   stepIndex,
-  stepsCount,
-  stepperWidth,
 }: StepContentProps): JSX.Element => {
   const stepContent = (
     <>
       <div className={styles['number']}>
         <div className={styles['inner']}>{stepIndex + 1}</div>
       </div>
-      <div
-        className={styles['label']}
-        style={{
-          //  Give a width to the label based on the total width available
-          width: `${(stepperWidth ?? stepsCount * 100) / (stepsCount + 1)}px`,
-        }}
-      >
+      <div className={styles['label']}>
         <div className={styles['inner']}>
           <span>{step.label}</span>
         </div>

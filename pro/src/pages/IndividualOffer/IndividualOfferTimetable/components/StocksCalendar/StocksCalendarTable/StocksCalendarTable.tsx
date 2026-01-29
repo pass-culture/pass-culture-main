@@ -31,6 +31,7 @@ import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { getPriceCategoryName } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { Table, TableVariant } from '@/ui-kit/Table/Table'
 
 import styles from './StocksCalendarTable.module.scss'
 import { StocksCalendarTableEditStock } from './StocksCalendarTableEditStock/StocksCalendarTableEditStock'
@@ -106,6 +107,67 @@ export function StocksCalendarTable({
     )
   }
 
+  const sampleData: any[] = [
+    {
+      id: 'beginningDate',
+      label: 'Dates',
+      render: (row) =>
+        row.beginningDatetime
+          ? formatLocalTimeDateString(
+              row.beginningDatetime,
+              departmentCode,
+              FORMAT_DD_MM_YYYY
+            )
+          : 'Date invalide',
+    },
+    {
+      id: 'date',
+      label: 'Horaire',
+      render: (row) =>
+        row.beginningDatetime
+          ? formatLocalTimeDateString(
+              row.beginningDatetime,
+              departmentCode,
+              FORMAT_HH_mm
+            )
+          : 'Horaire invalide',
+    },
+    {
+      id: 'priceCategory',
+      label: 'Tarif',
+      render: (row) =>
+        row ? getPriceCategoryName(row, isCaledonian) : 'Tarif invalide',
+    },
+    {
+      id: 'date',
+      label: 'Date limite de réservation',
+      render: (row) =>
+        row.bookingLimitDatetime
+          ? formatLocalTimeDateString(
+              row.bookingLimitDatetime,
+              departmentCode,
+              FORMAT_DD_MM_YYYY
+            )
+          : 'Date invalide',
+    },
+    {
+      id: 'bookingsQuantity',
+      label: 'Places restantes',
+      render: (row) => {
+        row.quantity === null
+          ? 'Illimité'
+          : mode === OFFER_WIZARD_MODE.CREATION
+            ? row.quantity
+            : (row.quantity || 0) - row.bookingsQuantity
+      },
+    },
+    {
+      id: 'date',
+      label: 'Réservations',
+      render: (row) => row.date,
+    },
+  ]
+
   return (
     <div className={styles['container']}>
       {/* The dialog must be outside of the table rows, otherwise radix created a dialog root for each line */}
@@ -151,6 +213,30 @@ export function StocksCalendarTable({
           />
         </div>
       )}
+
+      <Table
+        columns={sampleData}
+        data={stocks}
+        isLoading={false}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message:
+            'Vous pouvez modifier vos filtres pour lancer une nouvelle recherche',
+          subtitle: undefined,
+          resetMessage: undefined,
+          onFilterReset: (): void => {
+            throw new Error('Function not implemented.')
+          },
+        }}
+        noData={{
+          hasNoData: false,
+          message: {
+            icon: '',
+            title: '',
+            subtitle: '',
+          },
+        }}
+      ></Table>
       <table className={styles['table']}>
         <thead className={styles['thead']}>
           <tr>

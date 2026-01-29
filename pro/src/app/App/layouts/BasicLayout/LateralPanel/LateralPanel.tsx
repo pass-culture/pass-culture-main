@@ -86,6 +86,13 @@ export const LateralPanel = ({
               [styles['lateral-panel-nav-open']]: isOpen,
             })}
           >
+            <SvgIcon
+              alt="Pass Culture pro, l’espace des acteurs culturels"
+              src={logoPassCultureProIcon}
+              viewBox="0 0 119 40"
+              width="119"
+              className={styles['lateral-panel-logo']}
+            />
             <Button
               aria-expanded={isOpen}
               variant={ButtonVariant.TERTIARY}
@@ -98,13 +105,6 @@ export const LateralPanel = ({
               aria-controls="lateral-panel"
               ref={closeButtonRef}
               icon={strokeCloseIcon}
-            />
-            <SvgIcon
-              alt="Pass Culture pro, l’espace des acteurs culturels"
-              src={logoPassCultureProIcon}
-              viewBox="0 0 119 40"
-              width="119"
-              className={styles['lateral-panel-logo']}
             />
           </div>
         )}
