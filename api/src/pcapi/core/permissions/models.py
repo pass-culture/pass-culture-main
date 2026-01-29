@@ -113,7 +113,7 @@ def sync_enum_with_db_field(
     session: sa_orm.scoped_session[flask_sqlalchemy.session.Session],
     py_enum: type[enum.Enum],
     py_attr: str,
-    db_class: type[Model],
+    db_class: type["Permission"] | type["Role"],
 ) -> None:
     db_values = set(p.name for p in session.query(db_class.name).all())
     py_values = set(getattr(e, py_attr) for e in py_enum)

@@ -792,8 +792,6 @@ def create_offer_request(
     db.session.add(request)
     db.session.flush()
 
-    request.email = redactor.email
-
     transactional_mails.send_new_request_made_by_redactor_to_pro(request)
     on_commit(
         partial(

@@ -144,12 +144,11 @@ class AnonymizeNonProNonBeneficiaryUsersTest:
         assert user_to_anonymize.externalIds == {}
         assert user_to_anonymize.idPieceNumber is None
         assert user_to_anonymize.login_device_history == []
-        assert user_to_anonymize.user_email_history == []
+        assert user_to_anonymize.email_history == []
         assert user_to_anonymize.irisFrance == iris
         assert user_to_anonymize.validatedBirthDate.day == 1
         assert user_to_anonymize.validatedBirthDate.month == 1
         assert user_to_anonymize.roles == [users_models.UserRole.ANONYMIZED]
-        assert user_to_anonymize.login_device_history == []
         assert user_to_anonymize.trusted_devices == []
         assert len(user_to_anonymize.action_history) == 1
         assert user_to_anonymize.action_history[0].actionType == history_models.ActionType.USER_ANONYMIZED

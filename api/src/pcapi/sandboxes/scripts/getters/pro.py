@@ -195,6 +195,7 @@ def create_adage_environment() -> dict:
         institution=educational_institution,
         venue__name="Mon lieu collectif",
     )
+    assert newOfferer.venue  # helps mypy
     educational_factories.EducationalDepositFactory.create(
         educationalInstitution=educational_institution,
         educationalYear=current_year,

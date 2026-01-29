@@ -87,7 +87,7 @@ def send_commercial_gesture_email(finance_incident: finance_models.FinanceIncide
     booking_email = venue.bookingEmail
 
     offers_incidents: dict[
-        bookings_models.Booking | educational_models.CollectiveBooking, list[finance_models.BookingFinanceIncident]
+        offers_models.Offer | educational_models.CollectiveOffer, list[finance_models.BookingFinanceIncident]
     ] = {}
     for booking_finance_incident in finance_incident.booking_finance_incidents:
         booking = booking_finance_incident.booking or booking_finance_incident.collectiveBooking

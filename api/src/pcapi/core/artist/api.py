@@ -44,13 +44,13 @@ def get_artist_image_url(artist: Artist) -> str | None:
 
 
 def create_artist_offer_link(offer_id: int, artist_offer_link: artist_serialize.ArtistOfferLinkBodyModel) -> None:
-    artist_offer_link = models.ArtistOfferLink(
+    link = models.ArtistOfferLink(
         offer_id=offer_id,
         artist_id=artist_offer_link.artist_id,
         artist_type=artist_offer_link.artist_type,
         custom_name=artist_offer_link.custom_name,
     )
-    db.session.add(artist_offer_link)
+    db.session.add(link)
 
     try:
         db.session.flush()

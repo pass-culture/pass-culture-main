@@ -1158,7 +1158,7 @@ def _get_collective_offer_template_by_id_for_adage_base_query() -> sa_orm.Query[
     )
 
 
-def get_collective_offer_template_by_id_for_adage(offer_id: int) -> models.CollectiveOffer:
+def get_collective_offer_template_by_id_for_adage(offer_id: int) -> models.CollectiveOfferTemplate:
     query = _get_collective_offer_template_by_id_for_adage_base_query()
     return query.filter(models.CollectiveOfferTemplate.id == offer_id).populate_existing().one()
 

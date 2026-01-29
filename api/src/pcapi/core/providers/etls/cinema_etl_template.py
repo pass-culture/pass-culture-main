@@ -179,7 +179,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         self,
         loadable_movie: LoadableMovie,
         price_category_labels_by_label: dict[str, offers_models.PriceCategoryLabel],
-    ) -> tuple[offers_models.Model, tuple[offers_models.Product, str] | None]:
+    ) -> tuple[offers_models.Offer, tuple[offers_models.Product, str] | None]:
         """
         This method does 3 things :
             1. Upsert movie product

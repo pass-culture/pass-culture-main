@@ -41,8 +41,8 @@ def create_offers_with_artists() -> None:
         # Book offer, just 1 artist link, linked to an Artist()
         author_artist = artist_factories.ArtistFactory()
         artist_factories.ArtistOfferLinkFactory(
-            artist_id=author_artist.id,
-            offer_id=book_offer.id,
+            artist=author_artist,
+            offer=book_offer,
             artist_type=artist_models.ArtistType.AUTHOR,
         )
 
@@ -50,25 +50,25 @@ def create_offers_with_artists() -> None:
         # + 1 stage director not linked to an Artist
         # + 2 performers, 1 linked to an Artist, 1 not linked
         artist_factories.ArtistOfferLinkFactory(
-            artist_id=author_artist.id,
-            offer_id=theater_offer.id,
+            artist=author_artist,
+            offer=theater_offer,
             artist_type=artist_models.ArtistType.AUTHOR,
         )
         stage_director_artist = artist_factories.ArtistFactory()
         artist_factories.ArtistOfferLinkFactory(
-            artist_id=stage_director_artist.id,
-            offer_id=theater_offer.id,
+            artist=stage_director_artist,
+            offer=theater_offer,
             artist_type=artist_models.ArtistType.STAGE_DIRECTOR,
         )
         performer_artist = artist_factories.ArtistFactory()
         artist_factories.ArtistOfferLinkFactory(
-            artist_id=performer_artist.id,
-            offer_id=theater_offer.id,
+            artist=performer_artist,
+            offer=theater_offer,
             artist_type=artist_models.ArtistType.PERFORMER,
         )
         artist_factories.ArtistOfferLinkFactory(
             custom_name="Michelle Vedette",
-            offer_id=theater_offer.id,
+            offer=theater_offer,
             artist_type=artist_models.ArtistType.PERFORMER,
         )
 

@@ -501,7 +501,9 @@ def create_offers_base_list(
     return offers, templates
 
 
-def add_image_to_offer(offer: educational_models.HasImageMixin, image_name: str) -> None:
+def add_image_to_offer(
+    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate, image_name: str
+) -> None:
     with open(
         f"./src/pcapi/sandboxes/thumbs/collectif/{image_name}",
         mode="rb",

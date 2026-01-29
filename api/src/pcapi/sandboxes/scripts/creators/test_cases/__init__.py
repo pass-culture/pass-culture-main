@@ -881,17 +881,17 @@ def create_highlight_criterion_category() -> None:
 def create_venues_across_cities() -> None:
     venues_by_city = [venues_mock.paris_venues, venues_mock.lyon_venues, venues_mock.mayotte_venues]
     for venues_list in venues_by_city:
-        for venue, venue_type_code in zip(venues_list, offerers_models.VenueTypeCode):
+        for city_venue, venue_type_code in zip(venues_list, offerers_models.VenueTypeCode):
             venue = offerers_factories.VenueFactory.create(
-                name=venue["city"] + "-" + venue["name"],
+                name=city_venue["city"] + "-" + city_venue["name"],
                 venueTypeCode=venue_type_code,
-                offererAddress__address__latitude=venue["latitude"],
-                offererAddress__address__longitude=venue["longitude"],
-                offererAddress__address__street=venue["address"],
-                offererAddress__address__postalCode=venue["postalCode"],
-                offererAddress__address__city=venue["city"],
-                offererAddress__address__departmentCode=venue["departementCode"],
-                offererAddress__address__banId=venue["banId"],
+                offererAddress__address__latitude=city_venue["latitude"],
+                offererAddress__address__longitude=city_venue["longitude"],
+                offererAddress__address__street=city_venue["address"],
+                offererAddress__address__postalCode=city_venue["postalCode"],
+                offererAddress__address__city=city_venue["city"],
+                offererAddress__address__departmentCode=city_venue["departementCode"],
+                offererAddress__address__banId=city_venue["banId"],
             )
             for _ in range(7):
                 offer = offers_factories.OfferFactory.create(

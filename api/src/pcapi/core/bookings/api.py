@@ -1117,15 +1117,15 @@ def auto_mark_as_used_after_event() -> None:
         )
     )
     n_collective_bookings_updated = 0
-    for booking in collective_bookings:
+    for collective_booking in collective_bookings:
         finance_api.add_event(
             finance_models.FinanceEventMotive.BOOKING_USED,
-            booking=booking,
+            booking=collective_booking,
         )
         n_collective_bookings_updated += 1
         educational_utils.log_information_for_data_purpose(
             event_name="BookingUsed",
-            extra_data={"bookingId": booking.id, "stockId": booking.collectiveStockId},
+            extra_data={"bookingId": collective_booking.id, "stockId": collective_booking.collectiveStockId},
             uai=None,
             user_role=None,
         )

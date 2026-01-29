@@ -2033,6 +2033,10 @@ class CollectiveOfferRequest(PcObject, models.Model):
     def _phoneNumberExpression(cls) -> sa_orm.InstrumentedAttribute[str | None]:
         return cls._phoneNumber
 
+    @property
+    def email(self) -> str:
+        return self.educationalRedactor.email
+
 
 class NationalProgram(PcObject, models.Model):
     """

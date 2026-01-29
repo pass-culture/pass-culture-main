@@ -1755,7 +1755,9 @@ class OfferReport(PcObject, Model):
     )
 
     def __str__(self) -> str:
-        return f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.when}"
+        return (
+            f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.reportedAt}"
+        )
 
 
 class BookMacroSection(PcObject, Model):
