@@ -1059,7 +1059,6 @@ def create_venue(offerer_id: int) -> utils.BackofficeResponse:
         isOpenToPublic=False,
     )
     venue = offerers_api.create_venue(venue_creation_info, current_user, address=attachment_address)
-    venue.isPermanent = True
     db.session.add(venue)
     offerers_api.link_venue_to_pricing_point(venue, attachment_venue.id)
 

@@ -256,18 +256,16 @@ class CreateVenueTest:
         venue = db.session.query(offerers_models.Venue).one()
         assert venue.isPermanent is True
 
-    def test_venue_is_not_permanent_when_created_without_siret_nor_is_open_to_public(self):
+    def test_create_venue_closed_to_public_should_be_permanent(self):
         user_offerer = offerers_factories.UserOffererFactory()
         init_data = self.base_data(user_offerer.offerer) | {
-            "siret": None,
-            "comment": "no siret",
             "isOpenToPublic": False,
         }
         data = venues_serialize.PostVenueBodyModel(**init_data)
         offerers_api.create_venue(data, user_offerer.user)
 
         venue = db.session.query(offerers_models.Venue).one()
-        assert venue.isPermanent is False
+        assert venue.isPermanent is True
 
     def test_venue_with_no_siret_has_no_pricing_point(self):
         user_offerer = offerers_factories.UserOffererFactory()

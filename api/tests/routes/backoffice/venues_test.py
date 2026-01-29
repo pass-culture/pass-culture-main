@@ -899,41 +899,6 @@ class UpdateVenueTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["params"]["VENUE_NAME"] == venue.common_name
         assert mails_testing.outbox[0]["params"]["VENUE_FORM_URL"] == urls.build_pc_pro_venue_link(venue)
 
-    @pytest.mark.parametrize(
-        "old_isPermanent,new_isPermanent,old_isOpenToPublic,new_isOpenToPublic",
-        [(False, True, False, False), (True, False, True, False)],
-    )
-    def test_update_venue_is_permanent_keep_is_open_to_public_consistancy(
-        self, authenticated_client, old_isPermanent, new_isPermanent, old_isOpenToPublic, new_isOpenToPublic
-    ):
-        offerer = offerers_factories.OffererFactory(siren="123456789")
-        contact_email = "contact.venue@example.com"
-        website = "update.venue@example.com"
-        social_medias = {"instagram": "https://instagram.com/update.venue"}
-        venue = offerers_factories.VenueFactory(
-            siret="12345678900012",
-            managingOfferer=offerer,
-            contact__email=contact_email,
-            contact__website=website,
-            contact__social_medias=social_medias,
-            name="Venue Name",
-            isOpenToPublic=old_isOpenToPublic,
-            isPermanent=old_isPermanent,
-        )
-
-        data = self._get_current_data(venue)
-        data["is_permanent"] = new_isPermanent
-
-        response = self.post_to_endpoint(authenticated_client, venue_id=venue.id, form=data)
-
-        assert response.status_code == 303
-        assert response.location == url_for("backoffice_web.venue.get", venue_id=venue.id)
-
-        db.session.refresh(venue)
-
-        assert venue.isPermanent == new_isPermanent
-        assert venue.isOpenToPublic == new_isOpenToPublic
-
     def test_update_venue_location_with_offerer_address_not_manual(self, authenticated_client, offerer):
         contact_email = "contact.venue@example.com"
         website = "update.venue@example.com"
@@ -2031,10 +1996,6 @@ class UpdateVenueTest(PostEndpointHelper):
                 "accessibilityProvider.externalAccessibilityUrl": {
                     "new_info": None,
                     "old_info": "https://acceslibre.beta.gouv.fr/erps/mon-slug/",
-                },
-                "isOpenToPublic": {
-                    "new_info": False,
-                    "old_info": True,
                 },
                 "isPermanent": {
                     "new_info": False,

@@ -142,14 +142,6 @@ def update_venue(
 ) -> models.Venue:
     new_open_to_public = not venue.isOpenToPublic and modifications.get("isOpenToPublic")
 
-    # TODO: (pcharlet 2025-04-02) Remove the next 5 lines when regularisation is done.
-    # We need consistent informations between isPermanent and isOpenToPublic during regularisation. isPermanent will be removed.
-    not_permanent_anymore = venue.isPermanent and modifications.get("isPermanent") is False
-    if new_open_to_public and not venue.isPermanent:
-        modifications["isPermanent"] = True
-    elif not_permanent_anymore and venue.isOpenToPublic:
-        modifications["isOpenToPublic"] = False
-
     has_address_changed = (
         location_modifications.get("banId", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
         or location_modifications.get("postalCode", offerers_constants.UNCHANGED) is not offerers_constants.UNCHANGED
@@ -504,8 +496,8 @@ def create_venue(
 
     if venue.siret:
         link_venue_to_pricing_point(venue, pricing_point_id=venue.id)
-    if venue.siret or venue.isOpenToPublic:
-        venue.isPermanent = True
+
+    venue.isPermanent = True
 
     on_commit(functools.partial(search.async_index_venue_ids, [venue.id], reason=IndexationReason.VENUE_CREATION))
     external_attributes_api.update_external_pro(venue.bookingEmail)
