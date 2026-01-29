@@ -85,7 +85,7 @@
     "@storybook/react-vite": "9.1.17",
     "@testing-library/cypress": "10.1.0",
     "@testing-library/jest-dom": "6.9.1",
-    "@testing-library/react": "16.3.1",
+    "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
     "@types/dompurify": "3.2.0",
     "@types/node": "25.0.8",
