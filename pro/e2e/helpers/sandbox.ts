@@ -97,3 +97,47 @@ export async function createProUserWithActiveCollectiveOffer(
     `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_active_collective_offer`
   )
 }
+
+export async function createProUserWithVirtualOffer(
+  request: APIRequestContext
+): Promise<ProUserData> {
+  return await sandboxCall<ProUserData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_with_virtual_offer`
+  )
+}
+
+export interface ProUserWithOffererData {
+  user: {
+    email: string
+  }
+  siren: string
+}
+
+export interface ProUserWithOffererAndVenueData {
+  user: {
+    email: string
+  }
+  siret: string
+}
+
+export async function createNewProUserAndOfferer(
+  request: APIRequestContext
+): Promise<ProUserWithOffererData> {
+  return await sandboxCall<ProUserWithOffererData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_new_pro_user_and_offerer`
+  )
+}
+
+export async function createNewProUserAndOffererWithVenue(
+  request: APIRequestContext
+): Promise<ProUserWithOffererAndVenueData> {
+  return await sandboxCall<ProUserWithOffererAndVenueData>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_new_pro_user_and_offerer_with_venue`
+  )
+}

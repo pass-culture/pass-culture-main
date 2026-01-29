@@ -1,35 +1,12 @@
 import { expect, request as playwrightRequest, test } from '@playwright/test'
 
+import { MOCKED_BACK_ADDRESS_LABEL, mockAddressSearch } from './helpers/address'
 import { login } from './helpers/auth'
+import { setFeatureFlags } from './helpers/features'
 import { BASE_API_URL, createNewProUser } from './helpers/sandbox'
-
-const MOCKED_BACK_ADDRESS_LABEL = '3 Rue de Valois 75001 Paris'
-const MOCKED_BACK_ADDRESS_STREET = '3 RUE DE VALOIS'
 
 const newVenueName = 'First Venue'
 const mySiret = '92345678912345'
-
-interface Feature {
-  name: string
-  isActive: boolean
-}
-
-async function setFeatureFlags(
-  requestContext: Awaited<ReturnType<typeof playwrightRequest.newContext>>,
-  features: Feature[]
-): Promise<void> {
-  const response = await requestContext.patch(
-    `${BASE_API_URL}/testing/features`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-      },
-      data: { features },
-    }
-  )
-  expect(response.status()).toBe(204)
-}
 
 test.describe('Signup journey with not diffusible offerer siret', () => {
   test.beforeEach(async ({ page }) => {
@@ -102,49 +79,7 @@ test.describe('Signup journey with not diffusible offerer siret', () => {
   test('I should be able to sign up with a new account and create a new offerer with a not diffusible siret with an address', async ({
     page,
   }) => {
-    await page.route(
-      'https://data.geopf.fr/geocodage/search/?limit=5&q=*',
-      (route) => {
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({
-            type: 'FeatureCollection',
-            version: 'draft',
-            features: [
-              {
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [2.3056966, 48.8716934],
-                },
-                properties: {
-                  label: MOCKED_BACK_ADDRESS_LABEL,
-                  score: 0.97351,
-                  housenumber: '89',
-                  id: '75108_5194_00089',
-                  name: MOCKED_BACK_ADDRESS_STREET,
-                  postcode: '75008',
-                  citycode: '75108',
-                  x: 649261.94,
-                  y: 6863742.69,
-                  city: 'Paris',
-                  district: 'Paris 8e Arrondissement',
-                  context: '75, Paris, Île-de-France',
-                  type: 'housenumber',
-                  importance: 0.70861,
-                  street: MOCKED_BACK_ADDRESS_STREET,
-                },
-              },
-            ],
-            attribution: 'BAN',
-            licence: 'ETALAB-2.0',
-            query: MOCKED_BACK_ADDRESS_LABEL,
-            limit: 5,
-          }),
-        })
-      }
-    )
+    await mockAddressSearch(page)
 
     await expect(page).toHaveURL(/\/inscription\/structure\/recherche/)
     await page.getByLabel(/Numéro de SIRET à 14 chiffres/).fill(mySiret)
