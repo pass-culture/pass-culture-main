@@ -5,44 +5,98 @@
                 "additionalProperties": false,
                 "properties": {
                     "audioDisability": {
-                        "$ref": "#/components/schemas/AudioDisability"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AudioDisability"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
                     },
                     "isAccessibleAudioDisability": {
-                        "title": "Isaccessibleaudiodisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": false,
+                        "title": "Isaccessibleaudiodisability"
                     },
                     "isAccessibleMentalDisability": {
-                        "title": "Isaccessiblementaldisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": false,
+                        "title": "Isaccessiblementaldisability"
                     },
                     "isAccessibleMotorDisability": {
-                        "title": "Isaccessiblemotordisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": false,
+                        "title": "Isaccessiblemotordisability"
                     },
                     "isAccessibleVisualDisability": {
-                        "title": "Isaccessiblevisualdisability",
-                        "type": "boolean"
+                        "anyOf": [
+                            {
+                                "type": "boolean"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": false,
+                        "title": "Isaccessiblevisualdisability"
                     },
                     "mentalDisability": {
-                        "$ref": "#/components/schemas/MentalDisability"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MentalDisability"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
                     },
                     "motorDisability": {
-                        "$ref": "#/components/schemas/MotorDisability"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/MotorDisability"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
                     },
                     "visualDisability": {
-                        "$ref": "#/components/schemas/VisualDisability"
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/VisualDisability"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
                     }
                 },
-                "required": [
-                    "isAccessibleMotorDisability",
-                    "isAccessibleAudioDisability",
-                    "isAccessibleVisualDisability",
-                    "isAccessibleMentalDisability",
-                    "audioDisability",
-                    "mentalDisability",
-                    "motorDisability",
-                    "visualDisability"
-                ],
                 "title": "AccessibilityData",
                 "type": "object"
             },
@@ -6239,39 +6293,7 @@
                 "additionalProperties": false,
                 "properties": {
                     "accessibilityData": {
-                        "anyOf": [
-                            {
-                                "$ref": "#/components/schemas/AccessibilityData"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null
-                    },
-                    "accessibilityId": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Accessibilityid"
-                    },
-                    "accessibilityUrl": {
-                        "anyOf": [
-                            {
-                                "type": "string"
-                            },
-                            {
-                                "type": "null"
-                            }
-                        ],
-                        "default": null,
-                        "title": "Accessibilityurl"
+                        "$ref": "#/components/schemas/AccessibilityData"
                     },
                     "activity": {
                         "anyOf": [
@@ -6349,6 +6371,41 @@
                         ],
                         "default": null,
                         "title": "Description"
+                    },
+                    "externalAccessibilityData": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/AccessibilityData"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null
+                    },
+                    "externalAccessibilityId": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalaccessibilityid"
+                    },
+                    "externalAccessibilityUrl": {
+                        "anyOf": [
+                            {
+                                "type": "string"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ],
+                        "default": null,
+                        "title": "Externalaccessibilityurl"
                     },
                     "id": {
                         "title": "Id",
@@ -6446,6 +6503,7 @@
                 },
                 "required": [
                     "id",
+                    "accessibilityData",
                     "activity",
                     "isOpenToPublic",
                     "isPermanent",

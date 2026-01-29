@@ -13,6 +13,14 @@ class VenueContact(HttpBodyModel):
     website: str | None = None
 
 
+class AudioDisability(HttpBodyModel):
+    deafAndHardOfHearing: list[str]
+
+
+class MentalDisability(HttpBodyModel):
+    trainedPersonnel: str
+
+
 class MotorDisability(HttpBodyModel):
     facilities: str
     exterior: str
@@ -20,42 +28,35 @@ class MotorDisability(HttpBodyModel):
     parking: str
 
 
-class AudioDisability(HttpBodyModel):
-    deafAndHardOfHearing: list[str]
-
-
 class VisualDisability(HttpBodyModel):
     soundBeacon: str
     audioDescription: list[str]
 
 
-class MentalDisability(HttpBodyModel):
-    trainedPersonnel: str
-
-
 class AccessibilityData(HttpBodyModel):
-    isAccessibleMotorDisability: bool
-    isAccessibleAudioDisability: bool
-    isAccessibleVisualDisability: bool
-    isAccessibleMentalDisability: bool
-    audioDisability: AudioDisability
-    mentalDisability: MentalDisability
-    motorDisability: MotorDisability
-    visualDisability: VisualDisability
+    is_accessible_audio_disability: bool | None = False
+    is_accessible_mental_disability: bool | None = False
+    is_accessible_motor_disability: bool | None = False
+    is_accessible_visual_disability: bool | None = False
+    audio_disability: AudioDisability | None = None
+    mental_disability: MentalDisability | None = None
+    motor_disability: MotorDisability | None = None
+    visual_disability: VisualDisability | None = None
 
 
 class VenueResponse(HttpBodyModel):
     id: int
+    accessibility_data: AccessibilityData
     activity: offerers_models.Activity | None
-    accessibility_data: AccessibilityData | None = None
-    accessibility_id: str | None = None
-    accessibility_url: str | None = None
     banner_credit: str | None = None
     banner_is_from_google: bool = False
     banner_url: pydantic_v2.HttpUrl | None = None
     contact: VenueContact | None = None
     city: str | None = None
     description: str | None = None
+    external_accessibility_data: AccessibilityData | None = None
+    external_accessibility_id: str | None = None
+    external_accessibility_url: str | None = None
     is_open_to_public: bool
     is_permanent: bool
     latitude: float | None = None
@@ -69,19 +70,25 @@ class VenueResponse(HttpBodyModel):
 
     @classmethod
     def build(cls, venue: offerers_models.Venue) -> "VenueResponse":
-        accessibility_data = None
-        accessibility_id = None
-        accessibility_url = None
+        external_accessibility_data = None
+        external_accessibility_id = None
+        external_accessibility_url = None
         banner_credit = None
         banner_is_from_google = False
+        accessibility_data = AccessibilityData(
+            is_accessible_audio_disability=venue.audioDisabilityCompliant,
+            is_accessible_mental_disability=venue.mentalDisabilityCompliant,
+            is_accessible_motor_disability=venue.motorDisabilityCompliant,
+            is_accessible_visual_disability=venue.visualDisabilityCompliant,
+        )
         if venue.accessibilityProvider:
-            accessibility_data = AccessibilityData.model_validate(
+            external_accessibility_data = AccessibilityData.model_validate(
                 acceslibre_serializers.ExternalAccessibilityDataModel.from_accessibility_infos(
                     venue.accessibilityProvider.externalAccessibilityData
                 ),
             )
-            accessibility_id = venue.accessibilityProvider.externalAccessibilityId
-            accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
+            external_accessibility_id = venue.accessibilityProvider.externalAccessibilityId
+            external_accessibility_url = venue.accessibilityProvider.externalAccessibilityUrl
 
         if venue.bannerMeta:
             banner_credit = venue.bannerMeta.get("image_credit")
@@ -92,16 +99,17 @@ class VenueResponse(HttpBodyModel):
 
         return cls(
             id=venue.id,
-            accessibility_data=accessibility_data,
-            accessibility_id=accessibility_id,
-            accessibility_url=accessibility_url,
             activity=venue.activity,
             banner_credit=banner_credit,
             banner_is_from_google=banner_is_from_google,
             banner_url=venue.bannerUrl,
+            accessibility_data=accessibility_data,
             city=venue.offererAddress.address.city,
             contact=VenueContact.model_validate(venue.contact) if venue.contact else None,
             description=venue.description,
+            external_accessibility_data=external_accessibility_data,
+            external_accessibility_id=external_accessibility_id,
+            external_accessibility_url=external_accessibility_url,
             is_open_to_public=venue.isOpenToPublic,
             is_permanent=venue.isPermanent,
             latitude=latitude,

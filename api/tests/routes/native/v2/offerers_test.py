@@ -54,33 +54,15 @@ class GetVenueTest:
         assert response.json == {
             "id": venue.id,
             "accessibilityData": {
-                "isAccessibleMotorDisability": True,
-                "isAccessibleAudioDisability": True,
-                "isAccessibleVisualDisability": True,
-                "isAccessibleMentalDisability": False,
-                "motorDisability": {
-                    "facilities": acceslibre_enum.FACILITIES_UNADAPTED.value,
-                    "exterior": acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR.value,
-                    "entrance": acceslibre_enum.ENTRANCE_ELEVATOR.value,
-                    "parking": acceslibre_enum.PARKING_NEARBY.value,
-                },
-                "audioDisability": {
-                    "deafAndHardOfHearing": [
-                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value,
-                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value,
-                    ]
-                },
-                "visualDisability": {
-                    "soundBeacon": acceslibre_enum.UNKNOWN.value,
-                    "audioDescription": [
-                        acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value,
-                        acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value,
-                    ],
-                },
-                "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
+                "isAccessibleMotorDisability": venue.audioDisabilityCompliant,
+                "isAccessibleAudioDisability": venue.mentalDisabilityCompliant,
+                "isAccessibleVisualDisability": venue.motorDisabilityCompliant,
+                "isAccessibleMentalDisability": venue.visualDisabilityCompliant,
+                "audioDisability": None,
+                "mentalDisability": None,
+                "motorDisability": None,
+                "visualDisability": None,
             },
-            "accessibilityId": venue.accessibilityProvider.externalAccessibilityId,
-            "accessibilityUrl": venue.accessibilityProvider.externalAccessibilityUrl,
             "activity": venue.activity.name,
             "bannerCredit": "Wikimedia Commons CC By",
             "bannerIsFromGoogle": False,
@@ -93,6 +75,34 @@ class GetVenueTest:
                 "socialMedias": venue.contact.social_medias,
             },
             "description": venue.description,
+            "externalAccessibilityData": {
+                "isAccessibleMotorDisability": True,
+                "isAccessibleAudioDisability": True,
+                "isAccessibleVisualDisability": True,
+                "isAccessibleMentalDisability": False,
+                "audioDisability": {
+                    "deafAndHardOfHearing": [
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_PORTABLE_INDUCTION_LOOP.value,
+                        acceslibre_enum.DEAF_AND_HARD_OF_HEARING_SUBTITLE.value,
+                    ]
+                },
+                "mentalDisability": {"trainedPersonnel": acceslibre_enum.PERSONNEL_UNTRAINED.value},
+                "motorDisability": {
+                    "facilities": acceslibre_enum.FACILITIES_UNADAPTED.value,
+                    "exterior": acceslibre_enum.EXTERIOR_ACCESS_ELEVATOR.value,
+                    "entrance": acceslibre_enum.ENTRANCE_ELEVATOR.value,
+                    "parking": acceslibre_enum.PARKING_NEARBY.value,
+                },
+                "visualDisability": {
+                    "soundBeacon": acceslibre_enum.UNKNOWN.value,
+                    "audioDescription": [
+                        acceslibre_enum.AUDIODESCRIPTION_NO_DEVICE.value,
+                        acceslibre_enum.AUDIODESCRIPTION_OCCASIONAL.value,
+                    ],
+                },
+            },
+            "externalAccessibilityId": venue.accessibilityProvider.externalAccessibilityId,
+            "externalAccessibilityUrl": venue.accessibilityProvider.externalAccessibilityUrl,
             "isOpenToPublic": venue.isOpenToPublic,
             "isPermanent": venue.isPermanent,
             "latitude": float(venue.offererAddress.address.latitude),
