@@ -74,9 +74,9 @@ class EditAccountForm(utils.PCForm):
         has_manual_editing=True,
         limit=10,
     )
-    street = fields.PCOptHiddenField("Adresse")
-    postal_code = fields.PCOptPostalCodeHiddenField("Code postal")
-    city = fields.PCOptHiddenField("Ville")
+    street = fields.PCOptStringField("Adresse", initially_hidden=True)
+    postal_code = fields.PCOptPostalCodeField("Code postal", initially_hidden=True)
+    city = fields.PCOptStringField("Ville", initially_hidden=True)
     marketing_email_subscription = fields.PCSwitchBooleanField("Abonné aux emails marketing", full_row=True)
 
 

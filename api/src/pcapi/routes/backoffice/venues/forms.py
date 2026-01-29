@@ -56,29 +56,33 @@ class EditVenueForm(EditVirtualVenueForm):
         has_manual_editing=True,
         limit=10,
     )
-    street = fields.PCHiddenField(
+    street = fields.PCStringField(
         "Adresse",
+        initially_hidden=True,
         validators=(
             wtforms.validators.Length(
                 min=1, max=200, message="L'adresse doit contenir entre %(min)d et %(max)d caractères"
             ),
         ),
     )
-    postal_code = fields.PCPostalCodeHiddenField("Code postal")  # match Address.postalCode case
-    city = fields.PCHiddenField(
+    postal_code = fields.PCPostalCodeField("Code postal", initially_hidden=True)  # match Address.postalCode case
+    city = fields.PCStringField(
         "Ville",
+        initially_hidden=True,
         validators=(
             wtforms.validators.Length(min=1, max=50, message="doit contenir entre %(min)d et %(max)d caractères"),
         ),
     )
-    latitude = fields.PCHiddenField("Latitude")
-    longitude = fields.PCHiddenField("Longitude")
-    ban_id = fields.PCOptHiddenField(
+    latitude = fields.PCStringField("Latitude", initially_hidden=True)
+    longitude = fields.PCStringField("Longitude", initially_hidden=True)
+    ban_id = fields.PCOptStringField(
         "Identifiant Base Adresse Nationale",
+        initially_hidden=True,
         validators=(wtforms.validators.Length(max=20, message="doit contenir au maximum %(max)d caractères"),),
     )
-    insee_code = fields.PCOptHiddenField(
+    insee_code = fields.PCOptStringField(
         "Code INSEE",
+        initially_hidden=True,
         validators=(wtforms.validators.Length(max=5, message="doit contenir au maximum %(max)d caractères"),),
     )
     is_manual_address = fields.PCOptHiddenField("Édition manuelle de l'adresse")
@@ -130,7 +134,7 @@ class EditVenueForm(EditVirtualVenueForm):
 
         return siret
 
-    def validate_latitude(self, latitude: fields.PCOptHiddenField) -> fields.PCOptHiddenField:
+    def validate_latitude(self, latitude: fields.PCOptStringField) -> fields.PCOptStringField:
         try:
             float_data = float(latitude.data)
         except ValueError:
@@ -141,7 +145,7 @@ class EditVenueForm(EditVirtualVenueForm):
             )
         return latitude
 
-    def validate_longitude(self, longitude: fields.PCOptHiddenField) -> fields.PCOptHiddenField:
+    def validate_longitude(self, longitude: fields.PCOptStringField) -> fields.PCOptStringField:
         try:
             float_data = float(longitude.data)
         except ValueError:

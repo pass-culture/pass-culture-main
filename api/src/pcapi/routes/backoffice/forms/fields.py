@@ -82,8 +82,9 @@ class PCOptStringField(wtforms.StringField):
         validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
     ]
 
-    def __init__(self, label: str | None = None, **kwargs: typing.Any):
+    def __init__(self, label: str | None = None, *, initially_hidden: bool = False, **kwargs: typing.Any):
         self.full_width = kwargs.pop("full_width", False)
+        self.initially_hidden = initially_hidden
         super().__init__(label, filters=(sanitize_pc_string,), **kwargs)
 
 
@@ -155,20 +156,6 @@ class PCOptHiddenField(PCStringField):
     validators = [
         validators.Optional(""),
         validators.Length(max=64, message="doit contenir au maximum %(max)d caractères"),
-    ]
-
-
-class PCPostalCodeHiddenField(PCOptHiddenField):
-    validators = [
-        validators.DataRequired("Information obligatoire"),
-        PostalCodeValidator("Le code postal doit contenir 5 caractères"),
-    ]
-
-
-class PCOptPostalCodeHiddenField(PCOptHiddenField):
-    validators = [
-        validators.Optional(""),
-        PostalCodeValidator("Le code postal doit contenir 5 caractères"),
     ]
 
 

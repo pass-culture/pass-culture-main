@@ -1,6 +1,6 @@
 {% import "components/clipboard.html" as clipboard %}
-{% set hidden_field = field.type in ["PCOptHiddenField", "PCPostalCodeHiddenField", "PCOptPostalCodeHiddenField", "PCOptHiddenIntegerField", "PCHiddenField"] %}
-<div class="form-floating flex-grow-1 {% if hidden_field %}d-none{% endif %} pc-field-{{ field.name }}">
+{% set hidden_field = field.type in ["PCOptHiddenField", "PCOptHiddenIntegerField", "PCHiddenField"] %}
+<div class="form-floating flex-grow-1 {% if hidden_field or field.initially_hidden %}d-none{% endif %} pc-field-{{ field.name }}">
   {% set string_field_id = random_hash() %}
   <input {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" or field.type == "PCOptHiddenIntegerField" or field.type == "PCDecimalField" %} type="number" {% elif field.type == "PCPasswordField" or field.type == "PCOptPasswordField" %} type="password" {% else %} type="text" {% endif %}
          id="{{ string_field_id }}"

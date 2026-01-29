@@ -921,11 +921,11 @@ postal_address_autocomplete = fields.PcPostalAddressAutocomplete(
   limit=10, // limit of autocomplete choices (default: 10)
 )
 // Below are the hidden fields, you can decide to add form validators to them.
-street = fields.PCOptHiddenField("street") // if selected in the autocomplete, it will be filled in the form
-city = fields.PCOptHiddenField("Ville") // if selected in the autocomplete, it will be filled in the form
-postalCode = fields.PCOptPostalCodeHiddenField("Code postal") // if selected in the autocomplete, it will be filled in the form
-latitude = fields.PCOptHiddenField("Latitude") // if selected in the autocomplete, it will be filled in the form
-longitude = fields.PCOptHiddenField("Longitude") // if selected in the autocomplete, it will be filled in the form
+street = fields.PCOptStringField("street", initially_hidden=True) // if selected in the autocomplete, it will be filled in the form
+city = fields.PCOptStringField("Ville", initially_hidden=True) // if selected in the autocomplete, it will be filled in the form
+postalCode = fields.PCOptPostalCodeField("Code postal", initially_hidden=True) // if selected in the autocomplete, it will be filled in the form
+latitude = fields.PCOptStringField("Latitude", initially_hidden=True) // if selected in the autocomplete, it will be filled in the form
+longitude = fields.PCOptStringField("Longitude", initially_hidden=True) // if selected in the autocomplete, it will be filled in the form
 ```
 
 ## PcProSearchForm

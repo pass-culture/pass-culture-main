@@ -1,4 +1,4 @@
-<div class="form-floating flex-grow-1 {% if field.type == "PCOptHiddenField" or field.type == "PCPostalCodeHiddenField" or field.type == "PCOptPostalCodeHiddenField" or field.type == "PCOptHiddenIntegerField" or field.type == "PCHiddenField" or field.type == "PCLongHiddenField" %} d-none {% endif %} pc-field-{{ field.name }}">
+<div class="form-floating flex-grow-1 {% if field.type == "PCOptHiddenField" or field.type == "PCOptHiddenIntegerField" or field.type == "PCHiddenField" or field.type == "PCLongHiddenField" %} d-none {% endif %} pc-field-{{ field.name }}">
   {% set string_field_id = random_hash() %}
   <input {% if field.type == "PCIntegerField" or field.type == "PCOptIntegerField" or field.type == "PCOptHiddenIntegerField" or field.type == "PCDecimalField" %} type="number" {% elif field.type == "PCPasswordField" or field.type == "PCOptPasswordField" %} type="password" {% else %} type="text" {% endif %}
          id="{{ string_field_id }}"
@@ -14,7 +14,7 @@
          {% if field.flags.maxlength %}maxlength="{{ field.flags.maxlength }}"{% endif %}
          {% if field.flags.disabled %}disabled{% endif %}
          {% if field.flags.max is not none %}max="{{ field.flags.max }}"{% endif %}
-         {% if field.flags.min is not none %}min="{{ field.flags.min }}"{% endif %} />
+         {% if field.flags.min is not none %}min="{{ field.flags.min }}"{% endif %} />
   <label class="label-element-form"
          data-original-name="{{ field.name }}"
          for="{{ string_field_id }}">{{ field.label.text }}</label>
