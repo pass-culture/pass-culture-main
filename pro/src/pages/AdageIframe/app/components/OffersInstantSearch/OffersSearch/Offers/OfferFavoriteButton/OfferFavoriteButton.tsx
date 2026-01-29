@@ -18,7 +18,6 @@ export interface OfferFavoriteButtonProps {
   queryId?: string
   afterFavoriteChange?: (isFavorite: boolean) => void
   isInSuggestions?: boolean
-  className?: string
   viewType?: 'grid' | 'list'
   playlistId?: number
 }
@@ -28,7 +27,6 @@ export const OfferFavoriteButton = ({
   queryId,
   afterFavoriteChange,
   isInSuggestions,
-  className,
   viewType,
   playlistId,
 }: OfferFavoriteButtonProps): JSX.Element => {
@@ -118,8 +116,6 @@ export const OfferFavoriteButton = ({
       variant={ButtonVariant.SECONDARY}
       color={ButtonColor.BRAND}
       icon={isFavorite ? fullStarIcon : strokeStarIcon}
-      className={className}
-      //     dataTestid={`favorite-${isFavorite ? 'active' : 'inactive'}`}
       onClick={handleFavoriteClick}
       tooltip={buttonText}
     />

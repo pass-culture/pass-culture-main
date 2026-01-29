@@ -78,13 +78,6 @@
   gap: var(--size-spacing-xl);
 }
 
-.offer-header-action {
-  svg {
-    width: rem.torem(24px);
-    height: rem.torem(24px);
-  }
-}
-
 @container (min-width: #{size.$tablet}) {
   .offer-header-title {
     @include fonts.title3;

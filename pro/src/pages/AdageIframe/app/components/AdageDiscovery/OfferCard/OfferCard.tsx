@@ -115,7 +115,6 @@ export const OfferCardComponent = ({
       <div className={styles['offer-favorite-button-container']}>
         <OfferFavoriteButton
           offer={{ ...offer, isTemplate: true }}
-          className={styles['offer-favorite-button']}
           viewType={viewType}
           playlistId={playlistId}
         />

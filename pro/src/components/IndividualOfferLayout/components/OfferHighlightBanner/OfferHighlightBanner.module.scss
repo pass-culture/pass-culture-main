@@ -1,13 +1,18 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_size.scss" as size;
 
 .highlight-banner {
   display: flex;
+  flex-flow: column wrap;
   align-items: center;
   gap: var(--size-spacing-s);
   padding: var(--size-spacing-xl);
   border-radius: var(--size-border-radius-m);
   background-color: var(--color-background-info);
-  flex-wrap: wrap;
+
+  @media (min-width: size.$tablet) {
+    flex-flow: row wrap;
+  }
 
   &-content {
     flex: 1 0;
@@ -19,11 +24,16 @@
 
 .no-highlight-banner {
   display: flex;
+  flex-flow: column wrap;
   align-items: center;
-  gap: var(--size-spacing-s);
+  gap: var(--size-spacing-xl);
   padding: var(--size-spacing-xl);
   border: 1px solid var(--color-border-brand-primary);
   border-radius: var(--size-border-radius-m);
+
+  @media (min-width: size.$tablet) {
+    flex-flow: row wrap;
+  }
 
   &-content {
     @include fonts.body-accent;

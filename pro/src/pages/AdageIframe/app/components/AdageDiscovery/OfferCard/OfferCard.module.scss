@@ -74,16 +74,6 @@ $offer-image-width: rem.torem(216px);
   right: rem.torem(12px);
 }
 
-.offer-favorite-button {
-  background-color: var(--color-background-default);
-  padding: rem.torem(10px);
-
-  &:hover:not(:disabled),
-  &:focus-visible {
-    background-color: var(--color-background-default);
-  }
-}
-
 .offer-tag-container {
   display: flex;
   align-items: center;

@@ -139,7 +139,7 @@ export const VenueOfferSteps = ({
                   as="a"
                   variant={ButtonVariant.SECONDARY}
                   color={ButtonColor.NEUTRAL}
-                  iconPosition={IconPositionEnum.RIGHT}
+                  iconPosition={IconPositionEnum.LEFT}
                   icon={fullNextIcon}
                   to={`remboursements/informations-bancaires?structure=${offerer.id}`}
                   onClick={() => {

@@ -34,7 +34,7 @@
     &-header {
       display: flex;
       flex-direction: row;
-      align-items: top;
+      align-items: flex-start;
       margin-bottom: var(--size-spacing-xl);
 
       @media (min-width: size.$tablet) {

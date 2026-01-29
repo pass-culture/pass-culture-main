@@ -77,15 +77,11 @@ export function AdageOfferHeader({
               {adageUser?.role === AdageFrontRoles.REDACTOR && (
                 <OfferFavoriteButton
                   offer={offer}
-                  className={styles['offer-header-action']}
                   queryId={''}
                   playlistId={playlistId}
                 />
               )}
-              <OfferShareLink
-                className={styles['offer-header-action']}
-                offer={offer}
-              />
+              <OfferShareLink offer={offer} />
             </div>
           )}
         </div>

@@ -12,13 +12,9 @@ import strokeShareIcon from '@/icons/stroke-share.svg'
 
 export interface OfferShareLinkProps {
   offer: CollectiveOfferResponseModel | CollectiveOfferTemplateResponseModel
-  className?: string
 }
 
-export const OfferShareLink = ({
-  offer,
-  className,
-}: OfferShareLinkProps): JSX.Element => {
+export const OfferShareLink = ({ offer }: OfferShareLinkProps): JSX.Element => {
   const mailBody = `
 Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n\nPour accéder au descriptif complet de cette offre, veuillez d’abord vous connecter à ADAGE avec le profil “Rédacteur de projets” ou “Chef d’établissement”, puis cliquez sur le lien : ${document.referrer}adage/passculture/offres/offerid/${offer.id}/source/teacherShareLink \n\nVous n'avez pas de profil rédacteur de projets dans ADAGE ? Contactez votre chef d'établissement pour obtenir les droits, cette vidéo pourra l'aider à réaliser la procédure : https://www.dailymotion.com/video/x7ypdmf \n\nCordialement`
 
@@ -38,7 +34,6 @@ Bonjour, \n\nJe partage avec vous l’offre pass Culture “${offer.name}”. \n
       as="a"
       variant={ButtonVariant.SECONDARY}
       color={ButtonColor.BRAND}
-      className={className}
       to={`mailto:?subject=Partage d’offre sur ADAGE - ${encodeURIComponent(offer.name)}&body=${encodeURIComponent(mailBody)}`}
       icon={strokeShareIcon}
       onClick={handleShareButtonClicked}
