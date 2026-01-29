@@ -1121,6 +1121,7 @@ class Returns200Test:
         assert venue.venueTypeCode == expected_venueTypeCode
         assert venue.activity == expected_activity
 
+
 class Returns400Test:
     @pytest.mark.parametrize("data, key", venue_malformed_test_data)
     def test_update_venue_malformed(self, client, data, key):

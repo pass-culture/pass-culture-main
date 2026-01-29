@@ -152,7 +152,7 @@ def _create_pro_user(row: dict) -> User:
 
     # TODO(xordoquy): rename address to location ?
     venue_creation_info = venues_serialize.PostVenueBodyModel(
-        activity=offerers_models.Activity.NOT_ASSIGNED,
+        activity=offerers_models.Activity.OTHER,
         address=address,
         bookingEmail=offerers_schemas.VenueBookingEmail(user.email),
         comment=None,
