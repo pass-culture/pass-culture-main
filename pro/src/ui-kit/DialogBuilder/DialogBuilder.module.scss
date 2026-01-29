@@ -1,3 +1,4 @@
+@use "styles/mixins/_a11y.scss" as a11y;
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/variables/_z-index.scss" as zIndex;
 @use "styles/mixins/_size.scss" as size;
@@ -34,6 +35,10 @@ $animation-timing-function: ease-in-out;
 
   img {
     height: rem.torem(17px);
+  }
+
+  &-visually-hidden {
+    @include a11y.visually-hidden;
   }
 }
 
