@@ -193,3 +193,14 @@ def validate_datetime(field_name: str, always: bool = False) -> classmethod:
 
 def validate_timezoned_datetime(field_name: str, always: bool = False) -> classmethod:
     return pydantic_v1.validator(field_name, pre=False, allow_reuse=True, always=always)(check_date_in_future)
+
+
+def parse_args_as_list(args: typing.Any) -> list[typing.Any] | None:
+    if args is None or isinstance(args, list):
+        return args
+
+    return [args]
+
+
+# use this validator for a query parameter that we need to parse as a list
+args_as_list_validator = pydantic_v2.BeforeValidator(parse_args_as_list)

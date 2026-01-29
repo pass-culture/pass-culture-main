@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum CollectiveOfferDisplayedStatus {
   PUBLISHED = 'PUBLISHED',
   UNDER_REVIEW = 'UNDER_REVIEW',

@@ -3,6 +3,7 @@ from datetime import date
 from datetime import datetime
 
 import flask
+import pydantic as pydantic_v2
 from pydantic.v1 import AnyHttpUrl
 from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import EmailStr
@@ -20,6 +21,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import collective_history_serialize
 from pcapi.routes.serialization import venues_serialize
@@ -27,44 +29,36 @@ from pcapi.routes.serialization.educational_institutions import EducationalInsti
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
 from pcapi.utils.date import format_into_utc_date
 from pcapi.utils.image_conversion import CropParams
 
 
-class ListCollectiveOffersQueryModel(ConfiguredBaseModel):
-    name: str | None
-    offerer_id: int | None
-    status: list[educational_models.CollectiveOfferDisplayedStatus] | None
-    venue_id: int | None
-    period_beginning_date: date | None
-    period_ending_date: date | None
-    format: EacFormat | None
-    location_type: educational_models.CollectiveLocationType | None
-    offerer_address_id: int | None
+class ListCollectiveOffersQueryModel(HttpQueryParamsModel):
+    name: str | None = None
+    offerer_id: int | None = None
+    status: typing.Annotated[
+        list[educational_models.CollectiveOfferDisplayedStatus] | None, utils.args_as_list_validator
+    ] = None
+    venue_id: int | None = None
+    period_beginning_date: date | None = None
+    period_ending_date: date | None = None
+    format: EacFormat | None = None
+    location_type: educational_models.CollectiveLocationType | None = None
+    offerer_address_id: int | None = None
 
-    @validator("status", pre=True)
-    def parse_status(cls, status: typing.Any | None) -> list[typing.Any] | None:
-        # this is needed to handle the case of only one status in query filters
-        if status is None or isinstance(status, list):
-            return status
-
-        return [status]
-
-    @root_validator(skip_on_failure=True)
-    def validate_location_filter(cls, values: dict) -> dict:
-        location_type = values.get("location_type")
-        offerer_address_id = values.get("offerer_address_id")
-
-        if offerer_address_id is not None and location_type != educational_models.CollectiveLocationType.ADDRESS:
-            raise ValueError(
-                f"Cannot provide offerer_address_id when location_type is not {educational_models.CollectiveLocationType.ADDRESS.value}"
+    @pydantic_v2.model_validator(mode="after")
+    def validate_location_filter(self) -> typing.Self:
+        if (
+            self.offerer_address_id is not None
+            and self.location_type != educational_models.CollectiveLocationType.ADDRESS
+        ):
+            raise PydanticError(
+                f"Cannot provide offererAddressId when locationType is not {educational_models.CollectiveLocationType.ADDRESS.value}"
             )
 
-        return values
-
-    class Config:
-        extra = "forbid"
+        return self
 
 
 class CollectiveOfferStockResponseModel(ConfiguredBaseModel):

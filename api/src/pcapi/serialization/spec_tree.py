@@ -109,7 +109,10 @@ class ExtendedSpecTree(SpecTree):
                         if composed_key not in definitions:
                             definitions[composed_key] = value
                         elif value != definitions[composed_key]:
-                            errors.append(composed_key)
+                            if _is_same_enum(definitions[composed_key], value):
+                                definitions[composed_key] = value
+                            else:
+                                errors.append(composed_key)
 
         if errors:
             raise ValueError(
@@ -117,6 +120,18 @@ class ExtendedSpecTree(SpecTree):
             )
 
         return super()._get_model_definitions()
+
+
+# TODO (jcicurel-pass, 2026-02-02): Remove when migration to pydantic V1 is over
+def _is_same_enum(current_definition: dict, incoming_definition: dict) -> bool:
+    # if an enum is used both in a pydantic v1 and v2 model, it will generate two different definitions for the same schema key
+    # if the enum values are the same, we can assume the definitions are equivalent
+    # the only differences will be on schema fields like "description"
+    return (
+        "enum" in current_definition
+        and "enum" in incoming_definition
+        and current_definition["enum"] == incoming_definition["enum"]
+    )
 
 
 class ExtendResponse(Response):

@@ -471,15 +471,15 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffers(
-    name?: string | null,
-    offererId?: number | null,
-    status?: Array<CollectiveOfferDisplayedStatus> | null,
-    venueId?: number | null,
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-    format?: EacFormat | null,
-    locationType?: CollectiveLocationType | null,
-    offererAddressId?: number | null,
+    name?: (string | null),
+    offererId?: (number | null),
+    status?: (Array<CollectiveOfferDisplayedStatus> | null),
+    venueId?: (number | null),
+    periodBeginningDate?: (string | null),
+    periodEndingDate?: (string | null),
+    format?: (EacFormat | null),
+    locationType?: (CollectiveLocationType | null),
+    offererAddressId?: (number | null),
   ): CancelablePromise<ListCollectiveOffersResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -551,15 +551,15 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOfferTemplates(
-    name?: string | null,
-    offererId?: number | null,
-    status?: Array<CollectiveOfferDisplayedStatus> | null,
-    venueId?: number | null,
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-    format?: EacFormat | null,
-    locationType?: CollectiveLocationType | null,
-    offererAddressId?: number | null,
+    name?: (string | null),
+    offererId?: (number | null),
+    status?: (Array<CollectiveOfferDisplayedStatus> | null),
+    venueId?: (number | null),
+    periodBeginningDate?: (string | null),
+    periodEndingDate?: (string | null),
+    format?: (EacFormat | null),
+    locationType?: (CollectiveLocationType | null),
+    offererAddressId?: (number | null),
   ): CancelablePromise<ListCollectiveOfferTemplatesResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
@@ -811,15 +811,15 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffersCsv(
-    name?: string | null,
-    offererId?: number | null,
-    status?: Array<CollectiveOfferDisplayedStatus> | null,
-    venueId?: number | null,
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-    format?: EacFormat | null,
-    locationType?: CollectiveLocationType | null,
-    offererAddressId?: number | null,
+    name?: (string | null),
+    offererId?: (number | null),
+    status?: (Array<CollectiveOfferDisplayedStatus> | null),
+    venueId?: (number | null),
+    periodBeginningDate?: (string | null),
+    periodEndingDate?: (string | null),
+    format?: (EacFormat | null),
+    locationType?: (CollectiveLocationType | null),
+    offererAddressId?: (number | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',
@@ -856,15 +856,15 @@ export class DefaultService {
    * @throws ApiError
    */
   public getCollectiveOffersExcel(
-    name?: string | null,
-    offererId?: number | null,
-    status?: Array<CollectiveOfferDisplayedStatus> | null,
-    venueId?: number | null,
-    periodBeginningDate?: string | null,
-    periodEndingDate?: string | null,
-    format?: EacFormat | null,
-    locationType?: CollectiveLocationType | null,
-    offererAddressId?: number | null,
+    name?: (string | null),
+    offererId?: (number | null),
+    status?: (Array<CollectiveOfferDisplayedStatus> | null),
+    venueId?: (number | null),
+    periodBeginningDate?: (string | null),
+    periodEndingDate?: (string | null),
+    format?: (EacFormat | null),
+    locationType?: (CollectiveLocationType | null),
+    offererAddressId?: (number | null),
   ): CancelablePromise<any> {
     return this.httpRequest.request({
       method: 'GET',

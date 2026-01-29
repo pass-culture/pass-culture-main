@@ -2,9 +2,6 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-/**
- * An enumeration.
- */
 export enum EacFormat {
   ATELIER_DE_PRATIQUE = 'Atelier de pratique',
   CONCERT = 'Concert',

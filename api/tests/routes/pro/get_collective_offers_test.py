@@ -327,10 +327,8 @@ class Return400Test:
 
         assert response.json == {
             "status.0": [
-                "value is not a valid enumeration member; permitted: 'PUBLISHED', "
-                "'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', 'BOOKED', 'HIDDEN', "
-                "'EXPIRED', 'ENDED', 'CANCELLED', 'REIMBURSED', 'ARCHIVED', "
-                "'DRAFT'",
+                "Input should be 'PUBLISHED', 'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', 'BOOKED', 'HIDDEN', "
+                "'EXPIRED', 'ENDED', 'CANCELLED', 'REIMBURSED', 'ARCHIVED' or 'DRAFT'"
             ]
         }
 
@@ -342,11 +340,7 @@ class Return400Test:
             response = client.get(f"{URL}?locationType=BLOUP")
 
         assert response.status_code == 400
-        assert response.json == {
-            "locationType": [
-                "value is not a valid enumeration member; permitted: 'SCHOOL', 'ADDRESS', 'TO_BE_DEFINED'",
-            ]
-        }
+        assert response.json == {"locationType": ["Input should be 'SCHOOL', 'ADDRESS' or 'TO_BE_DEFINED'"]}
 
     def test_filter_offerer_address_not_accepted(self, client):
         user_offerer = offerers_factories.UserOffererFactory()
@@ -356,4 +350,4 @@ class Return400Test:
             response = client.get(f"{URL}?locationType=SCHOOL&offererAddressId=1")
 
         assert response.status_code == 400
-        assert response.json == {"__root__": ["Cannot provide offerer_address_id when location_type is not ADDRESS"]}
+        assert response.json == {"": ["Cannot provide offererAddressId when locationType is not ADDRESS"]}
