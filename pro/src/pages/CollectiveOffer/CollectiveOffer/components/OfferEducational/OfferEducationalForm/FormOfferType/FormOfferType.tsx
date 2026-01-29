@@ -14,7 +14,10 @@ import type { SelectOption } from '@/commons/custom_types/form'
 import { useFunctionOnce } from '@/commons/hooks/useFunctionOnce'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { MarkdownInfoBox } from '@/components/MarkdownInfoBox/MarkdownInfoBox'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonSize, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
+import fullLinkIcon from '@/icons/full-link.svg'
 import { MultiSelect, type Option } from '@/ui-kit/form/MultiSelect/MultiSelect'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TextArea } from '@/ui-kit/form/TextArea/TextArea'
@@ -206,18 +209,23 @@ export const FormOfferType = ({
           sideComponent={
             <div className={styles['description-info-boxes']}>
               {isTemplate && (
-                <TipsBanner
-                  link={{
-                    text: 'Voir des exemples d’offres vitrines',
-                    to: 'https://aide.passculture.app/hc/fr/articles/17467449038876--Acteurs-Culturels-Consulter-des-exemples-d-offres-vitrine',
-                    isExternal: true,
-                    opensInNewTab: true,
-                    onClick: logHasClickedSeeTemplateOfferExample,
-                  }}
-                >
-                  Vous avez du mal a rédiger votre offre ? Nous vous proposons
-                  des exemples d’offres vitrines réalisées par d’autres acteurs
-                  culturels.
+                <TipsBanner>
+                  <span className={styles['description-info-spacing']}>
+                    Vous avez du mal a rédiger votre offre ? Nous vous proposons
+                    des exemples d’offres vitrines réalisées par d’autres
+                    acteurs culturels.
+                  </span>
+                  <Button
+                    as="a"
+                    icon={fullLinkIcon}
+                    variant={ButtonVariant.TERTIARY}
+                    size={ButtonSize.SMALL}
+                    label="Voir des exemples d’offres vitrines"
+                    onClick={logHasClickedSeeTemplateOfferExample}
+                    to="https://aide.passculture.app/hc/fr/articles/17467449038876--Acteurs-Culturels-Consulter-des-exemples-d-offres-vitrine"
+                    isExternal
+                    opensInNewTab
+                  />
                 </TipsBanner>
               )}
               <MarkdownInfoBox />

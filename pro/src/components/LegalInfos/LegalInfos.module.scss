@@ -1,44 +1,10 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.legal-infos {
-  @include fonts.body-accent-xs;
-
+.legal-infos-callout {
   color: var(--color-text-subtle);
 
-  .quaternary-link {
-    color: var(--color-text-brand-primary);
-    display: inline;
-    text-decoration: underline;
-
-    svg {
-      color: var(--color-color-text-brand-primary);
-    }
-  }
-
-  .icon-legal-infos {
-    width: rem.torem(16px);
-    vertical-align: text-bottom;
-    margin-right: var(--size-spacing-xs);
-  }
-
-  &-support-email {
-    white-space: nowrap;
-  }
-}
-
-.legal-infos-callout {
   .legal-infos-paragraph {
     margin-bottom: var(--size-spacing-s);
-  }
-
-  &-link {
-    display: inline;
-    color: var(--color-text-brand-primary);
-    text-decoration: underline;
-
-    &:hover {
-      text-decoration: underline;
-    }
   }
 }

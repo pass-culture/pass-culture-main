@@ -42,14 +42,15 @@
   gap: var(--size-spacing-s);
 }
 
+.description-info-spacing {
+  display: block;
+  margin-bottom: var(--size-spacing-m);
+}
+
 .title,
 .description,
 .price-detail {
   margin-bottom: var(--size-spacing-l);
-}
-
-.info-box-children {
-  margin-left: 0;
 }
 
 .event-other-address {
@@ -67,11 +68,5 @@
 
   &-search {
     margin-bottom: 0;
-  }
-}
-
-@media (min-width: size.$laptop) {
-  .info-box-children {
-    margin-left: 16px;
   }
 }

@@ -9,7 +9,6 @@ import {
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import { useInitReCaptcha } from '@/commons/hooks/useInitReCaptcha'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { getReCaptchaToken } from '@/commons/utils/recaptcha'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -18,8 +17,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullNextIcon from '@/icons/full-next.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 
 import styles from './LostPassword.module.scss'
 import { validationSchema } from './validationSchema'
@@ -33,7 +30,6 @@ type UserEmailFormValues = {
 export const LostPassword = (): JSX.Element => {
   const [email, setEmail] = useState<string>('')
   useInitReCaptcha()
-  const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
   const snackBar = useSnackBar()
 
@@ -107,25 +103,14 @@ export const LostPassword = (): JSX.Element => {
                 />
               </FormLayout.Row>
               <FormLayout.Row>
-                {isLaptopScreenAtLeast ? (
-                  <Button
-                    as="a"
-                    to="/connexion"
-                    variant={ButtonVariant.TERTIARY}
-                    color={ButtonColor.NEUTRAL}
-                    icon={fullNextIcon}
-                    label="Retour à la connexion"
-                  />
-                ) : (
-                  <ButtonLink
-                    to="/connexion"
-                    className={styles['back-button']}
-                    variant={OldButtonVariant.QUATERNARY}
-                    icon={fullNextIcon}
-                  >
-                    Retour à la connexion
-                  </ButtonLink>
-                )}
+                <Button
+                  as="a"
+                  to="/connexion"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  icon={fullNextIcon}
+                  label="Retour à la connexion"
+                />
               </FormLayout.Row>
             </FormLayout>
           </form>

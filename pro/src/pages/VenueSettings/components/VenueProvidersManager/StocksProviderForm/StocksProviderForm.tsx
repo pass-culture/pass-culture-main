@@ -6,10 +6,9 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { SynchronizationEvents } from '@/commons/core/FirebaseEvents/constants'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeConnectIcon from '@/icons/stroke-connect.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import styles from './StocksProviderForm.module.scss'
@@ -111,17 +110,17 @@ export const StocksProviderForm = ({
           par API est spécifique et dépend de l’intégration développée par
           l’éditeur du logiciel.
         </p>
-        <ButtonLink
-          className={styles['aide-stock-button']}
+        <Button
+          as="a"
           icon={fullLinkIcon}
           isExternal
           to="https://aide.passculture.app/hc/fr/articles/10616916478236"
           opensInNewTab
           aria-label="Nouvelle fenêtre"
-          variant={OldButtonVariant.QUATERNARY}
-        >
-          Visitez notre FAQ pour plus d’informations
-        </ButtonLink>
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="Visitez notre FAQ pour plus d’informations"
+        />
       </ConfirmDialog>
     </>
   )

@@ -4,7 +4,6 @@ import { useLocation } from 'react-router'
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
@@ -13,8 +12,6 @@ import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullKeyIcon from '@/icons/full-key.svg'
 import iconFullNext from '@/icons/full-next.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 
 import type { SigninFormValues } from './SignIn'
 import styles from './Signin.module.scss'
@@ -27,7 +24,6 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
   const location = useLocation()
   const { logEvent } = useAnalytics()
   const isAccountCreationAvailable = useActiveFeature('API_SIRENE_AVAILABLE')
-  const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
 
   const accountCreationUrl = isAccountCreationAvailable
     ? '/inscription/compte/creation'
@@ -90,35 +86,19 @@ export const SigninForm = ({ onSubmit }: SigninFormProps): JSX.Element => {
           <p className={styles['no-account-text']}>
             Vous n’avez pas encore de compte ?
           </p>
-          {isLaptopScreenAtLeast ? (
-            <Button
-              as="a"
-              to={accountCreationUrl}
-              icon={iconFullNext}
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              onClick={() =>
-                logEvent(Events.CLICKED_CREATE_ACCOUNT, {
-                  from: location.pathname,
-                })
-              }
-              label="S’inscrire"
-            />
-          ) : (
-            <ButtonLink
-              as="a"
-              to={accountCreationUrl}
-              icon={iconFullNext}
-              variant={OldButtonVariant.QUATERNARY}
-              onClick={() =>
-                logEvent(Events.CLICKED_CREATE_ACCOUNT, {
-                  from: location.pathname,
-                })
-              }
-            >
-              S’inscrire
-            </ButtonLink>
-          )}
+          <Button
+            as="a"
+            to={accountCreationUrl}
+            icon={iconFullNext}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            onClick={() =>
+              logEvent(Events.CLICKED_CREATE_ACCOUNT, {
+                from: location.pathname,
+              })
+            }
+            label="S’inscrire"
+          />
         </aside>
       </FormLayout>
     </Form>

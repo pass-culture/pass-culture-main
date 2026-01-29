@@ -19,25 +19,6 @@ describe('TipsBanner', () => {
     expect(screen.getByText(longText)).toBeInTheDocument()
   })
 
-  it('should render provided link', () => {
-    const linkText = 'Quelles modalités de retrait choisir ?'
-    render(
-      <TipsBanner
-        link={{
-          text: linkText,
-          to: '#',
-          isExternal: true,
-        }}
-      >
-        Ceci est un tip avec un lien.
-      </TipsBanner>
-    )
-
-    const linkElement = screen.getByRole('link', { name: linkText })
-    expect(linkElement).toBeInTheDocument()
-    expect(linkElement).toHaveAttribute('href', '#')
-  })
-
   it('should render provided illustration', () => {
     const illustrationSrc = 'https://example.com/illustration.png'
     render(

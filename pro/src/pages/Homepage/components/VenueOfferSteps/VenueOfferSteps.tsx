@@ -13,10 +13,14 @@ import {
 } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { Card } from '@/components/Card/Card'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 
 import {
   shouldDisplayEACInformationSectionForVenue,
@@ -95,12 +99,11 @@ export const VenueOfferSteps = ({
             <div className={styles['venue-offer-steps']}>
               {displayCreateStructureButton && (
                 <div className={styles['step-venue-creation']}>
-                  <ButtonLink
-                    className={cn(
-                      styles['step-button-width-info'],
-                      styles['step-button-with-info']
-                    )}
-                    variant={ButtonVariant.BOX}
+                  <Button
+                    as="a"
+                    variant={ButtonVariant.SECONDARY}
+                    color={ButtonColor.NEUTRAL}
+                    iconPosition={IconPositionEnum.RIGHT}
                     icon={fullNextIcon}
                     to={venueCreationUrl}
                     onClick={() => {
@@ -109,16 +112,13 @@ export const VenueOfferSteps = ({
                         is_first_venue: true,
                       })
                     }}
-                  >
-                    Créer une structure
-                  </ButtonLink>
+                    label=" Créer une structure"
+                  />
 
-                  <ButtonLink
-                    className={cn(
-                      styles['step-button-width-info'],
-                      styles['step-button-info']
-                    )}
-                    variant={ButtonVariant.QUATERNARY}
+                  <Button
+                    as="a"
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
                     to="https://aide.passculture.app/hc/fr/articles/4411992075281--Acteurs-Culturels-Comment-cr%C3%A9er-un-lieu-"
                     isExternal
                     opensInNewTab
@@ -128,19 +128,18 @@ export const VenueOfferSteps = ({
                         from: location.pathname,
                       })
                     }}
-                  >
-                    <span className={styles['step-button-info-text']}>
-                      Je ne dispose pas de structure propre, quel type de
-                      structure créer ?
-                    </span>
-                  </ButtonLink>
+                    label="  Je ne dispose pas de structure propre, quel type de
+                      structure créer ?"
+                  />
                 </div>
               )}
 
               {displayAddBankAccountButton && (
-                <ButtonLink
-                  className={styles['step-button-width']}
-                  variant={ButtonVariant.BOX}
+                <Button
+                  as="a"
+                  variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.NEUTRAL}
+                  iconPosition={IconPositionEnum.RIGHT}
                   icon={fullNextIcon}
                   to={`remboursements/informations-bancaires?structure=${offerer.id}`}
                   onClick={() => {
@@ -149,19 +148,19 @@ export const VenueOfferSteps = ({
                       from: OFFER_FORM_NAVIGATION_IN.HOME,
                     })
                   }}
-                >
-                  Ajouter un compte bancaire
-                </ButtonLink>
+                  label="Ajouter un compte bancaire"
+                />
               )}
               {displayAddEACInfoButton && (
-                <ButtonLink
-                  className={styles['step-button-width']}
-                  variant={ButtonVariant.BOX}
+                <Button
+                  as="a"
+                  variant={ButtonVariant.SECONDARY}
+                  color={ButtonColor.NEUTRAL}
+                  iconPosition={IconPositionEnum.RIGHT}
                   icon={fullNextIcon}
                   to={`/structures/${offerer.id}/lieux/${venue.id}/collectif`}
-                >
-                  Renseigner mes informations à destination des enseignants
-                </ButtonLink>
+                  label="Renseigner mes informations à destination des enseignants"
+                />
               )}
             </div>
           </>
@@ -172,9 +171,11 @@ export const VenueOfferSteps = ({
             <h3 className={styles['card-title']}>Démarche en cours : </h3>
 
             <div className={styles['venue-offer-steps']}>
-              <ButtonLink
-                className={styles['step-button-width']}
-                variant={ButtonVariant.BOX}
+              <Button
+                as="a"
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                iconPosition={IconPositionEnum.RIGHT}
                 icon={fullNextIcon}
                 to={`/structures/${offerer.id}/lieux/${venue.id}/collectif`}
                 onClick={() => {
@@ -182,9 +183,8 @@ export const VenueOfferSteps = ({
                     from: location.pathname,
                   })
                 }}
-              >
-                Suivre ma demande de référencement ADAGE
-              </ButtonLink>
+                label="Suivre ma demande de référencement ADAGE"
+              />
             </div>
           </>
         )}

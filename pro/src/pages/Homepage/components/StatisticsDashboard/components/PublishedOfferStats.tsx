@@ -13,8 +13,6 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import fullShowIcon from '@/icons/full-show.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
@@ -119,17 +117,18 @@ export const PublishedOfferStats = ({
                 de validation, l’offre sera publiée automatiquement.
               </p>
 
-              <ButtonLink
-                variant={OldButtonVariant.QUATERNARY}
+              <Button
+                as="a"
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
                 to="https://aide.passculture.app/hc/fr/articles/4412007222289--Acteurs-Culturels-Quelles-sont-les-raisons-possibles-de-refus-de-votre-offre-"
                 isExternal
                 icon={fullLinkIcon}
                 onClick={() =>
                   logEvent(Events.CLICKED_HOME_STATS_PENDING_OFFERS_FAQ)
                 }
-              >
-                En savoir plus sur les règles de conformité.
-              </ButtonLink>
+                label="En savoir plus sur les règles de conformité."
+              ></Button>
             </div>
 
             <div className={styles['container']}>

@@ -39,15 +39,6 @@
     @include fonts.body-xs;
   }
 
-  &-link {
-    @include fonts.body-accent-xs;
-
-    margin: 0;
-    align-items: center;
-    gap: var(--size-spacing-xs);
-    color: var(--color-text-brand-primary);
-  }
-
   &-illustration {
     display: none;
     width: auto;

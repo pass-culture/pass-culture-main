@@ -1,14 +1,11 @@
 import { useFormContext } from 'react-hook-form'
 
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import iconFullNext from '@/icons/full-next.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 
 import type { ResetPasswordValues } from '../ResetPassword'
 import styles from './ChangePasswordForm.module.scss'
@@ -20,8 +17,6 @@ type ChangePasswordFormProps = {
 export const ChangePasswordForm = ({
   onSubmit,
 }: ChangePasswordFormProps): JSX.Element => {
-  const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
-
   const {
     register,
     handleSubmit,
@@ -67,28 +62,14 @@ export const ChangePasswordForm = ({
           <p className={styles['no-account-text']}>
             Vous n’êtes pas à l’origine de cette demande ?
           </p>
-          {isLaptopScreenAtLeast ? (
-            <Button
-              as="a"
-              to="/connexion"
-              icon={iconFullNext}
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              label="Se connecter"
-            />
-          ) : (
-            <ButtonLink
-              to="/connexion"
-              icon={iconFullNext}
-              variant={
-                isLaptopScreenAtLeast
-                  ? OldButtonVariant.TERNARY
-                  : OldButtonVariant.QUATERNARY
-              }
-            >
-              Se connecter
-            </ButtonLink>
-          )}
+          <Button
+            as="a"
+            to="/connexion"
+            icon={iconFullNext}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            label="Se connecter"
+          />
         </aside>
       </FormLayout>
     </form>

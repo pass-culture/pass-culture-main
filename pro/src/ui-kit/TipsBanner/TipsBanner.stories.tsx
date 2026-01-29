@@ -50,11 +50,6 @@ export const TipsBannerWithLink: StoryObj<TipsBannerProps> = {
   args: {
     children:
       'Vous pouvez modifier la mise en forme de votre texte.Utilisez des doubles astérisques pour mettre en gras : **exemple** et des tirets bas pour l’italique : _exemple_Vous pourrez vérifier l’affichage à l’étape "Aperçu"',
-    link: {
-      text: 'Quelles modalités de retrait choisir ?',
-      to: '#',
-      isExternal: true,
-    },
   },
 }
 
@@ -62,11 +57,6 @@ export const TipsBannerWithIllustration: StoryObj<TipsBannerProps> = {
   args: {
     children:
       'Vous pouvez modifier la mise en forme de votre texte.Utilisez des doubles astérisques pour mettre en gras : **exemple** et des tirets bas pour l’italique : _exemple_Vous pourrez vérifier l’affichage à l’étape "Aperçu"',
-    link: {
-      text: 'Quelles modalités de retrait choisir ?',
-      to: '#',
-      isExternal: true,
-    },
     decorativeImage: mockupPng,
   },
 }

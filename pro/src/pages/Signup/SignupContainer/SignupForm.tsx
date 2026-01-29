@@ -2,7 +2,6 @@ import { useId } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import type { ProUserCreationBodyV2Model } from '@/apiClient/v1'
-import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { LegalInfos } from '@/components/LegalInfos/LegalInfos'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -12,14 +11,11 @@ import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import iconFullNext from '@/icons/full-next.svg'
-import { ButtonLink } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant as OldButtonVariant } from '@/ui-kit/Button/types'
 import { EmailSpellCheckInput } from '@/ui-kit/form/EmailSpellCheckInput/EmailSpellCheckInput'
 
 import styles from './SignupContainer.module.scss'
 
 export const SignupForm = (): JSX.Element => {
-  const isLaptopScreenAtLeast = useMediaQuery('(min-width: 64rem)')
   const formId = useId()
 
   const {
@@ -111,24 +107,14 @@ export const SignupForm = (): JSX.Element => {
             Vous avez déjà un compte ?
           </p>
 
-          {isLaptopScreenAtLeast ? (
-            <Button
-              as="a"
-              to="/connexion"
-              icon={iconFullNext}
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              label="Se connecter"
-            />
-          ) : (
-            <ButtonLink
-              to="/connexion"
-              icon={iconFullNext}
-              variant={OldButtonVariant.QUATERNARY}
-            >
-              Se connecter
-            </ButtonLink>
-          )}
+          <Button
+            as="a"
+            to="/connexion"
+            icon={iconFullNext}
+            variant={ButtonVariant.TERTIARY}
+            color={ButtonColor.NEUTRAL}
+            label="Se connecter"
+          />
         </div>
       </FormLayout>
     </>

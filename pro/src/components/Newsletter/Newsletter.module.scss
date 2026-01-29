@@ -8,7 +8,7 @@
   border: 2px solid var(--color-border-brand-primary);
   border-radius: var(--size-border-radius-m);
   width: 100%;
-  padding: rem.torem(1px);
+  padding: rem.torem(1px) var(--size-spacing-m);
 
   .newsletter-img {
     position: absolute;
@@ -19,21 +19,6 @@
 
     @media (min-width: size.$tablet) {
       display: inline;
-    }
-  }
-
-  .newsletter-link {
-    width: 100%;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    padding-left: var(--size-spacing-l);
-    padding-right: var(--size-spacing-l);
-    min-height: rem.torem(53px);
-
-    @media (min-width: size.$tablet) {
-      padding-right: 20%;
     }
   }
 }

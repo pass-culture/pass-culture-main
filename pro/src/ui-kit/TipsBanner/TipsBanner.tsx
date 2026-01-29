@@ -1,9 +1,6 @@
 import cn from 'classnames'
 
 import fullBulbIcon from '@/icons/full-bulb.svg'
-import fullLinkIcon from '@/icons/full-link.svg'
-import { ButtonLink, type ButtonLinkProps } from '@/ui-kit/Button/ButtonLink'
-import { ButtonVariant } from '@/ui-kit/Button/types'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './TipsBanner.module.scss'
@@ -13,15 +10,6 @@ export interface TipsBannerProps {
    * The content to display inside the TipsBanner.
    */
   children: React.ReactNode
-  /**
-   * An optional link to include in the TipsBanner.
-   */
-  link?: ButtonLinkProps & {
-    /**
-     * The text to display for the link.
-     */
-    text: string
-  }
   /**
    * An optional decorative image.
    */
@@ -33,7 +21,6 @@ export interface TipsBannerProps {
 }
 
 export const TipsBanner = ({
-  link,
   decorativeImage,
   children,
   className,
@@ -46,16 +33,6 @@ export const TipsBanner = ({
           savoir
         </div>
         <div className={styles['tips-banner-content']}>{children}</div>
-        {link && (
-          <ButtonLink
-            {...link}
-            icon={fullLinkIcon}
-            className={styles['tips-banner-link']}
-            variant={ButtonVariant.QUATERNARY}
-          >
-            {link.text}
-          </ButtonLink>
-        )}
       </div>
       {decorativeImage && (
         <img
