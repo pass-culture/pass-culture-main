@@ -38,15 +38,13 @@ export interface UserReviewDialogFormValues {
 
 export const UserReviewDialog = ({
   dialogTrigger = (
-    <div className={styles['item-review']}>
-      <Button
-        variant={ButtonVariant.TERTIARY}
-        color={ButtonColor.NEUTRAL}
-        size={ButtonSize.SMALL}
-        icon={fullSmsIcon}
-        label="Donner mon avis"
-      />
-    </div>
+    <Button
+      variant={ButtonVariant.TERTIARY}
+      color={ButtonColor.NEUTRAL}
+      size={ButtonSize.SMALL}
+      icon={fullSmsIcon}
+      label="Donner mon avis"
+    />
   ),
 }: {
   dialogTrigger?: React.ReactNode
