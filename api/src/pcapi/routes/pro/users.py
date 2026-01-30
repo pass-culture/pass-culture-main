@@ -33,6 +33,7 @@ from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.gdpr_api import anonymize_pro_user
 from pcapi.core.users.password_utils import check_password_strength
 from pcapi.core.users.password_utils import check_password_validity
+from pcapi.flask_app import metrics
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
@@ -284,6 +285,10 @@ def signout() -> None:
 @login_required
 @spectree_serialize(on_success_status=204, on_error_statuses=[400, 404], api=blueprint.pro_private_schema)
 @atomic()
+@metrics.counter(
+    "user_anonymization_requests",
+    "Number of uzer anonymisation request on pcapi PRO",
+)
 def anonymize() -> None:
     if not FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION.is_active():
         raise ResourceNotFoundError(errors={"global": "Cette fonctionnalité n'est pas disponible"})

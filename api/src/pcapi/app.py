@@ -5,7 +5,6 @@ from flask_wtf.csrf import CSRFProtect
 from pcapi import settings
 from pcapi.core.users.sessions import install_routed_login
 from pcapi.flask_app import app
-from pcapi.flask_app import setup_metrics
 
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -32,7 +31,6 @@ with app.app_context():
     install_routed_login()
     install_all_routes(app)
 
-    setup_metrics(app)
 
 # This is only called when running pcapi locally
 # Deployments use ENTRYPOINT exec ./entrypoint.sh

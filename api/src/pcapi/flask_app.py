@@ -68,7 +68,7 @@ init_sentry_sdk()
 app = Flask(__name__, static_url_path="/static")
 
 
-def setup_metrics(app_: Flask) -> None:
+def setup_metrics(app_: Flask) -> prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics:
     if not int(os.environ.get("ENABLE_FLASK_PROMETHEUS_EXPORTER", "0")):
         return
 
@@ -87,12 +87,16 @@ def setup_metrics(app_: Flask) -> None:
             return "other"
         return prefix
 
-    prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(
+    metrics = prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(
         app_,
         group_by="url_rule",
         default_labels={"url_prefix": get_url_prefix, "route_blueprint": get_top_level_blueprint_name},
     )
     # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
+    return metrics
+
+
+metrics = setup_metrics(app)
 
 
 @app.before_request
