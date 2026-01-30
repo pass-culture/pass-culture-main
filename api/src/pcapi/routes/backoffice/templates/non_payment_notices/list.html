@@ -77,7 +77,13 @@
       <td>{{ notice.reference }}</td>
       <td>{{ notice.emitterName }}</td>
       <td>{{ notice.emitterEmail }}</td>
-      <td>{{ notice.amount | format_amount(target=notice.offerer) }}</td>
+      <td>
+        {{ notice.amount | format_amount(target=notice.offerer) }}
+        {% if notice.fees %}
+          <br />
+          (dont {{ notice.fees | format_amount(target=notice.offerer) }} de frais)
+        {% endif %}
+      </td>
       <td>
         {% if notice.offerer %}{{ links.build_offerer_name_to_details_link(notice.offerer) }}{% endif %}
       </td>

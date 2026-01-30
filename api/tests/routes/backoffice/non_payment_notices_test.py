@@ -37,7 +37,9 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
 
     def test_list_non_payment_notices(self, authenticated_client):
         created_notice = offerers_factories.NonPaymentNoticeFactory(
-            offerer=offerers_factories.OffererFactory(), dateCreated=datetime.date.today()
+            fees=Decimal("49.5"),
+            offerer=offerers_factories.OffererFactory(),
+            dateCreated=datetime.date.today(),
         )
         pending_notice = offerers_factories.NonPaymentNoticeFactory(
             status=offerers_models.NoticeStatus.PENDING,
@@ -74,7 +76,7 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
         assert rows[0]["Référence"] == created_notice.reference
         assert rows[0]["Nom de l'émetteur"] == "Guy Ssier de Justice"
         assert rows[0]["Email de l'émetteur"] == "plus.dargent@example.com"
-        assert rows[0]["Montant"] == "199,99 €"
+        assert rows[0]["Montant"] == "199,99 € (dont 49,50 € de frais)"
         assert rows[0]["Entité juridique"] == created_notice.offerer.name
         assert rows[0]["Partenaire culturel"] == ""
         assert rows[0]["Motif"] == ""
@@ -275,6 +277,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
                 "date_received": datetime.date.today() - datetime.timedelta(days=1),
                 "notice_type": "BAILIFF",
                 "amount": "12,34",
+                "fees": "5,50",
                 "reference": "123ABC",
                 "emitter_name": "Ferran Largent",
                 "emitter_email": "avis.impayé@example.com",
@@ -297,6 +300,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.emitterName == "Ferran Largent"
         assert notice.emitterEmail == "avis.impayé@example.com"
         assert notice.amount == Decimal("12.34")
+        assert notice.fees == Decimal("5.50")
         assert notice.offerer is None
         assert notice.venue is None
         assert notice.motivation is None
@@ -313,6 +317,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
                 "date_received": datetime.date.today() - datetime.timedelta(days=1),
                 "notice_type": "BAILIFF",
                 "amount": "12,34",
+                "fees": "",
                 "reference": "123ABC",
                 "emitter_name": "Ferran Largent",
                 "emitter_email": "avis.impayé@example.com",
@@ -335,6 +340,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.emitterName == "Ferran Largent"
         assert notice.emitterEmail == "avis.impayé@example.com"
         assert notice.amount == Decimal("12.34")
+        assert notice.fees is None
         assert notice.offerer == offerer
         assert notice.venue is None
         assert notice.motivation is None
@@ -359,6 +365,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
                 "date_received": datetime.date.today() - datetime.timedelta(days=1),
                 "notice_type": "BAILIFF",
                 "amount": "12,34",
+                "fees": "",
                 "reference": "123ABC",
                 "emitter_name": "Ferran Largent",
                 "emitter_email": "avis.impayé@example.com",
@@ -381,6 +388,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.emitterName == "Ferran Largent"
         assert notice.emitterEmail == "avis.impayé@example.com"
         assert notice.amount == Decimal("12.34")
+        assert notice.fees is None
         assert notice.offerer == venue.managingOfferer
         assert notice.venue == venue
         assert notice.motivation is None
@@ -406,6 +414,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
                 "date_received": datetime.date.today() - datetime.timedelta(days=1),
                 "notice_type": "BAILIFF",
                 "amount": "12,34",
+                "fees": "",
                 "reference": "123ABC",
                 "emitter_name": "Ferran Largent",
                 "emitter_email": "avis.impayé@example.com",
@@ -428,6 +437,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.emitterName == "Ferran Largent"
         assert notice.emitterEmail == "avis.impayé@example.com"
         assert notice.amount == Decimal("12.34")
+        assert notice.fees is None
         assert notice.offerer == offerer
         assert notice.venue == venue
         assert notice.motivation is None
@@ -450,6 +460,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
                 "date_received": datetime.date.today() - datetime.timedelta(days=1),
                 "notice_type": "BAILIFF",
                 "amount": "12,34",
+                "fees": "",
                 "reference": "123ABC",
                 "emitter_name": "Ferran Largent",
                 "emitter_email": "avis.impayé@example.com",
@@ -545,6 +556,7 @@ class EditTest(PostEndpointHelper):
                 "date_received": new_date_received.isoformat(),
                 "notice_type": offerers_models.NoticeType.REMINDER_LETTER.name,
                 "amount": "256.50",
+                "fees": "45",
                 "reference": "NEWREF",
                 "emitter_name": "Centre de recouvrement",
                 "emitter_email": "recouvrement@example.com",
@@ -565,6 +577,7 @@ class EditTest(PostEndpointHelper):
         assert notice.emitterName == "Centre de recouvrement"
         assert notice.emitterEmail == "recouvrement@example.com"
         assert notice.amount == Decimal("256.50")
+        assert notice.fees == Decimal("45.00")
         assert notice.offerer == venue.managingOfferer
         assert notice.venue == venue
         assert notice.motivation is None
@@ -583,6 +596,7 @@ class EditTest(PostEndpointHelper):
                 "date_received": notice.dateReceived.isoformat(),
                 "notice_type": notice.noticeType.name,
                 "amount": str(notice.amount),
+                "fees": "",
                 "reference": notice.reference,
                 "emitter_name": notice.emitterName,
                 "emitter_email": notice.emitterEmail,
@@ -666,6 +680,7 @@ class SetPendingTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == notice.emitterEmail
         assert mails_testing.outbox[0]["params"] == {
             "AMOUNT": "199,99 €",
+            "FEES_AMOUNT": None,
             "BATCH_LABEL": None,
             "DATE_RECEIVED": get_date_formatted_for_email(notice.dateReceived),
             "MOTIVATION": motivation.name,
@@ -742,6 +757,7 @@ class SetNoContinuationTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == notice.emitterEmail
         assert mails_testing.outbox[0]["params"] == {
             "AMOUNT": "199,99 €",
+            "FEES_AMOUNT": None,
             "BATCH_LABEL": None,
             "DATE_RECEIVED": get_date_formatted_for_email(notice.dateReceived),
             "MOTIVATION": None,
@@ -802,7 +818,7 @@ class CloseTest(PostEndpointHelper):
         ]
         finance_factories.CashflowBatchFactory(label="VIR30")  # should not be associated
         notice = offerers_factories.NonPaymentNoticeFactory(
-            amount=Decimal(1234.5), dateReceived=datetime.date(2025, 8, 7), offerer=offerer
+            amount=Decimal(1234.5), fees=Decimal(150), dateReceived=datetime.date(2025, 8, 7), offerer=offerer
         )
         response = self.post_to_endpoint(
             authenticated_client,
@@ -827,6 +843,7 @@ class CloseTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == notice.emitterEmail
         assert mails_testing.outbox[0]["params"] == {
             "AMOUNT": "1234,50 €",
+            "FEES_AMOUNT": "150 €",
             "BATCH_LABEL": "VIR10, VIR20",
             "DATE_RECEIVED": "jeudi 7 août 2025",
             "MOTIVATION": motivation.name,

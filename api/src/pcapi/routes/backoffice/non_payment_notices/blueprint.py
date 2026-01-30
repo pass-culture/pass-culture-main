@@ -177,6 +177,7 @@ def _create_or_update_non_payment_notice(
 
     data = {
         "amount": form.amount.data,
+        "fees": form.fees.data,
         "dateReceived": form.date_received.data,
         "emitterEmail": form.emitter_email.data,
         "emitterName": form.emitter_name.data,
@@ -233,6 +234,7 @@ def get_edit_form(notice_id: int) -> utils.BackofficeResponse:
         date_received=notice.dateReceived,
         notice_type=notice.noticeType.name,
         amount=notice.amount,
+        fees=notice.fees,
         reference=notice.reference,
         emitter_name=notice.emitterName,
         emitter_email=notice.emitterEmail,

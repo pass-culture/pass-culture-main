@@ -1707,6 +1707,7 @@ class NonPaymentNotice(PcObject, Model):
     __tablename__ = "non_payment_notice"
 
     amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
+    fees: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=True)
     # TODO (prouzet, 2026-01-30) batchId is deprecated and should be removed when data is migrated
     batchId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True
