@@ -1,21 +1,37 @@
+import enum
+import typing
 from dataclasses import dataclass
-from enum import StrEnum
+from datetime import timedelta
 
 import flask
+from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_refresh_token
 from flask_jwt_extended import verify_jwt_in_request
 
+from pcapi import settings
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 
 from . import _common
 
 
-class JwtType(StrEnum):
+if typing.TYPE_CHECKING:
+    from pcapi.routes.native.v1.serialization import account as account_serialization
+
+
+@dataclass(frozen=True, slots=True)
+class JwtContainer:
+    access: str
+    refresh: str
+
+
+class JwtType(enum.StrEnum):
     ACCESS = "access"
     REFRESH = "refresh"
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
 class JwtData:
     fresh: bool
     iat: int
@@ -82,3 +98,27 @@ def _clean_previously_loaded_token() -> None:
         del flask.g.jwt_data
     if hasattr(flask.g, "raw_jwt"):
         del flask.g.raw_jwt
+
+
+def _is_used_jwt_refresh() -> bool:
+    return (
+        hasattr(flask.g, "jwt_data") and hasattr(flask.g, "raw_jwt") and flask.g.jwt_data.type == JwtType.REFRESH.value
+    )
+
+
+def create_user_jwt_tokens(
+    user: users_models.User,
+    device_info: "account_serialization.TrustedDevice | None" = None,
+) -> JwtContainer:
+    if _is_used_jwt_refresh():
+        # TODO regenerate a refresh token when renewing the access token
+        refresh_token = flask.g.raw_jwt
+    else:
+        if users_api.is_login_device_a_trusted_device(device_info, user):
+            duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXTENDED_EXPIRES)
+        else:
+            duration = timedelta(seconds=settings.JWT_REFRESH_TOKEN_EXPIRES)
+        refresh_token = create_refresh_token(identity=user.email, expires_delta=duration)
+
+    access_token = create_access_token(identity=user.email, additional_claims={"user_claims": {"user_id": user.id}})
+    return JwtContainer(access=access_token, refresh=refresh_token)

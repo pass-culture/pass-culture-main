@@ -27,6 +27,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import gdpr_api
 from pcapi.core.users import password_utils
 from pcapi.core.users.repository import find_user_by_email
+from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.models import api_errors
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
@@ -160,9 +161,13 @@ def validate_user_email(body: serializers.ChangeBeneficiaryEmailBody) -> seriali
                 "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": user.id}
             )
 
+    tokens = create_user_jwt_tokens(
+        user=user,
+        device_info=body.device_info,
+    )
     return serializers.ChangeBeneficiaryEmailResponse(
-        access_token=api.create_user_access_token(user),
-        refresh_token=api.create_user_refresh_token(user, body.device_info),
+        access_token=tokens.access,
+        refresh_token=tokens.refresh,
     )
 
 
@@ -273,9 +278,13 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
             "An unexpected error occurred while trying to link dms orphan to user", extra={"user_id": created_user.id}
         )
 
+    tokens = create_user_jwt_tokens(
+        user=created_user,
+        device_info=body.trusted_device,
+    )
     return auth_serializers.SigninResponse(
-        access_token=api.create_user_access_token(created_user),
-        refresh_token=api.create_user_refresh_token(created_user, body.trusted_device),
+        access_token=tokens.access,
+        refresh_token=tokens.refresh,
         account_state=created_user.account_state,
     )
 
