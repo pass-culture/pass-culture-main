@@ -9,6 +9,7 @@ from pcapi.core.users import exceptions
 from pcapi.core.users import models as users_models
 from pcapi.core.users.email import repository as email_repository
 from pcapi.core.users.email import update as email_api
+from pcapi.core.users.sessions import create_user_jwt_tokens
 from pcapi.models import api_errors
 from pcapi.routes.native.security import authenticated_and_active_user_required
 from pcapi.routes.native.v1.api_errors import account as account_errors
@@ -91,9 +92,13 @@ def confirm_email_update(
         constants.EMAIL_CHANGE_TOKEN_LIFE_TIME,
         user_id=user.id,
     ).encoded_token
+    tokens = create_user_jwt_tokens(
+        user=user,
+        device_info=body.device_info,
+    )
     return serializers.EmailChangeConfirmationResponse(
-        access_token=api.create_user_access_token(user),
-        refresh_token=api.create_user_refresh_token(user, body.device_info),
+        access_token=tokens.access,
+        refresh_token=tokens.refresh,
         new_email_selection_token=new_email_selection_token,
         reset_password_token=reset_password_token,
     )
