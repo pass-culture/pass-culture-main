@@ -70,7 +70,7 @@ def get_collective_offer_template(
     response_model=serializers.ListCollectiveOfferTemplateResponseModel,
     api=blueprint.api,
     on_error_statuses=[404],
-    flatten=True,
+    query_params_as_list=["ids"],
 )
 @adage_jwt_required
 def get_collective_offer_templates(

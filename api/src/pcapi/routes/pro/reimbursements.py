@@ -26,7 +26,7 @@ from . import blueprint
         "Content-Disposition": "attachment; filename=remboursements_pass_culture.csv",
     },
     api=blueprint.pro_private_schema,
-    flatten=True,
+    query_params_as_list=["invoicesReferences"],
 )
 def get_reimbursements_csv_v2(query: ReimbursementCsvByInvoicesModel) -> bytes:
     offerers_ids = _get_invoices_offerers(query)
