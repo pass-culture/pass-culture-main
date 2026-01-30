@@ -1,16 +1,32 @@
-import { Link } from 'react-router'
+import { Link, useNavigate } from 'react-router'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonVariant,
+  IconPositionEnum,
+} from '@/design-system/Button/types'
+import fullBackIcon from '@/icons/full-back.svg'
 
 import styles from './Sitemap.module.scss'
 
 export const Sitemap = () => {
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const navigate = useNavigate()
 
   return (
-    <BasicLayout mainHeading="Plan du site">
+    <BasicLayout mainHeading="Plan du site" displayLateralPanel={false}>
+      <Button
+        onClick={() => navigate(-1)}
+        color={ButtonColor.NEUTRAL}
+        variant={ButtonVariant.TERTIARY}
+        icon={fullBackIcon}
+        iconPosition={IconPositionEnum.LEFT}
+        label="Retour"
+      />
       <ul className={styles['sitemap-list']} data-testid="sitemap">
         <li className={styles['sitemap-list-item']}>
           <Link

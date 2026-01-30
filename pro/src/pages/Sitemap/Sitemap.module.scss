@@ -1,9 +1,13 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .sitemap-list {
   margin-top: var(--size-spacing-xxl);
   list-style-type: disc;
   list-style-position: inside;
+  width: rem.torem(826px);
+  margin-bottom: var(--size-spacing-xxl);
 
   &-item {
     margin-bottom: var(--size-spacing-s);
