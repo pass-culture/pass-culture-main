@@ -453,7 +453,9 @@ describe('SideNavLinks', () => {
       })
       expect(switchVenueButton).toBeInTheDocument()
       expect(switchVenueButton).toHaveAttribute('href', '/hub')
-      expect(screen.getByText(selectedVenuePublicName)).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', { name: new RegExp(selectedVenuePublicName) })
+      ).toBeInTheDocument()
     })
 
     it('should not display switch venue button when no venue is selected', () => {

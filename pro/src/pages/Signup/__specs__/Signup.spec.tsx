@@ -55,7 +55,7 @@ describe('src | components | pages | Signup', () => {
     expect(screen.queryByText(/SIREN/)).not.toBeInTheDocument()
 
     expect(
-      screen.getByText(/Conditions générales d’utilisation/)
+      screen.getByRole('link', { name: /Conditions générales d’utilisation/ })
     ).toHaveAttribute('href', 'https://pass.culture.fr/cgu-professionnels/')
 
     expect(
