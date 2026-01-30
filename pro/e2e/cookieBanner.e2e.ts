@@ -51,7 +51,10 @@ test.describe('Cookie banner', () => {
         page.getByText('Respect de votre vie privée')
       ).not.toBeVisible()
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(
@@ -74,7 +77,10 @@ test.describe('Cookie banner', () => {
     test('I should be able to refuse all cookies, and no cookie is checked in the dialog, except the required', async ({
       page,
     }) => {
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await page
@@ -94,7 +100,10 @@ test.describe('Cookie banner', () => {
     test('I should be able to choose a specific cookie, save and the status should be the same on modal re display', async ({
       page,
     }) => {
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(page.locator('#orejime-purpose-beamer')).not.toBeChecked()
@@ -107,7 +116,10 @@ test.describe('Cookie banner', () => {
         .click()
       await expect(page.locator('.orejime-Modal')).not.toBeVisible()
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(page.locator('#orejime-purpose-beamer')).toBeChecked()
@@ -116,7 +128,10 @@ test.describe('Cookie banner', () => {
     test('I should be able to choose a specific cookie, reload the page and the status should not have been changed', async ({
       page,
     }) => {
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(page.locator('#orejime-purpose-beamer')).not.toBeChecked()
@@ -127,7 +142,10 @@ test.describe('Cookie banner', () => {
 
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(page.locator('#orejime-purpose-beamer')).not.toBeChecked()
@@ -138,7 +156,10 @@ test.describe('Cookie banner', () => {
     }) => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await page.locator('.orejime-Modal').getByText('Beamer').click()
@@ -146,7 +167,10 @@ test.describe('Cookie banner', () => {
       await page.locator('.orejime-Modal-closeButton').click()
       await expect(page.locator('.orejime-Modal')).not.toBeVisible()
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(page.locator('#orejime-purpose-beamer')).not.toBeChecked()
@@ -157,7 +181,10 @@ test.describe('Cookie banner', () => {
     }) => {
       await expect(page.getByText('Respect de votre vie privée')).toBeVisible()
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await page.locator('.orejime-Modal').getByText('Beamer').click()
@@ -170,9 +197,14 @@ test.describe('Cookie banner', () => {
 
       await clearBrowserStateAndReload(page)
 
-      await expect(page.getByText('Gestion des cookies')).toHaveCount(2)
+      await expect(
+        page.getByRole('button', { name: 'Gestion des cookies' })
+      ).toHaveCount(2)
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(page.locator('#orejime-purpose-beamer')).not.toBeChecked()
@@ -200,7 +232,10 @@ test.describe('Cookie banner', () => {
         false
       )
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await page.locator('.orejime-Modal').getByText('Beamer').click()
@@ -232,7 +267,10 @@ test.describe('Cookie banner', () => {
         false
       )
 
-      await page.getByText('Gestion des cookies').first().click()
+      await page
+        .getByRole('button', { name: 'Gestion des cookies' })
+        .first()
+        .click()
       await expect(page.locator('.orejime-Modal')).toBeVisible()
 
       await expect(page.locator('#orejime-purpose-beamer')).toBeChecked()

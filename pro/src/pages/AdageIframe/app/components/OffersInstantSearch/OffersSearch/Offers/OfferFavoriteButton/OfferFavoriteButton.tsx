@@ -116,6 +116,7 @@ export const OfferFavoriteButton = ({
       variant={ButtonVariant.SECONDARY}
       color={ButtonColor.BRAND}
       icon={isFavorite ? fullStarIcon : strokeStarIcon}
+      data-testid={`favorite-${isFavorite ? 'active' : 'inactive'}`}
       onClick={handleFavoriteClick}
       tooltip={buttonText}
     />

@@ -162,7 +162,8 @@ describe('Create individual offers new flow', () => {
     // we go back to price categories step to delete a price category
     cy.findByText('Retour').should('exist').should('be.visible').click()
     // we click on delete button of the last price category
-    cy.findByTestId('remove-price-table-entry-button-3')
+    cy.findAllByRole('button', { name: /Supprimer ce tarif/ })
+      .eq(3)
       .should('exist')
       .should('be.visible')
       .click()

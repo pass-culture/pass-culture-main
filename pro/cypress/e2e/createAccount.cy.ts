@@ -59,7 +59,7 @@ describe('Account creation', () => {
       message: 'check that we are redirected to connexion',
     })
     cy.url().should('contain', '/inscription/structure/recherche')
-    cy.findByText('Aller au contenu').should('have.focus')
+    cy.findByRole('link', { name: /Aller au contenu/ }).should('have.focus')
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
   })
 })

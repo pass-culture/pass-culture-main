@@ -54,6 +54,8 @@ export function OpeningHoursTimespans({
     const hasOverlappingTimespans =
       form.formState.errors.openingHours?.[weekDay]?.root?.message
 
+    const nthTimeSlot = i === 0 ? 'première ' : 'deuxième '
+
     return (
       <div className={styles['timespan']} key={field.id}>
         <div className={styles['timespan-inputs']}>
@@ -100,7 +102,7 @@ export function OpeningHoursTimespans({
               color={ButtonColor.NEUTRAL}
               size={ButtonSize.SMALL}
               icon={fullLessIcon}
-              tooltip={`Supprimer la ${timespans.fields.length > 1 ? (i === 0 ? 'première ' : 'deuxième ') : ''}plage horaire du ${dayFrenchName.toLowerCase()}`}
+              tooltip={`Supprimer la ${timespans.fields.length > 1 ? nthTimeSlot : ''}plage horaire du ${dayFrenchName.toLowerCase()}`}
               onClick={() => timespans.remove(i)}
             />
           )}

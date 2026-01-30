@@ -269,7 +269,9 @@ describe('Signup journey with known offerer...', () => {
       cy.url().should('contain', '/inscription/structure/rattachement')
 
       // Hack because "aller au contenu" is focued by `useFocus`
-      cy.findByText('Aller au contenu').focus().click()
+      cy.findByRole('link', { name: /Aller au contenu/ })
+        .focus()
+        .click()
 
       cy.findByText('Ajouter une nouvelle structure').click()
       cy.wait('@search5Address')
@@ -335,7 +337,9 @@ describe('Signup journey with known offerer...', () => {
       cy.wait('@venuesSiret').its('response.statusCode').should('eq', 200)
 
       // Hack because "aller au contenu" is focued by `useFocus`
-      cy.findByText('Aller au contenu').focus().click()
+      cy.findByRole('link', { name: /Aller au contenu/ })
+        .focus()
+        .click()
 
       cy.stepLog({ message: 'I chose to join the space' })
       cy.contains('Rejoindre cet espace').click()

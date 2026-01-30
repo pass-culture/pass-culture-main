@@ -92,7 +92,8 @@
   display: none;
 
   @media (min-width: size.$tablet) {
-    display: block;
+    display: flex;
+    align-items: center;
 
     &.is-switch-venue {
       display: flex;
