@@ -113,15 +113,16 @@ export const StocksCalendarFilters = ({
           onUpdateFilters({ ...filters, priceCategoryId: e.target.value })
         }
       />
-      {hasFiltersApplied && (
+      <div className={styles['reset']}>
         <Button
           icon={fullRefreshIcon}
           onClick={() => onUpdateFilters({})}
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
+          disabled={!hasFiltersApplied}
           label="Réinitialiser les filtres"
         />
-      )}
+      </div>
     </div>
   )
 }

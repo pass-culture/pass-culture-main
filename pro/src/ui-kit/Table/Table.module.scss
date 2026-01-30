@@ -111,6 +111,10 @@
 }
 
 @media (max-width: size.$tablet) {
+  .table {
+    border-spacing: 0;
+  }
+
   .table-header {
     display: none;
   }
@@ -121,36 +125,62 @@
 
   .table-row {
     display: grid;
-    grid-template-columns: repeat(1, 1fr);
-    border: 1px solid var(--color-background-subtle);
+    grid-template-columns: 1fr;
+    gap: var(--size-spacing-s);
     margin-top: var(--size-spacing-s);
+
+    background: var(--color-background-default, #fff);
+    border: 1px solid var(--color-border-subtle);
+    border-radius: var(--size-border-radius-m, 8px);
+    padding: var(--size-spacing-s);
   }
 
   .table-collapse-cell {
-    display: flex;
-    justify-content: space-between;
-    gap: var(--size-spacing-s);
-    align-items: center;
-    border: 1px solid var(--color-background-subtle);
-    padding: var(--size-spacing-s);
+    display: grid;
+    grid-template-columns: minmax(0, 12ch) 1fr;
+    column-gap: var(--size-spacing-m);
+    row-gap: var(--size-spacing-xxs);
+    align-items: start;
 
-    &:first-child {
-      border: none;
-      border-radius: none;
-    }
+    padding: 0;
+    border: 0;
+  }
 
-    &:last-child {
-      border: none;
-      border-radius: none;
-    }
+  .table-collapse-cell + .table-collapse-cell {
+    padding-top: var(--size-spacing-s);
+    border-top: 1px solid var(--color-background-subtle);
   }
 
   .table-collapse-cell::before {
     @include fonts.body-accent-xs;
 
-    display: flex;
     content: attr(data-label);
     color: var(--color-text-subtle);
+    white-space: normal;
+  }
+
+  .table-collapse-cell > * {
+    justify-self: end;
+    text-align: right;
+    min-width: 0;
+  }
+
+  .table-collapse-cell {
+    overflow-wrap: anywhere;
+  }
+
+  .table-collapse-cell [data-actions],
+  .table-collapse-cell .tbody-td-actions {
+    justify-self: end;
+    display: flex;
+    gap: var(--size-spacing-s);
+    flex-wrap: wrap;
+  }
+
+  .table-collapse-cell:last-child {
+    border-radius: 0;
+    display: flex;
+    justify-content: space-between;
   }
 
   .table-fullrow-wrapper {

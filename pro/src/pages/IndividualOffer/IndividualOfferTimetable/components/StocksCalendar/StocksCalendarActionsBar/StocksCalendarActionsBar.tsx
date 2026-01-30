@@ -18,18 +18,18 @@ import styles from './StocksCalendarActionsBar.module.scss'
 
 export type StocksCalendarActionsBarProps = {
   offerId: number
-  checkedStocks: Set<number>
   hasStocks: boolean
-  updateCheckedStocks: (newStocks: Set<number>) => void
+  selectedStocksIds: Set<string | number>
+  setSelectedStocksIds: (newStocks: Set<number>) => void
   deleteStocks: (ids: number[]) => void
   mode: OFFER_WIZARD_MODE
 }
 
 export function StocksCalendarActionsBar({
   offerId,
-  checkedStocks,
   hasStocks,
-  updateCheckedStocks,
+  selectedStocksIds,
+  setSelectedStocksIds,
   deleteStocks,
   mode,
 }: StocksCalendarActionsBarProps) {
@@ -87,13 +87,13 @@ export function StocksCalendarActionsBar({
 
   return (
     <>
-      {checkedStocks.size > 0 ? (
+      {selectedStocksIds.size > 0 ? (
         <ActionsBarSticky className={styles['sticky']}>
           <div className={styles['sticky-content']}>
             <div>
-              {checkedStocks.size}{' '}
+              {selectedStocksIds.size}{' '}
               {pluralizeFr(
-                checkedStocks.size,
+                selectedStocksIds.size,
                 'date sélectionnée',
                 'dates sélectionnées'
               )}
@@ -102,15 +102,15 @@ export function StocksCalendarActionsBar({
               <Button
                 variant={ButtonVariant.SECONDARY}
                 onClick={() => {
-                  updateCheckedStocks(new Set())
+                  setSelectedStocksIds(new Set())
                 }}
                 label="Désélectionner"
               />
               <Button
                 onClick={() => {
-                  deleteStocks(Array.from(checkedStocks))
+                  deleteStocks(Array.from(selectedStocksIds))
                 }}
-                label={`Supprimer ${checkedStocks.size > 1 ? 'ces dates' : 'cette date'}`}
+                label={`Supprimer ${selectedStocksIds.size > 1 ? 'ces dates' : 'cette date'}`}
               ></Button>
             </div>
           </div>

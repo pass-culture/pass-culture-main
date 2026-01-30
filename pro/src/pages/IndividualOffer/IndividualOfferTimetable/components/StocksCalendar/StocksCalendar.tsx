@@ -25,7 +25,6 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { onSubmit } from './form/onSubmit'
@@ -63,7 +62,9 @@ export function StocksCalendar({
   timetableTypeRadioGroupShown,
 }: StocksCalendarProps) {
   const [page, setPage] = useState(1)
-  const [checkedStocks, setCheckedStocks] = useState(new Set<number>())
+  const [selectedStocksIds, setSelectedStocksIds] = useState<
+    Set<string | number>
+  >(new Set())
   const [appliedFilters, setAppliedFilters] = useState<StocksTableFilters>({})
   const [appliedSort, setAppliedSort] = useState<StocksTableSort>({
     sort: StocksOrderedBy.DATE,
@@ -99,11 +100,8 @@ export function StocksCalendar({
         STOCKS_PER_PAGE
       ),
     {
-      //  Display previous data in the table until the new data has loaded so that
-      //  the scroll position in the table remains the same in-between pagination loads
-      keepPreviousData: true,
       onSuccess: () => {
-        setCheckedStocks(new Set())
+        setSelectedStocksIds(new Set())
       },
     }
   )
@@ -112,7 +110,7 @@ export function StocksCalendar({
     await mutate(
       stockQueryKeys,
       api.deleteStocks(offer.id, { ids_to_delete: ids }),
-      { revalidate: false }
+      { revalidate: true }
     )
 
     if (
@@ -184,9 +182,12 @@ export function StocksCalendar({
     setIsDialogOpen(false)
   }
 
+  const hasFiltersApplied = Object.values(appliedFilters).some(Boolean)
   const stocks = data?.stocks || []
   const stockCount = data?.totalStockCount ?? 0
-  const hasStocks = Boolean(stockCount)
+  const hasStocks = Boolean(stockCount) && !hasFiltersApplied
+
+  const hasNoStocks = !stockCount && !hasFiltersApplied
 
   return (
     <>
@@ -212,13 +213,13 @@ export function StocksCalendar({
           )}
         </div>
       )}
-      {isLoading && <Spinner className={styles['spinner']} />}
+
       {!isOfferDisabled(offer) && (
         <div className={styles['cancel-banner']}>
           <StocksCalendarCancelBanner />
         </div>
       )}
-      {!hasStocks && (
+      {hasNoStocks && (
         <div className={styles['no-stocks-content']}>
           {isOfferSynchronized(offer) ? (
             <p>Aucune date à afficher</p>
@@ -246,7 +247,7 @@ export function StocksCalendar({
         </div>
       )}
       <div className={styles['container']}>
-        {!isLoading && hasStocks && (
+        {!hasNoStocks && (
           <div className={styles['content']}>
             <div className={styles['filters']}>
               <StocksCalendarFilters
@@ -274,14 +275,22 @@ export function StocksCalendar({
               </div>
             )}
             <StocksCalendarTable
+              isLoading={isLoading}
+              hasNoStocks={hasNoStocks}
               stocks={stocks}
               offer={offer}
               onDeleteStocks={deleteStocks}
-              checkedStocks={checkedStocks}
-              updateCheckedStocks={setCheckedStocks}
+              selectedStocksIds={selectedStocksIds}
+              setSelectedStocksIds={setSelectedStocksIds}
               departmentCode={departmentCode}
               mode={mode}
               onUpdateStock={updateStock}
+              onUpdateFilters={(filters) => {
+                //  Go back to the first page.
+                //  Because the current page may not exist anymore if there are less filtered dates than before
+                setPage(1)
+                setAppliedFilters(filters)
+              }}
             />
             <div className={styles['pagination']}>
               <Pagination
@@ -298,10 +307,10 @@ export function StocksCalendar({
         )}
 
         <StocksCalendarActionsBar
-          checkedStocks={checkedStocks}
+          selectedStocksIds={selectedStocksIds}
           hasStocks={hasStocks}
           deleteStocks={deleteStocks}
-          updateCheckedStocks={setCheckedStocks}
+          setSelectedStocksIds={setSelectedStocksIds}
           mode={mode}
           offerId={offer.id}
         />

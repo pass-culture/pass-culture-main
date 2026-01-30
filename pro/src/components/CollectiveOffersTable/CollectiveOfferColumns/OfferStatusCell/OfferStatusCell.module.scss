@@ -1,15 +1,11 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_size.scss" as size;
 
-.status-column {
-  min-width: rem.torem(100px);
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-@media screen and (max-width: size.$tablet) {
+@media screen and (min-width: size.$tablet) {
   .status-column {
-    text-align: end;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-width: rem.torem(100px);
   }
 }

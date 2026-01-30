@@ -28,10 +28,10 @@ function renderStocksCalendarActionsBar(
       <StocksCalendarActionsBar
         mode={OFFER_WIZARD_MODE.CREATION}
         offerId={1}
-        checkedStocks={new Set([])}
+        selectedStocksIds={new Set([])}
         deleteStocks={() => {}}
         hasStocks={false}
-        updateCheckedStocks={() => {}}
+        setSelectedStocksIds={() => {}}
         {...props}
       />
       <SnackBarContainer />
@@ -107,7 +107,7 @@ describe('StocksCalendarActionsBar', () => {
   it('should show the checked stocks action bar when some stocks are checked', () => {
     renderStocksCalendarActionsBar({
       hasStocks: true,
-      checkedStocks: new Set([1]),
+      selectedStocksIds: new Set([1]),
     })
 
     expect(
@@ -128,8 +128,8 @@ describe('StocksCalendarActionsBar', () => {
 
     renderStocksCalendarActionsBar({
       hasStocks: true,
-      checkedStocks: new Set([1, 2]),
-      updateCheckedStocks: updateCheckedStocks,
+      selectedStocksIds: new Set([1, 2]),
+      setSelectedStocksIds: updateCheckedStocks,
     })
 
     await userEvent.click(

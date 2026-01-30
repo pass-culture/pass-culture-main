@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { cleanup, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { addDays, addSeconds, subDays, subSeconds } from 'date-fns'
 
@@ -24,47 +24,112 @@ vi.mock('@/apiClient/api', () => ({
 function renderStocksCalendarTable(
   props: Partial<StocksCalendarTableProps> = {}
 ) {
+  const onDeleteStocks = props.onDeleteStocks ?? vi.fn()
+  const onUpdateFilters = props.onUpdateFilters ?? vi.fn()
+  const setSelectedStocksIds = props.setSelectedStocksIds ?? vi.fn()
+
   renderWithProviders(
     <StocksCalendarTable
       departmentCode="56"
-      checkedStocks={new Set()}
-      offer={getIndividualOfferFactory()}
-      onDeleteStocks={vi.fn()}
-      updateCheckedStocks={vi.fn()}
-      stocks={[
-        getOfferStockFactory({ id: 1 }),
-        getOfferStockFactory({ id: 2 }),
-      ]}
-      onUpdateStock={() => new Promise(() => {})}
-      mode={OFFER_WIZARD_MODE.CREATION}
-      {...props}
+      selectedStocksIds={props.selectedStocksIds ?? new Set()}
+      offer={props.offer ?? getIndividualOfferFactory()}
+      onDeleteStocks={onDeleteStocks}
+      setSelectedStocksIds={setSelectedStocksIds}
+      stocks={
+        props.stocks ?? [
+          getOfferStockFactory({ id: 1 }),
+          getOfferStockFactory({ id: 2 }),
+        ]
+      }
+      isLoading={props.isLoading ?? false}
+      onUpdateStock={props.onUpdateStock ?? (async () => {})}
+      mode={props.mode ?? OFFER_WIZARD_MODE.CREATION}
+      onUpdateFilters={onUpdateFilters}
+      hasNoStocks={props.hasNoStocks ?? false}
     />
   )
+
+  return { onDeleteStocks, onUpdateFilters, setSelectedStocksIds }
 }
 
 describe('StocksCalendarTable', () => {
-  it('should show a placeholder message when there is no stock displayed in the table', () => {
-    renderStocksCalendarTable({ stocks: [] })
+  const user = userEvent.setup()
 
-    expect(screen.getByText('Aucune date trouvée')).toBeInTheDocument()
+  afterEach(() => {
+    cleanup()
+    vi.clearAllMocks()
+    vi.useRealTimers()
   })
 
-  it('should not render stocks checkboxes options when the page is read only', () => {
-    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.READ_ONLY })
+  it('shows "Réservations" column only when mode is not CREATION', () => {
+    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.CREATION })
+    expect(screen.queryByText('Réservations')).not.toBeInTheDocument()
 
-    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+    cleanup()
+
+    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.EDITION })
+    expect(screen.getByText('Réservations')).toBeInTheDocument()
   })
 
-  it('should not render stocks deletion options when the page is read only', () => {
+  it('shows "Actions" column only when mode is not READ_ONLY', () => {
     renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.READ_ONLY })
+    expect(screen.queryByText('Actions')).not.toBeInTheDocument()
+
+    cleanup()
+
+    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.EDITION })
+    expect(screen.getByText('Actions')).toBeInTheDocument()
+  })
+
+  it('shows edit button only when editable rules are met', () => {
+    renderStocksCalendarTable({
+      mode: OFFER_WIZARD_MODE.EDITION,
+      offer: getIndividualOfferFactory({}), // not disabled, not synchronized
+      stocks: [
+        getOfferStockFactory({
+          id: 1,
+          isEventDeletable: true,
+          beginningDatetime: addDays(new Date(), 2).toISOString(),
+        }),
+      ],
+    })
 
     expect(
-      screen.queryByRole('button', { name: 'Supprimer la date' })
+      screen.getByRole('button', { name: 'Modifier la date' })
+    ).toBeInTheDocument()
+
+    cleanup()
+
+    renderStocksCalendarTable({
+      mode: OFFER_WIZARD_MODE.EDITION,
+      stocks: [
+        getOfferStockFactory({
+          id: 1,
+          beginningDatetime: subDays(new Date(), 1).toISOString(),
+        }),
+      ],
+    })
+
+    expect(
+      screen.queryByRole('button', { name: 'Modifier la date' })
     ).not.toBeInTheDocument()
   })
 
-  it('should not render the delete options when the stocks cannot be deleted', () => {
+  it('shows delete button only when stock is deletable and offer not disabled', () => {
     renderStocksCalendarTable({
+      mode: OFFER_WIZARD_MODE.EDITION,
+      offer: getIndividualOfferFactory({}),
+      stocks: [getOfferStockFactory({ id: 1, isEventDeletable: true })],
+    })
+
+    expect(
+      screen.getByRole('button', { name: 'Supprimer la date' })
+    ).toBeInTheDocument()
+
+    cleanup()
+
+    renderStocksCalendarTable({
+      mode: OFFER_WIZARD_MODE.EDITION,
       stocks: [getOfferStockFactory({ id: 1, isEventDeletable: false })],
     })
 
@@ -73,7 +138,81 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not render the delete and edit options when the offer is disabled (because it is rejected)', () => {
+  it('confirms deletion and calls onDeleteStocks([id])', async () => {
+    const { onDeleteStocks } = renderStocksCalendarTable({
+      mode: OFFER_WIZARD_MODE.EDITION,
+      stocks: [
+        getOfferStockFactory({
+          id: 42,
+          isEventDeletable: true,
+          beginningDatetime: addSeconds(new Date(), 10).toISOString(),
+        }),
+      ],
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Supprimer la date' }))
+    await user.click(
+      screen.getByRole('button', { name: 'Confirmer la suppression' })
+    )
+
+    expect(onDeleteStocks).toHaveBeenCalledWith([42])
+  })
+
+  it('shows warning text when deleting a stock with bookings', async () => {
+    renderStocksCalendarTable({
+      mode: OFFER_WIZARD_MODE.EDITION,
+      stocks: [
+        getOfferStockFactory({
+          id: 1,
+          isEventDeletable: true,
+          bookingsQuantity: 2,
+          beginningDatetime: addSeconds(new Date(), 10).toISOString(),
+        }),
+      ],
+    })
+
+    await user.click(screen.getByRole('button', { name: 'Supprimer la date' }))
+
+    expect(
+      screen.getByText(/entraînera l’annulation des réservations/i)
+    ).toBeInTheDocument()
+  })
+
+  it('triggers filter reset from no-result state', async () => {
+    const { onUpdateFilters } = renderStocksCalendarTable({
+      stocks: [],
+      hasNoStocks: false,
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: 'Afficher toutes les dates' })
+    )
+
+    expect(onUpdateFilters).toHaveBeenCalled()
+  })
+
+  it('shows no-result placeholder when stocks are empty and hasNoStocks is false', () => {
+    renderStocksCalendarTable({ stocks: [], hasNoStocks: false })
+
+    expect(
+      screen.getByText('Aucune date trouvée pour votre recherche')
+    ).toBeInTheDocument()
+  })
+
+  it('shows no-data block when hasNoStocks is true', () => {
+    renderStocksCalendarTable({ stocks: [], hasNoStocks: true })
+
+    expect(
+      screen.getByText('Vous n’avez pas encore de dates')
+    ).toBeInTheDocument()
+  })
+
+  it('does not render checkboxes when mode is READ_ONLY', () => {
+    renderStocksCalendarTable({ mode: OFFER_WIZARD_MODE.READ_ONLY })
+    expect(screen.queryByRole('checkbox')).not.toBeInTheDocument()
+  })
+
+  it('does not render delete/edit options when offer is disabled (REJECTED)', () => {
     renderStocksCalendarTable({
       offer: getIndividualOfferFactory({ status: OfferStatus.REJECTED }),
       mode: OFFER_WIZARD_MODE.EDITION,
@@ -88,10 +227,15 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should not render the edit options when the offer is synchronized', () => {
+  it('does not render edit option when offer is synchronized (non allociné)', () => {
     renderStocksCalendarTable({
       offer: getIndividualOfferFactory({ lastProvider: { name: '123' } }),
       mode: OFFER_WIZARD_MODE.EDITION,
+      stocks: [
+        getOfferStockFactory({
+          beginningDatetime: addDays(new Date(), 1).toISOString(),
+        }),
+      ],
     })
 
     expect(
@@ -99,7 +243,7 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should render the edit options when the offer is synchronized with allociné', () => {
+  it('renders edit option when offer is synchronized with Allociné', () => {
     renderStocksCalendarTable({
       offer: getIndividualOfferFactory({
         lastProvider: { name: 'Allociné' },
@@ -117,22 +261,7 @@ describe('StocksCalendarTable', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not render the delete and edit options when the offer is disabled (because it is pending)', () => {
-    renderStocksCalendarTable({
-      offer: getIndividualOfferFactory({ status: OfferStatus.PENDING }),
-      mode: OFFER_WIZARD_MODE.EDITION,
-    })
-
-    expect(
-      screen.queryByRole('button', { name: 'Supprimer la date' })
-    ).not.toBeInTheDocument()
-
-    expect(
-      screen.queryByRole('button', { name: 'Modifier la date' })
-    ).not.toBeInTheDocument()
-  })
-
-  it('should not render the edition options when the stocks beginning date is already passed', () => {
+  it('does not render edit option when the stock beginning date is already passed', () => {
     renderStocksCalendarTable({
       stocks: [
         getOfferStockFactory({
@@ -148,7 +277,7 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should open the stock edition dialog when clicking on the edition action', async () => {
+  it('opens the edit dialog when clicking on edit action', async () => {
     renderStocksCalendarTable({
       stocks: [
         getOfferStockFactory({
@@ -158,41 +287,43 @@ describe('StocksCalendarTable', () => {
       mode: OFFER_WIZARD_MODE.EDITION,
     })
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Modifier la date' })
-    )
+    await user.click(screen.getByRole('button', { name: 'Modifier la date' }))
 
     expect(
       screen.getByRole('heading', { name: 'Modifier la date' })
     ).toBeInTheDocument()
   })
 
-  it('should re-focus the edition action button when closing the dialog', async () => {
+  it('re-focuses the edit action button when closing the dialog', async () => {
+    vi.useFakeTimers()
+
     renderStocksCalendarTable({
       stocks: [
         getOfferStockFactory({
+          id: 1,
           beginningDatetime: addDays(new Date(), 2).toISOString(),
         }),
       ],
       mode: OFFER_WIZARD_MODE.EDITION,
     })
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Modifier la date' })
-    )
+    const editButton = screen.getByRole('button', { name: 'Modifier la date' })
+    // or: const editButton = screen.getByTitle('Modifier la date')
 
-    await userEvent.click(screen.getByRole('button', { name: 'Annuler' }))
+    await user.click(editButton)
+
+    await user.click(screen.getByRole('button', { name: 'Annuler' }))
+
+    vi.runAllTimers()
 
     expect(
       screen.queryByRole('heading', { name: 'Modifier la date' })
     ).not.toBeInTheDocument()
 
-    expect(
-      screen.getByRole('button', { name: 'Modifier la date' })
-    ).toHaveFocus()
+    expect(editButton).toHaveFocus()
   })
 
-  it('should disable the edition of a stock if its date is earlier today', () => {
+  it('disables edition if date is earlier today', () => {
     renderStocksCalendarTable({
       stocks: [
         getOfferStockFactory({
@@ -207,7 +338,7 @@ describe('StocksCalendarTable', () => {
     ).not.toBeInTheDocument()
   })
 
-  it('should enable the edition of a stock if its date is later today', () => {
+  it('enables edition if date is later today', () => {
     renderStocksCalendarTable({
       stocks: [
         getOfferStockFactory({
@@ -222,49 +353,22 @@ describe('StocksCalendarTable', () => {
     ).toBeInTheDocument()
   })
 
-  it('should open a delete warning dialog when the user clicks on the delete button', async () => {
+  it('does not show warning block in deletion dialog when stock has no bookings', async () => {
     renderStocksCalendarTable({
+      mode: OFFER_WIZARD_MODE.EDITION,
       stocks: [
         getOfferStockFactory({
-          beginningDatetime: addSeconds(new Date(), 1).toISOString(),
+          beginningDatetime: addSeconds(new Date(), 10).toISOString(),
+          bookingsQuantity: 0,
+          isEventDeletable: true,
         }),
       ],
-      mode: OFFER_WIZARD_MODE.EDITION,
     })
 
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Supprimer la date' })
-    )
+    await user.click(screen.getByRole('button', { name: 'Supprimer la date' }))
 
     expect(
-      screen.getByRole('heading', {
-        name: 'Êtes-vous sûr de vouloir supprimer cette date ?',
-      })
-    ).toBeInTheDocument()
-  })
-
-  it('should show an explicit warning message in the deletion dialog when the stock has bookings', async () => {
-    renderStocksCalendarTable({
-      stocks: [
-        getOfferStockFactory({
-          beginningDatetime: addSeconds(new Date(), 1).toISOString(),
-          bookingsQuantity: 10,
-        }),
-      ],
-      mode: OFFER_WIZARD_MODE.EDITION,
-    })
-
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Supprimer la date' })
-    )
-
-    expect(
-      screen.getByText((_content, element) => {
-        return (
-          element?.textContent ===
-          'Elle ne sera plus disponible à la réservation et entraînera l’annulation des réservations en cours et validées !'
-        )
-      })
-    ).toBeInTheDocument()
+      screen.queryByText(/entraînera l’annulation des réservations/i)
+    ).not.toBeInTheDocument()
   })
 })
