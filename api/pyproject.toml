@@ -92,7 +92,7 @@ zeep = "4.3.2"
 optional = true
 
 [tool.poetry.group.dev.dependencies]
-commitizen = "^4.11.3"
+commitizen = "^4.12.1"
 debugpy = "^1.8.18"
 djlint = "1.36.4"
 jsbeautifier = "1.15.4"  # djlint requires 1.15.1 which is broken
@@ -106,7 +106,7 @@ pytest-mock = "^3.15.1"
 pytest-socket = "^0.7.0"
 pytest-split = "^0.10.0"
 requests-mock = "^1.12.1"
-ruff = "^0.14.11"
+ruff = "^0.14.14"
 types-protobuf = "^6.32.1.20251210"
 types-python-dateutil = "^2.9.0.20251115"
 types-pytz = "^2025.2.0.20251108"
