@@ -119,8 +119,6 @@ def create_account(
     send_activation_mail: bool = True,
     remote_updates: bool = True,
     phone_number: str | None = None,
-    apps_flyer_user_id: str | None = None,
-    apps_flyer_platform: str | None = None,
     firebase_pseudo_id: str | None = None,
     sso_provider: str | None = None,
     sso_user_id: str | None = None,
@@ -148,9 +146,6 @@ def create_account(
 
     if user.externalIds is None:
         user.externalIds = {}
-
-    if apps_flyer_user_id and apps_flyer_platform:
-        user.externalIds["apps_flyer"] = {"user": apps_flyer_user_id, "platform": apps_flyer_platform.upper()}
 
     if firebase_pseudo_id:
         user.externalIds["firebase_pseudo_id"] = firebase_pseudo_id

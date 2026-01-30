@@ -192,8 +192,6 @@ def create_account(body: serializers.AccountRequest) -> None:
             birthdate=body.birthdate,
             marketing_email_subscription=bool(body.marketing_email_subscription),
             is_email_validated=False,
-            apps_flyer_user_id=body.apps_flyer_user_id,
-            apps_flyer_platform=body.apps_flyer_platform,
             firebase_pseudo_id=body.firebase_pseudo_id,
         )
 
@@ -252,8 +250,6 @@ def create_account_with_google_sso(body: serializers.GoogleAccountRequest) -> au
             birthdate=body.birthdate,
             marketing_email_subscription=bool(body.marketing_email_subscription),
             is_email_validated=True,
-            apps_flyer_user_id=body.apps_flyer_user_id,
-            apps_flyer_platform=body.apps_flyer_platform,
             firebase_pseudo_id=body.firebase_pseudo_id,
         )
 

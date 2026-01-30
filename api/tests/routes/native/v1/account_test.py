@@ -711,8 +711,6 @@ class AccountCreationTest:
             "notifications": True,
             "token": "gnagna",
             "marketingEmailSubscription": True,
-            "appsFlyerUserId": "apps_flyer_user_id",
-            "appsFlyerPlatform": "iOS",
             "firebasePseudoId": "firebase_pseudo_id",
         }
 
@@ -733,10 +731,7 @@ class AccountCreationTest:
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated is False
         assert user.checkPassword(data["password"])
-        assert user.externalIds == {
-            "apps_flyer": {"user": "apps_flyer_user_id", "platform": "IOS"},
-            "firebase_pseudo_id": "firebase_pseudo_id",
-        }
+        assert user.externalIds == {"firebase_pseudo_id": "firebase_pseudo_id"}
 
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 1
@@ -934,8 +929,6 @@ class AccountCreationWithSSOTest:
                 "notifications": True,
                 "token": "recaptcha token",
                 "marketingEmailSubscription": True,
-                "appsFlyerUserId": "apps_flyer_user_id",
-                "appsFlyerPlatform": "iOS",
                 "firebasePseudoId": "firebase_pseudo_id",
             },
         )
@@ -951,10 +944,7 @@ class AccountCreationWithSSOTest:
         assert user.get_notification_subscriptions().marketing_email
         assert user.isEmailValidated
         assert user.password is None
-        assert user.externalIds == {
-            "apps_flyer": {"user": "apps_flyer_user_id", "platform": "IOS"},
-            "firebase_pseudo_id": "firebase_pseudo_id",
-        }
+        assert user.externalIds == {"firebase_pseudo_id": "firebase_pseudo_id"}
 
         mocked_check_recaptcha_token_is_valid.assert_called()
         assert len(mails_testing.outbox) == 0  # no email verification
@@ -2186,7 +2176,6 @@ class AccountSecurityTest:
         """
         assert db.session.query(users_models.User).first() is None
         data = {
-            "appsFlyerPlatform": "web",
             "birthdate": "2004-01-01",
             "email": "patrick@example.com",
             "marketingEmailSubscription": True,
