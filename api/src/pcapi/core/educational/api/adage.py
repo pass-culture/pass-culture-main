@@ -140,8 +140,9 @@ def synchronize_adage_partners(
         .all()
     )
     logger.info(
-        "Adage partners sync - inactive venues",
-        extra={"number_of_venues": len(inactive_venues), "deactivated_venues": [v.id for v in inactive_venues]},
+        "Adage partners sync - %s inactive venues",
+        len(inactive_venues),
+        extra={"inactive_venues": [v.id for v in inactive_venues]},
     )
 
     offerer_sirens_with_inactive_venue: set[str] = set()
@@ -159,8 +160,9 @@ def synchronize_adage_partners(
         .all()
     )
     logger.info(
-        "Adage partners sync - activated venues",
-        extra={"number_of_venues": len(active_venues), "activated_venues": [v.id for v in active_venues]},
+        "Adage partners sync - %s active venues",
+        len(active_venues),
+        extra={"active_venues": [v.id for v in active_venues]},
     )
 
     new_adage_id_by_venue_id: dict[int, str] = {}
@@ -185,8 +187,9 @@ def synchronize_adage_partners(
 
     db.session.flush()
     logger.info(
-        "Adage partners sync - adageId updates",
-        extra={"number_of_updates": len(new_adage_id_by_venue_id), "updates": new_adage_id_by_venue_id},
+        "Adage partners sync - %s adageId updates",
+        len(new_adage_id_by_venue_id),
+        extra={"updates": new_adage_id_by_venue_id},
     )
 
     ### STEP 4: list current allowed Offerers and Offerers that have a Venue with adageId
@@ -236,8 +239,16 @@ def synchronize_adage_partners(
         sirens_to_deactivate = {offerer.siren for offerer in offerers_to_check if _should_deactivate_offerer(offerer)}
 
     # STEP 7: update the Offerers
-    logger.info("Adage partners sync - SIRENs to activate", extra={"sirens_to_activate": sirens_to_activate})
-    logger.info("Adage partners sync - SIRENs to deactivate", extra={"sirens_to_deactivate": sirens_to_deactivate})
+    logger.info(
+        "Adage partners sync - %s SIRENs to activate",
+        len(sirens_to_activate),
+        extra={"sirens_to_activate": sirens_to_activate},
+    )
+    logger.info(
+        "Adage partners sync - %s SIRENs to deactivate",
+        len(sirens_to_deactivate),
+        extra={"sirens_to_deactivate": sirens_to_deactivate},
+    )
 
     db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.siren.in_(sirens_to_activate)).update(
         {offerers_models.Offerer.allowedOnAdage: True}, synchronize_session=False
