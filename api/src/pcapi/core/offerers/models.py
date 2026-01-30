@@ -1682,15 +1682,34 @@ class NoticeStatusMotivation(enum.Enum):
     NO_LINKED_BANK_ACCOUNT = "NO_LINKED_BANK_ACCOUNT"
 
 
+class NonPaymentNoticeBatchAssociation(PcObject, Model):
+    """Many-to-many association table"""
+
+    __tablename__ = "non_payment_notice_batch_association"
+
+    noticeId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("non_payment_notice.id", ondelete="CASCADE"), index=True, nullable=False
+    )
+    batchId: sa_orm.Mapped[int] = sa_orm.mapped_column(
+        sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), index=True, nullable=False
+    )
+
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "noticeId",
+            "batchId",
+            name="unique_non_payment_notice_batch_association",
+        ),
+    )
+
+
 class NonPaymentNotice(PcObject, Model):
     __tablename__ = "non_payment_notice"
 
     amount: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(10, 2), nullable=False)
+    # TODO (prouzet, 2026-01-30) batchId is deprecated and should be removed when data is migrated
     batchId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("cashflow_batch.id"), nullable=True, index=True
-    )
-    batch: sa_orm.Mapped["finance_models.CashflowBatch | None"] = sa_orm.relationship(
-        "CashflowBatch", foreign_keys=[batchId]
     )
     dateReceived: sa_orm.Mapped[date] = sa_orm.mapped_column(
         sa.Date, nullable=False, server_default=sa.func.current_date()
@@ -1719,6 +1738,9 @@ class NonPaymentNotice(PcObject, Model):
         sa.BigInteger, sa.ForeignKey("offerer.id", ondelete="SET NULL"), nullable=True, index=True
     )
     offerer: sa_orm.Mapped["Offerer | None"] = sa_orm.relationship("Offerer", foreign_keys=[offererId])
+    batches: sa_orm.Mapped[list["finance_models.CashflowBatch"]] = sa_orm.relationship(
+        secondary=NonPaymentNoticeBatchAssociation.__tablename__
+    )
 
 
 class NoticeRecipientType(enum.Enum):

@@ -85,9 +85,7 @@
         {% if notice.venue %}{{ links.build_venue_name_to_details_link(notice.venue) }}{% endif %}
       </td>
       <td>{{ notice.motivation | format_notice_status_motivation }}</td>
-      <td>
-        {% if notice.batch %}{{ notice.batch.label }}{% endif %}
-      </td>
+      <td>{{ notice.batches | sort(attribute="id") | map(attribute="label") | join(", ") }}</td>
     </tr>
   {% endfor %}
 {% endblock table_body %}

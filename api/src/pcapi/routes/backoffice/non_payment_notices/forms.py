@@ -191,7 +191,7 @@ class CloseForm(FlaskForm):
     )
     batch = fields.PCTomSelectField(
         "N° de virement",
-        multiple=False,
+        multiple=True,
         choices=[],
         validate_choice=False,
         endpoint="backoffice_web.autocomplete_cashflow_batches",

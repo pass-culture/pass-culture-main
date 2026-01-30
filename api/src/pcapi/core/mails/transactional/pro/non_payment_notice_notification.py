@@ -9,7 +9,7 @@ from pcapi.utils.date import get_date_formatted_for_email
 def _get_notice_params(notice: offerers_models.NonPaymentNotice) -> dict:
     return {
         "AMOUNT": format_price(notice.amount, notice.offerer),
-        "BATCH_LABEL": notice.batch.label if notice.batch else None,
+        "BATCH_LABEL": ", ".join([batch.label for batch in notice.batches]) or None,
         "DATE_RECEIVED": get_date_formatted_for_email(notice.dateReceived),
         "MOTIVATION": notice.motivation.name if notice.motivation else None,
         "OFFERER_NAME": notice.offerer.name if notice.offerer else None,

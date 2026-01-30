@@ -64,7 +64,9 @@ def _get_notices(form: forms.GetNoticesSearchForm) -> list[offerers_models.NonPa
         ids_query = ids_query.filter(offerers_models.NonPaymentNotice.venueId.in_(form.venue.data))
 
     if form.batch.data:
-        ids_query = ids_query.filter(offerers_models.NonPaymentNotice.batchId.in_(form.batch.data))
+        ids_query = ids_query.join(offerers_models.NonPaymentNotice.batches).filter(
+            finance_models.CashflowBatch.id.in_(form.batch.data)
+        )
 
     if form.from_to_date.data:
         if form.from_to_date.from_date is not None and form.from_to_date.to_date is not None:
@@ -113,7 +115,7 @@ def _get_notices(form: forms.GetNoticesSearchForm) -> list[offerers_models.NonPa
                 offerers_models.Offerer.name,
                 offerers_models.Offerer.siren,
             ),
-            sa_orm.joinedload(offerers_models.NonPaymentNotice.batch).load_only(finance_models.CashflowBatch.label),
+            sa_orm.joinedload(offerers_models.NonPaymentNotice.batches).load_only(finance_models.CashflowBatch.label),
         )
         .order_by(sa.desc(offerers_models.NonPaymentNotice.dateCreated))
     )
@@ -283,7 +285,7 @@ def get_set_pending_form(notice_id: int) -> utils.BackofficeResponse:
 def _get_notice(notice_id: int) -> offerers_models.NonPaymentNotice:
     query = db.session.query(offerers_models.NonPaymentNotice).options(
         sa_orm.joinedload(offerers_models.NonPaymentNotice.offerer).load_only(offerers_models.Offerer.name),
-        sa_orm.joinedload(offerers_models.NonPaymentNotice.batch).load_only(finance_models.CashflowBatch.label),
+        sa_orm.joinedload(offerers_models.NonPaymentNotice.batches).load_only(finance_models.CashflowBatch.label),
     )
     return get_or_404_from_query(query, notice_id)
 
@@ -358,9 +360,18 @@ def close(notice_id: int) -> utils.BackofficeResponse:
         flash(utils.build_form_error_msg(form), "warning")
         return _redirect_to_list()
 
+    if form.batch.data:
+        batches = (
+            db.session.query(finance_models.CashflowBatch)
+            .filter(finance_models.CashflowBatch.id.in_(form.batch.data))
+            .all()
+        )
+    else:
+        batches = []
+
     notice.status = offerers_models.NoticeStatus.CLOSED
     notice.motivation = offerers_models.NoticeStatusMotivation[form.motivation.data]
-    notice.batchId = int(form.batch.data[0]) if form.batch.data else None
+    notice.batches = batches
     db.session.add(notice)
     db.session.flush()
     db.session.refresh(notice)

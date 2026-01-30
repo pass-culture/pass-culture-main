@@ -52,7 +52,10 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
             status=offerers_models.NoticeStatus.CLOSED,
             noticeType=offerers_models.NoticeType.BAILIFF,
             motivation=offerers_models.NoticeStatusMotivation.ALREADY_PAID,
-            batch=finance_factories.CashflowBatchFactory(label="VIR123"),
+            batches=[
+                finance_factories.CashflowBatchFactory(label="VIR98"),
+                finance_factories.CashflowBatchFactory(label="VIR123"),
+            ],
             dateCreated=datetime.date.today() - datetime.timedelta(days=2),
         )
 
@@ -103,7 +106,7 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
         assert rows[2]["Entité juridique"] == closed_notice.offerer.name
         assert rows[2]["Partenaire culturel"] == closed_notice.venue.name
         assert rows[2]["Motif"] == "Déjà payé"
-        assert rows[2]["N° de virement"] == "VIR123"
+        assert rows[2]["N° de virement"] == "VIR98, VIR123"
 
     def test_list_notices_by_id(self, authenticated_client):
         notice = offerers_factories.NonPaymentNoticeFactory()
@@ -183,8 +186,8 @@ class ListNonPaymentNoticesTest(GetEndpointHelper):
 
     def test_list_notices_by_batch(self, authenticated_client):
         batch = finance_factories.CashflowBatchFactory()
-        notice = offerers_factories.NonPaymentNoticeFactory(batch=batch)
-        offerers_factories.NonPaymentNoticeFactory(batch=finance_factories.CashflowBatchFactory())
+        notice = offerers_factories.NonPaymentNoticeFactory(batches=[batch, finance_factories.CashflowBatchFactory()])
+        offerers_factories.NonPaymentNoticeFactory(batches=[finance_factories.CashflowBatchFactory()])
         offerers_factories.NonPaymentNoticeFactory()
         batch_id = str(batch.id)
 
@@ -297,7 +300,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.offerer is None
         assert notice.venue is None
         assert notice.motivation is None
-        assert notice.batch is None
+        assert len(notice.batches) == 0
 
         # No action when not associated with offerer nor venue
         assert db.session.query(history_models.ActionHistory).count() == 0
@@ -335,7 +338,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.offerer == offerer
         assert notice.venue is None
         assert notice.motivation is None
-        assert notice.batch is None
+        assert len(notice.batches) == 0
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
@@ -381,7 +384,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.offerer == venue.managingOfferer
         assert notice.venue == venue
         assert notice.motivation is None
-        assert notice.batch is None
+        assert len(notice.batches) == 0
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
@@ -428,7 +431,7 @@ class CreateNonPaymentNoticeTest(PostEndpointHelper):
         assert notice.offerer == offerer
         assert notice.venue == venue
         assert notice.motivation is None
-        assert notice.batch is None
+        assert len(notice.batches) == 0
 
         action = db.session.query(history_models.ActionHistory).one()
         assert action.actionType == history_models.ActionType.NON_PAYMENT_NOTICE_CREATED
@@ -565,7 +568,7 @@ class EditTest(PostEndpointHelper):
         assert notice.offerer == venue.managingOfferer
         assert notice.venue == venue
         assert notice.motivation is None
-        assert notice.batch is None
+        assert len(notice.batches) == 0
 
         assert db.session.query(history_models.ActionHistory).count() == 0
 
@@ -793,14 +796,22 @@ class CloseTest(PostEndpointHelper):
     )
     def test_terminate(self, authenticated_client, motivation, recipient_type, expected_template):
         offerer = offerers_factories.OffererFactory()
-        batch = finance_factories.CashflowBatchFactory()
+        batches = [
+            finance_factories.CashflowBatchFactory(label="VIR10"),
+            finance_factories.CashflowBatchFactory(label="VIR20"),
+        ]
+        finance_factories.CashflowBatchFactory(label="VIR30")  # should not be associated
         notice = offerers_factories.NonPaymentNoticeFactory(
             amount=Decimal(1234.5), dateReceived=datetime.date(2025, 8, 7), offerer=offerer
         )
         response = self.post_to_endpoint(
             authenticated_client,
             notice_id=notice.id,
-            form={"motivation": motivation.name, "recipient": recipient_type.name, "batch": batch.id},
+            form={
+                "motivation": motivation.name,
+                "recipient": recipient_type.name,
+                "batch": [batch.id for batch in batches],
+            },
             follow_redirects=True,
         )
         assert response.status_code == 200
@@ -816,7 +827,7 @@ class CloseTest(PostEndpointHelper):
         assert mails_testing.outbox[0]["To"] == notice.emitterEmail
         assert mails_testing.outbox[0]["params"] == {
             "AMOUNT": "1234,50 €",
-            "BATCH_LABEL": batch.label,
+            "BATCH_LABEL": "VIR10, VIR20",
             "DATE_RECEIVED": "jeudi 7 août 2025",
             "MOTIVATION": motivation.name,
             "OFFERER_NAME": offerer.name,
