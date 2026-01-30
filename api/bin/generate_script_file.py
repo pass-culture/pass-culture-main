@@ -26,10 +26,10 @@ HEADER = """\
 \"""
 Job console documentation here: https://www.notion.so/passcultureapp/Documentation-Job-Console-769beeacd5a146de9c97b6f8ee544276
 
-You can start the job from the infrastructure repository with github cli :
+You can start the job from the infra repository with github cli :
 
-gh workflow run on_dispatch_pcapi_console_job.yml \\
-  -f ENVIRONMENT=testing \\
+gh workflow run on_dispatch_pcapi_console_job.yaml \\
+  -f ENVIRONMENT_SHORT_NAME=tst \\
   -f RESOURCES="512Mi/.5" \\
   -f BRANCH_NAME={git_branch_name} \\
   -f NAMESPACE={namespace} \\
