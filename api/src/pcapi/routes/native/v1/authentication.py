@@ -22,6 +22,7 @@ from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ForbiddenError
 from pcapi.models.feature import FeatureToggle
 from pcapi.routes.native.security import authenticated_and_active_user_required
+from pcapi.routes.native.security import authenticated_with_refresh_token
 from pcapi.routes.native.v1.serialization.authentication import ChangePasswordRequest
 from pcapi.routes.native.v1.serialization.authentication import RequestPasswordResetRequest
 from pcapi.routes.native.v1.serialization.authentication import ResetPasswordRequest
@@ -77,15 +78,11 @@ def signin(body: authentication.SigninRequest) -> authentication.SigninResponse:
 
 
 @blueprint.native_route("/refresh_access_token", methods=["POST"])
-@jwt_required(refresh=True)
+@authenticated_with_refresh_token
 @spectree_serialize(response_model=authentication.RefreshResponse, api=blueprint.api, on_error_statuses=[401])
 def refresh() -> authentication.RefreshResponse:
-    email = get_jwt_identity()
-    user = find_user_by_email(email)
-    if not user:
-        raise ApiErrors({"email": "unknown"}, status_code=401)
-    users_api.update_last_connection_date(user)
-    return authentication.RefreshResponse(access_token=users_api.create_user_access_token(user))
+    users_api.update_last_connection_date(current_user)
+    return authentication.RefreshResponse(access_token=users_api.create_user_access_token(current_user))
 
 
 @blueprint.native_route("/request_password_reset", methods=["POST"])
