@@ -186,7 +186,6 @@ export function StocksCalendar({
 
   const stocks = data?.stocks || []
   const stockCount = data?.totalStockCount ?? 0
-  const hasStocks = Boolean(stockCount)
 
   return (
     <>
@@ -198,7 +197,7 @@ export function StocksCalendar({
           ) : (
             <h2 className={styles['title']}>{'Horaires'}</h2>
           )}
-          {hasStocks && !isOfferSynchronized(offer) && (
+          {offer.hasStocks && !isOfferSynchronized(offer) && (
             <DialogBuilderButton
               triggerLabel="Ajouter une ou plusieurs dates"
               triggerVariant={ButtonVariant.SECONDARY}
@@ -218,7 +217,7 @@ export function StocksCalendar({
           <StocksCalendarCancelBanner />
         </div>
       )}
-      {!hasStocks && (
+      {!offer.hasStocks && (
         <div className={styles['no-stocks-content']}>
           {isOfferSynchronized(offer) ? (
             <p>Aucune date à afficher</p>
@@ -246,7 +245,7 @@ export function StocksCalendar({
         </div>
       )}
       <div className={styles['container']}>
-        {!isLoading && hasStocks && (
+        {!isLoading && offer.hasStocks && (
           <div className={styles['content']}>
             <div className={styles['filters']}>
               <StocksCalendarFilters
@@ -299,7 +298,7 @@ export function StocksCalendar({
 
         <StocksCalendarActionsBar
           checkedStocks={checkedStocks}
-          hasStocks={hasStocks}
+          hasStocks={offer.hasStocks}
           deleteStocks={deleteStocks}
           updateCheckedStocks={setCheckedStocks}
           mode={mode}

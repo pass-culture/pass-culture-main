@@ -67,8 +67,17 @@ const LABEL = {
 }
 
 describe('StocksCalendar', () => {
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
+
   it('should display a button to add calendar infos when there are no stocks yet', async () => {
-    renderStocksCalendar([])
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        hasStocks: false,
+      }),
+    })
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
@@ -80,7 +89,12 @@ describe('StocksCalendar', () => {
   })
 
   it('should display an info banner', async () => {
-    renderStocksCalendar([])
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        hasStocks: false,
+      }),
+    })
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
@@ -95,7 +109,11 @@ describe('StocksCalendar', () => {
 
   it('should not display an info banner if the offer is disabled', async () => {
     renderStocksCalendar([], {
-      offer: getIndividualOfferFactory({ status: OfferStatus.REJECTED }),
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        status: OfferStatus.REJECTED,
+        hasStocks: false,
+      }),
     })
 
     await waitFor(() => {
@@ -108,7 +126,12 @@ describe('StocksCalendar', () => {
   })
 
   it('should open the recurrence form when clicking on the button when there are no stocks yet', async () => {
-    renderStocksCalendar([])
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        hasStocks: false,
+      }),
+    })
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
@@ -200,7 +223,12 @@ describe('StocksCalendar', () => {
   })
 
   it('should close the dialog when the form is validated', async () => {
-    renderStocksCalendar([])
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        hasStocks: false,
+      }),
+    })
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
@@ -273,7 +301,12 @@ describe('StocksCalendar', () => {
   })
 
   it('should not show the total number of stocks if there is none', async () => {
-    renderStocksCalendar([])
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        hasStocks: false,
+      }),
+    })
 
     await waitFor(() => {
       expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
@@ -316,6 +349,7 @@ describe('StocksCalendar', () => {
     renderStocksCalendar([], {
       offer: getIndividualOfferFactory({
         priceCategories: [{ id: 1, label: 'Tarif', price: 1 }],
+        hasStocks: false,
       }),
     })
 
@@ -430,5 +464,213 @@ describe('StocksCalendar', () => {
     expect(
       screen.queryByRole('button', { name: LABEL.noDateAction })
     ).not.toBeInTheDocument()
+  })
+
+  it('should show success message after deleting multiple stocks', async () => {
+    const stocks = Array(5)
+      .fill(null)
+      .map((_, index) => getOfferStockFactory({ id: index }))
+
+    vi.spyOn(api, 'getStocks').mockResolvedValue(
+      getStocksResponseFactory({
+        stocks,
+        totalStockCount: stocks.length,
+      })
+    )
+
+    vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
+      getStocksResponseFactory({
+        stocks: [],
+        totalStockCount: 2,
+      })
+    )
+
+    renderWithProviders(
+      <>
+        <StocksCalendar
+          offer={getIndividualOfferFactory({
+            priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+          })}
+          mode={OFFER_WIZARD_MODE.CREATION}
+          timetableTypeRadioGroupShown={false}
+        />
+        <SnackBarContainer />
+      </>
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(screen.getAllByRole('checkbox')[1])
+    await userEvent.click(screen.getAllByRole('checkbox')[2])
+    await userEvent.click(screen.getAllByRole('checkbox')[3])
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Supprimer ces dates' })
+    )
+
+    expect(screen.getByText(/3 dates ont été supprimées/)).toBeInTheDocument()
+  })
+
+  it('should delete stocks and refresh offer in edition mode', async () => {
+    renderStocksCalendar(defaultStocks, {
+      mode: OFFER_WIZARD_MODE.EDITION,
+    })
+
+    const deleteSpy = vi.spyOn(api, 'deleteStocks').mockResolvedValueOnce(
+      getStocksResponseFactory({
+        stocks: [],
+        totalStockCount: 0,
+      })
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.click(
+      screen.getAllByRole('button', { name: 'Supprimer la date' })[0]
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Confirmer la suppression' })
+    )
+
+    expect(deleteSpy).toHaveBeenCalledOnce()
+
+    expect(screen.getByText(/Une date a été supprimée/)).toBeInTheDocument()
+  })
+
+  it('should show an error message when updating a stock fails', async () => {
+    renderStocksCalendar(
+      [
+        getOfferStockFactory({
+          id: 1,
+          beginningDatetime: addDays(new Date(), 2).toISOString().split('T')[0],
+        }),
+      ],
+      {
+        mode: OFFER_WIZARD_MODE.EDITION,
+      }
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    vi.spyOn(api, 'bulkUpdateEventStocks').mockRejectedValueOnce(
+      new Error('Network error')
+    )
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Modifier la date' })
+    )
+
+    await userEvent.click(screen.getByRole('button', { name: 'Valider' }))
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Une erreur est survenue lors de la modification des dates'
+        )
+      ).toBeInTheDocument()
+    })
+  })
+
+  it('should update sorting when selecting a sort option', async () => {
+    const stocksResponse = getStocksResponseFactory({
+      stocks: defaultStocks,
+      totalStockCount: defaultStocks.length,
+    })
+
+    const getStocksSpy = vi
+      .spyOn(api, 'getStocks')
+      .mockResolvedValueOnce(stocksResponse)
+      .mockResolvedValueOnce(stocksResponse)
+
+    renderWithProviders(
+      <>
+        <StocksCalendar
+          offer={getIndividualOfferFactory({
+            priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+          })}
+          mode={OFFER_WIZARD_MODE.CREATION}
+          timetableTypeRadioGroupShown={false}
+        />
+        <SnackBarContainer />
+      </>
+    )
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    await userEvent.selectOptions(
+      screen.getByLabelText('Trier par'),
+      'REMAINING_QUANTITY desc'
+    )
+
+    await waitFor(() => {
+      expect(getStocksSpy).toHaveBeenLastCalledWith(
+        expect.anything(),
+        undefined,
+        undefined,
+        undefined,
+        'REMAINING_QUANTITY',
+        true,
+        1,
+        20
+      )
+    })
+  })
+
+  it('should display "Aucune date à afficher" for synchronized offers without stocks', async () => {
+    renderStocksCalendar([], {
+      offer: getIndividualOfferFactory({
+        priceCategories: [{ id: 1, label: 'Tarif 1', price: 1 }],
+        lastProvider: { name: 'Provider' },
+        hasStocks: false,
+      }),
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(screen.getByText('Aucune date à afficher')).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: LABEL.dateAction })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should not show header section in read only mode', async () => {
+    renderStocksCalendar(defaultStocks, {
+      mode: OFFER_WIZARD_MODE.READ_ONLY,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    expect(
+      screen.queryByRole('heading', { name: 'Horaires' })
+    ).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: LABEL.noDateAction })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should show subtitle when timetableTypeRadioGroupShown is true', async () => {
+    renderStocksCalendar(defaultStocks, {
+      timetableTypeRadioGroupShown: true,
+    })
+
+    await waitFor(() => {
+      expect(screen.queryByText('Chargement en cours')).not.toBeInTheDocument()
+    })
+
+    const heading = screen.getByRole('heading', { name: 'Horaires' })
+    expect(heading.tagName).toBe('H3')
   })
 })
