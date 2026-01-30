@@ -191,8 +191,6 @@ describe('offers', () => {
           longitude: 2.3785,
         },
       },
-      isSoldOut: false,
-      isExpired: false,
       visualDisabilityCompliant: true,
       mentalDisabilityCompliant: true,
       audioDisabilityCompliant: true,
@@ -231,8 +229,6 @@ describe('offers', () => {
           name: 'Le Petit Rintintin Management',
         },
       },
-      isSoldOut: false,
-      isExpired: false,
       visualDisabilityCompliant: true,
       mentalDisabilityCompliant: true,
       audioDisabilityCompliant: true,
@@ -341,45 +337,6 @@ describe('offers', () => {
     expect(offerInParisName).toBeInTheDocument()
   })
 
-  it('should display only non sold-out offers', async () => {
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
-      collectiveOffers: [
-        {
-          ...offerInParis,
-          isSoldOut: true,
-        },
-        offerInCayenne,
-      ],
-    })
-
-    renderOffers(offersProps, adageUser)
-
-    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
-    expect(listItemsInOffer).toHaveLength(1)
-    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-  })
-
-  it('should not display expired offer', async () => {
-    // Given
-    vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
-      collectiveOffers: [
-        {
-          ...offerInParis,
-          isExpired: true,
-        },
-        offerInCayenne,
-      ],
-    })
-
-    // When
-    renderOffers(offersProps, adageUser)
-
-    // Then
-    const listItemsInOffer = await screen.findAllByTestId('offer-listitem')
-    expect(listItemsInOffer).toHaveLength(1)
-    expect(screen.getByText(offerInCayenne.name)).toBeInTheDocument()
-  })
-
   it('should display survey satisfaction', async () => {
     // Given
     vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
@@ -472,13 +429,10 @@ describe('offers', () => {
       expect(listItemsInOffer).toHaveLength(0)
     })
 
-    it('when all offers are not bookable', async () => {
+    it('when no offers', async () => {
       // Given
       vi.spyOn(apiAdage, 'getCollectiveOfferTemplates').mockResolvedValueOnce({
-        collectiveOffers: [
-          { ...offerInCayenne, isExpired: true },
-          { ...offerInParis, isSoldOut: true },
-        ],
+        collectiveOffers: [],
       })
       // When
       renderOffers(offersProps, adageUser)

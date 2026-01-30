@@ -119,8 +119,6 @@ class EducationalRedactorResponseModel(BaseModel):
 class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComplianceMixin):
     id: int
     description: str | None
-    isExpired: bool
-    isSoldOut: bool
     name: str
     venue: OfferVenueResponse
     students: list[educational_models.StudentLevels]
@@ -131,7 +129,6 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     educationalPriceDetail: str | None
     domains: typing.Sequence[OfferDomain]
     interventionArea: list[str]
-    imageCredit: str | None
     imageUrl: str | None
     nationalProgram: NationalProgramModel | None
     formats: typing.Sequence[EacFormat]
@@ -158,8 +155,6 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
         return cls(
             id=offer.id,
             description=offer.description,
-            isExpired=offer.hasBookingLimitDatetimesPassed,
-            isSoldOut=offer.collectiveStock.isSoldOut,
             name=offer.name,
             stock=offer.collectiveStock,
             venue=offer.venue,
@@ -172,7 +167,6 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
             domains=offer.domains,
             educationalInstitution=offer.institution,
             interventionArea=offer.interventionArea,
-            imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             teacher=offer.teacher,
             nationalProgram=offer.nationalProgram,
@@ -212,8 +206,6 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
         return cls(
             id=offer.id,
             description=offer.description,
-            isExpired=False,
-            isSoldOut=False,
             name=offer.name,
             venue=offer.venue,
             students=offer.students,
@@ -222,7 +214,6 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
             educationalPriceDetail=offer.priceDetail,
             domains=offer.domains,
             interventionArea=offer.interventionArea,
-            imageCredit=offer.imageCredit,
             imageUrl=offer.imageUrl,
             nationalProgram=offer.nationalProgram,
             isFavorite=is_favorite,

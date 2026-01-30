@@ -45,8 +45,6 @@ class GetFavoriteOfferTest:
                     "visualDisabilityCompliant": False,
                     "id": collective_offer_template.id,
                     "description": collective_offer_template.description,
-                    "isExpired": False,
-                    "isSoldOut": False,
                     "isFavorite": True,
                     "name": collective_offer_template.name,
                     "venue": {
@@ -84,7 +82,6 @@ class GetFavoriteOfferTest:
                         }
                     ],
                     "interventionArea": ["2A", "2B"],
-                    "imageCredit": None,
                     "imageUrl": None,
                     "nationalProgram": None,
                     "dates": {

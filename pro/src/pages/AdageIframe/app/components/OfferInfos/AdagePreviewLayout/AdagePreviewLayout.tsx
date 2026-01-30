@@ -45,8 +45,6 @@ export const AdagePreviewLayout = ({ offer }: AdagePreviewLayoutProps) => {
     | CollectiveOfferTemplateResponseModel
     | CollectiveOfferResponseModel = {
     ...offer,
-    isExpired: false,
-    isSoldOut: false,
     contactEmail: offer.contactEmail,
     venue: {
       ...offer.venue,
