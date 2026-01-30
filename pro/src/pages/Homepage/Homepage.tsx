@@ -2,7 +2,6 @@ import { useMemo, useRef } from 'react'
 
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { selectCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -26,8 +25,6 @@ import { VenueOfferSteps } from './components/VenueOfferSteps/VenueOfferSteps'
 import styles from './Homepage.module.scss'
 
 export const Homepage = (): JSX.Element => {
-  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
-
   const profileRef = useRef<HTMLElement>(null)
   const offerersRef = useRef<HTMLElement>(null)
 
@@ -43,6 +40,8 @@ export const Homepage = (): JSX.Element => {
   )
 
   const selectedOfferer = useAppSelector(selectCurrentOfferer)
+
+  const selectedVenue = useAppSelector((state) => state.user.selectedVenue)
 
   const hasNoVenueVisible = useMemo(() => {
     const physicalVenues = getPhysicalVenuesFromOfferer(selectedOfferer)
@@ -62,18 +61,20 @@ export const Homepage = (): JSX.Element => {
       ) : (
         <>
           <CollectiveBudgetBanner />
-          {!withSwitchVenueFeature && (
-            <>
-              <div className={styles['reimbursements-banners']}>
-                <AddBankAccountCallout offerer={selectedOfferer} />
-                <LinkVenueCallout offerer={selectedOfferer} />
-                <BankAccountHasPendingCorrectionCallout
-                  offerer={selectedOfferer}
-                />
-              </div>
-              {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
-            </>
-          )}
+          <>
+            <div className={styles['reimbursements-banners']}>
+              <AddBankAccountCallout
+                offerer={selectedOfferer}
+                venue={selectedVenue}
+              />
+              <LinkVenueCallout offerer={selectedOfferer} />
+              <BankAccountHasPendingCorrectionCallout
+                offerer={selectedOfferer}
+                venue={selectedVenue}
+              />
+            </div>
+            {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
+          </>
 
           {selectedOfferer?.isValidated && selectedOfferer.isActive && (
             <section className={styles.section}>

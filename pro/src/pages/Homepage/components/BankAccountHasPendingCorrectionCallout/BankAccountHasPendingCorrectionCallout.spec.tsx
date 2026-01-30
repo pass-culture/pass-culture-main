@@ -1,8 +1,10 @@
 import { screen } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 
+import { SimplifiedBankAccountStatus } from '@/apiClient/v1/models/SimplifiedBankAccountStatus'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import { BankAccountEvents } from '@/commons/core/FirebaseEvents/constants'
+import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import { defaultGetOffererResponseModel } from '@/commons/utils/factories/individualApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
@@ -17,33 +19,26 @@ describe('LinkVenueCallout', () => {
   const props: BankAccountHasPendingCorrectionCalloutProps = {
     titleOnly: false,
   }
-  it('should not render LinkVenueCallout without FF', () => {
-    renderWithProviders(<BankAccountHasPendingCorrectionCallout {...props} />)
-
-    expect(
-      screen.queryByText(/Compte bancaire incomplet/)
-    ).not.toBeInTheDocument()
-    expect(
-      screen.queryByRole('link', {
-        name: 'Voir les corrections attendues',
-      })
-    ).not.toBeInTheDocument()
-  })
-
-  describe('With FF enabled', () => {
-    it('should not render the add link venue banner if the offerer has no bank account with pending corrections', () => {
+  describe('With FF disabled', () => {
+    it('should not render LinkVenueCallout if offerer has no pending corrections on their bank account', () => {
       props.offerer = {
         ...defaultGetOffererResponseModel,
         hasBankAccountWithPendingCorrections: false,
       }
+
       renderWithProviders(<BankAccountHasPendingCorrectionCallout {...props} />)
 
       expect(
         screen.queryByText(/Compte bancaire incomplet/)
       ).not.toBeInTheDocument()
+      expect(
+        screen.queryByRole('link', {
+          name: 'Voir les corrections attendues',
+        })
+      ).not.toBeInTheDocument()
     })
 
-    it('should render LinkVenueCallout', () => {
+    it('should render LinkVenueCallout if offerer has a bank account with pending corrections', () => {
       props.offerer = {
         ...defaultGetOffererResponseModel,
         hasBankAccountWithPendingCorrections: true,
@@ -88,6 +83,45 @@ describe('LinkVenueCallout', () => {
           offererId: 1,
         }
       )
+    })
+  })
+
+  describe('With FF enabled', () => {
+    it('should not render LinkVenueCallout if venue has a bank account status valid or pending', () => {
+      props.venue = {
+        ...defaultGetVenue,
+        bankAccountStatus: SimplifiedBankAccountStatus.VALID,
+      }
+      renderWithProviders(
+        <BankAccountHasPendingCorrectionCallout {...props} />,
+        {
+          features: ['WIP_SWITCH_VENUE'],
+        }
+      )
+
+      expect(
+        screen.queryByText(/Compte bancaire incomplet/)
+      ).not.toBeInTheDocument()
+    })
+
+    it('should render LinkVenueCallout if venue has a bank account status with pending corrections', () => {
+      props.venue = {
+        ...defaultGetVenue,
+        bankAccountStatus: SimplifiedBankAccountStatus.PENDING_CORRECTIONS,
+      }
+      renderWithProviders(
+        <BankAccountHasPendingCorrectionCallout {...props} />,
+        {
+          features: ['WIP_SWITCH_VENUE'],
+        }
+      )
+
+      expect(screen.getByText(/Compte bancaire incomplet/)).toBeInTheDocument()
+      expect(
+        screen.getByRole('link', {
+          name: 'Voir les corrections attendues',
+        })
+      ).toBeInTheDocument()
     })
   })
 })
