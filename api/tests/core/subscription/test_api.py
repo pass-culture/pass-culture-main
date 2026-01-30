@@ -14,6 +14,7 @@ from sqlalchemy.orm import joinedload
 import pcapi.core.mails.testing as mails_testing
 import pcapi.core.users.api as users_api
 from pcapi import settings
+from pcapi.core.finance import factories as finance_factories
 from pcapi.core.finance import models as finance_models
 from pcapi.core.mails.transactional.sendinblue_template_ids import TransactionalEmail
 from pcapi.core.subscription import api as subscription_api
@@ -2073,6 +2074,46 @@ class ActivateBeneficiaryIfNoMissingStepTest:
 
         assert user.roles == [users_models.UserRole.BENEFICIARY]
         assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+    def test_user_is_not_granted_17_year_old_deposit_twice(self):
+        before_decree = settings.CREDIT_V3_DECREE_DATETIME - relativedelta(weeks=1)
+        with time_machine.travel(before_decree):
+            user = users_factories.BeneficiaryFactory.create(
+                age=17,
+                phoneValidationStatus=users_models.PhoneValidationStatusType.VALIDATED,
+            )
+            finance_factories.RecreditFactory(
+                deposit=user.deposit, recreditType=finance_models.RecreditType.RECREDIT_17
+            )
+
+        assert user.deposit
+        assert user.deposit.type == finance_models.DepositType.GRANT_15_17
+        assert user.deposit.recredits
+
+        after_decree = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(weeks=1)
+        with time_machine.travel(after_decree):
+            # user updates his profile because he is asked to by the user profile refresh campaign
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+
+        next_year = settings.CREDIT_V3_DECREE_DATETIME + relativedelta(years=1)
+        with time_machine.travel(next_year):
+            subscription_factories.ProfileCompletionFraudCheckFactory(user=user)
+            subscription_factories.HonorStatementFraudCheckFactory(user=user)
+
+            is_user_activated = subscription_api.activate_beneficiary_if_no_missing_step(user)
+
+        assert is_user_activated
+        assert user.deposits
+
+        assert user.deposit
+        assert user.deposit.type == finance_models.DepositType.GRANT_17_18
+
+        seventeen_years_old_recredits = []
+        for deposit in user.deposits:
+            for recredit in deposit.recredits:
+                if recredit.recreditType == finance_models.RecreditType.RECREDIT_17:
+                    seventeen_years_old_recredits.append(recredit)
+        assert len(seventeen_years_old_recredits) == 1
 
     def test_transition_from_free_beneficiary_to_17_18(self):
         ex_free_beneficiary = users_factories.EmailValidatedUserFactory(

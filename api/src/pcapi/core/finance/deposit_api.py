@@ -200,7 +200,9 @@ def _recredit_grant_17_18_deposit_using_age(user: users_models.User) -> models.R
             continue
 
         has_been_recredited = any(
-            recredit.recreditType == recredit_type_to_create for recredit in user.deposit.recredits
+            recredit.recreditType == recredit_type_to_create
+            for deposit in user.deposits
+            for recredit in deposit.recredits
         )
         if has_been_recredited:
             continue
