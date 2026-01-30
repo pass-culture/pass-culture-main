@@ -217,7 +217,7 @@ class AutocompleteCriteriaTest(AutocompleteTestBase):
         self._test_autocomplete(authenticated_client, "3²", {"3²+4²=5²"})
 
 
-class AutocompleteBoUserTest(AutocompleteTestBase):
+class AutocompleteBoUsersTest(AutocompleteTestBase):
     endpoint = "backoffice_web.autocomplete_bo_users"
 
     @pytest.mark.parametrize(
@@ -241,6 +241,35 @@ class AutocompleteBoUserTest(AutocompleteTestBase):
         users_factories.AdminFactory(firstName="Hugo", lastName="Admin")
         users_factories.AdminFactory(id=12345, firstName="Louise", lastName="Admin")
         users_factories.UserFactory(id=1234, firstName="Léo", lastName="Hugo")
+        users_factories.ProFactory(firstName="Léa", lastName="Pro")
+
+        self._test_autocomplete(authenticated_client, search_query, expected_texts)
+
+
+class AutocompletePublicUsersTest(AutocompleteTestBase):
+    endpoint = "backoffice_web.autocomplete_public_users"
+
+    @pytest.mark.parametrize(
+        "search_query, expected_texts",
+        [
+            ("", set()),
+            ("1", set()),
+            ("L", set()),
+            ("Le", {"Léa Hugo (100)", "Léo Jeune (200)"}),
+            ("Léa", {"Léa Hugo (100)"}),
+            ("Hugo", {"Léa Hugo (100)", "Hugo Jeune (300)"}),
+            ("Hugo J", {"Hugo Jeune (300)"}),
+            ("Pro", set()),
+            ("1234", set()),
+            ("12345", {"Louise Jeune (12345)"}),
+        ],
+    )
+    def test_autocomplete_public_users(self, authenticated_client, search_query, expected_texts):
+        users_factories.UnderageBeneficiaryFactory(id=100, firstName="Léa", lastName="Hugo")
+        users_factories.FreeBeneficiaryFactory(id=200, firstName="Léo", lastName="Jeune")
+        users_factories.UserFactory(id=300, firstName="Hugo", lastName="Jeune")
+        users_factories.BeneficiaryFactory(id=12345, firstName="Louise", lastName="Jeune")
+        users_factories.AdminFactory(id=1234, firstName="Léo", lastName="Hugo")
         users_factories.ProFactory(firstName="Léa", lastName="Pro")
 
         self._test_autocomplete(authenticated_client, search_query, expected_texts)

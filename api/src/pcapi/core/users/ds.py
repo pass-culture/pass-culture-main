@@ -398,9 +398,6 @@ def _sync_ds_application(
                     else:
                         data["flags"].add(users_models.UserAccountUpdateFlag.MISSING_VALUE)
 
-        ref_email = data.get("oldEmail") or data["email"]
-        data["user"] = repository.find_user_by_email(ref_email)
-
         for message in reversed(messages):
             correction = message.get("correction")
             if correction:
@@ -415,12 +412,19 @@ def _sync_ds_application(
             .filter_by(dsApplicationId=ds_application_id)
             .one_or_none()
         )
+
+        ref_email = data.get("oldEmail") or data["email"]
+        # Keep user associated in database when it has been set manually by support
+        if not (user_request and (user_request.is_user_set_manually or user_request.is_closed)):
+            data["user"] = repository.find_user_by_email(ref_email)
+
         if node["archived"]:
             if user_request:
                 db.session.delete(user_request)
         else:
             if user_request:
                 user_request_ref_email = user_request.oldEmail if user_request.has_email_update else user_request.email
+                data["flags"] |= user_request.persistent_flags
                 for key, value in data.items():
                     setattr(user_request, key, value)
             else:
@@ -436,7 +440,7 @@ def _sync_ds_application(
             ):
                 _reject_user_request_with_duplicates(user_request, data)
 
-            if (user_request_ref_email != ref_email) and data["user"] is None:
+            if (user_request_ref_email != ref_email) and data.get("user") is None:
                 transactional_mails.send_update_request_user_account_not_found(data["email"], ds_application_id)
 
             if set_without_continuation:

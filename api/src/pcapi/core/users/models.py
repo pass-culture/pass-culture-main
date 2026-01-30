@@ -1165,6 +1165,7 @@ class UserAccountUpdateFlag(enum.Enum):
     WAITING_FOR_CORRECTION = "WAITING_FOR_CORRECTION"
     CORRECTION_RESOLVED = "CORRECTION_RESOLVED"
     DUPLICATE_NEW_EMAIL = "DUPLICATE_NEW_EMAIL"
+    USER_SET_MANUALLY = "USER_SET_MANUALLY"
 
 
 class UserAccountUpdateRequest(PcObject, Model):
@@ -1258,6 +1259,11 @@ class UserAccountUpdateRequest(PcObject, Model):
         ]
 
     @property
+    def persistent_flags(self) -> set[UserAccountUpdateFlag]:
+        # Flags which must not be erased at synchronization with DN
+        return set(self.flags) & {UserAccountUpdateFlag.USER_SET_MANUALLY}
+
+    @property
     def has_email_update(self) -> bool:
         return UserAccountUpdateType.EMAIL in self.updateTypes
 
@@ -1309,6 +1315,15 @@ class UserAccountUpdateRequest(PcObject, Model):
         return bool(
             self.status in (dms_models.GraphQLApplicationStates.draft, dms_models.GraphQLApplicationStates.on_going)
         )
+
+    def set_user_id(self, user_id: int) -> None:
+        self.userId = user_id
+        if not self.is_user_set_manually:
+            self.flags = self.flags + [UserAccountUpdateFlag.USER_SET_MANUALLY]
+
+    @property
+    def is_user_set_manually(self) -> bool:
+        return bool(set(self.flags) & {UserAccountUpdateFlag.USER_SET_MANUALLY})
 
 
 class UserSession(PcObject, Model):

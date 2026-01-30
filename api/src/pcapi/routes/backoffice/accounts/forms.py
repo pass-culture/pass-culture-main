@@ -10,6 +10,7 @@ from pcapi.connectors.dms import models as dms_models
 from pcapi.core.subscription import models as subscription_models
 from pcapi.core.users import models as users_models
 from pcapi.models import db
+from pcapi.routes.backoffice import autocomplete
 from pcapi.routes.backoffice import filters
 from pcapi.routes.backoffice.forms import fields
 from pcapi.routes.backoffice.forms import search
@@ -211,6 +212,19 @@ class AccountUpdateRequestCorrectionForm(utils.PCForm):
         "Raison de demande de correction",
         choices=utils.values_from_enum(CorrectionReasonOptions),
     )
+
+
+class AccountUpdateRequestSelectUserForm(utils.PCForm):
+    user = fields.PCTomSelectField(
+        "Compte jeune",
+        choices=[],
+        validate_choice=True,
+        endpoint="backoffice_web.autocomplete_public_users",
+    )
+
+    def __init__(self, *args: list, **kwargs: dict):
+        super().__init__(*args, **kwargs)
+        autocomplete.prefill_public_users_choices(self.user)
 
 
 class UserTagBaseForm(FlaskForm):

@@ -53,5 +53,6 @@
     {{ build_dynamic_modal(url_for("backoffice_web.account_update.get_ask_for_correction_form", ds_application_id=update_request.dsApplicationId, correction_reason="missing-file") , "ask-for-correction-missing-file-" + update_request.dsApplicationId|string, "xl") }}
     {{ build_dynamic_modal(url_for("backoffice_web.account_update.get_ask_for_correction_form", ds_application_id=update_request.dsApplicationId, correction_reason="refused-file") , "ask-for-correction-refused-file-" + update_request.dsApplicationId|string, "xl") }}
     {{ build_dynamic_modal(url_for("backoffice_web.account_update.get_identity_theft_form", ds_application_id=update_request.dsApplicationId) , "identity-theft-" + update_request.dsApplicationId|string, "xl") }}
+    {{ build_dynamic_modal(url_for("backoffice_web.account_update.get_select_user_form", ds_application_id=update_request.dsApplicationId) , "select-user-" + update_request.dsApplicationId|string) }}
   {% endfor %}
 {% endblock after_table %}

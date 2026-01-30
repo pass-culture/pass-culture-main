@@ -13,7 +13,7 @@
   <tr id="request-row-{{ update_request.dsApplicationId }}">
     {% if is_instructor %}
       <td class="text-center">
-        {% if update_request.status == update_request.status.draft or update_request.can_be_accepted or update_request.can_be_corrected %}
+        {% if not update_request.is_closed %}
           <div class="d-flex">
             <div class="dropdown">
               <button type="button"
@@ -72,6 +72,18 @@
                        data-bs-target="#identity-theft-{{ update_request.dsApplicationId }}">Usurpation d'identité</a>
                   </li>
                 {% endif %}
+                <li class="dropdown-item p-0">
+                  <a class="btn btn-sm d-block w-100 text-start px-3"
+                     data-bs-toggle="modal"
+                     data-use-dynamic-modal="true"
+                     data-bs-target="#select-user-{{ update_request.dsApplicationId }}">
+                    {%+ if update_request.user +%}
+                    Remplacer
+                    {%+ else +%}
+                    Renseigner
+                    {%+ endif %}
+                  le compte jeune</a>
+                </li>
               </ul>
             </div>
           </div>
@@ -126,6 +138,10 @@
           {% for role in update_request.user.roles %}
             {{ role | format_role(deposits=update_request.user.deposits) | format_badge("secondary") }}
           {% endfor %}
+        {% endif %}
+        {% if update_request.is_user_set_manually %}
+          <br />
+          {{ "Sélectionné manuellement" | format_badge('secondary', 'person-check-fill') }}
         {% endif %}
       {% else %}
         Compte jeune non trouvé

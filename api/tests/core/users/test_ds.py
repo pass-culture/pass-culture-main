@@ -973,6 +973,41 @@ class SyncUserAccountUpdateRequestsTest:
 
         assert uaur.status == status
 
+    @pytest.mark.parametrize("requester_user_exists", [True, False])
+    @patch(
+        "pcapi.connectors.dms.api.DMSGraphQLClient.execute_query",
+        return_value=ds_fixtures.DS_RESPONSE_CORRECTION_RESOLVED,
+    )
+    def test_update_data_when_user_has_been_set_manually(self, mocked_get_applications, requester_user_exists):
+        if requester_user_exists:
+            users_factories.BeneficiaryGrant18Factory(email="jeune@example.com")
+        beneficiary = users_factories.BeneficiaryGrant18Factory(email="selectionne@example.com")
+        users_factories.EmailUpdateRequestFactory(
+            dsApplicationId=21177744,
+            dsTechnicalId="UHJvY4VkdXKlLTI5NTgw",
+            status=dms_models.GraphQLApplicationStates.on_going,
+            user=beneficiary,
+            flags=[users_models.UserAccountUpdateFlag.USER_SET_MANUALLY],
+        )
+
+        users_ds.sync_user_account_update_requests(104118, None)
+
+        mocked_get_applications.assert_called_once_with(
+            dms_api.GET_ACCOUNT_UPDATE_APPLICATIONS_QUERY_NAME, variables={"demarcheNumber": 104118}
+        )
+
+        uaur: users_models.UserAccountUpdateRequest = db.session.query(users_models.UserAccountUpdateRequest).one()
+        assert uaur.dsApplicationId == 21177744
+        assert uaur.dsTechnicalId == "UHJvY4VkdXKlLTI5NTgw"
+        assert uaur.firstName == "Jeune"
+        assert uaur.lastName == "Bénéficiaire"
+        assert uaur.email == "beneficiaire@example.com"
+        assert uaur.user == beneficiary
+        assert set(uaur.flags) == {
+            users_models.UserAccountUpdateFlag.USER_SET_MANUALLY,
+            users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED,
+        }
+
 
 class SyncDeletedUserAccountUpdateRequestsTest:
     @patch(

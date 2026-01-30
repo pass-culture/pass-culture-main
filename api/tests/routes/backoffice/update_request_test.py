@@ -1604,3 +1604,139 @@ class IdentityTheftTest(PostEndpointHelper):
     def test_not_found(self, authenticated_client):
         response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
         assert response.status_code == 404
+
+
+class GetSelectUserFormTest(GetEndpointHelper):
+    endpoint = "backoffice_web.account_update.get_select_user_form"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    # authenticated user and session + update request
+    expected_num_queries = 2
+    # one additional query to prefill user
+    expected_num_queries_with_prefill = expected_num_queries + 1
+
+    def test_get_form_when_no_user_is_linked(self, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory(user=None)
+        ds_application_id = update_request.dsApplicationId
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            assert response.status_code == 200
+
+        assert html_parser.extract_tom_select_options(response.data, "user", True) == {}
+
+    def test_get_form_when_user_is_linked(self, authenticated_client):
+        update_request = users_factories.UserAccountUpdateRequestFactory()
+        ds_application_id = update_request.dsApplicationId
+
+        with assert_num_queries(self.expected_num_queries_with_prefill):
+            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            assert response.status_code == 200
+
+        assert html_parser.extract_tom_select_options(response.data, "user", True) == {
+            str(update_request.user.id): f"{update_request.user.full_name} ({update_request.user.id})"
+        }
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            dms_models.GraphQLApplicationStates.accepted,
+            dms_models.GraphQLApplicationStates.refused,
+            dms_models.GraphQLApplicationStates.without_continuation,
+        ],
+    )
+    def test_get_form_when_application_is_closed(self, authenticated_client, status):
+        update_request = users_factories.UserAccountUpdateRequestFactory(status=status)
+        ds_application_id = update_request.dsApplicationId
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url_for(self.endpoint, ds_application_id=ds_application_id))
+            assert response.status_code == 200
+
+        assert html_parser.extract_alert(response.data) == f"Le dossier n°{ds_application_id} est déjà instruit."
+
+    def test_not_found(self, authenticated_client):
+        response = authenticated_client.get(url_for(self.endpoint, ds_application_id=1))
+        assert response.status_code == 404
+
+
+class SelectUserTest(PostEndpointHelper):
+    endpoint = "backoffice_web.account_update.select_user"
+    endpoint_kwargs = {"ds_application_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_UPDATE_REQUEST
+
+    @pytest.mark.parametrize(
+        "factory_params, additional_assertion",
+        [
+            ({}, None),
+            ({"user": None}, None),
+            (
+                {"flags": [users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED]},
+                lambda update_request: bool(
+                    update_request.correction_flags == [users_models.UserAccountUpdateFlag.CORRECTION_RESOLVED]
+                ),
+            ),
+        ],
+    )
+    def test_select_user(self, authenticated_client, factory_params, additional_assertion):
+        update_request = users_factories.UserAccountUpdateRequestFactory(**factory_params)
+        beneficiary = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"user": beneficiary.id},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
+        assert str(update_request.dsApplicationId) in cells[1]
+        assert beneficiary.full_name in cells[6]
+        assert beneficiary.email in cells[6]
+        assert "Sélectionné manuellement" in cells[6]
+
+        db.session.refresh(update_request)
+        assert update_request.user == beneficiary
+        assert update_request.is_user_set_manually
+        if additional_assertion:
+            assert additional_assertion(update_request)
+
+    @pytest.mark.parametrize(
+        "status",
+        [
+            dms_models.GraphQLApplicationStates.accepted,
+            dms_models.GraphQLApplicationStates.refused,
+            dms_models.GraphQLApplicationStates.without_continuation,
+        ],
+    )
+    def test_select_user_when_application_is_closed(self, authenticated_client, status):
+        update_request = users_factories.UserAccountUpdateRequestFactory(status=status)
+        original_user = update_request.user
+        beneficiary = users_factories.BeneficiaryFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            ds_application_id=update_request.dsApplicationId,
+            form={"user": beneficiary.id},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert f"Le dossier n°{update_request.dsApplicationId} est déjà instruit." in alerts["warning"]
+
+        cells = html_parser.extract_plain_row(response.data, id=f"request-row-{update_request.dsApplicationId}")
+        assert str(update_request.dsApplicationId) in cells[1]
+        assert original_user.full_name in cells[6]
+        assert original_user.email in cells[6]
+
+        db.session.refresh(update_request)
+        assert update_request.user == original_user
+        assert not update_request.is_user_set_manually
+
+    def test_not_found(self, authenticated_client):
+        response = self.post_to_endpoint(authenticated_client, ds_application_id=1)
+        assert response.status_code == 404

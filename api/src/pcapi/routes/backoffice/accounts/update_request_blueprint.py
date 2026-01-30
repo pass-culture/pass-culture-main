@@ -638,3 +638,75 @@ def identity_theft(ds_application_id: int) -> utils.BackofficeResponse:
         return _render_account_update_requests([ds_application_id])
 
     return _render_account_update_requests([ds_application_id])
+
+
+@account_update_blueprint.route("<int:ds_application_id>/select-user", methods=["GET"])
+def get_select_user_form(ds_application_id: int) -> utils.BackofficeResponse:
+    update_request = (
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    title = "Remplacer le compte jeune" if update_request.userId else "Renseigner le compte jeune"
+
+    if update_request.is_closed:
+        # May have been updated by another instructor between display and click on action
+        return render_template(
+            "components/dynamic/modal_form.html",
+            div_id=f"select-user-{ds_application_id}",
+            title=title,
+            alert=Markup("Le dossier n°{ds_application_id} est déjà instruit.").format(
+                ds_application_id=ds_application_id
+            ),
+        )
+
+    form = account_forms.AccountUpdateRequestSelectUserForm(
+        user=[update_request.userId] if update_request.userId else None,  # type: ignore[arg-type]
+    )
+
+    return render_template(
+        "components/dynamic/modal_form.html",
+        target_id=f"#request-row-{ds_application_id}",
+        form=form,
+        dst=url_for(".select_user", ds_application_id=ds_application_id),
+        div_id=f"select-user-{ds_application_id}",
+        title=title,
+        information=Markup(
+            "Sélectionnez un compte jeune à associer au dossier Démarche Numérique n°<strong>{ds_application_id}</strong>."
+        ).format(ds_application_id=ds_application_id),
+        button_text="Continuer",
+    )
+
+
+@account_update_blueprint.route("<int:ds_application_id>/select-user", methods=["POST"])
+def select_user(ds_application_id: int) -> utils.BackofficeResponse:
+    update_request: users_models.UserAccountUpdateRequest | None = (
+        db.session.query(users_models.UserAccountUpdateRequest)
+        .filter_by(dsApplicationId=ds_application_id)
+        .populate_existing()
+        .with_for_update(key_share=True)
+        .one_or_none()
+    )
+    if not update_request:
+        raise NotFound()
+
+    if update_request.is_closed:
+        flash(
+            Markup("Le dossier n°{ds_application_id} est déjà instruit.").format(ds_application_id=ds_application_id),
+            "warning",
+        )
+        return _render_account_update_requests([ds_application_id])
+
+    form = account_forms.AccountUpdateRequestSelectUserForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        return _render_account_update_requests([ds_application_id])
+
+    update_request.set_user_id(form.user.data[0])
+    db.session.add(update_request)
+    db.session.flush()
+
+    return _render_account_update_requests([ds_application_id])

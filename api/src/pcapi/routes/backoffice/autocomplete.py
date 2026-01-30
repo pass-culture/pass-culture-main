@@ -15,6 +15,7 @@ from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.providers import models as providers_models
+from pcapi.core.users import api as users_api
 from pcapi.core.users import models as users_models
 from pcapi.models import db
 from pcapi.routes.backoffice.filters import format_datespan
@@ -509,6 +510,52 @@ def autocomplete_bo_users() -> AutocompleteResponse:
     users = _get_bo_users_base_query().filter(query_filter).limit(NUM_RESULTS)
 
     return AutocompleteResponse(items=[AutocompleteItem(id=user.id, text=user.full_name) for user in users])
+
+
+def _get_public_users_choice_label(user: users_models.User) -> str:
+    return f"{user.full_name} ({user.id})"
+
+
+def _get_public_users_base_query() -> sa_orm.Query:
+    return users_api.get_public_account_base_query().options(
+        sa_orm.load_only(
+            users_models.User.id, users_models.User.firstName, users_models.User.lastName, users_models.User.email
+        )
+    )
+
+
+def prefill_public_users_choices(autocomplete_field: fields.PCTomSelectField) -> None:
+    if autocomplete_field.data:
+        users = (
+            _get_public_users_base_query()
+            .filter(users_models.User.id.in_(autocomplete_field.data))
+            .order_by(users_models.User.full_name)
+        )
+        autocomplete_field.choices = [(user.id, _get_public_users_choice_label(user)) for user in users]
+
+
+@blueprint.backoffice_web.route("/autocomplete/public-users", methods=["GET"])
+@login_required
+@spectree_serialize(response_model=AutocompleteResponse, api=blueprint.backoffice_web_schema)
+def autocomplete_public_users() -> AutocompleteResponse:
+    query_string = request.args.get("q", "").strip()
+
+    is_numeric_query = string_utils.is_numeric(query_string)
+    if not is_numeric_query and len(query_string) < 2:
+        return AutocompleteResponse(items=[])
+
+    if is_numeric_query:
+        query_filter = users_models.User.id == int(query_string)
+    else:
+        query_filter = sa.func.immutable_unaccent(users_models.User.firstName + " " + users_models.User.lastName).ilike(
+            f"%{clean_accents(query_string)}%"
+        )
+
+    users = _get_public_users_base_query().filter(query_filter).limit(NUM_RESULTS)
+
+    return AutocompleteResponse(
+        items=[AutocompleteItem(id=user.id, text=_get_public_users_choice_label(user)) for user in users]
+    )
 
 
 def _get_address_choice_label(address: geography_models.Address) -> str:

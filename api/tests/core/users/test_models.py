@@ -624,7 +624,7 @@ class UserIsCaledonianTest:
 
 
 @pytest.mark.usefixtures("db_session")
-class UserAccountUpdateRequestCanBeAcceptedTest:
+class UserAccountUpdateRequestTest:
     @pytest.mark.parametrize(
         "status,expected_result",
         [
@@ -635,11 +635,11 @@ class UserAccountUpdateRequestCanBeAcceptedTest:
             (dms_models.GraphQLApplicationStates.without_continuation, False),
         ],
     )
-    def test_status(self, status, expected_result):
+    def test_can_be_accepted_depending_on_status(self, status, expected_result):
         update_request = users_factories.LastNameUpdateRequestFactory(status=status)
         assert update_request.can_be_accepted is expected_result
 
-    def test_user(self):
+    def test_can_be_accepted_when_user_is_empty(self):
         update_request = users_factories.PhoneNumberUpdateRequestFactory(user=None)
         assert update_request.can_be_accepted is False
 
@@ -655,7 +655,7 @@ class UserAccountUpdateRequestCanBeAcceptedTest:
             ([], False),
         ],
     )
-    def test_update_types(self, update_types, expected_result):
+    def test_can_be_accepted_depending_on_update_types(self, update_types, expected_result):
         update_request = users_factories.UserAccountUpdateRequestFactory(updateTypes=update_types)
         assert update_request.can_be_accepted is expected_result
 
@@ -670,6 +670,47 @@ class UserAccountUpdateRequestCanBeAcceptedTest:
             ([], True),
         ],
     )
-    def test_flags(self, flags, expected_result):
+    def test_can_be_accepted_depending_on_flags(self, flags, expected_result):
         update_request = users_factories.EmailUpdateRequestFactory(flags=flags)
         assert update_request.can_be_accepted is expected_result
+
+    @pytest.mark.parametrize(
+        "flags,expected_result",
+        [
+            ([], set()),
+            ([user_models.UserAccountUpdateFlag.CORRECTION_RESOLVED], set()),
+            (
+                [user_models.UserAccountUpdateFlag.USER_SET_MANUALLY],
+                {user_models.UserAccountUpdateFlag.USER_SET_MANUALLY},
+            ),
+            (
+                [
+                    user_models.UserAccountUpdateFlag.CORRECTION_RESOLVED,
+                    user_models.UserAccountUpdateFlag.USER_SET_MANUALLY,
+                ],
+                {user_models.UserAccountUpdateFlag.USER_SET_MANUALLY},
+            ),
+        ],
+    )
+    def test_persistent_flags(self, flags, expected_result):
+        update_request = users_factories.LostCredentialsUpdateRequestFactory(flags=flags)
+        assert update_request.persistent_flags == expected_result
+
+    @pytest.mark.parametrize(
+        "flags,expected_result",
+        [
+            ([], False),
+            ([user_models.UserAccountUpdateFlag.CORRECTION_RESOLVED], False),
+            ([user_models.UserAccountUpdateFlag.USER_SET_MANUALLY], True),
+            (
+                [
+                    user_models.UserAccountUpdateFlag.CORRECTION_RESOLVED,
+                    user_models.UserAccountUpdateFlag.USER_SET_MANUALLY,
+                ],
+                True,
+            ),
+        ],
+    )
+    def test_is_user_set_manually(self, flags, expected_result):
+        update_request = users_factories.LostCredentialsUpdateRequestFactory(flags=flags)
+        assert update_request.is_user_set_manually is expected_result
