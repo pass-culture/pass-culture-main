@@ -1,5 +1,7 @@
 import * as yup from 'yup'
 
+import type { ArtistType } from '@/apiClient/v1'
+
 import type { DetailsFormValues } from './types'
 
 const eanValidation = yup
@@ -25,6 +27,16 @@ const commonValidationShape = {
   name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
   description: yup.string(),
   author: yup.string(),
+  artistOfferLinks: yup
+    .array()
+    .of(
+      yup.object().shape({
+        artistId: yup.string().nullable().defined(),
+        artistName: yup.string().defined(),
+        artistType: yup.mixed<ArtistType>().required(),
+      })
+    )
+    .required(),
   performer: yup.string(),
   ean: eanValidation,
   speaker: yup.string(),

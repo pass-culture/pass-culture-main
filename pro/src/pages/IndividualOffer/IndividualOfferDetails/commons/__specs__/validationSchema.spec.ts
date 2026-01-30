@@ -1,3 +1,4 @@
+import { ArtistType } from '@/apiClient/v1'
 import type { AccessibilityFormValues } from '@/commons/core/shared/types'
 
 import type { DetailsFormValues } from '../types' // Assuming types are in a sibling file
@@ -15,6 +16,7 @@ describe('getValidationSchema', () => {
     subcategoryId: 'CONCERT',
     venueId: 'venue-123',
     subcategoryConditionalFields: [],
+    artistOfferLinks: [],
     accessibility: {
       // Default for the new flow
       mental: false,
@@ -69,6 +71,72 @@ describe('getValidationSchema', () => {
       }
       const data = { ...validDetailsFormValuesBase, accessibility }
       await expect(schema.validate(data)).resolves.toBeDefined()
+    })
+  })
+
+  describe('artistOfferLinks validation', () => {
+    it('should fail if artistOfferLinks is missing', async () => {
+      const { artistOfferLinks, ...dataWithoutArtistOfferLinks } =
+        validDetailsFormValuesBase
+      await expect(
+        schema.validate(dataWithoutArtistOfferLinks)
+      ).rejects.toThrow()
+    })
+
+    it('should pass with artistId as null', async () => {
+      const data = {
+        ...validDetailsFormValuesBase,
+        artistOfferLinks: [
+          {
+            artistId: null,
+            artistName: 'Aya Nakamura',
+            artistType: ArtistType.PERFORMER,
+          },
+        ],
+      }
+      await expect(schema.validate(data)).resolves.toBeDefined()
+    })
+
+    it('should pass with artistName as empty string', async () => {
+      const data = {
+        ...validDetailsFormValuesBase,
+        artistOfferLinks: [
+          {
+            artistId: '1',
+            artistName: '',
+            artistType: ArtistType.PERFORMER,
+          },
+        ],
+      }
+      await expect(schema.validate(data)).resolves.toBeDefined()
+    })
+
+    it('should fail if artistType is missing', async () => {
+      const data = {
+        ...validDetailsFormValuesBase,
+        artistOfferLinks: [
+          {
+            artistId: '1',
+            artistName: 'Boris Vian',
+            artistType: undefined,
+          },
+        ],
+      }
+      await expect(schema.validate(data)).rejects.toThrow()
+    })
+
+    it('should fail if artistName is undefined', async () => {
+      const data = {
+        ...validDetailsFormValuesBase,
+        artistOfferLinks: [
+          {
+            artistId: '1',
+            artistName: undefined,
+            artistType: ArtistType.AUTHOR,
+          },
+        ],
+      }
+      await expect(schema.validate(data)).rejects.toThrow()
     })
   })
 })

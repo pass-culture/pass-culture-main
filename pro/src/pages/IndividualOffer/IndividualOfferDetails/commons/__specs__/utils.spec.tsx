@@ -1,4 +1,6 @@
 import {
+  type ArtistOfferLinkResponseModel,
+  ArtistType,
   OfferStatus,
   SubcategoryIdEnum,
   type VenueListItemResponseModel,
@@ -20,6 +22,7 @@ import {
   filterAvailableVenues,
   getAccessibilityFormValuesFromOffer,
   getFormReadOnlyFields,
+  getInitialArtistOfferLinks,
   getInitialValuesFromOffer,
   getInitialValuesFromVenues,
   getVenuesAsOptions,
@@ -155,6 +158,51 @@ describe('buildSubcategoryFields', () => {
   })
 })
 
+describe('getInitialArtistOfferLinks', () => {
+  const defaultLinks = DEFAULT_DETAILS_FORM_VALUES.artistOfferLinks
+
+  it('should return defaults links', () => {
+    const artists: ArtistOfferLinkResponseModel[] = []
+
+    const result = getInitialArtistOfferLinks(artists, defaultLinks)
+
+    expect(result).toStrictEqual(defaultLinks)
+  })
+
+  it('should return offer links', () => {
+    const offerLinks: ArtistOfferLinkResponseModel[] = [
+      { artistId: '1', artistName: 'Author A', artistType: ArtistType.AUTHOR },
+      {
+        artistId: '2',
+        artistName: 'Performer B',
+        artistType: ArtistType.PERFORMER,
+      },
+      {
+        artistId: '3',
+        artistName: 'Director C',
+        artistType: ArtistType.STAGE_DIRECTOR,
+      },
+    ]
+
+    const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
+
+    expect(result).toStrictEqual(offerLinks)
+  })
+
+  it('should add missing artist types from defaults to offer links', () => {
+    const offerLinks: ArtistOfferLinkResponseModel[] = [
+      { artistId: '1', artistName: 'Author A', artistType: ArtistType.AUTHOR },
+    ]
+
+    const result = getInitialArtistOfferLinks(offerLinks, defaultLinks)
+
+    expect(result).toHaveLength(3)
+    expect(result[0]).toStrictEqual(offerLinks[0])
+    expect(result[1]).toStrictEqual(defaultLinks[1])
+    expect(result[2]).toStrictEqual(defaultLinks[2])
+  })
+})
+
 describe('filterAvailableVenues', () => {
   const physicalVenue = venueListItemFactory({
     id: 1,
@@ -285,6 +333,23 @@ describe('getInitialValuesFromOffer', () => {
         visa: 'USA',
         productId: '',
         url: undefined,
+        artistOfferLinks: [
+          {
+            artistId: null,
+            artistName: '',
+            artistType: ArtistType.AUTHOR,
+          },
+          {
+            artistId: null,
+            artistName: '',
+            artistType: ArtistType.PERFORMER,
+          },
+          {
+            artistId: null,
+            artistName: '',
+            artistType: ArtistType.STAGE_DIRECTOR,
+          },
+        ],
       })
     })
   })
@@ -330,6 +395,23 @@ describe('getInitialValuesFromOffer', () => {
         venueId: '6',
         visa: 'USA',
         productId: '',
+        artistOfferLinks: [
+          {
+            artistId: null,
+            artistName: '',
+            artistType: ArtistType.AUTHOR,
+          },
+          {
+            artistId: null,
+            artistName: '',
+            artistType: ArtistType.PERFORMER,
+          },
+          {
+            artistId: null,
+            artistName: '',
+            artistType: ArtistType.STAGE_DIRECTOR,
+          },
+        ],
         accessibility: {
           audio: true,
           mental: false,

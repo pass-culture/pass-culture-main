@@ -1,6 +1,7 @@
 import { computeVenueDisplayName } from 'repository/venuesService'
 
 import {
+  type ArtistOfferLinkResponseModel,
   type CategoryResponseModel,
   type GetIndividualOfferResponseModel,
   OfferStatus,
@@ -78,6 +79,20 @@ export const buildShowSubTypeOptions = (showType?: string): SelectOption[] => {
       label: data.label,
     }))
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
+}
+
+// Ensures each artist type (author, performer, stage director) has at least one initial field.
+export const getInitialArtistOfferLinks = (
+  offerLinks: ArtistOfferLinkResponseModel[],
+  defaultLinks: ArtistOfferLinkResponseModel[]
+): ArtistOfferLinkResponseModel[] => {
+  const existingArtistTypes = new Set(offerLinks.map((a) => a.artistType))
+
+  const missingDefaults = defaultLinks.filter(
+    (d) => !existingArtistTypes.has(d.artistType)
+  )
+
+  return [...offerLinks, ...missingDefaults]
 }
 
 export const completeSubcategoryConditionalFields = (
@@ -172,6 +187,10 @@ export function getInitialValuesFromOffer({
     gtl_id: offer.extraData?.gtl_id ?? DEFAULT_DETAILS_FORM_VALUES.gtl_id,
     speaker: offer.extraData?.speaker ?? DEFAULT_DETAILS_FORM_VALUES.speaker,
     author: offer.extraData?.author ?? DEFAULT_DETAILS_FORM_VALUES.author,
+    artistOfferLinks: getInitialArtistOfferLinks(
+      offer.artistOfferLinks,
+      DEFAULT_DETAILS_FORM_VALUES.artistOfferLinks
+    ),
     performer:
       offer.extraData?.performer ?? DEFAULT_DETAILS_FORM_VALUES.performer,
     stageDirector:

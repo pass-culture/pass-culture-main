@@ -1,4 +1,5 @@
 import type {
+  ArtistOfferLinkResponseModel,
   GetIndividualOfferResponseModel,
   SubcategoryResponseModel,
 } from '@/apiClient/v1'
@@ -15,6 +16,7 @@ export type DetailsFormValues = {
   showSubType?: string
   gtl_id?: string
   author?: string
+  artistOfferLinks: Array<ArtistOfferLinkResponseModel>
   performer?: string
   ean?: string
   eanSearch?: string
