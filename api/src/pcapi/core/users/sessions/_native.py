@@ -2,7 +2,6 @@ from dataclasses import dataclass
 
 import flask
 from flask_jwt_extended import verify_jwt_in_request
-from flask_jwt_extended.exceptions import WrongTokenError
 
 from pcapi.core.users import models as users_models
 from pcapi.models import db
@@ -40,7 +39,7 @@ class SessionManager(_common.AbstractSessionManager):
                 verify_type=True,
                 optional=True,
             )
-        except WrongTokenError:
+        except Exception:
             return None
 
         if not result:
