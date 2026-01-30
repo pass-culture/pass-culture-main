@@ -1,6 +1,9 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
+from flask_jwt_extended.utils import create_access_token
+from flask_jwt_extended.utils import create_refresh_token
 
 import pcapi.core.users.factories as users_factories
 from pcapi.routes.native.security import authenticated_and_active_user_required
@@ -72,3 +75,62 @@ def test_inactive_user_when_may_be_inactive(client):
     with patch("pcapi.core.users.sessions._common.NATIVE_FOLDERS", ["/test-blueprint/"]):
         response = client.get(path)
     assert response.status_code == 204
+
+
+class UserConnectedTest:
+    def test_user_connected_with_refresh_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(
+            identity=user.email,
+            expires_delta=timedelta(seconds=30),
+        )
+
+        response = client.with_explicit_token(token).get("/native/v1/me")
+
+        assert response.status_code == 401
+        assert response.json == {}
+
+    def test_user_connected_with_access_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_access_token(
+            identity=user.email,
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"user_claims": {"user_id": user.id}},
+        )
+
+        response = client.with_explicit_token(token).get("/native/v1/me")
+
+        assert response.status_code == 200
+        assert response.json
+
+    def test_user_connected_with_no_token(self, client):
+        response = client.without_token().get("/native/v1/me")
+
+        assert response.status_code == 401
+        assert response.json == {}
+
+    def test_user_connected_with_invalid_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_access_token(
+            identity=user.email,
+            expires_delta=timedelta(seconds=30),
+            additional_claims={"user_claims": {"user_id": user.id}},
+        )[:-4]
+
+        response = client.with_explicit_token(token).get("/native/v1/me")
+
+        assert response.status_code == 401
+        assert response.json == {}
+
+    def test_user_connected_with_expired_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_access_token(
+            identity=user.email,
+            expires_delta=timedelta(seconds=-30),
+            additional_claims={"user_claims": {"user_id": user.id}},
+        )
+
+        response = client.with_explicit_token(token).get("/native/v1/me")
+
+        assert response.status_code == 401
+        assert response.json == {}

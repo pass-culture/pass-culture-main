@@ -2606,3 +2606,12 @@ class RefrestTest:
 
         assert response.status_code == 401
         assert response.json == {}
+
+    def test_with_expired_token(self, client):
+        user = users_factories.BeneficiaryFactory()
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=-30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 401
+        assert response.json == {}
