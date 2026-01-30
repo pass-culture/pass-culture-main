@@ -31,6 +31,7 @@ from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import finance_serialize
 from pcapi.routes.serialization import headline_offer_serialize
 from pcapi.routes.serialization import offerers_serialize
+from pcapi.routes.serialization import public_information_serialize
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils import requests
 from pcapi.utils.rest import check_user_has_access_to_offerer
@@ -154,9 +155,13 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
 @private_api.route("/offerers", methods=["POST"])
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201,
+    response_model=public_information_serialize.PostOffererResponseModel,
+    api=blueprint.pro_private_schema,
 )
-def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers_serialize.PostOffererResponseModel:
+def create_offerer(
+    body: offerers_serialize.CreateOffererQueryModel,
+) -> public_information_serialize.PostOffererResponseModel:
     siren_info = api_entreprise.get_siren_open_data(body.siren)
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
@@ -173,18 +178,20 @@ def create_offerer(body: offerers_serialize.CreateOffererQueryModel) -> offerers
         user_offerer = api.create_offerer(current_user, body, insee_data=siren_info)
     except offerers_exceptions.NotACollectivity:
         raise ApiErrors(errors={"user_offerer": ["Le rattachement est permis seulement pour les collectivités"]})
-    return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
+    return public_information_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
 @private_api.route("/offerers/new", methods=["POST"])
 @atomic()
 @login_required
 @spectree_serialize(
-    on_success_status=201, response_model=offerers_serialize.PostOffererResponseModel, api=blueprint.pro_private_schema
+    on_success_status=201,
+    response_model=public_information_serialize.PostOffererResponseModel,
+    api=blueprint.pro_private_schema,
 )
 def save_new_onboarding_data(
     body: offerers_serialize.SaveNewOnboardingDataQueryModel,
-) -> offerers_serialize.PostOffererResponseModel:
+) -> public_information_serialize.PostOffererResponseModel:
     try:
         check_web_recaptcha_token(
             body.token,
@@ -202,7 +209,7 @@ def save_new_onboarding_data(
         raise ApiErrors({"siret": "SIRET doesn't belong to a collectivity"})
     except offerers_exceptions.publicNameRequiredException:
         raise ApiErrors({"publicName": "Veuillez renseigner un nom public pour votre structure."})
-    return offerers_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
+    return public_information_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
 
 
 @private_api.route("/offerers/<int:offerer_id>/bank-accounts", methods=["GET"])

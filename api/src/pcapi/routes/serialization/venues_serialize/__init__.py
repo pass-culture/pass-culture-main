@@ -613,23 +613,6 @@ class VenuesEducationalStatusesResponseModel(BaseModel):
     statuses: list[VenuesEducationalStatusResponseModel]
 
 
-class VenueOfOffererFromSiretResponseModel(BaseModel):
-    id: int
-    name: str
-    publicName: str
-    siret: str | None
-    isPermanent: bool
-
-    class Config:
-        orm_mode = True
-
-
-class GetVenuesOfOffererFromSiretResponseModel(BaseModel):
-    offererName: str | None
-    offererSiren: str | None
-    venues: list[VenueOfOffererFromSiretResponseModel]
-
-
 class GetOffersStatsResponseModel(HttpBodyModel):
     published_public_offers: int
     published_educational_offers: int
