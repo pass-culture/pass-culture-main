@@ -120,7 +120,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       return null
     }
     return (
-      <div className={styles['table-fullrow-content']}>
+      <>
         <div>
           <span className={styles['details-title']}>Prix : </span>
           <span className={styles['details-content']}>
@@ -133,7 +133,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
           index={row.id}
           bookingStatusHistory={row.bookingStatusHistory}
         />
-      </div>
+      </>
     )
   }
 

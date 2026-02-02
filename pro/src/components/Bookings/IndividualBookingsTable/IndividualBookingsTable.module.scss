@@ -4,10 +4,6 @@
   @include a11y.visually-hidden;
 }
 
-.table-fullrow-content {
-  padding: 0 var(--size-spacing-s) var(--size-spacing-xl);
-}
-
 .table-pagination {
   margin-top: var(--size-spacing-xxl);
 }

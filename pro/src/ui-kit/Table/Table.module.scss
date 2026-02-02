@@ -110,6 +110,10 @@
   display: none;
 }
 
+.table-fullrow-content {
+  padding: var(--size-spacing-xl) var(--size-spacing-s);
+}
+
 @media (max-width: size.$tablet) {
   .table-header {
     display: none;
@@ -124,7 +128,6 @@
     grid-template-columns: 1fr;
     gap: var(--size-spacing-s);
     margin-top: var(--size-spacing-s);
-
     background: var(--color-background-default, #fff);
     border: 1px solid var(--color-border-subtle);
     border-radius: var(--size-border-radius-m, 8px);
@@ -133,53 +136,45 @@
 
   .table-collapse-cell {
     display: grid;
-    grid-template-columns: minmax(0, 12ch) 1fr;
-    column-gap: var(--size-spacing-m);
-    row-gap: var(--size-spacing-xxs);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--size-spacing-xs) var(--size-spacing-m);
     align-items: start;
 
-    padding: 0;
-    border: 0;
-  }
+    + .table-collapse-cell {
+      padding-top: var(--size-spacing-s);
+      border-top: 1px solid var(--color-background-subtle);
+    }
 
-  .table-collapse-cell + .table-collapse-cell {
-    padding-top: var(--size-spacing-s);
-    border-top: 1px solid var(--color-background-subtle);
-  }
+    &::before {
+      @include fonts.body-accent-xs;
 
-  .table-collapse-cell::before {
-    @include fonts.body-accent-xs;
+      content: attr(data-label);
+      color: var(--color-text-subtle);
+      white-space: normal;
+    }
 
-    content: attr(data-label);
-    color: var(--color-text-subtle);
-    white-space: normal;
-  }
+    > * {
+      justify-self: end;
+      text-align: right;
+      min-width: 0;
+    }
 
-  .table-collapse-cell > * {
-    justify-self: end;
-    text-align: right;
-    min-width: 0;
-  }
+    [data-actions],
+    .tbody-td-actions {
+      justify-self: end;
+      display: flex;
+      gap: var(--size-spacing-s);
+      flex-wrap: wrap;
+    }
 
-  .table-collapse-cell [data-actions],
-  .table-collapse-cell .tbody-td-actions {
-    justify-self: end;
-    display: flex;
-    gap: var(--size-spacing-s);
-    flex-wrap: wrap;
-  }
-
-  .table-collapse-cell:last-child {
-    border-radius: 0;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .table-fullrow-wrapper {
-    padding-bottom: 0;
+    &:last-child {
+      border-radius: 0;
+      display: flex;
+      justify-content: space-between;
+    }
   }
 
   .table-fullrow-content {
-    margin-bottom: 0;
+    padding: var(--size-spacing-s);
   }
 }

@@ -6,15 +6,14 @@
 @use "styles/mixins/_outline.scss" as outline;
 
 .title-column {
-  min-width: rem.torem(160px);
+  min-width: rem.torem(200px);
 
   &-with-thumb {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    min-width: rem.torem(240px);
-    gap: var(--size-spacing-s) var(--size-spacing-xl);
+    gap: var(--size-spacing-s);
   }
 
   &-name {
@@ -83,23 +82,4 @@
   color: var(--color-icon-error);
   margin-left: var(--size-spacing-xs);
   margin-top: var(--size-spacing-xs);
-}
-
-@media screen and (min-width: size.$tablet) {
-  .title-column {
-    min-width: rem.torem(160px);
-
-    &-with-thumb {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: flex-start;
-    }
-  }
-
-  .status-column {
-    &-content {
-      min-width: rem.torem(160px);
-    }
-  }
 }

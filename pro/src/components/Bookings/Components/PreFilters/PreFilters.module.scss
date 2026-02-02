@@ -46,29 +46,17 @@
     display: flex;
     justify-content: center;
     position: relative;
-    flex-wrap: wrap;
     gap: var(--size-spacing-s);
+    flex-wrap: nowrap;
   }
 
   &-separator {
     border-bottom: rem.torem(1px) solid var(--color-border-subtle);
     display: block;
     position: absolute;
-    top: initial;
-    bottom: rem.torem(-24px);
+    top: 50%;
+    bottom: initial;
     width: 100%;
-  }
-
-  @media screen and (min-width: size.$tablet) {
-    &-buttons {
-      flex-wrap: nowrap;
-      gap: initial;
-    }
-
-    &-separator {
-      top: 50%;
-      bottom: initial;
-    }
   }
 }
 
@@ -87,7 +75,6 @@
 
 .show-button {
   z-index: 0;
-  width: 100%;
 }
 
 @media screen and (min-width: size.$tablet) {
