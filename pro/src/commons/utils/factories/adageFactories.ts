@@ -7,7 +7,7 @@ import {
   type CollectiveOfferResponseModel,
   type CollectiveOfferTemplateResponseModel,
   EacFormat,
-  type EducationalInstitutionWithBudgetResponseModel,
+  type EducationalInstitutionBudgetResponseModel,
 } from '@/apiClient/adage'
 import { StudentLevels } from '@/apiClient/v1'
 
@@ -116,15 +116,9 @@ export const defaultAdageUser: AuthenticatedResponse = {
   canPrebook: true,
 }
 
-export const defaultEducationalInstitution: EducationalInstitutionWithBudgetResponseModel =
+export const defaultEducationalInstitution: EducationalInstitutionBudgetResponseModel =
   {
     budget: 1000,
-    city: 'Paris',
-    id: 1,
-    institutionType: 'COLLEGE',
-    name: 'Mon établissement',
-    phoneNumber: '0123456789',
-    postalCode: '75000',
   }
 
 export const defaultUseStatsReturn = {

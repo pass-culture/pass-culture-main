@@ -14,7 +14,7 @@ import type { CollectiveOfferTemplateResponseModel } from '../models/CollectiveO
 import type { CollectiveRequestBody } from '../models/CollectiveRequestBody';
 import type { CollectiveRequestResponseModel } from '../models/CollectiveRequestResponseModel';
 import type { ConsultOfferBody } from '../models/ConsultOfferBody';
-import type { EducationalInstitutionWithBudgetResponseModel } from '../models/EducationalInstitutionWithBudgetResponseModel';
+import type { EducationalInstitutionBudgetResponseModel } from '../models/EducationalInstitutionBudgetResponseModel';
 import type { FavoritesResponseModel } from '../models/FavoritesResponseModel';
 import type { HighlightBannerBody } from '../models/HighlightBannerBody';
 import type { ListCollectiveOffersResponseModel } from '../models/ListCollectiveOffersResponseModel';
@@ -107,10 +107,10 @@ export class DefaultService {
   }
   /**
    * get_educational_institution_with_budget <GET>
-   * @returns EducationalInstitutionWithBudgetResponseModel OK
+   * @returns EducationalInstitutionBudgetResponseModel OK
    * @throws ApiError
    */
-  public getEducationalInstitutionWithBudget(): CancelablePromise<EducationalInstitutionWithBudgetResponseModel> {
+  public getEducationalInstitutionWithBudget(): CancelablePromise<EducationalInstitutionBudgetResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/adage-iframe/collective/institution',

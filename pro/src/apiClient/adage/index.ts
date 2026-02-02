@@ -29,9 +29,9 @@ export type { CollectiveRequestResponseModel } from './models/CollectiveRequestR
 export type { ConsultOfferBody } from './models/ConsultOfferBody';
 export type { Coordinates } from './models/Coordinates';
 export { EacFormat } from './models/EacFormat';
+export type { EducationalInstitutionBudgetResponseModel } from './models/EducationalInstitutionBudgetResponseModel';
 export type { EducationalInstitutionProgramModel } from './models/EducationalInstitutionProgramModel';
 export type { EducationalInstitutionResponseModel } from './models/EducationalInstitutionResponseModel';
-export type { EducationalInstitutionWithBudgetResponseModel } from './models/EducationalInstitutionWithBudgetResponseModel';
 export type { EducationalRedactorResponseModel } from './models/EducationalRedactorResponseModel';
 export type { FavoritesResponseModel } from './models/FavoritesResponseModel';
 export type { FeatureResponseModel } from './models/FeatureResponseModel';

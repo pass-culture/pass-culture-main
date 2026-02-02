@@ -1,5 +1,5 @@
-import pcapi.core.educational.api.institution as api
 from pcapi.core.educational import repository
+from pcapi.core.educational.api import institution as api
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.adage_iframe import blueprint
 from pcapi.routes.adage_iframe.security import adage_jwt_required
@@ -12,13 +12,13 @@ from pcapi.utils.transaction_manager import atomic
 @blueprint.adage_iframe.route("/collective/institution", methods=["GET"])
 @atomic()
 @spectree_serialize(
-    response_model=educational_institution.EducationalInstitutionWithBudgetResponseModel,
+    response_model=educational_institution.EducationalInstitutionBudgetResponseModel,
     api=blueprint.api,
 )
 @adage_jwt_required
 def get_educational_institution_with_budget(
     authenticated_information: AuthenticatedInformation,
-) -> educational_institution.EducationalInstitutionWithBudgetResponseModel:
+) -> educational_institution.EducationalInstitutionBudgetResponseModel:
     if not authenticated_information.uai:
         raise ApiErrors({"code": "NOT ALLOWED"}, status_code=403)
 
@@ -28,12 +28,4 @@ def get_educational_institution_with_budget(
 
     remaining_budget = api.get_current_year_remaining_credit(institution)
 
-    return educational_institution.EducationalInstitutionWithBudgetResponseModel(
-        id=institution.id,
-        name=institution.name,
-        institutionType=institution.institutionType,
-        postalCode=institution.postalCode,
-        city=institution.city,
-        phoneNumber=institution.phoneNumber,
-        budget=int(remaining_budget),
-    )
+    return educational_institution.EducationalInstitutionBudgetResponseModel(budget=int(remaining_budget))
