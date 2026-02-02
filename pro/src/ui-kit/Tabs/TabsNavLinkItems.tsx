@@ -1,7 +1,8 @@
 import cn from 'classnames'
 import { Link } from 'react-router'
 
-import styles from './NavLinkItems.module.scss'
+import type { BaseTabsProps } from './Tabs'
+import styles from './Tabs.module.scss'
 
 export type NavLinkItem = {
   /**
@@ -18,39 +19,10 @@ export type NavLinkItem = {
   url: string
 }
 
-type NavLinkItemsProps = {
-  /**
-   * Navigation accessible name
-   */
-  navLabel: string
-  /**
-   * An array of links to be rendered.
-   */
+type NavLinkItemsProps = BaseTabsProps & {
   links: NavLinkItem[]
-  /**
-   * The key of the selected link.
-   */
-  selectedKey?: string
-  className?: string
 }
 
-/**
- * The NavLinkItems component is used to render a list of navigation links.
- *
- * @example
- * <NavLinkItems
- *   links={[{
- *     key: 'home',
- *     label: 'Home',
- *     url: '/home',
- *   }, {
- *     key: 'profile',
- *     label: 'Profile',
- *     url: '/profile',
- *   }]}
- *   selectedKey="home"
- * />
- */
 export const NavLinkItems = ({
   navLabel,
   selectedKey,

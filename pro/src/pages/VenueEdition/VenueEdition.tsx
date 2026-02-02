@@ -19,11 +19,9 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdition/CollectiveDataEdition/CollectiveDataEdition'
 import { formatAndOrderVenues } from '@/repository/venuesService'
 import { Select } from '@/ui-kit/form/Select/Select'
-import {
-  type NavLinkItem,
-  NavLinkItems,
-} from '@/ui-kit/NavLinkItems/NavLinkItems'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import { Tabs } from '@/ui-kit/Tabs/Tabs'
+import type { NavLinkItem } from '@/ui-kit/Tabs/TabsNavLinkItems'
 
 import { VenueEditionFormScreen } from './components/VenueEditionFormScreen'
 import { VenueEditionHeader } from './components/VenueEditionHeader'
@@ -140,8 +138,9 @@ export const VenueEdition = (): JSX.Element | null => {
           <VenueEditionHeader venue={venue} context={context} key={venue.id} />
 
           {!venue.isPermanent && (
-            <NavLinkItems
-              links={tabs}
+            <Tabs
+              type="links"
+              items={tabs}
               navLabel={`Sous menu - ${titleText}`}
               selectedKey={
                 context === 'collective' ? 'collective' : 'individual'

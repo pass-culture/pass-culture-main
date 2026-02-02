@@ -9,7 +9,7 @@ import { getIndividualOfferPath } from '@/commons/core/Offers/utils/getIndividua
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { type Step, Stepper } from '@/components/Stepper/Stepper'
-import { NavLinkItems } from '@/ui-kit/NavLinkItems/NavLinkItems'
+import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 import styles from './IndividualOfferNavigation.module.scss'
 import { getLastSubmittedStepIndex } from './utils/getLastSubmittedStepIndex'
@@ -76,9 +76,10 @@ export const IndividualOfferNavigation = () => {
         />
       ) : (
         <div className={styles.tabs}>
-          <NavLinkItems
+          <Tabs
+            type="links"
             navLabel="Sous menu - offre individuelle"
-            links={stepList.map(({ id, label, url }) => ({
+            items={stepList.map(({ id, label, url }) => ({
               key: id,
               label,
               url: url || '#',
