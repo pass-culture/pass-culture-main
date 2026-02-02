@@ -3,6 +3,8 @@ import typing
 from pydantic_core import InitErrorDetails
 from pydantic_core import ValidationError
 
+from pcapi.serialization.exceptions import PydanticError
+
 
 def raise_error_from_location(invalid_value: typing.Any, loc: str, msg: str) -> None:
     """
@@ -20,7 +22,7 @@ def raise_error_from_location(invalid_value: typing.Any, loc: str, msg: str) -> 
         f"{loc.capitalize()}Error",
         [
             InitErrorDetails(
-                type="value_error",
+                type=PydanticError(msg),
                 loc=(loc,),
                 input=invalid_value,
                 ctx={loc: invalid_value, "error": msg},

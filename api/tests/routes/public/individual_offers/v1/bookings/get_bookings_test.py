@@ -1002,4 +1002,4 @@ class GetBookingsByOfferTest(PublicAPIVenueEndpointHelper):
         with testing.assert_num_queries(num_queries):
             response = self.make_request(plain_api_key)
 
-        assert response.json == {"global": ["Value error, `offerId` or `venueId` must be set"]}
+        assert response.json == {"global": ["`offerId` or `venueId` must be set"]}

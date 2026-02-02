@@ -87,8 +87,8 @@ class CreateAddressTest(PublicAPIEndpointBaseHelper):
             ("postalCode", {"postalCode": ["Field required"]}),
             ("city", {"city": ["Field required"]}),
             ("street", {"street": ["Field required"]}),
-            ("latitude", {"latitude": ["Value error, `latitude` must be set if `longitude` is provided"]}),
-            ("longitude", {"longitude": ["Value error, `longitude` must be set if `latitude` is provided"]}),
+            ("latitude", {"latitude": ["`latitude` must be set if `longitude` is provided"]}),
+            ("longitude", {"longitude": ["`longitude` must be set if `latitude` is provided"]}),
         ],
     )
     def test_should_raise_400_because_of_missing_params(self, missing_param, expected_json):
