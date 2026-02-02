@@ -13,8 +13,8 @@ from pydantic.v1 import utils as pydantic_utils
 from pydantic.v1 import validator
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational import validation as educational_validation
+from pcapi.core.educational import models
+from pcapi.core.educational import validation
 from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offers_validation
@@ -38,24 +38,19 @@ from pcapi.utils.image_conversion import CropParams
 class ListCollectiveOffersQueryModel(HttpQueryParamsModel):
     name: str | None = None
     offerer_id: int | None = None
-    status: typing.Annotated[
-        list[educational_models.CollectiveOfferDisplayedStatus] | None, utils.args_as_list_validator
-    ] = None
+    status: typing.Annotated[list[models.CollectiveOfferDisplayedStatus] | None, utils.args_as_list_validator] = None
     venue_id: int | None = None
     period_beginning_date: date | None = None
     period_ending_date: date | None = None
     format: EacFormat | None = None
-    location_type: educational_models.CollectiveLocationType | None = None
+    location_type: models.CollectiveLocationType | None = None
     offerer_address_id: int | None = None
 
     @pydantic_v2.model_validator(mode="after")
     def validate_location_filter(self) -> typing.Self:
-        if (
-            self.offerer_address_id is not None
-            and self.location_type != educational_models.CollectiveLocationType.ADDRESS
-        ):
+        if self.offerer_address_id is not None and self.location_type != models.CollectiveLocationType.ADDRESS:
             raise PydanticError(
-                f"Cannot provide offererAddressId when locationType is not {educational_models.CollectiveLocationType.ADDRESS.value}"
+                f"Cannot provide offererAddressId when locationType is not {models.CollectiveLocationType.ADDRESS.value}"
             )
 
         return self
@@ -89,7 +84,7 @@ class CollectiveOfferDatesModel(BaseModel):
 
 
 class GetCollectiveOfferLocationModel(BaseModel):
-    locationType: educational_models.CollectiveLocationType
+    locationType: models.CollectiveLocationType
     locationComment: str | None
     location: address_serialize.LocationResponseModel | None
 
@@ -111,20 +106,20 @@ class BaseCollectiveOfferResponseModel(ConfiguredBaseModel):
     id: int
     name: str
     venue: venues_serialize.ListOffersVenueResponseModel
-    displayedStatus: educational_models.CollectiveOfferDisplayedStatus
+    displayedStatus: models.CollectiveOfferDisplayedStatus
     imageUrl: str | None
     location: GetCollectiveOfferLocationModel
     dates: CollectiveOfferDatesModel | None
 
 
 class CollectiveOfferResponseModel(BaseCollectiveOfferResponseModel):
-    allowedActions: list[educational_models.CollectiveOfferAllowedAction]
+    allowedActions: list[models.CollectiveOfferAllowedAction]
     stock: CollectiveOfferStockResponseModel | None
     educationalInstitution: EducationalInstitutionResponseModel | None
 
     @classmethod
     def build(
-        cls: type["CollectiveOfferResponseModel"], offer: educational_models.CollectiveOffer
+        cls: type["CollectiveOfferResponseModel"], offer: models.CollectiveOffer
     ) -> "CollectiveOfferResponseModel":
         stock = offer.collectiveStock
         serialized_stock = CollectiveOfferStockResponseModel.from_orm(stock) if stock is not None else None
@@ -154,12 +149,12 @@ class ListCollectiveOffersResponseModel(ConfiguredBaseModel):
 
 
 class CollectiveOfferTemplateResponseModel(BaseCollectiveOfferResponseModel):
-    allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
+    allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
     dates: CollectiveOfferDatesModel | None
 
     @classmethod
     def build(
-        cls: type["CollectiveOfferTemplateResponseModel"], offer: educational_models.CollectiveOfferTemplate
+        cls: type["CollectiveOfferTemplateResponseModel"], offer: models.CollectiveOfferTemplate
     ) -> "CollectiveOfferTemplateResponseModel":
         start, end = offer.start, offer.end
         if start is not None and end is not None:
@@ -227,14 +222,14 @@ class GetCollectiveOfferVenueResponseModel(BaseModel):
 
 
 class CollectiveOfferLocationModel(BaseModel):
-    locationType: educational_models.CollectiveLocationType
+    locationType: models.CollectiveLocationType
     locationComment: str | None
     location: address_serialize.LocationBodyModel | address_serialize.LocationOnlyOnVenueBodyModel | None
 
     @validator("locationComment")
     def validate_location_comment(cls, location_comment: str | None, values: dict) -> str | None:
         location_type = values.get("locationType")
-        if location_type != educational_models.CollectiveLocationType.TO_BE_DEFINED and location_comment is not None:
+        if location_type != models.CollectiveLocationType.TO_BE_DEFINED and location_comment is not None:
             raise ValueError("locationComment is not allowed for the provided locationType")
         return location_comment
 
@@ -248,14 +243,14 @@ class CollectiveOfferLocationModel(BaseModel):
         if (
             location_type
             in (
-                educational_models.CollectiveLocationType.SCHOOL,
-                educational_models.CollectiveLocationType.TO_BE_DEFINED,
+                models.CollectiveLocationType.SCHOOL,
+                models.CollectiveLocationType.TO_BE_DEFINED,
             )
             and address is not None
         ):
             raise ValueError("address is not allowed for the provided locationType")
 
-        if location_type == educational_models.CollectiveLocationType.ADDRESS and address is None:
+        if location_type == models.CollectiveLocationType.ADDRESS and address is None:
             raise ValueError("address is required for the provided locationType")
         return address
 
@@ -282,10 +277,10 @@ class GetCollectiveOfferCollectiveStockResponseModel(BaseModel):
 class GetCollectiveOfferBookingResponseModel(BaseModel):
     id: int
     dateCreated: datetime
-    status: educational_models.CollectiveBookingStatus
+    status: models.CollectiveBookingStatus
     educationalRedactor: EducationalRedactorResponseModel | None
     cancellationLimitDate: datetime
-    cancellationReason: educational_models.CollectiveBookingCancellationReasons | None
+    cancellationReason: models.CollectiveBookingCancellationReasons | None
     confirmationLimitDate: datetime
 
     class Config:
@@ -293,7 +288,7 @@ class GetCollectiveOfferBookingResponseModel(BaseModel):
 
 
 def get_collective_offer_location_model(
-    offer: educational_models.CollectiveOffer | educational_models.CollectiveOfferTemplate,
+    offer: models.CollectiveOffer | models.CollectiveOfferTemplate,
 ) -> GetCollectiveOfferLocationModel:
     location = None
     oa = offer.offererAddress
@@ -331,14 +326,14 @@ class GetCollectiveOfferBaseResponseModel(BaseModel, AccessibilityComplianceMixi
     dateCreated: datetime
     description: str
     durationMinutes: int | None
-    students: list[educational_models.StudentLevels]
+    students: list[models.StudentLevels]
     location: GetCollectiveOfferLocationModel
     contactEmail: str | None
     contactPhone: str | None
     id: int
     name: str
     venue: GetCollectiveOfferVenueResponseModel
-    displayedStatus: educational_models.CollectiveOfferDisplayedStatus
+    displayedStatus: models.CollectiveOfferDisplayedStatus
     domains: list[OfferDomain]
     interventionArea: list[str]
     imageCredit: str | None
@@ -361,8 +356,8 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     contactEmail: str | None
     contactPhone: str | None
     contactUrl: str | None
-    contactForm: educational_models.OfferContactFormEnum | None
-    allowedActions: list[educational_models.CollectiveOfferTemplateAllowedAction]
+    contactForm: models.OfferContactFormEnum | None
+    allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
 
 
 class CollectiveOfferRedactorModel(BaseModel):
@@ -410,7 +405,7 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     provider: GetCollectiveOfferProviderResponseModel | None
     isTemplate: bool = False
     dates: CollectiveOfferDatesModel | None
-    allowedActions: list[educational_models.CollectiveOfferAllowedAction]
+    allowedActions: list[models.CollectiveOfferAllowedAction]
     history: collective_history_serialize.CollectiveOfferHistory
 
 
@@ -428,15 +423,15 @@ def validate_intervention_area_with_location(
 ) -> None:
     # handle the case where it is None and []
     if intervention_area:
-        if location.locationType == educational_models.CollectiveLocationType.ADDRESS:
+        if location.locationType == models.CollectiveLocationType.ADDRESS:
             raise ValueError("intervention_area must be empty")
 
         if any(area for area in intervention_area if area not in ALL_INTERVENTION_AREA):
             raise ValueError("intervention_area must be a valid area")
     else:
         if location.locationType in (
-            educational_models.CollectiveLocationType.TO_BE_DEFINED,
-            educational_models.CollectiveLocationType.SCHOOL,
+            models.CollectiveLocationType.TO_BE_DEFINED,
+            models.CollectiveLocationType.SCHOOL,
         ):
             raise ValueError("intervention_area is required and must not be empty")
 
@@ -482,7 +477,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
     mental_disability_compliant: bool = False
     motor_disability_compliant: bool = False
     visual_disability_compliant: bool = False
-    students: list[educational_models.StudentLevels]
+    students: list[models.StudentLevels]
     location: CollectiveOfferLocationModel
     contact_email: EmailStr | None
     contact_phone: str | None
@@ -492,17 +487,17 @@ class PostCollectiveOfferBodyModel(BaseModel):
     formats: typing.Sequence[EacFormat]
 
     @validator("students")
-    def validate_students(cls, students: list[str]) -> list[educational_models.StudentLevels]:
+    def validate_students(cls, students: list[str]) -> list[models.StudentLevels]:
         return shared_offers.validate_students(students)
 
     @validator("name")
     def validate_name(cls, name: str) -> str:
-        educational_validation.check_collective_offer_name_length_is_valid(name)
+        validation.check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("description")
     def validate_description(cls, description: str) -> str:
-        educational_validation.check_collective_offer_description_length_is_valid(description)
+        validation.check_collective_offer_description_length_is_valid(description)
         return description
 
     @validator("domains")
@@ -539,7 +534,7 @@ class PostCollectiveOfferBodyModel(BaseModel):
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
     price_detail: PriceDetail | None
     contact_url: AnyHttpUrl | None
-    contact_form: educational_models.OfferContactFormEnum | None
+    contact_form: models.OfferContactFormEnum | None
     dates: DateRangeOnCreateModel | None
 
     class Config:
@@ -551,7 +546,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     bookingEmails: list[EmailStr] | None
     description: str | None
     name: str | None
-    students: list[educational_models.StudentLevels] | None
+    students: list[models.StudentLevels] | None
     location: CollectiveOfferLocationModel | None
     contactEmail: EmailStr | None
     contactPhone: str | None
@@ -563,7 +558,7 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     formats: typing.Sequence[EacFormat] | None
 
     @validator("students")
-    def validate_students(cls, students: list[str] | None) -> list[educational_models.StudentLevels] | None:
+    def validate_students(cls, students: list[str] | None) -> list[models.StudentLevels] | None:
         if not students:
             return None
         return shared_offers.validate_students(students)
@@ -571,14 +566,14 @@ class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):
     @validator("name")
     def validate_name(cls, name: str | None) -> str | None:
         assert name is not None and name.strip() != ""
-        educational_validation.check_collective_offer_name_length_is_valid(name)
+        validation.check_collective_offer_name_length_is_valid(name)
         return name
 
     @validator("description")
     def validate_description(cls, description: str | None) -> str | None:
         if description is None:
             raise ValueError("Description cannot be NULL.")
-        educational_validation.check_collective_offer_description_length_is_valid(description)
+        validation.check_collective_offer_description_length_is_valid(description)
         return description
 
     @validator("formats")
@@ -630,7 +625,7 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
     domains: list[int] | None
     dates: DateRangeModel | None
     contactUrl: str | None
-    contactForm: educational_models.OfferContactFormEnum | None
+    contactForm: models.OfferContactFormEnum | None
 
     @validator("domains")
     def validate_domains_collective_offer_template_edition(
