@@ -259,7 +259,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                 <Select
                   {...methods.register('activity')}
                   options={[
-                    ...(methods.watch('activity') === null // `activity` may be null if the venue wasn't yet open to public. In that case, we provide a default value so the field isn't rendered "blank"
+                    ...(methods.watch('activity') === null // TODO: make `activity` not nullable after migrating all the venues with VenueTypeCode and no matching activity
                       ? [
                           {
                             value: '',

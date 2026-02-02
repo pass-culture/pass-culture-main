@@ -18,7 +18,7 @@ export const validationSchema = (
     getActivities('NOT_OPEN_TO_PUBLIC')
   )
 
-  const typeCodeValidator = notOpenToPublic
+  const activityValidator = notOpenToPublic
     ? yup
         .mixed<ActivityNotOpenToPublicType>()
         .oneOf(activityTypeValuesNotOpenToPublic, 'Activité non valide')
@@ -27,7 +27,7 @@ export const validationSchema = (
         .oneOf(activityTypeValuesOpenToPublic, 'Activité non valide')
 
   return yup.object().shape({
-    activity: typeCodeValidator.required(
+    activity: activityValidator.required(
       'Veuillez sélectionner une activité principale'
     ),
     culturalDomains: yup
