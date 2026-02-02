@@ -34,6 +34,7 @@ export const MOCKED_SUBCATEGORY = {
     categoryId: MOCKED_CATEGORY.A.id,
     isEvent: true,
     onlineOfflinePlatform: CATEGORY_STATUS.OFFLINE,
+    conditionalFields: ['author', 'performer', 'stageDirector'],
   }),
   EVENT_ONLINE: typedSubcategoryFactory({
     id: SubcategoryIdEnum.LIVESTREAM_EVENEMENT,
