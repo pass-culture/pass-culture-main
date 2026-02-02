@@ -1395,12 +1395,11 @@ class UserProfileUpdateTest:
         assert "date(u.last_status_update_date)" not in ios_batch_attributes
 
 
-class ResetRecreditAmountToShow:
+class ResetRecreditAmountToShowTest:
     def test_update_user_profile_reset_recredit_amount_to_show(self, client, app):
-        user = users_factories.UnderageBeneficiaryFactory(email=self.identifier, recreditAmountToShow=30)
+        user = users_factories.UnderageBeneficiaryFactory(email="email@example.com", recreditAmountToShow=30)
 
-        client.with_token(user)
-        response = client.post("/native/v1/reset_recredit_amount_to_show")
+        response = client.with_token(user).post("/native/v1/reset_recredit_amount_to_show")
 
         assert response.status_code == 200
         assert user.recreditAmountToShow is None

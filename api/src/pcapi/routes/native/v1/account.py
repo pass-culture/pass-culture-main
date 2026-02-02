@@ -111,10 +111,10 @@ def patch_user_profile(body: serializers.UserProfilePatchRequest) -> serializers
 @blueprint.native_route("/reset_recredit_amount_to_show", methods=["POST"])
 @spectree_serialize(on_success_status=200, api=blueprint.api, response_model=serializers.UserProfileResponse)
 @authenticated_and_active_user_required
-def reset_recredit_amount_to_show(user: users_models.User) -> serializers.UserProfileResponse:
-    api.reset_recredit_amount_to_show(user)
+def reset_recredit_amount_to_show() -> serializers.UserProfileResponse:
+    api.reset_recredit_amount_to_show(current_user)
 
-    return serializers.UserProfileResponse.from_orm(user)
+    return serializers.UserProfileResponse.from_orm(current_user)
 
 
 @blueprint.native_route("/profile/email_update/cancel", methods=["POST"])
