@@ -1,18 +1,18 @@
 import type { StoryObj } from '@storybook/react-vite'
 import { withRouter } from 'storybook-addon-remix-react-router'
 
-import { NavLinkItems } from './NavLinkItems'
+import { Tabs } from './Tabs'
 
 export default {
-  title: '@/ui-kit/NavLinkItems',
+  title: '@/ui-kit/Tabs',
   decorators: [withRouter],
-  component: NavLinkItems,
+  component: Tabs,
 }
 
-export const Default: StoryObj<typeof NavLinkItems> = {
+export const NavLinksMode: StoryObj<typeof Tabs> = {
   args: {
     selectedKey: 'individual',
-    links: [
+    items: [
       {
         label: 'Offres individuelles',
         url: '#',
@@ -26,3 +26,19 @@ export const Default: StoryObj<typeof NavLinkItems> = {
     ],
   },
 }
+
+export const TabMode: StoryObj<typeof Tabs> = {
+  args: {
+    type: 'tabs',
+    selectedKey: 'tab1',
+    items: [{
+      key: 'tab1',
+      label: 'Tab 1'
+    }, {
+      key: 'tab2',
+      label: 'Tab 2'
+    }]
+  }
+}
+
+

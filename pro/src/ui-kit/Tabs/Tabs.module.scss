@@ -10,6 +10,15 @@
   margin-bottom: var(--size-spacing-xxl);
   gap: var(--size-spacing-l);
 
+  &-item-button {
+    border: none;
+    background: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+
   &-item {
     @include fonts.body-accent;
 
