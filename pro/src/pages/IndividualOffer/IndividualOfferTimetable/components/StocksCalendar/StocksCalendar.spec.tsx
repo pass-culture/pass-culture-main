@@ -399,7 +399,7 @@ describe('StocksCalendar', () => {
     await userEvent.type(screen.getByLabelText('Horaire'), '00:00')
 
     await userEvent.click(
-      screen.getByRole('button', { name: 'Réinitialiser les filtres' })
+      screen.getByRole('button', { name: /Réinitialiser les filtres/ })
     )
 
     expect(

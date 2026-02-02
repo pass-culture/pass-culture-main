@@ -25,7 +25,6 @@ import { ButtonVariant } from '@/design-system/Button/types'
 import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { onSubmit } from './form/onSubmit'
@@ -112,7 +111,7 @@ export function StocksCalendar({
     await mutate(
       stockQueryKeys,
       api.deleteStocks(offer.id, { ids_to_delete: ids }),
-      { revalidate: false }
+      { revalidate: true }
     )
 
     if (
@@ -187,6 +186,10 @@ export function StocksCalendar({
   const stocks = data?.stocks || []
   const stockCount = data?.totalStockCount ?? 0
 
+  const hasFiltersApplied = Object.values(appliedFilters).some(Boolean)
+  const hasStocks = Boolean(stockCount)
+  const hasNoStocks = !stockCount && !hasFiltersApplied
+
   return (
     <>
       {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
@@ -197,7 +200,7 @@ export function StocksCalendar({
           ) : (
             <h2 className={styles['title']}>{'Horaires'}</h2>
           )}
-          {offer.hasStocks && !isOfferSynchronized(offer) && (
+          {hasStocks && !isOfferSynchronized(offer) && (
             <DialogBuilderButton
               triggerLabel="Ajouter une ou plusieurs dates"
               triggerVariant={ButtonVariant.SECONDARY}
@@ -211,13 +214,12 @@ export function StocksCalendar({
           )}
         </div>
       )}
-      {isLoading && <Spinner className={styles['spinner']} />}
       {!isOfferDisabled(offer) && (
         <div className={styles['cancel-banner']}>
           <StocksCalendarCancelBanner />
         </div>
       )}
-      {!offer.hasStocks && (
+      {hasNoStocks && (
         <div className={styles['no-stocks-content']}>
           {isOfferSynchronized(offer) ? (
             <p>Aucune date à afficher</p>
@@ -245,7 +247,7 @@ export function StocksCalendar({
         </div>
       )}
       <div className={styles['container']}>
-        {!isLoading && offer.hasStocks && (
+        {!hasNoStocks && (
           <div className={styles['content']}>
             <div className={styles['filters']}>
               <StocksCalendarFilters
@@ -281,6 +283,12 @@ export function StocksCalendar({
               departmentCode={departmentCode}
               mode={mode}
               onUpdateStock={updateStock}
+              isLoading={!!isLoading}
+              hasNoStocks={hasNoStocks}
+              onUpdateFilters={() => {
+                setPage(1)
+                setAppliedFilters({})
+              }}
             />
             <div className={styles['pagination']}>
               <Pagination

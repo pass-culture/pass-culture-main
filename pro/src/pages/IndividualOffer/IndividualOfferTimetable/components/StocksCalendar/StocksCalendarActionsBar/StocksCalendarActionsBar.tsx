@@ -82,11 +82,7 @@ export function StocksCalendarActionsBar({
   }
 
   if (mode === OFFER_WIZARD_MODE.READ_ONLY) {
-    return (
-      <ActionsBarSticky className={styles['sticky']}>
-        <Button as="a" to="/offres" label="Retour à la liste des offres" />
-      </ActionsBarSticky>
-    )
+    return
   }
 
   return (

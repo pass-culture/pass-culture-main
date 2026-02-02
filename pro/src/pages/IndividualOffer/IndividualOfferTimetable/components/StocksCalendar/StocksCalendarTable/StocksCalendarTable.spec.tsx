@@ -46,7 +46,9 @@ describe('StocksCalendarTable', () => {
   it('should show a placeholder message when there is no stock displayed in the table', () => {
     renderStocksCalendarTable({ stocks: [] })
 
-    expect(screen.getByText('Aucune date trouvée')).toBeInTheDocument()
+    expect(
+      screen.getByText('Aucune date trouvée pour votre recherche')
+    ).toBeInTheDocument()
   })
 
   it('should not render stocks checkboxes options when the page is read only', () => {

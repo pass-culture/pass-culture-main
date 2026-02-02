@@ -4,7 +4,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--size-spacing-l);
-  align-items: center;
+  align-items: flex-end;
 }
 
 .time-picker {
@@ -20,4 +20,9 @@
 .sort-select,
 .place-category-select {
   max-width: rem.torem(189px);
+}
+
+.filter-reset {
+  height: 40px;
+  display: inline-flex;
 }

@@ -23,38 +23,43 @@ import {
   ButtonSize,
   ButtonVariant,
 } from '@/design-system/Button/types'
-import { Checkbox } from '@/design-system/Checkbox/Checkbox'
 import fullEditIcon from '@/icons/full-edit.svg'
 import fullTrashIcon from '@/icons/full-trash.svg'
-import strokeSearchIcon from '@/icons/stroke-search.svg'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { getPriceCategoryName } from '@/pages/IndividualOffer/commons/getPriceCategoryOptions'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
-import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import { type Column, Table, TableVariant } from '@/ui-kit/Table/Table'
 
+import type { StocksTableFilters } from '../form/types'
 import styles from './StocksCalendarTable.module.scss'
 import { StocksCalendarTableEditStock } from './StocksCalendarTableEditStock/StocksCalendarTableEditStock'
 
 export type StocksCalendarTableProps = {
   stocks: GetOfferStockResponseModel[]
   offer: GetIndividualOfferResponseModel
-  onDeleteStocks: (id: number[]) => void
-  checkedStocks: Set<number>
-  updateCheckedStocks: (newStocks: Set<number>) => void
+  isLoading: boolean
+  hasNoStocks: boolean
   departmentCode: string
   mode: OFFER_WIZARD_MODE
+  checkedStocks: Set<number>
+  updateCheckedStocks: (newStocks: Set<number>) => void
   onUpdateStock: (stock: EventStockUpdateBodyModel) => Promise<void>
+  onDeleteStocks: (id: number[]) => void
+  onUpdateFilters: (filters: StocksTableFilters) => void
 }
 
 export function StocksCalendarTable({
   stocks,
   offer,
-  onDeleteStocks,
-  onUpdateStock,
-  checkedStocks,
-  updateCheckedStocks,
+  isLoading,
+  hasNoStocks,
   departmentCode,
   mode,
+  checkedStocks,
+  updateCheckedStocks,
+  onUpdateStock,
+  onDeleteStocks,
+  onUpdateFilters,
 }: StocksCalendarTableProps) {
   const [isEditStockDialogOpen, setIsEditStockDialogOpen] = useState(false)
   const [stockOpenedInDialog, setStockOpenedInDialog] =
@@ -68,16 +73,6 @@ export function StocksCalendarTable({
 
   const snackBar = useSnackBar()
 
-  function handleStockCheckboxClicked(stockId: number) {
-    const newChecked = new Set(Array.from(checkedStocks))
-    if (checkedStocks.has(stockId)) {
-      newChecked.delete(stockId)
-    } else {
-      newChecked.add(stockId)
-    }
-    updateCheckedStocks(newChecked)
-  }
-
   async function handleUpdateStock(stock: EventStockUpdateBodyModel) {
     try {
       await onUpdateStock(stock)
@@ -90,20 +85,135 @@ export function StocksCalendarTable({
     }
   }
 
-  if (stocks.length === 0) {
-    return (
-      <div className={styles['no-data']}>
-        <SvgIcon
-          src={strokeSearchIcon}
-          alt=""
-          className={styles['no-data-icon']}
-        />
-        <p className={styles['bold']}>Aucune date trouvée</p>
-        <p>
-          Vous pouvez modifier vos filtres pour lancer une nouvelle recherche
-        </p>
-      </div>
-    )
+  const columns: Column<GetOfferStockResponseModel>[] = [
+    {
+      id: 'beginningDate',
+      label: 'Date',
+      render: (stock) =>
+        stock.beginningDatetime
+          ? formatLocalTimeDateString(
+              stock.beginningDatetime,
+              departmentCode,
+              FORMAT_DD_MM_YYYY
+            )
+          : 'Date invalide',
+    },
+    {
+      id: 'time',
+      label: 'Horaire',
+      render: (stock) =>
+        stock.beginningDatetime
+          ? formatLocalTimeDateString(
+              stock.beginningDatetime,
+              departmentCode,
+              FORMAT_HH_mm
+            )
+          : 'Horaire invalide',
+    },
+    {
+      id: 'priceCategory',
+      label: 'Tarif',
+      render: (stock) => {
+        const priceCategory = offer.priceCategories?.find(
+          (p) => p.id === stock.priceCategoryId
+        )
+
+        return priceCategory
+          ? getPriceCategoryName(priceCategory, isCaledonian)
+          : 'Tarif invalide'
+      },
+    },
+    {
+      id: 'bookingLimit',
+      label: 'Date limite de réservation',
+      render: (stock) =>
+        stock.bookingLimitDatetime
+          ? formatLocalTimeDateString(
+              stock.bookingLimitDatetime,
+              departmentCode,
+              FORMAT_DD_MM_YYYY
+            )
+          : 'Date invalide',
+    },
+    {
+      id: 'quantityLeftOrTotal',
+      label:
+        mode === OFFER_WIZARD_MODE.CREATION ? 'Places' : 'Places restantes',
+      render: (stock) => {
+        if (stock.quantity === null) {
+          return 'Illimité'
+        }
+
+        if (mode === OFFER_WIZARD_MODE.CREATION) {
+          return stock.quantity
+        }
+
+        return (stock.quantity || 0) - stock.bookingsQuantity
+      },
+    },
+  ]
+
+  if (mode !== OFFER_WIZARD_MODE.CREATION) {
+    columns.push({
+      id: 'bookingsQuantity',
+      label: 'Réservations',
+      render: (stock) => stock.bookingsQuantity,
+    })
+  }
+
+  if (mode !== OFFER_WIZARD_MODE.READ_ONLY) {
+    columns.push({
+      id: 'actions',
+      label: 'Actions',
+      render: (stock) => {
+        const canDeleteStock = !isOfferDisabled(offer) && stock.isEventDeletable
+
+        const canEditStock =
+          mode === OFFER_WIZARD_MODE.EDITION &&
+          !isOfferDisabled(offer) &&
+          stock.beginningDatetime &&
+          !isBefore(stock.beginningDatetime, new Date()) &&
+          (!isOfferSynchronized(offer) || isOfferAllocineSynchronized(offer))
+
+        if (!canEditStock && !canDeleteStock) {
+          return null
+        }
+
+        return (
+          <div className={styles['tbody-td-actions']}>
+            {canEditStock && (
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                size={ButtonSize.SMALL}
+                icon={fullEditIcon}
+                tooltip="Modifier la date"
+                ref={
+                  stock.id === stockOpenedInDialog?.id
+                    ? openedStockTriggerRef
+                    : undefined
+                }
+                onClick={() => {
+                  setStockOpenedInDialog(stock)
+                  setIsEditStockDialogOpen(true)
+                }}
+              />
+            )}
+
+            {canDeleteStock && (
+              <Button
+                variant={ButtonVariant.SECONDARY}
+                color={ButtonColor.NEUTRAL}
+                size={ButtonSize.SMALL}
+                icon={fullTrashIcon}
+                tooltip="Supprimer la date"
+                onClick={() => setStockBeingDeleted(stock)}
+              />
+            )}
+          </div>
+        )
+      },
+    })
   }
 
   return (
@@ -133,162 +243,31 @@ export function StocksCalendarTable({
           />
         )}
       </DialogBuilder>
-      {mode === OFFER_WIZARD_MODE.CREATION && (
-        <div className={styles['select-all']}>
-          <Checkbox
-            label="Tout sélectionner"
-            indeterminate={
-              checkedStocks.size < stocks.length && checkedStocks.size > 0
-            }
-            checked={checkedStocks.size === stocks.length}
-            onChange={() => {
-              if (checkedStocks.size < stocks.length) {
-                updateCheckedStocks(new Set(stocks.map((s) => s.id)))
-              } else {
-                updateCheckedStocks(new Set())
-              }
-            }}
-          />
-        </div>
-      )}
-      <table className={styles['table']}>
-        <thead className={styles['thead']}>
-          <tr>
-            <th className={styles['thead-th']}>
-              <div className={styles['thead-th-date']}>Date</div>
-            </th>
-            <th className={styles['thead-th']}>Horaire</th>
-            <th className={styles['thead-th']}>Tarif</th>
-            <th className={styles['thead-th']}>Date limite de réservation</th>
-            <th className={styles['thead-th']}>
-              {mode === OFFER_WIZARD_MODE.CREATION
-                ? 'Places'
-                : 'Places restantes'}
-            </th>
-            {mode !== OFFER_WIZARD_MODE.CREATION && (
-              <th className={styles['thead-th']}>Réservations</th>
-            )}
-            {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
-              <th className={styles['thead-th']}>Actions</th>
-            )}
-          </tr>
-        </thead>
-        <tbody className={styles['tbody']}>
-          {stocks.map((stock) => {
-            const priceCategory = offer.priceCategories?.find(
-              (p) => p.id === stock.priceCategoryId
-            )
-
-            const checkboxDateLabel = stock.beginningDatetime
-              ? formatLocalTimeDateString(
-                  stock.beginningDatetime,
-                  departmentCode,
-                  FORMAT_DD_MM_YYYY
-                )
-              : 'Date invalide'
-
-            const canDeleteStock =
-              mode !== OFFER_WIZARD_MODE.READ_ONLY &&
-              !isOfferDisabled(offer) &&
-              stock.isEventDeletable
-
-            const canEditStock =
-              mode === OFFER_WIZARD_MODE.EDITION &&
-              !isOfferDisabled(offer) &&
-              stock.beginningDatetime &&
-              !isBefore(stock.beginningDatetime, new Date()) &&
-              (!isOfferSynchronized(offer) ||
-                isOfferAllocineSynchronized(offer))
-
-            return (
-              <tr key={stock.id} className={styles['tr']}>
-                <td className={styles['tbody-td']}>
-                  {mode === OFFER_WIZARD_MODE.CREATION ? (
-                    <Checkbox
-                      label={checkboxDateLabel}
-                      checked={checkedStocks.has(stock.id)}
-                      onChange={() => handleStockCheckboxClicked(stock.id)}
-                      name="select-stock"
-                    />
-                  ) : (
-                    checkboxDateLabel
-                  )}
-                </td>
-                <td className={styles['tbody-td']}>
-                  {stock.beginningDatetime
-                    ? formatLocalTimeDateString(
-                        stock.beginningDatetime,
-                        departmentCode,
-                        FORMAT_HH_mm
-                      )
-                    : 'Horaire invalide'}
-                </td>
-                <td className={styles['tbody-td']}>
-                  {priceCategory
-                    ? getPriceCategoryName(priceCategory, isCaledonian)
-                    : 'Tarif invalide'}
-                </td>
-                <td className={styles['tbody-td']}>
-                  {stock.bookingLimitDatetime
-                    ? formatLocalTimeDateString(
-                        stock.bookingLimitDatetime,
-                        departmentCode,
-                        FORMAT_DD_MM_YYYY
-                      )
-                    : 'Date invalide'}
-                </td>
-                <td className={styles['tbody-td']}>
-                  {stock.quantity === null
-                    ? 'Illimité'
-                    : mode === OFFER_WIZARD_MODE.CREATION
-                      ? stock.quantity
-                      : (stock.quantity || 0) - stock.bookingsQuantity}
-                </td>
-                {mode !== OFFER_WIZARD_MODE.CREATION && (
-                  <td className={styles['tbody-td']}>
-                    {stock.bookingsQuantity}
-                  </td>
-                )}
-
-                {mode !== OFFER_WIZARD_MODE.READ_ONLY && (
-                  <td className={styles['tbody-td']}>
-                    <div className={styles['tbody-td-actions']}>
-                      {canEditStock && (
-                        <Button
-                          variant={ButtonVariant.SECONDARY}
-                          color={ButtonColor.NEUTRAL}
-                          size={ButtonSize.SMALL}
-                          icon={fullEditIcon}
-                          tooltip="Modifier la date"
-                          ref={
-                            stock.id === stockOpenedInDialog?.id
-                              ? openedStockTriggerRef
-                              : undefined
-                          }
-                          onClick={() => {
-                            setStockOpenedInDialog(stock)
-                            setIsEditStockDialogOpen(true)
-                          }}
-                        />
-                      )}
-                      {canDeleteStock && (
-                        <Button
-                          variant={ButtonVariant.SECONDARY}
-                          color={ButtonColor.NEUTRAL}
-                          size={ButtonSize.SMALL}
-                          icon={fullTrashIcon}
-                          tooltip="Supprimer la date"
-                          onClick={() => setStockBeingDeleted(stock)}
-                        />
-                      )}
-                    </div>
-                  </td>
-                )}
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <Table
+        columns={columns}
+        selectable={mode === OFFER_WIZARD_MODE.CREATION}
+        selectedIds={checkedStocks}
+        onSelectionChange={(stocks) =>
+          updateCheckedStocks(new Set(stocks.map((s) => s.id)))
+        }
+        data={stocks}
+        isLoading={isLoading}
+        variant={TableVariant.COLLAPSE}
+        noResult={{
+          message: 'Aucune date trouvée pour votre recherche',
+          subtitle: 'Vous pouvez modifier votre recherche ou',
+          resetMessage: 'Afficher toutes les dates',
+          onFilterReset: () => onUpdateFilters({} as StocksTableFilters),
+        }}
+        noData={{
+          hasNoData: hasNoStocks,
+          message: {
+            icon: '',
+            title: 'Aucune date créée pour cet événement',
+            subtitle: '',
+          },
+        }}
+      />
       <ConfirmDialog
         onCancel={() => {
           setStockBeingDeleted(null)
