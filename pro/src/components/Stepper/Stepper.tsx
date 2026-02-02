@@ -1,6 +1,6 @@
 import cn from 'classnames'
 import type React from 'react'
-import { useLayoutEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 
 import { findLastIndex } from '@/commons/utils/findLastIndex'
 import { StepContent } from '@/components/Stepper/StepContent'
@@ -27,18 +27,9 @@ export const Stepper = ({
   className,
 }: StepperProps): JSX.Element => {
   const listRef = useRef<HTMLOListElement>(null)
-  const [stepperWidth, setStepperWidth] = useState(0)
 
   const lastStepIndex = steps.length - 1
   const lastLineToActivate = findLastIndex(steps, (step: Step) => !!step.url)
-
-  useLayoutEffect(() => {
-    //  Before the first render, get the list total width
-    if (listRef.current) {
-      const { width } = listRef.current.getBoundingClientRect()
-      setStepperWidth(width)
-    }
-  }, [])
 
   return (
     // biome-ignore lint/correctness/useUniqueElementIds: We assume stepper is used once per page. There cannot be id duplications.
@@ -64,12 +55,7 @@ export const Stepper = ({
             key={`step-${step.id}`}
             data-testid={`step-${step.id}`}
           >
-            <StepContent
-              step={step}
-              stepIndex={stepIndex}
-              stepsCount={steps.length}
-              stepperWidth={stepperWidth}
-            />
+            <StepContent step={step} stepIndex={stepIndex} />
             {isActive && (
               <span className={styles['visually-hidden']}>
                 {' '}
