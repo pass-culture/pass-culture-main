@@ -3,6 +3,7 @@ import pathlib
 import shutil
 import tempfile
 import threading
+import typing
 import urllib.parse
 from dataclasses import dataclass
 from datetime import datetime
@@ -24,10 +25,11 @@ class PdfMetadata:
     created: datetime | None = None  # `now` if not given
 
 
-class CachingUrlFetcher:
+class CachingUrlFetcher(weasyprint.URLFetcher):
     """A URL fetcher for weasyprint that caches files."""
 
-    def __init__(self) -> None:
+    def __init__(self, **kwargs: typing.Any) -> None:
+        super().__init__(**kwargs)
         self.create_cache()
 
     def __del__(self) -> None:
@@ -51,28 +53,31 @@ class CachingUrlFetcher:
         except Exception:
             pass
 
-    def fetch_url(self, url: str) -> dict:
-        content_cache_key = urllib.parse.quote_plus(url)
-        metadata_cache_key = content_cache_key + ".metadata"
+    def fetch(self, url: str, headers: dict | None = None) -> weasyprint.urls.URLFetcherResponse:
+        base_cache_key = urllib.parse.quote_plus(url)
+        content_cache_key = base_cache_key + ".content"
+        headers_cache_key = base_cache_key + ".headers"
         content_path = self.tmp_dir / content_cache_key
-        metadata_path = self.tmp_dir / metadata_cache_key
+        headers_path = self.tmp_dir / headers_cache_key
         if content_path.exists():
-            result = {
-                "string": content_path.read_bytes(),
-            }
-            return result | json.loads(metadata_path.read_text())
+            return weasyprint.urls.URLFetcherResponse(
+                url,
+                body=content_path.read_bytes(),
+                headers=json.loads(headers_path.read_text()),
+            )
 
-        result = weasyprint.default_url_fetcher(url)
-        if "file_obj" in result:
-            # File objects cannot be serialized, we serialize their
-            # content instead.
-            result["string"] = result.pop("file_obj").read()
+        result = super().fetch(url, headers)
+
+        content = result.read()
         with content_path.open("bx") as fp:
-            fp.write(result["string"])  # despite the name, it's bytes
-        metadata = {key: value for key, value in result.items() if key != "string"}
-        with metadata_path.open("tx", encoding="utf-8") as fp:
-            fp.write(json.dumps(metadata))
-        return result
+            fp.write(content)
+        with headers_path.open("tx", encoding="utf-8") as fp:
+            fp.write(json.dumps(dict(result.headers)))
+        if result._file_obj.seekable():
+            result._file_obj.seek(0)
+            return result
+        # Gzip content is not seekable, can't be read twice
+        return weasyprint.urls.URLFetcherResponse(url, body=content, headers=result.headers, status=result.status)
 
 
 def _get_url_fetcher() -> CachingUrlFetcher:
@@ -83,7 +88,7 @@ def _get_url_fetcher() -> CachingUrlFetcher:
 
 def generate_pdf_from_html(html_content: str, metadata: PdfMetadata | None = None) -> bytes:
     fetcher = _get_url_fetcher()
-    document = weasyprint.HTML(string=html_content, url_fetcher=fetcher.fetch_url).render()
+    document = weasyprint.HTML(string=html_content, url_fetcher=fetcher).render()
     metadata = metadata or PdfMetadata()
     # a W3C date, as expected by Weasyprint
     document.metadata.created = (metadata.created or date_utils.get_naive_utc_now()).strftime("%Y-%m-%dT%H:%M:%SZ")

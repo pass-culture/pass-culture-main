@@ -19,6 +19,7 @@ import flask_sqlalchemy
 import pytest
 import requests_mock
 import sqlalchemy as sa
+import weasyprint
 from alembic import command
 from alembic.config import Config
 from cryptography.hazmat.primitives import serialization
@@ -283,45 +284,15 @@ def css_font_http_request_mock():
     This is for weasyprint, which uses ``urllib.request.open()``.
     """
 
-    class FakeResponse:
-        class FakeInfo:
-            def __init__(self, filename):
-                self.filename = filename
+    def fake_fetch(url_fetcher, url, *args, **kwargs):
+        assert url.startswith("https://fonts.googleapis.com/")
+        return weasyprint.urls.URLFetcherResponse(
+            url,
+            body=b"/*Test*/",
+            headers={"Content-Type": 'text/css; charset="utf-8"'},
+        )
 
-            def get_content_type(self):
-                return "text/plain"
-
-            def get_param(self, param):
-                if param == "charset":
-                    return "utf-8"
-                raise NotImplementedError()
-
-            def get_filename(self):
-                return self.filename
-
-            def get(self, header):
-                if header == "Content-Encoding":
-                    return None
-                raise NotImplementedError()
-
-        def __init__(self, url, content):
-            self.url = url
-            self.content = content
-
-        def read(self):
-            return self.content
-
-        def info(self):
-            return self.FakeInfo("dummy_filename.ext")
-
-        def geturl(self):
-            return self.url
-
-    def fake_open(request, *args, **kwargs):
-        assert request.host == "fonts.googleapis.com"
-        return FakeResponse(request.full_url, content=b"")  # return a bytes-like object to avoid TypeError
-
-    with patch("weasyprint.urls.open", fake_open):
+    with patch("weasyprint.urls.URLFetcher.fetch", fake_fetch):
         yield
 
 
