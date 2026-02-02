@@ -269,10 +269,13 @@
                     "OTHER",
                     "PERFORMANCE_HALL",
                     "PRESS",
+                    "PRESS_OR_MEDIA",
                     "PRODUCTION_OR_PROMOTION_COMPANY",
+                    "RADIO_OR_MUSIC_STREAMING",
                     "RECORD_STORE",
                     "SCIENCE_CENTRE",
                     "STREAMING_PLATFORM",
+                    "TELEVISION_OR_VIDEO_STREAMING",
                     "TOURIST_INFORMATION_CENTRE",
                     "TRAVELLING_CINEMA"
                 ],

@@ -211,11 +211,16 @@ class Activity(enum.Enum):
     # TODO (lmaubert 2025-10): Remove 'OTHER' when not necessary anymore (temporary value to measure the adequacy of the new list of main activities)
     OTHER = "OTHER"
     PERFORMANCE_HALL = "PERFORMANCE_HALL"
+    # TODO (lmaubert 2026-02): Remove 'PRESS', replaced by 'PRESS_OR_MEDIA'
     PRESS = "PRESS"
+    PRESS_OR_MEDIA = "PRESS_OR_MEDIA"
     PRODUCTION_OR_PROMOTION_COMPANY = "PRODUCTION_OR_PROMOTION_COMPANY"
+    RADIO_OR_MUSIC_STREAMING = "RADIO_OR_MUSIC_STREAMING"
     RECORD_STORE = "RECORD_STORE"
     SCIENCE_CENTRE = "SCIENCE_CENTRE"
+    # TODO (lmaubert 2026-02): Remove 'STREAMING_PLATFORM', split into two different activities
     STREAMING_PLATFORM = "STREAMING_PLATFORM"
+    TELEVISION_OR_VIDEO_STREAMING = "TELEVISION_OR_VIDEO_STREAMING"
     TOURIST_INFORMATION_CENTRE = "TOURIST_INFORMATION_CENTRE"
     TRAVELLING_CINEMA = "TRAVELLING_CINEMA"
 
@@ -263,9 +268,10 @@ ActivityNotOpenToPublic: enum.EnumType = enum.Enum(  # type: ignore[misc]
             "CULTURAL_MEDIATION",
             "FESTIVAL",
             "OTHER",
-            "PRESS",
+            "PRESS_OR_MEDIA",
             "PRODUCTION_OR_PROMOTION_COMPANY",
-            "STREAMING_PLATFORM",
+            "RADIO_OR_MUSIC_STREAMING",
+            "TELEVISION_OR_VIDEO_STREAMING",
             "TRAVELLING_CINEMA",
         )
     },

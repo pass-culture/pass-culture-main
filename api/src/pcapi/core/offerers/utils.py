@@ -33,7 +33,10 @@ ACTIVITY_NAME_TO_VENUE_TYPE_CODE_MAPPING = {
     offerers_models.Activity.ARTISTIC_COMPANY.name: offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
     offerers_models.Activity.PRODUCTION_OR_PROMOTION_COMPANY.name: offerers_schemas.VenueTypeCode.PERFORMING_ARTS,
     offerers_models.Activity.PRESS.name: offerers_schemas.VenueTypeCode.OTHER,
+    offerers_models.Activity.PRESS_OR_MEDIA.name: offerers_schemas.VenueTypeCode.OTHER,
     offerers_models.Activity.STREAMING_PLATFORM.name: offerers_schemas.VenueTypeCode.DIGITAL,
+    offerers_models.Activity.RADIO_OR_MUSIC_STREAMING.name: offerers_schemas.VenueTypeCode.DIGITAL,
+    offerers_models.Activity.TELEVISION_OR_VIDEO_STREAMING.name: offerers_schemas.VenueTypeCode.DIGITAL,
 }
 
 

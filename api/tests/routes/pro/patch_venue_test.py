@@ -1070,9 +1070,9 @@ class Returns200Test:
             (True, "CINEMA", offerers_models.VenueTypeCode.MOVIE, offerers_models.Activity.CINEMA),
             (
                 False,
-                "STREAMING_PLATFORM",
+                "RADIO_OR_MUSIC_STREAMING",
                 offerers_models.VenueTypeCode.DIGITAL,
-                offerers_models.Activity.STREAMING_PLATFORM,
+                offerers_models.Activity.RADIO_OR_MUSIC_STREAMING,
             ),
             (True, "FESTIVAL", offerers_models.VenueTypeCode.FESTIVAL, offerers_models.Activity.FESTIVAL),
             (False, "FESTIVAL", offerers_models.VenueTypeCode.FESTIVAL, offerers_models.Activity.FESTIVAL),

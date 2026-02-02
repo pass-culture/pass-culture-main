@@ -20,10 +20,13 @@ export const _DisplayableActivityMappings = {
   OTHER: 'Autre',
   PERFORMANCE_HALL: 'Salle de spectacles',
   PRESS: 'Presse',
+  PRESS_OR_MEDIA: 'Presse ou média',
   PRODUCTION_OR_PROMOTION_COMPANY: 'Société de production, tourneur ou label',
+  RADIO_OR_MUSIC_STREAMING: 'Radio ou streaming musical',
   RECORD_STORE: 'Disquaire',
   SCIENCE_CENTRE: 'Centre de culture scientifique, technique et industrielle',
   STREAMING_PLATFORM: 'Plateforme de streaming musique ou vidéo',
+  TELEVISION_OR_VIDEO_STREAMING: 'Télévision ou streaming vidéo',
   TOURIST_INFORMATION_CENTRE: 'Office de tourisme',
   TRAVELLING_CINEMA: 'Cinéma itinérant',
 }

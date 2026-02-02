@@ -4,9 +4,10 @@ export const _ActivityNotOpenToPublicMappings = {
   CULTURAL_MEDIATION: 'Médiation culturelle',
   FESTIVAL: 'Festival',
   OTHER: 'Autre',
-  PRESS: 'Presse',
+  PRESS_OR_MEDIA: 'Presse ou média',
   PRODUCTION_OR_PROMOTION_COMPANY: 'Société de production, tourneur ou label',
-  STREAMING_PLATFORM: 'Plateforme de streaming musique ou vidéo',
+  RADIO_OR_MUSIC_STREAMING: 'Radio ou streaming musical',
+  TELEVISION_OR_VIDEO_STREAMING: 'Télévision ou streaming vidéo',
   TRAVELLING_CINEMA: 'Cinéma itinérant',
 }
 
