@@ -36,6 +36,7 @@ describe('serializeExtraData', () => {
       durationMinutes: '',
       subcategoryConditionalFields: [],
       productId: '',
+      artistOfferLinks: [],
     }
 
     expect(serializeExtraData(formValues)).toStrictEqual({
@@ -70,6 +71,7 @@ describe('serializeExtraData', () => {
       durationMinutes: '',
       subcategoryConditionalFields: [],
       productId: '',
+      artistOfferLinks: [],
     }
 
     expect(serializeExtraData(formValues)).toStrictEqual({
@@ -105,6 +107,7 @@ describe('serializeDetailsPostData', () => {
     durationMinutes: '',
     subcategoryConditionalFields: [],
     productId: '',
+    artistOfferLinks: [],
   }
 
   it('should include accessibility fields', () => {
@@ -166,6 +169,7 @@ describe('serializeDetailsPatchData', () => {
     durationMinutes: '',
     subcategoryConditionalFields: [],
     productId: '',
+    artistOfferLinks: [],
   }
 
   it('should include accessibility fields', () => {

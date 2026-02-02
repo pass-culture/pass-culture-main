@@ -60,9 +60,11 @@ const DetailsSubFormWrappedWithFormik = ({
 const renderDetailsSubForm = ({
   props,
   mode = OFFER_WIZARD_MODE.CREATION,
+  features = [],
 }: {
   props?: DetailsSubFormTestProps
   mode?: OFFER_WIZARD_MODE
+  features?: string[]
 } = {}) => {
   const path = getIndividualOfferPath({
     step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
@@ -70,6 +72,7 @@ const renderDetailsSubForm = ({
   })
   const options = {
     initialRouterEntries: [path],
+    features,
   }
 
   return renderWithProviders(
@@ -119,6 +122,41 @@ describe('DetailsSubForm', () => {
 
     const subFormDurationInput = screen.getByLabelText(/Durée/)
     expect(subFormDurationInput).toBeInTheDocument()
+  })
+
+  it('should display combobox artists fields when WIP_OFFER_ARTISTS feature is active', () => {
+    renderDetailsSubForm({ features: ['WIP_OFFER_ARTISTS'] })
+
+    const artistSelects = {
+      author: /Auteur/,
+      performer: /Interprète/,
+      stageDirector: /Metteur en scène/,
+    }
+
+    Object.values(artistSelects).forEach((input) => {
+      const inputElement = screen.getByRole('combobox', { name: input })
+      expect(inputElement).toBeInTheDocument()
+    })
+  })
+
+  it('should display textbox artists fields when WIP_OFFER_ARTISTS feature is active and the offer is product based', () => {
+    renderDetailsSubForm({
+      props: {
+        isProductBased: true,
+      },
+      features: ['WIP_OFFER_ARTISTS'],
+    })
+
+    const artistSelects = {
+      author: /Auteur/,
+      performer: /Interprète/,
+      stageDirector: /Metteur en scène/,
+    }
+
+    Object.values(artistSelects).forEach((input) => {
+      const inputElement = screen.queryByRole('textbox', { name: input })
+      expect(inputElement).toBeInTheDocument()
+    })
   })
 
   describe('when EAN search is displayed', () => {

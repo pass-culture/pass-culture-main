@@ -1,6 +1,8 @@
 import { useFormContext } from 'react-hook-form'
 
+import { ArtistType } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner, BannerVariants } from '@/design-system/Banner/Banner'
@@ -15,6 +17,7 @@ import {
 import { Select } from '@/ui-kit/form/Select/Select'
 import { TimePicker } from '@/ui-kit/form/TimePicker/TimePicker'
 
+import { ArtistField } from './components/ArtistField/ArtistField'
 import styles from './DetailsSubForm.module.scss'
 
 export const ARTISTIC_INFORMATION_FIELDS: (keyof DetailsFormValues)[] = [
@@ -79,6 +82,11 @@ export const DetailsSubForm = ({
 
   const displayEanField =
     subcategoryConditionalFields.includes('ean') && !isEanSearchDisplayed
+
+  const isOfferArtistsFeatureActive = useActiveFeature('WIP_OFFER_ARTISTS')
+
+  const shouldUseArtistOfferLinks =
+    isOfferArtistsFeatureActive && !isProductBased
 
   return (
     <>
@@ -157,15 +165,23 @@ export const DetailsSubForm = ({
                     error={errors.speaker?.message}
                   />
                 )}
-                {subcategoryConditionalFields.includes('author') && (
-                  <TextInput
-                    label="Auteur"
-                    maxCharactersCount={1000}
-                    disabled={readOnlyFields.includes('author')}
-                    {...register('author')}
-                    error={errors.author?.message}
-                  />
-                )}
+                {subcategoryConditionalFields.includes('author') &&
+                  !shouldUseArtistOfferLinks && (
+                    <TextInput
+                      label="Auteur"
+                      maxCharactersCount={1000}
+                      disabled={readOnlyFields.includes('author')}
+                      {...register('author')}
+                      error={errors.author?.message}
+                    />
+                  )}
+                {subcategoryConditionalFields.includes('author') &&
+                  shouldUseArtistOfferLinks && (
+                    <ArtistField
+                      readOnly={readOnlyFields.includes('author')}
+                      artistType={ArtistType.AUTHOR}
+                    />
+                  )}
                 {subcategoryConditionalFields.includes('visa') && (
                   <TextInput
                     label="Visa d’exploitation"
@@ -175,24 +191,40 @@ export const DetailsSubForm = ({
                     error={errors.visa?.message}
                   />
                 )}
-                {subcategoryConditionalFields.includes('stageDirector') && (
-                  <TextInput
-                    label="Metteur en scène"
-                    maxCharactersCount={1000}
-                    disabled={readOnlyFields.includes('stageDirector')}
-                    {...register('stageDirector')}
-                    error={errors.stageDirector?.message}
-                  />
-                )}
-                {subcategoryConditionalFields.includes('performer') && (
-                  <TextInput
-                    label="Interprète"
-                    maxCharactersCount={1000}
-                    disabled={readOnlyFields.includes('performer')}
-                    {...register('performer')}
-                    error={errors.performer?.message}
-                  />
-                )}
+                {subcategoryConditionalFields.includes('stageDirector') &&
+                  !shouldUseArtistOfferLinks && (
+                    <TextInput
+                      label="Metteur en scène"
+                      maxCharactersCount={1000}
+                      disabled={readOnlyFields.includes('stageDirector')}
+                      {...register('stageDirector')}
+                      error={errors.stageDirector?.message}
+                    />
+                  )}
+                {subcategoryConditionalFields.includes('stageDirector') &&
+                  shouldUseArtistOfferLinks && (
+                    <ArtistField
+                      readOnly={readOnlyFields.includes('stageDirector')}
+                      artistType={ArtistType.STAGE_DIRECTOR}
+                    />
+                  )}
+                {subcategoryConditionalFields.includes('performer') &&
+                  !shouldUseArtistOfferLinks && (
+                    <TextInput
+                      label="Interprète"
+                      maxCharactersCount={1000}
+                      disabled={readOnlyFields.includes('performer')}
+                      {...register('performer')}
+                      error={errors.performer?.message}
+                    />
+                  )}
+                {subcategoryConditionalFields.includes('performer') &&
+                  shouldUseArtistOfferLinks && (
+                    <ArtistField
+                      readOnly={readOnlyFields.includes('performer')}
+                      artistType={ArtistType.PERFORMER}
+                    />
+                  )}
                 {displayEanField && (
                   <TextInput
                     label="EAN-13 (European Article Numbering)"
