@@ -162,7 +162,7 @@ const meta: Meta<typeof Table<Row>> = {
     selectable: false,
     isLoading: false,
     isSticky: false,
-    variant: TableVariant.SEPARATE,
+    variant: TableVariant.COLLAPSE,
     noData,
     noResult,
   },
@@ -187,9 +187,9 @@ export const Basic: Story = {
   render: (args) => <Table {...args} />,
 }
 
-export const CollapseVariant: Story = {
+export const SeparateVariant: Story = {
   args: {
-    variant: TableVariant.COLLAPSE,
+    variant: TableVariant.SEPARATE,
   },
 }
 
@@ -384,6 +384,15 @@ export const WithFullRowDetail: Story = {
 export const SortingShowcase: Story = {
   args: {
     // keep default columns (sortable on name, age, created, score)
+  },
+  render: (args) => <Table {...args} data={[...sampleData]} />,
+}
+
+export const WithPagination: Story = {
+  args: {pagination:  { currentPage: 1,
+    pageCount: 3,
+    onPageClick: (page: number) => { alert(`Go to page ${page}`)  }
+  }
   },
   render: (args) => <Table {...args} data={[...sampleData]} />,
 }

@@ -15,7 +15,6 @@ import { BookingOfferCell } from './Cells/BookingOfferCell'
 import { BookingStatusCell } from './Cells/BookingStatusCell'
 import { BookingStatusCellHistory } from './Cells/BookingStatusCellHistory'
 import { DetailsButtonCell } from './Cells/DetailsButtonCell'
-import styles from './IndividualBookingsTable.module.scss'
 
 type BookingRow = BookingRecapResponseModel & { id: number }
 const priceText = (amount: number) => (amount ? formatPrice(amount) : 'Gratuit')
@@ -54,12 +53,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       label: 'Bénéficiaire',
       sortable: true,
       ordererField: (row) => row.beneficiary.firstname,
-      render: (row) => (
-        <BeneficiaryCell
-          beneficiaryInfos={row.beneficiary}
-          className={styles['cell-item-wrapper']}
-        />
-      ),
+      render: (row) => <BeneficiaryCell beneficiaryInfos={row.beneficiary} />,
     },
     {
       id: 'bookingDate',
@@ -67,10 +61,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       sortable: true,
       ordererField: (row) => new Date(row.bookingDate).getTime(),
       render: (row) => (
-        <BookingDateCell
-          bookingDateTimeIsoString={row.bookingDate}
-          className={styles['cell-item-wrapper']}
-        />
+        <BookingDateCell bookingDateTimeIsoString={row.bookingDate} />
       ),
     },
     {
@@ -78,11 +69,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
       label: 'Contremarque',
       sortable: true,
       ordererField: (row) => row.bookingToken ?? '',
-      render: (row) => (
-        <span className={styles['cell-item-wrapper']}>
-          {row.bookingToken || '-'}
-        </span>
-      ),
+      render: (row) => <span>{row.bookingToken || '-'}</span>,
     },
     {
       id: 'status',
@@ -94,12 +81,7 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
           updateGlobalFilters={updateGlobalFilters}
         />
       ) : undefined,
-      render: (row) => (
-        <BookingStatusCell
-          booking={row}
-          className={styles['cell-item-wrapper']}
-        />
-      ),
+      render: (row) => <BookingStatusCell booking={row} />,
     },
     {
       id: 'details',
@@ -108,7 +90,6 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
         <DetailsButtonCell
           controlledId={`booking-details-${row.id}`}
           isExpanded={expandedIds?.has(row.id) ?? false}
-          className={styles['cell-item-wrapper']}
           onClick={() => onToggle?.(row.id)}
         />
       ),
@@ -122,8 +103,8 @@ export function useBookingsTableColumnsByIndex(opts: Opts) {
     return (
       <>
         <div>
-          <span className={styles['details-title']}>Prix : </span>
-          <span className={styles['details-content']}>
+          <span>Prix : </span>
+          <span>
             {isCaledonian
               ? formatPacificFranc(convertEuroToPacificFranc(row.bookingAmount))
               : priceText(row.bookingAmount)}

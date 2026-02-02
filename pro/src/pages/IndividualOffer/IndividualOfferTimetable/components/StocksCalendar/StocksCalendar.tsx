@@ -22,7 +22,6 @@ import { pluralizeFr } from '@/commons/utils/pluralize'
 import { convertTimeFromVenueTimezoneToUtc } from '@/commons/utils/timezone'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import { Pagination } from '@/design-system/Pagination/Pagination'
 import strokeAddCalendarIcon from '@/icons/stroke-add-calendar.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
@@ -289,18 +288,15 @@ export function StocksCalendar({
                 setPage(1)
                 setAppliedFilters({})
               }}
-            />
-            <div className={styles['pagination']}>
-              <Pagination
-                currentPage={page}
-                pageCount={
+              pagination={{
+                currentPage: page,
+                pageCount:
                   stockCount % STOCKS_PER_PAGE === 0
                     ? stockCount / STOCKS_PER_PAGE
-                    : Math.trunc(stockCount / STOCKS_PER_PAGE) + 1
-                }
-                onPageClick={setPage}
-              />
-            </div>
+                    : Math.trunc(stockCount / STOCKS_PER_PAGE) + 1,
+                onPageClick: setPage,
+              }}
+            />
           </div>
         )}
 

@@ -41,6 +41,11 @@ export type StocksCalendarTableProps = {
   hasNoStocks: boolean
   departmentCode: string
   mode: OFFER_WIZARD_MODE
+  pagination: {
+    currentPage: number
+    pageCount: number
+    onPageClick: (page: number) => void
+  }
   checkedStocks: Set<number>
   updateCheckedStocks: (newStocks: Set<number>) => void
   onUpdateStock: (stock: EventStockUpdateBodyModel) => Promise<void>
@@ -55,6 +60,7 @@ export function StocksCalendarTable({
   hasNoStocks,
   departmentCode,
   mode,
+  pagination,
   checkedStocks,
   updateCheckedStocks,
   onUpdateStock,
@@ -267,6 +273,7 @@ export function StocksCalendarTable({
             subtitle: '',
           },
         }}
+        pagination={pagination}
       />
       <ConfirmDialog
         onCancel={() => {

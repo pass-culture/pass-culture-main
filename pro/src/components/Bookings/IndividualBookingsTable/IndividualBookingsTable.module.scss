@@ -1,9 +1,0 @@
-@use "styles/mixins/_a11y.scss" as a11y;
-
-.visually-hidden {
-  @include a11y.visually-hidden;
-}
-
-.table-pagination {
-  margin-top: var(--size-spacing-xxl);
-}
