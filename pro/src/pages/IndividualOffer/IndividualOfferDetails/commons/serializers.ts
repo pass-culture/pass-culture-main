@@ -1,4 +1,9 @@
-import type { PatchOfferBodyModel, PostOfferBodyModel } from '@/apiClient/v1'
+import {
+  type ArtistOfferLinkBodyModel,
+  ArtistType,
+  type PatchOfferBodyModel,
+  type PostOfferBodyModel,
+} from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { normalizeRequestBodyProps } from '@/commons/utils/normalizeRequestBodyProps'
 import { trimStringsInObject } from '@/commons/utils/trimStringsInObject'
@@ -29,22 +34,74 @@ export function deSerializeDurationMinutes(durationMinute: number): string {
   return `${hours}:${minutes}`
 }
 
-export const serializeExtraData = (formValues: DetailsFormValues) => {
+export const serializeExtraData = (
+  formValues: DetailsFormValues,
+  isOfferArtistsFeatureActive: boolean
+) => {
+  const validArtistOfferLinks = formValues.artistOfferLinks.filter((artist) =>
+    artist.artistName?.trim()
+  )
+
+  const shouldUseArtistOfferLinks =
+    isOfferArtistsFeatureActive && !formValues.productId
+
+  const author = shouldUseArtistOfferLinks
+    ? validArtistOfferLinks
+        .filter((link) => link.artistType === ArtistType.AUTHOR)
+        .map((link) => link.artistName)
+        .join(', ')
+    : formValues.author
+
+  const stageDirector = shouldUseArtistOfferLinks
+    ? validArtistOfferLinks
+        .filter((link) => link.artistType === ArtistType.STAGE_DIRECTOR)
+        .map((link) => link.artistName)
+        .join(', ')
+    : formValues.stageDirector
+
+  const performer = shouldUseArtistOfferLinks
+    ? validArtistOfferLinks
+        .filter((link) => link.artistType === ArtistType.PERFORMER)
+        .map((link) => link.artistName)
+        .join(', ')
+    : formValues.performer
+
   return normalizeRequestBodyProps({
-    author: formValues.author,
+    author,
     gtl_id: formValues.gtl_id,
-    performer: formValues.performer,
+    performer,
     showType: formValues.showType,
     showSubType: formValues.showSubType,
     speaker: formValues.speaker,
-    stageDirector: formValues.stageDirector,
+    stageDirector,
     visa: formValues.visa,
     ean: formValues.ean,
   })
 }
 
-export function serializeDetailsPostData(
+const serializeArtistOfferLinks = (
   formValues: DetailsFormValues
+): ArtistOfferLinkBodyModel[] | undefined => {
+  const links: ArtistOfferLinkBodyModel[] = []
+
+  const validArtistOfferLinks = formValues.artistOfferLinks.filter((artist) =>
+    artist.artistName?.trim()
+  )
+
+  validArtistOfferLinks.forEach((link) => {
+    links.push({
+      artistId: link.artistId,
+      customName: link.artistId === null ? link.artistName.trim() : null,
+      artistType: link.artistType,
+    })
+  })
+
+  return links
+}
+
+export function serializeDetailsPostData(
+  formValues: DetailsFormValues,
+  isOfferArtistsFeatureActive: boolean
 ): PostOfferBodyModel {
   assertOrFrontendError(
     formValues.accessibility,
@@ -57,17 +114,19 @@ export function serializeDetailsPostData(
     venueId: Number(formValues.venueId),
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues),
+    extraData: serializeExtraData(formValues, isOfferArtistsFeatureActive),
     productId: formValues.productId ? Number(formValues.productId) : undefined,
     audioDisabilityCompliant: formValues.accessibility.audio,
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
+    artistOfferLinks: serializeArtistOfferLinks(formValues),
   })
 }
 
 export function serializeDetailsPatchData(
-  formValues: DetailsFormValues
+  formValues: DetailsFormValues,
+  isOfferArtistsFeatureActive: boolean
 ): PatchOfferBodyModel {
   assertOrFrontendError(
     formValues.accessibility,
@@ -79,10 +138,11 @@ export function serializeDetailsPatchData(
     subcategoryId: formValues.subcategoryId,
     description: formValues.description,
     durationMinutes: serializeDurationMinutes(formValues.durationMinutes ?? ''),
-    extraData: serializeExtraData(formValues),
+    extraData: serializeExtraData(formValues, isOfferArtistsFeatureActive),
     audioDisabilityCompliant: formValues.accessibility.audio,
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
+    artistOfferLinks: serializeArtistOfferLinks(formValues),
   })
 }

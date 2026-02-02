@@ -1,3 +1,5 @@
+import { ArtistType } from '@/apiClient/v1'
+
 import {
   deSerializeDurationMinutes,
   serializeDetailsPatchData,
@@ -17,29 +19,29 @@ describe('deSerializeDurationMinutes', () => {
 })
 
 describe('serializeExtraData', () => {
-  it('should correctly serialize extra data', () => {
-    const formValues = {
-      name: 'anything',
-      description: 'anything',
-      venueId: 'anything',
-      categoryId: 'anything',
-      subcategoryId: 'anything',
-      showType: 'a showtype',
-      showSubType: 'a showSubtype',
-      gtl_id: 'a gtl id',
-      author: 'Boris Vian',
-      performer: 'Marcel et son orchestre',
-      ean: 'any ean',
-      speaker: 'Robert Smith',
-      stageDirector: 'Bob Sinclar',
-      visa: '123456789',
-      durationMinutes: '',
-      subcategoryConditionalFields: [],
-      productId: '',
-      artistOfferLinks: [],
-    }
+  const formValuesBase: DetailsFormValues = {
+    name: 'anything',
+    description: 'anything',
+    venueId: 'anything',
+    categoryId: 'anything',
+    subcategoryId: 'anything',
+    showType: 'a showtype',
+    showSubType: 'a showSubtype',
+    gtl_id: 'a gtl id',
+    author: 'Boris Vian',
+    performer: 'Marcel et son orchestre',
+    ean: 'any ean',
+    speaker: 'Robert Smith',
+    stageDirector: 'Bob Sinclar',
+    visa: '123456789',
+    durationMinutes: '',
+    subcategoryConditionalFields: [],
+    productId: '',
+    artistOfferLinks: [],
+  }
 
-    expect(serializeExtraData(formValues)).toStrictEqual({
+  it('should correctly serialize extra data without artistsOfferLinks', () => {
+    expect(serializeExtraData(formValuesBase, false)).toStrictEqual({
       author: 'Boris Vian',
       ean: 'any ean',
       gtl_id: 'a gtl id',
@@ -52,8 +54,52 @@ describe('serializeExtraData', () => {
     })
   })
 
+  it('should correctly serialize extra data with artistsOfferLinks', () => {
+    const formValues: DetailsFormValues = {
+      ...formValuesBase,
+      author: '',
+      performer: '',
+      stageDirector: '',
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Boris Vian',
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: null,
+          artistName: 'Aya Nakamura',
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: null,
+          artistName: 'Marcel et son orchestre',
+          artistType: ArtistType.PERFORMER,
+        },
+        {
+          artistId: '2',
+          artistName: 'Bob Sinclar',
+          artistType: ArtistType.STAGE_DIRECTOR,
+        },
+      ],
+    }
+
+    expect(serializeExtraData(formValues, true)).toStrictEqual({
+      author: 'Boris Vian, Aya Nakamura',
+      ean: 'any ean',
+      gtl_id: 'a gtl id',
+      performer: 'Marcel et son orchestre',
+      showSubType: 'a showSubtype',
+      showType: 'a showtype',
+      speaker: 'Robert Smith',
+      stageDirector: 'Bob Sinclar',
+      visa: '123456789',
+    })
+  })
+
   it('should correctly serialize extra data with empty values', () => {
-    const formValues = {
+    const formValues: DetailsFormValues = {
+      ...formValuesBase,
       name: '',
       description: '',
       venueId: '',
@@ -68,13 +114,9 @@ describe('serializeExtraData', () => {
       speaker: '',
       stageDirector: '',
       visa: '',
-      durationMinutes: '',
-      subcategoryConditionalFields: [],
-      productId: '',
-      artistOfferLinks: [],
     }
 
-    expect(serializeExtraData(formValues)).toStrictEqual({
+    expect(serializeExtraData(formValues, false)).toStrictEqual({
       author: null,
       ean: null,
       gtl_id: null,
@@ -84,6 +126,32 @@ describe('serializeExtraData', () => {
       speaker: null,
       stageDirector: null,
       visa: null,
+    })
+  })
+
+  it('should correctly serialize extra data with productId', () => {
+    const formValues: DetailsFormValues = {
+      ...formValuesBase,
+      productId: '123',
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: 'Aya Nakamura',
+          artistType: ArtistType.AUTHOR,
+        },
+      ],
+    }
+
+    expect(serializeExtraData(formValues, false)).toStrictEqual({
+      author: 'Boris Vian',
+      ean: 'any ean',
+      gtl_id: 'a gtl id',
+      performer: 'Marcel et son orchestre',
+      showSubType: 'a showSubtype',
+      showType: 'a showtype',
+      speaker: 'Robert Smith',
+      stageDirector: 'Bob Sinclar',
+      visa: '123456789',
     })
   })
 })
@@ -107,22 +175,18 @@ describe('serializeDetailsPostData', () => {
     durationMinutes: '',
     subcategoryConditionalFields: [],
     productId: '',
+    accessibility: {
+      audio: true,
+      mental: false,
+      motor: true,
+      visual: false,
+      none: false,
+    },
     artistOfferLinks: [],
   }
 
-  it('should include accessibility fields', () => {
-    const formValues: DetailsFormValues = {
-      ...formValuesBase,
-      accessibility: {
-        audio: true,
-        mental: false,
-        motor: true,
-        visual: false,
-        none: false,
-      },
-    }
-
-    const result = serializeDetailsPostData(formValues)
+  it('should correctly serialize without artistsOfferLinks', () => {
+    const result = serializeDetailsPostData(formValuesBase, false)
 
     expect(result).toStrictEqual({
       name: 'Festival de la Musique',
@@ -146,6 +210,57 @@ describe('serializeDetailsPostData', () => {
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
       visualDisabilityCompliant: false,
+      artistOfferLinks: [],
+    })
+  })
+
+  it('should correctly serialize with artist offer links', () => {
+    const formValues: DetailsFormValues = {
+      ...formValuesBase,
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: ' Boris Vian ',
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: null,
+          artistName: ' Marcel et son orchestre ',
+          artistType: ArtistType.PERFORMER,
+        },
+        {
+          artistId: '2',
+          artistName: 'Bob Sinclar',
+          artistType: ArtistType.STAGE_DIRECTOR,
+        },
+      ],
+    }
+
+    const result = serializeDetailsPostData(formValues, true)
+
+    expect(result).toMatchObject({
+      extraData: {
+        author: 'Boris Vian',
+        performer: 'Marcel et son orchestre',
+        stageDirector: 'Bob Sinclar',
+      },
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          customName: null,
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: null,
+          customName: 'Marcel et son orchestre',
+          artistType: ArtistType.PERFORMER,
+        },
+        {
+          artistId: '2',
+          customName: null,
+          artistType: ArtistType.STAGE_DIRECTOR,
+        },
+      ],
     })
   })
 })
@@ -169,22 +284,18 @@ describe('serializeDetailsPatchData', () => {
     durationMinutes: '',
     subcategoryConditionalFields: [],
     productId: '',
+    accessibility: {
+      audio: true,
+      mental: false,
+      motor: true,
+      visual: false,
+      none: false,
+    },
     artistOfferLinks: [],
   }
 
-  it('should include accessibility fields', () => {
-    const formValues: DetailsFormValues = {
-      ...formValuesBase,
-      accessibility: {
-        audio: true,
-        mental: false,
-        motor: true,
-        visual: false,
-        none: false,
-      },
-    }
-
-    const result = serializeDetailsPatchData(formValues)
+  it('should correctly serialize without artistsOfferLinks', () => {
+    const result = serializeDetailsPatchData(formValuesBase, false)
 
     expect(result).toStrictEqual({
       name: 'Festival de la Musique',
@@ -206,6 +317,56 @@ describe('serializeDetailsPatchData', () => {
       mentalDisabilityCompliant: false,
       motorDisabilityCompliant: true,
       visualDisabilityCompliant: false,
+      artistOfferLinks: [],
+    })
+  })
+  it('should correctly serialize artist offer links', () => {
+    const formValues: DetailsFormValues = {
+      ...formValuesBase,
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistName: ' Boris Vian ',
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: null,
+          artistName: ' Marcel et son orchestre ',
+          artistType: ArtistType.PERFORMER,
+        },
+        {
+          artistId: '2',
+          artistName: 'Bob Sinclar',
+          artistType: ArtistType.STAGE_DIRECTOR,
+        },
+      ],
+    }
+
+    const result = serializeDetailsPatchData(formValues, true)
+
+    expect(result).toMatchObject({
+      extraData: {
+        author: 'Boris Vian',
+        performer: 'Marcel et son orchestre',
+        stageDirector: 'Bob Sinclar',
+      },
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          customName: null,
+          artistType: ArtistType.AUTHOR,
+        },
+        {
+          artistId: null,
+          customName: 'Marcel et son orchestre',
+          artistType: ArtistType.PERFORMER,
+        },
+        {
+          artistId: '2',
+          customName: null,
+          artistType: ArtistType.STAGE_DIRECTOR,
+        },
+      ],
     })
   })
 })

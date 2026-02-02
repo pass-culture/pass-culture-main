@@ -20,6 +20,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
@@ -75,6 +76,7 @@ export const IndividualOfferDetailsScreen = ({
   const isNewOfferDraft = !initialOffer
   const availableVenues = filterAvailableVenues(venues)
   const availableVenuesAsOptions = getVenuesAsOptions(availableVenues)
+  const isOfferArtistsFeatureActive = useActiveFeature('WIP_OFFER_ARTISTS')
 
   const getInitialValues = () => {
     return isNewOfferDraft
@@ -122,7 +124,9 @@ export const IndividualOfferDetailsScreen = ({
       if (isNewOfferDraft) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.postOffer(serializeDetailsPostData(formValues)),
+          api.postOffer(
+            serializeDetailsPostData(formValues, isOfferArtistsFeatureActive)
+          ),
           {
             revalidate: false,
             populateCache: (newOffer) => {
@@ -134,7 +138,10 @@ export const IndividualOfferDetailsScreen = ({
       } else if (initialOfferId) {
         await mutate(
           [GET_OFFER_QUERY_KEY, offerId],
-          api.patchOffer(initialOfferId, serializeDetailsPatchData(formValues)),
+          api.patchOffer(
+            initialOfferId,
+            serializeDetailsPatchData(formValues, isOfferArtistsFeatureActive)
+          ),
           { revalidate: false }
         )
       }
@@ -241,6 +248,7 @@ export const IndividualOfferDetailsScreen = ({
     form.setValue('subcategoryId', subcategoryId)
     form.setValue('gtl_id', gtl_id)
     form.setValue('author', author)
+    form.setValue('artistOfferLinks', [])
     form.setValue('performer', performer)
     form.setValue(
       'subcategoryConditionalFields',
