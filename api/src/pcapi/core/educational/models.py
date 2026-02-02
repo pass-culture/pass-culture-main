@@ -1697,45 +1697,12 @@ class CollectiveBooking(PcObject, models.Model):
         self.status = CollectiveBookingStatus.CONFIRMED
         self.confirmationDate = confirmation_datetime
 
-    @hybrid_property
-    def isConfirmed(self) -> bool:
-        return self.cancellationLimitDate <= date_utils.get_naive_utc_now()
-
-    @isConfirmed.inplace.expression
-    @classmethod
-    def _isConfirmedExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.cancellationLimitDate <= date_utils.get_naive_utc_now()
-
-    @hybrid_property
-    def is_used_or_reimbursed(self) -> bool:
-        return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
-
-    @is_used_or_reimbursed.inplace.expression
-    @classmethod
-    def _is_used_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
-        return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
-
-    @hybrid_property
-    def isReimbursed(self) -> bool:
-        return self.status == CollectiveBookingStatus.REIMBURSED
-
-    @isReimbursed.inplace.expression
-    @classmethod
-    def _isReimbursedExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.status == CollectiveBookingStatus.REIMBURSED
-
-    @hybrid_property
-    def isCancelled(self) -> bool:
-        return self.status == CollectiveBookingStatus.CANCELLED
-
-    @isCancelled.inplace.expression
-    @classmethod
-    def _isCancelledExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.status == CollectiveBookingStatus.CANCELLED
-
     @property
     def is_expired(self) -> bool:
-        return self.isCancelled and self.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+        return (
+            self.status == CollectiveBookingStatus.CANCELLED
+            and self.cancellationReason == CollectiveBookingCancellationReasons.EXPIRED
+        )
 
     @property
     def userName(self) -> str | None:
