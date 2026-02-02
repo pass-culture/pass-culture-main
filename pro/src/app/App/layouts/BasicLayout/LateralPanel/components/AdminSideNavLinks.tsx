@@ -57,6 +57,7 @@ export const AdminSideNavLinks = ({
           iconPosition={IconPositionEnum.LEFT}
           icon={fullBackIcon}
           label="Revenir à l’Espace Partenaire"
+          fullWidth
         />
       </div>
 

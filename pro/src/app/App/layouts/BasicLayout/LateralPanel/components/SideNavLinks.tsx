@@ -153,6 +153,7 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             iconPosition={IconPositionEnum.LEFT}
             icon={strokeRepaymentIcon}
             label="Espace Administration"
+            fullWidth
           />
         </div>
       )}
