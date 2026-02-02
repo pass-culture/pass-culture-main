@@ -297,7 +297,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
                     "longitude": venue.offererAddress.address.longitude,
                 }
             edit_venue_form = forms.EditVenueForm(venue=venue, **edit_prefill)
-        edit_venue_form.siret.flags.disabled = not _can_edit_siret()
+            edit_venue_form.siret.flags.disabled = not _can_edit_siret()
         edit_venue_form.tags.choices = [(criterion.id, criterion.name) for criterion in venue.criteria]
 
     delete_form = empty_forms.EmptyForm()
