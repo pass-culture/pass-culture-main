@@ -38,6 +38,9 @@ function renderStocksCalendarTable(
       onUpdateStock={() => new Promise(() => {})}
       mode={OFFER_WIZARD_MODE.CREATION}
       {...props}
+      onUpdateFilters={vi.fn()}
+      hasNoStocks={false}
+      isLoading={false}
     />
   )
 }

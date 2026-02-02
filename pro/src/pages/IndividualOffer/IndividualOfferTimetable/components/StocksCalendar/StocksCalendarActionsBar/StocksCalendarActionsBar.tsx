@@ -14,8 +14,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBar'
 
-import styles from './StocksCalendarActionsBar.module.scss'
-
 export type StocksCalendarActionsBarProps = {
   offerId: number
   checkedStocks: Set<number>
@@ -88,32 +86,32 @@ export function StocksCalendarActionsBar({
   return (
     <>
       {checkedStocks.size > 0 ? (
-        <ActionsBarSticky className={styles['sticky']}>
-          <div className={styles['sticky-content']}>
-            <div>
-              {checkedStocks.size}{' '}
-              {pluralizeFr(
-                checkedStocks.size,
-                'date sélectionnée',
-                'dates sélectionnées'
-              )}
-            </div>
-            <div className={styles['sticky-content-buttons']}>
-              <Button
-                variant={ButtonVariant.SECONDARY}
-                onClick={() => {
-                  updateCheckedStocks(new Set())
-                }}
-                label="Désélectionner"
-              />
-              <Button
-                onClick={() => {
-                  deleteStocks(Array.from(checkedStocks))
-                }}
-                label={`Supprimer ${checkedStocks.size > 1 ? 'ces dates' : 'cette date'}`}
-              ></Button>
-            </div>
-          </div>
+        <ActionsBarSticky>
+          <ActionsBarSticky.Left>
+            {checkedStocks.size}&nbsp;
+            {pluralizeFr(
+              checkedStocks.size,
+              'date sélectionnée',
+              'dates sélectionnées'
+            )}
+          </ActionsBarSticky.Left>
+          <ActionsBarSticky.Right>
+            <Button
+              variant={ButtonVariant.SECONDARY}
+              onClick={() => {
+                updateCheckedStocks(new Set())
+              }}
+              label="Désélectionner"
+              fullWidth
+            />
+            <Button
+              onClick={() => {
+                deleteStocks(Array.from(checkedStocks))
+              }}
+              label={`Supprimer ${checkedStocks.size > 1 ? 'ces dates' : 'cette date'}`}
+              fullWidth
+            />
+          </ActionsBarSticky.Right>
         </ActionsBarSticky>
       ) : (
         <ActionBar

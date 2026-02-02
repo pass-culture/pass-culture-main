@@ -283,7 +283,7 @@ export function StocksCalendar({
               departmentCode={departmentCode}
               mode={mode}
               onUpdateStock={updateStock}
-              isLoading={!!isLoading}
+              isLoading={isLoading}
               hasNoStocks={hasNoStocks}
               onUpdateFilters={() => {
                 setPage(1)
