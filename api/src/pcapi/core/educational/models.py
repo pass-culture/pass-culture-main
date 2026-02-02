@@ -1716,15 +1716,6 @@ class CollectiveBooking(PcObject, models.Model):
         return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
-    def isReimbursed(self) -> bool:
-        return self.status == CollectiveBookingStatus.REIMBURSED
-
-    @isReimbursed.inplace.expression
-    @classmethod
-    def _isReimbursedExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.status == CollectiveBookingStatus.REIMBURSED
-
-    @hybrid_property
     def isCancelled(self) -> bool:
         return self.status == CollectiveBookingStatus.CANCELLED
 
