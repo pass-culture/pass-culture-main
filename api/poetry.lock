@@ -164,14 +164,14 @@ cryptography = "*"
 
 [[package]]
 name = "babel"
-version = "2.17.0"
+version = "2.18.0"
 description = "Internationalization utilities"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "babel-2.17.0-py3-none-any.whl", hash = "sha256:4d0b53093fdfb4b21c92b5213dba5a1b23885afa8383709427046b21c366e5f2"},
-    {file = "babel-2.17.0.tar.gz", hash = "sha256:0c54cffb19f690cdcc52a3b50bcbf71e07a808d1c80d549f2459b9d2cf0afb9d"},
+    {file = "babel-2.18.0-py3-none-any.whl", hash = "sha256:e2b422b277c2b9a9630c1d7903c2a00d0830c409c59ac8cae9081c92f1aeba35"},
+    {file = "babel-2.18.0.tar.gz", hash = "sha256:b80b99a14bd085fcacfa15c9165f651fbb3406e66cc603abf11c5750937c992d"},
 ]
 
 [package.extras]
@@ -2022,29 +2022,30 @@ uritemplate = ">=3.0.1,<5"
 
 [[package]]
 name = "google-auth"
-version = "2.47.0"
+version = "2.48.0"
 description = "Google Authentication Library"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "google_auth-2.47.0-py3-none-any.whl", hash = "sha256:c516d68336bfde7cf0da26aab674a36fedcf04b37ac4edd59c597178760c3498"},
-    {file = "google_auth-2.47.0.tar.gz", hash = "sha256:833229070a9dfee1a353ae9877dcd2dec069a8281a4e72e72f77d4a70ff945da"},
+    {file = "google_auth-2.48.0-py3-none-any.whl", hash = "sha256:2e2a537873d449434252a9632c28bfc268b0adb1e53f9fb62afc5333a975903f"},
+    {file = "google_auth-2.48.0.tar.gz", hash = "sha256:4f7e706b0cd3208a3d940a19a822c37a476ddba5450156c3e6624a71f7c841ce"},
 ]
 
 [package.dependencies]
+cryptography = ">=38.0.3"
 pyasn1-modules = ">=0.2.1"
 rsa = ">=3.1.4,<5"
 
 [package.extras]
 aiohttp = ["aiohttp (>=3.6.2,<4.0.0)", "requests (>=2.20.0,<3.0.0)"]
 cryptography = ["cryptography (>=38.0.3)"]
-enterprise-cert = ["cryptography", "pyopenssl"]
-pyjwt = ["cryptography (>=38.0.3)", "pyjwt (>=2.0)"]
-pyopenssl = ["cryptography (>=38.0.3)", "pyopenssl (>=20.0.0)"]
+enterprise-cert = ["pyopenssl"]
+pyjwt = ["pyjwt (>=2.0)"]
+pyopenssl = ["pyopenssl (>=20.0.0)"]
 reauth = ["pyu2f (>=0.1.5)"]
 requests = ["requests (>=2.20.0,<3.0.0)"]
-testing = ["aiohttp (<3.10.0)", "aiohttp (>=3.6.2,<4.0.0)", "aioresponses", "cryptography (>=38.0.3)", "cryptography (>=38.0.3)", "flask", "freezegun", "grpcio", "oauth2client", "packaging", "pyjwt (>=2.0)", "pyopenssl (<24.3.0)", "pyopenssl (>=20.0.0)", "pytest", "pytest-asyncio", "pytest-cov", "pytest-localserver", "pyu2f (>=0.1.5)", "requests (>=2.20.0,<3.0.0)", "responses", "urllib3"]
+testing = ["aiohttp (<3.10.0)", "aiohttp (>=3.6.2,<4.0.0)", "aioresponses", "flask", "freezegun", "grpcio", "oauth2client", "packaging", "pyjwt (>=2.0)", "pyopenssl (<24.3.0)", "pyopenssl (>=20.0.0)", "pytest", "pytest-asyncio", "pytest-cov", "pytest-localserver", "pyu2f (>=0.1.5)", "requests (>=2.20.0,<3.0.0)", "responses", "urllib3"]
 urllib3 = ["packaging", "urllib3"]
 
 [[package]]
@@ -2687,14 +2688,14 @@ files = [
 
 [[package]]
 name = "ipython"
-version = "9.9.0"
+version = "9.10.0"
 description = "IPython: Productive Interactive Computing"
 optional = false
 python-versions = ">=3.11"
 groups = ["main"]
 files = [
-    {file = "ipython-9.9.0-py3-none-any.whl", hash = "sha256:b457fe9165df2b84e8ec909a97abcf2ed88f565970efba16b1f7229c283d252b"},
-    {file = "ipython-9.9.0.tar.gz", hash = "sha256:48fbed1b2de5e2c7177eefa144aba7fcb82dac514f09b57e2ac9da34ddb54220"},
+    {file = "ipython-9.10.0-py3-none-any.whl", hash = "sha256:c6ab68cc23bba8c7e18e9b932797014cc61ea7fd6f19de180ab9ba73e65ee58d"},
+    {file = "ipython-9.10.0.tar.gz", hash = "sha256:cd9e656be97618a0676d058134cd44e6dc7012c0e5cb36a9ce96a8c904adaf77"},
 ]
 
 [package.dependencies]
@@ -3787,14 +3788,14 @@ dev = ["codecov (>=1.5.1)", "configobj (>=5.0.6)", "coverage", "pdbpp (>=0.10.3)
 
 [[package]]
 name = "phonenumberslite"
-version = "9.0.22"
+version = "9.0.23"
 description = "Python version of Google's common library for parsing, formatting, storing and validating international phone numbers."
 optional = false
 python-versions = ">=2.5"
 groups = ["main"]
 files = [
-    {file = "phonenumberslite-9.0.22-py2.py3-none-any.whl", hash = "sha256:ae0c0e2778334dcf6d4322d09f8269efc4b6a1d3d425d6fa1913b9cd1641105e"},
-    {file = "phonenumberslite-9.0.22.tar.gz", hash = "sha256:87ffe32a61167ff4403d39b7ecdab0a9a8b5560b511dfb8b0a82cac824437175"},
+    {file = "phonenumberslite-9.0.23-py2.py3-none-any.whl", hash = "sha256:166243560e3f89b443a5d508d4ad56b71ec91e88cb5937b4f6f2b791c618fbdf"},
+    {file = "phonenumberslite-9.0.23.tar.gz", hash = "sha256:97a192bb0dda8a76229b809197a8d97742afcdf0076a00b7d858f92efa95d0c2"},
 ]
 
 [[package]]
@@ -4322,14 +4323,14 @@ tests = ["pytest"]
 
 [[package]]
 name = "py7zr"
-version = "1.1.2"
+version = "1.1.0"
 description = "Pure python 7-zip library"
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "py7zr-1.1.2-py3-none-any.whl", hash = "sha256:6482470a2bde69a955cc6ecd48ef31d5b166dd7fb3e6056b99e4cb2ff0518c12"},
-    {file = "py7zr-1.1.2.tar.gz", hash = "sha256:2aee212c5516ddcbeb76874dc3ece38b4566fc003f51600032c723cfea89ac56"},
+    {file = "py7zr-1.1.0-py3-none-any.whl", hash = "sha256:5921bc30fb72b5453aafe3b2183664c08ef508cde2655988d5e9bd6078353ef7"},
+    {file = "py7zr-1.1.0.tar.gz", hash = "sha256:087b1a94861ad9eb4d21604f6aaa0a8986a7e00580abd79fedd6f82fecf0592c"},
 ]
 
 [package.dependencies]
@@ -5658,14 +5659,14 @@ crt = ["botocore[crt] (>=1.37.4,<2.0a.0)"]
 
 [[package]]
 name = "schwifty"
-version = "2025.9.0"
+version = "2026.1.0"
 description = "IBAN parsing and validation"
 optional = false
-python-versions = ">=3.9"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "schwifty-2025.9.0-py3-none-any.whl", hash = "sha256:66fa5532df9aa641d131114ea41d938e4c670f4903b49db7092a0fa9d0347978"},
-    {file = "schwifty-2025.9.0.tar.gz", hash = "sha256:4283b8a4c02daec81a275c9460773ea2d1b778ca70ebb5bcb12ec1fc7dc0a099"},
+    {file = "schwifty-2026.1.0-py3-none-any.whl", hash = "sha256:7a72b17ad979ab6efa07a49152740e6d522a6426bb579ecdc20cb7f21d98067c"},
+    {file = "schwifty-2026.1.0.tar.gz", hash = "sha256:56164140301ec32db78b231f962f57b1fd7320028ee90dfc396344396f697498"},
 ]
 
 [package.dependencies]
@@ -5689,14 +5690,14 @@ files = [
 
 [[package]]
 name = "sentry-sdk"
-version = "2.50.0"
+version = "2.51.0"
 description = "Python client for Sentry (https://sentry.io)"
 optional = false
 python-versions = ">=3.6"
 groups = ["main"]
 files = [
-    {file = "sentry_sdk-2.50.0-py2.py3-none-any.whl", hash = "sha256:0ef0ed7168657ceb5a0be081f4102d92042a125462d1d1a29277992e344e749e"},
-    {file = "sentry_sdk-2.50.0.tar.gz", hash = "sha256:873437a989ee1b8b25579847bae8384515bf18cfed231b06c591b735c1781fe3"},
+    {file = "sentry_sdk-2.51.0-py2.py3-none-any.whl", hash = "sha256:e21016d318a097c2b617bb980afd9fc737e1efc55f9b4f0cdc819982c9717d5f"},
+    {file = "sentry_sdk-2.51.0.tar.gz", hash = "sha256:b89d64577075fd8c13088bc3609a2ce77a154e5beb8cba7cc16560b0539df4f7"},
 ]
 
 [package.dependencies]
@@ -7342,4 +7343,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "7e9285c0e475252d5f9deffaaee2b847fd3fa905dcd81778d264f5e0177c9c4f"
+content-hash = "80de996b6019dceeba059cdecbc46a3c095f207829490848c83fd11a04e44304"
