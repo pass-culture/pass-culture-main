@@ -143,7 +143,6 @@ class FeatureToggle(enum.Enum):
     WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
         "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
-    WIP_VENUE_CULTURAL_DOMAINS = "Active la nouvelle liste de domaines culturels pour les structures"
     WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
 
     def is_active(self) -> bool:
@@ -211,7 +210,6 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
-    FeatureToggle.WIP_VENUE_CULTURAL_DOMAINS,
     # Please keep alphabetic order
 )
 

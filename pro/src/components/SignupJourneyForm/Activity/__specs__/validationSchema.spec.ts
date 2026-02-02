@@ -5,7 +5,7 @@ import { validationSchema } from '../validationSchema'
 
 describe('Activity validationSchema', () => {
   const validFormValues: ActivityFormValues = {
-    venueTypeCode: 'MUSEUM',
+    activity: 'MUSEUM',
     socialUrls: [{ url: 'https://passculture.pro' }],
     targetCustomer: {
       individual: true,
@@ -19,21 +19,18 @@ describe('Activity validationSchema', () => {
     description: string
     formValues: ActivityFormValues
     expectedErrors: string[]
-    withCulturalDomains: boolean
     notOpenToPublic: boolean
   }[] = [
     {
       description: 'complete form',
       formValues: validFormValues,
       expectedErrors: [],
-      withCulturalDomains: false,
       notOpenToPublic: false,
     },
     {
       description: 'no venue type code',
-      formValues: { ...validFormValues, venueTypeCode: undefined },
+      formValues: { ...validFormValues, activity: undefined },
       expectedErrors: ['Veuillez sélectionner une activité principale'],
-      withCulturalDomains: false,
       notOpenToPublic: false,
     },
     {
@@ -42,7 +39,6 @@ describe('Activity validationSchema', () => {
       expectedErrors: [
         'Veuillez renseigner une URL valide. Ex : https://exemple.com',
       ],
-      withCulturalDomains: false,
       notOpenToPublic: false,
     },
     {
@@ -52,7 +48,6 @@ describe('Activity validationSchema', () => {
         targetCustomer: { individual: false, educational: false },
       },
       expectedErrors: ['Veuillez sélectionner au moins une option'],
-      withCulturalDomains: false,
       notOpenToPublic: false,
     },
     {
@@ -66,7 +61,6 @@ describe('Activity validationSchema', () => {
         'Veuillez renseigner un numéro de téléphone',
         'Veuillez renseigner un numéro de téléphone valide, exemple : 612345678',
       ],
-      withCulturalDomains: false,
       notOpenToPublic: false,
     },
     {
@@ -76,7 +70,6 @@ describe('Activity validationSchema', () => {
         culturalDomains: [],
       },
       expectedErrors: [],
-      withCulturalDomains: false,
       notOpenToPublic: false,
     },
     {
@@ -89,7 +82,6 @@ describe('Activity validationSchema', () => {
         'Activité non valide',
         'Veuillez sélectionner un ou plusieurs domaines d’activité',
       ],
-      withCulturalDomains: true,
       notOpenToPublic: true,
     },
     {
@@ -102,7 +94,6 @@ describe('Activity validationSchema', () => {
         'Activité non valide',
         'Veuillez sélectionner un ou plusieurs domaines d’activité',
       ],
-      withCulturalDomains: true,
       notOpenToPublic: true,
     },
     {
@@ -111,42 +102,33 @@ describe('Activity validationSchema', () => {
         ...validFormValues,
       },
       expectedErrors: ['Activité non valide'],
-      withCulturalDomains: true,
       notOpenToPublic: true,
     },
     {
       description: 'Right cultural domain',
       formValues: {
         ...validFormValues,
-        venueTypeCode: 'ART_GALLERY',
+        activity: 'ART_GALLERY',
       },
       expectedErrors: [],
-      withCulturalDomains: true,
       notOpenToPublic: false,
     },
     {
       description: 'Right cultural domain',
       formValues: {
         ...validFormValues,
-        venueTypeCode: 'FESTIVAL',
+        activity: 'FESTIVAL',
       },
       expectedErrors: [],
-      withCulturalDomains: true,
       notOpenToPublic: true,
     },
   ]
 
   cases.forEach(
-    ({
-      description,
-      formValues,
-      expectedErrors,
-      withCulturalDomains,
-      notOpenToPublic,
-    }) => {
-      it(`should validate the form for case: ${description} ${withCulturalDomains ? 'with' : 'without'} cultural domains and ${notOpenToPublic ? 'not ' : ''}open to public`, async () => {
+    ({ description, formValues, expectedErrors, notOpenToPublic }) => {
+      it(`should validate the form for case: ${description} ${notOpenToPublic ? 'not ' : ''}open to public`, async () => {
         const errors = await getYupValidationSchemaErrors(
-          validationSchema(withCulturalDomains, notOpenToPublic),
+          validationSchema(notOpenToPublic),
           formValues
         )
         expect(errors).toEqual(expectedErrors)

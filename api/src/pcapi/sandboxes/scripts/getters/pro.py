@@ -21,6 +21,12 @@ from pcapi.utils import date as date_utils
 
 def create_new_pro_user() -> dict:
     pro_user = users_factories.ProFactory.create()
+    educational_factories.EducationalDomainFactory.create(
+        name="Théatre",
+    )
+    educational_factories.EducationalCurrentYearFactory.create()
+    educational_factories.EducationalYearFactory.create()
+
     return {"user": get_pro_user_helper(pro_user)}
 
 

@@ -120,7 +120,6 @@ import type { UserResetEmailBodyModel } from '../models/UserResetEmailBodyModel'
 import type { VenueLabelListResponseModel } from '../models/VenueLabelListResponseModel';
 import type { VenueProviderResponse } from '../models/VenueProviderResponse';
 import type { VenuesEducationalStatusesResponseModel } from '../models/VenuesEducationalStatusesResponseModel';
-import type { VenueTypeListResponseModel } from '../models/VenueTypeListResponseModel';
 import type { VideoData } from '../models/VideoData';
 import type { CancelablePromise } from '../core/CancelablePromise';
 import type { BaseHttpRequest } from '../core/BaseHttpRequest';
@@ -2816,21 +2815,6 @@ export class DefaultService {
       },
       body: requestBody,
       mediaType: 'application/json',
-      errors: {
-        403: `Forbidden`,
-        422: `Unprocessable Content`,
-      },
-    });
-  }
-  /**
-   * get_venue_types <GET>
-   * @returns VenueTypeListResponseModel OK
-   * @throws ApiError
-   */
-  public getVenueTypes(): CancelablePromise<VenueTypeListResponseModel> {
-    return this.httpRequest.request({
-      method: 'GET',
-      url: '/venue-types',
       errors: {
         403: `Forbidden`,
         422: `Unprocessable Content`,

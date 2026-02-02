@@ -1,8 +1,4 @@
-import {
-  screen,
-  waitFor,
-  waitForElementToBeRemoved,
-} from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
 import { Route, Routes } from 'react-router'
 
@@ -28,7 +24,6 @@ import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContai
 vi.mock('@/apiClient/api', () => ({
   api: {
     getVenues: vi.fn(),
-    getVenueTypes: vi.fn(),
     saveNewOnboardingData: vi.fn(),
     listOfferersNames: vi.fn(),
     getOfferer: vi.fn(),
@@ -112,10 +107,6 @@ describe('ValidationScreen', () => {
       initialAddress: null,
       setInitialAddress: noop,
     }
-    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
-      { value: 'MUSEUM', label: 'first venue label' },
-      { value: 'venue2', label: 'second venue label' },
-    ])
     setSelectedOffererByIdMock.mockReset()
   })
 
@@ -148,7 +139,7 @@ describe('ValidationScreen', () => {
     renderValidationScreen({
       ...contextValue,
       activity: {
-        venueTypeCode: 'MUSEUM',
+        activity: 'MUSEUM',
         socialUrls: ['url1', 'url2'],
         targetCustomer: Target.EDUCATIONAL,
         phoneNumber: '',
@@ -163,8 +154,7 @@ describe('ValidationScreen', () => {
         ...addressInformations,
       },
     })
-    await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-    expect(await screen.findByText('first venue label')).toBeInTheDocument()
+    expect(await screen.findByText('Musée')).toBeInTheDocument()
     expect(screen.getByText('url1')).toBeInTheDocument()
     expect(screen.getByText('url2')).toBeInTheDocument()
     expect(screen.getByText('nom public')).toBeInTheDocument()
@@ -177,7 +167,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: 'MUSEUM',
+          activity: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -201,7 +191,6 @@ describe('ValidationScreen', () => {
 
     it('should navigate to activity page with the previous step button', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
 
       await userEvent.click(screen.getByText('Étape précédente'))
       expect(screen.getByText('Activite')).toBeInTheDocument()
@@ -209,7 +198,6 @@ describe('ValidationScreen', () => {
 
     it('should navigate to authentification page when clicking the first update button', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getAllByText('Modifier')[0])
 
       expect(screen.getByText('Authentification')).toBeInTheDocument()
@@ -217,7 +205,6 @@ describe('ValidationScreen', () => {
 
     it('should navigate to activite page when clicking the second update button', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getAllByText('Modifier')[1])
 
       expect(screen.getByText('Activite')).toBeInTheDocument()
@@ -228,7 +215,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: 'MUSEUM',
+          activity: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -268,12 +255,12 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+        activity: 'MUSEUM',
+        culturalDomains: undefined,
         publicName: 'nom public',
         siret: '123123123',
-        venueTypeCode: 'MUSEUM',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
         createVenueWithoutSiret: false,
@@ -309,12 +296,12 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(api.saveNewOnboardingData).toHaveBeenCalledWith({
+        culturalDomains: undefined,
+        activity: 'MUSEUM',
         publicName: null,
         siret: '123123123',
-        venueTypeCode: 'MUSEUM',
         webPresence: 'url1, url2',
         target: Target.EDUCATIONAL,
         createVenueWithoutSiret: false,
@@ -352,23 +339,20 @@ describe('ValidationScreen', () => {
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       expect(screen.getByText('Musée')).toBeInTheDocument()
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(saveNewOnboardingDataMock).toHaveBeenCalledTimes(1)
       const [[payload]] = saveNewOnboardingDataMock.mock.calls
       expect(payload.activity).toBe('MUSEUM')
-      expect(payload.venueTypeCode).toBeUndefined()
     })
 
     it('should see the data from the previous forms for validation without public name', async () => {
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      expect(await screen.findByText('first venue label')).toBeInTheDocument()
+      expect(await screen.findByText('Musée')).toBeInTheDocument()
       expect(screen.getByText('nom')).toBeInTheDocument()
     })
 
-    it('should send cultural domains when WIP_VENUE_CULTURAL_DOMAINS is active', async () => {
+    it('should send cultural domains', async () => {
       if (contextValue.activity) {
         contextValue.activity.culturalDomains = [
           'Domaine 1',
@@ -388,10 +372,7 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
 
-      renderValidationScreen(contextValue, {
-        features: ['WIP_VENUE_CULTURAL_DOMAINS'],
-      })
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
+      renderValidationScreen(contextValue)
       expect(
         screen.getByText('Domaine 1, Domaine II, Domaine C')
       ).toBeInTheDocument()
@@ -410,7 +391,7 @@ describe('ValidationScreen', () => {
     beforeEach(() => {
       contextValue = {
         activity: {
-          venueTypeCode: 'MUSEUM',
+          activity: 'MUSEUM',
           socialUrls: ['url1', 'url2'],
           targetCustomer: Target.EDUCATIONAL,
           phoneNumber: '',
@@ -438,20 +419,10 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockResolvedValue('token')
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(
         await screen.findByText('Erreur lors de la création de votre structure')
       ).toBeInTheDocument()
-    })
-
-    it('should not render on venue types api error', async () => {
-      vi.spyOn(api, 'getVenueTypes').mockRejectedValueOnce({})
-      renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
-      expect(
-        screen.queryByText('Informations structure')
-      ).not.toBeInTheDocument()
     })
 
     it('should not render when no activity', () => {
@@ -476,7 +447,6 @@ describe('ValidationScreen', () => {
       } as unknown as HTMLScriptElement)
       vi.spyOn(utils, 'getReCaptchaToken').mockRejectedValue(RECAPTCHA_ERROR)
       renderValidationScreen(contextValue)
-      await waitForElementToBeRemoved(() => screen.queryAllByTestId('spinner'))
       await userEvent.click(screen.getByText('Valider et créer ma structure'))
       expect(
         await screen.findByText('Une erreur technique est survenue')

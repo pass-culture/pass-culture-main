@@ -153,7 +153,7 @@ describe('test renderSignupJourneyStepper', () => {
       ...DEFAULT_ADDRESS_FORM_VALUES,
     }
     contextValue.activity = {
-      venueTypeCode: 'MUSEUM',
+      activity: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: '',

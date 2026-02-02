@@ -74,7 +74,6 @@ describe('saveVenueSettings', () => {
       publicName: '',
       siret: '12345678901234',
       street: '123 Rue Principale',
-      venueTypeCode: 'Théâtre',
       withdrawalDetails:
         "Les retraits sont autorisés jusqu'à 24 heures avant l'événement.",
     })

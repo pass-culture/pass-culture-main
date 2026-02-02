@@ -7,7 +7,7 @@ import type { ActivityOpenToPublic } from './ActivityOpenToPublic';
 import type { LocationBodyModel } from './LocationBodyModel';
 import type { Target } from './Target';
 export type SaveNewOnboardingDataQueryModel = {
-  activity?: (ActivityOpenToPublic | ActivityNotOpenToPublic) | null;
+  activity: (ActivityOpenToPublic | ActivityNotOpenToPublic);
   address: LocationBodyModel;
   createVenueWithoutSiret?: boolean;
   culturalDomains?: Array<string> | null;
@@ -17,7 +17,6 @@ export type SaveNewOnboardingDataQueryModel = {
   siret: string;
   target: Target;
   token: string;
-  venueTypeCode?: string | null;
   webPresence: string;
 };
 

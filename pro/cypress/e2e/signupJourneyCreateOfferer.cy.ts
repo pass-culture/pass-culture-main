@@ -27,11 +27,6 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
       method: 'GET',
       url: `/venues/siret/**`,
     }).as('venuesSiret')
-    cy.intercept({
-      method: 'GET',
-      url: '/venue-types',
-      times: 1,
-    }).as('venue-types')
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
@@ -62,7 +57,6 @@ describe('Signup journey with unknown offerer and unknown venue', () => {
     cy.findByText('Oui').click()
 
     cy.findByText('Étape suivante').click()
-    cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
     cy.injectAxe(DEFAULT_AXE_CONFIG)
     cy.checkA11y(undefined, DEFAULT_AXE_RULES, cy.a11yLog)
@@ -162,11 +156,6 @@ describe('Signup journey with known offerer...', () => {
     cy.intercept({ method: 'POST', url: '/offerers/new', times: 1 }).as(
       'createOfferer'
     )
-    cy.intercept({
-      method: 'GET',
-      url: '/venue-types',
-      times: 1,
-    }).as('venue-types')
     interceptSearch5Adresses()
     cy.intercept({
       method: 'GET',
@@ -211,7 +200,6 @@ describe('Signup journey with known offerer...', () => {
       cy.findByText('Oui').click()
 
       cy.findByText('Étape suivante').click()
-      cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I fill completely activity form' })
       cy.url().should('contain', '/inscription/structure/activite')
@@ -290,7 +278,6 @@ describe('Signup journey with known offerer...', () => {
       cy.findByText('Oui').click()
 
       cy.findByText('Étape suivante').click()
-      cy.wait('@venue-types').its('response.statusCode').should('eq', 200)
 
       cy.stepLog({ message: 'I fill activity form without main activity' })
       cy.url().should('contain', '/inscription/structure/activite')

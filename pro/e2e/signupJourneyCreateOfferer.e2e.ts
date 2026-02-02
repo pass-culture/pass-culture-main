@@ -50,12 +50,7 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     // Make the venue open to public
     await page.getByText('Oui').click()
 
-    const venueTypesPromise = page.waitForResponse(
-      (response) =>
-        response.url().includes('/venue-types') && response.status() === 200
-    )
     await page.getByText('Étape suivante').click()
-    await venueTypesPromise
 
     await checkAccessibility(page)
 
@@ -199,12 +194,7 @@ test.describe('Signup journey with known offerer...', () => {
       // Make the venue open to public
       await page.getByText('Oui').click()
 
-      const venueTypesPromise = page.waitForResponse(
-        (response) =>
-          response.url().includes('/venue-types') && response.status() === 200
-      )
       await page.getByText('Étape suivante').click()
-      await venueTypesPromise
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
       await page.getByLabel(/Activité principale/).selectOption('Galerie d’art')
@@ -290,12 +280,7 @@ test.describe('Signup journey with known offerer...', () => {
       // Make the venue open to public
       await page.getByText('Oui').click()
 
-      const venueTypesPromise = page.waitForResponse(
-        (response) =>
-          response.url().includes('/venue-types') && response.status() === 200
-      )
       await page.getByText('Étape suivante').click()
-      await venueTypesPromise
 
       await expect(page).toHaveURL(/\/inscription\/structure\/activite/)
       await page

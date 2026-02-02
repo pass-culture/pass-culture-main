@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
-import useSWR from 'swr'
 
 import { api } from '@/apiClient/api'
 import {
@@ -10,7 +9,6 @@ import {
   Target,
 } from '@/apiClient/v1'
 import { useAnalytics } from '@/app/App/analytics/firebase'
-import { GET_VENUE_TYPES_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import { useSignupJourneyContext } from '@/commons/context/SignupJourneyContext/SignupJourneyContext'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
@@ -18,7 +16,6 @@ import {
   RECAPTCHA_ERROR,
   RECAPTCHA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
-import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
@@ -40,7 +37,6 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 import { SignupJourneyAction } from '@/pages/SignupJourneyRoutes/constants'
-import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { ActionBar } from '../ActionBar/ActionBar'
 import styles from './Validation.module.scss'
@@ -54,15 +50,6 @@ export const Validation = (): JSX.Element | undefined => {
 
   const { activity, offerer } = useSignupJourneyContext()
   useInitReCaptcha()
-
-  const isVenueCulturalDomainsFeatureActive = useActiveFeature(
-    'WIP_VENUE_CULTURAL_DOMAINS'
-  )
-
-  const venueTypesQuery = useSWR([GET_VENUE_TYPES_QUERY_KEY], () =>
-    api.getVenueTypes()
-  )
-  const venueTypes = venueTypesQuery.data
 
   const dispatch = useAppDispatch()
   const { currentUser } = useCurrentUser()
@@ -87,28 +74,11 @@ export const Validation = (): JSX.Element | undefined => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activity, offerer, navigate])
 
-  if (venueTypesQuery.isLoading) {
-    return <Spinner />
-  }
-
-  if (!venueTypes) {
+  if (!activity?.activity || offerer === null) {
     return
   }
 
-  if (activity === null || offerer === null) {
-    return
-  }
-
-  const activityLabel =
-    isVenueCulturalDomainsFeatureActive || offerer?.isOpenToPublic === 'true'
-      ? getActivityLabel(
-          activity.venueTypeCode as
-            | ActivityOpenToPublic
-            | ActivityNotOpenToPublic
-        )
-      : venueTypes.find(
-          (venueType) => venueType.value === activity.venueTypeCode
-        )?.label
+  const activityLabel = getActivityLabel(activity.activity)
 
   const onSubmit = async () => {
     setLoading(true)
@@ -120,28 +90,10 @@ export const Validation = (): JSX.Element | undefined => {
         isOpenToPublic: offerer.isOpenToPublic === 'true',
         publicName: offerer.publicName || null,
         siret: offerer.siret.replaceAll(' ', ''),
-        ...(isVenueCulturalDomainsFeatureActive ||
-        offerer?.isOpenToPublic === 'true'
-          ? {
-              activity:
-                /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-                activity.venueTypeCode as
-                  | ActivityOpenToPublic
-                  | ActivityNotOpenToPublic,
-            }
-          : {
-              venueTypeCode:
-                /* istanbul ignore next: should not have empty or null venueTypeCode at this step */
-                activity.venueTypeCode,
-            }),
-        ...(isVenueCulturalDomainsFeatureActive
-          ? {
-              culturalDomains:
-                /* istanbul ignore next: should not have empty or null culturalDomains at this step */
-                activity.culturalDomains,
-            }
-          : {}),
-
+        culturalDomains: activity.culturalDomains,
+        activity: activity.activity as
+          | ActivityOpenToPublic
+          | ActivityNotOpenToPublic,
         webPresence: activity.socialUrls.join(', '),
         target:
           /* istanbul ignore next: the form validation already handles this */
@@ -248,12 +200,11 @@ export const Validation = (): JSX.Element | undefined => {
         </div>
         <div className={styles['data-displaying']}>
           <div className={styles['data-line']}>{activityLabel}</div>
-          {isVenueCulturalDomainsFeatureActive &&
-            (activity.culturalDomains ?? []).length > 0 && (
-              <div className={styles['data-line']}>
-                {activity.culturalDomains?.join(', ')}
-              </div>
-            )}
+          {(activity.culturalDomains ?? []).length > 0 && (
+            <div className={styles['data-line']}>
+              {activity.culturalDomains?.join(', ')}
+            </div>
+          )}
           {activity.socialUrls.map((url) => (
             <div className={styles['data-line']} key={url}>
               {url}

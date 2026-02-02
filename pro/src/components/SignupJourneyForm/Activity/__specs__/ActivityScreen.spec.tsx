@@ -4,7 +4,6 @@ import { Route, Routes } from 'react-router'
 import type { SWRResponse } from 'swr'
 import { vi } from 'vitest'
 
-import { api } from '@/apiClient/api'
 import { Target } from '@/apiClient/v1'
 import { DEFAULT_ACTIVITY_VALUES } from '@/commons/context/SignupJourneyContext/constants'
 import {
@@ -22,7 +21,7 @@ import { Activity } from '../Activity'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
-    getVenueTypes: vi.fn(),
+    listEducationalDomains: vi.fn(),
   },
 }))
 
@@ -69,10 +68,6 @@ describe('screens:SignupJourney::Activity', () => {
       initialAddress: null,
       setInitialAddress: noop,
     }
-    vi.spyOn(api, 'getVenueTypes').mockResolvedValue([
-      { value: 'MUSEUM', label: 'first venue label' },
-      { value: 'venue2', label: 'second venue label' },
-    ])
   })
 
   it('should render component', async () => {
@@ -112,19 +107,9 @@ describe('screens:SignupJourney::Activity', () => {
     ).toBeInTheDocument()
   })
 
-  it('should not render component on getVenueTypes error', async () => {
-    vi.spyOn(api, 'getVenueTypes').mockRejectedValue([])
-
-    renderActivityScreen(contextValue)
-
-    await waitFor(() => {
-      expect(screen.queryByText('Activité')).not.toBeInTheDocument()
-    })
-  })
-
   it('should display validation screen on click next step button', async () => {
     contextValue.activity = {
-      venueTypeCode: 'MUSEUM',
+      activity: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL_AND_EDUCATIONAL,
       phoneNumber: '0605120510',
@@ -151,7 +136,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with individual target customer', async () => {
     contextValue.activity = {
-      venueTypeCode: 'MUSEUM',
+      activity: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.INDIVIDUAL,
       phoneNumber: '0605120510',
@@ -178,7 +163,7 @@ describe('screens:SignupJourney::Activity', () => {
 
   it('should go next step with educational target customer', async () => {
     contextValue.activity = {
-      venueTypeCode: 'MUSEUM',
+      activity: 'MUSEUM',
       socialUrls: [],
       targetCustomer: Target.EDUCATIONAL,
       phoneNumber: '0605120510',
@@ -220,7 +205,7 @@ describe('screens:SignupJourney::Activity', () => {
     expect(screen.getByText('Authentication screen')).toBeInTheDocument()
   })
 
-  describe('WITH WIP_VENUE_CULTURAL_DOMAINS FF', () => {
+  describe('Cultural domains', () => {
     beforeEach(() => {
       contextValue.offerer = {
         name: 'test name',
@@ -260,7 +245,7 @@ describe('screens:SignupJourney::Activity', () => {
       if (contextValue.offerer) {
         contextValue.offerer.isOpenToPublic = 'false'
       }
-      renderActivityScreen(contextValue, ['WIP_VENUE_CULTURAL_DOMAINS'])
+      renderActivityScreen(contextValue)
       expect(
         await screen.findByRole('heading', {
           level: 2,
@@ -274,7 +259,7 @@ describe('screens:SignupJourney::Activity', () => {
       if (contextValue.offerer) {
         contextValue.offerer.isOpenToPublic = 'true'
       }
-      renderActivityScreen(contextValue, ['WIP_VENUE_CULTURAL_DOMAINS'])
+      renderActivityScreen(contextValue)
       expect(
         await screen.findByRole('heading', {
           level: 2,

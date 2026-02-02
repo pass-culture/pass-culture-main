@@ -617,6 +617,7 @@ describe('VenueEditionFormScreen', () => {
           visualDisabilityCompliant: null,
           motorDisabilityCompliant: null,
           isOpenToPublic: false,
+          collectiveDomains: [{ id: 1, name: 'FESTIVAL' }],
         })
 
         // If the user tries to submit the form without filling the accessibility section
@@ -627,14 +628,11 @@ describe('VenueEditionFormScreen', () => {
         expect(editVenueSpy).toHaveBeenCalled()
       })
 
-      it('should display the proper activities list for structures not open to public (when FF WIP_VENUE_CULTURAL_DOMAINS is activated)', async () => {
-        renderForm(
-          {
-            ...baseVenue,
-            isOpenToPublic: false,
-          },
-          { features: ['WIP_VENUE_CULTURAL_DOMAINS'] }
-        )
+      it('should display the proper activities list for structures not open to public', async () => {
+        renderForm({
+          ...baseVenue,
+          isOpenToPublic: false,
+        })
 
         const mainActivitySelect = await screen.findByRole('combobox', {
           name: /Activité principale/,
@@ -742,11 +740,8 @@ describe('VenueEditionFormScreen', () => {
         })
       })
 
-      it('should display the proper activities list for structures open to public (when FF WIP_VENUE_CULTURAL_DOMAINS is activated)', async () => {
-        renderForm(
-          { ...baseVenue, isOpenToPublic: true },
-          { features: ['WIP_VENUE_CULTURAL_DOMAINS'] }
-        )
+      it('should display the proper activities list for structures open to public', async () => {
+        renderForm({ ...baseVenue, isOpenToPublic: true })
 
         const mainActivitySelect = await screen.findByRole('combobox', {
           name: /Activité principale/,
@@ -780,7 +775,7 @@ describe('VenueEditionFormScreen', () => {
       })
     })
   })
-  describe('with FF WIP_VENUE_CULTURAL_DOMAINS', () => {
+  describe('Cultural domains', () => {
     beforeEach(() => {
       useSWRMock.mockReturnValue({
         isLoading: false,
@@ -803,26 +798,6 @@ describe('VenueEditionFormScreen', () => {
         ],
       } as SWRResponse)
     })
-    it('should display about activity at top without the FF enabled', () => {
-      renderForm(
-        {
-          ...baseVenue,
-          description: 'TOTOTO',
-          contact: {
-            phoneNumber: '123',
-            email: 'e@mail.fr',
-            website: 'site.web',
-          },
-        },
-        { initialRouterEntries: ['/'] }
-      )
-      const h3Titles = screen.getAllByRole('heading', { level: 3 })
-      expect(h3Titles).toHaveLength(3)
-      expect(h3Titles[0].textContent).toEqual('À propos de votre activité')
-      expect(
-        screen.queryByText(/Domaine(s) d’activité :/)
-      ).not.toBeInTheDocument()
-    })
 
     it('should display about activity at top with the FF enabled', () => {
       renderForm(
@@ -841,7 +816,6 @@ describe('VenueEditionFormScreen', () => {
         },
         {
           initialRouterEntries: ['/'],
-          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
         }
       )
       const h3Titles = screen.getAllByRole('heading', { level: 3 })
@@ -864,7 +838,6 @@ describe('VenueEditionFormScreen', () => {
         },
         {
           initialRouterEntries: ['/'],
-          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
         }
       )
       expect(screen.getByText(/Non renseigné/)).toBeInTheDocument()
@@ -883,7 +856,6 @@ describe('VenueEditionFormScreen', () => {
         },
         {
           initialRouterEntries: ['/edition'],
-          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
         }
       )
       const multiSelect = screen.getByLabelText(
@@ -913,7 +885,6 @@ describe('VenueEditionFormScreen', () => {
         },
         {
           initialRouterEntries: ['/edition'],
-          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
         }
       )
 
@@ -937,7 +908,6 @@ describe('VenueEditionFormScreen', () => {
         },
         {
           initialRouterEntries: ['/edition'],
-          features: ['WIP_VENUE_CULTURAL_DOMAINS'],
         }
       )
 

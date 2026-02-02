@@ -5,7 +5,6 @@
 import type { ActivityNotOpenToPublic } from './ActivityNotOpenToPublic';
 import type { ActivityOpenToPublic } from './ActivityOpenToPublic';
 import type { VenueContactModel } from './VenueContactModel';
-import type { VenueTypeCode } from './VenueTypeCode';
 import type { WeekdayOpeningHoursTimespans } from './WeekdayOpeningHoursTimespans';
 export type EditVenueBodyModel = {
   activity?: (ActivityOpenToPublic | ActivityNotOpenToPublic) | null;
@@ -32,7 +31,6 @@ export type EditVenueBodyModel = {
   siret?: string | null;
   street?: string | null;
   venueLabelId?: number | null;
-  venueTypeCode?: VenueTypeCode | null;
   visualDisabilityCompliant?: boolean | null;
   withdrawalDetails?: string | null;
 };
