@@ -42,7 +42,7 @@ def list_tags() -> utils.BackofficeResponse:
     form = criteria_forms.SearchTagForm(formdata=utils.get_query_params())
     create_category_form = (
         criteria_forms.CreateCriterionCategoryForm()
-        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2)
+        if utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
         else None
     )
 
@@ -247,7 +247,7 @@ def get_delete_tag_form(tag_id: int) -> utils.BackofficeResponse:
 
 
 @tags_blueprint.route("/tags/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS)
 def create_tag_category() -> utils.BackofficeResponse:
     form = criteria_forms.CreateCriterionCategoryForm()
 

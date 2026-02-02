@@ -4311,7 +4311,7 @@ class CreateTagButtonTest(button_helpers.ButtonHelper):
 
 
 class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
+    needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
     button_label = "Créer une catégorie"
 
     @property
@@ -4488,7 +4488,7 @@ class DeleteOffererTagTest(PostEndpointHelper):
 
 class CreateOffererTagCategoryTest(PostEndpointHelper):
     endpoint = "backoffice_web.offerer_tag.create_offerer_tag_category"
-    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
+    needed_permission = perm_models.Permissions.MANAGE_OFFERER_TAG
 
     def test_create_offerer_tag_category(self, authenticated_client):
         form_data = {

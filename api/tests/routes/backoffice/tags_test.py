@@ -334,7 +334,7 @@ class CreateTagButtonTest(button_helpers.ButtonHelper):
 
 
 class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
     button_label = "Créer une catégorie"
 
     @property
@@ -344,7 +344,7 @@ class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
 
 class CreateTagCategoryTest(PostEndpointHelper):
     endpoint = "backoffice_web.tags.create_tag_category"
-    needed_permission = perm_models.Permissions.MANAGE_TAGS_N2
+    needed_permission = perm_models.Permissions.MANAGE_OFFERS_AND_VENUES_TAGS
 
     def test_create_tag_category(self, authenticated_client):
         form_data = {

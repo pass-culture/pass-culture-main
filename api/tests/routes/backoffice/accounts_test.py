@@ -5269,7 +5269,7 @@ class CreateTagButtonTest(button_helpers.ButtonHelper):
 
 
 class CreateTagCategoryButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
     button_label = "Créer une catégorie"
 
     @property
@@ -5447,7 +5447,7 @@ class DeleteAccountTagTest(PostEndpointHelper):
 
 class CreateAccountTagCategoryTest(PostEndpointHelper):
     endpoint = "backoffice_web.account_tag.create_account_tag_category"
-    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2
+    needed_permission = perm_models.Permissions.MANAGE_ACCOUNT_TAGS
 
     def test_create_account_tag_category(self, authenticated_client):
         form_data = {

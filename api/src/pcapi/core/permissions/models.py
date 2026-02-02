@@ -77,9 +77,9 @@ class Permissions(enum.Enum):
     CLOSE_OFFERER = "fermer une entité juridique"
 
     READ_TAGS = "visualiser les tags entités juridiques, offres, partenaires culturels et jeunes"
-    MANAGE_OFFERER_TAG = "gérer les tags entité juridique"
-    MANAGE_TAGS_N2 = "supprimer un tag (entité juridique, offre, partenaire culturel) et créer des catégories"
-    MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et partenaires culturels"
+    MANAGE_OFFERER_TAG = "gérer les tags entité juridique, créer une catégorie"
+    MANAGE_TAGS_N2 = "supprimer un tag (entité juridique, offre, partenaire culturel)"
+    MANAGE_OFFERS_AND_VENUES_TAGS = "gérer les tags offres et partenaires culturels, créer une catégorie"
 
     READ_NON_PAYMENT_NOTICES = "visualiser les avis d'impayés"
     MANAGE_NON_PAYMENT_NOTICES = "gérer les avis d'impayés"
@@ -101,8 +101,8 @@ class Permissions(enum.Enum):
     MANAGE_SPECIAL_EVENTS = "gérer les opérations spéciales"
 
     MANAGE_ACCOUNT_UPDATE_REQUEST = "instruire les demandes de modification de compte (DS)"
-    MANAGE_ACCOUNT_TAGS = "gérer les tags jeunes"
-    MANAGE_ACCOUNT_TAGS_N2 = "supprimer un tag jeune et créer des catégories"
+    MANAGE_ACCOUNT_TAGS = "gérer les tags jeunes et créer des catégories"
+    MANAGE_ACCOUNT_TAGS_N2 = "supprimer un tag jeune"
 
     @classmethod
     def exists(cls, name: str) -> bool:

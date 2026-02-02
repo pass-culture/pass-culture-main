@@ -61,10 +61,10 @@ def list_offerer_tags() -> utils.BackofficeResponse:
         create_tag_form = offerer_forms.EditOffererTagForm()
         create_tag_form.categories.choices = categories_choices
         forms["create_tag_form"] = create_tag_form
+        forms["create_category_form"] = offerer_forms.CreateOffererTagCategoryForm()
 
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_TAGS_N2):
         forms["delete_tag_form"] = empty_forms.EmptyForm()
-        forms["create_category_form"] = offerer_forms.CreateOffererTagCategoryForm()
 
     return render_template(
         "offerer/offerer_tag.html",
@@ -158,7 +158,7 @@ def delete_offerer_tag(offerer_tag_id: int) -> utils.BackofficeResponse:
 
 
 @offerer_tag_blueprint.route("/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_TAGS_N2)
+@utils.permission_required(perm_models.Permissions.MANAGE_OFFERER_TAG)
 def create_offerer_tag_category() -> utils.BackofficeResponse:
     form = offerer_forms.CreateOffererTagCategoryForm()
 

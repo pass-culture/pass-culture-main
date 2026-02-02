@@ -66,10 +66,10 @@ def list_account_tags() -> utils.BackofficeResponse:
         create_tag_form = accounts_forms.EditUserTagForm()
         create_tag_form.categories.choices = categories_choices
         forms["create_tag_form"] = create_tag_form
+        forms["create_category_form"] = accounts_forms.CreateUserTagCategoryForm()
 
     if utils.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2):
         forms["delete_tag_form"] = empty_forms.EmptyForm()
-        forms["create_category_form"] = accounts_forms.CreateUserTagCategoryForm()
 
     return render_template(
         "accounts/account_tags.html",
@@ -198,7 +198,7 @@ def delete_account_tag(user_tag_id: int) -> utils.BackofficeResponse:
 
 
 @account_tag_blueprint.route("/category", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS_N2)
+@utils.permission_required(perm_models.Permissions.MANAGE_ACCOUNT_TAGS)
 def create_account_tag_category() -> utils.BackofficeResponse:
     form = accounts_forms.CreateUserTagCategoryForm()
 
