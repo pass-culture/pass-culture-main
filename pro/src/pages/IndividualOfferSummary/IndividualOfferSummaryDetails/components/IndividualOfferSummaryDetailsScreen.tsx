@@ -5,6 +5,7 @@ import {
   OFFER_WIZARD_MODE,
 } from '@/commons/core/Offers/constants'
 import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividualOfferUrl'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useMusicTypes } from '@/commons/hooks/useMusicTypes'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
 import { AccessibilitySummarySection } from '@/components/AccessibilitySummarySection/AccessibilitySummarySection'
@@ -38,12 +39,14 @@ export function IndividualOfferSummaryDetailsScreen({
 }: Readonly<IndividualOfferSummaryDetailsScreenProps>) {
   const mode = useOfferWizardMode()
   const { categories, subCategories } = useIndividualOfferContext()
+  const areArtistsEnabled = useActiveFeature('WIP_OFFER_ARTISTS')
 
   const { musicTypes } = useMusicTypes()
   const offerData = serializeOfferSectionData(
     offer,
     categories,
     subCategories,
+    areArtistsEnabled,
     musicTypes
   )
 
@@ -99,7 +102,10 @@ export function IndividualOfferSummaryDetailsScreen({
     })
   }
   if (conditionalFields.includes('author')) {
-    artisticInfoDescriptions.push({ title: 'Auteur', text: offerData.author })
+    artisticInfoDescriptions.push({
+      title: 'Auteur',
+      text: offerData.author,
+    })
   }
   if (conditionalFields.includes('visa')) {
     artisticInfoDescriptions.push({

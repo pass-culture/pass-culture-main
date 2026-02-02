@@ -1,4 +1,5 @@
 import {
+  ArtistType,
   type CategoryResponseModel,
   type GetIndividualOfferWithAddressResponseModel,
   OfferStatus,
@@ -12,7 +13,7 @@ import {
   subcategoryFactory,
 } from '@/commons/utils/factories/individualApiFactories'
 
-import { serializeOfferSectionData } from '../serializer'
+import { serializeArtist, serializeOfferSectionData } from '../serializer'
 
 describe('IndividualOfferSummary:serializer', () => {
   let offer: GetIndividualOfferWithAddressResponseModel
@@ -67,13 +68,17 @@ describe('IndividualOfferSummary:serializer', () => {
   })
 
   it('should serialize data with event stock', () => {
+    const areArtistsEnabled = false
+
     const offerSerialized = serializeOfferSectionData(
       offer,
       categories,
-      subCategoryList
+      subCategoryList,
+      areArtistsEnabled
     )
 
     expect(offerSerialized).toEqual({
+      artistOfferLinks: [],
       id: 12,
       name: 'Offer name',
       description: 'Offer description',
@@ -109,6 +114,7 @@ describe('IndividualOfferSummary:serializer', () => {
   })
 
   it('should serialize data with showType', () => {
+    const areArtistsEnabled = false
     offer = {
       ...offer,
       extraData: {
@@ -120,9 +126,166 @@ describe('IndividualOfferSummary:serializer', () => {
     const offerSerialized = serializeOfferSectionData(
       offer,
       categories,
-      subCategoryList
+      subCategoryList,
+      areArtistsEnabled
     )
     expect(offerSerialized.showTypeName).toEqual('Humour / Café-théâtre')
     expect(offerSerialized.showSubTypeName).toEqual('Café Théâtre')
+  })
+
+  it('should serialize artists', () => {
+    const areArtistsEnabled = true
+
+    offer = {
+      ...offer,
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistType: ArtistType.AUTHOR,
+          artistName: 'Jean-Michel Jarre',
+        },
+        {
+          artistId: '3',
+          artistType: ArtistType.PERFORMER,
+          artistName: 'Bobby Vinton',
+        },
+        {
+          artistId: '5',
+          artistType: ArtistType.STAGE_DIRECTOR,
+          artistName: 'Robert Redford',
+        },
+        {
+          artistId: '6',
+          artistType: ArtistType.STAGE_DIRECTOR,
+          artistName: 'Jim Carrey',
+        },
+      ],
+    }
+
+    const offerSerialized = serializeOfferSectionData(
+      offer,
+      categories,
+      subCategoryList,
+      areArtistsEnabled
+    )
+    expect(offerSerialized.author).toEqual('Jean-Michel Jarre')
+    expect(offerSerialized.performer).toEqual('Bobby Vinton')
+    expect(offerSerialized.stageDirector).toEqual('Robert Redford, Jim Carrey')
+  })
+})
+
+describe('serializeArtist', () => {
+  it('should get data from extraData when artist are not enabled', () => {
+    const offer = getIndividualOfferFactory({
+      extraData: {
+        author: 'Offer author',
+        performer: 'Offer performer',
+        stageDirector: 'Offer stageDirector',
+      },
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistType: ArtistType.AUTHOR,
+          artistName: 'Jean-Michel Jarre',
+        },
+      ],
+      productId: undefined,
+    })
+    const areArtistsEnabled = false
+    const defaultValue = 'default'
+
+    const result = serializeArtist(
+      offer,
+      { areArtistsEnabled },
+      offer.extraData.author,
+      defaultValue,
+      ArtistType.AUTHOR
+    )
+
+    expect(result).toBe('Offer author')
+  })
+
+  it('should get data from extraData when offer is product based', () => {
+    const offer = getIndividualOfferFactory({
+      extraData: {
+        author: 'Offer author',
+        performer: 'Offer performer',
+        stageDirector: 'Offer stageDirector',
+      },
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistType: ArtistType.AUTHOR,
+          artistName: 'Jean-Michel Jarre',
+        },
+      ],
+      productId: 123,
+    })
+    const areArtistsEnabled = false
+    const defaultValue = 'default'
+
+    const result = serializeArtist(
+      offer,
+      { areArtistsEnabled },
+      offer.extraData.author,
+      defaultValue,
+      ArtistType.AUTHOR
+    )
+
+    expect(result).toBe('Offer author')
+  })
+
+  it('should get data from artistOfferLink when offer is not product based and FF WIP_OFFER_ARTISTS is activated and offer is not product based ', () => {
+    const offer = getIndividualOfferFactory({
+      extraData: {
+        author: 'Offer author',
+        performer: 'Offer performer',
+        stageDirector: 'Offer stageDirector',
+      },
+      artistOfferLinks: [
+        {
+          artistId: '1',
+          artistType: ArtistType.AUTHOR,
+          artistName: 'Jean-Michel Jarre',
+        },
+      ],
+      productId: undefined,
+    })
+    const areArtistsEnabled = true
+    const defaultValue = 'default'
+
+    const result = serializeArtist(
+      offer,
+      { areArtistsEnabled },
+      offer.extraData.author,
+      defaultValue,
+      ArtistType.AUTHOR
+    )
+
+    expect(result).toBe('Jean-Michel Jarre')
+  })
+
+  it('should fallback to default value when artist are not find', () => {
+    const offer = getIndividualOfferFactory({
+      extraData: {
+        author: 'Offer author',
+        performer: 'Offer performer',
+        stageDirector: 'Offer stageDirector',
+      },
+      artistOfferLinks: [],
+      productId: undefined,
+    })
+    const areArtistsEnabled = true
+    const defaultValue = 'default'
+
+    const result = serializeArtist(
+      offer,
+      { areArtistsEnabled },
+      offer.extraData.author,
+      defaultValue,
+      ArtistType.AUTHOR
+    )
+
+    expect(result).toBe('default')
   })
 })
