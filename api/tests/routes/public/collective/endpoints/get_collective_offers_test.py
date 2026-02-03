@@ -1,3 +1,5 @@
+import datetime
+
 import pytest
 
 from pcapi.core import testing
@@ -6,6 +8,7 @@ from pcapi.core.educational import models
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.providers import factories as provider_factories
 from pcapi.models.offer_mixin import OfferValidationStatus
+from pcapi.utils.date import get_naive_utc_now
 
 from tests.routes.public.helpers import PublicAPIEndpointBaseHelper
 
@@ -132,6 +135,57 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
 
         assert not response.json
 
+    def test_filter_date(self):
+        plain_api_key, provider = self.setup_provider()
+        venue_provider = provider_factories.VenueProviderFactory(provider=provider)
+
+        now = get_naive_utc_now()
+        stock = educational_factories.CollectiveStockFactory(
+            collectiveOffer__provider=venue_provider.provider, startDatetime=now
+        )
+
+        # beginning filter after event start
+        query_date = now + datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodBeginningDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        assert response.json == []
+
+        # ending filter before event start
+        query_date = now - datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodEndingDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        assert response.json == []
+
+        # beginning filter before event start
+        query_date = now - datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodBeginningDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        [offer] = response.json
+        assert offer["id"] == stock.collectiveOfferId
+
+        # ending filter after event start
+        query_date = now + datetime.timedelta(days=1)
+        with testing.assert_num_queries(self.num_queries):
+            response = self.make_request(
+                plain_api_key=plain_api_key, query_params={"periodEndingDate": query_date.isoformat()}
+            )
+
+        assert response.status_code == 200
+        [offer] = response.json
+        assert offer["id"] == stock.collectiveOfferId
+
     def test_offer_without_stock(self, client):
         venue_provider = provider_factories.VenueProviderFactory()
 
@@ -225,3 +279,31 @@ class CollectiveOffersPublicGetOfferTest(PublicAPIEndpointBaseHelper):
         with testing.assert_num_queries(self.num_queries + 2):  # double rollback
             response = api_client.get(f"/v2/collective/offers/{offer_id}")
             assert response.status_code == 403
+
+    @pytest.mark.parametrize(
+        "query_params,expected_json",
+        (
+            (
+                {"offerStatus": "BLOUP"},
+                {
+                    "offerStatus": [
+                        "value is not a valid enumeration member; permitted: "
+                        "'PUBLISHED', 'UNDER_REVIEW', 'REJECTED', 'PREBOOKED', "
+                        "'BOOKED', 'HIDDEN', 'EXPIRED', 'ENDED', 'CANCELLED', "
+                        "'REIMBURSED', 'ARCHIVED', 'DRAFT'"
+                    ]
+                },
+            ),
+            ({"venueId": "BLOUP"}, {"venueId": ["value is not a valid integer"]}),
+            ({"periodBeginningDate": "BLOUP"}, {"periodBeginningDate": ["invalid datetime format"]}),
+            ({"periodEndingDate": "2024-05 -10T15:00:00+02:00"}, {"periodEndingDate": ["invalid datetime format"]}),
+        ),
+    )
+    def test_invalid_query_params(self, query_params, expected_json):
+        plain_api_key, _ = self.setup_provider()
+
+        with testing.assert_num_queries(3):  # provider + double rollback
+            response = self.make_request(plain_api_key=plain_api_key, query_params=query_params)
+
+        assert response.status_code == 400
+        assert response.json == expected_json

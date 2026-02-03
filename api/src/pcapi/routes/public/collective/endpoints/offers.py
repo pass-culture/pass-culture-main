@@ -517,9 +517,7 @@ def patch_collective_offer_public(
         )
     ),
 )
-def archive_collective_offers(
-    body: offers_serialization.ArchiveCollectiveOfferBodyModel,
-) -> None:
+def archive_collective_offers(body: offers_serialization.ArchiveCollectiveOfferBodyModel) -> None:
     """
     Archive Collective Offers
 

@@ -890,8 +890,8 @@ def list_public_collective_offers(
     required_id: int,
     displayedStatus: models.CollectiveOfferDisplayedStatus | None = None,
     venue_id: int | None = None,
-    period_beginning_date: str | None = None,
-    period_ending_date: str | None = None,
+    period_beginning_date: datetime | None = None,
+    period_ending_date: datetime | None = None,
     ids: list[int] | None = None,
     limit: int = 500,
 ) -> list[models.CollectiveOffer]:
