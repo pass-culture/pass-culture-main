@@ -280,3 +280,19 @@ def get_naive_utc_now() -> datetime:
 
 def get_naive_utc_from_iso_str(iso_str: str) -> datetime:
     return datetime.fromisoformat(iso_str).astimezone(tz.utc).replace(tzinfo=None)
+
+
+def convert_date_period_to_utc_datetime_period(
+    date_period: tuple[date, date],
+    timezone: str,
+) -> tuple[datetime, datetime]:
+    start_date, end_date = date_period
+
+    # if dates aren't chronologically ordered
+    if date_period[0] > date_period[1]:
+        end_date, start_date = date_period
+
+    start_datetime = datetime.combine(start_date, time(hour=0, minute=0, second=0), tzinfo=ZoneInfo(timezone))
+    end_datetime = datetime.combine(end_date, time(hour=23, minute=59, second=59), tzinfo=ZoneInfo(timezone))
+
+    return (start_datetime.astimezone(pytz.utc), end_datetime.astimezone(pytz.utc))

@@ -7,6 +7,7 @@ from flask_login import current_user
 from flask_login import login_required
 
 import pcapi.core.bookings.repository as booking_repository
+import pcapi.core.offerers.repository as offerers_repository
 from pcapi.core.bookings import api as bookings_api
 from pcapi.core.bookings import exceptions as bookings_exceptions
 from pcapi.core.bookings import models as bookings_models
@@ -208,7 +209,7 @@ def get_offer_price_categories_and_schedules_by_dates(offer_id: int) -> EventDat
     )
     stocks_by_date: dict[date, dict[str, list]] = {}
 
-    offer_timezone = booking_repository._get_offer_timezone(offer_id)
+    offer_timezone = offerers_repository.get_offer_timezone(offer_id)
     for stock in stocks:
         if stock.beginningDatetime is None:
             continue
