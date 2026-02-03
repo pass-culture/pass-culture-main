@@ -374,10 +374,11 @@ def create_artists() -> None:
     )
     for _ in range(2):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_4.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
+        offers_factories.StockFactory(offer=offer)
 
     # Artist 5: with AI biography but no Wikipedia source (edge case)
     artist_5 = artist_factories.ArtistFactory.create(
@@ -391,10 +392,11 @@ def create_artists() -> None:
     )
     for _ in range(2):
         product = offers_factories.ProductFactory.create(subcategoryId=subcategories.SUPPORT_PHYSIQUE_MUSIQUE_VINYLE.id)
-        offers_factories.OfferFactory.create(product=product, venue=venue)
+        offer = offers_factories.OfferFactory.create(product=product, venue=venue)
         offers_factories.ArtistProductLinkFactory.create(
             artist_id=artist_5.id, product_id=product.id, artist_type=ArtistType.PERFORMER
         )
+        offers_factories.StockFactory(offer=offer)
 
     _create_multi_artists_offer(venue)
     _create_library_with_writers()
