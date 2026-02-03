@@ -80,6 +80,7 @@ class ArtistProductLink(PcObject, Model):
     product_id: sa_orm.Mapped[int] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("product.id", ondelete="CASCADE"), nullable=False, index=True
     )
+    product: sa_orm.Mapped["Product"] = sa_orm.relationship("Product", back_populates="artistLinks", viewonly=True)
     artist_type: sa_orm.Mapped[ArtistType | None] = sa_orm.mapped_column(MagicEnum(ArtistType), nullable=True)
     date_created: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, server_default=sa.func.now()
