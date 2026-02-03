@@ -5,15 +5,11 @@ import type { AdresseData } from '@/apiClient/adresse/types.ts'
 import type { VenueListItemResponseModel } from '@/apiClient/v1'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
+import { AddressField } from '@/components/AddressField/AddressField'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { RadioButtonGroup } from '@/design-system/RadioButtonGroup/RadioButtonGroup'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullBackIcon from '@/icons/full-back.svg'
-import fullNextIcon from '@/icons/full-next.svg'
 import { OFFER_LOCATION } from '@/pages/IndividualOffer/commons/constants'
-import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 
 import { EMPTY_PHYSICAL_ADDRESS_SUBFORM_VALUES } from '../../../commons/constants'
 import type { LocationFormValues } from '../../../commons/types'
@@ -139,44 +135,21 @@ export const PhysicalLocationSubform = ({
             />
           </FormLayout.Row>
           <FormLayout.Row>
-            {/*
-              TODO (igabriele, 2025-08-25): Investigate ref issue in `AddressSelect`.
-
-              We can't use `register` here because it produces a warning in console:
-              `Warning: Function components cannot be given refs. Attempts to access this ref will fail. Did you mean to use React.forwardRef()?`
-            */}
-            <AddressSelect
-              {...register('location.addressAutocomplete')}
+            <AddressField
+              addressRegister={register('location.addressAutocomplete')}
               className={styles['location-field']}
-              disabled={isManualEdition || isDisabled}
-              error={errors.location?.addressAutocomplete?.message}
-              label="Adresse postale"
-              onAddressChosen={updateAddressFromAutocomplete}
-            />
-          </FormLayout.Row>
-
-          <FormLayout.Row className={styles['manual-address-button']}>
-            <Button
-              type="button"
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              icon={isManualEdition ? fullBackIcon : fullNextIcon}
-              onClick={toggleIsManualEdition}
               disabled={isDisabled}
-              label={
-                isManualEdition
-                  ? `Revenir à la sélection automatique`
-                  : `Vous ne trouvez pas votre adresse ?`
-              }
+              manual={isManualEdition}
+              onManualChange={toggleIsManualEdition}
+              error={errors.location?.addressAutocomplete?.message}
+              onAddressChosen={updateAddressFromAutocomplete}
+              renderManual={() => (
+                <AddressManualAdapter
+                  readOnlyFields={readOnlyFieldsForAddressManual}
+                />
+              )}
             />
           </FormLayout.Row>
-
-          {isManualEdition && (
-            // Use adapter to map flat field expectations of AddressManual to nested address.* structure
-            <AddressManualAdapter
-              readOnlyFields={readOnlyFieldsForAddressManual}
-            />
-          )}
         </div>
       )}
     </>
