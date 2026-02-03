@@ -85,4 +85,17 @@ describe('CollectiveDataForm', () => {
 
     expect(domainsCheckbox).toBeChecked()
   })
+
+  it('should check activity field', async () => {
+    renderCollectiveDataForm()
+
+    const activityField = screen.getByRole('combobox', {
+      name: /Activité principale/,
+    })
+
+    await userEvent.selectOptions(
+      activityField,
+      screen.getByRole('option', { name: 'Cinéma' })
+    )
+  })
 })
