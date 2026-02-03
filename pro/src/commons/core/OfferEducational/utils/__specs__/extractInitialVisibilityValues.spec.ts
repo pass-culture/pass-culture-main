@@ -1,8 +1,6 @@
-import type {
-  EducationalInstitutionResponseModel,
-  GetCollectiveOfferRequestResponseModel,
-} from '@/apiClient/v1'
+import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
 import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { defaultGetCollectiveOfferRequest } from '@/commons/utils/factories/collectiveApiFactories'
 
 describe('extractInitialVisibilityValues', () => {
   it('should return default values when institution is not defined', () => {
@@ -52,15 +50,8 @@ describe('extractInitialVisibilityValues', () => {
   })
 
   it('should return teacher details when institution and teacher are defined from requested informations', () => {
-    const requestInformations: GetCollectiveOfferRequestResponseModel = {
-      comment: '',
-      institution: {
-        name: 'Collège Bellevue',
-        city: 'Alès',
-        postalCode: '30100',
-        institutionId: 'ABCDEF11',
-        institutionType: 'COLLEGE',
-      },
+    const requestInformations = {
+      ...defaultGetCollectiveOfferRequest,
       redactor: {
         firstName: 'Reda',
         lastName: 'Khteur',

@@ -5,6 +5,7 @@ import { api } from '@/apiClient/api'
 import * as useAnalytics from '@/app/App/analytics/firebase'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
 import {
+  defaultGetCollectiveOfferRequest,
   getCollectiveOfferManagingOffererFactory,
   getCollectiveOfferTemplateFactory,
   getCollectiveOfferVenueFactory,
@@ -95,7 +96,8 @@ describe('CollectiveOfferFromRequest', () => {
   })
 
   it('should display request information', async () => {
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
+    const collectiveRequest = {
+      ...defaultGetCollectiveOfferRequest,
       comment: 'Test unit',
       redactor: {
         email: 'request@example.com',
@@ -105,7 +107,11 @@ describe('CollectiveOfferFromRequest', () => {
       institution,
       dateCreated: '2030-06-20',
       requestedDate: '2030-06-27',
-    })
+    }
+
+    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce(
+      collectiveRequest
+    )
 
     renderWithProviders(<CollectiveOfferFromRequest />)
 
@@ -130,11 +136,18 @@ describe('CollectiveOfferFromRequest', () => {
       logEvent: mockLogEvent,
     }))
 
-    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
+    const collectiveRequest = {
+      ...defaultGetCollectiveOfferRequest,
       comment: 'Test unit',
-      redactor: { email: 'request@example.com' },
+      redactor: {
+        ...defaultGetCollectiveOfferRequest.redactor,
+        email: 'request@example.com',
+      },
       institution,
-    })
+    }
+    vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce(
+      collectiveRequest
+    )
 
     renderWithProviders(<CollectiveOfferFromRequest />)
 

@@ -19,7 +19,10 @@ import {
   SENT_DATA_ERROR_MESSAGE,
 } from '@/commons/core/shared/constants'
 import * as useSnackBar from '@/commons/hooks/useSnackBar'
-import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
+import {
+  defaultGetCollectiveOfferRequest,
+  getCollectiveOfferFactory,
+} from '@/commons/utils/factories/collectiveApiFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -417,7 +420,8 @@ describe('CollectiveOfferVisibility', () => {
     })
 
     it('should prefill form with requested information', async () => {
-      vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce({
+      const collectiveRequest = {
+        ...defaultGetCollectiveOfferRequest,
         comment: 'Test unit',
         redactor: {
           email: 'compte.test@education.gouv.fr',
@@ -431,7 +435,10 @@ describe('CollectiveOfferVisibility', () => {
           name: 'METIER ROBERT DOISNEAU',
           postalCode: '91000',
         },
-      })
+      }
+      vi.spyOn(api, 'getCollectiveOfferRequest').mockResolvedValueOnce(
+        collectiveRequest
+      )
 
       vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
         .mockResolvedValueOnce([]) // redactors preloading

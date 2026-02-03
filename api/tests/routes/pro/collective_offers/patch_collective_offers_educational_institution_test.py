@@ -184,7 +184,7 @@ class Returns400Test:
         response = client.patch(f"/collective/offers/{offer.id}/educational_institution", json=data)
 
         assert response.status_code == 400
-        assert response.json == {"educationalInstitutionId": ["Ce champ ne peut pas être nul"]}
+        assert response.json == {"educationalInstitutionId": ["Saisissez un entier valide"]}
 
     def test_institution_id_missing(self, client):
         offer = factories.DraftCollectiveOfferFactory()

@@ -295,6 +295,11 @@ export const defaultGetVenue: GetVenueResponseModel = {
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
   {
+    dateCreated: new Date().toISOString(),
+    phoneNumber: null,
+    requestedDate: null,
+    totalStudents: null,
+    totalTeachers: null,
     comment: 'comment',
     institution: {
       city: 'Paris',

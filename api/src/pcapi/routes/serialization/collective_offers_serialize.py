@@ -21,6 +21,7 @@ from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
 from pcapi.routes.serialization import BaseModel
 from pcapi.routes.serialization import ConfiguredBaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import HttpQueryParamsModel
 from pcapi.routes.serialization import address_serialize
 from pcapi.routes.serialization import collective_history_serialize
@@ -360,13 +361,13 @@ class GetCollectiveOfferTemplateResponseModel(GetCollectiveOfferBaseResponseMode
     allowedActions: list[models.CollectiveOfferTemplateAllowedAction]
 
 
-class CollectiveOfferRedactorModel(BaseModel):
+class CollectiveOfferRedactorModel(HttpBodyModel):
     firstName: str | None
     lastName: str | None
     email: str
 
 
-class CollectiveOfferInstitutionModel(BaseModel):
+class CollectiveOfferInstitutionModel(HttpBodyModel):
     institutionId: str
     institutionType: str
     name: str
@@ -374,18 +375,15 @@ class CollectiveOfferInstitutionModel(BaseModel):
     postalCode: str
 
 
-class GetCollectiveOfferRequestResponseModel(BaseModel):
-    redactor: CollectiveOfferRedactorModel
+class GetCollectiveOfferRequestResponseModel(HttpBodyModel):
+    educationalRedactor: CollectiveOfferRedactorModel = pydantic_v2.Field(alias="redactor")
     requestedDate: date | None
     totalStudents: int | None
     totalTeachers: int | None
     phoneNumber: str | None
     comment: str
-    dateCreated: date | None
-    institution: CollectiveOfferInstitutionModel
-
-    class Config:
-        allow_population_by_field_name = True
+    dateCreated: date
+    educationalInstitution: CollectiveOfferInstitutionModel = pydantic_v2.Field(alias="institution")
 
 
 class GetCollectiveOfferProviderResponseModel(BaseModel):
@@ -409,13 +407,8 @@ class GetCollectiveOfferResponseModel(GetCollectiveOfferBaseResponseModel):
     history: collective_history_serialize.CollectiveOfferHistory
 
 
-class CollectiveOfferResponseIdModel(BaseModel):
+class CollectiveOfferResponseIdModel(HttpBodyModel):
     id: int
-
-    class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
 
 
 def validate_intervention_area_with_location(
@@ -652,25 +645,18 @@ class PatchCollectiveOfferTemplateBodyModel(PatchCollectiveOfferBodyModel):
         extra = "forbid"
 
 
-class PatchCollectiveOfferActiveStatusBodyModel(BaseModel):
+class PatchCollectiveOfferActiveStatusBodyModel(HttpBodyModel):
     is_active: bool
     ids: list[int]
 
-    class Config:
-        alias_generator = to_camel
 
-
-class PatchCollectiveOfferArchiveBodyModel(BaseModel):
+class PatchCollectiveOfferArchiveBodyModel(HttpBodyModel):
     ids: list[int]
 
 
-class PatchCollectiveOfferEducationalInstitution(BaseModel):
+class PatchCollectiveOfferEducationalInstitution(HttpBodyModel):
     educational_institution_id: int
-    teacher_email: str | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "allow"
+    teacher_email: str | None = None
 
 
 class AttachImageFormModel(BaseModel):

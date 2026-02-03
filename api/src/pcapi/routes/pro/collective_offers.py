@@ -193,27 +193,7 @@ def get_collective_offer_request(request_id: int) -> collective_offers_serialize
     offerer_id = collective_offer_request.collectiveOfferTemplate.venue.managingOffererId
     check_user_has_access_to_offerer(current_user, offerer_id)
 
-    institution = collective_offer_request.educationalInstitution
-    return collective_offers_serialize.GetCollectiveOfferRequestResponseModel(
-        redactor=collective_offers_serialize.CollectiveOfferRedactorModel(
-            firstName=collective_offer_request.educationalRedactor.firstName,
-            lastName=collective_offer_request.educationalRedactor.lastName,
-            email=collective_offer_request.educationalRedactor.email,
-        ),
-        requestedDate=collective_offer_request.requestedDate,
-        totalStudents=collective_offer_request.totalStudents,
-        totalTeachers=collective_offer_request.totalTeachers,
-        comment=collective_offer_request.comment,
-        phoneNumber=collective_offer_request.phoneNumber,
-        dateCreated=collective_offer_request.dateCreated,
-        institution=collective_offers_serialize.CollectiveOfferInstitutionModel(
-            institutionId=institution.institutionId,
-            institutionType=institution.institutionType,
-            name=institution.name,
-            city=institution.city,
-            postalCode=institution.postalCode,
-        ),
-    )
+    return collective_offers_serialize.GetCollectiveOfferRequestResponseModel.model_validate(collective_offer_request)
 
 
 @private_api.route("/collective/offers", methods=["POST"])
@@ -258,7 +238,7 @@ def create_collective_offer(
     except exceptions.CollectiveOfferTemplateNotFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
-    return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
+    return collective_offers_serialize.CollectiveOfferResponseIdModel(id=offer.id)
 
 
 @private_api.route("/collective/offers/<int:offer_id>", methods=["PATCH"])
@@ -564,7 +544,7 @@ def create_collective_offer_template(
     except exceptions.CollectiveOfferContactRequestError as err:
         raise ApiErrors({f"contact[{err.fields}]": err.msg}, status_code=400)
 
-    return collective_offers_serialize.CollectiveOfferResponseIdModel.from_orm(offer)
+    return collective_offers_serialize.CollectiveOfferResponseIdModel(id=offer.id)
 
 
 def _check_image(image_as_bytes: bytes) -> None:

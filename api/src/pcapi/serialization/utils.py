@@ -51,6 +51,7 @@ def before_handler(
         # pydantic V2
         "missing": "Ce champ est obligatoire",
         "int_parsing": "Saisissez un entier valide",
+        "int_type": "Saisissez un entier valide",
         "float_parsing": "Saisissez un nombre valide",
         "string_type": "Saisissez une chaîne de caractères valide",
         "string_too_short": "Cette chaîne de caractères doit avoir une taille minimum de {min_length} caractères",
