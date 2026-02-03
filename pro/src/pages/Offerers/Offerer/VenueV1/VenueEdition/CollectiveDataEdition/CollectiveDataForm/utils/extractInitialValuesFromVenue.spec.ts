@@ -1,4 +1,9 @@
-import { type GetVenueResponseModel, StudentLevels } from '@/apiClient/v1'
+import {
+  ActivityOpenToPublic,
+  DisplayableActivity,
+  type GetVenueResponseModel,
+  StudentLevels,
+} from '@/apiClient/v1'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 
 import { COLLECTIVE_DATA_FORM_INITIAL_VALUES } from '../initialValues'
@@ -19,6 +24,7 @@ describe('extractInitialValuesFromVenue', () => {
         StudentLevels.CAP_2E_ANN_E,
       ],
       collectiveWebsite: null,
+      activity: DisplayableActivity.CINEMA,
     }
 
     expect(extractInitialValuesFromVenue(venue)).toStrictEqual({
@@ -34,6 +40,7 @@ describe('extractInitialValuesFromVenue', () => {
       collectiveDomains: ['1'],
       collectiveInterventionArea:
         COLLECTIVE_DATA_FORM_INITIAL_VALUES.collectiveInterventionArea,
+      activity: ActivityOpenToPublic.CINEMA,
     })
   })
 })
