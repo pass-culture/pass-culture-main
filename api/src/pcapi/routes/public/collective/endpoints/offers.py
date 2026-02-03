@@ -1,6 +1,6 @@
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import repository as educational_repository
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import repository
 from pcapi.core.educational.api import offer as educational_api_offer
 from pcapi.core.offerers import exceptions as offerers_exceptions
 from pcapi.core.offerers import repository as offerers_repository
@@ -74,7 +74,7 @@ def get_collective_offers_public(
     (collective offers created manually in the pro interface will not show up).
     """
 
-    offers = educational_repository.list_public_collective_offers(
+    offers = repository.list_public_collective_offers(
         required_id=current_api_key.providerId,
         venue_id=query.venue_id,
         displayedStatus=query.offerStatus,
@@ -111,8 +111,8 @@ def get_collective_offer_public(offer_id: int) -> offers_serialization.GetPublic
     Return one collective offer using provided id.
     """
     try:
-        offer = educational_repository.get_collective_offer_by_id(offer_id)
-    except educational_exceptions.CollectiveOfferNotFound:
+        offer = repository.get_collective_offer_by_id(offer_id)
+    except exceptions.CollectiveOfferNotFound:
         raise api_errors.ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
     if not offer.collectiveStock:
@@ -194,41 +194,41 @@ def post_collective_offer_public(
         offer = educational_api_offer.create_collective_offer_public(requested_id=current_api_key.providerId, body=body)
 
     # venue errors
-    except educational_exceptions.CulturalPartnerNotFoundException:
+    except exceptions.CulturalPartnerNotFoundException:
         raise api_errors.ApiErrors(errors={"global": ["Non éligible pour les offres collectives."]}, status_code=403)
     except offerers_exceptions.VenueNotFoundException:
         raise api_errors.ApiErrors(errors={"venueId": ["Ce lieu n'à pas été trouvé."]}, status_code=404)
 
     # institution errors
-    except educational_exceptions.EducationalInstitutionUnknown:
+    except exceptions.EducationalInstitutionUnknown:
         raise api_errors.ApiErrors(
             errors={"educationalInstitutionId": ["Établissement scolaire non trouvé."]}, status_code=404
         )
-    except educational_exceptions.EducationalInstitutionIsNotActive:
+    except exceptions.EducationalInstitutionIsNotActive:
         raise api_errors.ApiErrors(
             errors={"educationalInstitutionId": ["L'établissement scolaire n'est pas actif."]}, status_code=403
         )
 
     # domains / national_program errors
-    except educational_exceptions.EducationalDomainsNotFound:
+    except exceptions.EducationalDomainsNotFound:
         raise api_errors.ApiErrors(errors={"domains": ["Domaine scolaire non trouvé."]}, status_code=404)
-    except educational_exceptions.NationalProgramNotFound:
+    except exceptions.NationalProgramNotFound:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national non trouvé."]}, status_code=404)
-    except educational_exceptions.IllegalNationalProgram:
+    except exceptions.IllegalNationalProgram:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national non valide."]}, status_code=400)
-    except educational_exceptions.InactiveNationalProgram:
+    except exceptions.InactiveNationalProgram:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
 
     # dates errors
-    except educational_exceptions.StartAndEndEducationalYearDifferent:
+    except exceptions.StartAndEndEducationalYearDifferent:
         raise api_errors.ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
         )
-    except educational_exceptions.StartEducationalYearMissing:
+    except exceptions.StartEducationalYearMissing:
         raise api_errors.ApiErrors(
             errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400
         )
-    except educational_exceptions.EndEducationalYearMissing:
+    except exceptions.EndEducationalYearMissing:
         raise api_errors.ApiErrors(
             errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400
         )
@@ -246,7 +246,7 @@ def post_collective_offer_public(
     db.session.expire(offer.collectiveStock)
 
     # re-fetch related data for the serializer
-    offer = educational_repository.get_collective_offer_by_id(offer.id)
+    offer = repository.get_collective_offer_by_id(offer.id)
 
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
@@ -293,8 +293,8 @@ def patch_collective_offer_public(
 
     # access control
     try:
-        offer = educational_repository.get_collective_offer_by_id(offer_id)
-    except educational_exceptions.CollectiveOfferNotFound:
+        offer = repository.get_collective_offer_by_id(offer_id)
+    except exceptions.CollectiveOfferNotFound:
         raise api_errors.ApiErrors(errors={"global": ["L'offre collective n'existe pas"]}, status_code=404)
 
     if not offer.collectiveStock:
@@ -312,7 +312,7 @@ def patch_collective_offer_public(
     # check allowed actions
     try:
         educational_api_offer.check_edit_collective_offer_public_allowed_action(offer=offer, new_values=new_values)
-    except educational_exceptions.CollectiveOfferForbiddenAction:
+    except exceptions.CollectiveOfferForbiddenAction:
         raise api_errors.ApiErrors(
             errors={
                 "global": f"Cette action n'est pas autorisée car le statut de l'offre est {offer.displayedStatus.value}"
@@ -411,10 +411,7 @@ def patch_collective_offer_public(
         image_file = new_values.pop("imageFile")
 
     national_program_id: int | None = new_values.get("nationalProgramId")
-    if (
-        national_program_id is not None
-        and educational_repository.get_national_program_or_none(national_program_id) is None
-    ):
+    if national_program_id is not None and repository.get_national_program_or_none(national_program_id) is None:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif inconnu"]}, status_code=400)
 
     # real edition
@@ -427,43 +424,43 @@ def patch_collective_offer_public(
         )
 
     # venue errors
-    except educational_exceptions.CulturalPartnerNotFoundException:
+    except exceptions.CulturalPartnerNotFoundException:
         raise api_errors.ApiErrors(errors={"global": ["Non éligible pour les offres collectives."]}, status_code=403)
     except offerers_exceptions.VenueNotFoundException:
         raise api_errors.ApiErrors(errors={"venueId": ["Ce lieu n'a pas été trouvé."]}, status_code=404)
 
     # institution errors
-    except educational_exceptions.EducationalInstitutionIsNotActive:
+    except exceptions.EducationalInstitutionIsNotActive:
         raise api_errors.ApiErrors(errors={"global": ["cet institution est expiré."]}, status_code=403)
-    except educational_exceptions.EducationalInstitutionUnknown:
+    except exceptions.EducationalInstitutionUnknown:
         raise api_errors.ApiErrors(
             errors={"educationalInstitutionId": ["Établissement scolaire non trouvé."]}, status_code=404
         )
 
     # domains / national_program errors
-    except educational_exceptions.EducationalDomainsNotFound:
+    except exceptions.EducationalDomainsNotFound:
         raise api_errors.ApiErrors(errors={"domains": ["Domaine scolaire non trouvé."]}, status_code=404)
-    except educational_exceptions.NationalProgramNotFound:
+    except exceptions.NationalProgramNotFound:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national non trouvé."]}, status_code=404)
-    except educational_exceptions.IllegalNationalProgram:
+    except exceptions.IllegalNationalProgram:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national non valide."]}, status_code=400)
-    except educational_exceptions.InactiveNationalProgram:
+    except exceptions.InactiveNationalProgram:
         raise api_errors.ApiErrors(errors={"nationalProgramId": ["Dispositif national inactif."]}, status_code=400)
 
     # edition errors
-    except educational_exceptions.CollectiveOfferNotEditable:
+    except exceptions.CollectiveOfferNotEditable:
         raise api_errors.ApiErrors(errors={"global": ["Offre non éditable."]}, status_code=422)
 
     # dates errors
-    except educational_exceptions.StartAndEndEducationalYearDifferent:
+    except exceptions.StartAndEndEducationalYearDifferent:
         raise api_errors.ApiErrors(
             errors={"global": ["Les dates de début et de fin ne sont pas sur la même année scolaire."]}, status_code=400
         )
-    except educational_exceptions.StartEducationalYearMissing:
+    except exceptions.StartEducationalYearMissing:
         raise api_errors.ApiErrors(
             errors={"startDatetime": ["Année scolaire manquante pour la date de début."]}, status_code=400
         )
-    except educational_exceptions.EndEducationalYearMissing:
+    except exceptions.EndEducationalYearMissing:
         raise api_errors.ApiErrors(
             errors={"endDatetime": ["Année scolaire manquante pour la date de fin."]}, status_code=400
         )
@@ -474,7 +471,7 @@ def patch_collective_offer_public(
             },
             status_code=400,
         )
-    except educational_exceptions.EndDatetimeBeforeStartDatetime:
+    except exceptions.EndDatetimeBeforeStartDatetime:
         raise api_errors.ApiErrors(
             errors={"global": ["La date de fin de l'évènement ne peut précéder la date de début."]},
             status_code=400,
@@ -495,7 +492,7 @@ def patch_collective_offer_public(
     db.session.expire(offer.collectiveStock)
 
     # re-fetch related data for the serializer
-    offer = educational_repository.get_collective_offer_by_id(offer.id)
+    offer = repository.get_collective_offer_by_id(offer.id)
 
     return offers_serialization.GetPublicCollectiveOfferResponseModel.from_orm(offer)
 
@@ -523,7 +520,7 @@ def archive_collective_offers(body: offers_serialization.ArchiveCollectiveOfferB
 
     Archive multiple collective offers.
     """
-    offers = educational_repository.list_public_collective_offers(required_id=current_api_key.providerId, ids=body.ids)
+    offers = repository.list_public_collective_offers(required_id=current_api_key.providerId, ids=body.ids)
     offers_ids = {offer.id for offer in offers}
 
     body_ids = set(body.ids)
@@ -534,7 +531,7 @@ def archive_collective_offers(body: offers_serialization.ArchiveCollectiveOfferB
 
     try:
         educational_api_offer.archive_collective_offers(offers=offers, date_archived=date_utils.get_naive_utc_now())
-    except educational_exceptions.CollectiveOfferForbiddenAction:
+    except exceptions.CollectiveOfferForbiddenAction:
         raise api_errors.ApiErrors({"global": ["Cette action n'est pas autorisée sur une des offres"]}, status_code=400)
 
 
