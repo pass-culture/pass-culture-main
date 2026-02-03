@@ -369,6 +369,10 @@ def update_venue_collective_data(
 
     modifications = {field: value for field, value in attrs.items() if venue.field_exists_and_has_changed(field, value)}
 
+    if "activity" in modifications:
+        validation.check_activity_according_to_open_to_public(modifications["activity"], venue.isOpenToPublic)
+        venue.activity = modifications["activity"]
+
     if collective_domains_in_attrs:
         venue.collectiveDomains = educational_repository.get_educational_domains_from_ids(collectiveDomains or [])
 
