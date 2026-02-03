@@ -32,7 +32,8 @@ NEXT_STATUS_BY_STATUS: typing.Final[
     models.CollectiveOfferDisplayedStatus.PUBLISHED: models.CollectiveOfferDisplayedStatus.PREBOOKED,
     models.CollectiveOfferDisplayedStatus.PREBOOKED: models.CollectiveOfferDisplayedStatus.BOOKED,
     models.CollectiveOfferDisplayedStatus.BOOKED: models.CollectiveOfferDisplayedStatus.ENDED,
-    models.CollectiveOfferDisplayedStatus.ENDED: models.CollectiveOfferDisplayedStatus.REIMBURSED,
+    models.CollectiveOfferDisplayedStatus.ENDED: models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT,
+    models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT: models.CollectiveOfferDisplayedStatus.REIMBURSED,
 }
 
 
@@ -66,6 +67,9 @@ def _get_status_date(
 
         case models.CollectiveOfferDisplayedStatus.ENDED:
             return stock.endDatetime
+
+        case models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT:
+            return None
 
         case models.CollectiveOfferDisplayedStatus.REIMBURSED:
             assert booking is not None
@@ -163,6 +167,13 @@ def _get_offer_past_history(
                 offer=offer,
                 from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
                 to_status=models.CollectiveOfferDisplayedStatus.BOOKED,
+            )
+
+        case models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT:
+            past_history = _get_past_history(
+                offer=offer,
+                from_status=models.CollectiveOfferDisplayedStatus.PUBLISHED,
+                to_status=models.CollectiveOfferDisplayedStatus.ENDED,
             )
 
         case models.CollectiveOfferDisplayedStatus.REIMBURSED:

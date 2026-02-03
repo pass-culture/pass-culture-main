@@ -106,6 +106,7 @@ STATUSES_NOT_ALLOWING_ARCHIVE_OFFER = (
     models.CollectiveOfferDisplayedStatus.PREBOOKED,
     models.CollectiveOfferDisplayedStatus.BOOKED,
     models.CollectiveOfferDisplayedStatus.ENDED,
+    models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT,
     models.CollectiveOfferDisplayedStatus.ARCHIVED,
 )
 

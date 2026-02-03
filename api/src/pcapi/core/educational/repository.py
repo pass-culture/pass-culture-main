@@ -757,6 +757,14 @@ def filter_collective_offers_by_statuses(
             )
         )
 
+    if models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT in statuses:
+        on_booking_status_filter.append(
+            sa.and_(
+                *approved_and_active_filters,
+                models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+            )
+        )
+
     if models.CollectiveOfferDisplayedStatus.REIMBURSED in statuses:
         on_booking_status_filter.append(
             sa.and_(

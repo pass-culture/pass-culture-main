@@ -78,6 +78,7 @@ class Returns200Test:
                     "PREBOOKED",
                     "BOOKED",
                     "ENDED",
+                    "PENDING_REIMBURSEMENT",
                     "REIMBURSED",
                 ],
                 "past": [{"datetime": format_into_utc_date(offer.lastValidationDate), "status": "PUBLISHED"}],

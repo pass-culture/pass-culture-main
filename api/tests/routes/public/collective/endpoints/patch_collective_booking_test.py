@@ -79,6 +79,7 @@ class CancelCollectiveBookingTest(PublicAPIVenueEndpointHelper):
         (
             educational_models.CollectiveOfferDisplayedStatus.ENDED,
             educational_models.CollectiveOfferDisplayedStatus.EXPIRED,
+            educational_models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT,
             educational_models.CollectiveOfferDisplayedStatus.REIMBURSED,
         ),
     )

@@ -32,6 +32,7 @@ class CollectiveBookingStatus(enum.Enum):
     CONFIRMED = "Confirmée"
     USED = "Validée"
     CANCELLED = "Annulée"
+    PENDING_REIMBURSEMENT = "En attente de remboursement"
     REIMBURSED = "Remboursée"
 
 

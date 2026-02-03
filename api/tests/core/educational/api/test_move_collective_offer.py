@@ -51,6 +51,10 @@ def create_offer_by_booking_state(venue, state):
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         collective_stock = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
         educational_factories.UsedCollectiveBookingFactory(collectiveStock=collective_stock)
+    if state == educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT:
+        collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
+        collective_stock = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
+        educational_factories.ReimbursedCollectiveBookingFactory(collectiveStock=collective_stock)
     if state == educational_models.CollectiveBookingStatus.REIMBURSED:
         collective_offer = educational_factories.CollectiveOfferFactory(venue=venue)
         collective_stock = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer)
@@ -335,6 +339,7 @@ class MoveCollectiveOfferSuccessTest:
             educational_models.CollectiveBookingStatus.PENDING,
             educational_models.CollectiveBookingStatus.CONFIRMED,
             educational_models.CollectiveBookingStatus.USED,
+            educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
             educational_models.CollectiveBookingStatus.REIMBURSED,
             educational_models.CollectiveBookingStatus.CANCELLED,
         ],

@@ -26,6 +26,7 @@ class HistoryTest:
                 OfferStatus.PREBOOKED,
                 OfferStatus.BOOKED,
                 OfferStatus.ENDED,
+                OfferStatus.PENDING_REIMBURSEMENT,
                 OfferStatus.REIMBURSED,
             ],
         )
@@ -40,6 +41,7 @@ class HistoryTest:
                 OfferStatus.PREBOOKED,
                 OfferStatus.BOOKED,
                 OfferStatus.ENDED,
+                OfferStatus.PENDING_REIMBURSEMENT,
                 OfferStatus.REIMBURSED,
             ],
         )
@@ -57,6 +59,7 @@ class HistoryTest:
             future=[
                 OfferStatus.BOOKED,
                 OfferStatus.ENDED,
+                OfferStatus.PENDING_REIMBURSEMENT,
                 OfferStatus.REIMBURSED,
             ],
         )
@@ -74,6 +77,7 @@ class HistoryTest:
             ],
             future=[
                 OfferStatus.ENDED,
+                OfferStatus.PENDING_REIMBURSEMENT,
                 OfferStatus.REIMBURSED,
             ],
         )
@@ -90,6 +94,22 @@ class HistoryTest:
                 HistoryStep(status=OfferStatus.BOOKED, datetime=booking.confirmationDate),
                 HistoryStep(status=OfferStatus.ENDED, datetime=offer.collectiveStock.endDatetime),
             ],
+            future=[OfferStatus.PENDING_REIMBURSEMENT, OfferStatus.REIMBURSED],
+        )
+
+    def test_pending_reimbursement(self):
+        offer = factories.EndedCollectiveOfferFactory()
+        [booking] = offer.collectiveStock.collectiveBookings
+        history = get_collective_offer_history(offer)
+
+        assert history == CollectiveOfferHistory(
+            past=[
+                HistoryStep(status=OfferStatus.PUBLISHED, datetime=offer.lastValidationDate),
+                HistoryStep(status=OfferStatus.PREBOOKED, datetime=booking.dateCreated),
+                HistoryStep(status=OfferStatus.BOOKED, datetime=booking.confirmationDate),
+                HistoryStep(status=OfferStatus.ENDED, datetime=offer.collectiveStock.endDatetime),
+                HistoryStep(status=OfferStatus.PENDING_REIMBURSEMENT, datetime=None),
+            ],
             future=[OfferStatus.REIMBURSED],
         )
 
@@ -104,6 +124,7 @@ class HistoryTest:
                 HistoryStep(status=OfferStatus.PREBOOKED, datetime=booking.dateCreated),
                 HistoryStep(status=OfferStatus.BOOKED, datetime=booking.confirmationDate),
                 HistoryStep(status=OfferStatus.ENDED, datetime=offer.collectiveStock.endDatetime),
+                HistoryStep(status=OfferStatus.PENDING_REIMBURSEMENT, datetime=None),
                 HistoryStep(status=OfferStatus.REIMBURSED, datetime=booking.reimbursementDate),
             ],
             future=[],
@@ -124,6 +145,7 @@ class HistoryExpiredTest:
                 OfferStatus.PREBOOKED,
                 OfferStatus.BOOKED,
                 OfferStatus.ENDED,
+                OfferStatus.PENDING_REIMBURSEMENT,
                 OfferStatus.REIMBURSED,
             ],
         )
@@ -142,6 +164,7 @@ class HistoryExpiredTest:
             future=[
                 OfferStatus.BOOKED,
                 OfferStatus.ENDED,
+                OfferStatus.PENDING_REIMBURSEMENT,
                 OfferStatus.REIMBURSED,
             ],
         )
@@ -247,6 +270,7 @@ class HistoryArchivedTest:
                 HistoryStep(status=OfferStatus.PREBOOKED, datetime=booking.dateCreated),
                 HistoryStep(status=OfferStatus.BOOKED, datetime=booking.confirmationDate),
                 HistoryStep(status=OfferStatus.ENDED, datetime=offer.collectiveStock.endDatetime),
+                HistoryStep(status=OfferStatus.PENDING_REIMBURSEMENT, datetime=None),
                 HistoryStep(status=OfferStatus.REIMBURSED, datetime=booking.reimbursementDate),
                 HistoryStep(status=OfferStatus.ARCHIVED, datetime=offer.dateArchived),
             ],

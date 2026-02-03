@@ -201,6 +201,8 @@ def reset_collective_booking(booking_id: int) -> None:
 
     if booking.status == models.CollectiveBookingStatus.USED:
         raise ForbiddenError({"code": "CANNOT_SET_BACK_USED_BOOKING_TO_PENDING"})
+    if booking.status == models.CollectiveBookingStatus.PENDING_REIMBURSEMENT:
+        raise ForbiddenError({"code": "CANNOT_SET_BACK_PENDING_REIMBURSEMENT_BOOKING_TO_PENDING"})
     if booking.status == models.CollectiveBookingStatus.REIMBURSED:
         raise ForbiddenError({"code": "CANNOT_SET_BACK_REIMBURSED_BOOKING_TO_PENDING"})
 

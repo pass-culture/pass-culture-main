@@ -892,6 +892,7 @@ class Returns403Test:
         "factory",
         [
             educational_factories.UsedCollectiveBookingFactory,
+            educational_factories.PendingReimbursementCollectiveBookingFactory,
             educational_factories.ReimbursedCollectiveBookingFactory,
         ],
     )

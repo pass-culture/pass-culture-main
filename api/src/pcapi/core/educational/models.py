@@ -115,6 +115,7 @@ class CollectiveBookingStatus(enum.Enum):
     CONFIRMED = "CONFIRMED"
     USED = "USED"
     CANCELLED = "CANCELLED"
+    PENDING_REIMBURSEMENT = "PENDING_REIMBURSEMENT"
     REIMBURSED = "REIMBURSED"
 
 
@@ -128,6 +129,7 @@ class CollectiveOfferDisplayedStatus(enum.Enum):
     EXPIRED = "EXPIRED"
     ENDED = "ENDED"
     CANCELLED = "CANCELLED"
+    PENDING_REIMBURSEMENT = "PENDING_REIMBURSEMENT"
     REIMBURSED = "REIMBURSED"
     ARCHIVED = "ARCHIVED"
     DRAFT = "DRAFT"
@@ -207,6 +209,10 @@ ALLOWED_ACTIONS_BY_DISPLAYED_STATUS: typing.Final[
         CollectiveOfferAllowedAction.CAN_EDIT_DISCOUNT,
         CollectiveOfferAllowedAction.CAN_DUPLICATE,
         CollectiveOfferAllowedAction.CAN_CANCEL,
+    ),
+    CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT: (
+        CollectiveOfferAllowedAction.CAN_DUPLICATE,
+        CollectiveOfferAllowedAction.CAN_ARCHIVE,
     ),
     CollectiveOfferDisplayedStatus.REIMBURSED: (
         CollectiveOfferAllowedAction.CAN_DUPLICATE,
@@ -815,6 +821,9 @@ class CollectiveOffer(
 
                     case CollectiveBookingStatus.USED:
                         status = CollectiveOfferDisplayedStatus.ENDED
+
+                    case CollectiveBookingStatus.PENDING_REIMBURSEMENT:
+                        status = CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT
 
                     case CollectiveBookingStatus.REIMBURSED:
                         status = CollectiveOfferDisplayedStatus.REIMBURSED
@@ -1663,7 +1672,10 @@ class CollectiveBooking(PcObject, models.Model):
     ) -> None:
         if self.status is CollectiveBookingStatus.CANCELLED:
             raise exceptions.CollectiveBookingAlreadyCancelled()
-        if self.status is CollectiveBookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
+        if (
+            self.status in (CollectiveBookingStatus.REIMBURSED, CollectiveBookingStatus.PENDING_REIMBURSEMENT)
+            and not cancel_even_if_reimbursed
+        ):
             raise exceptions.CollectiveBookingIsAlreadyUsed
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise exceptions.CollectiveBookingIsAlreadyUsed
@@ -1708,21 +1720,31 @@ class CollectiveBooking(PcObject, models.Model):
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
-        return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
+        return self.status in [
+            CollectiveBookingStatus.USED,
+            CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+            CollectiveBookingStatus.REIMBURSED,
+        ]
 
     @is_used_or_reimbursed.inplace.expression
     @classmethod
     def _is_used_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
-        return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
+        return cls.status.in_(
+            [
+                CollectiveBookingStatus.USED,
+                CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+                CollectiveBookingStatus.REIMBURSED,
+            ]
+        )
 
     @hybrid_property
-    def isReimbursed(self) -> bool:
-        return self.status == CollectiveBookingStatus.REIMBURSED
+    def is_pending_reimbursement_or_reimbursed(self) -> bool:
+        return self.status in [CollectiveBookingStatus.PENDING_REIMBURSEMENT, CollectiveBookingStatus.REIMBURSED]
 
-    @isReimbursed.inplace.expression
+    @is_pending_reimbursement_or_reimbursed.inplace.expression
     @classmethod
-    def _isReimbursedExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.status == CollectiveBookingStatus.REIMBURSED
+    def _is_pending_reimbursement_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
+        return cls.status.in_([CollectiveBookingStatus.PENDING_REIMBURSEMENT, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
     def isCancelled(self) -> bool:
@@ -1764,6 +1786,7 @@ class CollectiveBooking(PcObject, models.Model):
         return self.status not in (
             CollectiveBookingStatus.USED,
             CollectiveBookingStatus.REIMBURSED,
+            CollectiveBookingStatus.PENDING_REIMBURSEMENT,
             CollectiveBookingStatus.CANCELLED,
         )
 

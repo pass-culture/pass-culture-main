@@ -107,6 +107,7 @@ def get_collective_booking_status(
 ) -> models.CollectiveBookingStatus | schemas.CollectiveBookingRefused:
     if collective_booking.status in (
         models.CollectiveBookingStatus.USED,
+        models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
         models.CollectiveBookingStatus.REIMBURSED,
     ):
         return models.CollectiveBookingStatus.USED

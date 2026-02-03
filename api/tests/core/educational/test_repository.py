@@ -25,11 +25,6 @@ pytestmark = pytest.mark.usefixtures("db_session")
 class FilterCollectiveOfferByStatusesTest:
     ALL_STATUS = set(models.CollectiveOfferDisplayedStatus)
 
-    ALL_STATUS_WITHOUT_NEW = ALL_STATUS - {
-        models.CollectiveOfferDisplayedStatus.CANCELLED,
-        models.CollectiveOfferDisplayedStatus.REIMBURSED,
-    }
-
     # The HIDDEN filter is not relevant for a models.CollectiveOffer
     ALL_STATUS_WITHOUT_INACTIVE = ALL_STATUS - {models.CollectiveOfferDisplayedStatus.HIDDEN}
 
@@ -222,6 +217,7 @@ class FilterCollectiveOfferByStatusesTest:
         assert filtered_active_query.one() == offer
 
     def test_reimbursed_status(self):
+        create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT)
         create_collective_offer_by_status(models.CollectiveOfferDisplayedStatus.REIMBURSED)
 
         filtered_query = educational_repository.filter_collective_offers_by_statuses(

@@ -81,8 +81,15 @@ def collective_bookings_fixture() -> tuple:
         collectiveStock__collectiveOffer__formats=[EacFormat.ATELIER_DE_PRATIQUE],
         dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
     )
+    # 5
+    pending_reimbursement = educational_factories.PendingReimbursementCollectiveBookingFactory(
+        educationalInstitution=institution3,
+        collectiveStock__collectiveOffer__name="Offer n°5",
+        collectiveStock__collectiveOffer__formats=[EacFormat.ATELIER_DE_PRATIQUE],
+        dateCreated=date_utils.get_naive_utc_now() - datetime.timedelta(days=5),
+    )
 
-    return pending, confirmed, cancelled, used, reimbursed
+    return pending, confirmed, cancelled, used, reimbursed, pending_reimbursement
 
 
 class ListCollectiveBookingsTest(GetEndpointHelper):
@@ -304,14 +311,17 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             collectiveBooking=educational_factories.UsedCollectiveBookingFactory()
         )
         finance_factories.CollectivePricingFactory(
-            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(), cashflows=[cashflows[1]]
+            collectiveBooking=educational_factories.PendingReimbursementCollectiveBookingFactory(),
+            cashflows=[cashflows[1]],
         )
 
         reimbursed_pricing1 = finance_factories.CollectivePricingFactory(
-            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(), cashflows=[cashflows[0]]
+            collectiveBooking=educational_factories.PendingReimbursementCollectiveBookingFactory(),
+            cashflows=[cashflows[0]],
         )
         reimbursed_pricing3 = finance_factories.CollectivePricingFactory(
-            collectiveBooking=educational_factories.ReimbursedCollectiveBookingFactory(), cashflows=[cashflows[2]]
+            collectiveBooking=educational_factories.PendingReimbursementCollectiveBookingFactory(),
+            cashflows=[cashflows[2]],
         )
 
         searched_cashflow_batches = [cashflows[0].batch.id, cashflows[2].batch.id]
@@ -334,6 +344,7 @@ class ListCollectiveBookingsTest(GetEndpointHelper):
             ([educational_models.CollectiveBookingStatus.CANCELLED.name], (2,)),
             ([educational_models.CollectiveBookingStatus.USED.name], (3,)),
             ([educational_models.CollectiveBookingStatus.REIMBURSED.name], (4,)),
+            ([educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT.name], (5,)),
             (
                 [
                     educational_models.CollectiveBookingStatus.CONFIRMED.name,
@@ -614,6 +625,28 @@ class CancelCollectiveBookingTest(PostEndpointHelper):
 
         alerts = flash.get_htmx_flash_messages(authenticated_client)
         assert f"La réservation {confirmed.id} a été annulée" in alerts["success"]
+
+    def test_cant_cancel_pending_reimbursement_booking(self, authenticated_client, collective_bookings):
+        pending_reimbursement = collective_bookings[5]
+        old_status = pending_reimbursement.status
+        booking_id = pending_reimbursement.id
+
+        response = self.post_to_endpoint(
+            authenticated_client,
+            collective_booking_id=booking_id,
+            form={"reason": educational_models.CollectiveBookingCancellationReasons.BACKOFFICE.value},
+            headers={"hx-request": "true"},
+        )
+
+        assert response.status_code == 200
+        cells = html_parser.extract_plain_row(response.data, id=f"booking-row-{booking_id}")
+        assert cells[1] == str(booking_id)
+
+        booking = db.session.query(educational_models.CollectiveBooking).filter_by(id=booking_id).one()
+        assert booking.status == old_status
+
+        alerts = flash.get_htmx_flash_messages(authenticated_client)
+        assert "Cette réservation est en train d’être remboursée, il est impossible de l’invalider" in alerts["warning"]
 
     def test_cant_cancel_reimbursed_booking(self, authenticated_client, collective_bookings):
         reimbursed = collective_bookings[4]

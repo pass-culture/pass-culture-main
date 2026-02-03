@@ -169,6 +169,7 @@ class Returns200Test:
                     "PREBOOKED",
                     "BOOKED",
                     "ENDED",
+                    "PENDING_REIMBURSEMENT",
                     "REIMBURSED",
                 ],
                 "past": [

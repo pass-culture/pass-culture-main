@@ -2061,6 +2061,9 @@ class CloseOffererTest:
             collectiveStock__endDatetime=date_utils.get_naive_utc_now() + datetime.timedelta(days=6),
         )
         used_booking = educational_factories.UsedCollectiveBookingFactory(collectiveStock__collectiveOffer__venue=venue)
+        pending_reimbursement_booking = educational_factories.PendingReimbursementCollectiveBookingFactory(
+            collectiveStock__collectiveOffer__venue=venue
+        )
         reimbursed_booking = educational_factories.ReimbursedCollectiveBookingFactory(
             collectiveStock__collectiveOffer__venue=venue
         )
@@ -2091,6 +2094,7 @@ class CloseOffererTest:
             canceled_booking.cancellationReason
             == educational_models.CollectiveBookingCancellationReasons.REFUSED_BY_HEADMASTER
         )
+        assert pending_reimbursement_booking.status == educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
         assert reimbursed_booking.status == educational_models.CollectiveBookingStatus.REIMBURSED
         assert other_booking.status == educational_models.CollectiveBookingStatus.PENDING
 

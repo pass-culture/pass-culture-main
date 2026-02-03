@@ -54,7 +54,15 @@ class Return200Test:
         )
         collective_stock3 = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer3)
         educational_factories.CollectiveBookingFactory(
-            collectiveStock=collective_stock3, status=CollectiveBookingStatus.REIMBURSED
+            collectiveStock=collective_stock3, status=CollectiveBookingStatus.PENDING_REIMBURSEMENT
+        )
+
+        collective_offer4 = educational_factories.CollectiveOfferFactory(
+            venue__managingOfferer=user_offerer.offerer, validation=OfferValidationStatus.APPROVED
+        )
+        collective_stock4 = educational_factories.CollectiveStockFactory(collectiveOffer=collective_offer4)
+        educational_factories.CollectiveBookingFactory(
+            collectiveStock=collective_stock4, status=CollectiveBookingStatus.REIMBURSED
         )
 
         offers_factories.OfferFactory.create_batch(

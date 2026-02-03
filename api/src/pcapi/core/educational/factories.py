@@ -359,6 +359,10 @@ class UsedCollectiveBookingFactory(CollectiveBookingFactory):
     confirmationDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=6))
 
 
+class PendingReimbursementCollectiveBookingFactory(UsedCollectiveBookingFactory):
+    status = models.CollectiveBookingStatus.PENDING_REIMBURSEMENT
+
+
 class ReimbursedCollectiveBookingFactory(UsedCollectiveBookingFactory):
     status = models.CollectiveBookingStatus.REIMBURSED
     reimbursementDate = factory.LazyFunction(lambda: date_utils.get_naive_utc_now() - datetime.timedelta(days=1))
@@ -593,6 +597,14 @@ class EndedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         UsedCollectiveBookingFactory.create(collectiveStock=stock)
 
 
+class PendingReimbursementCollectiveOfferFactory(CollectiveOfferBaseFactory):
+    @factory.post_generation
+    def create_reimbursed_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
+        PendingReimbursementCollectiveBookingFactory.create(collectiveStock=stock)
+
+
 class ReimbursedCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_reimbursed_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
@@ -681,6 +693,8 @@ def create_collective_offer_by_status(
             return BookedCollectiveOfferFactory.create(**kwargs)
         case models.CollectiveOfferDisplayedStatus.ENDED:
             return EndedCollectiveOfferFactory.create(**kwargs)
+        case models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT:
+            return PendingReimbursementCollectiveOfferFactory.create(**kwargs)
         case models.CollectiveOfferDisplayedStatus.REIMBURSED:
             return ReimbursedCollectiveOfferFactory.create(**kwargs)
         case models.CollectiveOfferDisplayedStatus.DRAFT:
@@ -739,6 +753,8 @@ def create_collective_booking_by_status(
             return UsedCollectiveBookingFactory.create(**kwargs)
         case models.CollectiveBookingStatus.CANCELLED:
             return CancelledCollectiveBookingFactory.create(**kwargs)
+        case models.CollectiveBookingStatus.PENDING_REIMBURSEMENT:
+            return PendingReimbursementCollectiveBookingFactory.create(**kwargs)
         case models.CollectiveBookingStatus.REIMBURSED:
             return ReimbursedCollectiveBookingFactory.create(**kwargs)
 

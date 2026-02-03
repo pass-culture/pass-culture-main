@@ -210,6 +210,7 @@ COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS: typing.Dict[models.CollectiveOfferDisp
     models.CollectiveOfferDisplayedStatus.EXPIRED: "Expirée",
     models.CollectiveOfferDisplayedStatus.ENDED: "Terminée",
     models.CollectiveOfferDisplayedStatus.CANCELLED: "Annulée",
+    models.CollectiveOfferDisplayedStatus.PENDING_REIMBURSEMENT: "En cours de remboursement",  # FIXME (vroullier 02/2026) placeholder value
     models.CollectiveOfferDisplayedStatus.REIMBURSED: "Remboursée",
     models.CollectiveOfferDisplayedStatus.ARCHIVED: "Archivée",
     models.CollectiveOfferDisplayedStatus.DRAFT: "Brouillon",
