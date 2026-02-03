@@ -201,7 +201,7 @@ class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
             "Europe/Paris",
             (
                 datetime.datetime(2024, 12, 10, 23, 0, 0, tzinfo=pytz.utc),
-                datetime.datetime(2024, 12, 12, 22, 59, 59, tzinfo=pytz.utc),
+                datetime.datetime(2024, 12, 12, 22, 59, 59, 999999, tzinfo=pytz.utc),
             ),
         ),
         (  # dates not ordered
@@ -209,7 +209,7 @@ class FormatDatetimeFromUtcTimezoneToLocalTimezoneTest:
             "Europe/Paris",
             (
                 datetime.datetime(2024, 12, 3, 23, 0, 0, tzinfo=pytz.utc),
-                datetime.datetime(2024, 12, 25, 22, 59, 59, tzinfo=pytz.utc),
+                datetime.datetime(2024, 12, 25, 22, 59, 59, 999999, tzinfo=pytz.utc),
             ),
         ),
     ],
