@@ -19,6 +19,7 @@ import {
 } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
+import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDetails/components/DetailsForm/DetailsSubForm/DetailsSubForm'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
 
 interface OfferSummaryProps {
@@ -160,18 +161,8 @@ export const OfferSection = ({
     })
   }
 
-  const artisticInformationsFields = [
-    'speaker',
-    'author',
-    'visa',
-    'stageDirector',
-    'performer',
-    'ean',
-    'durationMinutes',
-  ]
-
-  const displayArtisticInformations = artisticInformationsFields.some((field) =>
-    conditionalFields.includes(field)
+  const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
+    (field) => conditionalFields.includes(field)
   )
 
   return (

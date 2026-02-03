@@ -21,7 +21,7 @@ const subcategories = [
     id: 'sub-A',
     categoryId: 'A',
     proLabel: 'Sous-catégorie A1',
-    conditionalFields: ['ean'],
+    conditionalFields: ['author', 'speaker', 'ean'],
   }),
   subcategoryFactory({
     id: 'sub-A2',
@@ -43,6 +43,8 @@ const SubcategoriesForm = ({
     },
   })
 
+  const conditionalFields = methods.watch('subcategoryConditionalFields')
+
   // biome-ignore lint/correctness/useExhaustiveDependencies: This is a test.
   useEffect(() => {
     onReady?.(methods)
@@ -55,6 +57,9 @@ const SubcategoriesForm = ({
         filteredCategories={categories}
         filteredSubcategories={subcategories}
       />
+      {conditionalFields.map((field) => (
+        <input key={field} {...methods.register(field)} />
+      ))}
     </FormProvider>
   )
 }
@@ -127,6 +132,8 @@ describe('<Subcategories />', () => {
     await waitFor(() => {
       expect(formActions.getValues('subcategoryId')).toBe('sub-A')
       expect(formActions.getValues('subcategoryConditionalFields')).toEqual([
+        'author',
+        'speaker',
         'ean',
       ])
     })
@@ -139,6 +146,43 @@ describe('<Subcategories />', () => {
     await waitFor(() => {
       expect(formActions.getValues('subcategoryId')).toBe('')
       expect(formActions.getValues('subcategoryConditionalFields')).toEqual([])
+    })
+  })
+
+  it('resets artistic fields when subcategory changes', async () => {
+    let formActions!: UseFormReturn<DetailsFormValues>
+    renderSubCategories({
+      onReady: (actions) => {
+        formActions = actions
+      },
+    })
+
+    const categorySelect = screen.getByLabelText(/Catégorie/)
+    await userEvent.selectOptions(categorySelect, 'A')
+
+    const subcategorySelect = await screen.findByLabelText(/Sous-catégorie/)
+    await userEvent.selectOptions(subcategorySelect, 'sub-A')
+
+    formActions.setValue('author', 'Test Author')
+    formActions.setValue('speaker', 'Test Speaker')
+    formActions.setValue('ean', 'Test EAN')
+
+    await waitFor(() => {
+      expect(formActions.getValues('author')).toBe('Test Author')
+      expect(formActions.getValues('speaker')).toBe('Test Speaker')
+      expect(formActions.getValues('ean')).toBe('Test EAN')
+    })
+
+    await userEvent.selectOptions(subcategorySelect, 'sub-A2')
+
+    await waitFor(() => {
+      expect(formActions.getValues('author')).toBe(
+        DEFAULT_DETAILS_FORM_VALUES.author
+      )
+      expect(formActions.getValues('speaker')).toBe(
+        DEFAULT_DETAILS_FORM_VALUES.speaker
+      )
+      expect(formActions.getValues('ean')).toBe(DEFAULT_DETAILS_FORM_VALUES.ean)
     })
   })
 })

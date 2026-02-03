@@ -23,6 +23,7 @@ import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
 import { Banner } from '@/design-system/Banner/Banner'
 import { ButtonVariant } from '@/design-system/Button/types'
 import phoneStrokeIcon from '@/icons/stroke-phone.svg'
+import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDetails/components/DetailsForm/DetailsSubForm/DetailsSubForm'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -130,19 +131,7 @@ export function IndividualOfferSummaryDetailsScreen({
     })
   }
 
-  const artisticInformationsFields = [
-    'speaker',
-    'author',
-    'visa',
-    'stageDirector',
-    'performer',
-    'ean',
-    'durationMinutes',
-    'showType',
-    'gtl_id',
-  ]
-
-  const displayArtisticInformations = artisticInformationsFields.some(
+  const displayArtisticInformations = ARTISTIC_INFORMATION_FIELDS.some(
     (field) => conditionalFields.includes(field) || subcategory?.isEvent
   )
 

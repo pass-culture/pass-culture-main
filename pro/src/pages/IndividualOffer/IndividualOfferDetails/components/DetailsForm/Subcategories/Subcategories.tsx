@@ -17,6 +17,7 @@ import {
 } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
 import { Select } from '@/ui-kit/form/Select/Select'
 
+import { ARTISTIC_INFORMATION_FIELDS } from '../DetailsSubForm/DetailsSubForm'
 import styles from './Subcategories.module.scss'
 
 type SubcategoriesProps = {
@@ -61,9 +62,13 @@ export function Subcategories({
     const newConditionalFields =
       completeSubcategoryConditionalFields(nextSubcategory)
 
+    ARTISTIC_INFORMATION_FIELDS.forEach((field) => {
+      resetField(field)
+    })
     setValue('subcategoryConditionalFields', newConditionalFields, {
       shouldValidate: true,
     })
+
     setIsEvent(nextSubcategory.isEvent)
   }
 

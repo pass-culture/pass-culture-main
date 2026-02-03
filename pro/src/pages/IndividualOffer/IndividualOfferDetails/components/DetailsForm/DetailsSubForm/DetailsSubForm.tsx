@@ -29,7 +29,9 @@ export const ARTISTIC_INFORMATION_FIELDS: (keyof DetailsFormValues)[] = [
   'ean',
   'durationMinutes',
   'showType',
+  'showSubType',
   'gtl_id',
+  'artistOfferLinks',
 ]
 
 export type DetailsSubFormProps = {
