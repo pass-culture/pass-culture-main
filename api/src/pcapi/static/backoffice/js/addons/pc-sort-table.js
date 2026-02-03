@@ -62,13 +62,16 @@ class PcSortTable extends PcAddOn {
     const rawLines = $container.getElementsByTagName('tr')
     const lines = []
     const emptyLines = []
+    const collapsables = []
     let $header = null
     for (let i = 0; i < rawLines.length; i++) {
       if($container !== $table || !$line.getElementsByTagName('th')){
         const $line = rawLines[i]
-        if(!this.#getValue($line, index)){
+        if($line?.classList?.contains('accordion-collapse')){
+          collapsables[$line.previousElementSibling.id] = $line
+        } else if(!this.#getValue($line, index)){
           emptyLines.push($line)
-        } else{
+        } else {
           lines.push($line)
         }
       } else {
@@ -79,12 +82,19 @@ class PcSortTable extends PcAddOn {
     orderedLines.forEach(($line) => {
       if(order === 'down'){
         $container.append($line)
-      }else{
+      } else {
         $container.prepend($line)
       }
-    })
+      if(!!collapsables[$line.id]) {
+        $line.after(collapsables[$line.id])
+      }
+    }
+    )
     emptyLines.forEach(($line) => {
       $container.append($line)
+      if(!!collapsables[$line.id]) {
+        $line.after(collapsables[$line.id])
+      }
     })
     if(!!$header){
       $container.prepend($header)

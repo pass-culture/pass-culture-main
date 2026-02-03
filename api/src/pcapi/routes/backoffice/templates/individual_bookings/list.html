@@ -3,6 +3,7 @@
 {% import "components/clipboard.html" as clipboard %}
 {% from "components/dynamic/modal.html" import build_dynamic_modal with context %}
 {% from "components/bookings/modal.html" import booking_modal with context %}
+{% from "components/table.html" import sortable_column %}
 {% set rows_count = rows|length %}
 {% set table_id = "booking-table" %}
 {% block title %}Réservations individuelles{% endblock %}
@@ -45,8 +46,12 @@
   <th>Crédit actif</th>
   <th>Auteur de la validation</th>
   <th>Évènement comptable</th>
-  <th>Date de réservation</th>
-  <th>Date de l'évènement</th>
+  {% call sortable_column(True, comparator="float") %}
+    Date de réservation
+  {% endcall %}
+  {% call sortable_column(True, comparator="float") %}
+    Date de l'évènement
+  {% endcall %}
   <th>Entité juridique</th>
   <th>Partenaire culturel</th>
 {% endblock table_header %}

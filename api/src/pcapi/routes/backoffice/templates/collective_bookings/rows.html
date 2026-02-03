@@ -71,8 +71,10 @@
    data-bs-title="Visualiser l'incident"></i></a>
       {% endif %}
     </td>
-    <td>{{ collective_booking.dateCreated | format_date_time }}</td>
-    <td>
+    <td data-pc-sort-table-value="{{ collective_booking.dateCreated.timestamp() }}">
+      {{ collective_booking.dateCreated | format_date_time }}
+    </td>
+    <td data-pc-sort-table-value="{% if collective_booking.collectiveStock %}{{ collective_booking.collectiveStock.startDatetime.timestamp() }}{% endif %}">
       {% if collective_booking.collectiveStock %}
         {% set start_date = collective_booking.collectiveStock.startDatetime | format_date_time(collective_booking.collectiveStock.collectiveOffer.address) %}
         {% set end_date = collective_booking.collectiveStock.endDatetime | format_date_time(collective_booking.collectiveStock.collectiveOffer.address) %}

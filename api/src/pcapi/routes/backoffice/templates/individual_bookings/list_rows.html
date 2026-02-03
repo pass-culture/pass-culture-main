@@ -69,8 +69,12 @@
    data-bs-title="Visualiser l'incident"></i></a>
       {% endif %}
     </td>
-    <td>{{ booking.dateCreated | format_date_time(booking.stock.offer.address) }}</td>
-    <td>{{ booking.stock.beginningDatetime | format_date_time(booking.stock.offer.address) }}</td>
+    <td data-pc-sort-table-value="{{ booking.dateCreated.timestamp() }}">
+      {{ booking.dateCreated | format_date_time(booking.stock.offer.address) }}
+    </td>
+    <td data-pc-sort-table-value="{% if booking.stock.beginningDatetime %}{{ booking.stock.beginningDatetime.timestamp() }}{% endif %}">
+      {{ booking.stock.beginningDatetime | format_date_time(booking.stock.offer.address) }}
+    </td>
     <td>{{ links.build_offerer_name_to_details_link(booking.offerer) }}</td>
     <td>{{ links.build_venue_name_to_details_link(booking.venue) }}</td>
   </tr>
