@@ -39,6 +39,7 @@ def deposit_exists_for_beneficiary_and_type(beneficiary: users_models.User, depo
 def has_reimbursement(booking: bookings_models.Booking | educational_models.CollectiveBooking) -> bool:
     """Return whether the requested booking has been reimbursed."""
     if booking.status in (
+        bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
         bookings_models.BookingStatus.REIMBURSED,
         educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
         educational_models.CollectiveBookingStatus.REIMBURSED,

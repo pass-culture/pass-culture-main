@@ -919,6 +919,7 @@ def _extract_gdpr_booking_data(user: models.User) -> list[schemas.GdprBookingSer
         bookings_models.BookingStatus.CONFIRMED.name: "Réservé",
         bookings_models.BookingStatus.USED.name: "Utilisé",
         bookings_models.BookingStatus.CANCELLED.name: "Annulé",
+        bookings_models.BookingStatus.PENDING_REIMBURSEMENT.name: "Utilisé",
         bookings_models.BookingStatus.REIMBURSED.name: "Utilisé",
     }
     bookings_data = (

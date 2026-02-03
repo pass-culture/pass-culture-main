@@ -38,6 +38,7 @@ BOOKING_STATUS_LABELS = {
     models.BookingStatus.CONFIRMED: "réservé",
     models.BookingStatus.CANCELLED: "annulé",
     models.BookingStatus.USED: "validé",
+    models.BookingStatus.PENDING_REIMBURSEMENT: "en attente de remboursement",
     models.BookingStatus.REIMBURSED: "remboursé",
     "confirmed": "confirmé",
 }
@@ -1116,6 +1117,7 @@ def get_booking_token(
         not event_beginning_datetime
         and booking_status
         not in [
+            models.BookingStatus.PENDING_REIMBURSEMENT,
             models.BookingStatus.REIMBURSED,
             models.BookingStatus.CANCELLED,
             models.BookingStatus.USED,

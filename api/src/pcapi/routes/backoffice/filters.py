@@ -613,7 +613,10 @@ def format_booking_status_long(booking: bookings_models.Booking | educational_mo
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
         return format_badge("AC remboursé", "success")
-    if booking.status in (educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,):
+    if booking.status in (
+        bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
+        educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+    ):
         return format_badge("AC en cours de remboursement", "success")
     if booking.status in (
         bookings_models.BookingStatus.CANCELLED,
@@ -656,7 +659,10 @@ def format_booking_status(
         educational_models.CollectiveBookingStatus.REIMBURSED,
     ):
         return format_badge("Remboursée", "success") if with_badge else "Remboursée"
-    if booking.status in (educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,):
+    if booking.status in (
+        bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
+        educational_models.CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+    ):
         return (
             format_badge("Facturée", "success") if with_badge else "Facturée"
         )  # FIXME (vroullier 02/2026) placeholder name

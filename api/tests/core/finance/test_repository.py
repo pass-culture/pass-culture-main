@@ -159,6 +159,9 @@ class HasReimbursementTest:
         cancelled = bookings_factories.BookingFactory()
         assert not repository.has_reimbursement(cancelled)
 
+        pending_reimbursement = bookings_factories.PendingReimbursementBookingFactory()
+        assert repository.has_reimbursement(pending_reimbursement)
+
         reimbursed = bookings_factories.ReimbursedBookingFactory()
         assert repository.has_reimbursement(reimbursed)
 

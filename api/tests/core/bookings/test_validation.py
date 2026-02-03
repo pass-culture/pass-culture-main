@@ -364,6 +364,11 @@ class CheckIsUsableTest:
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
             validation.check_is_usable(booking)
 
+    def should_raises_forbidden_error_if_pending_reimbursement(self):
+        booking = factories.PendingReimbursementBookingFactory()
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
+            validation.check_is_usable(booking)
+
     def should_raises_forbidden_error_if_reimbursed(self):
         booking = factories.ReimbursedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyRefunded):
@@ -481,6 +486,11 @@ class CheckCanBeMarkAsUnusedTest:
     def test_should_raise_resource_gone_error_if_cancelled(self):
         booking = factories.CancelledBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyCancelled):
+            validation.check_can_be_mark_as_unused(booking)
+
+    def test_should_raise_resource_gone_error_if_pending_reimbursement(self):
+        booking = factories.PendingReimbursementBookingFactory()
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
             validation.check_can_be_mark_as_unused(booking)
 
     def test_should_raise_resource_gone_error_if_reimbursed(self):

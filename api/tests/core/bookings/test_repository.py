@@ -900,6 +900,9 @@ class GetOfferBookingsByStatusCSVTest:
         beneficiary_4 = users_factories.BeneficiaryGrant18Factory(
             email="beneficiary4@example.com", firstName="severus", lastName="Snape", postalCode="93000"
         )
+        beneficiary_5 = users_factories.BeneficiaryGrant18Factory(
+            email="beneficiary4@example.com", firstName="Albus", lastName="Dumbledore", postalCode="93000"
+        )
         pro = users_factories.ProFactory()
         offerer = offerers_factories.OffererFactory()
         offerers_factories.UserOffererFactory(user=pro, offerer=offerer)
@@ -914,8 +917,11 @@ class GetOfferBookingsByStatusCSVTest:
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=date_utils.get_naive_utc_now() - timedelta(days=1), user=beneficiary_2
         )
-        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_3, stock=stock)
-        new_booking = bookings_factories.BookingFactory(user=beneficiary_4, stock=stock)
+        pending_reimbursement_booking = bookings_factories.PendingReimbursementBookingFactory(
+            user=beneficiary_3, stock=stock
+        )
+        reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary_4, stock=stock)
+        new_booking = bookings_factories.BookingFactory(user=beneficiary_5, stock=stock)
 
         bookings_csv = booking_repository.export_bookings_by_offer_id(
             offer_id=offer.id,
@@ -933,9 +939,18 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[1])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
         self._validate_csv_row(
-            dict(zip(headers, data[2])), beneficiary_3, offer, venue, reimbursed_booking, "remboursé", "Non"
+            dict(zip(headers, data[2])),
+            beneficiary_3,
+            offer,
+            venue,
+            pending_reimbursement_booking,
+            "en attente de remboursement",
+            "Non",
         )
-        self._validate_csv_row(dict(zip(headers, data[3])), beneficiary_4, offer, venue, new_booking, "réservé", "Non")
+        self._validate_csv_row(
+            dict(zip(headers, data[3])), beneficiary_4, offer, venue, reimbursed_booking, "remboursé", "Non"
+        )
+        self._validate_csv_row(dict(zip(headers, data[4])), beneficiary_5, offer, venue, new_booking, "réservé", "Non")
 
     def should_return_all_bookings_for_offer_with_duo(self):
         beneficiary = users_factories.BeneficiaryGrant18Factory(
@@ -957,6 +972,9 @@ class GetOfferBookingsByStatusCSVTest:
         validated_booking = bookings_factories.UsedBookingFactory(stock=stock, user=beneficiary, quantity=2)
         validated_booking_2 = bookings_factories.BookingFactory(
             stock=stock, cancellation_limit_date=date_utils.get_naive_utc_now() - timedelta(days=1), user=beneficiary_2
+        )
+        pending_reimbursement_booking = bookings_factories.PendingReimbursementBookingFactory(
+            user=beneficiary, stock=stock
         )
         reimbursed_booking = bookings_factories.ReimbursedBookingFactory(user=beneficiary, stock=stock)
         new_booking = bookings_factories.BookingFactory(user=beneficiary_2, stock=stock, quantity=2)
@@ -980,13 +998,22 @@ class GetOfferBookingsByStatusCSVTest:
             dict(zip(headers, data[2])), beneficiary_2, offer, venue, validated_booking_2, "confirmé", "Non"
         )
         self._validate_csv_row(
-            dict(zip(headers, data[3])), beneficiary, offer, venue, reimbursed_booking, "remboursé", "Non"
+            dict(zip(headers, data[3])),
+            beneficiary,
+            offer,
+            venue,
+            pending_reimbursement_booking,
+            "en attente de remboursement",
+            "Non",
         )
         self._validate_csv_row(
-            dict(zip(headers, data[4])), beneficiary_2, offer, venue, new_booking, "réservé", "DUO 1"
+            dict(zip(headers, data[4])), beneficiary, offer, venue, reimbursed_booking, "remboursé", "Non"
         )
         self._validate_csv_row(
-            dict(zip(headers, data[5])), beneficiary_2, offer, venue, new_booking, "réservé", "DUO 2"
+            dict(zip(headers, data[5])), beneficiary_2, offer, venue, new_booking, "réservé", "DUO 1"
+        )
+        self._validate_csv_row(
+            dict(zip(headers, data[6])), beneficiary_2, offer, venue, new_booking, "réservé", "DUO 2"
         )
 
 

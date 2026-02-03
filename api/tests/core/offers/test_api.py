@@ -4913,6 +4913,11 @@ class MoveOfferTest:
             offer = factories.OfferFactory(venue=venue)
             stock = factories.StockFactory(offer=offer, quantity=2)
             bookings_factories.CancelledBookingFactory(stock=stock)
+        if state == bookings_models.BookingStatus.PENDING_REIMBURSEMENT:
+            offer = factories.OfferFactory(venue=venue)
+            stock = factories.StockFactory(offer=offer, quantity=2)
+            bookings_factories.PendingReimbursementBookingFactory(stock=stock)
+            # TODO(xordoquy): might add finance stuffs too
         if state == bookings_models.BookingStatus.REIMBURSED:
             offer = factories.OfferFactory(venue=venue)
             stock = factories.StockFactory(offer=offer, quantity=2)
@@ -4937,6 +4942,7 @@ class MoveOfferTest:
             bookings_models.BookingStatus.CONFIRMED,
             bookings_models.BookingStatus.CANCELLED,
             bookings_models.BookingStatus.USED,
+            bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
             bookings_models.BookingStatus.REIMBURSED,
         ],
     )
@@ -4954,6 +4960,7 @@ class MoveOfferTest:
             bookings_models.BookingStatus.CONFIRMED,
             bookings_models.BookingStatus.CANCELLED,
             bookings_models.BookingStatus.USED,
+            bookings_models.BookingStatus.PENDING_REIMBURSEMENT,
             bookings_models.BookingStatus.REIMBURSED,
         ):
             assert db.session.query(bookings_models.Booking).count() == 1

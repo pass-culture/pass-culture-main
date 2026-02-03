@@ -79,6 +79,7 @@ class BookingStatus(enum.Enum):
     CONFIRMED = "CONFIRMED"
     USED = "USED"
     CANCELLED = "CANCELLED"
+    PENDING_REIMBURSEMENT = "PENDING_REIMBURSEMENT"
     REIMBURSED = "REIMBURSED"
 
 
@@ -273,7 +274,9 @@ class Booking(PcObject, Model):
     ) -> None:
         if self.status is BookingStatus.CANCELLED:
             raise exceptions.BookingIsAlreadyCancelled()
-        if self.status is BookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
+        if (
+            self.status is BookingStatus.REIMBURSED or self.status is BookingStatus.PENDING_REIMBURSEMENT
+        ) and not cancel_even_if_reimbursed:
             raise exceptions.BookingIsAlreadyUsed()
         if self.status is BookingStatus.USED and not cancel_even_if_used:
             raise exceptions.BookingIsAlreadyUsed()
@@ -339,21 +342,21 @@ class Booking(PcObject, Model):
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
-        return self.status in [BookingStatus.USED, BookingStatus.REIMBURSED]
+        return self.status in [BookingStatus.USED, BookingStatus.PENDING_REIMBURSEMENT, BookingStatus.REIMBURSED]
 
     @is_used_or_reimbursed.inplace.expression
     @classmethod
     def _is_used_or_reimbursed_expression(cls) -> ColumnElement[bool]:
-        return cls.status.in_([BookingStatus.USED, BookingStatus.REIMBURSED])
+        return cls.status.in_([BookingStatus.USED, BookingStatus.PENDING_REIMBURSEMENT, BookingStatus.REIMBURSED])
 
     @hybrid_property
-    def isReimbursed(self) -> bool:
-        return self.status == BookingStatus.REIMBURSED
+    def is_pending_reimbursement_or_reimbursed(self) -> bool:
+        return self.status in [BookingStatus.PENDING_REIMBURSEMENT, BookingStatus.REIMBURSED]
 
-    @isReimbursed.inplace.expression
+    @is_pending_reimbursement_or_reimbursed.inplace.expression
     @classmethod
-    def _isReimbursedExpression(cls) -> ColumnElement[bool]:
-        return cls.status == BookingStatus.REIMBURSED
+    def _is_pending_reimbursement_or_reimbursed_expression(cls) -> ColumnElement[bool]:
+        return cls.status.in_([BookingStatus.PENDING_REIMBURSEMENT, BookingStatus.REIMBURSED])
 
     @hybrid_property
     def isCancelled(self) -> bool:
@@ -546,7 +549,7 @@ trig_check_booking_deposit_ddl = sa.DDL(f"""
         WHERE
             booking."depositId" = deposit_id
             AND NOT booking.status = '{BookingStatus.CANCELLED.value}'
-            AND (NOT only_used_bookings OR booking.status IN ('{BookingStatus.USED.value}', '{BookingStatus.REIMBURSED.value}'));
+            AND (NOT only_used_bookings OR booking.status IN ('{BookingStatus.USED.value}','{BookingStatus.PENDING_REIMBURSEMENT.value}', '{BookingStatus.REIMBURSED.value}'));
         RETURN
             deposit_amount - sum_bookings;
         END;
@@ -617,8 +620,8 @@ trig_check_booking_deposit_ddl = sa.DDL(f"""
     OR UPDATE OF quantity, amount, status, "userId"
     ON booking
     FOR EACH ROW
-    -- Happens only for USED to REIMBURSED transition
-    WHEN (NEW.status <> '{BookingStatus.REIMBURSED.value}')
+    -- Happens only for USED to PENDING_REIMBURSEMENT and PENDING_REIMBURSEMENT to REIMBURSED transitions
+    WHEN (NEW.status <> '{BookingStatus.PENDING_REIMBURSEMENT.value}' OR NEW.status <> '{BookingStatus.REIMBURSED.value}')
     EXECUTE PROCEDURE check_booking()
     """)
 sa_event.listen(Booking.__table__, "after_create", trig_check_booking_deposit_ddl)

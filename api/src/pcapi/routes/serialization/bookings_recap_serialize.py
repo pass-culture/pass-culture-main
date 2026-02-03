@@ -23,6 +23,7 @@ class BookingRecapStatus(Enum):
     validated = "validated"
     cancelled = "cancelled"
     reimbursed = "reimbursed"
+    pending_reimbursement = "pending_reimbursement"
     confirmed = "confirmed"
     pending = "pending"
 
@@ -217,6 +218,8 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
 
 
 def _build_booking_status(booking: Booking) -> BookingRecapStatus:
+    if booking.status == BookingStatus.PENDING_REIMBURSEMENT:
+        return BookingRecapStatus.pending_reimbursement
     if booking.status == BookingStatus.REIMBURSED:
         return BookingRecapStatus.reimbursed
     if booking.status == BookingStatus.CANCELLED:

@@ -119,7 +119,7 @@ def check_beneficiary_can_cancel_booking(user: User, booking: Booking) -> None:
 def check_booking_can_be_cancelled(booking: Booking) -> None:
     if booking.status == BookingStatus.CANCELLED:
         raise exceptions.BookingIsAlreadyCancelled()
-    if booking.status == BookingStatus.REIMBURSED:
+    if booking.status in (BookingStatus.PENDING_REIMBURSEMENT, BookingStatus.REIMBURSED):
         raise exceptions.BookingIsAlreadyRefunded()
     if booking.status == BookingStatus.USED:
         raise exceptions.BookingIsAlreadyUsed()
