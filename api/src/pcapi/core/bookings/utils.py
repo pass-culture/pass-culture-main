@@ -1,14 +1,10 @@
 import hmac
 import typing
-from datetime import date
 from datetime import datetime
-from datetime import time
 from datetime import timedelta
 from decimal import Decimal
 from hashlib import sha256
-from zoneinfo import ZoneInfo
 
-import pytz
 from dateutil import tz
 
 import pcapi.utils.date as date_utils
@@ -74,22 +70,6 @@ def get_cooldown_datetime_by_subcategories(sub_category_id: str) -> datetime:
             else 0
         )
     )
-
-
-def convert_date_period_to_utc_datetime_period(
-    date_period: tuple[date, date],
-    timezone: str,
-) -> tuple[datetime, datetime]:
-    start_date, end_date = date_period
-
-    # if dates aren't chronologically ordered
-    if date_period[0] > date_period[1]:
-        end_date, start_date = date_period
-
-    start_datetime = datetime.combine(start_date, time(hour=0, minute=0, second=0), tzinfo=ZoneInfo(timezone))
-    end_datetime = datetime.combine(end_date, time(hour=23, minute=59, second=59), tzinfo=ZoneInfo(timezone))
-
-    return (start_datetime.astimezone(pytz.utc), end_datetime.astimezone(pytz.utc))
 
 
 DEFAULT_PACIFIC_FRANC_TO_EURO_RATE = 0.00838

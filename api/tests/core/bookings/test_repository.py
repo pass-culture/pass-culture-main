@@ -1237,22 +1237,3 @@ class GetTomorrowEventOfferTest:
             bookings = booking_repository.find_individual_bookings_event_happening_tomorrow_query()
 
         assert len(bookings) == 1
-
-
-def test_sould_return_user_offerer_timezones():
-    pro_user = users_factories.ProFactory()
-    user_offerer = offerers_factories.UserOffererFactory(user=pro_user)
-    offerer = user_offerer.offerer
-
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Europe/Paris")
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Europe/Paris")
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="America/Guadeloupe")
-    offerers_factories.OffererAddressFactory(offerer=offerer, address__timezone="Indian/Mayotte")
-
-    # Venue with different timezone
-    offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__timezone="America/Cayenne")
-
-    timezones = booking_repository.get_pro_user_timezones(pro_user)
-
-    assert len(timezones) == 4
-    assert timezones == {"Europe/Paris", "America/Guadeloupe", "Indian/Mayotte", "America/Cayenne"}
