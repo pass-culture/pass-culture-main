@@ -250,7 +250,9 @@ class Product(PcObject, Model, HasThumbMixin):
         "Artist", back_populates="products", secondary="artist_product_link"
     )
 
-    artistLinks: sa_orm.Mapped[list["ArtistProductLink"]] = sa_orm.relationship("ArtistProductLink")
+    artistLinks: sa_orm.Mapped[list["ArtistProductLink"]] = sa_orm.relationship(
+        "ArtistProductLink", back_populates="product", viewonly=True
+    )
     offers: sa_orm.Mapped[list["Offer"]] = sa_orm.relationship(
         "Offer", back_populates="product", order_by="Offer.id", foreign_keys="Offer.productId"
     )
