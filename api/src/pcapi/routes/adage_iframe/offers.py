@@ -101,7 +101,10 @@ def get_collective_offer_templates(
 @blueprint.adage_iframe.route("/collective/offers-template/<int:offer_id>/request", methods=["POST"])
 @atomic()
 @spectree_serialize(
-    response_model=serializers.CollectiveRequestResponseModel, api=blueprint.api, on_error_statuses=[404]
+    response_model=serializers.CollectiveRequestResponseModel,
+    api=blueprint.api,
+    on_success_status=201,
+    on_error_statuses=[404],
 )
 @adage_jwt_required
 def create_collective_request(
@@ -140,7 +143,7 @@ def create_collective_request(
         user_role=AdageFrontRoles.REDACTOR if institution else AdageFrontRoles.READONLY,
     )
 
-    return serializers.CollectiveRequestResponseModel.from_orm(collective_request)
+    return serializers.CollectiveRequestResponseModel(id=collective_request.id)
 
 
 def _get_redactor(authenticated_information: AuthenticatedInformation) -> EducationalRedactor | None:

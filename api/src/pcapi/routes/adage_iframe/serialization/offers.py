@@ -12,6 +12,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.routes.serialization.national_programs import NationalProgramModel
 from pcapi.routes.shared import validation
@@ -238,19 +239,8 @@ class ListCollectiveOfferTemplateResponseModel(BaseModel):
         json_encoders = {datetime: format_into_utc_date}
 
 
-class CollectiveRequestResponseModel(BaseModel):
+class CollectiveRequestResponseModel(HttpBodyModel):
     id: int
-    email: str
-    phone_number: str | None
-    requested_date: date | None
-    total_students: int | None
-    total_teachers: int | None
-    comment: str
-
-    class Config:
-        alias_generator = to_camel
-        orm_mode = True
-        json_encoders = {datetime: format_into_utc_date}
 
 
 class PostCollectiveRequestBodyModel(BaseModel):

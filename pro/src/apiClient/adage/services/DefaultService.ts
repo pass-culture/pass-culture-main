@@ -168,7 +168,7 @@ export class DefaultService {
    * create_collective_request <POST>
    * @param offerId
    * @param requestBody
-   * @returns CollectiveRequestResponseModel OK
+   * @returns CollectiveRequestResponseModel Created
    * @throws ApiError
    */
   public createCollectiveRequest(

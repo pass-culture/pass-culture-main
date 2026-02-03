@@ -36,13 +36,15 @@ class CreateCollectiveRequestTest:
         with caplog.at_level(logging.INFO):
             response = client.post(url_for(self.endpoint, offer_id=offer.id), json=body)
 
-        assert response.status_code == 200
-        assert response.json["email"] == educational_redactor.email
-        assert response.json["phoneNumber"] == "+33139980101"
-        assert response.json["requestedDate"] is None
-        assert response.json["totalStudents"] == 30
-        assert response.json["totalTeachers"] == 2
-        assert response.json["comment"] == "Un commentaire sublime que nous avons là"
+        assert response.status_code == 201
+        request_id = response.json["id"]
+
+        collective_request = db.session.query(educational_models.CollectiveOfferRequest).filter_by(id=request_id).one()
+        assert collective_request.phoneNumber == "+33139980101"
+        assert collective_request.requestedDate is None
+        assert collective_request.totalStudents == 30
+        assert collective_request.totalTeachers == 2
+        assert collective_request.comment == "Un commentaire sublime que nous avons là"
 
         record = next(log for log in caplog.records if log.message == "CreateCollectiveOfferRequest")
         assert record.extra == {
@@ -102,7 +104,7 @@ class CreateCollectiveRequestTest:
           2. everything works as expected.
         """
         educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_redactor = educational_factories.EducationalRedactorFactory.build()
+        educational_redactor = educational_factories.EducationalRedactorFactory()
         offer = educational_factories.CollectiveOfferTemplateFactory()
 
         client = client.with_adage_token(
@@ -114,10 +116,12 @@ class CreateCollectiveRequestTest:
         )
 
         response = client.post(url_for(self.endpoint, offer_id=offer.id), json=base_body())
-        assert response.status_code == 200
+        assert response.status_code == 201
 
         # quick checks: response and adage request
-        assert response.json["email"] == educational_redactor.email
+        request_id = response.json["id"]
+        collective_request = db.session.query(educational_models.CollectiveOfferRequest).filter_by(id=request_id).one()
+        assert collective_request.educationalRedactorId == educational_redactor.id
         assert len(adage_api_testing.adage_requests) == 1
 
         # check: a new redactor has been saved into database
