@@ -3,11 +3,10 @@ import logging
 import pytest
 from flask import url_for
 
-import pcapi.core.educational.testing as adage_api_testing
-import pcapi.core.educational.utils as educational_utils
-from pcapi.core.educational import factories as educational_factories
-from pcapi.core.educational import models as educational_models
-from pcapi.core.educational.models import AdageFrontRoles
+from pcapi.core.educational import factories
+from pcapi.core.educational import models
+from pcapi.core.educational import testing
+from pcapi.core.educational import utils
 from pcapi.models import db
 
 
@@ -27,9 +26,9 @@ class CreateCollectiveRequestTest:
     endpoint = "adage_iframe.create_collective_request"
 
     def test_post_collective_request(self, client, caplog):
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_redactor = educational_factories.EducationalRedactorFactory()
-        offer = educational_factories.CollectiveOfferTemplateFactory()
+        educational_institution = factories.EducationalInstitutionFactory()
+        educational_redactor = factories.EducationalRedactorFactory()
+        offer = factories.CollectiveOfferTemplateFactory()
 
         body = base_body()
         client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
@@ -39,7 +38,7 @@ class CreateCollectiveRequestTest:
         assert response.status_code == 201
         request_id = response.json["id"]
 
-        collective_request = db.session.query(educational_models.CollectiveOfferRequest).filter_by(id=request_id).one()
+        collective_request = db.session.query(models.CollectiveOfferRequest).filter_by(id=request_id).one()
         assert collective_request.phoneNumber == "+33139980101"
         assert collective_request.requestedDate is None
         assert collective_request.totalStudents == 30
@@ -55,13 +54,13 @@ class CreateCollectiveRequestTest:
             "total_teachers": body["totalTeachers"],
             "comment": body["comment"],
             "analyticsSource": "adage",
-            "userId": educational_utils.get_hashed_user_id(educational_redactor.email),
+            "userId": utils.get_hashed_user_id(educational_redactor.email),
             "uai": educational_institution.institutionId,
-            "user_role": AdageFrontRoles.REDACTOR,
+            "user_role": models.AdageFrontRoles.REDACTOR,
         }
 
-        assert len(adage_api_testing.adage_requests) == 1
-        request = adage_api_testing.adage_requests[0]["sent_data"]
+        assert len(testing.adage_requests) == 1
+        request = testing.adage_requests[0]["sent_data"]
         assert request.redactorEmail == educational_redactor.email
         assert request.requestPhoneNumber == "+33139980101"
         assert request.totalStudents == 30
@@ -75,8 +74,8 @@ class CreateCollectiveRequestTest:
         assert not request.requestedDate
 
     def test_post_collective_request_no_offer_template(self, client):
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
+        educational_institution = factories.EducationalInstitutionFactory()
+        educational_redactor = factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
 
         unknown_template_id = 0
         client = client.with_adage_token(email=educational_redactor.email, uai=educational_institution.institutionId)
@@ -86,8 +85,8 @@ class CreateCollectiveRequestTest:
         assert response.json == {"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}
 
     def test_post_collective_request_no_institution_found(self, client):
-        educational_redactor = educational_factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
-        offer = educational_factories.CollectiveOfferTemplateFactory()
+        educational_redactor = factories.EducationalRedactorFactory(email="JamesHolden@rocinante.com")
+        offer = factories.CollectiveOfferTemplateFactory()
 
         unknown_uai = "unknown"
         client = client.with_adage_token(email=educational_redactor.email, uai=unknown_uai)
@@ -95,7 +94,7 @@ class CreateCollectiveRequestTest:
 
         assert response.status_code == 404
         assert response.json == {"code": "INSTITUTION_NOT_FOUND"}
-        assert not adage_api_testing.adage_requests
+        assert not testing.adage_requests
 
     def test_missing_redactor_is_created(self, client):
         """
@@ -103,9 +102,9 @@ class CreateCollectiveRequestTest:
           1. it is created with its authenticated information;
           2. everything works as expected.
         """
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_redactor = educational_factories.EducationalRedactorFactory()
-        offer = educational_factories.CollectiveOfferTemplateFactory()
+        educational_institution = factories.EducationalInstitutionFactory()
+        educational_redactor = factories.EducationalRedactorFactory()
+        offer = factories.CollectiveOfferTemplateFactory()
 
         client = client.with_adage_token(
             email=educational_redactor.email,
@@ -120,12 +119,12 @@ class CreateCollectiveRequestTest:
 
         # quick checks: response and adage request
         request_id = response.json["id"]
-        collective_request = db.session.query(educational_models.CollectiveOfferRequest).filter_by(id=request_id).one()
+        collective_request = db.session.query(models.CollectiveOfferRequest).filter_by(id=request_id).one()
         assert collective_request.educationalRedactorId == educational_redactor.id
-        assert len(adage_api_testing.adage_requests) == 1
+        assert len(testing.adage_requests) == 1
 
         # check: a new redactor has been saved into database
-        found_redactor = db.session.query(educational_models.EducationalRedactor).one()
+        found_redactor = db.session.query(models.EducationalRedactor).one()
 
         assert found_redactor.email == educational_redactor.email
         assert found_redactor.civility == educational_redactor.civility
@@ -133,9 +132,9 @@ class CreateCollectiveRequestTest:
         assert found_redactor.lastName == educational_redactor.lastName
 
     def test_invalid_phone_number(self, client):
-        educational_institution = educational_factories.EducationalInstitutionFactory()
-        educational_redactor = educational_factories.EducationalRedactorFactory()
-        offer = educational_factories.CollectiveOfferTemplateFactory()
+        educational_institution = factories.EducationalInstitutionFactory()
+        educational_redactor = factories.EducationalRedactorFactory()
+        offer = factories.CollectiveOfferTemplateFactory()
 
         body = {**base_body(), "phoneNumber": "0000000000000000"}
 

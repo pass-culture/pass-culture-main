@@ -8,7 +8,7 @@ from pydantic.v1 import root_validator
 from pydantic.v1.class_validators import validator
 
 from pcapi.core.categories.models import EacFormat
-from pcapi.core.educational import models as educational_models
+from pcapi.core.educational import models
 from pcapi.core.offerers import models as offerers_models
 from pcapi.routes.native.v1.serialization import common_models
 from pcapi.routes.serialization import BaseModel
@@ -122,7 +122,7 @@ class CollectiveOfferBaseReponseModel(BaseModel, common_models.AccessibilityComp
     description: str | None
     name: str
     venue: OfferVenueResponse
-    students: list[educational_models.StudentLevels]
+    students: list[models.StudentLevels]
     location: collective_offers_serialize.GetCollectiveOfferLocationModel | None
     contactEmail: str | None
     contactPhone: str | None
@@ -151,7 +151,7 @@ class CollectiveOfferResponseModel(CollectiveOfferBaseReponseModel):
 
     @classmethod
     def build(
-        cls: "type[CollectiveOfferResponseModel]", offer: educational_models.CollectiveOffer
+        cls: "type[CollectiveOfferResponseModel]", offer: models.CollectiveOffer
     ) -> "CollectiveOfferResponseModel":
         return cls(
             id=offer.id,
@@ -191,12 +191,12 @@ class CollectiveOfferTemplateResponseModel(CollectiveOfferBaseReponseModel):
     isFavorite: bool | None
     dates: collective_offers_serialize.CollectiveOfferDatesModel | None
     contactUrl: str | None
-    contactForm: educational_models.OfferContactFormEnum | None
+    contactForm: models.OfferContactFormEnum | None
 
     @classmethod
     def build(
         cls: "type[CollectiveOfferTemplateResponseModel]",
-        offer: educational_models.CollectiveOfferTemplate,
+        offer: models.CollectiveOfferTemplate,
         is_favorite: bool,
     ) -> "CollectiveOfferTemplateResponseModel":
         if offer.start and offer.end:

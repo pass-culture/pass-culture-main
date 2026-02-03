@@ -3,10 +3,10 @@ import logging
 from sqlalchemy import exc as sa_exc
 from sqlalchemy.orm import exc as orm_exc
 
-from pcapi.core.educational import exceptions as educational_exceptions
-from pcapi.core.educational import repository as educational_repository
-from pcapi.core.educational import utils as educational_utils
-from pcapi.core.educational.api import offer as educational_api_offer
+from pcapi.core.educational import exceptions
+from pcapi.core.educational import repository
+from pcapi.core.educational import utils
+from pcapi.core.educational.api import offer as api
 from pcapi.core.educational.models import AdageFrontRoles
 from pcapi.core.educational.models import EducationalRedactor
 from pcapi.models.api_errors import ApiErrors
@@ -32,7 +32,7 @@ def get_collective_offer(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferResponseModel:
     try:
-        offer = educational_repository.get_collective_offer_by_id_for_adage(offer_id)
+        offer = repository.get_collective_offer_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_NOT_FOUND"}, status_code=404)
 
@@ -51,7 +51,7 @@ def get_collective_offer_template(
     authenticated_information: AuthenticatedInformation, offer_id: int
 ) -> serializers.CollectiveOfferTemplateResponseModel:
     try:
-        offer = educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
+        offer = repository.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
@@ -80,7 +80,7 @@ def get_collective_offer_templates(
         return serializers.ListCollectiveOfferTemplateResponseModel(collectiveOffers=[])
 
     try:
-        offers = educational_repository.get_collective_offer_templates_by_ids_for_adage(query.ids).all()
+        offers = repository.get_collective_offer_templates_by_ids_for_adage(query.ids).all()
     except sa_exc.SQLAlchemyError:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATES_NOT_FOUND"}, status_code=400)
 
@@ -113,22 +113,20 @@ def create_collective_request(
     authenticated_information: AuthenticatedInformation,
 ) -> serializers.CollectiveRequestResponseModel:
     try:
-        offer = educational_repository.get_collective_offer_template_by_id_for_adage(offer_id)
+        offer = repository.get_collective_offer_template_by_id_for_adage(offer_id)
     except orm_exc.NoResultFound:
         raise ApiErrors({"code": "COLLECTIVE_OFFER_TEMPLATE_NOT_FOUND"}, status_code=404)
 
-    institution = educational_repository.get_educational_institution_public(
-        institution_id=None, uai=authenticated_information.uai
-    )
+    institution = repository.get_educational_institution_public(institution_id=None, uai=authenticated_information.uai)
     if not institution:
         raise ApiErrors({"code": "INSTITUTION_NOT_FOUND"}, status_code=404)
 
     redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
-    redactor = educational_repository.find_or_create_redactor(redactor_informations)
+    redactor = repository.find_or_create_redactor(redactor_informations)
 
-    collective_request = educational_api_offer.create_offer_request(body, offer, institution, redactor)
+    collective_request = api.create_offer_request(body, offer, institution, redactor)
 
-    educational_utils.log_information_for_data_purpose(
+    utils.log_information_for_data_purpose(
         event_name="CreateCollectiveOfferRequest",
         extra_data={
             "id": collective_request.id,
@@ -149,9 +147,9 @@ def create_collective_request(
 def _get_redactor(authenticated_information: AuthenticatedInformation) -> EducationalRedactor | None:
     try:
         redactor_informations = get_redactor_information_from_adage_authentication(authenticated_information)
-    except educational_exceptions.MissingRequiredRedactorInformation:
+    except exceptions.MissingRequiredRedactorInformation:
         return None
-    return educational_repository.find_redactor_by_email(redactor_informations.email)
+    return repository.find_redactor_by_email(redactor_informations.email)
 
 
 @blueprint.adage_iframe.route("/collective/offers/my_institution", methods=["GET"])
@@ -169,9 +167,7 @@ def get_collective_offers_for_my_institution(
     _get_redactor(authenticated_information)
 
     offers = [
-        offer
-        for offer in educational_repository.get_offers_for_my_institution(authenticated_information.uai)
-        if offer.isBookable
+        offer for offer in repository.get_offers_for_my_institution(authenticated_information.uai) if offer.isBookable
     ]
 
     return serializers.ListCollectiveOffersResponseModel(
