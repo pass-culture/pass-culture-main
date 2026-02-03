@@ -39,7 +39,7 @@ export const AdminSideNavLinks = ({
   const dataId = useId()
   const dataSublistId = useId()
 
-  // Used because `<DropdownMenu.Content />` `side` prop comes from `@radix-ui` and can't be handled via CSS unless by creating an intermediary UI component.
+  // Used because `<Dropdown.Content />` `side` prop comes from `@radix-ui` and can't be handled via CSS unless by creating an intermediary UI component.
   const isMobileScreen = useMediaQuery('(max-width: 64rem)')
 
   return (
@@ -110,7 +110,6 @@ export const AdminSideNavLinks = ({
               src={openSection.data ? fullUpIcon : fullDownIcon}
               alt=""
               width="18"
-              className={styles['nav-section-icon']}
             />
           </button>
           {openSection.data && (
