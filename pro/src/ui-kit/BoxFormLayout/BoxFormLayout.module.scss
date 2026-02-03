@@ -1,27 +1,22 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.box-form-layout:not(:last-child) {
+.box-form-layout {
+  border: rem.torem(1px) solid var(--color-border-subtle);
+  border-radius: var(--size-border-radius-m);
+  padding: var(--size-spacing-l);
+  background-color: var(--color-background);
   margin-bottom: var(--size-spacing-l);
+}
+
+.box-form-layout-header {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: flex-start;
+  gap: var(--size-spacing-s);
+  justify-content: space-between;
 }
 
 .box-form-layout-header-title {
   margin-bottom: var(--size-spacing-s);
   color: var(--color-text-subtle);
-}
-
-.box-form-layout-fields {
-  max-width: rem.torem(400px);
-}
-
-.box-form-layout-form-header {
-  margin-bottom: var(--size-spacing-l);
-  overflow-wrap: anywhere;
-}
-
-.box-form-layout-form-header-secondary {
-  color: var(--color-text-subtle);
-}
-
-.box-form-layout-required-message {
-  margin-bottom: var(--size-spacing-l);
 }

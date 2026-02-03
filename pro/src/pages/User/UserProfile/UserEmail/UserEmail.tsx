@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react'
 import { api } from '@/apiClient/api'
 import { UserEmailForm } from '@/pages/User/UserProfile/UserEmail/UserEmailForm/UserEmailForm'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 import { BannerPendingEmailValidation } from './BannerPendingEmailValidation/BannerPendingEmailValidation'
@@ -41,27 +40,21 @@ export const UserEmail = ({
 
   return (
     <BoxFormLayout>
-      <BoxRounded
-        onClickModify={!showForm ? onClickModify : undefined}
-        footer={
-          !showForm &&
-          pendingEmailValidation && (
-            <BannerPendingEmailValidation email={pendingEmailValidation} />
-          )
-        }
-      >
-        {showForm ? (
-          <UserEmailForm
-            closeForm={resetForm}
-            getPendingEmailRequest={getPendingEmailRequest}
-          />
-        ) : (
-          <BoxFormLayout.Header
-            subtitle={initialValues.email}
-            title="Adresse email de connexion"
-          />
-        )}
-      </BoxRounded>
+      {showForm ? (
+        <UserEmailForm
+          closeForm={resetForm}
+          getPendingEmailRequest={getPendingEmailRequest}
+        />
+      ) : (
+        <BoxFormLayout.Header
+          title="Adresse email de connexion"
+          subtitle={initialValues.email}
+          onClickModify={onClickModify}
+        />
+      )}
+      {!showForm && pendingEmailValidation && (
+        <BannerPendingEmailValidation email={pendingEmailValidation} />
+      )}
     </BoxFormLayout>
   )
 }

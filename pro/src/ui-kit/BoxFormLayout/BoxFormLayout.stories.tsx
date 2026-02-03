@@ -3,12 +3,11 @@ import { useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 
 import { FormLayout } from '@/components/FormLayout/FormLayout'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
 
-import { BoxFormLayout, type BoxFormLayoutProps } from './BoxFormLayout'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { ButtonVariant, ButtonColor } from '@/design-system/Button/types';
-import { Button } from '@/design-system/Button/Button';
+import { BoxFormLayout, type BoxFormLayoutProps } from './BoxFormLayout'
 
 export default {
   title: '@/ui-kit/BoxFormLayout',
@@ -34,13 +33,7 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
 
   return (
     <BoxFormLayout {...args}>
-      <BoxRounded
-        onClickModify={!showForm ? () => setShowForm(true) : undefined}
-      >
         {showForm ? (
-          <>
-            <BoxFormLayout.RequiredMessage />
-            <BoxFormLayout.Fields>
               <FormProvider {...methods}>
                 <form onSubmit={handleSubmit(onSubmit)}>
                   <FormLayout>
@@ -80,17 +73,15 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
                   </div>
                 </form>
               </FormProvider>
-            </BoxFormLayout.Fields>
-          </>
         ) : (
           <>
             <BoxFormLayout.Header
               subtitle={'Je suis le sous-titre'}
               title="Adresse email"
+              onClickModify={() => setShowForm(true) }
             />
           </>
         )}
-      </BoxRounded>
     </BoxFormLayout>
   )
 }

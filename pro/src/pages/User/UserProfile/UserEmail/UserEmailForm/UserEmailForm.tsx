@@ -10,7 +10,6 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { PasswordInput } from '@/design-system/PasswordInput/PasswordInput'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 
 import styles from './UserEmailForm.module.scss'
 import { validationSchema } from './validationSchema'
@@ -75,37 +74,35 @@ export const UserEmailForm = ({
 
   return (
     <>
-      <BoxFormLayout.FormHeader
-        textSecondary="Adresse email actuelle"
-        textPrimary={currentUser.email}
-      />
-      <BoxFormLayout.Fields>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <FormLayout>
-            <div className={styles['text-input']}>
-              <TextInput
-                label="Nouvelle adresse email"
-                description="Format : email@exemple.com"
-                error={errors.email?.message}
-                required
-                type="email"
-                {...register('email')}
-                requiredIndicator="explicit"
-              />
-            </div>
-            <div className={styles['text-input']}>
-              <PasswordInput
-                label="Mot de passe (requis pour modifier votre email)"
-                error={errors.password?.message}
-                required={true}
-                {...register('password')}
-                value={watch('password')}
-                requiredIndicator="explicit"
-              />
-            </div>
-          </FormLayout>
+      <span className={styles['header-secondary']}>
+        Adresse email actuelle:
+      </span>
+      <span>{currentUser.email}</span>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormLayout mediumWidthForm>
+          <FormLayout.Row mdSpaceAfter>
+            <TextInput
+              label="Nouvelle adresse email"
+              description="Format : email@exemple.com"
+              error={errors.email?.message}
+              required
+              type="email"
+              {...register('email')}
+              requiredIndicator="explicit"
+            />
+          </FormLayout.Row>
+          <FormLayout.Row mdSpaceAfter>
+            <PasswordInput
+              label="Mot de passe (requis pour modifier votre email)"
+              error={errors.password?.message}
+              required={true}
+              {...register('password')}
+              value={watch('password')}
+              requiredIndicator="explicit"
+            />
+          </FormLayout.Row>
 
-          <div className={styles['buttons-field']}>
+          <FormLayout.Row inline>
             <Button
               onClick={onCancel}
               variant={ButtonVariant.SECONDARY}
@@ -118,9 +115,9 @@ export const UserEmailForm = ({
               isLoading={isSubmitting}
               label="Enregistrer"
             />
-          </div>
-        </form>
-      </BoxFormLayout.Fields>
+          </FormLayout.Row>
+        </FormLayout>
+      </form>
     </>
   )
 }

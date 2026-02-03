@@ -1,7 +1,6 @@
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { UserPhoneForm } from '@/components/UserPhoneForm/UserPhoneForm'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 
@@ -61,16 +60,15 @@ export const UserPhone = ({
   const resetForm = () => setCurrentForm(null)
   return (
     <BoxFormLayout>
-      <BoxRounded onClickModify={!showForm ? onClickModify : undefined}>
-        {showForm ? (
-          <UserPhoneForm closeForm={resetForm} initialValues={initialValues} />
-        ) : (
-          <BoxFormLayout.Header
-            subtitle={`${formatPhoneNumber(initialValues.phoneNumber)}`}
-            title="Téléphone"
-          />
-        )}
-      </BoxRounded>
+      {showForm ? (
+        <UserPhoneForm closeForm={resetForm} initialValues={initialValues} />
+      ) : (
+        <BoxFormLayout.Header
+          subtitle={`${formatPhoneNumber(initialValues.phoneNumber)}`}
+          title="Téléphone"
+          onClickModify={onClickModify}
+        />
+      )}
     </BoxFormLayout>
   )
 }

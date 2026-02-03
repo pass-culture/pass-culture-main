@@ -1,6 +1,5 @@
 import { UserPasswordForm } from '@/components/UserPasswordForm/UserPasswordForm'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
 
 import { Forms } from '../constants'
 
@@ -17,16 +16,15 @@ export const UserPassword = ({
   const resetForm = () => setCurrentForm(null)
   return (
     <BoxFormLayout>
-      <BoxRounded onClickModify={!showForm ? onClickModify : undefined}>
-        {showForm ? (
-          <UserPasswordForm closeForm={resetForm} />
-        ) : (
-          <BoxFormLayout.Header
-            subtitle="***************"
-            title="Mot de passe"
-          />
-        )}
-      </BoxRounded>
+      {showForm ? (
+        <UserPasswordForm closeForm={resetForm} />
+      ) : (
+        <BoxFormLayout.Header
+          onClickModify={onClickModify}
+          subtitle="***************"
+          title="Mot de passe"
+        />
+      )}
     </BoxFormLayout>
   )
 }

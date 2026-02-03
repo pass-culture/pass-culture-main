@@ -10,7 +10,7 @@ import {
   formatPacificFranc,
 } from '@/commons/utils/convertEuroToPacificFranc'
 import fullHelpIcon from '@/icons/full-help.svg'
-import { BoxRounded } from '@/ui-kit/BoxRounded/BoxRounded'
+import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
@@ -79,7 +79,7 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       : income.individual
 
   return (
-    <BoxRounded>
+    <BoxFormLayout>
       <div className={styles['income-results-box']}>
         <IncomeResultsSubBox
           title={totalLabel}
@@ -103,6 +103,6 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
           </>
         )}
       </div>
-    </BoxRounded>
+    </BoxFormLayout>
   )
 }

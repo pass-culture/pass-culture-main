@@ -11,9 +11,7 @@ import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 
-import styles from '../UserPhoneForm/UserForm.module.scss'
 import type { UserIdentityFormValues } from './types'
 import { validationSchema } from './validationSchema'
 
@@ -66,29 +64,27 @@ export const UserIdentityForm = ({
   }
 
   return (
-    <BoxFormLayout.Fields>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormLayout>
-          <div className={styles['text-input']}>
-            <TextInput
-              label="Prénom"
-              error={errors.firstName?.message}
-              required
-              requiredIndicator="explicit"
-              {...register('firstName')}
-            />
-          </div>
-          <div className={styles['text-input']}>
-            <TextInput
-              label="Nom"
-              error={errors.lastName?.message}
-              required
-              requiredIndicator="explicit"
-              {...register('lastName')}
-            />
-          </div>
-        </FormLayout>
-        <div className={styles['buttons-field']}>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormLayout mediumWidthForm>
+        <FormLayout.Row mdSpaceAfter>
+          <TextInput
+            label="Prénom"
+            error={errors.firstName?.message}
+            required
+            requiredIndicator="explicit"
+            {...register('firstName')}
+          />
+        </FormLayout.Row>
+        <FormLayout.Row mdSpaceAfter>
+          <TextInput
+            label="Nom"
+            error={errors.lastName?.message}
+            required
+            requiredIndicator="explicit"
+            {...register('lastName')}
+          />
+        </FormLayout.Row>
+        <FormLayout.Row inline>
           <Button
             onClick={onCancel}
             variant={ButtonVariant.SECONDARY}
@@ -96,8 +92,8 @@ export const UserIdentityForm = ({
             label="Annuler"
           />
           <Button type="submit" isLoading={isSubmitting} label="Enregistrer" />
-        </div>
-      </form>
-    </BoxFormLayout.Fields>
+        </FormLayout.Row>
+      </FormLayout>
+    </form>
   )
 }
