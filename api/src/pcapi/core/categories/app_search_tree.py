@@ -352,9 +352,11 @@ SEARCH_GROUP_CONCERTS_FESTIVALS = SearchGroup(
 )
 SEARCH_GROUP_EVENEMENTS_EN_LIGNE = SearchGroup(
     children=[
-        NATIVE_CATEGORY_CONCERTS_EN_LIGNE,
+        # Without subcategories first
         NATIVE_CATEGORY_PRATIQUE_ARTISTIQUE_EN_LIGNE,
         NATIVE_CATEGORY_RENCONTRES_EN_LIGNE,
+        # With subcategories
+        NATIVE_CATEGORY_CONCERTS_EN_LIGNE,
     ],
     search_value="EVENEMENTS_EN_LIGNE",
     label="Évènements en ligne",
@@ -362,9 +364,11 @@ SEARCH_GROUP_EVENEMENTS_EN_LIGNE = SearchGroup(
 )
 SEARCH_GROUP_CINEMA = SearchGroup(
     children=[
-        NATIVE_CATEGORY_SEANCES_DE_CINEMA,
+        # Without subcategories first
         NATIVE_CATEGORY_CARTES_CINEMA,
         NATIVE_CATEGORY_EVENEMENTS_CINEMA,
+        # With subcategories
+        NATIVE_CATEGORY_SEANCES_DE_CINEMA,
     ],
     search_value="CINEMA",
     label="Cinéma",
@@ -454,12 +458,14 @@ SEARCH_GROUP_MUSEES_VISITES_CULTURELLES = SearchGroup(
 )
 SEARCH_GROUP_MUSIQUE = SearchGroup(
     children=[
+        # Without subcategories first
         NATIVE_CATEGORY_ACHAT_LOCATION_INSTRUMENT,
+        NATIVE_CATEGORY_PARTITIONS_DE_MUSIQUE,
+        # With subcategories
         NATIVE_CATEGORY_CD,
         NATIVE_CATEGORY_CONCERTS_EVENEMENTS,
         NATIVE_CATEGORY_FESTIVALS,
         NATIVE_CATEGORY_MUSIQUE_EN_LIGNE,
-        NATIVE_CATEGORY_PARTITIONS_DE_MUSIQUE,
         NATIVE_CATEGORY_VINYLES,
     ],
     search_value="MUSIQUE",
@@ -517,6 +523,9 @@ SEARCH_GROUP_SPECTACLES = SearchGroup(
 SEARCH_NODES_ROOT = SearchNode(
     label="Root",
     children=[
+        # Without subcategories first
+        SEARCH_GROUP_CARTES_JEUNES,
+        # With subcategories
         SEARCH_GROUP_CONCERTS_FESTIVALS,
         SEARCH_GROUP_CINEMA,
         SEARCH_GROUP_FILMS_DOCUMENTAIRES_SERIES,
@@ -527,7 +536,6 @@ SEARCH_NODES_ROOT = SearchNode(
         SEARCH_GROUP_MUSEES_VISITES_CULTURELLES,
         SEARCH_GROUP_JEUX_JEUX_VIDEOS,
         SEARCH_GROUP_MEDIA_PRESSE,
-        SEARCH_GROUP_CARTES_JEUNES,
         SEARCH_GROUP_RENCONTRES_CONFERENCES,
         SEARCH_GROUP_EVENEMENTS_EN_LIGNE,
         SEARCH_GROUP_NONE,
