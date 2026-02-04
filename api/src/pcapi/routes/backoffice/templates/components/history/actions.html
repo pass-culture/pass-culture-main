@@ -3,7 +3,9 @@
 {% macro build_actions_table(actions, show_venue) %}
   <table class="table table-hover my-4">
     <thead>
-      <tr>
+      <tr {%+ if use_new_tab_ui %}
+          class="bg-secondary-subtle fs-7 align-middle"
+          {% endif %}>
         <th scope="col"></th>
         <th scope="col" class="col-2">Type</th>
         <th scope="col" class="col-2">Date/Heure</th>
@@ -11,7 +13,9 @@
         <th scope="col" class="col-2">Auteur</th>
       </tr>
     </thead>
-    <tbody class="table-group-divider">
+    <tbody {%+ if not use_new_tab_ui %}
+           class="table-group-divider"
+           {% endif %}>
       {% for action in actions %}
         <tr>
           <th scope="row"></th>

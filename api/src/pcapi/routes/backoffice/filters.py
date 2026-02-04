@@ -391,7 +391,7 @@ def format_string_list(data: list[str] | None, max_characters: int | None = None
     return result
 
 
-def pluralize(count: int | None, singular: str = "", plural: str = "s") -> str:
+def pluralize(count: int | float | decimal.Decimal | None, singular: str = "", plural: str = "s") -> str:
     return plural if count and count > 1 else singular
 
 
@@ -2034,6 +2034,23 @@ def format_user_subscription_tunnel_step_status(status: str) -> str:
     return Markup('<i class="bi bi-{icon}" title="{status}"></i>').format(icon=icon, status=status)
 
 
+_SUBSCRIPTION_STATUS_TO_TOOLTIP = {
+    subscription_schemas.SubscriptionItemStatus.KO.value: "Non éligible",
+    subscription_schemas.SubscriptionItemStatus.NOT_APPLICABLE.value: "Non éligible",
+    subscription_schemas.SubscriptionItemStatus.NOT_ENABLED.value: "Non éligible",
+    subscription_schemas.SubscriptionItemStatus.OK.value: "Validé",
+    subscription_schemas.SubscriptionItemStatus.PENDING.value: "En attente",
+    subscription_schemas.SubscriptionItemStatus.SKIPPED.value: "Non réalisé",
+    subscription_schemas.SubscriptionItemStatus.SUSPICIOUS.value: "suspect",
+    subscription_schemas.SubscriptionItemStatus.TODO.value: "Prochaine étape",
+    subscription_schemas.SubscriptionItemStatus.VOID.value: "Non réalisé",
+}
+
+
+def format_filter_status(status: str) -> str:
+    return _SUBSCRIPTION_STATUS_TO_TOOLTIP.get(status, "Prochaine étape")
+
+
 def offer_mediation_link(mediation_id: int, thumb_count: int) -> str | None:
     mediation = offers_models.Mediation(
         id=mediation_id,
@@ -2187,4 +2204,5 @@ def install_template_filters(app: Flask) -> None:
     app.jinja_env.filters["format_user_profile_refresh_campaign_action_type"] = (
         format_user_profile_refresh_campaign_action_type
     )
+    app.jinja_env.filters["format_filter_status"] = format_filter_status
     app.jinja_env.filters["is_user_offerer_action_type"] = is_user_offerer_action_type

@@ -64,6 +64,7 @@ from pcapi.routes.backoffice.users import forms as user_forms
 from pcapi.routes.backoffice.utils import access_control
 from pcapi.routes.backoffice.utils import response as response_utils
 from pcapi.routes.backoffice.utils import search as search_utils
+from pcapi.routes.backoffice.utils.details_actions import DetailsActions
 from pcapi.utils import date as date_utils
 from pcapi.utils import email as email_utils
 from pcapi.utils.transaction_manager import atomic
@@ -82,6 +83,56 @@ public_accounts_blueprint = backoffice_blueprint.child_backoffice_blueprint(
     url_prefix="/public-accounts",
     permission=perm_models.Permissions.READ_PUBLIC_ACCOUNT,
 )
+
+
+class AccountDetailsActionType(enum.StrEnum):
+    SEND_VALIDATION = enum.auto()
+    RESET_PASSWORD = enum.auto()
+    BREVO = enum.auto()
+    UPDATE = enum.auto()
+    BONUS = enum.auto()
+    EXTRACT = enum.auto()
+    SUSPEND = enum.auto()
+    UNSUSPEND = enum.auto()
+    REVIEW = enum.auto()
+    INVALID_PASSWORD = enum.auto()
+    ANONYMIZE = enum.auto()
+    TAG = enum.auto()
+
+
+def _get_account_details_actions(user: users_models.User, can_anonymize: bool) -> DetailsActions:
+    account_details_actions = DetailsActions(AccountDetailsActionType)
+
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+        if not user.isEmailValidated:
+            account_details_actions.add_action(AccountDetailsActionType.SEND_VALIDATION)
+        account_details_actions.add_action(AccountDetailsActionType.RESET_PASSWORD)
+    if user.isActive:
+        account_details_actions.add_action(AccountDetailsActionType.BREVO)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+        account_details_actions.add_action(AccountDetailsActionType.UPDATE)
+
+    if access_control.has_current_user_permission(
+        perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
+    ) and users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True):
+        account_details_actions.add_action(AccountDetailsActionType.BONUS)
+    if access_control.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT) and (
+        user.is_beneficiary or user.roles == []
+    ):
+        account_details_actions.add_action(AccountDetailsActionType.EXTRACT)
+    if user.isActive and access_control.has_current_user_permission(perm_models.Permissions.SUSPEND_USER):
+        account_details_actions.add_action(AccountDetailsActionType.SUSPEND)
+    if not user.isActive and access_control.has_current_user_permission(perm_models.Permissions.UNSUSPEND_USER):
+        account_details_actions.add_action(AccountDetailsActionType.UNSUSPEND)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
+        account_details_actions.add_action(AccountDetailsActionType.REVIEW)
+        account_details_actions.add_action(AccountDetailsActionType.INVALID_PASSWORD)
+    if can_anonymize:
+        account_details_actions.add_action(AccountDetailsActionType.ANONYMIZE)
+    if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_ACCOUNT_TAGS):
+        account_details_actions.add_action(AccountDetailsActionType.TAG)
+
+    return account_details_actions
 
 
 def _load_suspension_info(query: sa_orm.Query) -> sa_orm.Query:
@@ -422,11 +473,12 @@ def render_public_account_details(
         if eligibility_history[user_current_eligibility.value].idCheckHistory and len(subscription_items) > 0:
             duplicate_user_id = _get_duplicate_fraud_history(eligibility_history)
 
-    latest_fraud_check = _get_latest_fraud_check(
-        eligibility_history, [subscription_models.FraudCheckType.UBBLE, subscription_models.FraudCheckType.DMS]
-    )
-
+    can_request_bonus_credit = False
     kwargs: dict[str, typing.Any] = {}
+
+    if access_control.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT):
+        if user.is_beneficiary or user.roles == []:
+            kwargs["extract_user_form"] = empty_forms.EmptyForm()
 
     if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
         if not edit_account_form:
@@ -447,27 +499,10 @@ def render_public_account_details(
                 city=user.city,
                 marketing_email_subscription=user.get_notification_subscriptions().marketing_email,
             )
-        extract_user_form = None
-        if access_control.has_current_user_permission(perm_models.Permissions.EXTRACT_PUBLIC_ACCOUNT):
-            if user.is_beneficiary or user.roles == []:
-                extract_user_form = empty_forms.EmptyForm()
-        if access_control.has_current_user_permission(perm_models.Permissions.MANAGE_PUBLIC_ACCOUNT):
-            kwargs.update(
-                {
-                    "password_reset_dst": url_for(".send_public_account_reset_password_email", user_id=user.id),
-                    "password_reset_form": empty_forms.EmptyForm(),
-                    "password_invalidation_dst": url_for(".invalidate_public_account_password", user_id=user.id),
-                    "password_invalidation_form": empty_forms.EmptyForm(),
-                }
-            )
 
         manual_review_form = None
         if access_control.has_current_user_permission(perm_models.Permissions.BENEFICIARY_MANUAL_REVIEW):
             manual_review_form = account_forms.ManualReviewForm()
-
-        can_request_bonus_credit = access_control.has_current_user_permission(
-            perm_models.Permissions.REQUEST_BENEFICIARY_BONUS_CREDIT
-        ) and users_api.get_user_is_eligible_for_bonification(user, is_from_backoffice=True)
 
         kwargs.update(
             {
@@ -477,7 +512,10 @@ def render_public_account_details(
                 "manual_review_dst": url_for(".review_public_account", user_id=user.id),
                 "can_request_bonus_credit": can_request_bonus_credit,
                 "manual_phone_validation_form": empty_forms.EmptyForm(),
-                "extract_user_form": extract_user_form,
+                "password_reset_dst": url_for(".send_public_account_reset_password_email", user_id=user.id),
+                "password_reset_form": empty_forms.EmptyForm(),
+                "password_invalidation_dst": url_for(".invalidate_public_account_password", user_id=user.id),
+                "password_invalidation_form": empty_forms.EmptyForm(),
             }
         )
 
@@ -527,7 +565,6 @@ def render_public_account_details(
         history=history,
         duplicate_user_id=duplicate_user_id,
         eligibility_history=eligibility_history,
-        latest_fraud_check=latest_fraud_check,
         comment_form=account_forms.CommentForm(),
         comment_dst=url_for(".comment_public_account", user_id=user_id),
         bookings=sorted(user.userBookings, key=lambda booking: booking.dateCreated, reverse=True),
@@ -537,6 +574,10 @@ def render_public_account_details(
         booking_fraudulent_form=account_forms.TagFraudulentBookingsForm(),
         booking_remove_fraudulent_form=empty_forms.EmptyForm(),
         is_user_expired=is_user_expired,
+        allowed_actions=_get_account_details_actions(
+            user,
+            can_anonymize=("anonymize_form" in kwargs),
+        ),
         **kwargs,
     )
 
@@ -1943,22 +1984,6 @@ def get_eligibility_history(user: users_models.User) -> dict[str, serialization.
         )
 
     return subscriptions
-
-
-def _get_latest_fraud_check(
-    eligibility_history: dict[str, serialization.EligibilitySubscriptionHistoryModel],
-    check_types: list[subscription_models.FraudCheckType],
-) -> serialization.IdCheckItemModel | None:
-    latest_fraud_check = None
-    check_list = []
-    for history in eligibility_history.values():
-        for idCheckItem in history.idCheckHistory:
-            if idCheckItem.type in [check_type.value for check_type in check_types]:
-                check_list.append(idCheckItem)
-    if check_list:
-        check_list = sorted(check_list, key=lambda idCheckItem: idCheckItem.dateCreated, reverse=True)
-        latest_fraud_check = check_list[0]
-    return latest_fraud_check
 
 
 def _get_duplicate_fraud_history(
