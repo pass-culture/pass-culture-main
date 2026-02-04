@@ -4,7 +4,6 @@ import * as React from 'react'
 
 import { Dropdown } from './Dropdown'
 
-// Adapte si ton Button est ailleurs / props différentes
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
 import { DropdownItem } from './DropdownItem'
