@@ -69,10 +69,12 @@
     <div class="col-9 px-5 pt-3">
       {% block main_column_container %}
         <div class="vstack gap-3">
+          {% block before_title %}
+          {% endblock before_title %}
           <!-- TITLE + TAGS -->
-          <div class="d-flex">
+          <div class="d-flex hstack gap-12">
             <!-- OFFER NAME -->
-            <h2 class="flex-fill">
+            <h2 class="text-nowrap">
               {% block title %}
               {% endblock title %}
             </h2>

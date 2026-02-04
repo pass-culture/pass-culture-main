@@ -1,28 +1,59 @@
 {% macro build_details_tab(name, title, is_active=False) %}
-  <li class="nav-item"
-      role="presentation">
-    <button class="{{ 'nav-link active fw-bolder' if is_active else 'nav-link fw-bolder' }}"
-            id="{{ name ~ '-tab' }}"
-            data-bs-toggle="tab"
-            data-bs-target="{{ '.' ~ name ~ '-tab-pane' }}"
-            type="button"
-            role="tab"
-            aria-controls="{{ name ~ 'tab-pane' }}"
-            aria-selected="true">{{ title }}</button>
-  </li>
+  {% if use_new_tab_ui %}
+    {# set by context #}
+    <li class="nav-item"
+        role="presentation">
+      <button class="nav-link {{ 'active' if is_active else '' }} fw-bolder px-4 pt-1 pb-12"
+              id="{{ name ~ '-tab' }}"
+              data-bs-toggle="tab"
+              data-bs-target="{{ '.' ~ name ~ '-tab-pane' }}"
+              type="button"
+              role="tab"
+              aria-controls="{{ name ~ 'tab-pane' }}"
+              aria-selected="true">{{ title }}</button>
+    </li>
+  {% else %}
+    <li class="nav-item"
+        role="presentation">
+      <button class="{{ 'nav-link active fw-bolder' if is_active else 'nav-link fw-bolder' }}"
+              id="{{ name ~ '-tab' }}"
+              data-bs-toggle="tab"
+              data-bs-target="{{ '.' ~ name ~ '-tab-pane' }}"
+              type="button"
+              role="tab"
+              aria-controls="{{ name ~ 'tab-pane' }}"
+              aria-selected="true">{{ title }}</button>
+    </li>
+  {% endif %}
 {% endmacro %}
 {% macro build_details_tabs_wrapper(name="details-tab") %}
-  <ul class="nav nav-tabs nav-fill mt-4 {{ name }}"
-      role="tablist">
-    {{ caller() }}
-  </ul>
+  {% if use_new_tab_ui %}
+    {# set by context #}
+    <nav class="nav-bar p0">
+      <ul class="nav nav-underline w-100 mt-4 {{ name }}"
+          role="tablist">
+        {{ caller() }}
+        <li class="nav-item flex-grow-1 nav-link disabled"></li>
+      </ul>
+    </nav>
+  {% else %}
+    <ul class="nav nav-tabs nav-fill mt-4 {{ name }}"
+        role="tablist">
+      {{ caller() }}
+    </ul>
+  {% endif %}
 {% endmacro %}
 {% macro build_details_tab_content(name, is_active=False) %}
-  <div class="tab-pane fade p-4 {{ name ~ '-tab-pane' }} {{ 'show active' if is_active }}"
+  <div class="tab-pane fade {%+ if not use_new_tab_ui %}p-4{% endif +%} {{ name ~ '-tab-pane' }} {{ 'show active' if is_active }}"
        role="tabpanel"
        aria-labelledby="{{ name ~ '-tab' }}"
        tabindex="0">{{ caller() }}</div>
 {% endmacro %}
 {% macro build_details_tabs_content_wrapper() %}
-  <div class="tab-content bg-white border border-top-0 shadow-sm">{{ caller() }}</div>
+  {% if use_new_tab_ui %}
+    {# set by context #}
+    <div class="tab-content bg-white border-0 pt-3">{{ caller() }}</div>
+  {% else %}
+    <div class="tab-content bg-white border border-top-0 shadow-sm">{{ caller() }}</div>
+  {% endif %}
 {% endmacro %}
