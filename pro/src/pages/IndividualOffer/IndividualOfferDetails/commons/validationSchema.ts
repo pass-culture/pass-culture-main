@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-import type { ArtistType } from '@/apiClient/v1'
+import type { ArtistOfferLinkResponseModel, ArtistType } from '@/apiClient/v1'
 
 import type { DetailsFormValues } from './types'
 
@@ -11,6 +11,32 @@ const eanValidation = yup
     message: "L'EAN doit être composé de 13 chiffres.",
     test: (ean) => !ean || ean.length === 13,
   })
+
+const getIndexFromPath = (path?: string): number | null => {
+  const match = path?.match(/\[(\d+)\]/)
+  return match ? Number(match[1]) : null
+}
+
+const isDuplicateArtist = (
+  links: ArtistOfferLinkResponseModel[],
+  currentIndex: number
+): boolean => {
+  const currentLink = links[currentIndex]
+
+  if (
+    !currentLink ||
+    (currentLink.artistId === null && currentLink.artistName === '')
+  ) {
+    return false
+  }
+  return links.some(
+    (link, index) =>
+      index < currentIndex &&
+      link.artistType === currentLink.artistType &&
+      link.artistId === currentLink.artistId &&
+      link.artistName === currentLink.artistName
+  )
+}
 
 const isAnyTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
@@ -32,7 +58,25 @@ const commonValidationShape = {
     .of(
       yup.object().shape({
         artistId: yup.string().nullable().defined(),
-        artistName: yup.string().defined(),
+        artistName: yup
+          .string()
+          .defined()
+          .test(
+            'no-duplicate-artist',
+            'Cet artiste a déjà été ajouté',
+            function () {
+              const index = getIndexFromPath(this.path)
+              if (index === null) {
+                return false
+              }
+              // Access the parent array (artistOfferLinks) to check for duplicates
+              const links = this.from?.[1]?.value?.artistOfferLinks
+              if (!links) {
+                return false
+              }
+              return !isDuplicateArtist(links, index)
+            }
+          ),
         artistType: yup.mixed<ArtistType>().required(),
       })
     )

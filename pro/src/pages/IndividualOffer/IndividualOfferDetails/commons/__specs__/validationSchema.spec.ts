@@ -138,6 +138,47 @@ describe('getValidationSchema', () => {
       }
       await expect(schema.validate(data)).rejects.toThrow()
     })
+    it('should fail when the artistId is duplicated', async () => {
+      const data = {
+        ...validDetailsFormValuesBase,
+        artistOfferLinks: [
+          {
+            artistId: '1',
+            artistName: 'Aya Nakamura',
+            artistType: ArtistType.PERFORMER,
+          },
+          {
+            artistId: '1',
+            artistName: 'Aya Nakamura',
+            artistType: ArtistType.PERFORMER,
+          },
+        ],
+      }
+      await expect(schema.validate(data)).rejects.toThrow(
+        'Cet artiste a déjà été ajouté'
+      )
+    })
+
+    it('should fail when the artistName is duplicated and artistId is null', async () => {
+      const data = {
+        ...validDetailsFormValuesBase,
+        artistOfferLinks: [
+          {
+            artistId: null,
+            artistName: 'Aya Nakamura',
+            artistType: ArtistType.PERFORMER,
+          },
+          {
+            artistId: null,
+            artistName: 'Aya Nakamura',
+            artistType: ArtistType.PERFORMER,
+          },
+        ],
+      }
+      await expect(schema.validate(data)).rejects.toThrow(
+        'Cet artiste a déjà été ajouté'
+      )
+    })
   })
 })
 

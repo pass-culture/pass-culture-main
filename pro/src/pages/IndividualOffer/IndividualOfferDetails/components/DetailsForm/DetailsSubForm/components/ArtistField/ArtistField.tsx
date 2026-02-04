@@ -1,7 +1,10 @@
 import { useFieldArray, useFormContext } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
-import { ArtistType } from '@/apiClient/v1'
+import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import fullMoreIcon from '@/icons/full-more.svg'
 import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
 import { ApiSelect } from '@/ui-kit/form/ApiSelect/ApiSelect'
 
@@ -10,6 +13,8 @@ const ARTIST_TYPE_LABELS: Record<ArtistType, string> = {
   [ArtistType.PERFORMER]: 'Interprète',
   [ArtistType.STAGE_DIRECTOR]: 'Metteur en scène',
 }
+
+type ArtistOption = ArtistResponseModel & { value: string; label: string }
 
 type ArtistFieldProps = {
   readOnly: boolean
@@ -20,9 +25,14 @@ export function ArtistField({
   readOnly,
   artistType,
 }: Readonly<ArtistFieldProps>) {
-  const { control, register } = useFormContext<DetailsFormValues>()
+  const {
+    control,
+    register,
+    setValue,
+    formState: { errors },
+  } = useFormContext<DetailsFormValues>()
 
-  const { fields } = useFieldArray({
+  const { fields, append } = useFieldArray({
     control,
     name: 'artistOfferLinks',
   })
@@ -34,7 +44,6 @@ export function ArtistField({
   return (
     <>
       {fieldsForType.map(({ field, index }) => {
-        const { onChange } = register(`artistOfferLinks.${index}`)
         const { ref } = register(`artistOfferLinks.${index}.artistName`)
         const name = `artistOfferLinks.${index}`
 
@@ -43,33 +52,29 @@ export function ArtistField({
             <ApiSelect
               name={name}
               label={ARTIST_TYPE_LABELS[artistType]}
-              onSelect={(artist) => {
+              onSelect={(artist: ArtistOption) => {
                 if (artist) {
-                  onChange({
-                    target: {
-                      name,
-                      value: {
-                        artistId: artist.id,
-                        artistName: artist.name,
-                        artistType,
-                      },
+                  setValue(
+                    `artistOfferLinks.${index}`,
+                    {
+                      artistId: artist.id,
+                      artistName: artist.name,
+                      artistType,
                     },
-                    type: 'change',
-                  })
+                    { shouldValidate: true }
+                  )
                 }
               }}
               onSearch={(searchText) => {
-                onChange({
-                  target: {
-                    name,
-                    value: {
-                      artistId: null,
-                      artistName: searchText,
-                      artistType,
-                    },
+                setValue(
+                  `artistOfferLinks.${index}`,
+                  {
+                    artistId: null,
+                    artistName: searchText,
+                    artistType,
                   },
-                  type: 'change',
-                })
+                  { shouldValidate: true }
+                )
               }}
               searchApi={async (searchText) => {
                 const artists = await api.getArtists(searchText)
@@ -80,6 +85,7 @@ export function ArtistField({
                   label: artist.name,
                 }))
               }}
+              error={errors?.artistOfferLinks?.[index]?.artistName?.message}
               minSearchLength={2}
               disabled={readOnly}
               required={false}
@@ -88,6 +94,20 @@ export function ArtistField({
           </div>
         )
       })}
+      {!readOnly && (
+        <Button
+          variant={ButtonVariant.TERTIARY}
+          icon={fullMoreIcon}
+          color={ButtonColor.NEUTRAL}
+          label={`Ajouter un ${ARTIST_TYPE_LABELS[artistType].toLowerCase()}`}
+          onClick={() =>
+            append(
+              { artistId: null, artistName: '', artistType },
+              { shouldFocus: true }
+            )
+          }
+        />
+      )}
     </>
   )
 }

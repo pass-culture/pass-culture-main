@@ -1,4 +1,5 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
+import { userEvent } from '@testing-library/user-event'
 import { forwardRef } from 'react'
 import { FormProvider, type UseFormGetValues, useForm } from 'react-hook-form'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -136,35 +137,65 @@ describe('ArtistField', () => {
     ])
   })
 
-  it('onSearch should update form value with search text', () => {
+  it('onSearch should update form value with search text', async () => {
     const { getValues } = renderArtistField()
     const props = apiSelectSpy.mock.calls[0][0]
 
     props.onSearch?.('John')
 
-    const artistOfferLinks = getValues().artistOfferLinks
-    const authorLink = artistOfferLinks[0]
-    expect(authorLink).toEqual({
-      artistId: null,
-      artistName: 'John',
-      artistType: ArtistType.AUTHOR,
+    await waitFor(() => {
+      const artistOfferLinks = getValues().artistOfferLinks
+      expect(artistOfferLinks[0]).toEqual({
+        artistId: null,
+        artistName: 'John',
+        artistType: ArtistType.AUTHOR,
+      })
     })
   })
 
-  it('onSelect should update form value with selected artist object', () => {
+  it('onSelect should update form value with selected artist object', async () => {
     const { getValues } = renderArtistField()
     const props = apiSelectSpy.mock.calls[0][0]
 
-    props.onSelect({
-      id: '42',
-      name: 'John Doe',
+    props.onSelect({ id: '42', name: 'John Doe' })
+
+    await waitFor(() => {
+      const artistOfferLinks = getValues().artistOfferLinks
+      expect(artistOfferLinks[0]).toEqual({
+        artistId: '42',
+        artistName: 'John Doe',
+        artistType: ArtistType.AUTHOR,
+      })
     })
+  })
+
+  it('should render button to add artist', () => {
+    renderArtistField({ readOnly: false })
+
+    expect(
+      screen.getByRole('button', { name: /Ajouter un auteur/i })
+    ).toBeInTheDocument()
+  })
+
+  it('should not render button to add artist when readOnly', () => {
+    renderArtistField({ readOnly: true })
+
+    expect(
+      screen.queryByRole('button', { name: /Ajouter un auteur/i })
+    ).not.toBeInTheDocument()
+  })
+
+  it('should add new artist field when clicking add button', async () => {
+    const { getValues } = renderArtistField({ readOnly: false })
+
+    const addButton = screen.getByRole('button', { name: /Ajouter un auteur/i })
+    await userEvent.click(addButton)
 
     const artistOfferLinks = getValues().artistOfferLinks
-    const authorLink = artistOfferLinks[0]
-    expect(authorLink).toEqual({
-      artistId: '42',
-      artistName: 'John Doe',
+    expect(artistOfferLinks).toHaveLength(2)
+    expect(artistOfferLinks[1]).toEqual({
+      artistId: null,
+      artistName: '',
       artistType: ArtistType.AUTHOR,
     })
   })
