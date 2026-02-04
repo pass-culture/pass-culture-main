@@ -1,5 +1,5 @@
 [data-bs-toggle="collapse"][aria-expanded="true"] {
-  & > i.bi-chevron-right::before {
-    transform: rotate(90deg)
+  & > i.bi-chevron-down::before {
+    transform: rotate(-90deg)
   }
 }

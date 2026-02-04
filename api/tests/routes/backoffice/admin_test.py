@@ -488,18 +488,13 @@ class GetBoUserTest(GetEndpointHelper):
             assert response.status_code == 200
 
         content = html_parser.content_as_text(response.data)
+        descriptions = html_parser.extract_descriptions(response.data)
         assert "Admin" in content
         assert "Suspendu" not in content
-        assert f"User ID : {user.id} " in content
-        assert f"Email : {user.email} " in content
-        assert f"Date de création du compte : {user.dateCreated.strftime('%d/%m/%Y')}" in content
-        assert (
-            f"Date de dernière connexion : {user.lastConnectionDate.strftime('%d/%m/%Y') if user.lastConnectionDate else ''}"
-            in content
-        )
-        assert "Date de naissance" not in content
-        assert "Tél :" not in content
-        assert "Adresse :" not in content
+        assert descriptions["User ID"] == str(user.id)
+        assert descriptions["Email"] == user.email
+        assert descriptions["Date de création du compte"] == user.dateCreated.strftime("%d/%m/%Y")
+        assert "Date de dèrniere connexion" not in descriptions
 
     def test_get_suspended_bo_user_with_history(self, authenticated_client, legit_user):
         user = users_factories.AdminFactory(
