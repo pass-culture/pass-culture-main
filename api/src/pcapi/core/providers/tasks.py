@@ -6,15 +6,15 @@ from pcapi.local_providers.provider_manager import synchronize_ems_venue_provide
 from pcapi.local_providers.provider_manager import synchronize_venue_provider
 
 
-class CinemaSynchronisationJobPayload(BaseModelV2):
+class CinemaSynchronisationTaskPayload(BaseModelV2):
     venue_provider_id: int
 
 
 @celery_async_task(
     name="tasks.providers.default.synchronize_cinema_sessions",
-    model=CinemaSynchronisationJobPayload,
+    model=CinemaSynchronisationTaskPayload,
 )
-def synchronize_cinema_sessions(payload: CinemaSynchronisationJobPayload) -> None:
+def synchronize_cinema_sessions_task(payload: CinemaSynchronisationTaskPayload) -> None:
     venue_provider = providers_repository.get_venue_provider_by_id(payload.venue_provider_id)
     if venue_provider.provider.localClass == "EMSStocks":
         synchronize_ems_venue_provider(venue_provider)

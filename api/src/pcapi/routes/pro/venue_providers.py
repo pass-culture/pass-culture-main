@@ -135,8 +135,8 @@ def create_venue_provider(
         if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION.is_active():
             on_commit(
                 functools.partial(
-                    providers_tasks.synchronize_cinema_sessions.delay,
-                    providers_tasks.CinemaSynchronisationJobPayload(
+                    providers_tasks.synchronize_cinema_sessions_task.delay,
+                    providers_tasks.CinemaSynchronisationTaskPayload(
                         venue_provider_id=new_venue_provider.id
                     ).model_dump_json(),
                 )
