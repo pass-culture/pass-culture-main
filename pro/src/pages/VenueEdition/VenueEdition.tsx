@@ -20,8 +20,8 @@ import { CollectiveDataEdition } from '@/pages/Offerers/Offerer/VenueV1/VenueEdi
 import { formatAndOrderVenues } from '@/repository/venuesService'
 import { Select } from '@/ui-kit/form/Select/Select'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
+import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
-import type { NavLinkItem } from '@/ui-kit/Tabs/TabsNavLinkItems'
 
 import { VenueEditionFormScreen } from './components/VenueEditionFormScreen'
 import { VenueEditionHeader } from './components/VenueEditionHeader'
