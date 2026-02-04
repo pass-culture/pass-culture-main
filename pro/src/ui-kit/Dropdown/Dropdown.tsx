@@ -2,8 +2,16 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import type * as React from 'react'
 
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
+import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
+
+import styles from './Dropdown.module.scss'
 import { DropdownItem } from './DropdownItem'
-import styles from './DropdownMenuWrapper.module.scss'
 
 type DropdownOption = {
   id: string
@@ -14,8 +22,10 @@ type DropdownOption = {
 }
 
 export type DropdownProps = {
+  title?: string
+
   /** Trigger slot rendered with Radix Trigger asChild */
-  trigger: React.ReactNode
+  trigger?: React.ReactNode
 
   /** Controlled/uncontrolled open state (optional) */
   open?: boolean
@@ -32,9 +42,14 @@ export type DropdownProps = {
 
   /** Styling */
   contentClassName?: string
+
+  dropdownTriggerRef?: React.RefObject<HTMLButtonElement>
+
+  triggerTooltip?: boolean
 }
 
 export function Dropdown({
+  title,
   trigger,
   open,
   defaultOpen,
@@ -44,6 +59,8 @@ export function Dropdown({
   align = 'end',
   sideOffset = 4,
   contentClassName,
+  dropdownTriggerRef,
+  triggerTooltip,
 }: DropdownProps): JSX.Element {
   const content =
     children ??
@@ -65,7 +82,19 @@ export function Dropdown({
       onOpenChange={onOpenChange}
     >
       <DropdownMenu.Trigger data-testid="dropdown-menu-trigger" asChild>
-        {trigger}
+        {trigger ? (
+          trigger
+        ) : (
+          <Button
+            ref={dropdownTriggerRef}
+            variant={ButtonVariant.SECONDARY}
+            color={ButtonColor.NEUTRAL}
+            size={ButtonSize.SMALL}
+            icon={fullThreeDotsIcon}
+            tooltip={triggerTooltip ? title : undefined}
+            aria-label={title}
+          />
+        )}
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>

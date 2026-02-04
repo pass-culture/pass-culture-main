@@ -11,7 +11,6 @@ import {
   OFFER_FORM_NAVIGATION_IN,
   OFFER_FORM_NAVIGATION_MEDIUM,
 } from '@/commons/core/FirebaseEvents/constants'
-import { OFFER_STATUS_DRAFT } from '@/commons/core/Offers/constants'
 import { useQuerySearchFilters } from '@/commons/core/Offers/hooks/useQuerySearchFilters'
 import type { IndividualSearchFiltersParams } from '@/commons/core/Offers/types'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
@@ -19,18 +18,19 @@ import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { ensureCurrentOfferer } from '@/commons/store/offerer/selectors'
 import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import { getStoredFilterConfig } from '@/components/OffersTableSearch/utils'
-import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
+import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import penIcon from '@/icons/full-edit.svg'
+import fullStockIcon from '@/icons/full-stock.svg'
+import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeStarIcon from '@/icons/stroke-star.svg'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
-import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
+import { Dropdown, type DropdownProps } from '@/ui-kit/Dropdown/Dropdown'
 
 import styles from './Cells.module.scss'
-import { DeleteDraftCell } from './DeleteDraftCell'
-import { EditOfferCell } from './EditOfferCell'
-import { EditStocksCell } from './EditStocksCell'
 import { HeadlineOfferCell } from './HeadlineOfferCell/HeadlineOfferCell'
 import { HeadlineOfferImageDialogs } from './HeadlineOfferImageDialogs'
 
@@ -132,32 +132,69 @@ export const IndividualActionsCells = ({
   return (
     <>
       <div className={styles['actions-column']}>
-        <DropdownMenuWrapper
+        <Dropdown
           title="Voir les actions"
-          triggerIcon={fullThreeDotsIcon}
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
-        >
-          <EditOfferCell editionOfferLink={editionOfferLink} />
-          {offer.status === OFFER_STATUS_DRAFT ? (
-            <DeleteDraftCell
-              setIsConfirmDialogOpen={setIsConfirmDialogDeleteDraftOpen}
-            />
-          ) : (
-            <EditStocksCell offer={offer} editionStockLink={editionStockLink} />
-          )}{' '}
-          {isHeadlineActionDisplayed && (
-            <HeadlineOfferCell
-              offer={offer}
-              setIsConfirmReplacementDialogOpen={
-                setIsConfirmDialogReplaceHeadlineOfferOpen
-              }
-              setIsOfferWithoutImageDialogOpen={
-                setIsDialogForHeadlineOfferWithoutImageOpen
-              }
-            />
-          )}
-        </DropdownMenuWrapper>
+          options={
+            [
+              {
+                id: 'see-offer',
+                element: (
+                  <Button
+                    as="a"
+                    variant={ButtonVariant.TERTIARY}
+                    color={ButtonColor.NEUTRAL}
+                    to={editionOfferLink}
+                    icon={penIcon}
+                    label="Voir l’offre"
+                  />
+                ),
+              },
+              offer.status === OfferStatus.DRAFT
+                ? {
+                    id: 'delete-draft',
+                    onselect: setIsConfirmDialogDeleteDraftOpen,
+                    element: (
+                      <Button
+                        icon={fullTrashIcon}
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.NEUTRAL}
+                        label="Supprimer l’offre"
+                      />
+                    ),
+                  }
+                : {
+                    id: 'edit-stocks',
+                    onselect: editionStockLink,
+                    element: (
+                      <Button
+                        as="a"
+                        variant={ButtonVariant.TERTIARY}
+                        color={ButtonColor.NEUTRAL}
+                        to={editionStockLink}
+                        icon={fullStockIcon}
+                        label={offer.isEvent ? `Dates et capacités` : `Stocks`}
+                      />
+                    ),
+                  },
+              isHeadlineActionDisplayed && {
+                id: 'headline-offer',
+                element: (
+                  <HeadlineOfferCell
+                    offer={offer}
+                    setIsConfirmReplacementDialogOpen={
+                      setIsConfirmDialogReplaceHeadlineOfferOpen
+                    }
+                    setIsOfferWithoutImageDialogOpen={
+                      setIsDialogForHeadlineOfferWithoutImageOpen
+                    }
+                  />
+                ),
+              },
+            ].filter(Boolean) as NonNullable<DropdownProps['options']>
+          }
+        />
       </div>
       <ConfirmDialog
         icon={strokeTrashIcon}

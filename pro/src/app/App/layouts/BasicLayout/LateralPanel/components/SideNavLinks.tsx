@@ -42,7 +42,7 @@ import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
-import { Dropdown } from '@/ui-kit/DropdownMenuWrapper/Dropdown'
+import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 
 import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import { SideNavLink } from './SideNavLink'

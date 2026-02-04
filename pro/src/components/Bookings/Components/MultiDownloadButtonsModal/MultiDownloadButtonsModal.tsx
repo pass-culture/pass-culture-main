@@ -12,7 +12,7 @@ import {
 import fullDownIcon from '@/icons/full-down.svg'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullUpIcon from '@/icons/full-up.svg'
-import { Dropdown } from '@/ui-kit/DropdownMenuWrapper/Dropdown'
+import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 
 type MultiDownloadButtonsModalType = {
   isDownloading: boolean
@@ -43,34 +43,34 @@ export const MultiDownloadButtonsModal = ({
       options={[
         {
           id: 'excel',
+          onSelect: async () => {
+            await downloadFunction(filters, 'XLS')
+            logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
+              from: location.pathname,
+            })
+          },
           element: (
             <Button
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
               icon={fullDownloadIcon}
-              onClick={async () => {
-                await downloadFunction(filters, 'XLS')
-                logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
-                  from: location.pathname,
-                })
-              }}
               label="Microsoft Excel (.xls)"
             />
           ),
         },
         {
           id: 'csv',
+          onSelect: async () => {
+            await downloadFunction(filters, 'CSV')
+            logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
+              from: location.pathname,
+            })
+          },
           element: (
             <Button
               variant={ButtonVariant.TERTIARY}
               color={ButtonColor.NEUTRAL}
               icon={fullDownloadIcon}
-              onClick={async () => {
-                await downloadFunction(filters, 'CSV')
-                logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
-                  from: location.pathname,
-                })
-              }}
               label="Fichier CSV (.csv)"
             />
           ),

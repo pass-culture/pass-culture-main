@@ -2,26 +2,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 @use "styles/variables/_z-index.scss" as zIndex;
 
-.menu-button {
-  @include fonts.title2;
-
-  background-color: transparent;
-  border: none;
-  display: flex;
-  cursor: pointer;
-
-  &-icon {
-    width: rem.torem(20px);
-    height: rem.torem(20px);
-
-    &:focus,
-    &:focus-visible,
-    &:hover {
-      color: var(--color-icon-brand-primary);
-    }
-  }
-}
-
 .menu-list {
   display: flex;
   flex-direction: column;

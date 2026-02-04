@@ -46,10 +46,9 @@ import fullCopyIcon from '@/icons/full-duplicate.svg'
 import fullPenIcon from '@/icons/full-edit.svg'
 import fullHideIcon from '@/icons/full-hide.svg'
 import fullPlusIcon from '@/icons/full-plus.svg'
-import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
-import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
+import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
 
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 import styles from './OfferActionsCell.module.scss'
@@ -286,9 +285,8 @@ export const OfferActionsCell = ({
   return (
     <div className={styles['actions-column']}>
       {!noActionsAllowed && (
-        <DropdownMenuWrapper
+        <Dropdown
           title="Voir les actions"
-          triggerIcon={fullThreeDotsIcon}
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
         >
@@ -404,7 +402,7 @@ export const OfferActionsCell = ({
               </DropdownMenu.Item>
             </>
           )}
-        </DropdownMenuWrapper>
+        </Dropdown>
       )}
       <DuplicateOfferDialog
         onCancel={() => setIsModalOpen(false)}
