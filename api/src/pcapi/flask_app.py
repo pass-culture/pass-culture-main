@@ -87,10 +87,20 @@ def setup_metrics(app_: Flask) -> None:
             return "other"
         return prefix
 
+    def get_url_rule() -> str:
+        if request.url_rule:
+            return str(request.url_rule)
+        else:
+            return "other"
+
     prometheus_flask_exporter.multiprocess.GunicornPrometheusMetrics(
         app_,
         group_by="url_rule",
-        default_labels={"url_prefix": get_url_prefix, "route_blueprint": get_top_level_blueprint_name},
+        default_labels={
+            "url_prefix": get_url_prefix,
+            "route_blueprint": get_top_level_blueprint_name,
+            "path": get_url_rule,
+        },
     )
     # An external export server is started by Gunicorn, see `gunicorn.conf.py`.
 
