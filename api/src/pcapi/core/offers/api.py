@@ -2825,3 +2825,30 @@ def replace_offer_price_categories(
     db.session.flush()
 
     return offer
+
+
+def get_offer_mediation_url(offer: models.Offer) -> tuple[str | None, str | None]:
+    """Fetch the most recent mediation url from the offer or its product
+
+    Try to fetch the most recent mediation from the offer's product first. If
+    nothing is found, search from the offer's mediations.
+    """
+    product = offer.product
+
+    if product:
+        mediations = sorted(product.productMediations, key=lambda m: m.id, reverse=True)
+        if mediations:
+            return mediations[0].url, None
+
+    mediations = sorted(offer.mediations, key=lambda m: m.id, reverse=True)
+    if mediations:
+        return mediations[0].thumbUrl, mediations[0].credit
+
+    return None, None
+
+
+def build_offer_image(offer: models.Offer) -> models.OfferImage | None:
+    url, credit = get_offer_mediation_url(offer)
+    if not url:
+        return None
+    return models.OfferImage(url=url, credit=credit)

@@ -1,4 +1,5 @@
 import json
+from dataclasses import dataclass
 from decimal import Decimal
 
 from .queries import count_bookings
@@ -80,30 +81,40 @@ COUNT_OFFERS = [
 
 
 class MockOfferConsultationCountQueryResult:
-    total_views_6_months: int
+    month: int
+    views: int
 
-    def __init__(self, total_views_6_months: int = 0):
-        self.total_views_6_months = total_views_6_months
+    def __init__(self, month: int = 1, views: int = 0):
+        self.month = month
+        self.views = views
 
 
 OFFER_CONSULTATION_COUNT = [
-    MockOfferConsultationCountQueryResult(total_views_6_months=3456),
+    MockOfferConsultationCountQueryResult(month=1, views=3456),
 ]
 
 
-class MockTopOffersByConsultationQueryResult:
-    offer_id: str
-    total_views_last_30_days: int
+class MockTopOffersByViewsQueryResult:
+    id: str
+    views: int
     rank: int
 
-    def __init__(self, offer_id: str, total_views_last_30_days: int, rank: int):
-        self.offer_id = offer_id
-        self.total_views_last_30_days = total_views_last_30_days
+    def __init__(self, id: str, views: int, rank: int):
+        self.id = id
+        self.views = views
         self.rank = rank
 
 
-TOP_OFFERS_BY_CONSULTATION = [
-    MockTopOffersByConsultationQueryResult(offer_id="offer_1", total_views_last_30_days=150, rank=1),
-    MockTopOffersByConsultationQueryResult(offer_id="offer_2", total_views_last_30_days=120, rank=2),
-    MockTopOffersByConsultationQueryResult(offer_id="offer_3", total_views_last_30_days=100, rank=3),
+TOP_OFFERS_BY_VIEWS = [
+    MockTopOffersByViewsQueryResult(id="1", views=150, rank=1),
+    MockTopOffersByViewsQueryResult(id="2", views=120, rank=2),
+    MockTopOffersByViewsQueryResult(id="3", views=100, rank=3),
 ]
+
+
+@dataclass
+class MockVenueOffersMonthlyViewsQuery:
+    total: int
+
+
+VENUE_OFFERS_MONTHLY_VIEWS = [MockVenueOffersMonthlyViewsQuery(total=256)]

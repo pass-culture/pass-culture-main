@@ -57,9 +57,9 @@ import type { GetProductInformations } from '../models/GetProductInformations';
 import type { GetStocksResponseModel } from '../models/GetStocksResponseModel';
 import type { GetVenueListLiteResponseModel } from '../models/GetVenueListLiteResponseModel';
 import type { GetVenueListResponseModel } from '../models/GetVenueListResponseModel';
-import type { GetVenueOffersStatsModel } from '../models/GetVenueOffersStatsModel';
 import type { GetVenueResponseModel } from '../models/GetVenueResponseModel';
 import type { GetVenuesOfOffererFromSiretResponseModel } from '../models/GetVenuesOfOffererFromSiretResponseModel';
+import type { GetVenueStatsResponseModel } from '../models/GetVenueStatsResponseModel';
 import type { HasInvoiceResponseModel } from '../models/HasInvoiceResponseModel';
 import type { HeadlineOfferCreationBodyModel } from '../models/HeadlineOfferCreationBodyModel';
 import type { HeadlineOfferDeleteBodyModel } from '../models/HeadlineOfferDeleteBodyModel';
@@ -3002,12 +3002,12 @@ export class DefaultService {
   /**
    * get_venue_offers_stats <GET>
    * @param venueId
-   * @returns GetVenueOffersStatsModel OK
+   * @returns GetVenueStatsResponseModel OK
    * @throws ApiError
    */
   public getVenueOffersStats(
     venueId: number,
-  ): CancelablePromise<GetVenueOffersStatsModel> {
+  ): CancelablePromise<GetVenueStatsResponseModel> {
     return this.httpRequest.request({
       method: 'GET',
       url: '/venues/{venue_id}/offers-statistics',
