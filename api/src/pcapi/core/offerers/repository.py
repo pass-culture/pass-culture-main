@@ -1333,13 +1333,39 @@ def get_offer_timezone(offer_id: int) -> str:
     )
 
 
+@typing.overload
 def convert_date_period_to_datetime_period_for_timezones(
     period: tuple[datetime.date, datetime.date],
-    pro_user: users_models.User,
+    pro_user_id: int,
     *,
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
-) -> dict[str, tuple[datetime.datetime, datetime.datetime]]:
+) -> dict[str, tuple[datetime.datetime, datetime.datetime]]: ...
+@typing.overload
+def convert_date_period_to_datetime_period_for_timezones(
+    period: tuple[None, datetime.date],
+    pro_user_id: int,
+    *,
+    offer_id: int | None = None,
+    offerer_address_id: int | None = None,
+) -> dict[str, tuple[None, datetime.datetime]]: ...
+@typing.overload
+def convert_date_period_to_datetime_period_for_timezones(
+    period: tuple[datetime.date, None],
+    pro_user_id: int,
+    *,
+    offer_id: int | None = None,
+    offerer_address_id: int | None = None,
+) -> dict[str, tuple[datetime.datetime, None]]: ...
+
+
+def convert_date_period_to_datetime_period_for_timezones(
+    period: tuple[typing.Any, typing.Any],
+    pro_user_id: int,
+    *,
+    offer_id: int | None = None,
+    offerer_address_id: int | None = None,
+) -> dict[str, tuple[typing.Any, typing.Any]]:
     """
     Convert a date period to a UTC datetime period based on relevant timezones.
 
@@ -1361,6 +1387,6 @@ def convert_date_period_to_datetime_period_for_timezones(
         timezone = get_offer_timezone(offer_id)
         return {timezone: date_utils.convert_date_period_to_utc_datetime_period(period, timezone)}
 
-    timezones = get_pro_user_timezones(pro_user.id)
+    timezones = get_pro_user_timezones(pro_user_id)
 
     return {timezone: date_utils.convert_date_period_to_utc_datetime_period(period, timezone) for timezone in timezones}

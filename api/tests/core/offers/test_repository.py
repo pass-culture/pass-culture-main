@@ -192,19 +192,29 @@ class GetCappedOffersForFiltersTest:
         period_beginning_date = datetime.date(2020, 4, 21)
         period_ending_date = datetime.date(2020, 4, 21)
 
-        cayenne_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="America/Cayenne")
+        venue_in_cayenne = offerers_factories.VenueFactory(
+            managingOfferer=pro_attachment_to_offerer.offerer,
+            offererAddress__address__postalCode="97300",
+        )
+        cayenne_offerer_address = offerers_factories.OffererAddressFactory(
+            venue=venue_in_cayenne, address__timezone="America/Cayenne"
+        )
         offer_in_cayenne = factories.OfferFactory(
-            venue__managingOfferer=pro_attachment_to_offerer.offerer,
-            venue__offererAddress__address__postalCode="97300",
+            venue=venue_in_cayenne,
             offererAddress=cayenne_offerer_address,
         )
         cayenne_event_datetime = datetime.datetime(2020, 4, 22, 2, 0)
         factories.EventStockFactory(offer=offer_in_cayenne, beginningDatetime=cayenne_event_datetime)
 
-        mayotte_offerer_address = offerers_factories.OffererAddressFactory(address__timezone="Indian/Mayotte")
+        venue_in_mayotte = offerers_factories.VenueFactory(
+            managingOfferer=pro_attachment_to_offerer.offerer,
+            offererAddress__address__postalCode="97600",
+        )
+        mayotte_offerer_address = offerers_factories.OffererAddressFactory(
+            venue=venue_in_mayotte, address__timezone="Indian/Mayotte"
+        )
         offer_in_mayotte = factories.OfferFactory(
-            venue__managingOfferer=pro_attachment_to_offerer.offerer,
-            venue__offererAddress__address__postalCode="97600",
+            venue=venue_in_mayotte,
             offererAddress=mayotte_offerer_address,
         )
         mayotte_event_datetime = datetime.datetime(2020, 4, 20, 22, 0)
