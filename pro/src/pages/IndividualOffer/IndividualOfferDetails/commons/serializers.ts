@@ -1,5 +1,6 @@
 import {
   type ArtistOfferLinkBodyModel,
+  type ArtistOfferLinkResponseModel,
   ArtistType,
   type PatchOfferBodyModel,
   type PostOfferBodyModel,
@@ -80,18 +81,16 @@ export const serializeExtraData = (
 }
 
 const serializeArtistOfferLinks = (
-  formValues: DetailsFormValues
+  artistOfferLinks: ArtistOfferLinkResponseModel[]
 ): ArtistOfferLinkBodyModel[] | undefined => {
   const links: ArtistOfferLinkBodyModel[] = []
-
-  const validArtistOfferLinks = formValues.artistOfferLinks.filter((artist) =>
+  const validArtistOfferLinks = artistOfferLinks.filter((artist) =>
     artist.artistName?.trim()
   )
-
   validArtistOfferLinks.forEach((link) => {
     links.push({
       artistId: link.artistId,
-      customName: link.artistId === null ? link.artistName.trim() : null,
+      artistName: link.artistName.trim(),
       artistType: link.artistType,
     })
   })
@@ -120,7 +119,7 @@ export function serializeDetailsPostData(
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
-    artistOfferLinks: serializeArtistOfferLinks(formValues),
+    artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
   })
 }
 
@@ -143,6 +142,6 @@ export function serializeDetailsPatchData(
     mentalDisabilityCompliant: formValues.accessibility.mental,
     motorDisabilityCompliant: formValues.accessibility.motor,
     visualDisabilityCompliant: formValues.accessibility.visual,
-    artistOfferLinks: serializeArtistOfferLinks(formValues),
+    artistOfferLinks: serializeArtistOfferLinks(formValues.artistOfferLinks),
   })
 }
