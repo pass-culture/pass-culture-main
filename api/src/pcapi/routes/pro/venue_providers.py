@@ -11,11 +11,13 @@ from pcapi.core.providers import api
 from pcapi.core.providers import exceptions
 from pcapi.core.providers import models as providers_models
 from pcapi.core.providers import repository as providers_repository
+from pcapi.core.providers import tasks as providers_tasks
 from pcapi.core.providers.constants import CINEMA_PROVIDER_NAMES
 from pcapi.core.providers.models import VenueProviderCreationPayload
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.api_errors import ResourceNotFoundError
+from pcapi.models.feature import FeatureToggle
 from pcapi.routes.apis import private_api
 from pcapi.routes.serialization import venue_provider_serialize
 from pcapi.serialization.decorator import spectree_serialize
@@ -130,7 +132,17 @@ def create_venue_provider(
     # venue_provider_job only handles movie providers now.
     movie_provider_names = {"AllocineStocks"} | set(CINEMA_PROVIDER_NAMES)
     if new_venue_provider.provider.localClass in movie_provider_names:
-        on_commit(functools.partial(venue_provider_job.delay, new_venue_provider.id))
+        if FeatureToggle.WIP_ASYNCHRONOUS_CELERY_CINEMA_INTEGRATION.is_active():
+            on_commit(
+                functools.partial(
+                    providers_tasks.synchronize_cinema_sessions.delay,
+                    providers_tasks.CinemaSynchronisationJobPayload(
+                        venue_provider_id=new_venue_provider.id
+                    ).model_dump_json(),
+                )
+            )
+        else:
+            on_commit(functools.partial(venue_provider_job.delay, new_venue_provider.id))
 
     return venue_provider_serialize.VenueProviderResponse.model_validate(new_venue_provider)
 

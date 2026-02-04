@@ -9,6 +9,7 @@ import pcapi.core.external.zendesk.tasks  # noqa: F401
 import pcapi.core.external.zendesk_sell.tasks  # noqa: F401
 import pcapi.core.offers.tasks  # noqa: F401
 import pcapi.core.operations.tasks  # noqa: F401
+import pcapi.core.providers.tasks  # noqa: F401
 import pcapi.core.subscription.bonus.tasks  # noqa: F401
 import pcapi.core.subscription.ubble.tasks  # noqa: F401
 from pcapi import settings

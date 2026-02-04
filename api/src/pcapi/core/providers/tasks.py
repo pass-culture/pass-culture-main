@@ -1,64 +1,22 @@
-import logging
-import time
+from pydantic import BaseModel as BaseModelV2
 
-from pcapi import settings
-from pcapi.local_providers import provider_manager
-from pcapi.models import db
-from pcapi.routes.serialization import BaseModel
-from pcapi.tasks.decorator import task
-
-from . import models
+import pcapi.core.providers.repository as providers_repository
+from pcapi.celery_tasks.tasks import celery_async_task
+from pcapi.local_providers.provider_manager import synchronize_ems_venue_provider
+from pcapi.local_providers.provider_manager import synchronize_venue_provider
 
 
-logger = logging.getLogger(__name__)
+class CinemaSynchronisationJobPayload(BaseModelV2):
+    venue_provider_id: int
 
 
-class SynchronizeVenueProvidersRequest(BaseModel):
-    provider_id: int
-    venue_provider_ids: list[int]
-
-
-@task(
-    settings.GCP_SYNCHRONIZE_VENUE_PROVIDERS_QUEUE_NAME,
-    "/providers/synchronize_venue_providers",
-    task_request_timeout=30 * 60,
+@celery_async_task(
+    name="tasks.providers.default.synchronize_cinema_sessions",
+    model=CinemaSynchronisationJobPayload,
 )
-def synchronize_venue_providers_task(payload: SynchronizeVenueProvidersRequest) -> None:
-    provider_id = payload.provider_id
-    venue_provider_ids = payload.venue_provider_ids
-    venue_providers = (
-        db.session.query(models.VenueProvider).filter(models.VenueProvider.id.in_(venue_provider_ids)).all()
-    )
-
-    if not venue_providers:
-        return
-
-    start_timer = time.perf_counter()
-    logger.info(
-        "Synchronization job started",
-        extra={
-            "providerid": provider_id,
-            "venue_providers": venue_provider_ids,
-        },
-    )
-
-    provider_manager.synchronize_venue_providers(venue_providers)
-
-    duration = time.perf_counter() - start_timer
-    if duration >= 0.5 * 60 * 60:  # 50% of time between two ProviderAPIsSync cron jobs
-        logger.error(
-            "Synchronization of venue providers took a long time",
-            extra={
-                "provider": provider_id,
-                "duration": duration,
-                "venue_providers": venue_provider_ids,
-            },
-        )
-
-    logger.info(
-        "Synchronization with provider finished",
-        extra={
-            "provider": provider_id,
-            "duration": duration,
-        },
-    )
+def synchronize_cinema_sessions(payload: CinemaSynchronisationJobPayload) -> None:
+    venue_provider = providers_repository.get_venue_provider_by_id(payload.venue_provider_id)
+    if venue_provider.provider.localClass == "EMSStocks":
+        synchronize_ems_venue_provider(venue_provider)
+    else:
+        synchronize_venue_provider(venue_provider)
