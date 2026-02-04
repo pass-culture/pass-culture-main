@@ -88,20 +88,6 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: "Deploy API"
-        if: ${{ inputs.deploy_api && !inputs.is_new_infra }}
-        uses: ./.github/actions/deploy-api
-        with:
-          environment: ${{ inputs.environment }}
-          app_version: ${{ inputs.app_version }}
-          cluster_scope: ${{ inputs.cluster_scope }}
-          cluster_environment: ${{ inputs.cluster_environment }}
-          workload_identity_provider_secret_name: ${{ inputs.workload_identity_provider_secret_name }}
-          gcp_ehp_workload_identity_provider: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
-          gcp_ehp_service_account: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
-          passculture_github_action_app_id: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_ID }}
-          passculture_github_action_app_private_key: ${{ secrets.PASSCULTURE_GITHUB_ACTION_APP_PRIVATE_KEY }}
-
-      - name: "Deploy API To new Infra"
         if: ${{ inputs.deploy_api && inputs.is_new_infra }}
         uses: ./.github/actions/deploy-api-new-infra
         with:
