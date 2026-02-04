@@ -48,7 +48,6 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
           })}
         >
           <CumulatedViews dailyViews={stats.jsonData.dailyViews} />
-
           {stats.jsonData.topOffers.length > 0 && (
             <MostViewedOffers
               last30daysViews={stats.jsonData.totalViewsLast30Days}

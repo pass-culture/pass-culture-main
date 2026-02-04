@@ -20,7 +20,7 @@ describe('CumulatedViews', () => {
       screen.getByText(
         'Vos offres n’ont pas encore été découvertes par les bénéficiaires'
       )
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should render empty state when 0 views in the past 6 months', () => {
@@ -38,7 +38,7 @@ describe('CumulatedViews', () => {
       screen.getByText(
         'Vos offres n’ont pas encore été découvertes par les bénéficiaires'
       )
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 
   it('should render graph and accessible table if data is present', () => {
@@ -56,6 +56,6 @@ describe('CumulatedViews', () => {
       screen.getByText(
         'Nombre de vues cumulées de toutes vos offres sur les 6 derniers mois'
       )
-    ).toBeInTheDocument()
+    ).toBeVisible()
   })
 })
