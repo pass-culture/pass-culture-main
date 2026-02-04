@@ -3,8 +3,8 @@ from unittest import mock
 import pytest
 from flask import url_for
 
-from pcapi.core.external.zendesk_sell_backends import base as zendesk_sell
-from pcapi.core.external.zendesk_sell_backends import testing as zendesk_testing
+from pcapi.core.external.zendesk_sell.backends import base as zendesk_sell
+from pcapi.core.external.zendesk_sell.backends import testing as zendesk_testing
 from pcapi.core.offerers import factories as offerers_factories
 from pcapi.core.permissions import models as perm_models
 from pcapi.core.users import testing
@@ -42,7 +42,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
             }
         ]
 
-    @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
+    @mock.patch("pcapi.core.external.zendesk_sell.backends.testing.TestingBackend.get_offerer_by_id")
     def test_sync_offerer_matching_several_contacts(self, mock_get_offerer_by_id, authenticated_client):
         offerer = offerers_factories.OffererFactory()
 
@@ -78,7 +78,7 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
 
         assert not testing.zendesk_sell_requests
 
-    @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
+    @mock.patch("pcapi.core.external.zendesk_sell.backends.testing.TestingBackend.get_offerer_by_id")
     def test_sync_offerer_not_found(self, mock_get_offerer_by_id, authenticated_client):
         offerer = offerers_factories.OffererFactory()
 
@@ -94,6 +94,11 @@ class UpdateOffererOnZendeskSellTest(PostEndpointHelper):
         )
 
         assert not testing.zendesk_sell_requests
+
+
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL=True)
+class UpdateOffererOnZendeskSellCeleryTest(UpdateOffererOnZendeskSellTest):
+    pass
 
 
 class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
@@ -119,7 +124,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
             },
         ]
 
-    @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
+    @mock.patch("pcapi.core.external.zendesk_sell.backends.testing.TestingBackend.get_offerer_by_id")
     def test_sync_open_to_public_venue_without_parent(self, mock_get_offerer_by_id, authenticated_client):
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
@@ -140,7 +145,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
             },
         ]
 
-    @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
+    @mock.patch("pcapi.core.external.zendesk_sell.backends.testing.TestingBackend.get_offerer_by_id")
     def test_sync_open_to_public_venue_with_two_parents(self, mock_get_offerer_by_id, authenticated_client):
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
@@ -184,7 +189,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
             },
         ]
 
-    @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_offerer_by_id")
+    @mock.patch("pcapi.core.external.zendesk_sell.backends.testing.TestingBackend.get_offerer_by_id")
     def test_sync_open_to_public_venue_with_parent_error(self, mock_get_offerer_by_id, authenticated_client):
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
@@ -224,7 +229,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
 
         assert not testing.zendesk_sell_requests
 
-    @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_venue_by_id")
+    @mock.patch("pcapi.core.external.zendesk_sell.backends.testing.TestingBackend.get_venue_by_id")
     def test_sync_venue_matching_several_contacts(self, mock_get_venue_by_id, authenticated_client):
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
@@ -260,7 +265,7 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
 
         assert not testing.zendesk_sell_requests
 
-    @mock.patch("pcapi.core.external.zendesk_sell_backends.testing.TestingBackend.get_venue_by_id")
+    @mock.patch("pcapi.core.external.zendesk_sell.backends.testing.TestingBackend.get_venue_by_id")
     def test_sync_venue_not_found(self, mock_get_venue_by_id, authenticated_client):
         venue = offerers_factories.VenueFactory(isOpenToPublic=True)
 
@@ -276,3 +281,8 @@ class UpdateVenueOnZendeskSellTest(PostEndpointHelper):
         )
 
         assert not testing.zendesk_sell_requests
+
+
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK_SELL=True)
+class UpdateVenueOnZendeskSellCeleryTest(UpdateVenueOnZendeskSellTest):
+    pass

@@ -26,8 +26,8 @@ from pydantic import BaseModel
 import pcapi.utils.email as email_utils
 from pcapi.app import app
 from pcapi.core import search
-from pcapi.core.external import zendesk_sell
 from pcapi.core.external.attributes import api as external_attributes_api
+from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.geography import models as geography_models
 from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
@@ -288,7 +288,7 @@ def create_offerer_and_venue(data: dict, counters: ImportCounters, comment: str)
         if venue.bookingEmail:
             booking_email = str(venue.bookingEmail)
             external_attributes_api.update_external_pro(booking_email)
-        zendesk_sell.create_venue(venue)
+        zendesk_sell_api.create_venue(venue)
 
     return offerer
 
@@ -353,7 +353,7 @@ def main(filename: str, not_dry: bool) -> None:
 def update_zendesk_offerer(offerer_id: int) -> None:
     offerer = db.session.query(offerers_models.Offerer).filter(offerers_models.Offerer.id == offerer_id).one()
     logger.info(f"Updating Zendesk offerer: {offerer.id} (SIREN: {offerer.siren})")
-    zendesk_sell.create_offerer(offerer)
+    zendesk_sell_api.create_offerer(offerer)
 
 
 if __name__ == "__main__":

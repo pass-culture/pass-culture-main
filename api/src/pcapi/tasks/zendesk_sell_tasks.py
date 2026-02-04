@@ -18,31 +18,31 @@ class VenuePayload(BaseModel):
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/create_offerer")
 def create_offerer_task(payload: OffererPayload) -> None:
-    from pcapi.core.external import zendesk_sell
+    from pcapi.core.external.zendesk_sell import api
 
     logger.info("create_offerer_task - payload: %s", payload)
-    zendesk_sell.do_create_offerer(payload.offerer_id)
+    api.do_create_offerer(payload.offerer_id)
 
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/update_offerer")
 def update_offerer_task(payload: OffererPayload) -> None:
-    from pcapi.core.external import zendesk_sell
+    from pcapi.core.external.zendesk_sell import api
 
     logger.info("update_offerer_task - payload: %s", payload)
-    zendesk_sell.do_update_offerer(payload.offerer_id)
+    api.do_update_offerer(payload.offerer_id)
 
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/create_venue")
 def create_venue_task(payload: VenuePayload) -> None:
-    from pcapi.core.external import zendesk_sell
+    from pcapi.core.external.zendesk_sell import api
 
     logger.info("create_venue_task - payload: %s", payload)
-    zendesk_sell.do_create_venue(payload.venue_id)
+    api.do_create_venue(payload.venue_id)
 
 
 @task(GCP_ZENDESK_SELL_QUEUE_NAME, "/zendesk_sell/update_venue")
 def update_venue_task(payload: VenuePayload) -> None:
-    from pcapi.core.external import zendesk_sell
+    from pcapi.core.external.zendesk_sell import api
 
     logger.info("update_venue_task - payload: %s", payload)
-    zendesk_sell.do_update_venue(payload.venue_id)
+    api.do_update_venue(payload.venue_id)
