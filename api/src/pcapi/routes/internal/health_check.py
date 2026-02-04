@@ -1,3 +1,4 @@
+from pcapi.flask_app import SPECIAL_EVENT_COUNTER
 from pcapi.routes.apis import public_api
 from pcapi.utils.health_checker import check_database_connection
 from pcapi.utils.health_checker import read_version_from_file
@@ -5,6 +6,7 @@ from pcapi.utils.health_checker import read_version_from_file
 
 @public_api.route("/health/api", methods=["GET"])
 def health_api() -> tuple[str, int]:
+    SPECIAL_EVENT_COUNTER.inc()
     output = read_version_from_file()
     return output, 200
 
