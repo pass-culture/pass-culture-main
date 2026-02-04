@@ -2,8 +2,8 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type TopOffersByConsultationModel = {
-  offerId: string;
-  totalViewsLast30Days: number;
+export type VenueMonthlyViewModel = {
+  month: number;
+  views: number;
 };
 

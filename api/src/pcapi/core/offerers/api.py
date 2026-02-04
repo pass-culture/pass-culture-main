@@ -2118,31 +2118,35 @@ def get_venues_stats(venue_ids: typing.Iterable[int]) -> dict[str, int | float |
     return stats
 
 
-@dataclasses.dataclass
-class OfferConsultationModel:
+@dataclasses.dataclass(frozen=True)
+class OfferViewsModel:
     offer_id: str
-    consultation_count: int
+    views: int
+    rank: int
+
+
+@dataclasses.dataclass
+class MonthlyViewsModel:
+    month: int
+    views: int
 
 
 @dataclasses.dataclass
 class VenueOffersStatisticsModel:
-    offers_consultation_count: int
-    top_offers_by_consultation: list[OfferConsultationModel]
+    monthly_views: list[MonthlyViewsModel]
+    total_views_last_30_days: int
+    top_offers: list[OfferViewsModel]
 
 
 def get_venue_offers_statistics(venue_id: int) -> VenueOffersStatisticsModel:
-    offers_consultation_count = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": venue_id})
-    top_offers_by_consultation = clickhouse_queries.TopOffersByConsultationQuery().execute({"venue_id": venue_id})
+    monthly_views = clickhouse_queries.OfferConsultationCountQuery().execute({"venue_id": venue_id})
+    views_count = clickhouse_queries.VenueOffersMonthlyViewsQuery().execute({"venue_id": venue_id})
+    top_offers = clickhouse_queries.TopOffersByViewsQuery().execute({"venue_id": venue_id})
 
     return VenueOffersStatisticsModel(
-        offers_consultation_count=offers_consultation_count[0].total_views_6_months if offers_consultation_count else 0,
-        top_offers_by_consultation=[
-            OfferConsultationModel(
-                offer_id=offer.offer_id,
-                consultation_count=offer.total_views_last_30_days,
-            )
-            for offer in top_offers_by_consultation
-        ],
+        monthly_views=[MonthlyViewsModel(month=row.month, views=row.views) for row in monthly_views],
+        total_views_last_30_days=views_count[0].total if len(views_count) > 0 else 0,
+        top_offers=[OfferViewsModel(offer_id=row.id, views=row.views, rank=row.rank) for row in top_offers],
     )
 
 

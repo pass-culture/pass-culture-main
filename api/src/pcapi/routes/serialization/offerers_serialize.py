@@ -324,6 +324,9 @@ class TopOffersResponseData(offerers_models.TopOffersData):
     image: offers_models.OfferImage | None
     isHeadlineOffer: bool
 
+    class Config:
+        alias_generator = to_camel
+
 
 class OffererStatsDataModel(BaseModel):
     totalViewsLast30Days: int
@@ -368,6 +371,30 @@ class GetOffererStatsResponseModel(BaseModel):
                 dailyViews=[offerers_models.OffererViewsModel(**_v) for _v in dailyViews],
             ),
         )
+
+
+class VenueMonthlyViewModel(BaseModel):
+    month: int
+    views: int
+
+
+class VenueStatsDataModel(BaseModel):
+    total_views_last_30_days: int
+    top_offers: list[TopOffersResponseData]
+    monthly_views: list[VenueMonthlyViewModel]
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
+
+
+class GetVenueStatsResponseModel(BaseModel):
+    venue_id: int
+    json_data: VenueStatsDataModel
+
+    class Config:
+        alias_generator = to_camel
+        allow_population_by_field_name = True
 
 
 class LinkVenueToBankAccountBodyModel(BaseModel):
