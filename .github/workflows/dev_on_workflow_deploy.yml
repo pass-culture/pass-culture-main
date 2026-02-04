@@ -119,7 +119,7 @@ jobs:
         with:
           node-version-file: "${{ inputs.doc-api-entrypoint }}/package.json"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.environment == 'testing'
+        if: inputs.environment != 'production'
       - name: "Build documentation"
         run: |
           set -e

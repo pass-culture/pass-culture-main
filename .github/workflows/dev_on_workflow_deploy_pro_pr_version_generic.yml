@@ -55,7 +55,7 @@ jobs:
         with:
           node-version-file: "pro/package.json"
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV == 'testing'
+        if: inputs.ENV != 'production'
       - name: "OpenID Connect Authentication"
         id: "openid-auth"
         uses: "google-github-actions/auth@v3"

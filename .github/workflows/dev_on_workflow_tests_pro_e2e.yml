@@ -39,7 +39,7 @@ jobs:
           node-version-file: "pro/package.json"
       
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV == 'testing'
+        if: inputs.ENV != 'production'
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
@@ -136,7 +136,7 @@ jobs:
           node-version-file: "pro/package.json"
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV == 'testing'
+        if: inputs.ENV != 'production'
 
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:

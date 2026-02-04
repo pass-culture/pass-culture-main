@@ -42,7 +42,7 @@ jobs:
           node-version-file: "pro/package.json"
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV == 'testing'
+        if: inputs.ENV != 'production'
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -116,7 +116,7 @@ jobs:
           node-version-file: "pro/package.json"
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV == 'testing'
+        if: inputs.ENV != 'production'
 
       - name: Install dependencies
         run: yarn install --immutable
