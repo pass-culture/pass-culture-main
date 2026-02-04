@@ -17,8 +17,12 @@ from pcapi.utils import date as date_utils
 from pcapi.utils import postal_code as postal_code_utils
 
 
-@pytest.mark.usefixtures("db_session")
-class ZendeskWebhookTest:
+pytestmark = [
+    pytest.mark.usefixtures("db_session"),
+]
+
+
+class ZendeskWebhookCommon:
     @pytest.mark.parametrize(
         "phone_number,postal_code,expected_additional_tags",
         [
@@ -189,7 +193,8 @@ class ZendeskWebhookTest:
     @pytest.mark.parametrize("pro_factory", [users_factories.ProFactory, users_factories.NonAttachedProFactory])
     def test_webhook_update_pro_by_user_email(self, client, pro_factory):
         pro_user = pro_factory(email="pro@example.com")
-        offerer = offerers_factories.UserOffererFactory(user=pro_user).offerer
+        offerer = offerers_factories.OffererFactory()
+        offerers_factories.UserOffererFactory(user=pro_user, offerer=offerer)
         venue = offerers_factories.VenueFactory(managingOfferer=offerer, offererAddress__address__postalCode="75018")
         soft_deleted_venue = offerers_factories.VenueFactory(managingOfferer=offerer)
         soft_deleted_venue.isSoftDeleted = True
@@ -220,7 +225,7 @@ class ZendeskWebhookTest:
                     "first_name": pro_user.firstName,
                     "last_name": pro_user.lastName,
                     "postal_code": venue.offererAddress.address.postalCode,
-                    "offerer_name": venue.managingOfferer.name,
+                    "offerer_name": offerer.name,
                     "venue_name": venue.name,
                     "dms_application": "Aucun",
                 },
@@ -320,3 +325,13 @@ class ZendeskWebhookTest:
 
         assert response.status_code == 400
         assert len(users_testing.zendesk_requests) == 0
+
+
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK=False)
+class ZendeskWebhookTest(ZendeskWebhookCommon):
+    pass
+
+
+@pytest.mark.features(WIP_ASYNCHRONOUS_CELERY_ZENDESK=True)
+class ZendeskWebhookCeleryTest(ZendeskWebhookCommon):
+    pass
