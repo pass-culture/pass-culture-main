@@ -83,6 +83,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          cache: "yarn"
+          cache-dependency-path: "**/yarn.lock"
+          node-version-file: "pro/package.json"
+
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+        if: inputs.ENV != 'production'
+
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
@@ -100,16 +110,6 @@ jobs:
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
           version: "2.23.3"
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          cache: "yarn"
-          cache-dependency-path: "**/yarn.lock"
-          node-version-file: "pro/package.json"
-
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV != 'production'
 
       - name: "Fix local permissions"
         run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
