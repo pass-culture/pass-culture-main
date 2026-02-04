@@ -21,6 +21,7 @@ PRO_FEATURES = (
     FeatureToggle.WIP_OFFER_ARTISTS,
     FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
+    FeatureToggle.WIP_PRE_SIGNUP_INFO,
 )
 
 

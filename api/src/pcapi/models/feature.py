@@ -124,27 +124,30 @@ class FeatureToggle(enum.Enum):
     )
     VENUE_REGULARIZATION = "Déplacement de n'importe quelle offre vers une autre venue"
     # For features under construction, a temporary feature flag must be named with the `WIP_` prefix
+    WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour du statut actif des offres"
     WIP_ASYNCHRONOUS_CELERY_MAILS = (
         "Activer le backend de tâches asynchrones Celery pour les tâches liées à l'envoi de mails"
     )
-    WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour du statut actif des offres"
     WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM = "Activer le backend de tâches asynchrones Celery pour les tâches liées à la mise à jour des opérations spéciales"
     WIP_ASYNCHRONOUS_CELERY_UBBLE = "Active le backend de tâches asynchrones Celery pour les tâches liées à Ubble"
+    WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
+    WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
+    WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
     WIP_FREE_ELIGIBILITY = (
         "Activer la nouvelle éligibilité qui permet aux jeunes de 15 à 16 ans de réserver des offres gratuites"
+    )
+    WIP_LLM_OFFER_SEARCH = "Activer la recherche par LLM dans le BO"
+    WIP_OFFER_ARTISTS = "Active la suggestion d'artistes à la création d'une offre"
+    WIP_PRE_SIGNUP_INFO = (
+        "Activer le nouveau sas d'information avant inscription des partenaires culturels sur le portail pro"
+    )
+    WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
+        "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
     )
     WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY = (
         "Autoriser l'ajout de nouvelle structure seulement pour les collectivités"
     )
     WIP_SWITCH_VENUE = "Activer la gestion de l'espace partenaire par venue sans passer par l'offerer"
-    WIP_ENABLE_FINANCE_SETTLEMENTS = "Active le workflow finance des règlements"
-    WIP_ENABLE_OHO = "Activer la création d'offre individuelle sur plages horaires"
-    WIP_OFFER_ARTISTS = "Active la suggestion d'artistes à la création d'une offre"
-    WIP_PRO_AUTONOMOUS_ANONYMIZATION = (
-        "Activer la fonctionnalité d'anonymisation autonome des données personnelles depuis le portail pro"
-    )
-    WIP_ENABLE_NEW_PRO_HOME = "Activer la nouvelle page d'accueil du portail pro"
-    WIP_LLM_OFFER_SEARCH = "Activer la recherche par LLM dans le BO"
 
     def is_active(self) -> bool:
         if flask.has_request_context():
@@ -201,17 +204,18 @@ FEATURES_DISABLED_BY_DEFAULT: tuple[FeatureToggle, ...] = (
     FeatureToggle.VENUE_REGULARIZATION,
     FeatureToggle.SEND_ALL_EMAILS_TO_EHP,
     FeatureToggle.SYNCHRONIZE_TITELIVE_API_MUSIC_PRODUCTS,
+    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_MAILS,
     FeatureToggle.WIP_ASYNCHRONOUS_CELERY_SPECIAL_EVENT_TYPEFORM,
-    FeatureToggle.WIP_ASYNCHRONOUS_CELERY_BATCH_UPDATE_STATUSES,
-    FeatureToggle.WIP_ENABLE_OHO,
     FeatureToggle.WIP_ENABLE_FINANCE_SETTLEMENTS,
     FeatureToggle.WIP_ENABLE_NEW_PRO_HOME,
+    FeatureToggle.WIP_ENABLE_OHO,
+    FeatureToggle.WIP_LLM_OFFER_SEARCH,
     FeatureToggle.WIP_OFFER_ARTISTS,
+    FeatureToggle.WIP_PRE_SIGNUP_INFO,
     FeatureToggle.WIP_PRO_AUTONOMOUS_ANONYMIZATION,
     FeatureToggle.WIP_RESTRICT_VENUE_CREATION_TO_COLLECTIVITY,
     FeatureToggle.WIP_SWITCH_VENUE,
-    FeatureToggle.WIP_LLM_OFFER_SEARCH,
     # Please keep alphabetic order
 )
 
