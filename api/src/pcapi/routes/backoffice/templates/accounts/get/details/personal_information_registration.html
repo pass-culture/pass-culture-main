@@ -3,7 +3,7 @@
   <div class="table-responsive">
     <table class="table table-hover">
       <thead class="table-light">
-        <tr class="table-secondary fs-7">
+        <tr class="table-secondary fs-7 py-2">
           <th>Date de création</th>
           <th>ID technique</th>
           <th>Type</th>
@@ -110,54 +110,48 @@
     </table>
   </div>
 {% endmacro %}
-<div class="card my-4">
-  <div class="card-body">
-    <h5 class="card-title text-bold fs-2 m-3">
-      Parcours d'inscription
-      {{ tunnel.type.value | format_eligibility_value | format_badge("primary") }}
-    </h5>
-    <div class="card-body">
-      <div class="py-1"
-           data-registration-steps-id="{{ tunnel.type.value }}">
-        <div class="position-relative">
-          <div class="progress position-absolute">
-            <div class="progress-bar"
-                 role="progressbar"
-                 aria-valuenow="{{ tunnel.progress }}"
-                 aria-valuemin="0"
-                 aria-valuemax="100"
-                 style="width: {{ tunnel.progress }}%"></div>
-          </div>
-          <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
-            {% for step in tunnel.steps %}
-              <li>
-                {% set div_class %}
-                  {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
-                {% endset %}
-                <div class="steps {{ div_class }}"
-                     disabled
-                     title="{{ step.subscription_item_status }}">
-                  <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
-                    {% if step.icon %}
-                      <i class="bi {{ step.icon }} pe-none"></i>
-                    {% else %}
-                      {{ step.text }}
-                    {% endif %}
-                    {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
-                    {% if status_icon %}
-                      <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
-                        {{ status_icon }}
-                      </div>
-                    {% endif %}
-                    <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
-                  </span>
-                </div>
-              </li>
-            {% endfor %}
-          </ol>
-        </div>
-        {% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
-      </div>
+<div class="mb-3">{{ tunnel.type.value | format_eligibility_value | format_badge("primary") }}</div>
+<div class="py-1"
+     data-registration-steps-id="{{ tunnel.type.value }}">
+  <div class="position-relative">
+    <div class="progress position-absolute">
+      <div class="progress-bar"
+           role="progressbar"
+           aria-valuenow="{{ tunnel.progress }}"
+           aria-valuemin="0"
+           aria-valuemax="100"
+           style="width: {{ tunnel.progress }}%"></div>
     </div>
+    <ol class="breadcrumb-container position-relative d-flex p-0 justify-content-between">
+      {% for step in tunnel.steps %}
+        <li>
+          {% set div_class %}
+            {{ 'step-success' if step.status.success }}{{ 'step-warning' if step.status.warning }}{{ 'step-error' if step.status.error }}{{ 'step-disabled' if step.status.disabled }}
+          {% endset %}
+          <div class="steps {{ div_class }}"
+               disabled
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               data-bs-custom-class="primary-tooltip"
+               data-bs-title="{{ step.subscription_item_status | format_filter_status }}">
+            <span class="step-number d-flex flex-column justify-content-center align-items-center pe-none position-relative">
+              {% if step.icon %}
+                <i class="bi {{ step.icon }} pe-none"></i>
+              {% else %}
+                {{ step.text }}
+              {% endif %}
+              {% set status_icon = step.subscription_item_status | format_user_subscription_tunnel_step_status %}
+              {% if status_icon %}
+                <div class="step-status-icon-container position-absolute translate-middle-y d-flex rounded-circle justify-content-center {{ div_class }}">
+                  {{ status_icon }}
+                </div>
+              {% endif %}
+              <div class="step-text center-smallcontainer pe-none">{{ step.description | format_registration_step_description }}</div>
+            </span>
+          </div>
+        </li>
+      {% endfor %}
+    </ol>
   </div>
+  {% if fraud_actions_desc %}<div class="pt-3">{{ build_idcheck_histories(fraud_actions_desc) }}</div>{% endif %}
 </div>
