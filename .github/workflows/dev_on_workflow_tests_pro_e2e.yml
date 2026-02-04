@@ -115,6 +115,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: "pro/package.json"
+
+      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
+        if: inputs.ENV != 'production'
+
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
         with:
@@ -130,13 +137,6 @@ jobs:
             ARTIFACT_REGISTRY_SERVICE_ACCOUNT:passculture-metier-ehp/passculture-main-artifact-registry-service-account
             CYPRESS_CLOUD_RECORD_KEY:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-record-key
             CYPRESS_CLOUD_PROJECT_ID:passculture-metier-ehp/e2e-tests-pro-cypress-cloud-project-id
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: "pro/package.json"
-
-      - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV != 'production'
 
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
