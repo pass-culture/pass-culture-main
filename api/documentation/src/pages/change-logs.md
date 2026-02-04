@@ -5,17 +5,18 @@ title: Pass Culture API change logs
 # Change logs
 
 :::info
-Soon, a `bookingAllowedDatetime` param will be available at offer creation and update. Thanks to this new param, you will be able to precise when your offer becomes bookable. 
+Soon, a `bookingAllowedDatetime` parameter will be available at offer creation and update. Thanks to this new parameter, you will be able to specify when your offer becomes bookable.
 
 You will have two dates at your disposal :
 
 - a `publicationDatetime` that indicates the date and time when the offer becomes visible in the beneficiary application
 - a `bookingAllowedDatetime` that indicates the date and time when the offer becomes bookable in the beneficiary application. If not set, the offer will be bookable as soon as it is published.
-:::
+  :::
 
 ## January 2026
 
 - You can now filter bookings either by `offerId` or `venueId` (endpoint: [**Get Bookings**](/rest-api#tag/Bookings/operation/GetBookings))
+- `label` was added to the response payload of the [**Get Event categories endpoint**](/rest-api#tag/Offer-Attributes/operation/GetEventCategories)
 
 ## December 2025
 
@@ -38,12 +39,10 @@ You will have two dates at your disposal :
 - The `offerVenue` field has been removed from all collective endpoints. The `location` field must be used instead, and is now required in the request body of the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic). You can find relevant information [here](/docs/understanding-our-api/resources/collective-offers#offers-location).
 - Collective offers with `isActive = false` and no related booking have been archived. This does not apply to offers that are under review or rejected by the validation process.
 
-
 ## July 2025
 
 - You can specify a `publicationDatetime` for your product offers in the [**Create Product Offer**](/rest-api#tag/Product-Offers/operation/PostProductOffer) and [**Update Product Offer**](/rest-api#tag/Product-Offers/operation/EditProduct) endpoints
 - You can specify a `publicationDatetime` for your event offers in the [**Create Event Offer**](/rest-api#tag/Event-Offers/operation/PostEventOffer) and [**Update Event Offer**](/rest-api#tag/Event-Offers/operation/EditEvent) endpoints
-
 
 ## June 2025
 
@@ -77,6 +76,7 @@ You will have two dates at your disposal :
 - The `isActive` attribute have been deprecated in the body and in return value of [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic), [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic).
 
 ## January 2025
+
 - The `beginningDatetime` has been removed from the following endpoints:
   - Removed from the return value:
     - [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic)
@@ -84,8 +84,8 @@ You will have two dates at your disposal :
   - Removed from the input body and the return value:
     - [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic)
     - [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic)
-  Please use the `startDatetime` and `endDatetime` fields instead.
-  The `startDatetime` field will be required when creating a collective offer and its value will be copied to `endDatetime` if `endDatetime` is not provided.
+      Please use the `startDatetime` and `endDatetime` fields instead.
+      The `startDatetime` field will be required when creating a collective offer and its value will be copied to `endDatetime` if `endDatetime` is not provided.
 
 ## December 2024
 
@@ -99,7 +99,6 @@ You will have two dates at your disposal :
 - The `subcategoryId` field has been removed from collective offers. The attribute is not returned anymore in the response of the [**Get Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOfferPublic) and the [**Get Collective Offers endpoint**](/rest-api#tag/Collective-Offers/operation/GetCollectiveOffersPublic)
 - You must now only use the `formats` field (and not `subcategoryId`) to specify the educational format of your collective offer in the [**Create Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PostCollectiveOfferPublic) and the [**Update Collective Offer endpoint**](/rest-api#tag/Collective-Offers/operation/PatchCollectiveOfferPublic). The `formats` field is required when creating a collective offer.
 
-
 ## November 2024
 
 - You can edit the name of an event using the [**Update Event Offer endpoint**](/rest-api#tag/Event-Offers/operation/EditEvent)
@@ -112,26 +111,29 @@ You will have two dates at your disposal :
 New endpoints allow you to specify that your offer is available at a location different from your venue. Learn how to use them in [**our documentation**](/rest-api#tag/Addresses).
 :::
 
-
 - **Search Addresses:** You can now search for addresses in the pass Culture database using the [**Search Addresses endpoint**](/rest-api#tag/Addresses/operation/SearchAddresses)
 - **Get Address:** You can now retrieve an existing address from the pass Culture database with the [**Get Address endpoint**](/rest-api#tag/Addresses/operation/GetAddress)
 - **Create Address:** You can add an address to the pass Culture database with the [**Create Address endpoint**](/rest-api#tag/Addresses/operation/CreateAddress)
 
 ### Stocks endpoints
+
 - The [**"Get event stocks" endpoint**](/rest-api#tag/Event-Offer-Stocks/operation/GetEventStocks) now supports filtering results by the `idsAtProvider` parameter (ie. by your own ids)
 
 ## September 2024
 
 ### `idAtProvider` in price category
+
 - You can now specify your own id when you [**create price categories**](/rest-api#tag/Event-Offer-Price-Categories/operation/PostEventPriceCategories), or when you [**update a price category**](/rest-api#tag/Event-Offer-Price-Categories/operation/PatchEventPriceCategory), by adding an `idAtProvider` to your JSON payload.
 - You can now access your event price categories using [**this endpoint**](/rest-api#tag/Event-Offer-Price-Categories/operation/GetEventPriceCategories) and filter them using the `idsAtProvider` parameter
 - Your price category id is now sent in [**our ticket request message**](/docs/understanding-our-api/managing-bookings/connection-with-ticketing-system#-our-request-payload) in the `price_category_id_at_provider` key
 
 ### EANs availability check
+
 - You can now check if your EANs are available for bulk upsert using [**this endpoint**](/rest-api#tag/Product-Offer-Bulk-Operations/operation/CheckEansAvailability)
 
 ### Collective booking status (integration only)
-It is possible to change the status of collective booking into the **integration** environment. We have created new endpoints to modify these statuses and simulate the booking timeline on the Adage side. Please check [rest api documentation](/rest-api#tag/Adage-Mock-(Collective-Bookings))
+
+It is possible to change the status of collective booking into the **integration** environment. We have created new endpoints to modify these statuses and simulate the booking timeline on the Adage side. Please check [rest api documentation](</rest-api#tag/Adage-Mock-(Collective-Bookings)>)
 
 :::warning
 These routes are not available from the **production** environment, they only exists because there no Adage platform available from the **integration** environment.

@@ -286,6 +286,8 @@ class _FIELDS_V2:
     EVENT_CATEGORIES_RELATED_FIELDS = Field(
         description="To override category related fields, the category must be specified, even if it cannot be changed. Other category related fields may be left undefined to keep their current value.",
     )
+    EVENT_CATEGORY_ID = Field(description="Category id", example="CONCERT")
+    EVENT_CATEGORY_LABEL = Field(description="Category label", example="Concert")
     EVENT_CONDITIONAL_FIELDS = Field(
         description="The keys are fields that should be set in the category_related_fields of an event. The values indicate whether their associated field is mandatory during event creation."
     )

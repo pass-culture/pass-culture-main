@@ -2462,7 +2462,6 @@
                 "title": "EacFormat"
             },
             "EventCategoryEnum": {
-                "description": "An enumeration.",
                 "enum": [
                     "ACTIVATION_EVENT",
                     "ATELIER_PRATIQUE_ART",
@@ -2497,6 +2496,7 @@
                 "type": "string"
             },
             "EventCategoryResponse": {
+                "additionalProperties": false,
                 "properties": {
                     "conditionalFields": {
                         "additionalProperties": {
@@ -2507,12 +2507,21 @@
                         "type": "object"
                     },
                     "id": {
-                        "$ref": "#/components/schemas/EventCategoryEnum"
+                        "$ref": "#/components/schemas/EventCategoryEnum",
+                        "description": "Category id",
+                        "example": "CONCERT"
+                    },
+                    "label": {
+                        "description": "Category label",
+                        "example": "Concert",
+                        "title": "Label",
+                        "type": "string"
                     }
                 },
                 "required": [
                     "id",
-                    "conditionalFields"
+                    "conditionalFields",
+                    "label"
                 ],
                 "title": "EventCategoryResponse",
                 "type": "object"
