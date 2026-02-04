@@ -49,6 +49,7 @@ export { CollectiveOfferDisplayedStatus } from './models/CollectiveOfferDisplaye
 export type { CollectiveOfferHistory } from './models/CollectiveOfferHistory';
 export type { CollectiveOfferInstitutionModel } from './models/CollectiveOfferInstitutionModel';
 export type { CollectiveOfferLocationModel } from './models/CollectiveOfferLocationModel';
+export type { CollectiveOfferLocationModelV2 } from './models/CollectiveOfferLocationModelV2';
 export type { CollectiveOfferRedactorModel } from './models/CollectiveOfferRedactorModel';
 export type { CollectiveOfferResponseIdModel } from './models/CollectiveOfferResponseIdModel';
 export type { CollectiveOfferResponseModel } from './models/CollectiveOfferResponseModel';
@@ -68,7 +69,6 @@ export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel
 export type { CreateThumbnailResponseModel } from './models/CreateThumbnailResponseModel';
 export type { CropParams } from './models/CropParams';
 export type { DateRangeModel } from './models/DateRangeModel';
-export type { DateRangeOnCreateModel } from './models/DateRangeOnCreateModel';
 export type { DeleteOfferRequestBody } from './models/DeleteOfferRequestBody';
 export type { DeleteStockListBody } from './models/DeleteStockListBody';
 export { DisplayableActivity } from './models/DisplayableActivity';
@@ -179,8 +179,10 @@ export type { ListOffersVenueResponseModel } from './models/ListOffersVenueRespo
 export type { ListProviderResponse } from './models/ListProviderResponse';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
 export type { LocationBodyModel } from './models/LocationBodyModel';
+export type { LocationBodyModelV2 } from './models/LocationBodyModelV2';
 export type { LocationModel } from './models/LocationModel';
 export type { LocationOnlyOnVenueBodyModel } from './models/LocationOnlyOnVenueBodyModel';
+export type { LocationOnlyOnVenueBodyModelV2 } from './models/LocationOnlyOnVenueBodyModelV2';
 export type { LocationResponseModel } from './models/LocationResponseModel';
 export type { LoginUserBodyModel } from './models/LoginUserBodyModel';
 export type { ManagedVenue } from './models/ManagedVenue';
@@ -213,6 +215,7 @@ export type { PatchOfferPublishBodyModel } from './models/PatchOfferPublishBodyM
 export { PhoneValidationStatusType } from './models/PhoneValidationStatusType';
 export type { PostCollectiveOfferBodyModel } from './models/PostCollectiveOfferBodyModel';
 export type { PostCollectiveOfferTemplateBodyModel } from './models/PostCollectiveOfferTemplateBodyModel';
+export type { PostDateRangeModel } from './models/PostDateRangeModel';
 export type { PostOfferBodyModel } from './models/PostOfferBodyModel';
 export type { PostOffererResponseModel } from './models/PostOffererResponseModel';
 export type { PostVenueProviderBody } from './models/PostVenueProviderBody';

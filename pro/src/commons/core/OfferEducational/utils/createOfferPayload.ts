@@ -1,9 +1,9 @@
 import {
   CollectiveLocationType,
-  type DateRangeOnCreateModel,
   OfferContactFormEnum,
   type PostCollectiveOfferBodyModel,
   type PostCollectiveOfferTemplateBodyModel,
+  type PostDateRangeModel,
 } from '@/apiClient/v1'
 import {
   buildDateTime,
@@ -34,7 +34,7 @@ export const serializeDates = (
   startDatetime: string,
   endingDatetime: string,
   hour?: string
-): DateRangeOnCreateModel => {
+): PostDateRangeModel => {
   const startDatetimeInUserTimezone = buildDateTime(
     startDatetime,
     hour || '00:00'
@@ -59,14 +59,15 @@ const getCommonOfferPayload = (
       const location = offer.location.location?.isVenueLocation
         ? { isVenueLocation: true }
         : {
-            ...offer.location.location,
+            isManualEdition: offer.location.location?.isManualEdition,
+            isVenueLocation: offer.location.location?.isVenueLocation,
+            label: offer.location.location?.label,
             banId: offer.banId,
             street: offer.street ?? '',
             postalCode: offer.postalCode ?? '',
             latitude: offer.latitude ?? '',
             longitude: offer.longitude ?? '',
             city: offer.city ?? '',
-            coords: offer.coords ?? '',
           }
 
       return {

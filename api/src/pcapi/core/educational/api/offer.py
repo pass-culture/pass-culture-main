@@ -42,10 +42,8 @@ from pcapi.models import feature
 from pcapi.models import offer_mixin
 from pcapi.models import validation_status_mixin
 from pcapi.models.utils import get_or_404
-from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
 from pcapi.routes.public import utils as public_utils
 from pcapi.routes.public.collective.serialization import offers as public_api_collective_offers_serialize
-from pcapi.routes.serialization import collective_offers_serialize
 from pcapi.utils import date as date_utils
 from pcapi.utils import image_conversion
 from pcapi.utils import rest
@@ -53,15 +51,17 @@ from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import on_commit
 
 
+if typing.TYPE_CHECKING:
+    from pcapi.routes.adage_iframe.serialization.offers import PostCollectiveRequestBodyModel
+    from pcapi.routes.serialization import collective_offers_serialize
+
 logger = logging.getLogger(__name__)
+
 OFFERS_RECAP_LIMIT = 101
 
 
-AnyCollectiveOffer = models.CollectiveOffer | models.CollectiveOfferTemplate
-
-
 def get_or_create_offerer_address_from_collective_offer_location(
-    location_body: collective_offers_serialize.CollectiveOfferLocationModel | None,
+    location_body: "collective_offers_serialize.CollectiveOfferLocationModel | collective_offers_serialize.CollectiveOfferLocationModelV2 | None",
     venue: offerers_models.Venue,
 ) -> offerers_models.OffererAddress | None:
     if not location_body or not location_body.location:
@@ -145,7 +145,7 @@ class CollectiveOfferLocation:
 
 
 def create_collective_offer_template(
-    offer_data: collective_offers_serialize.PostCollectiveOfferTemplateBodyModel, user: User
+    offer_data: "collective_offers_serialize.PostCollectiveOfferTemplateBodyModel", user: User
 ) -> models.CollectiveOfferTemplate:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
 
@@ -165,7 +165,7 @@ def create_collective_offer_template(
         students=offer_data.students,
         contactEmail=offer_data.contact_email,
         contactPhone=offer_data.contact_phone,
-        contactUrl=offer_data.contact_url,
+        contactUrl=str(offer_data.contact_url) if offer_data.contact_url else None,
         contactForm=offer_data.contact_form,
         validation=offer_mixin.OfferValidationStatus.DRAFT,
         audioDisabilityCompliant=offer_data.audio_disability_compliant,
@@ -201,7 +201,7 @@ def create_collective_offer_template(
 
 
 def create_collective_offer(
-    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel, user: User, offer_id: int | None = None
+    offer_data: "collective_offers_serialize.PostCollectiveOfferBodyModel", user: User, offer_id: int | None = None
 ) -> models.CollectiveOffer:
     venue = get_venue_and_check_access_for_offer_creation(offer_data, user)
 
@@ -267,7 +267,7 @@ def create_collective_offer(
 
 
 def get_venue_and_check_access_for_offer_creation(
-    offer_data: collective_offers_serialize.PostCollectiveOfferBodyModel,
+    offer_data: "collective_offers_serialize.PostCollectiveOfferBodyModel",
     user: User,
 ) -> offerers_models.Venue:
     if offer_data.template_id is not None:
@@ -773,7 +773,7 @@ def duplicate_offer_and_stock(original_offer: models.CollectiveOffer) -> models.
 
 
 def create_offer_request(
-    body: PostCollectiveRequestBodyModel,
+    body: "PostCollectiveRequestBodyModel",
     offer: models.CollectiveOfferTemplate,
     institution: models.EducationalInstitution,
     redactor: models.EducationalRedactor,
@@ -1144,7 +1144,7 @@ def update_collective_offer_template(
 
 
 def _update_collective_offer(
-    offer: AnyCollectiveOffer,
+    offer: models.CollectiveOffer | models.CollectiveOfferTemplate,
     new_values: dict,
     location_body: "collective_offers_serialize.CollectiveOfferLocationModel | None",
 ) -> list[str]:

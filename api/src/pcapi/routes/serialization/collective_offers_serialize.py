@@ -4,7 +4,6 @@ from datetime import datetime
 
 import flask
 import pydantic as pydantic_v2
-from pydantic.v1 import AnyHttpUrl
 from pydantic.v1 import ConstrainedStr
 from pydantic.v1 import EmailStr
 from pydantic.v1 import Field
@@ -13,9 +12,9 @@ from pydantic.v1 import utils as pydantic_utils
 from pydantic.v1 import validator
 
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational import constants
 from pcapi.core.educational import models
 from pcapi.core.educational import validation
-from pcapi.core.educational.constants import ALL_INTERVENTION_AREA
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.offers import validation as offers_validation
 from pcapi.routes.native.v1.serialization.common_models import AccessibilityComplianceMixin
@@ -28,6 +27,7 @@ from pcapi.routes.serialization import collective_history_serialize
 from pcapi.routes.serialization import venues_serialize
 from pcapi.routes.serialization.educational_institutions import EducationalInstitutionResponseModel
 from pcapi.routes.serialization.national_programs import NationalProgramModel
+from pcapi.routes.serialization.utils import raise_error_from_location
 from pcapi.routes.shared.collective.serialization import offers as shared_offers
 from pcapi.serialization import utils
 from pcapi.serialization.exceptions import PydanticError
@@ -419,7 +419,7 @@ def validate_intervention_area_with_location(
         if location.locationType == models.CollectiveLocationType.ADDRESS:
             raise ValueError("intervention_area must be empty")
 
-        if any(area for area in intervention_area if area not in ALL_INTERVENTION_AREA):
+        if any(area for area in intervention_area if area not in constants.ALL_INTERVENTION_AREA):
             raise ValueError("intervention_area must be a valid area")
     else:
         if location.locationType in (
@@ -459,80 +459,129 @@ class DateRangeOnCreateModel(DateRangeModel):
         return start
 
 
-class PostCollectiveOfferBodyModel(BaseModel):
+class PostDateRangeModel(HttpBodyModel):
+    start: datetime
+    end: datetime
+
+    @pydantic_v2.field_validator("start", "end")
+    @classmethod
+    def remove_timezone(cls, date_time: datetime) -> datetime:
+        return utils.without_timezone(date_time)
+
+    @pydantic_v2.field_validator("start")
+    @classmethod
+    def validate_start(cls, start: datetime) -> datetime:
+        if start.date() < date.today():
+            raise PydanticError("La date de début ne peut pas être dans le passé")
+
+        return start
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_end_before_start(self) -> typing.Self:
+        if self.start > self.end:
+            raise PydanticError("La date de début doit être avant la date de fin")
+
+        return self
+
+
+class CollectiveOfferLocationModelV2(HttpBodyModel):
+    locationType: models.CollectiveLocationType
+    locationComment: str | None = None
+    location: address_serialize.LocationBodyModelV2 | address_serialize.LocationOnlyOnVenueBodyModelV2 | None = None
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_location_comment(self) -> typing.Self:
+        if self.locationType != models.CollectiveLocationType.TO_BE_DEFINED and self.locationComment is not None:
+            raise_error_from_location(
+                None, loc="locationComment", msg="locationComment n'est pas autorisé pour cette valeur de locationType"
+            )
+
+        return self
+
+    @pydantic_v2.model_validator(mode="after")
+    def validate_location(self) -> typing.Self:
+        if (
+            self.locationType
+            in (
+                models.CollectiveLocationType.SCHOOL,
+                models.CollectiveLocationType.TO_BE_DEFINED,
+            )
+            and self.location is not None
+        ):
+            raise_error_from_location(
+                None, loc="location", msg="location n'est pas autorisé pour cette valeur de locationType"
+            )
+
+        if self.locationType == models.CollectiveLocationType.ADDRESS and self.location is None:
+            raise_error_from_location(None, loc="location", msg="location est requis pour cette valeur de locationType")
+
+        return self
+
+
+def validate_intervention_area_with_location_v2(
+    intervention_area: list[str] | None, location: CollectiveOfferLocationModelV2
+) -> None:
+    if intervention_area:
+        if location.locationType == models.CollectiveLocationType.ADDRESS:
+            raise_error_from_location(
+                None, loc="interventionArea", msg="interventionArea doit être vide pour cette valeur de locationType"
+            )
+
+        if any(area not in constants.ALL_INTERVENTION_AREA for area in intervention_area):
+            raise_error_from_location(
+                None, loc="interventionArea", msg="interventionArea doit contenir des départements valides"
+            )
+
+    elif location.locationType in (models.CollectiveLocationType.TO_BE_DEFINED, models.CollectiveLocationType.SCHOOL):
+        raise_error_from_location(
+            None, loc="interventionArea", msg="interventionArea ne peut pas être vide pour cette valeur de locationType"
+        )
+
+
+class PostCollectiveOfferBodyModel(HttpBodyModel):
     venue_id: int
-    name: str
-    booking_emails: list[EmailStr]
-    description: str
-    domains: list[int]
-    duration_minutes: int | None
-    audio_disability_compliant: bool = False
-    mental_disability_compliant: bool = False
-    motor_disability_compliant: bool = False
-    visual_disability_compliant: bool = False
-    students: list[models.StudentLevels]
-    location: CollectiveOfferLocationModel
-    contact_email: EmailStr | None
-    contact_phone: str | None
+    name: str = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_NAME_LENGTH)
+    booking_emails: list[pydantic_v2.EmailStr] = pydantic_v2.Field(min_length=1)
+    description: str = pydantic_v2.Field(max_length=constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH)
+    domains: list[int] = pydantic_v2.Field(min_length=1)
+    duration_minutes: int | None = None
+    audio_disability_compliant: bool
+    mental_disability_compliant: bool
+    motor_disability_compliant: bool
+    visual_disability_compliant: bool
+    students: list[models.StudentLevels] = pydantic_v2.Field(min_length=1)
+    location: CollectiveOfferLocationModelV2
+    contact_email: pydantic_v2.EmailStr | None = None
+    contact_phone: str | None = None
     intervention_area: list[str] | None
-    template_id: int | None
-    nationalProgramId: int | None
-    formats: typing.Sequence[EacFormat]
+    template_id: int | None = None
+    nationalProgramId: int | None = None
+    formats: list[EacFormat] = pydantic_v2.Field(min_length=1)
 
-    @validator("students")
-    def validate_students(cls, students: list[str]) -> list[models.StudentLevels]:
-        return shared_offers.validate_students(students)
+    @pydantic_v2.field_validator("students")
+    @classmethod
+    def validate_students(cls, students: list[models.StudentLevels]) -> list[models.StudentLevels]:
+        try:
+            # TODO (jcicurel-pass, 2026-02-04): refactor validate_students to raise correct error
+            # when all models using it are migrated to v2
+            shared_offers.validate_students(students)
+        except ValueError as ex:
+            raise PydanticError(str(ex))
 
-    @validator("name")
-    def validate_name(cls, name: str) -> str:
-        validation.check_collective_offer_name_length_is_valid(name)
-        return name
+        return students
 
-    @validator("description")
-    def validate_description(cls, description: str) -> str:
-        validation.check_collective_offer_description_length_is_valid(description)
-        return description
+    @pydantic_v2.model_validator(mode="after")
+    def validate_intervention_area(self) -> typing.Self:
+        validate_intervention_area_with_location_v2(self.intervention_area, self.location)
 
-    @validator("domains")
-    def validate_domains(cls, domains: list[str]) -> list[str]:
-        if not domains:
-            raise ValueError("domains must have at least one value")
-        return domains
-
-    @validator("formats")
-    def validate_formats(cls, formats: list[EacFormat]) -> list[EacFormat]:
-        if len(formats) == 0:
-            raise ValueError("formats must have at least one value")
-        return formats
-
-    @validator("intervention_area")
-    def validate_intervention_area(cls, intervention_area: list[str] | None, values: dict) -> list[str] | None:
-        location = values.get("location")
-        if location is not None:
-            validate_intervention_area_with_location(intervention_area, location)
-
-        return intervention_area
-
-    @validator("booking_emails")
-    def validate_booking_emails(cls, booking_emails: list[str]) -> list[str]:
-        if not booking_emails:
-            raise ValueError("Un email doit etre renseigné.")
-        return booking_emails
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+        return self
 
 
 class PostCollectiveOfferTemplateBodyModel(PostCollectiveOfferBodyModel):
-    price_detail: PriceDetail | None
-    contact_url: AnyHttpUrl | None
-    contact_form: models.OfferContactFormEnum | None
-    dates: DateRangeOnCreateModel | None
-
-    class Config:
-        alias_generator = to_camel
-        extra = "forbid"
+    price_detail: str | None = pydantic_v2.Field(default=None, max_length=constants.MAX_COLLECTIVE_PRICE_DETAILS_LENGTH)
+    contact_url: pydantic_v2.AnyHttpUrl | None = None
+    contact_form: models.OfferContactFormEnum | None = None
+    dates: PostDateRangeModel | None = None
 
 
 class PatchCollectiveOfferBodyModel(BaseModel, AccessibilityComplianceMixin):

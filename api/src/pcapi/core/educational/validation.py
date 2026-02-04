@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal
 
 from pcapi.core.bookings import exceptions as booking_exceptions
+from pcapi.core.educational import constants
 from pcapi.core.educational import exceptions
 from pcapi.core.educational import models
 from pcapi.core.educational import repository
@@ -69,20 +70,22 @@ def check_collective_offer_template_action_is_allowed(
 
 
 def check_collective_offer_name_length_is_valid(offer_name: str) -> None:
-    if len(offer_name) > models.MAX_COLLECTIVE_NAME_LENGTH:
+    if len(offer_name) > constants.MAX_COLLECTIVE_NAME_LENGTH:
         raise api_errors.ApiErrors(
             errors={
-                "name": [f"Le titre de l’offre doit faire au maximum {models.MAX_COLLECTIVE_NAME_LENGTH} caractères."]
+                "name": [
+                    f"Le titre de l’offre doit faire au maximum {constants.MAX_COLLECTIVE_NAME_LENGTH} caractères."
+                ]
             }
         )
 
 
 def check_collective_offer_description_length_is_valid(offer_description: str) -> None:
-    if len(offer_description) > models.MAX_COLLECTIVE_DESCRIPTION_LENGTH:
+    if len(offer_description) > constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH:
         raise api_errors.ApiErrors(
             {
                 "description": [
-                    f"La description de l’offre doit faire au maximum {models.MAX_COLLECTIVE_DESCRIPTION_LENGTH} caractères."
+                    f"La description de l’offre doit faire au maximum {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH} caractères."
                 ]
             }
         )

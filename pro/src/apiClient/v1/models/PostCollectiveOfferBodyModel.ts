@@ -2,27 +2,27 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-import type { CollectiveOfferLocationModel } from './CollectiveOfferLocationModel';
+import type { CollectiveOfferLocationModelV2 } from './CollectiveOfferLocationModelV2';
 import type { EacFormat } from './EacFormat';
 import type { StudentLevels } from './StudentLevels';
 export type PostCollectiveOfferBodyModel = {
-  audioDisabilityCompliant?: boolean;
+  audioDisabilityCompliant: boolean;
   bookingEmails: Array<string>;
-  contactEmail?: string | null;
-  contactPhone?: string | null;
+  contactEmail?: (string | null);
+  contactPhone?: (string | null);
   description: string;
   domains: Array<number>;
-  durationMinutes?: number | null;
+  durationMinutes?: (number | null);
   formats: Array<EacFormat>;
-  interventionArea?: Array<string> | null;
-  location: CollectiveOfferLocationModel;
-  mentalDisabilityCompliant?: boolean;
-  motorDisabilityCompliant?: boolean;
+  interventionArea: (Array<string> | null);
+  location: CollectiveOfferLocationModelV2;
+  mentalDisabilityCompliant: boolean;
+  motorDisabilityCompliant: boolean;
   name: string;
-  nationalProgramId?: number | null;
+  nationalProgramId?: (number | null);
   students: Array<StudentLevels>;
-  templateId?: number | null;
+  templateId?: (number | null);
   venueId: number;
-  visualDisabilityCompliant?: boolean;
+  visualDisabilityCompliant: boolean;
 };
 

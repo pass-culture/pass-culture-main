@@ -133,7 +133,7 @@ STATUSES_NOT_ALLOWING_CANCEL = tuple(
 )
 
 ADDRESS_DICT = {
-    "isVenueAddress": False,
+    "isVenueLocation": False,
     "isManualEdition": False,
     "city": "Paris",
     "label": "My address",
