@@ -5,15 +5,12 @@ from markupsafe import Markup
 from werkzeug.exceptions import NotFound
 from werkzeug.utils import redirect
 
-from pcapi import settings
-from pcapi.core.external import zendesk_sell
-from pcapi.core.external.zendesk_sell_backends import BaseBackend
+from pcapi.core.external.zendesk_sell import api as zendesk_sell_api
 from pcapi.core.offerers import models as offerers_models
 from pcapi.core.permissions import models as perm_models
 from pcapi.models import db
 from pcapi.routes.backoffice import utils
 from pcapi.utils import requests
-from pcapi.utils.module_loading import import_string
 
 
 zendesk_sell_blueprint = utils.child_backoffice_blueprint(
@@ -22,14 +19,13 @@ zendesk_sell_blueprint = utils.child_backoffice_blueprint(
     url_prefix="/zendesk-sell",
     permission=perm_models.Permissions.MANAGE_PRO_ENTITY,
 )
-zendesk_sell_backend: BaseBackend = import_string(settings.ZENDESK_SELL_BACKEND)()
 
 
 def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
     offerer = venue.managingOfferer
     try:
-        zendesk_offerer_data = zendesk_sell_backend.get_offerer_by_id(offerer)
-    except zendesk_sell.ContactFoundMoreThanOneError as e:
+        zendesk_offerer_data = zendesk_sell_api.get_backend().get_offerer_by_id(offerer)
+    except zendesk_sell_api.ContactFoundMoreThanOneError as e:
         message = Markup(
             "Attention : Plusieurs entités juridiques parentes possibles ont été trouvées pour ce partenaire culturel dans Zendesk Sell. <br/> <ul>"
         )
@@ -41,14 +37,14 @@ def _get_parent_organization_id(venue: offerers_models.Venue) -> int | None:
             ).format(
                 item_id=item["id"],
                 product_offerer_id=item["custom_fields"][
-                    zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value
+                    zendesk_sell_api.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value
                 ],
-                siren=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIREN.value],
+                siren=item["custom_fields"][zendesk_sell_api.ZendeskCustomFieldsShort.SIREN.value],
             )
         message += Markup("</ul>")
         flash(message, "info")
         return None
-    except zendesk_sell.ContactNotFoundError:
+    except zendesk_sell_api.ContactNotFoundError:
         # no parent: ignore, nothing to update
         return None
     except requests.exceptions.HTTPError as http_error:
@@ -73,13 +69,13 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
     )
     url = url_for("backoffice_web.offerer.get", offerer_id=offerer_id)
 
-    if zendesk_sell.is_offerer_only_virtual(offerer):
+    if zendesk_sell_api.is_offerer_only_virtual(offerer):
         flash("Cette entité juridique ne gère que des partenaires culturels virtuels", "warning")
         return redirect(url, code=303)
 
     try:
-        zendesk_offerer_data = zendesk_sell_backend.get_offerer_by_id(offerer)
-    except zendesk_sell.ContactFoundMoreThanOneError as e:
+        zendesk_offerer_data = zendesk_sell_api.get_backend().get_offerer_by_id(offerer)
+    except zendesk_sell_api.ContactFoundMoreThanOneError as e:
         message = Markup(
             "Plusieurs entités juridiques ont été trouvées dans Zendesk Sell, aucune ne peut donc être mise à jour : <br/> <ul>"
         )
@@ -91,14 +87,14 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
             ).format(
                 item_id=item["id"],
                 product_offerer_id=item["custom_fields"][
-                    zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value
+                    zendesk_sell_api.ZendeskCustomFieldsShort.PRODUCT_OFFERER_ID.value
                 ],
-                siren=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIREN.value],
+                siren=item["custom_fields"][zendesk_sell_api.ZendeskCustomFieldsShort.SIREN.value],
             )
         message += Markup("</ul>")
         flash(Markup(message), "warning")  # noqa: S704
         return redirect(url, code=303)
-    except zendesk_sell.ContactNotFoundError:
+    except zendesk_sell_api.ContactNotFoundError:
         flash("L'entité juridique n'a pas été trouvée dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
@@ -112,7 +108,7 @@ def update_offerer(offerer_id: int) -> utils.BackofficeResponse:
 
     try:
         offerer_zendesk_id = zendesk_offerer_data["id"]
-        zendesk_sell_backend.update_offerer(offerer_zendesk_id, offerer)
+        zendesk_sell_api.get_backend().update_offerer(offerer_zendesk_id, offerer)
     except requests.exceptions.HTTPError as http_error:
         flash(
             Markup("Une erreur {status_code} s'est produite : {error}").format(
@@ -147,8 +143,8 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
         return redirect(url, code=303)
 
     try:
-        zendesk_venue_data = zendesk_sell_backend.get_venue_by_id(venue)
-    except zendesk_sell.ContactFoundMoreThanOneError as e:
+        zendesk_venue_data = zendesk_sell_api.get_backend().get_venue_by_id(venue)
+    except zendesk_sell_api.ContactFoundMoreThanOneError as e:
         message = Markup(
             "Plusieurs partenaires culturels ont été trouvés dans Zendesk Sell, aucun ne peut donc être mis à jour : <br/> <ul>"
         )
@@ -159,13 +155,15 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
                 "SIRET : <b>{siret}</b> </li>"
             ).format(
                 item_id=item["id"],
-                product_venue_id=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value],
-                siret=item["custom_fields"][zendesk_sell.ZendeskCustomFieldsShort.SIRET.value],
+                product_venue_id=item["custom_fields"][
+                    zendesk_sell_api.ZendeskCustomFieldsShort.PRODUCT_VENUE_ID.value
+                ],
+                siret=item["custom_fields"][zendesk_sell_api.ZendeskCustomFieldsShort.SIRET.value],
             )
         message += Markup("</ul>")
         flash(message, "warning")
         return redirect(url, code=303)
-    except zendesk_sell.ContactNotFoundError:
+    except zendesk_sell_api.ContactNotFoundError:
         flash("Le partenaire culturel n'a pas été trouvé dans Zendesk Sell", "warning")
         return redirect(url, code=303)
     except requests.exceptions.HTTPError as http_error:
@@ -180,7 +178,7 @@ def update_venue(venue_id: int) -> utils.BackofficeResponse:
     try:
         zendesk_venue_id = zendesk_venue_data["id"]
         parent_organization_id = _get_parent_organization_id(venue)
-        zendesk_sell_backend.update_venue(zendesk_venue_id, venue, parent_organization_id)
+        zendesk_sell_api.get_backend().update_venue(zendesk_venue_id, venue, parent_organization_id)
     except requests.exceptions.HTTPError as http_error:
         flash(
             Markup("Une erreur {status_code} s'est produite : {error}").format(
