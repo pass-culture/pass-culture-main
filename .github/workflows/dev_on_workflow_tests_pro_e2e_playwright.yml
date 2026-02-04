@@ -100,14 +100,7 @@ jobs:
       - uses: KengoTODA/actions-setup-docker-compose@v1
         with:
           version: "2.23.3"
-
-      - name: "Fix local permissions"
-        run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
-        working-directory: api
-        env:
-          PCAPI_UID: 1000
-          PCAPI_GID: 1000
-
+      
       - name: Setup Node.js
         uses: actions/setup-node@v6
         with:
@@ -117,6 +110,13 @@ jobs:
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
         if: inputs.ENV != 'production'
+
+      - name: "Fix local permissions"
+        run: sudo chown -R $PCAPI_UID:$PCAPI_GID .
+        working-directory: api
+        env:
+          PCAPI_UID: 1000
+          PCAPI_GID: 1000
 
       - name: Install dependencies
         run: yarn install --immutable
