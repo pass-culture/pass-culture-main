@@ -1,7 +1,7 @@
 import cn from 'classnames'
 
-import type { BaseTabsProps } from './Tabs'
-import styles from './Tabs.module.scss'
+import type { BaseTabsProps } from '../Tabs'
+import styles from '../Tabs.module.scss'
 
 export type TabItem = {
   /**

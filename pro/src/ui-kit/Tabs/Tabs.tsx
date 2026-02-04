@@ -1,5 +1,5 @@
-import { type NavLinkItem, NavLinkItems } from './TabsNavLinkItems'
-import { type TabItem, TabItems } from './TabsTabItems'
+import { type NavLinkItem, NavLinkItems } from './NavLinkItems/NavLinkItems'
+import { type TabItem, TabItems } from './TabItems/TabItems'
 
 export type BaseTabsProps = {
   /**

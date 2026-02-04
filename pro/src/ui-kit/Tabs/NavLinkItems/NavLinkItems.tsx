@@ -1,8 +1,8 @@
 import cn from 'classnames'
 import { Link } from 'react-router'
 
-import type { BaseTabsProps } from './Tabs'
-import styles from './Tabs.module.scss'
+import type { BaseTabsProps } from '../Tabs'
+import styles from '../Tabs.module.scss'
 
 export type NavLinkItem = {
   /**

@@ -3,8 +3,8 @@ import { useId, useState } from 'react'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
+import type { TabItem } from '@/ui-kit/Tabs/TabItems/TabItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
-import type { TabItem } from '@/ui-kit/Tabs/TabsTabItems'
 
 export const NewHomepage = (): JSX.Element => {
   const selectedVenue: GetVenueResponseModel | null = useAppSelector(

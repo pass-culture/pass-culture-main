@@ -2,8 +2,8 @@ import type { GetOffererResponseModel } from '@/apiClient/v1'
 import { useActiveStep } from '@/commons/hooks/useActiveStep'
 import fullErrorIcon from '@/icons/full-error.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
+import type { NavLinkItem } from '@/ui-kit/Tabs/NavLinkItems/NavLinkItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
-import type { NavLinkItem } from '@/ui-kit/Tabs/TabsNavLinkItems'
 
 import {
   STEP_ID_BANK_INFORMATIONS,
