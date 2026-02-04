@@ -51,7 +51,7 @@ def update_ubble_workflow_task(payload: ubble_schemas.UpdateWorkflowPayload) -> 
         )
 
     if fraud_check.status == subscription_models.FraudCheckStatus.STARTED:
-        logger.error(
+        logger.warning(
             "Started ubble application still started after 12 hours. This is a problem on our side.",
             extra={"fraud_check_id": fraud_check.id, "ubble_id": fraud_check.thirdPartyId},
         )
