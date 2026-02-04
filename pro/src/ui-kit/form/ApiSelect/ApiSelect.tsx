@@ -2,7 +2,6 @@ import {
   forwardRef,
   type Ref,
   useCallback,
-  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -10,7 +9,10 @@ import {
 import { useDebouncedCallback } from 'use-debounce'
 
 import type { SelectOption } from '@/commons/custom_types/form'
-import { SelectAutocomplete } from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
+import {
+  type CustomEvent,
+  SelectAutocomplete,
+} from '@/ui-kit/form/SelectAutoComplete/SelectAutocomplete'
 
 const DEBOUNCE_TIME_BEFORE_REQUEST = 400
 
@@ -27,7 +29,15 @@ export type ApiSelectProps = {
   error?: string
   required?: boolean
   minSearchLength?: number
+
+  // ✅ RHF-compatible handlers
+  onChange?(event: CustomEvent<'change'>): void
+  onBlur?(event: CustomEvent<'blur'>): void
+
+  // ✅ selection callback
   onSelect(option: ApiOption | undefined): void
+
+  // optional
   onSearch?(searchText: string): void
   searchApi: (searchText: string) => Promise<ApiOption[]>
   value?: string
@@ -48,6 +58,8 @@ export const ApiSelect = forwardRef(
       onSearch,
       searchApi,
       value,
+      onChange,
+      onBlur,
     }: ApiSelectProps,
     ref: Ref<HTMLInputElement>
   ) => {
@@ -85,12 +97,12 @@ export const ApiSelect = forwardRef(
       onSearch?.(searchText)
     }, DEBOUNCE_TIME_BEFORE_REQUEST)
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: only run on mount
-    useEffect(() => {
-      fetchOptions(value ?? inputRef.current?.value ?? '')
-    }, [])
-
     useImperativeHandle(ref, () => inputRef.current as HTMLInputElement)
+
+    const triggerSelectFromValue = (rawValue: string) => {
+      const selectedOption = optionsMap.current.get(rawValue)
+      onSelect(selectedOption)
+    }
 
     return (
       <SelectAutocomplete
@@ -98,12 +110,15 @@ export const ApiSelect = forwardRef(
         label={label}
         options={options}
         description={description}
-        onSearch={(searchText) => {
-          debouncedOnSearch(searchText)
-        }}
+        onSearch={(searchText) => debouncedOnSearch(searchText)}
         onChange={(event) => {
-          const selectedOption = optionsMap.current.get(event.target.value)
-          onSelect(selectedOption)
+          onChange?.(event) // ✅ let RHF update field value
+          triggerSelectFromValue(event.target.value)
+        }}
+        onBlur={(event) => {
+          onBlur?.(event) // ✅ let RHF mark touched / run validation
+          // keep old AddressSelect behavior: choose on blur if value matches an option
+          triggerSelectFromValue(event.target.value)
         }}
         disabled={disabled}
         className={className}

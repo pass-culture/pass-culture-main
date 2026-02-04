@@ -8,18 +8,14 @@ import type {
   VenueProviderResponse,
 } from '@/apiClient/v1'
 import { resetReactHookFormAddressFields } from '@/commons/utils/resetAddressFields'
+import { AddressField } from '@/components/AddressField/AddressField'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
-import { Button } from '@/design-system/Button/Button'
-import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
-import fullBackIcon from '@/icons/full-back.svg'
-import fullNextIcon from '@/icons/full-next.svg'
 import { ReimbursementFields } from '@/pages/Offerers/Offerer/VenueV1/fields/ReimbursementFields/ReimbursementFields'
 import { VenueFormActionBar } from '@/pages/VenueEdition/components/VenueFormActionBar/VenueFormActionBar'
 import { AddressManual } from '@/ui-kit/form/AddressManual/AddressManual'
-import { AddressSelect } from '@/ui-kit/form/AddressSelect/AddressSelect'
 import { TipsBanner } from '@/ui-kit/TipsBanner/TipsBanner'
 
 import type {
@@ -102,36 +98,21 @@ export const VenueSettingsForm = ({
                 <TextInput
                   {...register('publicName')}
                   label="Nom public"
-                  description="À remplir si différent de la raison sociale. En le
-                    remplissant, c’est ce dernier qui sera visible du public."
+                  description="À remplir si différent de la raison sociale. En le remplissant, c’est ce dernier qui sera visible du public."
                 />
               </FormLayout.Row>
 
               <FormLayout.Row>
-                <AddressSelect
-                  {...register('addressAutocomplete')}
-                  disabled={manuallySetAddress}
-                  label={'Adresse postale'}
-                  onAddressChosen={onAddressSelect}
+                <AddressField
+                  addressRegister={register('addressAutocomplete')}
+                  disabled={manuallySetAddress} // si tu veux garder ton state existant, passe manual/onManualChange
+                  manual={manuallySetAddress}
+                  onManualChange={toggleManuallySetAddress}
                   error={errors.addressAutocomplete?.message}
+                  onAddressChosen={onAddressSelect}
+                  renderManual={() => <AddressManual />}
                 />
               </FormLayout.Row>
-
-              <FormLayout.Row>
-                <Button
-                  type="button"
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.NEUTRAL}
-                  icon={manuallySetAddress ? fullBackIcon : fullNextIcon}
-                  onClick={toggleManuallySetAddress}
-                  label={
-                    manuallySetAddress
-                      ? 'Revenir à la sélection automatique'
-                      : 'Vous ne trouvez pas votre adresse ?'
-                  }
-                />
-              </FormLayout.Row>
-              {manuallySetAddress && <AddressManual />}
             </>
           )}
         </FormLayout.Section>
