@@ -1,3 +1,4 @@
+import enum
 import logging
 import typing
 from itertools import islice
@@ -22,12 +23,11 @@ blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
 
 
-@blueprint.cli.command("index_offers_in_algolia_by_offer")
-@cron_decorators.log_cron_with_transaction
-@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
-def index_offers_in_algolia_by_offer() -> None:
-    """Pop offers from indexation queue and reindex them."""
-    search.index_offers_in_queue(max_batches_to_process=50)
+class IndexableObjects(enum.Enum):
+    ARTISTS = enum.auto()
+    COLLECTIVE_OFFER_TEMPLATES = enum.auto()
+    OFFERS = enum.auto()
+    VENUES = enum.auto()
 
 
 @blueprint.cli.command("index_offers_in_algolia_by_artist")
@@ -44,14 +44,6 @@ def index_offers_in_algolia_by_artist() -> None:
 def index_offers_in_algolia_by_venue() -> None:
     """Pop venues from indexation queue and reindex their offers."""
     search.index_offers_of_venues_in_queue()
-
-
-@blueprint.cli.command("index_collective_offer_templates")
-@cron_decorators.log_cron_with_transaction
-@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
-def index_collective_offer_templates() -> None:
-    """Pop collective offers template from indexation queue and reindex them."""
-    search.index_collective_offers_templates_in_queue()
 
 
 @blueprint.cli.command("delete_expired_offers_in_algolia")
@@ -75,22 +67,45 @@ def delete_expired_collective_offers_template_in_algolia() -> None:
     unindex_expired_or_archived_collective_offers_template()
 
 
-@blueprint.cli.command("index_offers_in_error_in_algolia_by_offer")
+@blueprint.cli.command("reindex")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
-def index_offers_in_error_in_algolia_by_offer() -> None:
-    """Pop offers from the error queue and reindex them."""
-    search.index_offers_in_queue(from_error_queue=True)
+@click.argument("object_type", type=click.Choice(IndexableObjects, case_sensitive=False), required=True)
+@click.option("--from_error_queue", is_flag=True, help="Reindex objects from error queue")
+def reindex(object_type: IndexableObjects, from_error_queue: bool = False) -> None:
+    """Pop object ids from queue and reindex"""
+    match object_type:
+        case IndexableObjects.ARTISTS:
+            search.index_artists_in_queue(from_error_queue=from_error_queue)
+        case IndexableObjects.COLLECTIVE_OFFER_TEMPLATES:
+            search.index_collective_offers_templates_in_queue(from_error_queue=from_error_queue)
+        case IndexableObjects.VENUES:
+            search.index_venues_in_queue(from_error_queue=from_error_queue)
+        case IndexableObjects.OFFERS:
+            search.index_offers_in_queue(from_error_queue=from_error_queue, max_batches_to_process=50)
+        case _:
+            raise ValueError("Invalid `object_type`")  # should not happen
 
 
-@blueprint.cli.command("index_collective_offers_templates_in_error")
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command
+@blueprint.cli.command("index_offers_in_algolia_by_offer")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
-def index_collective_offers_templates_in_error() -> None:
-    """Pop collective offers template from the error queue and reindex them."""
-    search.index_collective_offers_templates_in_queue(from_error_queue=True)
+def index_offers_in_algolia_by_offer() -> None:
+    """Pop offers from indexation queue and reindex them."""
+    search.index_offers_in_queue(max_batches_to_process=50)
 
 
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command
+@blueprint.cli.command("index_collective_offer_templates")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def index_collective_offer_templates() -> None:
+    """Pop collective offers template from indexation queue and reindex them."""
+    search.index_collective_offers_templates_in_queue()
+
+
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command
 @blueprint.cli.command("index_artists")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
@@ -99,14 +114,7 @@ def index_artists() -> None:
     search.index_artists_in_queue()
 
 
-@blueprint.cli.command("index_artists_in_error")
-@cron_decorators.log_cron_with_transaction
-@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
-def index_artists_in_error() -> None:
-    """Pop artists from the error queue and reindex them."""
-    search.index_artists_in_queue(from_error_queue=True)
-
-
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command
 @blueprint.cli.command("index_venues")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
@@ -115,12 +123,40 @@ def index_venues() -> None:
     search.index_venues_in_queue()
 
 
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command with --from_error_queue flag
+@blueprint.cli.command("index_artists_in_error")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def index_artists_in_error() -> None:
+    """Pop artists from the error queue and reindex them."""
+    search.index_artists_in_queue(from_error_queue=True)
+
+
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command with --from_error_queue flag
 @blueprint.cli.command("index_venues_in_error")
 @cron_decorators.log_cron_with_transaction
 @cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
 def index_venues_in_error() -> None:
     """Pop venues from the error queue and reindex them."""
     search.index_venues_in_queue(from_error_queue=True)
+
+
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command with --from_error_queue flag
+@blueprint.cli.command("index_collective_offers_templates_in_error")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def index_collective_offers_templates_in_error() -> None:
+    """Pop collective offers template from the error queue and reindex them."""
+    search.index_collective_offers_templates_in_queue(from_error_queue=True)
+
+
+# TODO (tcoudray-pass, 04/02/26): Remove once the CRON job uses reindex command with --from_error_queue flag
+@blueprint.cli.command("index_offers_in_error_in_algolia_by_offer")
+@cron_decorators.log_cron_with_transaction
+@cron_decorators.cron_require_feature(FeatureToggle.ENABLE_RECURRENT_CRON)
+def index_offers_in_error_in_algolia_by_offer() -> None:
+    """Pop offers from the error queue and reindex them."""
+    search.index_offers_in_queue(from_error_queue=True)
 
 
 def _partially_index(
