@@ -1,10 +1,12 @@
 import datetime
 import enum
 import logging
+import random
 import re
 import typing
 from dataclasses import asdict
 from decimal import Decimal
+from uuid import uuid4
 
 import sqlalchemy as sa
 import sqlalchemy.orm as sa_orm
@@ -1585,3 +1587,27 @@ def get_user_remaining_bonus_attempts(user: models.User) -> int:
         if not (fraud_check.reason and fraud_check.reason.startswith(bonus_constants.BACKOFFICE_ORIGIN_START))
     ]
     return constants.MAX_QF_BONUS_RETRIES - len(ko_qf_bonus_credit_fraud_checks)
+
+
+def generate_user_jwt_perf() -> models.UserJwtPerfs:
+    return models.UserJwtPerfs(
+        userId= random.randint(0, 10_000_000),
+        deviceId=random.randint(0, 10_000_000),
+        refresh=uuid4(),
+        access=uuid4(),
+        expirationDatetime=date_utils.get_naive_utc_now(),
+    )
+
+
+def preload_jwt_tokens(count: int, block_size: int = 100) -> None:
+    done = 0
+    while  done < count:
+        block = min(count - done, block_size)
+        
+        objects = [ 
+            generate_user_jwt_perf() for _ in range(block)
+        ]
+        done += block
+        db.session.bulk_save_objects(objects)
+        db.session.commit()
+        print(done)

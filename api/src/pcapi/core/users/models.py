@@ -1507,3 +1507,14 @@ class UserProfileRefreshCampaign(PcObject, Model):
         order_by=ACTION_HISTORY_ORDER_BY,
         passive_deletes=True,
     )
+
+
+class UserJwtPerfs(PcObject, Model):
+    """pefs test do not merge """
+
+    __tablename__ = "user_jwt_perfs"
+    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False)
+    deviceId: sa_orm.Mapped[int] = sa_orm.mapped_column(sa.BigInteger, nullable=False)
+    refresh: sa_orm.Mapped[UUID] = sa_orm.mapped_column(postgresql.UUID(as_uuid=True), unique=True, nullable=False, index=True)
+    access: sa_orm.Mapped[UUID] = sa_orm.mapped_column(postgresql.UUID(as_uuid=True), unique=True, nullable=False, index=True)
+    expirationDatetime: sa_orm.Mapped[datetime] = sa_orm.mapped_column(sa.DateTime, nullable=False, index=True)

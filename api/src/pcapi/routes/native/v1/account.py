@@ -1,4 +1,5 @@
 import logging
+import random
 
 import flask
 import pydantic.v1 as pydantic_v1
@@ -25,6 +26,7 @@ from pcapi.core.users import constants
 from pcapi.core.users import email as email_api
 from pcapi.core.users import exceptions
 from pcapi.core.users import gdpr_api
+from pcapi.core.users import models
 from pcapi.core.users import password_utils
 from pcapi.core.users.repository import find_user_by_email
 from pcapi.models import api_errors
@@ -43,6 +45,22 @@ from .serialization import authentication as auth_serializers
 
 
 logger = logging.getLogger(__name__)
+
+
+@blueprint.native_route("/jwt_test", methods=["GET"])
+@spectree_serialize(on_success_status=204, api=blueprint.api, on_error_statuses=[400])
+@atomic()
+def jwt_test() -> None:
+    """/native/v1/jwt_test"""
+    db.session.query(
+        models.UserJwtPerfs
+    ).filter(
+        models.UserJwtPerfs.id.in_(
+            db.session.query(models.UserJwtPerfs.id).limit(1),
+        ),
+    ).delete()
+    token = api.generate_user_jwt_perf()
+    db.session.add(token)
 
 
 @blueprint.native_route("/me", methods=["GET"])
