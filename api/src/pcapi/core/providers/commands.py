@@ -1,7 +1,5 @@
 import datetime
 import logging
-from collections.abc import Generator
-from contextlib import contextmanager
 from time import time
 from typing import Type
 
@@ -14,6 +12,7 @@ from pcapi.core.providers import allocine
 from pcapi.local_providers import provider_manager
 from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
+from pcapi.utils import logging as logging_utils
 from pcapi.utils.blueprint import Blueprint
 
 from .etls.boost_etl import BoostExtractTransformLoadProcess
@@ -27,17 +26,6 @@ from .titelive_utils import generate_titelive_gtl_from_file
 
 blueprint = Blueprint(__name__, __name__)
 logger = logging.getLogger(__name__)
-
-
-@contextmanager
-def _set_debug_level(target_logger: logging.Logger, level: int) -> Generator[None, None, None]:
-    old_level = target_logger.level
-    target_logger.setLevel(level)
-
-    try:
-        yield
-    finally:
-        target_logger.setLevel(old_level)
 
 
 @blueprint.cli.command("synchronize_allocine_products")
@@ -71,7 +59,7 @@ def test_etl_integration(venue_provider_id: int) -> None:
         logger.warning("ETL integration not available for %s", venue_provider.provider.localClass)
         return
 
-    with _set_debug_level(logging.getLogger("pcapi"), level=logging.DEBUG):
+    with logging_utils.logging_at_level(logging.getLogger("pcapi"), level=logging.DEBUG):
         etl_class = local_class_to_etl_mapping[venue_provider.provider.localClass]
         etl_process = etl_class(venue_provider)
         etl_process.execute()
@@ -83,7 +71,7 @@ def debug_synchronize_venue_provider(venue_provider_id: int) -> None:
     """
     Start synchronize_venue_provider with `pcapi` logger at DEBUG level
     """
-    with _set_debug_level(logging.getLogger("pcapi"), level=logging.DEBUG):
+    with logging_utils.logging_at_level(logging.getLogger("pcapi"), level=logging.DEBUG):
         venue_provider: providers_models.VenueProvider = (
             db.session.query(providers_models.VenueProvider).filter_by(id=venue_provider_id).one()
         )
