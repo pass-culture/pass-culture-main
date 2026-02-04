@@ -1,6 +1,4 @@
 import logging
-from collections.abc import Generator
-from contextlib import contextmanager
 from typing import Type
 
 from urllib3 import exceptions as urllib3_exceptions
@@ -19,6 +17,7 @@ from pcapi.local_providers.cinema_providers.ems.ems_stocks import EMSStocks
 from pcapi.local_providers.local_provider import LocalProvider
 from pcapi.models import db
 from pcapi.utils import cron
+from pcapi.utils import logging as logging_utils
 from pcapi.utils import requests
 from pcapi.utils.repository import transaction
 
@@ -104,26 +103,11 @@ def synchronize_venue_provider(venue_provider: provider_models.VenueProvider, li
     )
 
 
-@contextmanager
-def _set_logging_level(target_logger: logging.Logger, level: int) -> Generator[None, None, None]:
-    """
-    Generator to set logging level of given logger to target level (most often to `DEBUG`) during the execution of a function
-    and restore logging level to previous level aftewards.
-    """
-    old_level = target_logger.level
-    target_logger.setLevel(level)
-
-    try:
-        yield
-    finally:
-        target_logger.setLevel(old_level)
-
-
 def execute_cinema_etl_process(venue_provider: provider_models.VenueProvider, *, debug: bool = False) -> None:
-    debug_level = logging.DEBUG if debug else logging.INFO
+    logging_level = logging.DEBUG if debug else logging.INFO
     pcapi_logger = logging.getLogger("pcapi")
 
-    with _set_logging_level(pcapi_logger, debug_level):
+    with logging_utils.logging_at_level(pcapi_logger, logging_level):
         assert venue_provider.provider.localClass  # to make mypy happy
         ETLProcess = _LOCAL_CLASS_NAME_TO_ETL_CLASS[venue_provider.provider.localClass]
         ETLProcess(venue_provider).execute()
