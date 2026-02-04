@@ -170,6 +170,13 @@ class VenueProvider(PcObject, Model, DeactivableMixin):
         .correlate_except(Provider)
     )
 
+    # TODO (tcoudray-pass, 04/02/26): This is a temporary column to activate new cinema
+    # integrations by venue. It will be removed once we get rid of old local provider integrations
+    # see https://passculture.atlassian.net/browse/PC-40117
+    isNewEtlIntegrationEnabled: sa_orm.Mapped[bool | None] = sa_orm.mapped_column(
+        sa.Boolean, nullable=True, default=False
+    )
+
     __mapper_args__ = {
         "polymorphic_on": sa.case(
             (isFromAllocineProvider, "allocine_venue_provider"),

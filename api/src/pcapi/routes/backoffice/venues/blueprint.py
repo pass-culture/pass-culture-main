@@ -38,6 +38,7 @@ from pcapi.core.permissions import models as perm_models
 from pcapi.core.providers import api as providers_api
 from pcapi.core.providers import models as providers_models
 from pcapi.core.search.models import IndexationReason
+from pcapi.local_providers.provider_manager import new_etl_integration_can_be_enabled
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.models.utils import get_or_404
@@ -343,6 +344,9 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
             else None
         ),
         get_region_name_from_postal_code=regions_utils.get_region_name_from_postal_code,
+        # TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
+        # See https://passculture.atlassian.net/browse/PC-40117
+        new_etl_integration_can_be_enabled=new_etl_integration_can_be_enabled,
     )
 
 
@@ -532,6 +536,25 @@ def toggle_venue_provider_is_active(venue_id: int, provider_id: int) -> utils.Ba
     flash(
         Markup("La synchronisation du partenaire culturel avec le provider a été {verb}.").format(
             verb="réactivée" if set_active else "mise en pause"
+        ),
+        "info",
+    )
+
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
+# TODO (tcoudray-pass, 04/02/26): Remove when we get rid of old local providers integrations
+# See https://passculture.atlassian.net/browse/PC-40117
+@venue_blueprint.route("/<int:venue_id>/provider/<int:provider_id>/cinema_integration", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.ADVANCED_PRO_SUPPORT)
+def toggle_new_cinema_integration_is_enabled(venue_id: int, provider_id: int) -> utils.BackofficeResponse:
+    venue_provider = _fetch_venue_provider(venue_id, provider_id)
+    venue_provider.isNewEtlIntegrationEnabled = not venue_provider.isNewEtlIntegrationEnabled
+    db.session.flush()
+
+    flash(
+        Markup("La nouvelle intégration cinéma a été {verb}.").format(
+            verb="activée" if venue_provider.isNewEtlIntegrationEnabled else "désactivée"
         ),
         "info",
     )

@@ -268,6 +268,21 @@
                                 {% endif %}
                               </button>
                             </form>
+                            {% if new_etl_integration_can_be_enabled(venue_provider) %}
+                              <form action="{{ url_for('backoffice_web.venue.toggle_new_cinema_integration_is_enabled', venue_id=venue.id, provider_id=venue_provider.provider.id) }}"
+                                    name="{{ url_for('backoffice_web.venue.toggle_new_cinema_integration_is_enabled', venue_id=venue.id, provider_id=venue_provider.provider.id) | action_to_name }}"
+                                    method="post">
+                                {{ csrf_token }}
+                                <button type="submit"
+                                        class="btn btn-sm d-block w-100 text-start px-3">
+                                  {% if venue_provider.isNewEtlIntegrationEnabled %}
+                                    Désactiver la nouvelle intégration cinéma
+                                  {% else %}
+                                    Activer la nouvelle intégration cinéma
+                                  {% endif %}
+                                </button>
+                              </form>
+                            {% endif %}
                           </li>
                           {% set has_delete_option = (venue_provider.provider.localClass != 'AllocineStocks') %}
                           {% if has_delete_option %}
