@@ -4,10 +4,14 @@ import typing
 from decimal import Decimal
 from decimal import InvalidOperation
 
+import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
+from pydantic import BaseModel as BaseModelV2
+from pydantic.types import StringConstraints
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
+from pcapi.serialization.exceptions import PydanticError
 from pcapi.serialization.utils import to_camel
 from pcapi.utils import phone_number as phone_number_utils
 
@@ -18,7 +22,62 @@ MAX_LATITUDE = 90
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
 
+RequiredStrippedStringV2 = StringConstraints(strip_whitespace=True, min_length=1)
 
+VenueCityV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(max_length=200)]
+VenueInseeCodeV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(min_length=5, max_length=5)]
+VenuePostalCodeV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(min_length=5, max_length=5)]
+VenueAddressV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(max_length=200)]
+
+
+class LocationModelV2(BaseModelV2):
+    isManualEdition: bool = False
+    isVenueLocation: bool = False
+    banId: str | None = None
+    city: VenueCityV2
+    inseeCode: VenueInseeCodeV2 | None = None
+    label: str | None = None
+    latitude: float | str
+    longitude: float | str
+    postalCode: VenuePostalCodeV2
+    street: VenueAddressV2
+
+    @pydantic_v2.field_validator("city")
+    @classmethod
+    def title_city_when_manually_edited(cls, city: str, info: pydantic_v2.ValidationInfo) -> str:
+        if info.data.get("isManualEdition") is True:
+            return city.title()
+
+        return city
+
+    @pydantic_v2.field_validator("latitude")
+    @classmethod
+    def validate_latitude(cls, raw_latitude: float | str) -> float | str:
+        try:
+            latitude = Decimal(raw_latitude)
+        except InvalidOperation:
+            raise PydanticError("Format incorrect")
+
+        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
+            raise PydanticError(f"La latitude doit être comprise entre -{MAX_LATITUDE} et +{MAX_LATITUDE}")
+
+        return raw_latitude
+
+    @pydantic_v2.field_validator("longitude")
+    @classmethod
+    def validate_longitude(cls, raw_longitude: float | str) -> float | str:
+        try:
+            longitude = Decimal(raw_longitude)
+        except InvalidOperation:
+            raise PydanticError("Format incorrect")
+
+        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
+            raise PydanticError(f"La longitude doit être comprise entre -{MAX_LONGITUDE} et +{MAX_LONGITUDE}")
+
+        return raw_longitude
+
+
+# Legacy (pydantic V1)
 class RequiredStrippedString(pydantic_v1.ConstrainedStr):
     strip_whitespace = True
     min_length = 1

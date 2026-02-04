@@ -2,10 +2,14 @@ import typing
 from datetime import datetime
 from itertools import chain
 
-from pcapi.core.educational import models
 
+MAX_COLLECTIVE_NAME_LENGTH: typing.Final = 110
+MAX_COLLECTIVE_DESCRIPTION_LENGTH: typing.Final = 1500
+MAX_COLLECTIVE_PRICE_DETAILS_LENGTH: typing.Final = 1000
 
-INSTITUTION_TYPES = {
+BIG_NUMBER_FOR_SORTING_OFFERS: typing.Final = 9999
+
+INSTITUTION_TYPES: typing.Final = {
     "EC AGRIC PR": "ECOLE AGRICOLE PRIVEE",
     "LGTA PR": "LYCEE GENERAL TECHNOLOGIQUE AGRICOLE PRIVE",
     "A ESPE": "ANTENNE ESPE",
@@ -186,8 +190,10 @@ INSTITUTION_TYPES = {
 }
 
 
-MAINLAND_INTERVENTION_AREA = [str(i).zfill(2) for i in chain(range(1, 96), ["2A", "2B", "mainland"]) if i != 20]
-ALL_INTERVENTION_AREA = [
+MAINLAND_INTERVENTION_AREA: typing.Final = [
+    str(i).zfill(2) for i in chain(range(1, 96), ["2A", "2B", "mainland"]) if i != 20
+]
+ALL_INTERVENTION_AREA: typing.Final = [
     *MAINLAND_INTERVENTION_AREA,
     "971",
     "972",
@@ -198,19 +204,4 @@ ALL_INTERVENTION_AREA = [
     "all",
 ]
 
-MEG_BEGINNING_DATE = datetime(2023, 9, 1)
-
-COLLECTIVE_OFFER_DISPLAYED_STATUS_LABELS: typing.Dict[models.CollectiveOfferDisplayedStatus, str] = {
-    models.CollectiveOfferDisplayedStatus.PUBLISHED: "Publiée",
-    models.CollectiveOfferDisplayedStatus.UNDER_REVIEW: "En instruction",
-    models.CollectiveOfferDisplayedStatus.REJECTED: "Non conforme",
-    models.CollectiveOfferDisplayedStatus.PREBOOKED: "Préréservée",
-    models.CollectiveOfferDisplayedStatus.BOOKED: "Réservée",
-    models.CollectiveOfferDisplayedStatus.HIDDEN: "En pause",
-    models.CollectiveOfferDisplayedStatus.EXPIRED: "Expirée",
-    models.CollectiveOfferDisplayedStatus.ENDED: "Terminée",
-    models.CollectiveOfferDisplayedStatus.CANCELLED: "Annulée",
-    models.CollectiveOfferDisplayedStatus.REIMBURSED: "Remboursée",
-    models.CollectiveOfferDisplayedStatus.ARCHIVED: "Archivée",
-    models.CollectiveOfferDisplayedStatus.DRAFT: "Brouillon",
-}
+MEG_BEGINNING_DATE: typing.Final = datetime(2023, 9, 1)

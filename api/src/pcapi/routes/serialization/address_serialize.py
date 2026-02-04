@@ -6,6 +6,15 @@ from pydantic.v1 import validator
 from pcapi.core.offerers import schemas as offerers_schema
 from pcapi.core.offerers.models import OffererAddress
 from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
+
+
+class LocationOnlyOnVenueBodyModelV2(HttpBodyModel):
+    isVenueLocation: typing.Literal[True] = True
+
+
+class LocationBodyModelV2(HttpBodyModel, offerers_schema.LocationModelV2):
+    isVenueLocation: typing.Literal[False] = False
 
 
 # Legacy (pydantic V1)

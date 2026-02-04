@@ -20,6 +20,7 @@ from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.bookings import exceptions as booking_exceptions
 from pcapi.core.categories.models import EacFormat
+from pcapi.core.educational import constants
 from pcapi.core.educational import exceptions
 from pcapi.core.finance import models as finance_models
 from pcapi.core.geography import models as geography_models
@@ -34,12 +35,6 @@ from pcapi.utils.siren import SIREN_LENGTH
 
 
 logger = logging.getLogger(__name__)
-
-BIG_NUMBER_FOR_SORTING_OFFERS = 9999
-
-MAX_COLLECTIVE_NAME_LENGTH: typing.Final = 110
-MAX_COLLECTIVE_DESCRIPTION_LENGTH: typing.Final = 1500
-
 
 if typing.TYPE_CHECKING:
     from pcapi.core.offerers.models import Offerer
@@ -65,7 +60,7 @@ class StudentLevels(enum.Enum):
     CAP1 = "CAP - 1re année"
 
     @classmethod
-    def primary_levels(cls) -> set:
+    def primary_levels(cls) -> "set[StudentLevels]":
         return {
             cls.ECOLES_MARSEILLE_MATERNELLE,
             cls.ECOLES_MARSEILLE_CP_CE1_CE2,
@@ -625,7 +620,7 @@ class CollectiveOffer(
 
         parent_args += [
             sa.CheckConstraint(
-                f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+                f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
                 name="collective_offer_description_constraint",
             ),
             sa.CheckConstraint(
@@ -748,7 +743,7 @@ class CollectiveOffer(
         ):
             date_limit_score = days_until_booking_limit
         else:
-            date_limit_score = BIG_NUMBER_FOR_SORTING_OFFERS
+            date_limit_score = constants.BIG_NUMBER_FOR_SORTING_OFFERS
 
         return not self.isArchived, -date_limit_score, self.dateCreated
 
@@ -1090,7 +1085,7 @@ class CollectiveOfferTemplate(
                 name="collective_offer_tmpl_contact_form_switch_constraint",
             ),
             sa.CheckConstraint(
-                f"length(description) <= {MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
+                f"length(description) <= {constants.MAX_COLLECTIVE_DESCRIPTION_LENGTH}",
                 name="collective_offer_tmpl_description_constraint",
             ),
             sa.CheckConstraint(

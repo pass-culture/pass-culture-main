@@ -2,8 +2,7 @@
 /* istanbul ignore file */
 /* tslint:disable */
 /* eslint-disable */
-export type DateRangeOnCreateModel = {
-  end: string;
-  start: string;
+export type LocationOnlyOnVenueBodyModelV2 = {
+  isVenueLocation?: boolean;
 };
 

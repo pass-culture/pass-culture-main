@@ -25,6 +25,11 @@ def to_camel(string: str) -> str:
     return components[0] + "".join(x.title() for x in components[1:])
 
 
+def _is_email_error(error_message: str) -> bool:
+    # email errors do not have an error_type, we must check the message directly
+    return error_message.startswith("value is not a valid email address")
+
+
 def before_handler(
     _request: flask.Request,
     _response: flask.Response,
@@ -55,13 +60,11 @@ def before_handler(
         "float_parsing": "Saisissez un nombre valide",
         "string_type": "Saisissez une chaîne de caractères valide",
         "string_too_short": "Cette chaîne de caractères doit avoir une taille minimum de {min_length} caractères",
+        "string_too_long": "Cette chaîne de caractères doit avoir une taille maximum de {max_length} caractères",
         "greater_than_equal": "Saisissez un nombre supérieur ou égal à {ge}",
-    }
-
-    # pydantic V2 is not precise enough on error_types so for some errors
-    # we must use the message for translation mapping
-    error_messages_by_message = {
-        "value is not a valid email address: An email address must have an @-sign.": "Saisissez un email valide",
+        "too_short": "Cette liste doit doit avoir une taille minimum de {min_length}",
+        "model_attributes_type": "Format incorrect",
+        "datetime_type": "Format de date invalide",
     }
 
     if pydantic_error and pydantic_error.errors():
@@ -69,8 +72,8 @@ def before_handler(
         for error in pydantic_error.errors():
             if error["type"] in error_messages_by_error_type:
                 message = error_messages_by_error_type[error["type"]].format(**error.get("ctx", {}))
-            elif error["msg"] in error_messages_by_message:
-                message = error_messages_by_message[error["msg"]].format(**error.get("ctx", {}))
+            elif _is_email_error(error["msg"]):
+                message = "Saisissez un email valide"
             else:
                 message = error["msg"]
 
