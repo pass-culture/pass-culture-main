@@ -22,6 +22,7 @@ from pcapi.core.educational import models as educational_models
 from pcapi.core.geography import models as geography_models
 from pcapi.core.highlights import models as highlights_models
 from pcapi.core.offerers import models as offerers_models
+from pcapi.core.offerers import repository as offerers_repository
 from pcapi.core.providers import constants as providers_constants
 from pcapi.core.providers import models as providers_models
 from pcapi.core.reactions import models as reactions_models
@@ -104,7 +105,6 @@ def get_capped_offers_for_filters(
         period_beginning_date=period_beginning_date,
         period_ending_date=period_ending_date,
     )
-
     offers = (
         query.options(
             sa_orm.load_only(
@@ -539,6 +539,7 @@ def get_offers_by_filters(
             query = query.filter(models.Offer.name.ilike(search))
     if status is not None:
         query = _filter_by_status(query, status)
+
     if period_beginning_date is not None or period_ending_date is not None:
         offer_alias = sa_orm.aliased(models.Offer)
         venue_oa_alias = sa_orm.aliased(offerers_models.OffererAddress)
@@ -561,24 +562,49 @@ def get_offers_by_filters(
             .filter(models.Stock.offerId == models.Offer.id)
         )
         target_timezone = sa.func.coalesce(geography_models.Address.timezone, venue_address_alias.timezone)
-        if period_beginning_date is not None:
-            stock_query = stock_query.filter(
-                sa.func.timezone(
-                    target_timezone,
-                    sa.func.timezone("UTC", models.Stock.beginningDatetime),
-                )
-                >= period_beginning_date
-            )
-        if period_ending_date is not None:
-            stock_query = stock_query.filter(
-                sa.func.timezone(
-                    target_timezone,
-                    sa.func.timezone("UTC", models.Stock.beginningDatetime),
-                )
-                <= datetime.datetime.combine(period_ending_date, datetime.time.max),
-            )
 
+        event_date_range: (
+            tuple[datetime.date, datetime.date] | tuple[datetime.date, None] | tuple[None, datetime.date]
+        ) = (period_beginning_date, period_ending_date)  # type: ignore[assignment]
+        datetime_period_by_timezones = offerers_repository.convert_date_period_to_datetime_period_for_timezones(
+            event_date_range,
+            user_id,
+            offerer_address_id=offerer_address_id,
+        )
+        if period_beginning_date is not None:
+            if len(datetime_period_by_timezones) == 1:  # ie. all bookings are on a single timezone
+                [(period_start, _)] = datetime_period_by_timezones.values()
+                stock_query = stock_query.filter(models.Stock.beginningDatetime >= period_start)
+            else:  # ie. bookings are dispatched on several timezones
+                stock_query = stock_query.filter(
+                    sa.or_(
+                        *[
+                            sa.and_(
+                                target_timezone == timezone,
+                                models.Stock.beginningDatetime >= period_start,
+                            )
+                            for timezone, (period_start, _) in datetime_period_by_timezones.items()
+                        ]
+                    )
+                )
+        if period_ending_date is not None:
+            if len(datetime_period_by_timezones) == 1:  # ie. all bookings are on a single timezone
+                [(_, period_end)] = datetime_period_by_timezones.values()
+                stock_query = stock_query.filter(models.Stock.beginningDatetime <= period_end)
+            else:  # ie. bookings are dispatched on several timezones
+                stock_query = stock_query.filter(
+                    sa.or_(
+                        *[
+                            sa.and_(
+                                target_timezone == timezone,
+                                models.Stock.beginningDatetime <= period_end,
+                            )
+                            for timezone, (_, period_end) in datetime_period_by_timezones.items()
+                        ]
+                    )
+                )
         query = query.filter(stock_query.exists())
+
     return query
 
 

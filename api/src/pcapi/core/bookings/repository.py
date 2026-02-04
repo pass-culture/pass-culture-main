@@ -452,7 +452,7 @@ def _get_filtered_bookings_query(
 
         datetime_period_by_timezones = offerers_repository.convert_date_period_to_datetime_period_for_timezones(
             period,
-            pro_user,
+            pro_user.id,
             offer_id=offer_id,
             offerer_address_id=offerer_address_id,
         )
