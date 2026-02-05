@@ -1,11 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { VenueListItemResponseModel } from '@/apiClient/v1'
-import { getInitialSelectedVenueId } from '@/commons/store/user/utils/getInitialSelectedVenueId'
+import { getInitialPartnerVenueId } from '@/commons/store/user/utils/getInitialPartnerVenueId'
 import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import { LOCAL_STORAGE_KEY } from '@/commons/utils/localStorageManager'
 
-describe('getInitialSelectedVenueId', () => {
+describe('getInitialPartnerVenueId', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     localStorage.clear()
@@ -20,7 +20,7 @@ describe('getInitialSelectedVenueId', () => {
         makeVenueListItem({ id: 456 }),
       ]
 
-      const result = getInitialSelectedVenueId(venues)
+      const result = getInitialPartnerVenueId(venues)
 
       expect(result).toBe(123)
     })
@@ -33,7 +33,7 @@ describe('getInitialSelectedVenueId', () => {
         makeVenueListItem({ id: 456 }),
       ]
 
-      const result = getInitialSelectedVenueId(venues)
+      const result = getInitialPartnerVenueId(venues)
 
       expect(result).toBeNull()
     })
@@ -43,7 +43,7 @@ describe('getInitialSelectedVenueId', () => {
 
       const venues = [makeVenueListItem({ id: 123 })]
 
-      const result = getInitialSelectedVenueId(venues)
+      const result = getInitialPartnerVenueId(venues)
 
       expect(result).toBe(123)
     })
@@ -53,7 +53,7 @@ describe('getInitialSelectedVenueId', () => {
     it('should return the only venue ID when user has exactly one venue', () => {
       const venues = [makeVenueListItem({ id: 789 })]
 
-      const result = getInitialSelectedVenueId(venues)
+      const result = getInitialPartnerVenueId(venues)
 
       expect(result).toBe(789)
     })
@@ -64,7 +64,7 @@ describe('getInitialSelectedVenueId', () => {
         makeVenueListItem({ id: 456 }),
       ]
 
-      const result = getInitialSelectedVenueId(venues)
+      const result = getInitialPartnerVenueId(venues)
 
       expect(result).toBeNull()
     })
@@ -74,7 +74,7 @@ describe('getInitialSelectedVenueId', () => {
     it('should return null when user has no venues', () => {
       const venues: VenueListItemResponseModel[] = []
 
-      const result = getInitialSelectedVenueId(venues)
+      const result = getInitialPartnerVenueId(venues)
 
       expect(result).toBeNull()
     })

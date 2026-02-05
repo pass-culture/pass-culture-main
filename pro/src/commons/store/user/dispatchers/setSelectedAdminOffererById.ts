@@ -11,22 +11,22 @@ import {
 } from '@/commons/utils/localStorageManager'
 
 import type { AppThunkApiConfig } from '../../store'
-import { logout } from '../../user/dispatchers/logout'
-import { updateAdminCurrentOfferer } from '../reducer'
+import { setSelectedAdminOfferer } from '../reducer'
+import { logout } from './logout'
 
-export const setAdminCurrentOfferer = createAsyncThunk<
+export const setSelectedAdminOffererById = createAsyncThunk<
   void,
   number | GetOffererResponseModel,
   AppThunkApiConfig
 >(
-  'offerer/setAdminCurrentOfferer',
+  'user/setSelectedAdminOffererById',
   async (offererOrOffererId, { dispatch }) => {
     try {
       const nextOfferer =
         typeof offererOrOffererId === 'number'
           ? await api.getOfferer(offererOrOffererId)
           : offererOrOffererId
-      dispatch(updateAdminCurrentOfferer(nextOfferer))
+      dispatch(setSelectedAdminOfferer(nextOfferer))
       localStorageManager.setItem(
         LOCAL_STORAGE_KEY.SELECTED_ADMIN_OFFERER_ID,
         String(nextOfferer.id)

@@ -29,7 +29,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const adminSelectedOfferer = useAppSelector(
-    (store) => store.offerer.adminCurrentOfferer
+    (store) => store.user.selectedAdminOfferer
   )
   const isCaledonian = useIsCaledonian(withSwitchVenueFeature)
 

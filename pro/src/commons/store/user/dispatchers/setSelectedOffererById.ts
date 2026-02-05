@@ -28,6 +28,7 @@ import {
 import { ensureVenues } from '../selectors'
 import { logout } from './logout'
 
+// TODO (igabriele, 2026-02-04): Delete this dispatcher once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const setSelectedOffererById = createAsyncThunk<
   UserAccess | null,
   { nextSelectedOffererId: number; shouldRefetch?: boolean },

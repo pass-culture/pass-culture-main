@@ -24,5 +24,4 @@ export const currentOffererFactory = (
     isOnboarded: true,
     ...customOfferer.currentOfferer,
   },
-  adminCurrentOfferer: null,
 })

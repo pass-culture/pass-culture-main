@@ -8,6 +8,7 @@ export enum LOCAL_STORAGE_KEY {
   SELECTED_ADMIN_OFFERER_ID = 'PASS_CULTURE_SELECTED_ADMIN_OFFERER_ID',
 
   // Legacy keys (will be removed in the future)
+  // TODO (igabriele, 2026-02-04): Move this key to a `LOCAL_STORAGE_KEY_TO_PRUNE` once `WIP_SWITCH_VENUE` FF is enabled and removed.
   /** @deprecated Will be removed in the future in favor of `SELECTED_VENUE_ID`. */
   SELECTED_OFFERER_ID = 'homepageSelectedOffererId',
 }

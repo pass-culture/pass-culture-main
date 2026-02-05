@@ -39,11 +39,11 @@ describe('setSelectedVenueById', () => {
         getOffererNameFactory({ id: 100 }),
         getOffererNameFactory({ id: 200 }),
       ],
-      adminCurrentOfferer: null,
     },
     user: {
       access: null,
       currentUser: null,
+      selectedAdminOfferer: null,
       selectedVenue: makeGetVenueResponseModel({
         id: 201,
         managingOffererId: 200,
@@ -150,7 +150,6 @@ describe('setSelectedVenueById', () => {
       offerer: {
         ...storeDataBase.offerer!,
         offererNames: null,
-        adminCurrentOfferer: null,
       },
     })
 
@@ -194,11 +193,11 @@ describe('setSelectedVenueById', () => {
           getOffererNameFactory({ id: 100 }),
           getOffererNameFactory({ id: 200 }),
         ],
-        adminCurrentOfferer: null,
       },
       user: {
         access: null,
         currentUser: null,
+        selectedAdminOfferer: null,
         selectedVenue: makeGetVenueResponseModel({
           id: 201,
           managingOffererId: 200,

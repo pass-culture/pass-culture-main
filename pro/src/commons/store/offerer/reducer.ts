@@ -11,17 +11,16 @@ export type OffererState = {
    * because they won't be allowed to access this offerer's details.
    */
   currentOffererName: GetOffererNameResponseModel | null
-  adminCurrentOfferer: GetOffererResponseModel | null
 }
 
 export const initialState: OffererState = {
   offererNames: null,
   currentOfferer: null,
   currentOffererName: null,
-  adminCurrentOfferer: null,
 }
 
-// TODO (igabriele, 2025-10-16): Merge that into user slice (it's user-dependent).
+// TODO (igabriele, 2026-02-04): 1. Move the `offererNames` prop into `userSlice`.
+// TODO (igabriele, 2026-02-04): 2. Delete this slice once `WIP_SWITCH_VENUE` FF is enabled and removed.
 const offererSlice = createSlice({
   name: 'offerer',
   initialState,
@@ -46,13 +45,6 @@ const offererSlice = createSlice({
     ) => {
       state.currentOfferer = action.payload
     },
-
-    updateAdminCurrentOfferer: (
-      state: OffererState,
-      action: PayloadAction<GetOffererResponseModel | null>
-    ) => {
-      state.adminCurrentOfferer = action.payload
-    },
   },
 })
 
@@ -62,5 +54,4 @@ export const {
   setCurrentOffererName,
   updateOffererNames,
   updateCurrentOfferer,
-  updateAdminCurrentOfferer,
 } = offererSlice.actions

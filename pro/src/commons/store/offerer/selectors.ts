@@ -1,4 +1,5 @@
 /* istanbul ignore file */
+// TODO (igabriele, 2026-02-04): Delete this file once `WIP_SWITCH_VENUE` FF is enabled and removed.
 
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import type { RootState } from '@/commons/store/store'
@@ -27,6 +28,6 @@ export const selectOffererNames = (state: RootState) =>
 export const selectCurrentOfferer = (state: RootState) =>
   state.offerer.currentOfferer
 
-/** @deprecated Use `ensureCurrentOfferer` or `selectCurrentOfferer`. */
+/** @deprecated Use `ensureCurrentOfferer` or `state => state.offerer.currentOfferer`. */
 export const selectCurrentOffererId = (state: RootState) =>
   state.offerer.currentOfferer?.id ?? null

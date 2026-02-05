@@ -1,6 +1,11 @@
 import { vi } from 'vitest'
 
+import * as handleUnexpectedErrorModule from '@/commons/errors/handleUnexpectedError'
 import { getOffererNameFactory } from '@/commons/utils/factories/individualApiFactories'
+import {
+  makeGetVenueManagingOffererResponseModel,
+  makeGetVenueResponseModel,
+} from '@/commons/utils/factories/venueFactories'
 import { localStorageManager } from '@/commons/utils/localStorageManager'
 
 import { getInitialAdminOffererId } from '../getInitialAdminOffererId'
@@ -15,49 +20,102 @@ vi.mock('@/commons/utils/localStorageManager', () => ({
 }))
 
 describe('getInitialAdminOffererId', () => {
-  afterEach(() => {
+  const offererNames = [
+    getOffererNameFactory({ id: 100 }),
+    getOffererNameFactory({ id: 200 }),
+  ]
+
+  beforeEach(() => {
     vi.resetAllMocks()
   })
 
-  it('should return null when offererNames is empty', () => {
-    const result = getInitialAdminOffererId([])
+  describe('Priority 1: localStorage', () => {
+    it('should return saved offerer id when present in offererNames', () => {
+      vi.spyOn(localStorageManager, 'getItem').mockReturnValue('100')
 
-    expect(result).toBeNull()
+      const result = getInitialAdminOffererId({
+        offererNames,
+        selectedVenue: null,
+      })
+
+      expect(result).toBe(100)
+    })
+
+    it('should call handleUnexpectedError and return null when saved id is not in offererNames', () => {
+      vi.spyOn(localStorageManager, 'getItem').mockReturnValue('999')
+      const handleUnexpectedErrorSpy = vi
+        .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
+        .mockImplementation(() => {})
+
+      const result = getInitialAdminOffererId({
+        offererNames,
+        selectedVenue: null,
+      })
+
+      expect(result).toBeNull()
+      expect(handleUnexpectedErrorSpy).toHaveBeenCalledOnce()
+    })
   })
 
-  it('should return saved offerer id when present in offererNames', () => {
-    vi.spyOn(localStorageManager, 'getItem').mockReturnValue('123')
-    const offerers = [
-      getOffererNameFactory({ id: 123 }),
-      getOffererNameFactory({ id: 456 }),
-    ]
+  describe('Priority 2: selectedVenue parent offerer', () => {
+    it('should return selectedVenue parent offerer id when no localStorage and venue is selected', () => {
+      vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
+      const selectedVenue = makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 100 }),
+      })
 
-    const result = getInitialAdminOffererId(offerers)
+      const result = getInitialAdminOffererId({
+        offererNames,
+        selectedVenue,
+      })
 
-    expect(result).toBe(123)
+      expect(result).toBe(100)
+    })
+
+    it('should call handleUnexpectedError and return null when selectedVenue parent offerer is not in offererNames', () => {
+      vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
+      const handleUnexpectedErrorSpy = vi
+        .spyOn(handleUnexpectedErrorModule, 'handleUnexpectedError')
+        .mockImplementation(() => {})
+      const selectedVenue = makeGetVenueResponseModel({
+        id: 101,
+        managingOfferer: makeGetVenueManagingOffererResponseModel({ id: 999 }),
+      })
+
+      const result = getInitialAdminOffererId({
+        offererNames,
+        selectedVenue,
+      })
+
+      expect(result).toBeNull()
+      expect(handleUnexpectedErrorSpy).toHaveBeenCalledOnce()
+    })
   })
 
-  it('should return default (first) offerer id when no saved id', () => {
-    vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
-    const offerers = [
-      getOffererNameFactory({ id: 123 }),
-      getOffererNameFactory({ id: 456 }),
-    ]
+  describe('Priority 3: first offerer', () => {
+    it('should return first offerer id when no localStorage and no selectedVenue', () => {
+      vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
 
-    const result = getInitialAdminOffererId(offerers)
+      const result = getInitialAdminOffererId({
+        offererNames,
+        selectedVenue: null,
+      })
 
-    expect(result).toBe(123)
+      expect(result).toBe(100)
+    })
   })
 
-  it('should return default (first) offerer id when saved id is not in offererNames', () => {
-    vi.spyOn(localStorageManager, 'getItem').mockReturnValue('999')
-    const offerers = [
-      getOffererNameFactory({ id: 123 }),
-      getOffererNameFactory({ id: 456 }),
-    ]
+  describe('Priority 4: no offerers', () => {
+    it('should return null when offererNames is empty', () => {
+      vi.spyOn(localStorageManager, 'getItem').mockReturnValue(null)
 
-    const result = getInitialAdminOffererId(offerers)
+      const result = getInitialAdminOffererId({
+        offererNames: [],
+        selectedVenue: null,
+      })
 
-    expect(result).toBe(123)
+      expect(result).toBeNull()
+    })
   })
 })
