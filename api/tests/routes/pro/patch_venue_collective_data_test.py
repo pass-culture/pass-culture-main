@@ -5,6 +5,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -72,7 +73,7 @@ class Returns200Test:
             collectivePhone="",
             collectiveEmail="",
             activity=offerers_models.ActivityOpenToPublic.CINEMA,
-            isOpenToPublic=True,
+            # isOpenToPublic=True,
         )
         educational_status = offerers_factories.VenueEducationalStatusFactory()
 
@@ -96,6 +97,8 @@ class Returns200Test:
 
         response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
 
+        print(venue.isOpenToPublic)
+        print("WIP_VENUE_CULTURAL_DOMAINS: %s" % FeatureToggle.WIP_VENUE_CULTURAL_DOMAINS.is_active())
         assert response.status_code == 200, response.json
         venue = db.session.get(offerers_models.Venue, venue_id)
         assert venue.collectiveDomains == [domain]
