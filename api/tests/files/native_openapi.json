@@ -4476,8 +4476,6 @@
             "PostFeedbackBody": {
                 "properties": {
                     "feedback": {
-                        "maxLength": 800,
-                        "minLength": 1,
                         "title": "Feedback",
                         "type": "string"
                     }
