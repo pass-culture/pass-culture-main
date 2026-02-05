@@ -1,4 +1,3 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import type { Meta, StoryObj } from '@storybook/react'
 import * as React from 'react'
 
@@ -30,9 +29,6 @@ export const WithChildren: Story = {
       <DropdownItem onSelect={() => console.log('Paramètres')}>
         Paramètres
       </DropdownItem>
-
-      {/* Tu peux utiliser aussi les primitives Radix si besoin */}
-      <DropdownMenu.Separator />
 
       <DropdownItem onSelect={() => console.log('Déconnexion')}>
         Déconnexion
