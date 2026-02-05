@@ -9,6 +9,7 @@ import os
 import pprint
 import sys
 import time
+import traceback
 import typing
 import uuid
 
@@ -221,6 +222,12 @@ class PlainTextFormatter(logging.Formatter):
     """Formatter for dev environments let's keep it simple"""
 
     def format(self, record: logging.LogRecord) -> str:
+        if record.exc_info:
+            # restore printing stacktrace in dev
+            print("")
+            traceback.print_exception(*record.exc_info)
+            print("")
+
         extra = getattr(record, "extra", {})
         formated_extra = ""
         if record.msg == "HTTP request at %s":
