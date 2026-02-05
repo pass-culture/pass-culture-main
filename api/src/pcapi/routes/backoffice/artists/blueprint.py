@@ -270,16 +270,16 @@ class ArtistDetailsActionType(enum.StrEnum):
 
 
 def _get_artist_details_actions() -> dict[ArtistDetailsActionType, bool]:
-    can_manage_offers = utils.has_current_user_permission(perm_models.Permissions.MANAGE_OFFERS)
+    can_manage_artists = utils.has_current_user_permission(perm_models.Permissions.MANAGE_ARTISTS)
     can_manage_fraud = utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS)
 
     actions = {
-        ArtistDetailsActionType.EDIT: can_manage_offers,
+        ArtistDetailsActionType.EDIT: can_manage_artists,
         ArtistDetailsActionType.BLACKLIST: can_manage_fraud,
-        ArtistDetailsActionType.LINK_PRODUCT: can_manage_offers,
-        ArtistDetailsActionType.UNLINK_PRODUCT: can_manage_offers,
-        ArtistDetailsActionType.MERGE: can_manage_offers,
-        ArtistDetailsActionType.SPLIT: can_manage_offers,
+        ArtistDetailsActionType.LINK_PRODUCT: can_manage_artists,
+        ArtistDetailsActionType.UNLINK_PRODUCT: can_manage_artists,
+        ArtistDetailsActionType.MERGE: can_manage_artists,
+        ArtistDetailsActionType.SPLIT: can_manage_artists,
     }
     return actions
 
@@ -315,7 +315,7 @@ def get_artist_details(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/edit", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def get_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -334,7 +334,7 @@ def get_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/edit", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def post_artist_edit_form(artist_id: str) -> utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -426,7 +426,7 @@ def post_artist_unblacklist(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/products/<int:product_id>/unlink-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def get_unlink_product_form(artist_id: str, product_id: int) -> utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -454,7 +454,7 @@ def get_unlink_product_form(artist_id: str, product_id: int) -> utils.Backoffice
 
 
 @artists_blueprint.route("/<string:artist_id>/products/<int:product_id>/unlink", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def post_unlink_product(artist_id: str, product_id: int) -> utils.BackofficeResponse:
     link = (
         db.session.query(artist_models.ArtistProductLink).filter_by(artist_id=artist_id, product_id=product_id).first()
@@ -480,7 +480,7 @@ def post_unlink_product(artist_id: str, product_id: int) -> utils.BackofficeResp
 
 
 @artists_blueprint.route("/<string:artist_id>/associate-product", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def associate_product_form(artist_id: str) -> utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -506,7 +506,7 @@ def associate_product_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/associate-product", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def associate_product(artist_id: str) -> utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -550,7 +550,7 @@ def associate_product(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/confirm-association", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def confirm_association(artist_id: str) -> utils.BackofficeResponse:
     confirm_form = forms.ConfirmAssociationForm()
 
@@ -581,7 +581,7 @@ def confirm_association(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/merge-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def get_merge_artist_form(artist_id: str) -> utils.BackofficeResponse:
     artist = db.session.query(artist_models.Artist).filter_by(id=artist_id).one_or_none()
     if not artist:
@@ -606,7 +606,7 @@ def get_merge_artist_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/merge", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def post_merge_artists(artist_id: str) -> utils.BackofficeResponse:
     artist_to_keep_id = artist_id
     artist_to_keep = db.session.query(artist_models.Artist).filter_by(id=artist_to_keep_id).one_or_none()
@@ -649,7 +649,7 @@ def post_merge_artists(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/split-form", methods=["GET"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def get_split_artist_form(artist_id: str) -> utils.BackofficeResponse:
     source_artist = (
         db.session.query(artist_models.Artist)
@@ -679,7 +679,7 @@ def get_split_artist_form(artist_id: str) -> utils.BackofficeResponse:
 
 
 @artists_blueprint.route("/<string:artist_id>/split", methods=["POST"])
-@utils.permission_required(perm_models.Permissions.MANAGE_OFFERS)
+@utils.permission_required(perm_models.Permissions.MANAGE_ARTISTS)
 def post_split_artist(artist_id: str) -> utils.BackofficeResponse:
     source_artist = (
         db.session.query(artist_models.Artist)

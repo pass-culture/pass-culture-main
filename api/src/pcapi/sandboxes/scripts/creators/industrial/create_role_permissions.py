@@ -112,6 +112,10 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_REIMBURSEMENT_RULES,
         perm_models.Permissions.CREATE_REIMBURSEMENT_RULES,
     ],
+    "data": [
+        perm_models.Permissions.READ_OFFERS,
+        perm_models.Permissions.MANAGE_ARTISTS,
+    ],
     "partenaire_technique": [
         perm_models.Permissions.READ_TECH_PARTNERS,
         perm_models.Permissions.MANAGE_TECH_PARTNERS,
@@ -193,6 +197,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MANAGE_OFFERS,
+        perm_models.Permissions.MANAGE_ARTISTS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.VALIDATE_OFFERER,
         perm_models.Permissions.READ_TAGS,
@@ -245,6 +250,7 @@ ROLE_PERMISSIONS: dict[str, list[perm_models.Permissions]] = {
         perm_models.Permissions.READ_BOOKINGS,
         perm_models.Permissions.READ_OFFERS,
         perm_models.Permissions.MANAGE_OFFERS,
+        perm_models.Permissions.MANAGE_ARTISTS,
         perm_models.Permissions.MULTIPLE_OFFERS_ACTIONS,
         perm_models.Permissions.VALIDATE_OFFERER,
         perm_models.Permissions.READ_TAGS,

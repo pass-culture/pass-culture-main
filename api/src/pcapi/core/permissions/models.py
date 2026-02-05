@@ -69,8 +69,9 @@ class Permissions(enum.Enum):
     MANAGE_BOOKINGS = "gérer les réservations"
     READ_BOOKINGS = "visualiser les réservations"
 
-    READ_OFFERS = "visualiser les offres"
+    READ_OFFERS = "visualiser les offres, produits, artistes"
     MANAGE_OFFERS = "gérer les offres"
+    MANAGE_ARTISTS = "gérer les artistes"
     MULTIPLE_OFFERS_ACTIONS = "opérations sur plusieurs offres"
 
     VALIDATE_OFFERER = "gérer la validation des entités juridiques et des rattachements"
@@ -190,6 +191,7 @@ class Roles(enum.Enum):
     CONNECT_AS_PRO = "connect_as_pro"
     DAF = "daf"
     DAF_MANAGEMENT = "responsable_daf"
+    DATA = "data"
     DPO = "dpo"
     FRAUDE_CONFORMITE = "fraude_conformite"
     FRAUDE_JEUNES = "fraude_jeunes"
