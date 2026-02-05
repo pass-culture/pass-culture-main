@@ -14,19 +14,21 @@ export type TabItem = {
    */
   key: string
   /**
-   * The corresponding tab element's id
-   * It should be used in the `aria-labelledby` attribute
-   *  of the corresponding panel element.
-   * @default `tab-${key}`
+   * Base string used to derive DOM ids for tab and panel elements.
+   *
+   * The generated ids are computed according to the following convention :
+   *
+   * 1. Tab element id: `tab-${baseId}`
+   *    It should be used in the `aria-labelledby` attribute
+   *    of the corresponding panel element.
+   *
+   * 2. Panel element id: `panel-${baseId}`:
+   *    Used in the `aria-controls` attribute of the tab element.
+   *    It should be used as the id of the corresponding panel.
+   *
+   * Defaults to the value of `key`.
    */
-  tabId?: string
-  /**
-   * The corresponding tab element's id
-   * It's used in the `aria-controls` attribute
-   *   of the corresponding tab element
-   * @default `panel-${key}`
-   */
-  panelId?: string
+  baseId?: string
 }
 
 type TabItemsProps = BaseTabsProps & {
@@ -34,6 +36,9 @@ type TabItemsProps = BaseTabsProps & {
   tabs: TabItem[]
   onChange: (selectedKey: string) => void
 }
+
+export const getTabId = (baseId: string): string => `tab-${baseId}`
+export const getPanelId = (baseId: string): string => `panel-${baseId}`
 
 export const TabItems = ({
   navLabel,
@@ -49,7 +54,7 @@ export const TabItems = ({
         aria-label={navLabel}
         className={cn(styles['menu-list'], className)}
       >
-        {tabs.map(({ key, label, tabId, panelId }) => {
+        {tabs.map(({ key, label, baseId }) => {
           const isSelected = selectedKey === key
 
           return (
@@ -58,13 +63,13 @@ export const TabItems = ({
              * @see https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/tab_role#best_practices
              */
             <button
-              id={tabId ?? `tab-${key}`}
+              id={getTabId(baseId ?? key)}
               key={key}
               type="button"
               role="tab"
               onClick={() => onChange(key)}
               aria-selected={isSelected}
-              aria-controls={panelId ?? `panel-${key}`}
+              aria-controls={getPanelId(baseId ?? key)}
               tabIndex={0}
               className={cn(
                 styles['menu-list-item'],

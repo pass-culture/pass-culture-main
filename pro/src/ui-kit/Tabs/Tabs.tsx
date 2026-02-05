@@ -13,7 +13,7 @@ export type BaseTabsProps = {
   className?: string
 }
 
-type TabTabsProps = BaseTabsProps & {
+type StandardTabsProps = BaseTabsProps & {
   type: 'tabs'
   /**
    * An array of links or tabs to be rendered.
@@ -25,7 +25,7 @@ type TabTabsProps = BaseTabsProps & {
   onChange: (selectedKey: string) => void
 }
 
-type NavLinkTabsProps = BaseTabsProps & {
+type NavTabsProps = BaseTabsProps & {
   type: 'links'
   /**
    * An array of links or tabs to be rendered.
@@ -53,7 +53,7 @@ type NavLinkTabsProps = BaseTabsProps & {
  *   selectedKey="home"
  * />
  */
-export const Tabs = (props: TabTabsProps | NavLinkTabsProps): JSX.Element => {
+export const Tabs = (props: StandardTabsProps | NavTabsProps): JSX.Element => {
   return props.type === 'tabs' ? (
     <TabItems
       navLabel={props.navLabel}
