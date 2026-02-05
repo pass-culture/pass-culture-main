@@ -32,14 +32,14 @@
                        data-bs-target="#commercial-gesture-creation-modal-{{ collective_booking.id }}">Créer un geste commercial</a>
                   </li>
                 {% endif %}
-              {% elif not collective_booking.isReimbursed %}
+              {% elif not collective_booking.is_pending_reimbursement_or_reimbursed %}
                 <li class="dropdown-item p-0">
                   <a class="btn btn-sm d-block w-100 text-start px-3"
                      data-bs-toggle="modal"
                      data-use-dynamic-modal="true"
                      data-bs-target=".pc-cancel-booking-modal-{{ collective_booking.id }}">Annuler la réservation</a>
                 </li>
-              {% elif collective_booking.isReimbursed and has_permission("CREATE_INCIDENTS") %}
+              {% elif collective_booking.is_pending_reimbursement_or_reimbursed and has_permission("CREATE_INCIDENTS") %}
                 <li class="dropdown-item p-0">
                   <a class="btn btn-sm d-block w-100 text-start px-3"
                      data-bs-toggle="modal"

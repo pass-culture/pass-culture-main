@@ -1110,6 +1110,7 @@
                     "CONFIRMED",
                     "USED",
                     "CANCELLED",
+                    "PENDING_REIMBURSEMENT",
                     "REIMBURSED"
                 ],
                 "title": "BookingStatus",
@@ -1692,6 +1693,7 @@
                     "CONFIRMED",
                     "USED",
                     "CANCELLED",
+                    "PENDING_REIMBURSEMENT",
                     "REIMBURSED"
                 ],
                 "title": "CollectiveBookingStatus"

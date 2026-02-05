@@ -440,7 +440,7 @@ def get_individual_bookings_overpayment_creation_form() -> utils.BackofficeRespo
             )
             .filter(
                 bookings_models.Booking.id.in_(form.object_ids_list),
-                bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
+                bookings_models.Booking.is_pending_reimbursement_or_reimbursed,
             )
             .all()
         )
@@ -668,7 +668,7 @@ def create_individual_booking_overpayment() -> utils.BackofficeResponse:
         )
         .filter(
             bookings_models.Booking.id.in_(form.object_ids_list),
-            bookings_models.Booking.status == bookings_models.BookingStatus.REIMBURSED,
+            bookings_models.Booking.is_pending_reimbursement_or_reimbursed,
         )
         .all()
     )

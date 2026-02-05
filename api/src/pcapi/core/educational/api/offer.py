@@ -931,7 +931,7 @@ def check_can_move_collective_offer_venue(
             .join(models.CollectiveBooking.collectiveStock)
             .filter(
                 models.CollectiveStock.collectiveOfferId == collective_offer.id,
-                models.CollectiveBooking.isReimbursed,
+                models.CollectiveBooking.is_pending_reimbursement_or_reimbursed,
             )
             .count()
         )
@@ -1041,7 +1041,7 @@ def move_collective_offer_venue(
     db.session.add(collective_offer)
 
     for collective_booking in collective_bookings.all():
-        assert not collective_booking.isReimbursed
+        assert not collective_booking.is_pending_reimbursement_or_reimbursed
         collective_booking.venueId = destination_venue.id
         db.session.add(collective_booking)
 

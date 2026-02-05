@@ -193,6 +193,23 @@ class GetBookingByTokenTest(PublicAPIVenueEndpointHelper):
             "booking": f"Vous pourrez valider cette contremarque à partir du {cancellation_limit_date}, une fois le délai d’annulation passé."
         }
 
+    def test_should_raise_403_when_booking_is_being_refunded(self):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+
+        offer = offers_factories.ThingOfferFactory(venue=venue_provider.venue)
+        stock = offers_factories.StockFactory(offer=offer)
+        booking_token = bookings_factories.PendingReimbursementBookingFactory(stock=stock).token
+
+        num_queries = 1  # select api_key
+        num_queries += 1  # select booking
+        num_queries += 1  # rollback atomic
+        num_queries += 1  # rollback atomic
+        with testing.assert_num_queries(num_queries):
+            response = self.make_request(plain_api_key=plain_api_key, path_params={"token": booking_token})
+            assert response.status_code == 403
+
+        assert response.json == {"payment": "This booking has already been reimbursed"}
+
     def test_should_raise_403_when_booking_is_refunded(self):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
 
