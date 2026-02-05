@@ -2,14 +2,14 @@
 
 [[package]]
 name = "alembic"
-version = "1.18.1"
+version = "1.18.2"
 description = "A database migration tool for SQLAlchemy."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "alembic-1.18.1-py3-none-any.whl", hash = "sha256:f1c3b0920b87134e851c25f1f7f236d8a332c34b75416802d06971df5d1b7810"},
-    {file = "alembic-1.18.1.tar.gz", hash = "sha256:83ac6b81359596816fb3b893099841a0862f2117b2963258e965d70dc62fb866"},
+    {file = "alembic-1.18.2-py3-none-any.whl", hash = "sha256:18a5f6448af4864cc308aadf33eb37c0116da9a60fd9bb3f31ccb1b522b4a9b9"},
+    {file = "alembic-1.18.2.tar.gz", hash = "sha256:1c3ddb635f26efbc80b1b90c5652548202022d4e760f6a78d6d85959280e3684"},
 ]
 
 [package.dependencies]
@@ -4192,9 +4192,6 @@ files = [
     {file = "psycopg-3.2.10.tar.gz", hash = "sha256:0bce99269d16ed18401683a8569b2c5abd94f72f8364856d56c0389bcd50972a"},
 ]
 
-[package.dependencies]
-tzdata = {version = "*", markers = "sys_platform == \"win32\""}
-
 [package.extras]
 binary = ["psycopg-binary (==3.2.10) ; implementation_name != \"pypy\""]
 c = ["psycopg-c (==3.2.10) ; implementation_name != \"pypy\""]
@@ -6617,7 +6614,7 @@ files = [
     {file = "tzdata-2025.2-py2.py3-none-any.whl", hash = "sha256:1a403fada01ff9221ca8044d701868fa132215d84beb92242d9acd2147f667a8"},
     {file = "tzdata-2025.2.tar.gz", hash = "sha256:b60a638fcc0daffadf82fe0f57e53d06bdec2f36c4df66280ae79bce6bd6f2b9"},
 ]
-markers = {dev = "platform_system == \"Windows\" or sys_platform == \"win32\""}
+markers = {dev = "platform_system == \"Windows\""}
 
 [[package]]
 name = "tzlocal"
@@ -7343,4 +7340,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13,<4.0"
-content-hash = "80de996b6019dceeba059cdecbc46a3c095f207829490848c83fd11a04e44304"
+content-hash = "c7a55c7bc9dbddafbf801fee950cbeff05f53234cef61a80e0d0f5a8d0ee2eba"
