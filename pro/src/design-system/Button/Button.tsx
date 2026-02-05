@@ -83,6 +83,7 @@ export const Button = forwardRef<
         iconAlt={iconAlt}
         className={styles['btn-icon']}
         iconClassName={iconClassName}
+        //  width={22}
       />
     )
 

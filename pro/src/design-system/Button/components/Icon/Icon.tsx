@@ -7,6 +7,7 @@ interface IconProps {
   iconAlt?: string
   className?: string
   iconClassName?: string
+  width: number
 }
 
 export const Icon = ({
@@ -14,13 +15,14 @@ export const Icon = ({
   iconAlt,
   className,
   iconClassName,
+  width,
 }: Readonly<IconProps>) => {
   return (
     <SvgIcon
       src={icon}
       alt={iconAlt}
       className={classNames(className, iconClassName)}
-      width={'16'}
+      //  width={width}
     />
   )
 }
