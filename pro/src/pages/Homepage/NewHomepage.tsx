@@ -3,7 +3,11 @@ import { useId, useState } from 'react'
 import type { GetVenueResponseModel } from '@/apiClient/v1'
 import { BasicLayout } from '@/app/App/layouts/BasicLayout/BasicLayout'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import type { TabItem } from '@/ui-kit/Tabs/TabItems/TabItems'
+import {
+  getPanelId,
+  getTabId,
+  type TabItem,
+} from '@/ui-kit/Tabs/TabItems/TabItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
 export const NewHomepage = (): JSX.Element => {
@@ -25,14 +29,12 @@ export const NewHomepage = (): JSX.Element => {
     {
       key: 'tab-individual',
       label: 'Individuel',
-      tabId: `tab-${individualId}`,
-      panelId: `panel-${individualId}`,
+      baseId: individualId,
     },
     {
       key: 'tab-collective',
       label: 'Collectif',
-      tabId: `tab-${collectiveId}`,
-      panelId: `panel-${collectiveId}`,
+      baseId: collectiveId,
     },
   ]
 
@@ -49,9 +51,9 @@ export const NewHomepage = (): JSX.Element => {
       )}
       {hasIndividual && (
         <div
-          id={`panel-${individualId}`}
+          id={getPanelId(individualId)}
           role="tabpanel"
-          aria-labelledby={`tab-${individualId}`}
+          aria-labelledby={getTabId(individualId)}
           tabIndex={selectedTab === 'tab-individual' ? 0 : -1}
           hidden={selectedTab !== 'tab-individual'}
         >
@@ -60,9 +62,9 @@ export const NewHomepage = (): JSX.Element => {
       )}
       {hasCollective && (
         <div
-          id={`panel-${collectiveId}`}
+          id={getPanelId(collectiveId)}
           role="tabpanel"
-          aria-labelledby={`tab-${collectiveId}`}
+          aria-labelledby={getTabId(collectiveId)}
           tabIndex={selectedTab === 'tab-collective' ? 0 : -1}
           hidden={selectedTab !== 'tab-collective'}
         >
