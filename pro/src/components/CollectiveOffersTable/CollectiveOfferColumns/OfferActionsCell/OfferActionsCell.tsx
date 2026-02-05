@@ -1,4 +1,3 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import cn from 'classnames'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -49,6 +48,7 @@ import fullPlusIcon from '@/icons/full-plus.svg'
 import strokeCheckIcon from '@/icons/stroke-check.svg'
 import strokeThingIcon from '@/icons/stroke-thing.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 import { DuplicateOfferDialog } from './DuplicateOfferDialog/DuplicateOfferDialog'
 import styles from './OfferActionsCell.module.scss'
@@ -70,6 +70,8 @@ export const OfferActionsCell = ({
   const selectedOffererId = useAppSelector(ensureCurrentOfferer).id
 
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
   const [isCancelledBookingModalOpen, setIsCancelledBookingModalOpen] =
     useState(false)
   const [isArchivedModalOpen, setIsArchivedModalOpen] = useState(false)
@@ -289,9 +291,11 @@ export const OfferActionsCell = ({
           title="Voir les actions"
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
+          open={isDropdownOpen}
+          onOpenChange={setIsDropdownOpen}
         >
           {canDuplicateOffer && (
-            <DropdownMenu.Item
+            <DropdownItem
               className={styles['menu-item']}
               onSelect={handleCreateOfferClick}
             >
@@ -301,10 +305,10 @@ export const OfferActionsCell = ({
                 color={ButtonColor.NEUTRAL}
                 label="Dupliquer"
               />
-            </DropdownMenu.Item>
+            </DropdownItem>
           )}
           {canCreateBookableOffer && (
-            <DropdownMenu.Item
+            <DropdownItem
               className={styles['menu-item']}
               onSelect={handleCreateOfferClick}
             >
@@ -314,10 +318,10 @@ export const OfferActionsCell = ({
                 color={ButtonColor.NEUTRAL}
                 label="Créer une offre réservable"
               />
-            </DropdownMenu.Item>
+            </DropdownItem>
           )}
           {canEditOffer && (
-            <DropdownMenu.Item className={styles['menu-item']}>
+            <DropdownItem>
               <Button
                 as="a"
                 variant={ButtonVariant.TERTIARY}
@@ -327,31 +331,25 @@ export const OfferActionsCell = ({
                 onClick={handleEditOfferClick}
                 label="Modifier"
               />
-            </DropdownMenu.Item>
+            </DropdownItem>
           )}
           {canPublishOffer && (
-            <DropdownMenu.Item
-              className={styles['menu-item']}
-              onSelect={hideOrPublishOffer}
-            >
+            <DropdownItem onSelect={hideOrPublishOffer}>
               <Button
                 icon={strokeCheckIcon}
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
                 label="Publier"
               />
-            </DropdownMenu.Item>
+            </DropdownItem>
           )}
           {!isCollectiveOfferBookable(offer) && canShareOffer && (
-            <DropdownMenu.Item
-              className={styles['menu-item']}
-              onSelect={(e) => e.preventDefault()}
-            >
+            <DropdownItem>
               <ShareLinkDrawer offerId={offer.id} />
-            </DropdownMenu.Item>
+            </DropdownItem>
           )}
           {canHideOffer && (
-            <DropdownMenu.Item
+            <DropdownItem
               className={styles['menu-item']}
               onSelect={hideOrPublishOffer}
             >
@@ -361,46 +359,32 @@ export const OfferActionsCell = ({
                 color={ButtonColor.NEUTRAL}
                 label="Mettre en pause"
               />
-            </DropdownMenu.Item>
+            </DropdownItem>
           )}
           {isBookingCancellable && (
-            <>
-              <DropdownMenu.Separator
-                className={cn(styles['separator'], styles['tablet-only'])}
+            <DropdownItem
+              className={cn(styles['menu-item'])}
+              onSelect={() => setIsCancelledBookingModalOpen(true)}
+            >
+              <Button
+                icon={fullClearIcon}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.BRAND}
+                label="Annuler la réservation"
               />
-              <DropdownMenu.Item
-                className={cn(styles['menu-item'])}
-                onSelect={() => setIsCancelledBookingModalOpen(true)}
-              >
-                <Button
-                  icon={fullClearIcon}
-                  variant={ButtonVariant.TERTIARY}
-                  color={ButtonColor.BRAND}
-                  label="Annuler la réservation"
-                />
-              </DropdownMenu.Item>
-            </>
+            </DropdownItem>
           )}
           {canArchiveOffer && (
-            <>
-              <DropdownMenu.Separator
-                className={cn(styles['separator'], styles['tablet-only'])}
-              />
-              <DropdownMenu.Item
-                className={cn(styles['menu-item'])}
-                onSelect={() => setIsArchivedModalOpen(true)}
-                asChild
-              >
-                <div className={styles['status-filter-label']}>
-                  <Button
-                    icon={strokeThingIcon}
-                    variant={ButtonVariant.TERTIARY}
-                    color={ButtonColor.NEUTRAL}
-                    label="Archiver"
-                  />
-                </div>
-              </DropdownMenu.Item>
-            </>
+            <DropdownItem onSelect={() => setIsArchivedModalOpen(true)} asChild>
+              <div className={styles['status-filter-label']}>
+                <Button
+                  icon={strokeThingIcon}
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  label="Archiver"
+                />
+              </div>
+            </DropdownItem>
           )}
         </Dropdown>
       )}

@@ -30,6 +30,10 @@ export const ShareLinkDrawer = forwardRef<
             variant={ButtonVariant.TERTIARY}
             color={ButtonColor.NEUTRAL}
             label="Partager l’offre"
+            onClick={(e) => {
+              e.preventDefault()
+              setIsOpenDialog(true)
+            }}
           />
           <Tag label="Nouveau" variant={TagVariant.NEW} aria-hidden="true" />
         </div>
