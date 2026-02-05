@@ -809,11 +809,14 @@ def filter_collective_offers_by_statuses(
             ),
         )
 
-        # Cancelled due to no booking when the event has started
+        # Cancelled due to no booking OR booking not confirmed when the event has started
         on_booking_status_filter.append(
             sa.and_(
                 *approved_and_active_filters,
-                models.CollectiveBooking.status == None,
+                sa.or_(
+                    models.CollectiveBooking.status == None,
+                    models.CollectiveBooking.status == models.CollectiveBookingStatus.PENDING,
+                ),
                 models.CollectiveStock.hasStartDatetimePassed == True,
             ),
         )

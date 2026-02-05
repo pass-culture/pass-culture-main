@@ -72,7 +72,15 @@ def _get_status_date(
             return booking.reimbursementDate
 
         case models.CollectiveOfferDisplayedStatus.CANCELLED:
-            return stock.startDatetime if booking is None else booking.cancellationDate
+            if booking is None or booking.cancellationDate is None:
+                return stock.startDatetime
+
+            # if the booking was auto-cancelled due to expiration after start date
+            # the offer is considered cancelled from the start date
+            if booking.is_expired:
+                return min(stock.startDatetime, booking.cancellationDate)
+
+            return booking.cancellationDate
 
         case models.CollectiveOfferDisplayedStatus.ARCHIVED:
             return offer.dateArchived

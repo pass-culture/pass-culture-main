@@ -574,6 +574,14 @@ def create_collective_offers_with_different_displayed_status(
             "endDatetime": in_two_weeks,
             "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
         },
+        # booking was not confirmed and start has passed, auto-cancel job has not ran yet
+        # note that the booking will be auto-cancelled by the next job
+        "Babylone": {
+            "bookingLimitDatetime": yesterday,
+            "startDatetime": yesterday,
+            "endDatetime": yesterday,
+            "bookingFactory": educational_factories.PendingCollectiveBookingFactory,
+        },
         # with a cancelled booking due to expiration
         "Budapest": {
             "bookingLimitDatetime": two_weeks_ago,

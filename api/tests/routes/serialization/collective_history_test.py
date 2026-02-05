@@ -189,6 +189,22 @@ class HistoryCancelledTest:
             future=[],
         )
 
+    def test_cancelled_prebooked_start_date_passed(self):
+        # offer is prebooked, start date is passed but auto cancel script has not run yet
+        offer = factories.PrebookedStartPassedCollectiveOfferFactory()
+
+        history = get_collective_offer_history(offer)
+        [booking] = offer.collectiveStock.collectiveBookings
+
+        assert history == CollectiveOfferHistory(
+            past=[
+                HistoryStep(status=OfferStatus.PUBLISHED, datetime=offer.lastValidationDate),
+                HistoryStep(status=OfferStatus.PREBOOKED, datetime=booking.dateCreated),
+                HistoryStep(status=OfferStatus.CANCELLED, datetime=offer.collectiveStock.startDatetime),
+            ],
+            future=[],
+        )
+
 
 def _archive_offer(offer: models.CollectiveOffer):
     offer.publicationDatetime = None
