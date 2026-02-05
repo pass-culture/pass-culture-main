@@ -76,7 +76,7 @@ export const ReimbursementsInvoices = (): JSX.Element => {
         periodStart,
         periodEnd,
         reimbursementPoint !== DEFAULT_INVOICES_FILTERS.reimbursementPointId
-          ? parseInt(reimbursementPoint, 10)
+          ? Number.parseInt(reimbursementPoint, 10)
           : undefined,
         offererId
       )

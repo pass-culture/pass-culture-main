@@ -9,7 +9,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+        '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/:offerId/edition/details',
     title: 'Détails de l’offre - Modifier une offre individuelle',
@@ -28,7 +28,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+        '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/creation/description',
     title: 'Description - Créer une offre individuelle',
@@ -37,7 +37,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+        '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/:offerId/creation/description',
     title: 'Description - Créer une offre individuelle',
@@ -46,7 +46,7 @@ export const routesIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+        '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/offre/individuelle/:offerId/edition/description',
     title: 'Description - Modifier une offre individuelle',
@@ -256,7 +256,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+        '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/onboarding/offre/individuelle/creation/description',
     title: 'Description - Créer une offre individuelle - Onboarding',
@@ -268,7 +268,7 @@ export const routesOnboardingIndividualOfferWizard: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/IndividualOffer/IndividualOfferDetails/IndividualOfferDetails'
+        '@/pages/IndividualOffer/IndividualOfferDescription/IndividualOfferDescription'
       ),
     path: '/onboarding/offre/individuelle/:offerId/creation/description',
     title: 'Description - Créer une offre individuelle - Onboarding',

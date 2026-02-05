@@ -39,12 +39,12 @@ import {
   type RenderWithProvidersOptions,
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
-import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
+import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
 import {
-  IndividualOfferDetailsScreen,
-  type IndividualOfferDetailsScreenProps,
-} from './IndividualOfferDetailsScreen'
+  IndividualOfferDescriptionScreen,
+  type IndividualOfferDescriptionScreenProps,
+} from './IndividualOfferDescriptionScreen'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -159,7 +159,7 @@ const renderDetailsScreen = ({
   }),
 }: {
   contextValue: IndividualOfferContextValues
-  props?: Partial<IndividualOfferDetailsScreenProps>
+  props?: Partial<IndividualOfferDescriptionScreenProps>
   mode?: OFFER_WIZARD_MODE
   options?: RenderWithProvidersOptions
   path?: string
@@ -180,7 +180,7 @@ const renderDetailsScreen = ({
 
   const element = (
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferDetailsScreen {...controlledProps} />
+      <IndividualOfferDescriptionScreen {...controlledProps} />
     </IndividualOfferContext.Provider>
   )
 
@@ -250,7 +250,7 @@ const userFillsEverything = async () => {
   )
 }
 
-describe('<IndividualOfferDetailsScreen />', () => {
+describe('<IndividualOfferDescriptionScreen />', () => {
   let contextValue: IndividualOfferContextValues
 
   beforeEach(() => {

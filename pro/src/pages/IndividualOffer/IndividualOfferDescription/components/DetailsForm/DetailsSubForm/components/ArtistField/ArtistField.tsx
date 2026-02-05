@@ -5,7 +5,7 @@ import { type ArtistResponseModel, ArtistType } from '@/apiClient/v1'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullMoreIcon from '@/icons/full-more.svg'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 import { ApiSelect } from '@/ui-kit/form/ApiSelect/ApiSelect'
 
 import avatarPlaceholder from './assets/avatar_placeholder.png'

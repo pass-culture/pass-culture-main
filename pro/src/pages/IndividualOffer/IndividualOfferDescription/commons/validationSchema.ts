@@ -94,10 +94,11 @@ const commonValidationShape = {
     is: (subcategoryConditionalFields: string[]) =>
       subcategoryConditionalFields.includes('durationMinutes'),
     then: (schema) =>
-      schema.matches(
-        /^(([01]?[0-9]|2[0-3]):[0-5][0-9])?$/,
-        'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)'
-      ),
+      schema.matches(/^([01]?\d|2[0-3]):[0-5]\d$/, {
+        message:
+          'Veuillez entrer une durée sous la forme HH:MM (ex: 1:30 pour 1h30)',
+        excludeEmptyString: true,
+      }),
   }),
   categoryId: yup.string().required('Veuillez sélectionner une catégorie'),
   subcategoryId: yup

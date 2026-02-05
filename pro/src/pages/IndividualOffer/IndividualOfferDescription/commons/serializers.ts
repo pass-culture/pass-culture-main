@@ -22,7 +22,7 @@ export const serializeDurationMinutes = (
   /* istanbul ignore next: DEBT, TO FIX */
   const [hours, minutes] = durationHour
     .split(':')
-    .map((s: string) => parseInt(s, 10))
+    .map((s: string) => Number.parseInt(s, 10))
 
   return minutes + hours * 60
 }

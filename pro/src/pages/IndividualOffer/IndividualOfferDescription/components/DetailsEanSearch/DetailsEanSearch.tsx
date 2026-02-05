@@ -6,16 +6,15 @@ import { api } from '@/apiClient/api'
 import { getError, isErrorAPIError } from '@/apiClient/helpers'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Button } from '@/design-system/Button/Button'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 import fullCloseIcon from '@/icons/full-close.svg'
 import strokeBarcodeIcon from '@/icons/stroke-barcode.svg'
-import type { Product } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
-import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { eanSearchValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
-import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDetails/components/EanSearchCallout/EanSearchCallout'
+import type { Product } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import { isSubCategoryCD } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
+import { eanSearchValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
+import { EanSearchCallout } from '@/pages/IndividualOffer/IndividualOfferDescription/components/EanSearchCallout/EanSearchCallout'
 
 import styles from './DetailsEanSearch.module.scss'
 
@@ -42,7 +41,9 @@ export const DetailsEanSearch = ({
   onEanSearch,
   onEanReset,
 }: DetailsEanSearchProps): JSX.Element => {
-  const selectedOffererId = useAppSelector(selectCurrentOffererId)
+  const selectedOffererId = useAppSelector(
+    (state) => state.offerer.currentOfferer
+  )?.id
   const [wasCleared, setWasCleared] = useState(false)
   const [subcatError, setSubcatError] = useState<string | null>(null)
 
@@ -144,17 +145,17 @@ export const DetailsEanSearch = ({
               disabled={shouldInputBeDisabled}
               required={shouldInputBeRequired}
               description="Format : EAN à 13 chiffres"
-              {...(!displayClearButton
+              {...(displayClearButton
                 ? {
-                    icon: strokeBarcodeIcon,
-                  }
-                : {
                     iconButton: {
                       icon: fullCloseIcon,
                       label: 'Effacer',
                       onClick: onEanClear,
                       disabled: isLoading,
                     },
+                  }
+                : {
+                    icon: strokeBarcodeIcon,
                   })}
               {...register('eanSearch')}
               maxCharactersCount={13}
