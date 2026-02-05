@@ -125,6 +125,29 @@ jobs:
       image: pcapi-tests
       tag: ${{ github.sha }}
 
+  # Theses steps builds pcapi and pcapi-console image, tags them with the last commit sha then
+  # pushes them to the registry
+  build-pcapi:
+    name: "[pcapi] build docker image."
+    needs: [pcapi-init-job]
+    uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+
+  push-pcapi:
+    name: Push pcapi docker image to artifact registry
+    needs:
+      - build-pcapi
+    uses: ./.github/workflows/dev_on_workflow_push_docker_image.yml
+    with:
+      image: pcapi
+      tag: ${{ github.sha }}
+      tag_latest: false
+    secrets:
+      WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_EHP_WORKLOAD_IDENTITY_PROVIDER }}
+      SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
+
   run-mypy-cop:
     name: "MyPy cop"
     needs: [pcapi-init-job]
