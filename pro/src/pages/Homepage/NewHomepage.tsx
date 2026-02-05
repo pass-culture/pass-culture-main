@@ -10,17 +10,19 @@ import {
 } from '@/ui-kit/Tabs/TabItems/TabItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
+import { getInitialTab, onNewTabSelected } from './commons/utils/tabsManagement'
+
 export const NewHomepage = (): JSX.Element => {
   const selectedVenue: GetVenueResponseModel | null = useAppSelector(
     (state) => state.user.selectedVenue
   )
-  const hasIndividual = selectedVenue?.hasActiveIndividualOffer
+  const hasIndividual = !!selectedVenue?.hasActiveIndividualOffer
   const hasCollective =
     selectedVenue?.allowedOnAdage ||
     (selectedVenue?.collectiveDmsApplications || []).length > 0
 
   const [selectedTab, setSelectedTab] = useState(
-    hasIndividual ? 'tab-individual' : 'tab-collective'
+    getInitialTab(selectedVenue?.id, hasIndividual, hasCollective)
   )
   const individualId = useId()
   const collectiveId = useId()
@@ -38,6 +40,11 @@ export const NewHomepage = (): JSX.Element => {
     },
   ]
 
+  const hanldeTabChange = (newSelectedTab: string) => {
+    setSelectedTab(newSelectedTab)
+    onNewTabSelected(newSelectedTab, selectedVenue?.id)
+  }
+
   return (
     <BasicLayout mainHeading={`Votre espace ${selectedVenue?.publicName}`}>
       {hasIndividual && hasCollective && (
@@ -46,7 +53,7 @@ export const NewHomepage = (): JSX.Element => {
           navLabel="Sous menu - page d'accueil"
           items={tabs}
           selectedKey={selectedTab}
-          onChange={setSelectedTab}
+          onChange={hanldeTabChange}
         />
       )}
       {hasIndividual && (
