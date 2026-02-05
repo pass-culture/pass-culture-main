@@ -49,6 +49,15 @@ $number-size: rem.torem(30px);
       }
     }
 
+    .label {
+      .inner > span {
+        position: absolute;
+        left: 0;
+        transform: translateX(calc(-50% + ($number-size / 2)));
+        white-space: nowrap;
+      }
+    }
+
     &.selectionnable {
       .step {
         color: var(--color-text-default);
