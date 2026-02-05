@@ -6,6 +6,7 @@ import { storageAvailable } from './storageAvailable'
 export enum LOCAL_STORAGE_KEY {
   SELECTED_VENUE_ID = 'PASS_CULTURE_SELECTED_VENUE_ID',
   SELECTED_ADMIN_OFFERER_ID = 'PASS_CULTURE_SELECTED_ADMIN_OFFERER_ID',
+  LAST_VISITED_HOMEPAGE_TABS = 'PASS_CULTURE_LAST_VISITED_HOMEPAGE_TABS',
 
   // Legacy keys (will be removed in the future)
   // TODO (igabriele, 2026-02-04): Move this key to a `LOCAL_STORAGE_KEY_TO_PRUNE` once `WIP_SWITCH_VENUE` FF is enabled and removed.
