@@ -1,18 +1,16 @@
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
-
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullLinkIcon from '@/icons/full-link.svg'
-
-import dropdownStyles from '../HeaderDropdown/HeaderDropdown.module.scss'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 export const HelpDropdownMenu = () => {
   const { logEvent } = useAnalytics()
+
   return (
     <>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
+      <DropdownItem>
         <Button
           to="https://aide.passculture.app"
           as="a"
@@ -28,8 +26,8 @@ export const HelpDropdownMenu = () => {
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
         />
-      </DropdownMenu.Item>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
+      </DropdownItem>
+      <DropdownItem>
         <Button
           as="a"
           icon={fullLinkIcon}
@@ -45,8 +43,8 @@ export const HelpDropdownMenu = () => {
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
         />
-      </DropdownMenu.Item>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
+      </DropdownItem>
+      <DropdownItem>
         <Button
           as="a"
           icon={fullLinkIcon}
@@ -62,8 +60,8 @@ export const HelpDropdownMenu = () => {
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
         />
-      </DropdownMenu.Item>
-      <DropdownMenu.Item className={dropdownStyles['menu-item']}>
+      </DropdownItem>
+      <DropdownItem>
         <Button
           as="a"
           icon={fullLinkIcon}
@@ -79,7 +77,7 @@ export const HelpDropdownMenu = () => {
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
         />
-      </DropdownMenu.Item>
+      </DropdownItem>
     </>
   )
 }

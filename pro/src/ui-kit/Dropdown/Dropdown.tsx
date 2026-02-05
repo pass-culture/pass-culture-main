@@ -38,6 +38,7 @@ export type DropdownProps = {
 
   /** Radix content config */
   align?: 'start' | 'center' | 'end'
+  side?: 'top' | 'right' | 'bottom' | 'left'
   sideOffset?: number
 
   /** Styling */
@@ -61,6 +62,7 @@ export function Dropdown({
   contentClassName,
   dropdownTriggerRef,
   triggerTooltip,
+  side,
 }: DropdownProps): JSX.Element {
   const content =
     children ??
@@ -102,6 +104,7 @@ export function Dropdown({
           className={cn(styles['menu-list'], contentClassName)}
           align={align}
           sideOffset={sideOffset}
+          side={side}
         >
           {content}
         </DropdownMenu.Content>
