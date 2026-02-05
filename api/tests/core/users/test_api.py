@@ -833,7 +833,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -953,7 +953,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -1051,7 +1051,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
@@ -1146,7 +1146,7 @@ class DomainsCreditTest:
         invoice = finance_api._generate_invoice(
             bank_account_id=bank_account.id, cashflow_ids=[c.id for c in batch.cashflows]
         )
-        finance_api.validate_invoice(invoice.id)
+        finance_api.validate_invoices([invoice.id])
 
         # Create the finance incidents and validate them
         #  - For booking2 → cancelled totally
