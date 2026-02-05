@@ -110,11 +110,11 @@ export const isTimeInTheFuture = (
     return false
   }
   const [hours, minutes] = beginningTime.split(':')
-  if (parseInt(hours, 10) > now.getHours()) {
+  if (Number.parseInt(hours, 10) > now.getHours()) {
     return true
   }
-  if (parseInt(hours, 10) === now.getHours()) {
-    return parseInt(minutes, 10) > now.getMinutes()
+  if (Number.parseInt(hours, 10) === now.getHours()) {
+    return Number.parseInt(minutes, 10) > now.getMinutes()
   }
   return false
 }

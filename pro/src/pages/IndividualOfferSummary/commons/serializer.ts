@@ -95,10 +95,10 @@ const serializerOfferSubCategoryFields = (
     }
   }
   const showType = showOptionsTree.find(
-    (item) => item.code === parseInt(offer.extraData?.showType, 10)
+    (item) => item.code === Number.parseInt(offer.extraData?.showType, 10)
   )
   const showSubType = showType?.children.find(
-    (item) => item.code === parseInt(offer.extraData?.showSubType, 10)
+    (item) => item.code === Number.parseInt(offer.extraData?.showSubType, 10)
   )
 
   const { musicTypeName, musicSubTypeName, gtl_id } = getMusicData(

@@ -3,7 +3,7 @@ import * as yup from 'yup'
 import { checkCoords } from '@/commons/utils/coords'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
-import { offerFormUrlRegex } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+import { offerFormUrlRegex } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 
 import { OFFER_LOCATION } from '../../../commons/constants'
 import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'

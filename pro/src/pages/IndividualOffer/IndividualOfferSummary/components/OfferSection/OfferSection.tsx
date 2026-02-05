@@ -20,7 +20,7 @@ import {
 } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
-import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDetails/components/DetailsForm/DetailsSubForm/DetailsSubForm'
+import { ARTISTIC_INFORMATION_FIELDS } from '@/pages/IndividualOffer/IndividualOfferDescription/components/DetailsForm/DetailsSubForm/DetailsSubForm'
 import { serializeOfferSectionData } from '@/pages/IndividualOfferSummary/commons/serializer'
 
 interface OfferSummaryProps {

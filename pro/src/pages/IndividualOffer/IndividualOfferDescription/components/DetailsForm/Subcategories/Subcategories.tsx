@@ -8,19 +8,19 @@ import type {
 import { useIndividualOfferContext } from '@/commons/context/IndividualOfferContext/IndividualOfferContext'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { Banner } from '@/design-system/Banner/Banner'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
-import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
+import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
+import type { DetailsFormValues } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
 import {
   buildCategoryOptions,
   buildSubcategoryOptions,
   completeSubcategoryConditionalFields,
-} from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
+} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 import { ARTISTIC_INFORMATION_FIELDS } from '../DetailsSubForm/DetailsSubForm'
 import styles from './Subcategories.module.scss'
 
-type SubcategoriesProps = {
+interface SubcategoriesProps {
   readOnlyFields: string[]
   filteredCategories: CategoryResponseModel[]
   filteredSubcategories: SubcategoryResponseModel[]
@@ -30,7 +30,7 @@ export function Subcategories({
   readOnlyFields,
   filteredCategories,
   filteredSubcategories,
-}: SubcategoriesProps) {
+}: Readonly<SubcategoriesProps>) {
   const {
     setValue,
     clearErrors,

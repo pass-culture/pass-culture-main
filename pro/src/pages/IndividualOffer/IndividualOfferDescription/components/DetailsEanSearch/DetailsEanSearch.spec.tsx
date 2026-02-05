@@ -12,7 +12,7 @@ import {
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
-import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/constants'
+import { DEFAULT_DETAILS_FORM_VALUES } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/constants'
 
 import {
   DetailsEanSearch,

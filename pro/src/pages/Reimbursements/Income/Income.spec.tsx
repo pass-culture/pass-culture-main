@@ -181,7 +181,7 @@ describe('Income', () => {
       // Years are sorted in descending order, so the last/most recent year
       // is the first item of the list of filters.
       const mostRecentYear = years.sort(
-        (a, b) => parseInt(b, 10) - parseInt(a, 10)
+        (a, b) => Number.parseInt(b, 10) - parseInt(a, 10)
       )[0]
       expect(
         screen.getByRole('button', {
@@ -208,7 +208,7 @@ describe('Income', () => {
       // Years are sorted in descending order, so the last/most recent year
       // is the first item of the list of filters.
       const mostRecentYear = years.sort(
-        (a, b) => parseInt(b, 10) - parseInt(a, 10)
+        (a, b) => Number.parseInt(b, 10) - parseInt(a, 10)
       )[0]
       expect(
         screen.getByRole('button', {

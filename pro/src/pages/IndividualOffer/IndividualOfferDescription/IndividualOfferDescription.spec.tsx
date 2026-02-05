@@ -22,7 +22,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import { Component as IndividualOfferDetails } from './IndividualOfferDetails'
+import { Component as IndividualOfferDescription } from './IndividualOfferDescription'
 
 vi.mock('swr', async (importOriginal) => ({
   ...(await importOriginal()),
@@ -33,13 +33,13 @@ vi.mock('@/apiClient/api', () => ({
     getVenues: vi.fn(),
   },
 }))
-vi.mock('./components/IndividualOfferDetailsScreen', () => ({
-  IndividualOfferDetailsScreen: ({ venues }: { venues: unknown[] }) => (
+vi.mock('./components/IndividualOfferDescriptionScreen', () => ({
+  IndividualOfferDescriptionScreen: ({ venues }: { venues: unknown[] }) => (
     <div data-testid="details-screen">venues:{venues.length}</div>
   ),
 }))
 
-const renderIndividualOfferDetails: RenderComponentFunction<
+const renderIndividualOfferDescription: RenderComponentFunction<
   void,
   IndividualOfferContextValues
 > = (params) => {
@@ -54,13 +54,13 @@ const renderIndividualOfferDetails: RenderComponentFunction<
 
   return renderWithProviders(
     <IndividualOfferContext.Provider value={contextValue}>
-      <IndividualOfferDetails />
+      <IndividualOfferDescription />
     </IndividualOfferContext.Provider>,
     options
   )
 }
 
-describe('<IndividualOfferDetails />', () => {
+describe('<IndividualOfferDescription />', () => {
   const useSWRMock = vi.mocked(useSWR)
 
   beforeEach(() => {
@@ -84,7 +84,7 @@ describe('<IndividualOfferDetails />', () => {
     })
     const contextValues = { offer }
 
-    renderIndividualOfferDetails({ contextValues })
+    renderIndividualOfferDescription({ contextValues })
 
     expect(screen.getByTestId('spinner')).toBeInTheDocument()
 
@@ -95,7 +95,7 @@ describe('<IndividualOfferDetails />', () => {
     )
   })
 
-  it('should render IndividualOfferDetails', () => {
+  it('should render IndividualOfferDescription', () => {
     const venuesData = {
       venues: [makeVenueListItem({ id: 2 })],
     }
@@ -110,7 +110,7 @@ describe('<IndividualOfferDetails />', () => {
     const offer = getIndividualOfferFactory()
     const contextValues = { offer }
 
-    renderIndividualOfferDetails({ contextValues })
+    renderIndividualOfferDescription({ contextValues })
 
     expect(screen.getByTestId('details-screen')).toHaveTextContent('venues:1')
 
@@ -149,7 +149,7 @@ describe('<IndividualOfferDetails />', () => {
       },
     }
 
-    renderIndividualOfferDetails({ contextValues, options })
+    renderIndividualOfferDescription({ contextValues, options })
 
     expect(useSWRMock).toHaveBeenCalledWith(
       expect.any(Function),

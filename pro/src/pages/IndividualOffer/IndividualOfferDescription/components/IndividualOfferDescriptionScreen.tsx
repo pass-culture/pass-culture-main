@@ -30,8 +30,8 @@ import { ActionBar } from '@/pages/IndividualOffer/components/ActionBar/ActionBa
 import type {
   DetailsFormValues,
   Product,
-} from '@/pages/IndividualOffer/IndividualOfferDetails/commons/types'
-import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/useIndividualOfferImageUpload'
+} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/types'
+import { useIndividualOfferImageUpload } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 import {
   filterAvailableVenues,
   getFormReadOnlyFields,
@@ -39,8 +39,8 @@ import {
   getInitialValuesFromVenues,
   getVenuesAsOptions,
   hasMusicType,
-} from '@/pages/IndividualOffer/IndividualOfferDetails/commons/utils'
-import { getValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDetails/commons/validationSchema'
+} from '@/pages/IndividualOffer/IndividualOfferDescription/commons/utils'
+import { getValidationSchema } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 
 import {
   serializeDetailsPatchData,
@@ -50,16 +50,16 @@ import { DetailsEanSearch } from './DetailsEanSearch/DetailsEanSearch'
 import { DetailsForm } from './DetailsForm/DetailsForm'
 import { EanSearchCallout } from './EanSearchCallout/EanSearchCallout'
 
-export type IndividualOfferDetailsScreenProps = {
+export type IndividualOfferDescriptionScreenProps = {
   venues: VenueListItemResponseModel[]
 }
 
-export const IndividualOfferDetailsScreen = ({
+export const IndividualOfferDescriptionScreen = ({
   venues,
-}: IndividualOfferDetailsScreenProps): JSX.Element => {
+}: IndividualOfferDescriptionScreenProps): JSX.Element => {
   const navigate = useNavigate()
   const { pathname } = useLocation()
-  const isOnboarding = pathname.indexOf('onboarding') !== -1
+  const isOnboarding = pathname.includes('onboarding')
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const mode = useOfferWizardMode()
@@ -156,7 +156,7 @@ export const IndividualOfferDetailsScreen = ({
           step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
           offerId,
           mode,
-          isOnboarding: pathname.indexOf('onboarding') !== -1,
+          isOnboarding,
         }),
         { replace: true }
       )

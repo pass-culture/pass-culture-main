@@ -34,9 +34,9 @@ export const hasMusicType = (
   subcategoryConditionalFields: string[]
 ): boolean => {
   // Books have a gtl_id field, other categories have a musicType field
-  return categoryId !== 'LIVRE'
-    ? subcategoryConditionalFields.includes('gtl_id')
-    : subcategoryConditionalFields.includes('musicType')
+  return categoryId === 'LIVRE'
+    ? subcategoryConditionalFields.includes('musicType')
+    : subcategoryConditionalFields.includes('gtl_id')
 }
 
 export const buildCategoryOptions = (
@@ -67,7 +67,7 @@ export const buildShowSubTypeOptions = (showType?: string): SelectOption[] => {
   }
 
   const selectedShowTypeChildren = showOptionsTree.find(
-    (showTypeOption) => showTypeOption.code === parseInt(showType, 10)
+    (showTypeOption) => showTypeOption.code === Number.parseInt(showType, 10)
   )?.children
 
   if (!selectedShowTypeChildren) {
@@ -213,7 +213,7 @@ export function getAccessibilityFormValuesFromOffer(
     motor: !!offer.motorDisabilityCompliant,
     visual: !!offer.visualDisabilityCompliant,
   }
-  const hasSomeAccessibility = Object.values(accessibilityBase).some((v) => v)
+  const hasSomeAccessibility = Object.values(accessibilityBase).some(Boolean)
 
   return {
     ...accessibilityBase,
