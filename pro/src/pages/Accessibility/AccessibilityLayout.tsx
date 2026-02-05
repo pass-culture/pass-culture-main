@@ -27,7 +27,9 @@ export const AccessibilityLayout = ({
   const isUserConnected = !!user
 
   return isUserConnected ? (
-    <BasicLayout mainHeading={mainHeading}>{children}</BasicLayout>
+    <BasicLayout mainHeading={mainHeading} isFullPage={true}>
+      {children}
+    </BasicLayout>
   ) : (
     <LoggedOutLayout mainHeading={mainHeading}>
       <section className={styles['layout']} data-testid="logged-out-section">

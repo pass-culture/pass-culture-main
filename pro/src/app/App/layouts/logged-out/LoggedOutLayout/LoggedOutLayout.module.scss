@@ -73,8 +73,9 @@
     padding: var(--size-spacing-xl);
     margin: auto;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-flow: column wrap;
+    place-content: center;
+    justify-self: center;
     min-width: size.$full-content-min-width;
     max-width: size.$full-content-max-width;
     min-height: calc(

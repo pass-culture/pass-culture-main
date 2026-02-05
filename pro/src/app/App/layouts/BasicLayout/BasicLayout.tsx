@@ -39,7 +39,7 @@ interface BasicLayoutProps {
   /**
    * Optional: display the Lateral Panel
    */
-  displayLateralPanel?: boolean
+  isFullPage?: boolean
 }
 
 export const BasicLayout = ({
@@ -48,7 +48,7 @@ export const BasicLayout = ({
   mainSubHeading,
   isStickyActionBarInChild = false,
   isAdminArea = false,
-  displayLateralPanel = true,
+  isFullPage = false,
 }: BasicLayoutProps) => {
   const currentUser = useAppSelector(selectCurrentUser)
   const [isLateralPanelOpen, setIsLateralPanelOpen] = useState(false)
@@ -62,7 +62,7 @@ export const BasicLayout = ({
       className={styles['main-heading']}
       mainHeading={mainHeading}
       mainSubHeading={mainSubHeading}
-      shouldDisplayBackToNavLink={displayLateralPanel}
+      shouldDisplayBackToNavLink={!isFullPage}
     />
   )
 
@@ -89,7 +89,7 @@ export const BasicLayout = ({
           [styles['page-layout-connect-as']]: currentUser?.isImpersonated,
         })}
       >
-        {displayLateralPanel && (
+        {!isFullPage && (
           <LateralPanel
             isOpen={isLateralPanelOpen}
             onToggle={setIsLateralPanelOpen}
@@ -103,9 +103,9 @@ export const BasicLayout = ({
           <div className={styles['content-container']}>
             <main id="content">
               <div
-                className={cn(styles.content, {
-                  [styles['content-no-lateral-panel']]: !displayLateralPanel,
-                })}
+                className={
+                  isFullPage ? styles['content-no-side-panel'] : styles.content
+                }
               >
                 {mainHeadingWrapper}
                 {children}

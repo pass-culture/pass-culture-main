@@ -18,7 +18,7 @@ export const Sitemap = () => {
   const navigate = useNavigate()
 
   return (
-    <BasicLayout mainHeading="Plan du site" displayLateralPanel={false}>
+    <BasicLayout mainHeading="Plan du site" isFullPage={true}>
       <Button
         onClick={() => navigate(-1)}
         color={ButtonColor.NEUTRAL}
