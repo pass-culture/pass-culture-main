@@ -28,7 +28,8 @@ import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { computeDeletionErrorMessage } from '@/pages/IndividualOffers/utils/computeDeletionErrorMessage'
 import { computeDeletionSuccessMessage } from '@/pages/IndividualOffers/utils/computeDeletionSuccessMessage'
 import { computeIndividualApiFilters } from '@/pages/IndividualOffers/utils/computeIndividualApiFilters'
-import { Dropdown, type DropdownProps } from '@/ui-kit/Dropdown/Dropdown'
+import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 import styles from './Cells.module.scss'
 import { HeadlineOfferCell } from './HeadlineOfferCell/HeadlineOfferCell'
@@ -136,65 +137,52 @@ export const IndividualActionsCells = ({
           title="Voir les actions"
           triggerTooltip
           dropdownTriggerRef={dropdownTriggerRef}
-          options={
-            [
-              {
-                id: 'see-offer',
-                element: (
-                  <Button
-                    as="a"
-                    variant={ButtonVariant.TERTIARY}
-                    color={ButtonColor.NEUTRAL}
-                    to={editionOfferLink}
-                    icon={penIcon}
-                    label="Voir l’offre"
-                  />
-                ),
-              },
-              offer.status === OfferStatus.DRAFT
-                ? {
-                    id: 'delete-draft',
-                    onselect: setIsConfirmDialogDeleteDraftOpen,
-                    element: (
-                      <Button
-                        icon={fullTrashIcon}
-                        variant={ButtonVariant.TERTIARY}
-                        color={ButtonColor.NEUTRAL}
-                        label="Supprimer l’offre"
-                      />
-                    ),
-                  }
-                : {
-                    id: 'edit-stocks',
-                    onselect: editionStockLink,
-                    element: (
-                      <Button
-                        as="a"
-                        variant={ButtonVariant.TERTIARY}
-                        color={ButtonColor.NEUTRAL}
-                        to={editionStockLink}
-                        icon={fullStockIcon}
-                        label={offer.isEvent ? `Dates et capacités` : `Stocks`}
-                      />
-                    ),
-                  },
-              isHeadlineActionDisplayed && {
-                id: 'headline-offer',
-                element: (
-                  <HeadlineOfferCell
-                    offer={offer}
-                    setIsConfirmReplacementDialogOpen={
-                      setIsConfirmDialogReplaceHeadlineOfferOpen
-                    }
-                    setIsOfferWithoutImageDialogOpen={
-                      setIsDialogForHeadlineOfferWithoutImageOpen
-                    }
-                  />
-                ),
-              },
-            ].filter(Boolean) as NonNullable<DropdownProps['options']>
-          }
-        />
+        >
+          <DropdownItem>
+            <Button
+              as="a"
+              variant={ButtonVariant.TERTIARY}
+              color={ButtonColor.NEUTRAL}
+              to={editionOfferLink}
+              icon={penIcon}
+              label="Voir l’offre"
+            />
+          </DropdownItem>
+          {offer.status === OfferStatus.DRAFT ? (
+            <DropdownItem onSelect={() => setIsConfirmDialogDeleteDraftOpen}>
+              <Button
+                icon={fullTrashIcon}
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                label="Supprimer l’offre"
+              />
+            </DropdownItem>
+          ) : (
+            <DropdownItem>
+              <Button
+                as="a"
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
+                to={editionStockLink}
+                icon={fullStockIcon}
+                label={offer.isEvent ? `Dates et capacités` : `Stocks`}
+              />
+            </DropdownItem>
+          )}
+          {isHeadlineActionDisplayed && (
+            <DropdownItem>
+              <HeadlineOfferCell
+                offer={offer}
+                setIsConfirmReplacementDialogOpen={
+                  setIsConfirmDialogReplaceHeadlineOfferOpen
+                }
+                setIsOfferWithoutImageDialogOpen={
+                  setIsDialogForHeadlineOfferWithoutImageOpen
+                }
+              />
+            </DropdownItem>
+          )}
+        </Dropdown>
       </div>
       <ConfirmDialog
         icon={strokeTrashIcon}

@@ -9,6 +9,7 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
@@ -51,36 +52,29 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   }
 
   return (
-    <Dropdown
-      title="Téléchargement des justificatifs"
-      triggerTooltip
-      options={[
-        {
-          id: 'download-invoice',
-          element: (
-            <Button
-              icon={fullDownloadIcon}
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              label="Télécharger le justificatif comptable (.pdf)"
-            />
-          ),
-          onSelect: () => downloadPDFFile(invoice.url),
-        },
-        {
-          id: 'download-invoice-details',
-          title: 'Télécharger le détail des réservations (.csv)',
-          element: (
-            <Button
-              icon={fullDownloadIcon}
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              label="Télécharger le détail des réservations (.csv)"
-            />
-          ),
-          onSelect: () => downloadCSVFile(invoice.reference),
-        },
-      ]}
-    />
+    <Dropdown title="Téléchargement des justificatifs" triggerTooltip>
+      <DropdownItem
+        title="Télécharger le justificatif comptable (.pdf)"
+        onSelect={() => downloadPDFFile(invoice.url)}
+      >
+        <Button
+          icon={fullDownloadIcon}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="Télécharger le justificatif comptable (.pdf)"
+        />
+      </DropdownItem>
+      <DropdownItem
+        title="Télécharger le détail des réservations (.csv)"
+        onSelect={() => downloadCSVFile(invoice.reference)}
+      >
+        <Button
+          icon={fullDownloadIcon}
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          label="Télécharger le détail des réservations (.csv)"
+        />
+      </DropdownItem>
+    </Dropdown>
   )
 }

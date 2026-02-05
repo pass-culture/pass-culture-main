@@ -5,22 +5,24 @@ import { axe } from 'vitest-axe'
 import { Button } from '@/design-system/Button/Button'
 
 import { Dropdown, type DropdownProps } from './Dropdown'
+import { DropdownItem } from './DropdownItem'
 
 const defaultProps: DropdownProps = {
+  title: 'dropdown',
   trigger: <Button label="Trigger" onClick={() => {}}></Button>,
-  options: [
-    { id: '1', element: <Button label="Button 1" onClick={() => {}}></Button> },
-    {
-      id: '2',
-      element: <Button label="Button 2" onClick={() => {}}></Button>,
-    },
-  ],
 }
 
 function renderDropdown(props?: Partial<DropdownProps>) {
   return render(
     <>
-      <Dropdown {...defaultProps} {...props} />
+      <Dropdown {...defaultProps} {...props}>
+        <DropdownItem>
+          <Button label="Button 1" onClick={() => {}}></Button>
+        </DropdownItem>
+        <DropdownItem>
+          <Button label="Button 2" onClick={() => {}}></Button>
+        </DropdownItem>
+      </Dropdown>
       <span>Other element</span>
     </>
   )

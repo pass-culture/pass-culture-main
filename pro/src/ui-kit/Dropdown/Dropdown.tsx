@@ -11,18 +11,9 @@ import {
 import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
 
 import styles from './Dropdown.module.scss'
-import { DropdownItem } from './DropdownItem'
-
-type DropdownOption = {
-  id: string
-  title?: string
-  disabled?: boolean
-  onSelect?: () => void
-  element: React.ReactNode
-}
 
 export type DropdownProps = {
-  title?: string
+  title: string
 
   /** Trigger slot rendered with Radix Trigger asChild */
   trigger?: React.ReactNode
@@ -34,7 +25,6 @@ export type DropdownProps = {
 
   /** Content */
   children?: React.ReactNode
-  options?: DropdownOption[]
 
   /** Radix content config */
   align?: 'start' | 'center' | 'end'
@@ -56,7 +46,6 @@ export function Dropdown({
   defaultOpen,
   onOpenChange,
   children,
-  options,
   align = 'end',
   sideOffset = 4,
   contentClassName,
@@ -64,19 +53,6 @@ export function Dropdown({
   triggerTooltip,
   side,
 }: DropdownProps): JSX.Element {
-  const content =
-    children ??
-    options?.map((opt) => (
-      <DropdownItem
-        key={opt.id}
-        title={opt.title}
-        disabled={opt.disabled}
-        onSelect={opt.onSelect}
-      >
-        {opt.element}
-      </DropdownItem>
-    ))
-
   return (
     <DropdownMenu.Root
       open={open}
@@ -84,9 +60,7 @@ export function Dropdown({
       onOpenChange={onOpenChange}
     >
       <DropdownMenu.Trigger data-testid="dropdown-menu-trigger" asChild>
-        {trigger ? (
-          trigger
-        ) : (
+        {trigger ?? (
           <Button
             ref={dropdownTriggerRef}
             variant={ButtonVariant.SECONDARY}
@@ -106,7 +80,7 @@ export function Dropdown({
           sideOffset={sideOffset}
           side={side}
         >
-          {content}
+          {children}
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

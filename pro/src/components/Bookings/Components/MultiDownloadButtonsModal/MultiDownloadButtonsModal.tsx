@@ -13,6 +13,7 @@ import fullDownIcon from '@/icons/full-down.svg'
 import fullDownloadIcon from '@/icons/full-download.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 type MultiDownloadButtonsModalType = {
   isDownloading: boolean
@@ -37,45 +38,10 @@ export const MultiDownloadButtonsModal = ({
 
   return (
     <Dropdown
+      title="Télécharger les réservations"
       open={isOpen}
       onOpenChange={setIsOpen}
       align="start"
-      options={[
-        {
-          id: 'excel',
-          onSelect: async () => {
-            await downloadFunction(filters, 'XLS')
-            logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
-              from: location.pathname,
-            })
-          },
-          element: (
-            <Button
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              icon={fullDownloadIcon}
-              label="Microsoft Excel (.xls)"
-            />
-          ),
-        },
-        {
-          id: 'csv',
-          onSelect: async () => {
-            await downloadFunction(filters, 'CSV')
-            logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
-              from: location.pathname,
-            })
-          },
-          element: (
-            <Button
-              variant={ButtonVariant.TERTIARY}
-              color={ButtonColor.NEUTRAL}
-              icon={fullDownloadIcon}
-              label="Fichier CSV (.csv)"
-            />
-          ),
-        },
-      ]}
       trigger={
         <Button
           label="Télécharger"
@@ -90,6 +56,37 @@ export const MultiDownloadButtonsModal = ({
           disabled={isDownloading || isLocalLoading || isFiltersDisabled}
         />
       }
-    />
+    >
+      <DropdownItem
+        onSelect={async () => {
+          await downloadFunction(filters, 'XLS')
+          logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_XLS, {
+            from: location.pathname,
+          })
+        }}
+      >
+        <Button
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullDownloadIcon}
+          label="Microsoft Excel (.xls)"
+        />
+      </DropdownItem>
+      <DropdownItem
+        onSelect={async () => {
+          await downloadFunction(filters, 'CSV')
+          logEvent(Events.CLICKED_DOWNLOAD_BOOKINGS_CSV, {
+            from: location.pathname,
+          })
+        }}
+      >
+        <Button
+          variant={ButtonVariant.TERTIARY}
+          color={ButtonColor.NEUTRAL}
+          icon={fullDownloadIcon}
+          label="Fichier CSV (.csv)"
+        />
+      </DropdownItem>
+    </Dropdown>
   )
 }

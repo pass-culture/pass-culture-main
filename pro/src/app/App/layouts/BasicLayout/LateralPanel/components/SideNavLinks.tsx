@@ -43,6 +43,7 @@ import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
 import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import { SideNavLink } from './SideNavLink'
@@ -190,41 +191,10 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
 
           <div className={styles['nav-section-create-button-wrapper']}>
             <Dropdown
+              title="Créer une offre"
               open={isOpen}
               onOpenChange={setIsOpen}
               align="start"
-              options={[
-                {
-                  element: (
-                    <Button
-                      as="a"
-                      variant={ButtonVariant.TERTIARY}
-                      color={ButtonColor.NEUTRAL}
-                      to={getIndividualOfferUrl({
-                        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                        mode: OFFER_WIZARD_MODE.CREATION,
-                        isOnboarding: false,
-                      })}
-                      icon={strokePhoneIcon}
-                      label="Pour le grand public"
-                    />
-                  ),
-                  id: 'individual',
-                },
-                {
-                  element: (
-                    <Button
-                      as="a"
-                      variant={ButtonVariant.TERTIARY}
-                      color={ButtonColor.NEUTRAL}
-                      to="/offre/creation"
-                      icon={strokeBagIcon}
-                      label="Pour les groupes scolaires"
-                    />
-                  ),
-                  id: 'collective',
-                },
-              ]}
               trigger={
                 <Button
                   label="Créer une offre"
@@ -234,7 +204,32 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
                   fullWidth
                 />
               }
-            />
+            >
+              <DropdownItem>
+                <Button
+                  as="a"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  to={getIndividualOfferUrl({
+                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                    mode: OFFER_WIZARD_MODE.CREATION,
+                    isOnboarding: false,
+                  })}
+                  icon={strokePhoneIcon}
+                  label="Pour le grand public"
+                />
+              </DropdownItem>
+              <DropdownItem>
+                <Button
+                  as="a"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  to="/offre/creation"
+                  icon={strokeBagIcon}
+                  label="Pour les groupes scolaires"
+                />
+              </DropdownItem>
+            </Dropdown>
           </div>
         </div>
       )}

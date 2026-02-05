@@ -13,6 +13,7 @@ import { HelpDropdownMenu } from './HelpDropdownMenu'
 export const HeaderHelpDropdown = () => {
   return (
     <Dropdown
+      title="Centre d'aide"
       sideOffset={16}
       trigger={
         <Button

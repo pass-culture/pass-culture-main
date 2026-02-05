@@ -39,15 +39,16 @@ export const WithChildren: Story = {
 
 export const WithOptions: Story = {
   args: {
+    title: "dropdown",
     trigger: <Button label="Options (API simple)" variant={ButtonVariant.PRIMARY} />,
-    options: [
-      { id: 'profile', element: 'Profil', onSelect: () => console.log('Profil') },
-      { id: 'settings', element: 'Paramètres', onSelect: () => console.log('Paramètres') },
-      { id: 'logout', element: 'Déconnexion', onSelect: () => console.log('Déconnexion') },
-    ],
   },
-  render: (args) => <Dropdown {...args} />,
+  render: (args) => <Dropdown {...args} >
+      <DropdownItem onSelect= {() => console.log('Profil') }>Profil</DropdownItem>
+      <DropdownItem onSelect={ () => console.log('Paramètres') }>Paramètres</DropdownItem>
+      <DropdownItem onSelect= {() => console.log('Déconnexion') }>Déconnexion</DropdownItem>
+  </Dropdown>,
 }
+
 
 export const ControlledOpen: Story = {
   args: {
@@ -57,23 +58,14 @@ export const ControlledOpen: Story = {
     const [open, setOpen] = React.useState(false)
 
     return (
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
         <Dropdown
           {...args}
           open={open}
           onOpenChange={setOpen}
-          options={[
-            { id: 'a', element: 'Action A', onSelect: () => console.log('A') },
-            { id: 'b', element: 'Action B', onSelect: () => console.log('B') },
-          ]}
-        />
-
-        <Button
-          label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
-          variant={ButtonVariant.SECONDARY}
-          onClick={() => setOpen((v) => !v)}
-        />
-      </div>
+        >
+          <DropdownItem onSelect= {() => console.log('A')}>Action A</DropdownItem>
+          <DropdownItem onSelect= {() => console.log('B')}>Action B</DropdownItem>
+        </Dropdown>
     )
   },
 }
@@ -82,11 +74,12 @@ export const LongContent: Story = {
   args: {
     trigger: <Button label="Long content" variant={ButtonVariant.PRIMARY} />,
     contentClassName: 'storybookDropdownLong',
-    options: Array.from({ length: 20 }).map((_, i) => ({
-      id: String(i),
-      element: `Action ${i + 1}`,
-      onSelect: () => console.log(`Action ${i + 1}`),
-    })),
   },
-  render: (args) => <Dropdown {...args} />,
+  render: (args) => <Dropdown {...args} >
+    {Array.from({ length: 20 }).map((_,item) => (
+        <DropdownItem key={`Action ${item + 1}`} onSelect= { () => console.log(`Action ${item + 1}`)}> 
+        {`Action ${item + 1}`}
+        </DropdownItem>
+    ))}
+  </Dropdown>,
 }

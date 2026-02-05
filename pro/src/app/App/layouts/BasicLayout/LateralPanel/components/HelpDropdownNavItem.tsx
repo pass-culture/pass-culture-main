@@ -18,6 +18,7 @@ export const HelpDropdownNavItem = ({
   isMobileScreen,
 }: HelpDropdownNavItemProps) => (
   <Dropdown
+    title="Centre d’aide"
     side={isMobileScreen ? 'top' : 'right'}
     sideOffset={0}
     trigger={
