@@ -33,7 +33,7 @@ export const BankInformations = (): JSX.Element => {
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
   const selectedOffererId = useAppSelector(selectCurrentOffererId)
   const adminSelectedOfferer = useAppSelector(
-    (store) => store.offerer.adminCurrentOfferer
+    (store) => store.user.selectedAdminOfferer
   )
 
   const offererId = withSwitchVenueFeature

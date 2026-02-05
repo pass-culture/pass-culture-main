@@ -1,8 +1,8 @@
 import { useOffererNamesQuery } from '@/commons/hooks/swr/useOffererNamesQuery'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
-import { setAdminCurrentOfferer } from '@/commons/store/offerer/dispatchers/setAdminCurrentOfferer'
 import { ensureOffererNames } from '@/commons/store/offerer/selectors'
+import { setSelectedAdminOffererById } from '@/commons/store/user/dispatchers/setSelectedAdminOffererById'
 import { Select } from '@/ui-kit/form/Select/Select'
 
 import styles from './OffererSelect.module.scss'
@@ -12,11 +12,11 @@ export const OffererSelect = (): JSX.Element | null => {
   const { isLoading } = useOffererNamesQuery()
   const offererNames = useAppSelector(ensureOffererNames)
 
-  const adminCurrentOfferer = useAppSelector(
-    (store) => store.offerer.adminCurrentOfferer
+  const selectedAdminOfferer = useAppSelector(
+    (store) => store.user.selectedAdminOfferer
   )
 
-  const value = adminCurrentOfferer?.id?.toString()
+  const value = selectedAdminOfferer?.id?.toString()
 
   const offererOptions =
     offererNames?.map((item) => ({
@@ -26,7 +26,7 @@ export const OffererSelect = (): JSX.Element | null => {
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const offererId = Number(event.target.value)
-    dispatch(setAdminCurrentOfferer(offererId))
+    dispatch(setSelectedAdminOffererById(offererId))
   }
 
   return (

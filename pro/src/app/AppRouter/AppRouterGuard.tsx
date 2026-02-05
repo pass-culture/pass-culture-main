@@ -10,6 +10,7 @@ type AppRouterGuardProps = {
   unattachedOnly?: boolean
   publicOnly?: boolean
 }
+// TODO (igabriele, 2026-02-04): Delete this component once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export const AppRouterGuard = memo(({ children }: AppRouterGuardProps) => {
   const location = useLocation()
   const [searchParams] = useSearchParams()

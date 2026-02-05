@@ -5,11 +5,9 @@ import {
 } from '@/commons/utils/localStorageManager'
 
 /**
- * Determine the initially selected venue ID when possible.
- *
- * The selected venue ID only applies to the partner space (and not the administration one).
+ * Compute the initially Partner Space selected venue ID when possible.
  */
-export const getInitialSelectedVenueId = (
+export const getInitialPartnerVenueId = (
   venues: VenueListItemResponseModel[]
 ): number | null => {
   // ---------------------------------------------------------------------------

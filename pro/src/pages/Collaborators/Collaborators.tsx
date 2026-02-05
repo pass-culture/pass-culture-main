@@ -14,10 +14,7 @@ import { OffererLinkEvents } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
-import {
-  ensureOffererNames,
-  selectCurrentOffererId,
-} from '@/commons/store/offerer/selectors'
+import { ensureOffererNames } from '@/commons/store/offerer/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { OffererSelect } from '@/components/OffererSelect/OffererSelect'
 import { Button } from '@/design-system/Button/Button'
@@ -37,7 +34,9 @@ type UserEmailFormValues = {
 }
 
 export const Collaborators = (): JSX.Element | null => {
-  const currentOffererId = useAppSelector(selectCurrentOffererId)
+  const currentOffererId = useAppSelector(
+    (state) => state.offerer.currentOfferer
+  )?.id
   const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const { logEvent } = useAnalytics()
@@ -46,7 +45,7 @@ export const Collaborators = (): JSX.Element | null => {
   const [showInvitationForm, setShowInvitationForm] = useState(false)
 
   const adminSelectedOfferer = useAppSelector(
-    (store) => store.offerer.adminCurrentOfferer
+    (store) => store.user.selectedAdminOfferer
   )
   const offererNames = useAppSelector(ensureOffererNames)
   const offererId = withSwitchVenueFeature

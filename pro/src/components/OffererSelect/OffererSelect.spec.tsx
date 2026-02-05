@@ -56,7 +56,9 @@ describe('OffererSelect', () => {
       storeOverrides: {
         offerer: {
           offererNames: offerers,
-          adminCurrentOfferer: fullOfferer,
+        },
+        user: {
+          selectedAdminOfferer: fullOfferer,
         },
       },
     })
@@ -80,7 +82,9 @@ describe('OffererSelect', () => {
       storeOverrides: {
         offerer: {
           offererNames: offerers,
-          adminCurrentOfferer: fullOfferer,
+        },
+        user: {
+          selectedAdminOfferer: fullOfferer,
         },
       },
     })
@@ -110,7 +114,9 @@ describe('OffererSelect', () => {
       storeOverrides: {
         offerer: {
           offererNames: offerers,
-          adminCurrentOfferer: fullOfferer,
+        },
+        user: {
+          selectedAdminOfferer: fullOfferer,
         },
       },
     })
@@ -143,7 +149,9 @@ describe('OffererSelect', () => {
       storeOverrides: {
         offerer: {
           offererNames: offerers,
-          adminCurrentOfferer: fullOfferer1,
+        },
+        user: {
+          selectedAdminOfferer: fullOfferer1,
         },
       },
     })
@@ -153,7 +161,7 @@ describe('OffererSelect', () => {
 
     await waitFor(() => {
       const state = store.getState()
-      expect(state.offerer.adminCurrentOfferer?.id).toBe(2)
+      expect(state.user.selectedAdminOfferer?.id).toBe(2)
       expect(api.getOfferer).toHaveBeenCalledWith(2)
     })
   })
@@ -173,7 +181,9 @@ describe('OffererSelect', () => {
       storeOverrides: {
         offerer: {
           offererNames: offerers,
-          adminCurrentOfferer: fullOfferer,
+        },
+        user: {
+          selectedAdminOfferer: fullOfferer,
         },
       },
     })
