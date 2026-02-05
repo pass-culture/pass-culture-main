@@ -534,6 +534,14 @@ class PrebookedCollectiveOfferFactory(CollectiveOfferBaseFactory):
         PendingCollectiveBookingFactory.create(collectiveStock=stock)
 
 
+class PrebookedStartPassedCollectiveOfferFactory(CollectiveOfferBaseFactory):
+    @factory.post_generation
+    def create_prebooked_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:
+        yesterday = date_utils.get_naive_utc_now() - datetime.timedelta(days=1)
+        stock = CollectiveStockFactory.create(startDatetime=yesterday, collectiveOffer=self)
+        PendingCollectiveBookingFactory.create(collectiveStock=stock)
+
+
 class CancelledWithoutBookingCollectiveOfferFactory(CollectiveOfferBaseFactory):
     @factory.post_generation
     def create_cancelled_stock(self, _create: bool, _extracted: typing.Any, **_kwargs: typing.Any) -> None:

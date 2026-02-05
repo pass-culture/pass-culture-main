@@ -802,7 +802,9 @@ class CollectiveOffer(
                             status = CollectiveOfferDisplayedStatus.PUBLISHED
 
                     case CollectiveBookingStatus.PENDING:
-                        if has_booking_limit_passed:
+                        if has_started:
+                            status = CollectiveOfferDisplayedStatus.CANCELLED
+                        elif has_booking_limit_passed:
                             status = CollectiveOfferDisplayedStatus.EXPIRED
                         else:
                             status = CollectiveOfferDisplayedStatus.PREBOOKED
