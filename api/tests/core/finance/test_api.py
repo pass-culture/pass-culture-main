@@ -4743,8 +4743,8 @@ def test_get_drive_folder_name():
     assert name == "2022-04 - jusqu'au 30 avril"
 
 
-class ValidateInvoiceTest:
-    def test_validate_invoice_and_dependent_objects(self):
+class ValidateInvoicesTest:
+    def test_validate_invoices_and_dependent_objects(self):
         offerer = offerers_factories.OffererFactory(name="Association de coiffeurs", siren="853318459")
         bank_account = factories.BankAccountFactory(offerer=offerer)
         venue = offerers_factories.VenueFactory(
@@ -4805,7 +4805,7 @@ class ValidateInvoiceTest:
         assert invoice.status == models.InvoiceStatus.PENDING
         assert cashflow.status == models.CashflowStatus.PENDING_ACCEPTANCE
 
-        api.validate_invoice(invoice.id)
+        api.validate_invoices([invoice.id])
         db.session.commit()
 
         assert invoice.status == models.InvoiceStatus.PAID
