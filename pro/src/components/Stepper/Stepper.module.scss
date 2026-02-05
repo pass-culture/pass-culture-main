@@ -61,7 +61,7 @@ $number-size: rem.torem(30px);
         }
       }
 
-      :hover {
+      &:hover {
         .label {
           text-decoration: underline var(--color-text-default);
         }
@@ -165,7 +165,6 @@ $number-size: rem.torem(30px);
 
       &:first-child {
         .label {
-          width: unset;
           left: 0;
           text-align: left;
         }
@@ -173,7 +172,6 @@ $number-size: rem.torem(30px);
 
       &:last-child {
         .label {
-          width: unset;
           right: 0;
           text-align: right;
         }
