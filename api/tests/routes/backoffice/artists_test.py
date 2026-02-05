@@ -61,7 +61,7 @@ class GetArtistDetailsTest(GetEndpointHelper):
 
 
 class EditArtistButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
     button_label = "Éditer"
 
     @property
@@ -73,7 +73,7 @@ class EditArtistButtonTest(button_helpers.ButtonHelper):
 class GetArtistEditFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.get_artist_edit_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     # session + artist
     expected_num_queries = 2
@@ -93,7 +93,7 @@ class GetArtistEditFormTest(GetEndpointHelper):
 class PostArtistEditTest(PostEndpointHelper):
     endpoint = "backoffice_web.artist.post_artist_edit_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     def test_edit_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
@@ -234,7 +234,7 @@ class PostArtistUnblacklistTest(PostEndpointHelper):
 
 
 class LinkProductButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
     button_label = "Associer un produit"
 
     @property
@@ -246,7 +246,7 @@ class LinkProductButtonTest(button_helpers.ButtonHelper):
 class GetAssociateProductFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.associate_product_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     # session + artist
     expected_num_queries = 2
@@ -268,7 +268,7 @@ class GetAssociateProductFormTest(GetEndpointHelper):
 class PostConfirmAssociationTest(PostEndpointHelper):
     endpoint = "backoffice_web.artist.confirm_association"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     def test_associate_product_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
@@ -304,7 +304,7 @@ class PostConfirmAssociationTest(PostEndpointHelper):
 class GetUnlinkProductFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.get_unlink_product_form"
     endpoint_kwargs = {"artist_id": "some-uuid", "product_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     # session + artist + product
     expected_num_queries = 3
@@ -328,7 +328,7 @@ class GetUnlinkProductFormTest(GetEndpointHelper):
 class PostUnlinkProductTest(PostEndpointHelper):
     endpoint = "backoffice_web.artist.post_unlink_product"
     endpoint_kwargs = {"artist_id": "some-uuid", "product_id": 1}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_offer_ids")
@@ -356,7 +356,7 @@ class PostUnlinkProductTest(PostEndpointHelper):
 
 
 class MergeArtistButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
     button_label = "Fusionner"
 
     @property
@@ -368,7 +368,7 @@ class MergeArtistButtonTest(button_helpers.ButtonHelper):
 class GetMergeArtistFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.get_merge_artist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     # session + artist
     expected_num_queries = 2
@@ -391,7 +391,7 @@ class GetMergeArtistFormTest(GetEndpointHelper):
 class PostMergeArtistsTest(PostEndpointHelper):
     endpoint = "backoffice_web.artist.post_merge_artists"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     def test_merge_artists_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
@@ -428,7 +428,7 @@ class PostMergeArtistsTest(PostEndpointHelper):
 
 
 class SplitArtistButtonTest(button_helpers.ButtonHelper):
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
     button_label = "Séparer"
 
     @property
@@ -440,7 +440,7 @@ class SplitArtistButtonTest(button_helpers.ButtonHelper):
 class GetSplitArtistFormTest(GetEndpointHelper):
     endpoint = "backoffice_web.artist.get_split_artist_form"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     # session + artist
     expected_num_queries = 2
@@ -465,7 +465,7 @@ class GetSplitArtistFormTest(GetEndpointHelper):
 class PostSplitArtistTest(PostEndpointHelper):
     endpoint = "backoffice_web.artist.post_split_artist"
     endpoint_kwargs = {"artist_id": "some-uuid"}
-    needed_permission = perm_models.Permissions.MANAGE_OFFERS
+    needed_permission = perm_models.Permissions.MANAGE_ARTISTS
 
     @patch("pcapi.routes.backoffice.artists.blueprint.async_index_artist_ids")
     def test_split_artist_success(self, mock_async_index_artist_ids, db_session, authenticated_client):
