@@ -623,6 +623,7 @@ class UserRecreditTest:
             bookings_factories.UsedBookingFactory(deposit=user.deposit, amount=2)
             # Bookings in a 'terminal' state, cannot be cancelled outside of a finance incident
             bookings_factories.CancelledBookingFactory(deposit=user.deposit, amount=12)
+            bookings_factories.PendingReimbursementBookingFactory(deposit=user.deposit, amount=3)
             bookings_factories.ReimbursedBookingFactory(deposit=user.deposit, amount=13)
 
         with time_machine.travel(pcapi_settings.CREDIT_V3_DECREE_DATETIME):
@@ -635,7 +636,7 @@ class UserRecreditTest:
 
         assert len(user.deposit.bookings) == 2
         newly_credited_amount = 50
-        remaining_credit_amount = 30 - 13 - 2 - 1  # sum of the amounts of all the non-cancelled bookings
+        remaining_credit_amount = 30 - 13 - 3 - 2 - 1  # sum of the amounts of all the non-cancelled bookings
         amount_transferred_alongside_the_bookings = 1 + 2
         assert (
             user.deposit.amount

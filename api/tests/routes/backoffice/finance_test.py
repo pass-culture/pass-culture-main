@@ -1886,7 +1886,7 @@ class CreateOverpaymentTest(PostEndpointHelper):
             bookings_factories.ReimbursedBookingFactory(
                 stock=stock_1, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
             ),
-            bookings_factories.ReimbursedBookingFactory(
+            bookings_factories.PendingReimbursementBookingFactory(
                 stock=stock_2, pricings=[finance_factories.PricingFactory(status=finance_models.PricingStatus.INVOICED)]
             ),
         ]

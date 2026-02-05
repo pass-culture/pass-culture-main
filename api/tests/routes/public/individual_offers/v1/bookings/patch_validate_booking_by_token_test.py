@@ -141,6 +141,11 @@ class ValidateBookingByTokenTest(PublicAPIVenueEndpointHelper):
     @pytest.mark.parametrize(
         "factory,expected_status,expected_response_json",
         [
+            (
+                bookings_factories.PendingReimbursementBookingFactory,
+                403,
+                {"payment": "This booking has already been reimbursed"},
+            ),
             (bookings_factories.ReimbursedBookingFactory, 403, {"payment": "This booking has already been reimbursed"}),
             (bookings_factories.UsedBookingFactory, 410, {"booking": "This booking has already been validated"}),
             (bookings_factories.CancelledBookingFactory, 410, {"booking": "This booking has been cancelled"}),

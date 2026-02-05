@@ -1116,6 +1116,7 @@ def get_booking_token(
         not event_beginning_datetime
         and booking_status
         not in [
+            models.BookingStatus.PENDING_REIMBURSEMENT,
             models.BookingStatus.REIMBURSED,
             models.BookingStatus.CANCELLED,
             models.BookingStatus.USED,

@@ -115,6 +115,7 @@ class CollectiveBookingStatus(enum.Enum):
     CONFIRMED = "CONFIRMED"
     USED = "USED"
     CANCELLED = "CANCELLED"
+    PENDING_REIMBURSEMENT = "PENDING_REIMBURSEMENT"
     REIMBURSED = "REIMBURSED"
 
 
@@ -1663,7 +1664,7 @@ class CollectiveBooking(PcObject, models.Model):
     ) -> None:
         if self.status is CollectiveBookingStatus.CANCELLED:
             raise exceptions.CollectiveBookingAlreadyCancelled()
-        if self.status is CollectiveBookingStatus.REIMBURSED and not cancel_even_if_reimbursed:
+        if self.is_pending_reimbursement_or_reimbursed and not cancel_even_if_reimbursed:
             raise exceptions.CollectiveBookingIsAlreadyUsed
         if self.status is CollectiveBookingStatus.USED and not cancel_even_if_used:
             raise exceptions.CollectiveBookingIsAlreadyUsed
@@ -1708,21 +1709,31 @@ class CollectiveBooking(PcObject, models.Model):
 
     @hybrid_property
     def is_used_or_reimbursed(self) -> bool:
-        return self.status in [CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED]
+        return self.status in [
+            CollectiveBookingStatus.USED,
+            CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+            CollectiveBookingStatus.REIMBURSED,
+        ]
 
     @is_used_or_reimbursed.inplace.expression
     @classmethod
     def _is_used_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
-        return cls.status.in_([CollectiveBookingStatus.USED, CollectiveBookingStatus.REIMBURSED])
+        return cls.status.in_(
+            [
+                CollectiveBookingStatus.USED,
+                CollectiveBookingStatus.PENDING_REIMBURSEMENT,
+                CollectiveBookingStatus.REIMBURSED,
+            ]
+        )
 
     @hybrid_property
-    def isReimbursed(self) -> bool:
-        return self.status == CollectiveBookingStatus.REIMBURSED
+    def is_pending_reimbursement_or_reimbursed(self) -> bool:
+        return self.status in [CollectiveBookingStatus.PENDING_REIMBURSEMENT, CollectiveBookingStatus.REIMBURSED]
 
-    @isReimbursed.inplace.expression
+    @is_pending_reimbursement_or_reimbursed.inplace.expression
     @classmethod
-    def _isReimbursedExpression(cls) -> sa.ColumnElement[bool]:
-        return cls.status == CollectiveBookingStatus.REIMBURSED
+    def _is_pending_reimbursement_or_reimbursed_expression(cls) -> sa.ColumnElement[bool]:
+        return cls.status.in_([CollectiveBookingStatus.PENDING_REIMBURSEMENT, CollectiveBookingStatus.REIMBURSED])
 
     @hybrid_property
     def isCancelled(self) -> bool:
@@ -1763,6 +1774,7 @@ class CollectiveBooking(PcObject, models.Model):
     def is_cancellable_from_offerer(self) -> bool:
         return self.status not in (
             CollectiveBookingStatus.USED,
+            CollectiveBookingStatus.PENDING_REIMBURSEMENT,
             CollectiveBookingStatus.REIMBURSED,
             CollectiveBookingStatus.CANCELLED,
         )

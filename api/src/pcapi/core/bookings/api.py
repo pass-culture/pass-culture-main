@@ -272,7 +272,12 @@ def get_user_bookings_by_status(user: users_models.User, status: str) -> list[mo
     query_filter = sa.or_(
         models.Booking.displayAsEnded.is_(True),
         models.Booking.status.in_(
-            [models.BookingStatus.USED, models.BookingStatus.REIMBURSED, models.BookingStatus.CANCELLED]
+            [
+                models.BookingStatus.USED,
+                models.BookingStatus.PENDING_REIMBURSEMENT,
+                models.BookingStatus.REIMBURSED,
+                models.BookingStatus.CANCELLED,
+            ]
         ),
     )
 
@@ -692,7 +697,11 @@ def _cancel_bookings_from_stock(
     for booking in stock.bookings:
         # Do not make several SQL queries per booking then rollback to savepoint for those which cannot be cancelled.
         # This optimization could avoid timeout in the backoffice when an EAN is rejected with many past bookings.
-        if booking.status in (models.BookingStatus.REIMBURSED, models.BookingStatus.CANCELLED):
+        if booking.status in (
+            models.BookingStatus.PENDING_REIMBURSEMENT,
+            models.BookingStatus.REIMBURSED,
+            models.BookingStatus.CANCELLED,
+        ):
             continue
 
         cancel_even_if_used = stock.offer.isEvent

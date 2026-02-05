@@ -1681,6 +1681,11 @@ class MarkAsUsedTest:
             api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
         assert booking.status is not BookingStatus.USED
 
+    def test_raise_if_pending_reimbursement(self):
+        booking = bookings_factories.PendingReimbursementBookingFactory()
+        with pytest.raises(exceptions.BookingIsAlreadyRefunded):
+            api.mark_as_used(booking, models.BookingValidationAuthorType.OFFERER)
+
     def test_raise_if_already_reimbursed(self):
         booking = bookings_factories.ReimbursedBookingFactory()
         with pytest.raises(exceptions.BookingIsAlreadyRefunded):

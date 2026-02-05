@@ -206,6 +206,34 @@ class CancelCollectiveBookingTest(AdageMockEndpointHelper):
                     expected_error_json={"code": "ALREADY_CANCELLED_BOOKING"},
                 )
 
+    def test_cannot_cancel_pending_reimbursement_booking(self, client):
+        plain_api_key, venue_provider = self.setup_active_venue_provider()
+        pending_reimbursement_booking = self.setup_base_resource(
+            factory=factories.PendingReimbursementCollectiveBookingFactory,
+            venue=venue_provider.venue,
+            provider=venue_provider.provider,
+        )
+        auth_client = client.with_explicit_token(plain_api_key)
+
+        with assert_attribute_does_not_change(pending_reimbursement_booking, "status"):
+            booking_id = pending_reimbursement_booking.id
+
+            expected_queries_count = 1  # 1. get api key
+            expected_queries_count += 1  # 3. get collective booking
+            expected_queries_count += 1  # 4. get collective stock (lock for update)
+            expected_queries_count += 1  # 5. get collective booking (refresh)
+            expected_queries_count += 1  # 6. rollback
+            expected_queries_count += 1  # 6. rollback
+            expected_queries_count += 1  # 7. rollback (second one because of with atomic in cancel_collective_booking)
+
+            with assert_num_queries(expected_queries_count):
+                self.assert_request_has_expected_result(
+                    auth_client,
+                    url_params={"booking_id": booking_id},
+                    expected_status_code=403,
+                    expected_error_json={"code": "BOOKING_IS_REIMBURSED"},
+                )
+
     def test_cannot_cancel_reimbursed_booking(self, client):
         plain_api_key, venue_provider = self.setup_active_venue_provider()
         reimbursed_booking = self.setup_base_resource(
@@ -304,6 +332,7 @@ class UseCollectiveBookingTest(AdageMockEndpointHelper):
             factories.PendingCollectiveBookingFactory,
             factories.UsedCollectiveBookingFactory,
             factories.CancelledCollectiveBookingFactory,
+            factories.PendingReimbursementCollectiveBookingFactory,
             factories.ReimbursedCollectiveBookingFactory,
         ],
     )
