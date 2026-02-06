@@ -4,7 +4,7 @@ import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveA
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 import type { MandatoryCollectiveOfferFromParamsProps } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 
-import { CollectiveOfferVisibility } from '../CollectiveOfferCreationVisibility'
+import { CollectiveOfferCreationInstitution } from '../CollectiveOfferCreationInstitution'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -14,12 +14,12 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderCollectiveOfferCreationVisibility = (
+const renderCollectiveOfferCreationInstitution = (
   path: string,
   props: MandatoryCollectiveOfferFromParamsProps,
   storeOverride?: any
 ) => {
-  renderWithProviders(<CollectiveOfferVisibility {...props} />, {
+  renderWithProviders(<CollectiveOfferCreationInstitution {...props} />, {
     initialRouterEntries: [path],
     storeOverrides: storeOverride,
   })
@@ -31,10 +31,10 @@ const defaultProps = {
   offerer: undefined,
 }
 
-describe('CollectiveOfferVisibility', () => {
-  it('should render collective offer visibility form', async () => {
-    renderCollectiveOfferCreationVisibility(
-      '/offre/A1/collectif/visibilite',
+describe('CollectiveOfferCreationInstitution', () => {
+  it('should render collective offer institution form', async () => {
+    renderCollectiveOfferCreationInstitution(
+      '/offre/A1/collectif/etablissement',
       defaultProps
     )
 
@@ -46,18 +46,6 @@ describe('CollectiveOfferVisibility', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: "Renseignez l'établissement scolaire et l'enseignant",
-      })
-    ).toBeInTheDocument()
-  })
-  it('should render new collective offer visibility form if ff active', async () => {
-    renderCollectiveOfferCreationVisibility(
-      '/offre/A1/collectif/visibilite',
-      defaultProps
-    )
-
-    expect(
-      await screen.findByRole('heading', {
         name: "Renseignez l'établissement scolaire et l'enseignant",
       })
     ).toBeInTheDocument()

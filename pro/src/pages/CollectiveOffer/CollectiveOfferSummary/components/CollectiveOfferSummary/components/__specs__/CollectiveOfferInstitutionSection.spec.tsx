@@ -10,29 +10,29 @@ import {
 } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOfferVisibilitySection } from '../CollectiveOfferVisibilitySection'
+import { CollectiveOfferInstitutionSection } from '../CollectiveOfferInstitutionSection'
 
-const renderCollectiveOfferVisibilitySection = (
+const renderCollectiveOfferInstitutionSection = (
   institution?: EducationalInstitutionResponseModel | null,
   teacher?: EducationalRedactorResponseModel | null
 ) => {
   return renderWithProviders(
-    <CollectiveOfferVisibilitySection
+    <CollectiveOfferInstitutionSection
       institution={institution}
       teacher={teacher}
     />
   )
 }
 
-describe('CollectiveOfferVisibilitySection', () => {
+describe('CollectiveOfferInstitutionSection', () => {
   it('should render all institution if no institution provided', () => {
-    renderCollectiveOfferVisibilitySection()
+    renderCollectiveOfferInstitutionSection()
 
     expect(screen.getByText('Tous les établissements')).toBeInTheDocument()
   })
 
   it('should render teacher informations if provided', () => {
-    renderCollectiveOfferVisibilitySection(defaultEducationalInstitution, {
+    renderCollectiveOfferInstitutionSection(defaultEducationalInstitution, {
       ...defaultEducationalRedactor,
       firstName: 'Julien',
       lastName: 'Durand',

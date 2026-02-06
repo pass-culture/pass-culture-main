@@ -21,6 +21,7 @@ import styles from './CollectiveOfferSummary.module.scss'
 import { CollectiveOfferContactSection } from './components/CollectiveOfferContactSection'
 import { CollectiveOfferDateSection } from './components/CollectiveOfferDateSection'
 import { CollectiveOfferImagePreview } from './components/CollectiveOfferImagePreview'
+import { CollectiveOfferInstitutionSection } from './components/CollectiveOfferInstitutionSection'
 import { CollectiveOfferLocationSection } from './components/CollectiveOfferLocationSection'
 import { CollectiveOfferNotificationSection } from './components/CollectiveOfferNotificationSection'
 import { CollectiveOfferParticipantSection } from './components/CollectiveOfferParticipantSection'
@@ -28,7 +29,6 @@ import { CollectiveOfferPriceSection } from './components/CollectiveOfferPriceSe
 import { CollectiveOfferStockSection } from './components/CollectiveOfferStockSection'
 import { CollectiveOfferTypeSection } from './components/CollectiveOfferTypeSection'
 import { CollectiveOfferVenueSection } from './components/CollectiveOfferVenueSection'
-import { CollectiveOfferVisibilitySection } from './components/CollectiveOfferVisibilitySection'
 
 export interface CollectiveOfferSummaryProps {
   offer:
@@ -36,14 +36,14 @@ export interface CollectiveOfferSummaryProps {
     | GetCollectiveOfferResponseModel
   offerEditLink?: string
   stockEditLink?: string
-  visibilityEditLink?: string
+  institutionEditLink?: string
 }
 
 export const CollectiveOfferSummary = ({
   offer,
   offerEditLink,
   stockEditLink,
-  visibilityEditLink,
+  institutionEditLink,
 }: CollectiveOfferSummaryProps) => {
   const isOfferTemplate = isCollectiveOfferTemplate(offer)
 
@@ -105,9 +105,9 @@ export const CollectiveOfferSummary = ({
         {!isOfferTemplate && (
           <SummarySection
             title={'Établissement et enseignant'}
-            editLink={canEditInstitution ? visibilityEditLink : null}
+            editLink={canEditInstitution ? institutionEditLink : null}
           >
-            <CollectiveOfferVisibilitySection
+            <CollectiveOfferInstitutionSection
               institution={offer.institution}
               teacher={offer.teacher}
             />

@@ -19,9 +19,9 @@ import {
 } from '@/commons/config/swrQueryKeys'
 import { isCollectiveOffer, Mode } from '@/commons/core/OfferEducational/types'
 import {
-  extractInitialVisibilityValues,
+  extractInitialInstitutionValues,
   formatInstitutionDisplayName,
-} from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+} from '@/commons/core/OfferEducational/utils/extractInitialInstitutionValues'
 import {
   GET_DATA_ERROR_MESSAGE,
   SENT_DATA_ERROR_MESSAGE,
@@ -45,18 +45,18 @@ import {
   FORM_KEYS_MAPPING,
   GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE,
   INSTITUTION_GENERIC_ERROR_MESSAGE,
-  POST_VISIBILITY_FORM_ERROR_MESSAGE,
+  POST_INSTITUTION_FORM_ERROR_MESSAGE,
   REDACTOR_GENERIC_ERROR_MESSAGE,
 } from '../../commons/constants'
 import {
-  type VisibilityFormValues,
+  type InstitutionFormValues,
   validationSchema,
 } from '../../commons/validationSchema'
-import styles from './CollectiveOfferVisibility.module.scss'
+import styles from './CollectiveOfferInstitution.module.scss'
 
-export interface CollectiveOfferVisibilityProps {
+export interface CollectiveOfferInstitutionProps {
   mode: Mode
-  initialValues: VisibilityFormValues
+  initialValues: InstitutionFormValues
   onSuccess: ({
     offerId,
     message,
@@ -82,7 +82,7 @@ interface TeacherOption extends SelectOption {
   email: string
 }
 
-export const CollectiveOfferVisibilityScreen = ({
+export const CollectiveOfferInstitutionScreen = ({
   mode,
   initialValues,
   onSuccess,
@@ -90,7 +90,7 @@ export const CollectiveOfferVisibilityScreen = ({
   isLoadingInstitutions,
   offer,
   requestId = '',
-}: CollectiveOfferVisibilityProps) => {
+}: CollectiveOfferInstitutionProps) => {
   const snackBar = useSnackBar()
 
   const [teachersOptions, setTeachersOptions] = useState<TeacherOption[]>([])
@@ -147,7 +147,7 @@ export const CollectiveOfferVisibilityScreen = ({
     return true
   }
 
-  const onSubmit = async (values: VisibilityFormValues) => {
+  const onSubmit = async (values: InstitutionFormValues) => {
     if (!form.formState.isDirty) {
       onSuccess({
         offerId: offer.id.toString(),
@@ -186,7 +186,7 @@ export const CollectiveOfferVisibilityScreen = ({
       })
 
       reset({
-        ...extractInitialVisibilityValues(collectiveOffer.institution),
+        ...extractInitialInstitutionValues(collectiveOffer.institution),
       })
     } catch (error) {
       if (isErrorAPIError(error)) {
@@ -195,12 +195,12 @@ export const CollectiveOfferVisibilityScreen = ({
           FORM_KEYS_MAPPING
         )
 
-        snackBar.error(POST_VISIBILITY_FORM_ERROR_MESSAGE)
+        snackBar.error(POST_INSTITUTION_FORM_ERROR_MESSAGE)
 
         Object.entries(serializedApiErrors).forEach(([field]) => {
-          form.setError(field as keyof VisibilityFormValues, {
+          form.setError(field as keyof InstitutionFormValues, {
             message:
-              DEFAULT_FORM_FIELD_ERRORS[field as keyof VisibilityFormValues] ||
+              DEFAULT_FORM_FIELD_ERRORS[field as keyof InstitutionFormValues] ||
               SENT_DATA_ERROR_MESSAGE,
           })
         })
@@ -212,7 +212,7 @@ export const CollectiveOfferVisibilityScreen = ({
 
   initialValues = requestInformations
     ? {
-        ...extractInitialVisibilityValues(null, null, requestInformations),
+        ...extractInitialInstitutionValues(null, null, requestInformations),
         institution:
           institutionsOptions
             .find(
@@ -224,9 +224,9 @@ export const CollectiveOfferVisibilityScreen = ({
       }
     : initialValues
 
-  const form = useForm<VisibilityFormValues>({
+  const form = useForm<InstitutionFormValues>({
     defaultValues: initialValues,
-    resolver: yupResolver<VisibilityFormValues, unknown, unknown>(
+    resolver: yupResolver<InstitutionFormValues, unknown, unknown>(
       validationSchema
     ),
     mode: 'onBlur',
@@ -286,8 +286,8 @@ export const CollectiveOfferVisibilityScreen = ({
         opt.institutionId === requestInformations.institution.institutionId
     )
 
-    const formValues: VisibilityFormValues = {
-      ...extractInitialVisibilityValues(null, null, requestInformations),
+    const formValues: InstitutionFormValues = {
+      ...extractInitialInstitutionValues(null, null, requestInformations),
       institution: institutionOption?.value.toString() ?? '',
       teacher: requestInformations.redactor.email,
     }

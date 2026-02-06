@@ -4,7 +4,7 @@ import type {
   EducationalRedactorResponseModel,
   GetCollectiveOfferRequestResponseModel,
 } from '@/apiClient/v1'
-import type { VisibilityFormValues } from '@/pages/CollectiveOfferVisibility/commons/validationSchema'
+import type { InstitutionFormValues } from '@/pages/CollectiveOfferInstitution/commons/validationSchema'
 
 export const formatInstitutionDisplayName = (
   institution:
@@ -16,11 +16,11 @@ export const formatInstitutionDisplayName = (
   } - ${institution.institutionId}`.trim()
 }
 
-export const extractInitialVisibilityValues = (
+export const extractInitialInstitutionValues = (
   institution?: EducationalInstitutionResponseModel | null,
   teacher?: EducationalRedactorResponseModel | null,
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
-): VisibilityFormValues => ({
+): InstitutionFormValues => ({
   institution: institution?.id.toString() ?? '',
   teacher: teacher
     ? `${teacher.email}`

@@ -11,7 +11,7 @@ import {
   Mode,
 } from '@/commons/core/OfferEducational/types'
 import { computeURLCollectiveOfferId } from '@/commons/core/OfferEducational/utils/computeURLCollectiveOfferId'
-import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { extractInitialInstitutionValues } from '@/commons/core/OfferEducational/utils/extractInitialInstitutionValues'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { isCollectiveInstitutionEditable } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
@@ -20,12 +20,12 @@ import {
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { CollectiveOfferVisibilityScreen } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import { CollectiveOfferInstitutionScreen } from '@/pages/CollectiveOfferInstitution/components/CollectiveOfferInstitution/CollectiveOfferInstitution'
 import { Spinner } from '@/ui-kit/Spinner/Spinner'
 
 import { getEducationalInstitutions } from './commons/utils/getEducationalInstitutions'
 
-export const CollectiveOfferEditionVisibility = ({
+export const CollectiveOfferEditionInstitution = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
@@ -66,7 +66,7 @@ export const CollectiveOfferEditionVisibility = ({
     return <Spinner />
   }
 
-  const isVisibilityEditable = isCollectiveInstitutionEditable(offer)
+  const isInstitutionEditable = isCollectiveInstitutionEditable(offer)
 
   return (
     <CollectiveOfferLayout
@@ -74,9 +74,9 @@ export const CollectiveOfferEditionVisibility = ({
       subTitle={offer.name}
       isTemplate={isTemplate}
     >
-      <CollectiveOfferVisibilityScreen
-        mode={isVisibilityEditable ? Mode.EDITION : Mode.READ_ONLY}
-        initialValues={extractInitialVisibilityValues(
+      <CollectiveOfferInstitutionScreen
+        mode={isInstitutionEditable ? Mode.EDITION : Mode.READ_ONLY}
+        initialValues={extractInitialInstitutionValues(
           offer.institution,
           offer.teacher
         )}
@@ -92,5 +92,5 @@ export const CollectiveOfferEditionVisibility = ({
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
-  CollectiveOfferEditionVisibility
+  CollectiveOfferEditionInstitution
 )

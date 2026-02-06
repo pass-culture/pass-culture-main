@@ -276,11 +276,11 @@ export const routes: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/CollectiveOfferVisibility/CollectiveOfferCreationVisibility'
+        '@/pages/CollectiveOfferInstitution/CollectiveOfferCreationInstitution'
       ),
     loader: withUserPermissions(mustHaveSelectedVenue),
-    path: '/offre/:offerId/collectif/visibilite',
-    title: 'Visibilité - Créer une offre réservable',
+    path: '/offre/:offerId/collectif/etablissement',
+    title: 'Établissement - Créer une offre réservable',
   },
   {
     lazy: () =>
@@ -385,11 +385,11 @@ export const routes: CustomRouteObject[] = [
   {
     lazy: () =>
       import(
-        '@/pages/CollectiveOfferVisibility/CollectiveOfferEditionVisibility'
+        '@/pages/CollectiveOfferInstitution/CollectiveOfferEditionInstitution'
       ),
     loader: withUserPermissions(mustHaveSelectedVenue),
-    path: '/offre/:offerId/collectif/visibilite/edition',
-    title: 'Visibilité - Modifier une offre collective réservable',
+    path: '/offre/:offerId/collectif/etablissement/edition',
+    title: 'Établissement - Modifier une offre collective réservable',
   },
   {
     lazy: () =>

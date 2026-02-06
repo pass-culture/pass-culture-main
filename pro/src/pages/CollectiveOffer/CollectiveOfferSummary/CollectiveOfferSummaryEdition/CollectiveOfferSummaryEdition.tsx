@@ -34,7 +34,7 @@ export const CollectiveOfferSummaryEdition = ({
     offer.isTemplate
   )}/collectif/stocks/edition`
 
-  const visibilityEditLink = `/offre/${offer.id}/collectif/visibilite/edition`
+  const institutionEditLink = `/offre/${offer.id}/collectif/etablissement/edition`
 
   if (isCollectiveOffer(offer)) {
     return <BookableOfferSummary offer={offer} />
@@ -56,7 +56,7 @@ export const CollectiveOfferSummaryEdition = ({
         offer={offer}
         offerEditLink={offerEditLink}
         stockEditLink={stockEditLink}
-        visibilityEditLink={visibilityEditLink}
+        institutionEditLink={institutionEditLink}
       />
 
       <ActionsBarSticky>

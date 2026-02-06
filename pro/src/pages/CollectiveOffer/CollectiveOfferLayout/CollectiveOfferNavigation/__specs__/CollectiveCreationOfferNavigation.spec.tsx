@@ -166,10 +166,10 @@ describe('CollectiveCreationOfferNavigation', () => {
     )
   })
 
-  it('should show links if visibility is the active step', () => {
+  it('should show links if institution is the active step', () => {
     renderCollectiveOfferNavigation({
       ...props,
-      activeStep: CollectiveOfferStep.VISIBILITY,
+      activeStep: CollectiveOfferStep.INSTITUTION,
       offer: getCollectiveOfferFactory({
         institution: undefined,
       }),
@@ -183,7 +183,7 @@ describe('CollectiveCreationOfferNavigation', () => {
       `/offre/${offerId}/collectif/stocks`
     )
     expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite`
+      `/offre/${offerId}/collectif/etablissement`
     )
   })
 
@@ -211,7 +211,7 @@ describe('CollectiveCreationOfferNavigation', () => {
       `/offre/${offerId}/collectif/stocks`
     )
     expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite`
+      `/offre/${offerId}/collectif/etablissement`
     )
     expect(links[3].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/creation/recapitulatif`
@@ -245,7 +245,7 @@ describe('CollectiveCreationOfferNavigation', () => {
       `/offre/${offerId}/collectif/stocks`
     )
     expect(links[2].getAttribute('href')).toBe(
-      `/offre/${offerId}/collectif/visibilite`
+      `/offre/${offerId}/collectif/etablissement`
     )
     expect(links[3].getAttribute('href')).toBe(
       `/offre/${offerId}/collectif/creation/recapitulatif`
@@ -280,7 +280,7 @@ describe('CollectiveCreationOfferNavigation', () => {
     expect(duplicateOffer).not.toBeInTheDocument()
   })
 
-  it('should be able to go to the visibility ans stocks step if the institurion and stock are already filled', () => {
+  it('should be able to go to the institution and stocks step if the institution and stock are already filled', () => {
     renderCollectiveOfferNavigation({
       ...props,
       offer: getCollectiveOfferFactory(),

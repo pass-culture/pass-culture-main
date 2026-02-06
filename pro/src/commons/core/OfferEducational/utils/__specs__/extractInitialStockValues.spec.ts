@@ -9,7 +9,7 @@ import {
 
 import { extractInitialStockValues } from '../extractInitialStockValues'
 
-describe('extractInitialVisibilityValues', () => {
+describe('extractInitialStockValues', () => {
   it('should return default values when collectiveStock is not defined', () => {
     expect(
       extractInitialStockValues(
