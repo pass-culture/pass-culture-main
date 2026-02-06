@@ -41,14 +41,6 @@ const isDuplicateArtist = (
 const isAnyTrue = (values: Record<string, boolean>): boolean =>
   Object.values(values).includes(true)
 
-// TODO: this regex is subject to backtracking which can lead to "catastrophic backtracking", high memory usage and slow performance
-// we cannot use the yup url validation because we need to allow {} in the url to interpolate some data
-export const offerFormUrlRegex = new RegExp(
-  /*eslint-disable-next-line no-useless-escape*/
-  /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)(([a-z0-9]+([-..-.@_a-z0-9]+)*\.[a-z]{2,5})|((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.){3}(25[0-5]|(2[0-4]|1\d|[1-9]|)\d))(:[0-9]{1,5})?\S*?$/,
-  'i'
-)
-
 const commonValidationShape = {
   name: yup.string().trim().max(90).required('Veuillez renseigner un titre'),
   description: yup.string(),

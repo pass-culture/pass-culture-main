@@ -76,7 +76,7 @@ describe('getValidationSchema', () => {
 
   describe('artistOfferLinks validation', () => {
     it('should fail if artistOfferLinks is missing', async () => {
-      const { artistOfferLinks, ...dataWithoutArtistOfferLinks } =
+      const { artistOfferLinks: _, ...dataWithoutArtistOfferLinks } =
         validDetailsFormValuesBase
       await expect(
         schema.validate(dataWithoutArtistOfferLinks)
