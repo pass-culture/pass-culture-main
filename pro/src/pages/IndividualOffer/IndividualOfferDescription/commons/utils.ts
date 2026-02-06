@@ -4,6 +4,7 @@ import {
   type ArtistOfferLinkResponseModel,
   type CategoryResponseModel,
   type GetIndividualOfferResponseModel,
+  type GetVenueResponseModel,
   OfferStatus,
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
@@ -128,33 +129,35 @@ export function getVenuesAsOptions(
     .sort((a, b) => a.label.localeCompare(b.label, 'fr'))
 }
 
+export function getInitialValuesFromVenue(
+  venue: GetVenueResponseModel
+): DetailsFormValues {
+  return {
+    ...DEFAULT_DETAILS_FORM_VALUES,
+    accessibility: getAccessibilityInfoFromVenue(venue).accessibility,
+    venueId: venue.id.toString(),
+  }
+}
+
+// TODO (igabriele, 2026-02-04): Delete this util once `WIP_SWITCH_VENUE` FF is enabled and removed.
 export function getInitialValuesFromVenues(
-  availableVenues: VenueListItemResponseModel[],
-  isNewOfferCreationFlowFeatureActive: boolean
+  availableVenues: VenueListItemResponseModel[]
 ): DetailsFormValues {
   //  When there is only one venue available, we can automatically use this venue as the initially selected one.
   const onlyVenue =
     availableVenues.length === 1 ? availableVenues[0] : undefined
   const venueId = onlyVenue?.id.toString() ?? ''
 
-  if (isNewOfferCreationFlowFeatureActive) {
-    return {
-      ...DEFAULT_DETAILS_FORM_VALUES,
-      venueId,
-      accessibility: getAccessibilityInfoFromVenue(onlyVenue).accessibility,
-    }
-  }
-
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
     venueId,
+    accessibility: getAccessibilityInfoFromVenue(onlyVenue).accessibility,
   }
 }
 
 export function getInitialValuesFromOffer({
   offer,
   subcategories,
-  isNewOfferCreationFlowFeatureActive,
 }: SetDefaultInitialValuesFromOfferProps): DetailsFormValues {
   const subcategory = subcategories.find(
     (subcategory: SubcategoryResponseModel) =>
@@ -163,10 +166,6 @@ export function getInitialValuesFromOffer({
   assertOrFrontendError(subcategory, 'La categorie de l’offre est introuvable.')
 
   const ean = offer.extraData?.ean ?? DEFAULT_DETAILS_FORM_VALUES.ean
-  const maybeAccessibility = isNewOfferCreationFlowFeatureActive
-    ? { accessibility: getAccessibilityFormValuesFromOffer(offer) }
-    : {}
-  const maybeUrl = isNewOfferCreationFlowFeatureActive ? {} : { url: offer.url }
 
   return {
     ...DEFAULT_DETAILS_FORM_VALUES,
@@ -199,8 +198,7 @@ export function getInitialValuesFromOffer({
       DEFAULT_DETAILS_FORM_VALUES.stageDirector,
     productId:
       offer.productId?.toString() ?? DEFAULT_DETAILS_FORM_VALUES.productId,
-    ...maybeAccessibility,
-    ...maybeUrl,
+    accessibility: getAccessibilityFormValuesFromOffer(offer),
   }
 }
 
@@ -224,7 +222,6 @@ export function getAccessibilityFormValuesFromOffer(
 export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
   hasSelectedProduct: boolean,
-  isNewOfferCreationFlowFeatureActive: boolean,
   venue?: VenueListItemResponseModel
 ): string[] {
   const isNewOfferDraft = offer === null
@@ -232,9 +229,6 @@ export function getFormReadOnlyFields(
   const allFieldsExceptAccessibility: string[] = Object.keys(
     DEFAULT_DETAILS_FORM_VALUES
   )
-  const maybeAccessibilityFields = isNewOfferCreationFlowFeatureActive
-    ? ['accessibility']
-    : []
 
   const hasPendingOrRejectedStatus =
     offer && [OfferStatus.REJECTED, OfferStatus.PENDING].includes(offer.status)
@@ -250,7 +244,7 @@ export function getFormReadOnlyFields(
   }
 
   if (hasPendingOrRejectedStatus) {
-    return [...allFieldsExceptAccessibility, ...maybeAccessibilityFields]
+    return [...allFieldsExceptAccessibility, 'accessibility']
   }
 
   if (hasSelectedProduct) {

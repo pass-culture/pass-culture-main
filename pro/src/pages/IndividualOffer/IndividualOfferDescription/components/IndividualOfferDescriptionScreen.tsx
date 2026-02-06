@@ -1,5 +1,4 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import { useEffect } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
@@ -21,7 +20,9 @@ import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { FrontendError } from '@/commons/errors/FrontendError'
 import { handleUnexpectedError } from '@/commons/errors/handleUnexpectedError'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
+import { useAppSelector } from '@/commons/hooks/useAppSelector'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { ensureSelectedVenue } from '@/commons/store/user/selectors'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { RouteLeavingGuardIndividualOffer } from '@/components/RouteLeavingGuardIndividualOffer/RouteLeavingGuardIndividualOffer'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
@@ -36,6 +37,7 @@ import {
   filterAvailableVenues,
   getFormReadOnlyFields,
   getInitialValuesFromOffer,
+  getInitialValuesFromVenue,
   getInitialValuesFromVenues,
   getVenuesAsOptions,
   hasMusicType,
@@ -57,12 +59,15 @@ export type IndividualOfferDescriptionScreenProps = {
 export const IndividualOfferDescriptionScreen = ({
   venues,
 }: IndividualOfferDescriptionScreenProps): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const isOnboarding = pathname.includes('onboarding')
   const { logEvent } = useAnalytics()
   const { mutate } = useSWRConfig()
   const mode = useOfferWizardMode()
+  const selectedVenue = useAppSelector(ensureSelectedVenue)
 
   const {
     categories,
@@ -80,11 +85,12 @@ export const IndividualOfferDescriptionScreen = ({
 
   const getInitialValues = () => {
     return isNewOfferDraft
-      ? getInitialValuesFromVenues(availableVenues, true)
+      ? withSwitchVenueFeature
+        ? getInitialValuesFromVenue(selectedVenue)
+        : getInitialValuesFromVenues(availableVenues)
       : getInitialValuesFromOffer({
           offer: initialOffer,
           subcategories: subCategories,
-          isNewOfferCreationFlowFeatureActive: true,
         })
   }
 
@@ -95,12 +101,6 @@ export const IndividualOfferDescriptionScreen = ({
     ),
     mode: 'onBlur',
   })
-
-  useEffect(() => {
-    //  If we go from an offer edition details page to the offer creation,
-    // the offerId is then null but the page remains the same so the form would not be reset
-    form.reset(getInitialValues())
-  }, [initialOffer?.id, form.reset])
 
   const hasSelectedProduct = !!form.watch('productId')
   const selectedSubcategoryId = form.watch('subcategoryId')
@@ -114,7 +114,6 @@ export const IndividualOfferDescriptionScreen = ({
   const readOnlyFields = getFormReadOnlyFields(
     initialOffer,
     hasSelectedProduct,
-    true,
     venue
   )
 

@@ -7,6 +7,7 @@ import type {
   VenueListItemResponseModel,
 } from '@/apiClient/v1'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { getAccessibilityInfoFromVenue } from '@/commons/utils/getAccessibilityInfoFromVenue'
 import { updateAccessibilityField } from '@/commons/utils/updateAccessibilityField'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
@@ -44,6 +45,8 @@ export const DetailsForm = ({
   filteredSubcategories,
   readOnlyFields,
 }: DetailsFormProps): JSX.Element => {
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
+
   const {
     formState: { errors },
     register,
@@ -99,7 +102,7 @@ export const DetailsForm = ({
         )}
         {!showAddVenueBanner && (
           <>
-            {venuesOptions.length > 1 && (
+            {!withSwitchVenueFeature && venuesOptions.length > 1 && (
               <FormLayout.Row className={styles.row}>
                 <Select
                   label="Qui propose l’offre ? *"

@@ -32,7 +32,10 @@ const IndividualOfferDescription = (): JSX.Element | null => {
 
   return (
     <IndividualOfferLayout offer={offer}>
-      <IndividualOfferDescriptionScreen venues={venuesQuery.data.venues} />
+      <IndividualOfferDescriptionScreen
+        key={offer?.id}
+        venues={venuesQuery.data.venues}
+      />
     </IndividualOfferLayout>
   )
 }

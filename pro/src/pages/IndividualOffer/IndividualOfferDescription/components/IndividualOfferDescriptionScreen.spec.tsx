@@ -35,6 +35,7 @@ import {
   currentOffererFactory,
   sharedCurrentUserFactory,
 } from '@/commons/utils/factories/storeFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import {
   type RenderWithProvidersOptions,
   renderWithProviders,
@@ -171,7 +172,10 @@ const renderDetailsScreen = ({
   const controlledOptions = {
     initialRouterEntries: [path],
     storeOverrides: {
-      user: { currentUser: sharedCurrentUserFactory() },
+      user: {
+        currentUser: sharedCurrentUserFactory(),
+        selectedVenue: makeGetVenueResponseModel({ id: 189 }),
+      },
       offerer: currentOffererFactory(),
     },
     user: sharedCurrentUserFactory(),
@@ -1190,6 +1194,48 @@ describe('<IndividualOfferDescriptionScreen />', () => {
     })
 
     expect(screen.queryByText(/Qui propose l’offre ? */)).toBeFalsy()
+  })
+
+  describe('with WIP_SWITCH_VENUE feature flag', () => {
+    it('should use selectedVenue from Redux store for initial values on creation', () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_SWITCH_VENUE'],
+          storeOverrides: {
+            user: {
+              currentUser: sharedCurrentUserFactory(),
+              selectedVenue: makeGetVenueResponseModel({
+                id: 777,
+                audioDisabilityCompliant: true,
+                mentalDisabilityCompliant: false,
+                motorDisabilityCompliant: true,
+                visualDisabilityCompliant: false,
+              }),
+            },
+            offerer: currentOffererFactory(),
+          },
+        },
+      })
+
+      expect(screen.getByRole('checkbox', { name: /Auditif/ })).toBeChecked()
+      expect(screen.getByRole('checkbox', { name: /Moteur/ })).toBeChecked()
+      expect(screen.getByRole('checkbox', { name: /Visuel/ })).not.toBeChecked()
+      expect(
+        screen.getByRole('checkbox', { name: /Psychique ou cognitif/ })
+      ).not.toBeChecked()
+    })
+
+    it('should not display the venue selector even with multiple venues', () => {
+      renderDetailsScreen({
+        contextValue,
+        options: {
+          features: ['WIP_SWITCH_VENUE'],
+        },
+      })
+
+      expect(screen.queryByLabelText(LABELS.venue)).not.toBeInTheDocument()
+    })
   })
 
   describe('onboarding', () => {
