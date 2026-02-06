@@ -181,6 +181,9 @@ export const ImageDragAndDropUploader = ({
                 },
               }
             : {})}
+          {...(mode !== UploaderModeEnum.VENUE && {
+            isMaxResolutionEnabled: true,
+          })}
         />
       )}
     </div>

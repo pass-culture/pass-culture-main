@@ -1,5 +1,6 @@
 import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import React, { forwardRef } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { describe, expect } from 'vitest'
 
@@ -28,6 +29,39 @@ import {
   OfferEducationalForm,
   type OfferEducationalFormProps,
 } from '../OfferEducationalForm'
+
+vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+  getImageDimensions: vi.fn((file) => {
+    return Promise.resolve({
+      width: (file as any).width || 0,
+      height: (file as any).height || 0,
+    })
+  }),
+}))
+
+vi.mock('react-avatar-editor', () => {
+  const MockAvatarEditor = forwardRef((_props, ref) => {
+    if (ref && typeof ref === 'object' && 'current' in ref) {
+      ref.current = {
+        getImage: vi.fn(() => ({ toDataURL: vi.fn(() => 'my img') })),
+        getCroppingRect: vi.fn(() => ({
+          x: 0,
+          y: 0,
+          width: 100,
+          height: 100,
+        })),
+      }
+    }
+    return React.createElement('div', { 'aria-label': "Editeur d'image" })
+  })
+
+  MockAvatarEditor.displayName = 'MockAvatarEditor'
+
+  return {
+    __esModule: true,
+    default: MockAvatarEditor,
+  }
+})
 
 function renderOfferEducationalForm(
   props: OfferEducationalFormProps,
@@ -200,11 +234,19 @@ describe('OfferEducationalForm', () => {
     })
 
     const imageInput = screen.getByLabelText('Importez une image')
-    await userEvent.upload(imageInput, new File(['fake img'], 'fake_img.jpg'))
+    await userEvent.upload(
+      imageInput,
+      Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+        width: 500,
+        height: 900,
+      })
+    )
 
-    expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
-      imageType: UploaderModeEnum.OFFER_COLLECTIVE,
-      imageCreationStage: 'add image',
+    await waitFor(() => {
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
+        imageType: UploaderModeEnum.OFFER_COLLECTIVE,
+        imageCreationStage: 'add image',
+      })
     })
   })
 

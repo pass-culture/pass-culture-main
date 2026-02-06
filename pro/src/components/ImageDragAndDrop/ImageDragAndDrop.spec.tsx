@@ -16,12 +16,14 @@ function mockData(files: File[]) {
   }
 }
 
-const createObjectURLMock = vi.fn(() => 'mocked-url')
-const revokeObjectURLMock = vi.fn()
-vi.stubGlobal('URL', {
-  createObjectURL: createObjectURLMock,
-  revokeObjectURL: revokeObjectURLMock,
-})
+vi.mock('./getImageDimensions', () => ({
+  getImageDimensions: vi.fn((file) => {
+    return Promise.resolve({
+      width: (file as any).width || 0,
+      height: (file as any).height || 0,
+    })
+  }),
+}))
 
 describe('ImageDragAndDrop', () => {
   it('should render the component with a drop zone and an input', () => {
@@ -40,7 +42,13 @@ describe('ImageDragAndDrop', () => {
   })
 
   it('should display the correct text when dragging over', async () => {
-    const file = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' })
+    const file = Object.assign(
+      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+      {
+        width: 800,
+        height: 600,
+      }
+    )
     const data = mockData([file])
 
     render(<ImageDragAndDrop />)
@@ -57,7 +65,13 @@ describe('ImageDragAndDrop', () => {
   })
 
   it('should call onDropOrSelected when a valid file is dropped', async () => {
-    const file = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' })
+    const file = Object.assign(
+      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+      {
+        width: 800,
+        height: 600,
+      }
+    )
     const data = mockData([file])
 
     const onDropOrSelected = vi.fn()
@@ -66,12 +80,24 @@ describe('ImageDragAndDrop', () => {
     fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
 
     await waitFor(() => {
-      expect(onDropOrSelected).toHaveBeenCalledWith(file)
+      expect(onDropOrSelected).toHaveBeenCalledWith(
+        expect.objectContaining({
+          path: './test-image.jpg',
+          width: 800,
+          height: 600,
+        })
+      )
     })
   })
 
   it('should display the appropriate err message when an invalid file type is dropped & call onError', async () => {
-    const file = new File(['test'], 'test-image.txt', { type: 'txt' })
+    const file = Object.assign(
+      new File(['test'], 'test-image.txt', { type: 'txt' }),
+      {
+        width: 800,
+        height: 600,
+      }
+    )
     const data = mockData([file])
 
     const onError = vi.fn()
@@ -89,7 +115,13 @@ describe('ImageDragAndDrop', () => {
   })
 
   it('should display the appropriate err message when the file is too large & call onError', async () => {
-    const file = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' })
+    const file = Object.assign(
+      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+      {
+        width: 800,
+        height: 600,
+      }
+    )
     Object.defineProperty(file, 'size', { value: 11 * 1024 * 1024 })
     const data = mockData([file])
 
@@ -122,25 +154,16 @@ describe('ImageDragAndDrop', () => {
       expect(screen.getByText(/Largeur minimum :/)).toBeInTheDocument()
     })
 
-    it('should display the appropriate error message when the image has invalid dimensions', async () => {
-      const file = new File(['test'], 'test-image.jpg', { type: 'image/jpeg' })
+    it('should display the appropriate error message when the image has too short dimensions', async () => {
+      const file = Object.assign(
+        new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+        {
+          width: 10,
+          height: 10,
+        }
+      )
+
       const data = mockData([file])
-      global.Image = class {
-        width = 10
-        height = 10
-        onload: (() => void) | null = null
-
-        set src(val: string) {
-          this._src = val
-          setTimeout(() => this.onload?.(), 0)
-        }
-
-        get src() {
-          return this._src
-        }
-
-        private _src = ''
-      } as unknown as typeof Image
 
       const onError = vi.fn()
       render(
@@ -165,6 +188,27 @@ describe('ImageDragAndDrop', () => {
         'file-invalid-dimensions-width',
         'file-invalid-dimensions-height',
       ])
+    })
+
+    it('should display the appropriate error message when the image has too large dimensions', async () => {
+      const file = Object.assign(
+        new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+        {
+          width: 81,
+          height: 1_000_000,
+        }
+      )
+
+      const data = mockData([file])
+
+      const onError = vi.fn()
+      render(<ImageDragAndDrop onError={onError} isMaxResolutionEnabled />)
+
+      fireEvent.drop(screen.getByTestId('image-drag-and-drop'), data)
+
+      await waitFor(() => {
+        expect(onError).toHaveBeenCalledWith(['file-too-large-dimensions'])
+      })
     })
   })
 })

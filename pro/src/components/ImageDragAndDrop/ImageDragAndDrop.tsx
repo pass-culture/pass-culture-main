@@ -6,37 +6,13 @@ import fullValidateIcon from '@/icons/full-validate.svg'
 import strokePicture from '@/icons/stroke-picture.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import {
+  ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
+  UPLOAD_IMAGE_MAX_RESOLUTION,
+} from './constants'
+import { getImageDimensions } from './getImageDimensions'
 import { ImageConstraintCheck } from './ImageConstraintCheck'
 import styles from './ImageDragAndDrop.module.scss'
-
-const ALLOWED_IMAGE_TYPES = [
-  {
-    mime: 'image/jpeg',
-    extensions: ['.jpeg', '.jpg'],
-  },
-  {
-    mime: 'image/png',
-    extensions: ['.png'],
-  },
-  {
-    mime: 'image/mpo',
-    extensions: ['.mpo'],
-  },
-  {
-    mime: 'image/webp',
-    extensions: ['.webp'],
-  },
-]
-
-type MimeToExtensionsMap = {
-  [mimeType: string]: string[]
-}
-
-type FileWithDimensions = File & {
-  width: number
-  height: number
-  objectUrlToBeRevoked?: string
-}
 
 interface ImageDragAndDropProps {
   /**
@@ -67,6 +43,7 @@ interface ImageDragAndDropProps {
     width?: number
     height?: number
   }
+  isMaxResolutionEnabled?: boolean
 }
 
 export const ImageDragAndDrop = forwardRef(
@@ -78,127 +55,75 @@ export const ImageDragAndDrop = forwardRef(
       onError,
       disabled,
       minSizes,
+      isMaxResolutionEnabled = false,
     }: ImageDragAndDropProps,
     dragAndDropInputRef: ForwardedRef<HTMLInputElement>
   ) => {
     const [isDraggedOver, setIsDraggedOver] = useState(false)
     const [isHovered, setIsHovered] = useState(false)
     const [isFocused, setIsFocused] = useState(false)
+    const [customErrors, setCustomErrors] = useState<string[]>([])
 
-    const accept: MimeToExtensionsMap = ALLOWED_IMAGE_TYPES.reduce(
-      (acc: MimeToExtensionsMap, { mime, extensions }) => {
-        acc[mime] = extensions
-        return acc
-      },
-      {}
-    )
+    const handleDrop = async (files: File[]) => {
+      setCustomErrors([])
+      const file = files[0]
+      if (!file) {
+        return
+      }
 
-    const imageMimeTypes = ALLOWED_IMAGE_TYPES.reduce(
-      (acc: string[], { mime }) => {
-        acc.push(mime)
-        return acc
-      },
-      []
-    )
+      try {
+        const { width, height } = await getImageDimensions(file)
+
+        const errors: string[] = []
+
+        if (minSizes) {
+          const { width: minWidth, height: minHeight } = minSizes
+          if (minWidth && width < minWidth) {
+            errors.push('file-invalid-dimensions-width')
+          }
+          if (minHeight && height < minHeight) {
+            errors.push('file-invalid-dimensions-height')
+          }
+        }
+        if (isMaxResolutionEnabled) {
+          if (width * height > UPLOAD_IMAGE_MAX_RESOLUTION) {
+            errors.push('file-too-large-dimensions')
+          }
+        }
+
+        if (errors.length > 0) {
+          setCustomErrors(errors)
+          onError?.(errors)
+        } else if (onDropOrSelected) {
+          const image = Object.assign(file, { width, height })
+          onDropOrSelected(image)
+        }
+      } catch {
+        const error = ['file-invalid-type']
+        setCustomErrors(error)
+        onError?.(error)
+      } finally {
+        setIsDraggedOver(false)
+      }
+    }
 
     const { getRootProps, getInputProps, fileRejections } = useDropzone({
-      accept,
+      accept: ALLOWED_IMAGE_TYPES_TO_EXTENSIONS,
       maxFiles: 1,
       maxSize: 10 * 1024 * 1024,
-      onDragEnter: () => setIsDraggedOver(true),
+      onDragEnter: () => {
+        setCustomErrors([])
+        setIsDraggedOver(true)
+      },
       onDragLeave: () => setIsDraggedOver(false),
       onDropAccepted: (files) => {
-        const file = files[0]
-        // Disabled because untrue : file can be undefined at this point.
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (file) {
-          onDropOrSelected?.(file)
-        }
-        setIsDraggedOver(false)
+        void handleDrop(files)
       },
       onDropRejected: (files) => {
         const file = files[0]
         const errors = file.errors.map((e) => e.code)
         onError?.(errors)
         setIsDraggedOver(false)
-      },
-      getFilesFromEvent: (event) => {
-        // @ts-expect-error: dataTransfer & target are actually existing properties.
-        // An example of getFilesFromEvent can be found here :
-        // https://react-dropzone.js.org/#section-extending-dropzone
-        const fileList = event.dataTransfer?.files ?? event.target?.files
-        const promises = []
-        const files = []
-
-        for (const file of fileList) {
-          files.push(file)
-
-          if (minSizes) {
-            const promise: Promise<FileWithDimensions> = new Promise(
-              (resolve) => {
-                if (!imageMimeTypes.includes(file.type)) {
-                  file.width = 0
-                  file.height = 0
-                  resolve(file)
-                }
-
-                const image = new Image()
-                image.onload = () => {
-                  file.width = image.width
-                  file.height = image.height
-                  file.objectUrlToBeRevoked = image.src
-                  resolve(file)
-                }
-
-                image.src = URL.createObjectURL(file)
-              }
-            )
-
-            promises.push(promise)
-          }
-        }
-
-        return minSizes ? Promise.all(promises) : Promise.resolve(files)
-      },
-      validator: (file) => {
-        const extendedFile = file as unknown as FileWithDimensions
-        const { width, height, objectUrlToBeRevoked } = extendedFile
-        const hasDimensions =
-          extendedFile.width !== 0 && extendedFile.height !== 0
-
-        // Additional validation to check image dimensions
-        // when minSizes are provided.
-        if (minSizes && hasDimensions) {
-          const { width: minWidth, height: minHeight } = minSizes
-          const isWidthInValid = minWidth ? width < minWidth : false
-          const isHeightInValid = minHeight ? height < minHeight : false
-
-          const errors = []
-
-          if (isWidthInValid) {
-            errors.push({
-              code: 'file-invalid-dimensions-width',
-              message: `L’image doit faire au moins ${minWidth} pixels de large`,
-            })
-          }
-
-          if (isHeightInValid) {
-            errors.push({
-              code: 'file-invalid-dimensions-height',
-              message: `L’image doit faire au moins ${minHeight} pixels de haut`,
-            })
-          }
-
-          // Revoke the object URL we created previously to get image dimensions,
-          // and avoid memory leaks.
-          if (objectUrlToBeRevoked) {
-            URL.revokeObjectURL(objectUrlToBeRevoked)
-          }
-
-          return errors.length > 0 ? errors : null
-        }
-
-        return null
       },
     })
 
@@ -222,26 +147,21 @@ export const ImageDragAndDrop = forwardRef(
 
         acc.hasWrongType = errors.some((e) => e.code === 'file-invalid-type')
         acc.hasWrongSize = errors.some((e) => e.code === 'file-too-large')
-        acc.hasWrongWidth = errors.some(
-          (e) => e.code === 'file-invalid-dimensions-width'
-        )
-        acc.hasWrongHeight = errors.some(
-          (e) => e.code === 'file-invalid-dimensions-height'
-        )
-
         return acc
       },
       {
-        hasWrongType: false,
+        hasWrongType: customErrors.includes('file-invalid-type'),
         hasWrongSize: false,
-        hasWrongWidth: false,
-        hasWrongHeight: false,
+        hasWrongWidth: customErrors.includes('file-invalid-dimensions-width'),
+        hasWrongHeight: customErrors.includes('file-invalid-dimensions-height'),
+        hasWrongDimensions: customErrors.includes('file-too-large-dimensions'),
       }
     )
     const hasError =
       errors.hasWrongSize ||
       errors.hasWrongType ||
       errors.hasWrongWidth ||
+      errors.hasWrongDimensions ||
       errors.hasWrongHeight
 
     const ariaId = useId()
@@ -344,6 +264,14 @@ export const ImageDragAndDrop = forwardRef(
             hasError={errors.hasWrongSize}
             errorMessage="Le poids du fichier est trop lourd"
           />
+          {isMaxResolutionEnabled && (
+            <ImageConstraintCheck
+              label="Résolution maximale de l’image"
+              constraint="80 Mégapixels"
+              hasError={errors.hasWrongDimensions}
+              errorMessage="L’image doit comporter au maximum 80 Mégapixels"
+            />
+          )}
           {minSizes?.height && (
             <ImageConstraintCheck
               label="Hauteur minimum"
