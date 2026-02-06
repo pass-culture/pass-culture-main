@@ -1,7 +1,13 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
-import { expect } from 'vitest'
+import { expect, vi } from 'vitest'
 
+import { api } from '@/apiClient/api'
+import {
+  ActivityOpenToPublic,
+  type GetVenueResponseModel,
+} from '@/apiClient/v1'
+import { GET_VENUE_QUERY_KEY } from '@/commons/config/swrQueryKeys'
 import { defaultGetVenue } from '@/commons/utils/factories/collectiveApiFactories'
 import {
   type RenderWithProvidersOptions,
@@ -10,7 +16,34 @@ import {
 
 import { CollectiveDataForm } from '../CollectiveDataForm/CollectiveDataForm'
 
-function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
+const mockMutate = vi.fn()
+
+vi.mock('@/apiClient/api', () => ({
+  api: {
+    editVenueCollectiveData: vi.fn(),
+  },
+}))
+
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router')
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  }
+})
+
+vi.mock('swr', async () => {
+  const actual = await vi.importActual('swr')
+  return {
+    ...actual,
+    useSWRConfig: () => ({ mutate: mockMutate }),
+  }
+})
+
+function renderCollectiveDataForm(
+  options?: RenderWithProvidersOptions,
+  venueOverrides?: GetVenueResponseModel
+) {
   return renderWithProviders(
     <CollectiveDataForm
       statuses={[
@@ -27,7 +60,7 @@ function renderCollectiveDataForm(options?: RenderWithProvidersOptions) {
         { id: '1', label: 'Arts numériques' },
         { id: '2', label: 'Architecture' },
       ]}
-      venue={defaultGetVenue}
+      venue={{ ...defaultGetVenue, ...venueOverrides }}
     />,
     options
   )
@@ -84,5 +117,87 @@ describe('CollectiveDataForm', () => {
     await userEvent.click(domainsCheckbox)
 
     expect(domainsCheckbox).toBeChecked()
+  })
+
+  it('should check activity field', async () => {
+    renderCollectiveDataForm()
+
+    const activityField = screen.getByRole('combobox', {
+      name: /Activité principale/,
+    })
+
+    await userEvent.selectOptions(
+      activityField,
+      screen.getByRole('option', { name: 'Cinéma' })
+    )
+
+    expect(activityField).toHaveValue(ActivityOpenToPublic.CINEMA)
+  })
+
+  it('should have blank activity field is activity is null', () => {
+    renderCollectiveDataForm({}, { ...defaultGetVenue, activity: null })
+
+    const activityField = screen.getByRole('combobox', {
+      name: /Activité principale/,
+    })
+
+    expect(activityField).toHaveValue('')
+  })
+
+  it('should dispatch setSelectedVenue when WIP_SWITCH_VENUE is enabled', async () => {
+    mockMutate.mockClear()
+    const updatedVenue = {
+      ...defaultGetVenue,
+      collectiveDescription: 'Updated',
+    }
+    vi.mocked(api.editVenueCollectiveData).mockResolvedValue(updatedVenue)
+
+    const { store } = renderCollectiveDataForm({
+      features: ['WIP_SWITCH_VENUE'],
+    })
+
+    const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
+    await userEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(api.editVenueCollectiveData).toHaveBeenCalledWith(
+        defaultGetVenue.id,
+        expect.any(Object)
+      )
+    })
+
+    await waitFor(() => {
+      expect(store.getState().user?.selectedVenue?.collectiveDescription).toBe(
+        'Updated'
+      )
+    })
+
+    expect(mockMutate).not.toHaveBeenCalled()
+  })
+
+  it('should call mutate when WIP_SWITCH_VENUE is disabled', async () => {
+    mockMutate.mockClear()
+    const updatedVenue = {
+      ...defaultGetVenue,
+      collectiveDescription: 'Updated',
+    }
+    vi.mocked(api.editVenueCollectiveData).mockResolvedValue(updatedVenue)
+
+    renderCollectiveDataForm()
+
+    const submitButton = screen.getByRole('button', { name: 'Enregistrer' })
+    await userEvent.click(submitButton)
+
+    await waitFor(() => {
+      expect(api.editVenueCollectiveData).toHaveBeenCalledWith(
+        defaultGetVenue.id,
+        expect.any(Object)
+      )
+    })
+
+    expect(mockMutate).toHaveBeenCalledWith([
+      GET_VENUE_QUERY_KEY,
+      String(defaultGetVenue.id),
+    ])
   })
 })

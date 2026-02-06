@@ -16,5 +16,6 @@ export const extractInitialValuesFromVenue = (
       domain.id.toString()
     ),
     collectiveInterventionArea: venue.collectiveInterventionArea ?? [],
+    activity: venue.activity as CollectiveDataFormValues['activity'], // Force is needed because of "GAMES_CENTRE" which is present in `DisplayableActivity`, but not in `ActivityOpenToPublic | ActivityNotOpenToPublic`
   }
 }

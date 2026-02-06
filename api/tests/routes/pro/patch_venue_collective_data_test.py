@@ -5,6 +5,7 @@ import pcapi.core.offerers.models as offerers_models
 from pcapi.core.educational import factories as educational_factories
 from pcapi.core.educational import models as educational_models
 from pcapi.models import db
+from pcapi.models.feature import FeatureToggle
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -57,6 +58,59 @@ class Returns200Test:
         assert venue.venueEducationalStatusId == educational_status.id
         assert venue.collectivePhone == "0600000000"
         assert venue.collectiveEmail == "john@doe.com"
+
+    def test_should_update_venue_with_activity_data(self, client) -> None:
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=user_offerer.offerer,
+            collectiveDomains=[],
+            collectiveStudents=[],
+            collectiveNetwork=[],
+            collectiveDescription="",
+            collectiveWebsite="",
+            collectiveInterventionArea=[],
+            venueEducationalStatusId=None,
+            collectivePhone="",
+            collectiveEmail="",
+            activity=offerers_models.ActivityOpenToPublic.CINEMA,
+            # isOpenToPublic=True,
+        )
+        educational_status = offerers_factories.VenueEducationalStatusFactory()
+
+        domain = educational_factories.EducationalDomainFactory(name="pouet")
+
+        client = client.with_session_auth(email=user_offerer.user.email)
+        venue_id = venue.id
+
+        venue_data = {
+            "collectiveDomains": [domain.id],
+            "collectiveStudents": [educational_models.StudentLevels.COLLEGE4.value],
+            "collectiveNetwork": ["network1", "network2"],
+            "collectiveDescription": "Description",
+            "collectiveWebsite": "http://website.com",
+            "collectiveInterventionArea": ["01", "02"],
+            "venueEducationalStatusId": educational_status.id,
+            "collectivePhone": "0600000000",
+            "collectiveEmail": "john@doe.com",
+            "activity": offerers_models.ActivityOpenToPublic.MUSEUM.value,
+        }
+
+        response = client.patch(f"/venues/{venue.id}/collective-data", json=venue_data)
+
+        print(venue.isOpenToPublic)
+        print("WIP_VENUE_CULTURAL_DOMAINS: %s" % FeatureToggle.WIP_VENUE_CULTURAL_DOMAINS.is_active())
+        assert response.status_code == 200, response.json
+        venue = db.session.get(offerers_models.Venue, venue_id)
+        assert venue.collectiveDomains == [domain]
+        assert venue.collectiveStudents == [educational_models.StudentLevels.COLLEGE4]
+        assert venue.collectiveNetwork == ["network1", "network2"]
+        assert venue.collectiveDescription == "Description"
+        assert venue.collectiveWebsite == "http://website.com"
+        assert venue.collectiveInterventionArea == ["01", "02"]
+        assert venue.venueEducationalStatusId == educational_status.id
+        assert venue.collectivePhone == "0600000000"
+        assert venue.collectiveEmail == "john@doe.com"
+        assert venue.activity == offerers_models.Activity.MUSEUM
 
     def test_should_update_venue_with_empty_data(self, client) -> None:
         user_offerer = offerers_factories.UserOffererFactory()

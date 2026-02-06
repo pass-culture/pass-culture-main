@@ -1,4 +1,5 @@
 import type { GetVenueResponseModel } from '@/apiClient/v1'
+import { getActivityLabel } from '@/commons/mappings/mappings'
 import { SummaryDescriptionList } from '@/components/SummaryLayout/SummaryDescriptionList'
 import { SummarySection } from '@/components/SummaryLayout/SummarySection'
 import { SummarySubSection } from '@/components/SummaryLayout/SummarySubSection'
@@ -38,6 +39,14 @@ export const CollectiveDataEditionReadOnly = ({
       <SummarySubSection title="Informations de la structure">
         <SummaryDescriptionList
           descriptions={[
+            ...(venue.activity
+              ? [
+                  {
+                    title: 'Activité',
+                    text: getActivityLabel(venue.activity),
+                  },
+                ]
+              : []),
             {
               title: 'Domaine artistique et culturel',
               text:

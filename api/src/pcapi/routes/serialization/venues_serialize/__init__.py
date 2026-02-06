@@ -462,6 +462,7 @@ class EditVenueCollectiveDataBodyModel(BaseModel):
     collectiveAccessInformation: str | None
     collectivePhone: str | None
     collectiveEmail: str | None
+    activity: offerers_models.ActivityOpenToPublic | offerers_models.ActivityNotOpenToPublic | None
 
     _validate_collectiveDescription = string_length_validator("collectiveDescription", length=500)
     _validate_collectiveWebsite = string_length_validator("collectiveWebsite", length=150)
