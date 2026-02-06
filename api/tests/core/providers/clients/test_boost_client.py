@@ -474,6 +474,25 @@ class BookTicketTest:
 
         assert post_adapter.last_request == None
 
+    def test_error_502_should_raise_boost_api_exception(self, requests_mock):
+        beneficiary = users_factories.BeneficiaryGrant18Factory()
+        booking = bookings_factories.BookingFactory(user=beneficiary, quantity=2)
+        cinema_details = providers_factories.BoostCinemaDetailsFactory(cinemaUrl="https://cinema-0.example.com/")
+        cinema_str_id = cinema_details.cinemaProviderPivot.idAtProvider
+        requests_mock.get(
+            "https://cinema-0.example.com/api/showtimes/36684",
+            status_code=502,
+            content=b"Error code 502",
+        )
+        boost = boost_client.BoostAPIClient(cinema_str_id, request_timeout=12)
+
+        with pytest.raises(boost_client.BoostAPIException) as exc:
+            boost.book_ticket(show_id=36684, booking=booking, beneficiary=beneficiary)
+
+        assert exc.value.args == (
+            "Error on Boost API on GET https://cinema-0.example.com/api/showtimes/36684 : None - Error code 502",
+        )
+
 
 class CancelBookingTest:
     def test_should_cancel_booking_with_success(self, requests_mock):

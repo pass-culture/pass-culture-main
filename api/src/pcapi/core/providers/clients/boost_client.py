@@ -99,6 +99,7 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
     if response.status_code >= 400:
         reason = _extract_reason_from_response(response)
         message = _extract_message_from_response(response)
+        error_message = None
         if reason and cinema_api_token:
             error_message = reason.replace(cinema_api_token, "")
 
@@ -120,17 +121,18 @@ def _raise_for_status(response: requests.Response, cinema_api_token: str | None,
         raise BoostAPIException(f"Error on Boost API on {request_detail} : {error_message} - {message}")
 
 
+def _convert_from_bytes_or_str(content: str | bytes) -> str:
+    if isinstance(content, bytes):
+        try:
+            return content.decode("utf-8")
+        except UnicodeDecodeError:
+            return content.decode("iso-8859-1")
+    return content
+
+
 def _extract_reason_from_response(response: requests.Response) -> str:
     # from requests.Response.raise_for_status()
-    reason = response.reason
-
-    if isinstance(response.reason, bytes):
-        try:
-            reason = reason.decode("utf-8")
-        except UnicodeDecodeError:
-            reason = reason.decode("iso-8859-1")
-
-    return reason
+    return _convert_from_bytes_or_str(response.reason)
 
 
 def _extract_message_from_response(response: requests.Response) -> str:
@@ -138,7 +140,7 @@ def _extract_message_from_response(response: requests.Response) -> str:
         content = response.json()
         message = content.get("message", "")
     except requests.exceptions.JSONDecodeError:
-        message = response.content
+        message = _convert_from_bytes_or_str(response.content)
     return message
 
 
