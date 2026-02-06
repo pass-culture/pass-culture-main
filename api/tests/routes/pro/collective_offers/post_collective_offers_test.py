@@ -620,6 +620,33 @@ class Returns400Test:
         assert response.json == {"location.location": ["location n'est pas autorisé pour cette valeur de locationType"]}
         assert db.session.query(models.CollectiveOffer).count() == 0
 
+    @pytest.mark.parametrize(
+        "field_name,field_value,error_message",
+        (
+            ("latitude", 91, "Saisissez un nombre inférieur à 90"),
+            ("latitude", -91, "Saisissez un nombre supérieur à -90"),
+            ("longitude", 181, "Saisissez un nombre inférieur à 180"),
+            ("longitude", -181, "Saisissez un nombre supérieur à -180"),
+        ),
+    )
+    def test_location_coordinates(self, client, field_name, field_value, error_message):
+        venue = offerers_factories.VenueFactory()
+        user_offerer = offerers_factories.UserOffererFactory(offerer=venue.managingOfferer)
+
+        data = {
+            **base_offer_payload(venue=venue),
+            "location": {
+                "locationType": models.CollectiveLocationType.ADDRESS.value,
+                "locationComment": None,
+                "location": {**educational_testing.ADDRESS_DICT, field_name: field_value},
+            },
+        }
+        response = client.with_session_auth(user_offerer.user.email).post("/collective/offers", json=data)
+
+        assert response.status_code == 400
+        assert response.json == {f"location.location.0.{field_name}": [error_message]}
+        assert db.session.query(models.CollectiveOffer).count() == 0
+
 
 class Returns404Test:
     def test_create_collective_offer_with_unknown_domain(self, client):
