@@ -11,6 +11,7 @@ import {
   managedVenueFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
@@ -26,6 +27,8 @@ function renderComponent(props: OfferEducationalProps) {
     storeOverrides: {
       user: {
         currentUser: user,
+        selectedVenue: makeGetVenueResponseModel({ id: props.venues[0].id }),
+        venues: [...props.venues],
       },
       offerer: currentOffererFactory(),
     },

@@ -18,6 +18,7 @@ import {
 } from '@/commons/core/OfferEducational/types'
 import { computeCollectiveOffersUrl } from '@/commons/core/Offers/utils/computeCollectiveOffersUrl'
 import type { SelectOption } from '@/commons/custom_types/form'
+import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { isActionAllowedOnCollectiveOffer } from '@/commons/utils/isActionAllowedOnCollectiveOffer'
 import { sortByLabel } from '@/commons/utils/strings'
@@ -77,6 +78,7 @@ export const OfferEducationalForm = ({
   const { logEvent } = useAnalytics()
   const [venuesOptions, setVenuesOptions] = useState<SelectOption[]>([])
   const [isEligible, setIsEligible] = useState<boolean>()
+  const withSwitchVenueFeature = useActiveFeature('WIP_SWITCH_VENUE')
 
   const { setValue, formState, watch } =
     useFormContext<OfferEducationalFormValues>()
@@ -97,6 +99,10 @@ export const OfferEducationalForm = ({
           setIsEligible(true)
         } else {
           setIsEligible(userOfferer.allowedOnAdage)
+        }
+
+        if (withSwitchVenueFeature) {
+          return
         }
 
         let newVenuesOptions = userOfferer.managedVenues.map((item) => ({
@@ -155,7 +161,7 @@ export const OfferEducationalForm = ({
         ) : (
           <>
             <FormLayout.MandatoryInfo />
-            {venuesOptions.length > 1 && (
+            {!withSwitchVenueFeature && venuesOptions.length > 1 && (
               <FormVenue
                 isEligible={isEligible}
                 disableForm={!canEditDetails}
