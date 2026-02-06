@@ -138,8 +138,8 @@ export const CollectiveOfferInstitutionScreen = ({
       })
       return false
     }
-    if (watch('teacher') && !body.teacherEmail) {
-      form.setError('teacher', {
+    if (watch('teacherEmail') && !body.teacherEmail) {
+      form.setError('teacherEmail', {
         message: REDACTOR_GENERIC_ERROR_MESSAGE,
       })
       return false
@@ -160,7 +160,7 @@ export const CollectiveOfferInstitutionScreen = ({
     const selectedTeacher: TeacherOption | null = requestId
       ? teachersOptions[0]
       : (teachersOptions.find(
-          (teacher) => teacher.value === watch('teacher')
+          (teacher) => teacher.value === watch('teacherEmail')
         ) ?? null)
     const teacherEmail = selectedTeacher ? selectedTeacher.email : null
 
@@ -245,9 +245,9 @@ export const CollectiveOfferInstitutionScreen = ({
     (_institution) => _institution.value === institution
   )
 
-  const teacher = watch('teacher')
+  const teacherEmail = watch('teacherEmail')
   const selectedTeacher = teachersOptions.find(
-    (_teacher) => _teacher.value === teacher
+    (_teacher) => _teacher.value === teacherEmail
   )
 
   const { isLoading: isPreloadingRedactors } = useSWR(
@@ -289,7 +289,7 @@ export const CollectiveOfferInstitutionScreen = ({
     const formValues: InstitutionFormValues = {
       ...extractInitialInstitutionValues(null, null, requestInformations),
       institution: institutionOption?.value.toString() ?? '',
-      teacher: requestInformations.redactor.email,
+      teacherEmail: requestInformations.redactor.email,
     }
 
     reset(formValues)
@@ -345,7 +345,7 @@ export const CollectiveOfferInstitutionScreen = ({
         )
       )
     } catch {
-      form.setError('teacher', {
+      form.setError('teacherEmail', {
         message: GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE,
       })
     }
@@ -393,7 +393,7 @@ export const CollectiveOfferInstitutionScreen = ({
                           shouldValidate: true,
                         })
 
-                        setValue('teacher', '')
+                        setValue('teacherEmail', '')
                       }}
                       disabled={!canEditInstitution}
                       searchInOptions={(options, pattern) =>
@@ -415,7 +415,7 @@ export const CollectiveOfferInstitutionScreen = ({
                     description="Ex: Camille Dupont"
                     shouldResetOnOpen={true}
                     onSearch={(searchText) => {
-                      setValue('teacher', searchText, {
+                      setValue('teacherEmail', searchText, {
                         shouldDirty: true,
                         shouldValidate: true,
                       })
@@ -427,13 +427,13 @@ export const CollectiveOfferInstitutionScreen = ({
                       isPreloadingRedactors
                     }
                     onChange={(event) => {
-                      setValue('teacher', event.target.value, {
+                      setValue('teacherEmail', event.target.value, {
                         shouldDirty: true,
                         shouldValidate: true,
                       })
                     }}
                     value={selectedTeacher?.value || watch('teacherName')}
-                    error={errors.teacher?.message}
+                    error={errors.teacherEmail?.message}
                   />
                 </FormLayout.Row>
               </FormLayout.Section>

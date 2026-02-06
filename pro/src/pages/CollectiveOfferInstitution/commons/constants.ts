@@ -23,14 +23,13 @@ export const FORM_KEYS_MAPPING: Record<
 > = {
   educationalInstitutionId: 'institution',
   educationalInstitution: 'institution',
-  teacherEmail: 'teacher',
+  teacherEmail: 'teacherEmail',
 }
 export const DEFAULT_FORM_FIELD_ERRORS: Record<
   keyof InstitutionFormValues,
   string
 > = {
   institution: INSTITUTION_GENERIC_ERROR_MESSAGE,
-  teacher: REDACTOR_GENERIC_ERROR_MESSAGE,
-  visibility: POST_INSTITUTION_FORM_ERROR_MESSAGE,
+  teacherEmail: REDACTOR_GENERIC_ERROR_MESSAGE,
   teacherName: REDACTOR_GENERIC_ERROR_MESSAGE,
 }

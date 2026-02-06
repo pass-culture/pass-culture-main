@@ -22,11 +22,10 @@ export const extractInitialInstitutionValues = (
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
 ): InstitutionFormValues => ({
   institution: institution?.id.toString() ?? '',
-  teacher: teacher
+  teacherEmail: teacher
     ? `${teacher.email}`
     : requestInformations
       ? `${requestInformations.redactor.email}`
       : '',
   teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : '',
-  visibility: institution || requestInformations ? 'one' : 'all',
 })

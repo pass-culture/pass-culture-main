@@ -81,9 +81,9 @@ export const DEFAULT_EAC_STOCK_FORM_VALUES: OfferEducationalStockFormValues = {
 }
 
 export const DEFAULT_INSTITUTION_FORM_VALUES: InstitutionFormValues = {
-  visibility: 'one',
   institution: '',
-  teacher: undefined,
+  teacherEmail: undefined,
+  teacherName: undefined,
 }
 
 export const MAX_DESCRIPTION_LENGTH = 1500
