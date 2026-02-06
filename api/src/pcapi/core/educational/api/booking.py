@@ -240,13 +240,13 @@ def cancel_collective_offer_booking(offer_id: int, author_id: int, user_connect_
 
 
 def notify_pro_users_one_day_before() -> None:
-    bookings = repository.find_bookings_starting_in_x_days(1)
+    bookings = repository.get_bookings_starting_tomorrow()
     for booking in bookings:
         transactional_mails.send_eac_alert_one_day_before_event(booking)
 
 
 def notify_pro_users_one_day_after() -> None:
-    bookings = repository.find_bookings_ending_in_x_days(-1)
+    bookings = repository.get_bookings_ended_yesterday()
     for booking in bookings:
         transactional_mails.send_eac_alert_one_day_after_event(booking)
 
