@@ -4474,8 +4474,12 @@
                 "title": "PopOverIcon"
             },
             "PostFeedbackBody": {
+                "additionalProperties": false,
                 "properties": {
                     "feedback": {
+                        "maxLength": 800,
+                        "minLength": 1,
+                        "strip_whitespace": true,
                         "title": "Feedback",
                         "type": "string"
                     }
