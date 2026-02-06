@@ -56,7 +56,6 @@ from pcapi.utils.requests import exceptions as requests_exceptions
 from pcapi.utils.transaction_manager import is_managed_transaction
 from pcapi.utils.transaction_manager import mark_transaction_as_invalid
 from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers import apps_flyer_job
 from pcapi.workers import push_notification_job
 
 from . import constants
@@ -449,9 +448,6 @@ def book_offer(
         offers_api.delete_stock(stock)
         db.session.commit()
         raise
-
-    if beneficiary.externalIds and "apps_flyer" in beneficiary.externalIds:
-        apps_flyer_job.log_user_booked_offer_event_job.delay(booking.id)
 
     logger.info(
         "Beneficiary booked an offer",

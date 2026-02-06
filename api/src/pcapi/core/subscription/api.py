@@ -1,7 +1,6 @@
 import datetime
 import logging
 import typing
-from functools import partial
 
 import psycopg2
 
@@ -36,8 +35,6 @@ from pcapi.models import db
 from pcapi.models.feature import FeatureToggle
 from pcapi.utils import date as date_utils
 from pcapi.utils.decorators import retry
-from pcapi.utils.transaction_manager import on_commit
-from pcapi.workers import apps_flyer_job
 
 from . import exceptions
 from . import models
@@ -119,9 +116,6 @@ def activate_beneficiary_for_eligibility(
     transactional_mails.send_accepted_as_beneficiary_email(user=user)
     external_attributes_api.update_external_user(user)
     batch.track_deposit_activated_event(user.id, deposit)
-
-    if user.externalIds and "apps_flyer" in user.externalIds:
-        on_commit(partial(apps_flyer_job.log_user_becomes_beneficiary_event_job.delay, user.id))
 
     return user
 

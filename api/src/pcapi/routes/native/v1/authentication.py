@@ -31,7 +31,6 @@ from pcapi.routes.native.v1.serialization.authentication import ValidateEmailRes
 from pcapi.serialization.decorator import spectree_serialize
 from pcapi.utils.repository import transaction
 from pcapi.utils.transaction_manager import atomic
-from pcapi.workers import apps_flyer_job
 
 from .. import blueprint
 from .serialization import authentication
@@ -173,9 +172,6 @@ def validate_email(body: ValidateEmailRequest) -> ValidateEmailResponse:
     db.session.add(user)
     db.session.commit()
     external_attributes_api.update_external_user(user)
-
-    if user.externalIds and "apps_flyer" in user.externalIds:
-        apps_flyer_job.log_user_registration_event_job.delay(user.id)
 
     try:
         dms_subscription_api.try_dms_orphan_adoption(user)

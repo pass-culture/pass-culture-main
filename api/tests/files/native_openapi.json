@@ -102,16 +102,6 @@
             },
             "AccountRequest": {
                 "properties": {
-                    "appsFlyerPlatform": {
-                        "nullable": true,
-                        "title": "Appsflyerplatform",
-                        "type": "string"
-                    },
-                    "appsFlyerUserId": {
-                        "nullable": true,
-                        "title": "Appsflyeruserid",
-                        "type": "string"
-                    },
                     "birthdate": {
                         "format": "date",
                         "title": "Birthdate",
@@ -2699,16 +2689,6 @@
                 "properties": {
                     "accountCreationToken": {
                         "title": "Accountcreationtoken",
-                        "type": "string"
-                    },
-                    "appsFlyerPlatform": {
-                        "nullable": true,
-                        "title": "Appsflyerplatform",
-                        "type": "string"
-                    },
-                    "appsFlyerUserId": {
-                        "nullable": true,
-                        "title": "Appsflyeruserid",
                         "type": "string"
                     },
                     "birthdate": {
