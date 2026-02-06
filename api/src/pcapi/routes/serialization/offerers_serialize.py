@@ -386,7 +386,7 @@ class GetOffererV2StatsResponseModel(BaseModel):
 
 class OffererAddressGetterDict(GetterDict):
     def get(self, key: str, default: Any | None = None) -> Any:
-        if key == "label":
+        if key == "label" and not self._obj.label:
             if self.get("common_name", default) is not None:
                 return self.get("common_name", default)
         return super().get(key, default)

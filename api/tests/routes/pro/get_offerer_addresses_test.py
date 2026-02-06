@@ -22,6 +22,7 @@ class Return200Test:
         user_offerer = offerers_factories.UserOffererFactory()
         pro = user_offerer.user
         offerer = user_offerer.offerer
+        venue = offerers_factories.VenueFactory(managingOfferer=offerer)
 
         offerer_address_1 = offerers_factories.OffererAddressFactory(
             offerer=offerer,
@@ -29,6 +30,7 @@ class Return200Test:
             address__street="1 boulevard Poissonnière",
             address__postalCode="75002",
             address__city="Paris",
+            venue=venue,
         )
         offerer_address_2 = offerers_factories.OffererAddressFactory(
             offerer=offerer,
@@ -144,7 +146,7 @@ class Return200Test:
                     "city": "Paris",
                     "departmentCode": "75",
                     "id": offerer_address_id,
-                    "label": "Venue public name",
+                    "label": "1ere adresse",
                     "postalCode": "75002",
                     "street": "1 boulevard Poissonnière",
                 },
