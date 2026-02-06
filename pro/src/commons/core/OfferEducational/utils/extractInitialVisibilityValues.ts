@@ -27,5 +27,6 @@ export const extractInitialVisibilityValues = (
     : requestInformations
       ? `${requestInformations.redactor.email}`
       : '',
+  teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : '',
   visibility: institution || requestInformations ? 'one' : 'all',
 })

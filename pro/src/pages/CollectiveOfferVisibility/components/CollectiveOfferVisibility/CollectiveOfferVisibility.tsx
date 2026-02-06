@@ -112,9 +112,9 @@ export const CollectiveOfferVisibilityScreen = ({
             postalCode,
           })
           return {
-            label: label,
+            label,
             value: String(id),
-            institutionId: institutionId,
+            institutionId,
           }
         }
       ),
@@ -148,6 +148,15 @@ export const CollectiveOfferVisibilityScreen = ({
   }
 
   const onSubmit = async (values: VisibilityFormValues) => {
+    if (!form.formState.isDirty) {
+      onSuccess({
+        offerId: offer.id.toString(),
+        message:
+          'Les paramètres de visibilité de votre offre ont bien été enregistrés',
+        payload: offer,
+      })
+    }
+
     const selectedTeacher: TeacherOption | null = requestId
       ? teachersOptions[0]
       : (teachersOptions.find(
@@ -167,9 +176,8 @@ export const CollectiveOfferVisibilityScreen = ({
       const collectiveOffer =
         await api.patchCollectiveOffersEducationalInstitution(offer.id, {
           educationalInstitutionId: Number(values.institution),
-          teacherEmail: teacherEmail,
+          teacherEmail,
         })
-
       onSuccess({
         offerId: offer.id.toString(),
         message:
@@ -424,7 +432,7 @@ export const CollectiveOfferVisibilityScreen = ({
                         shouldValidate: true,
                       })
                     }}
-                    value={selectedTeacher?.value || watch('teacher')}
+                    value={selectedTeacher?.value || watch('teacherName')}
                     error={errors.teacher?.message}
                   />
                 </FormLayout.Row>

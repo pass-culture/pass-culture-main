@@ -7,6 +7,7 @@ export const validationSchema = yup.object().shape({
     .string()
     .required('Veuillez sélectionner un établissement scolaire dans la liste'),
   teacher: yup.string(),
+  teacherName: yup.string(),
 })
 
 export type VisibilityFormValues = InferType<typeof validationSchema>
