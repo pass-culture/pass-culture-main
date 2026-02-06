@@ -3,10 +3,10 @@ import * as yup from 'yup'
 import { checkCoords } from '@/commons/utils/coords'
 import { removeQuotes } from '@/commons/utils/removeQuotes'
 import { nonEmptyStringOrNull } from '@/commons/utils/yup/nonEmptyStringOrNull'
-import { offerFormUrlRegex } from '@/pages/IndividualOffer/IndividualOfferDescription/commons/validationSchema'
 
 import { OFFER_LOCATION } from '../../../commons/constants'
 import type { LocationFormValues, PhysicalAddressSubformValues } from '../types'
+import { isValidUrlWithTemplateStrings } from './isValidUrlWithTemplateStrings'
 
 export const PhysicalLocationValidationSchema = yup
   .object<PhysicalAddressSubformValues>()
@@ -108,11 +108,11 @@ export const getValidationSchema = ({ isDigital }: { isDigital: boolean }) => {
           .nonNullable(
             'Veuillez renseigner une URL valide. Ex : https://exemple.com'
           )
-          .matches(offerFormUrlRegex, {
-            message:
-              'Veuillez renseigner une URL valide. Ex : https://exemple.com',
-            excludeEmptyString: true,
-          }),
+          .test(
+            'isValidUrlWithTemplateStrings',
+            'Veuillez renseigner une URL valide. Ex : https://exemple.com',
+            (value) => isValidUrlWithTemplateStrings(value)
+          ),
     }),
   })
 }
