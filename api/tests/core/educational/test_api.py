@@ -625,10 +625,18 @@ class NotifyProUserOneDayAfterTest:
         # should not send email only the endDate should be taken into account
         factories.CollectiveBookingFactory(
             collectiveStock__collectiveOffer__name="booking8",
-            collectiveStock__collectiveOffer__bookingEmails=["booking1@example.com", "booking1-2@example.com"],
+            collectiveStock__collectiveOffer__bookingEmails=["booking8+1@example.com", "booking8+2@example.com"],
             collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
             collectiveStock__endDatetime=datetime.datetime(2020, 1, 9),  # -> a different endDatetime
             status=models.CollectiveBookingStatus.CONFIRMED,
+        )
+        # should not send email: start date is passed but booking is pending
+        factories.CollectiveBookingFactory(
+            collectiveStock__collectiveOffer__name="booking9",
+            collectiveStock__collectiveOffer__bookingEmails=["booking9+1@example.com", "booking9+2@example.com"],
+            collectiveStock__startDatetime=datetime.datetime(2020, 1, 6),
+            collectiveStock__endDatetime=datetime.datetime(2020, 1, 6),
+            status=models.CollectiveBookingStatus.PENDING,
         )
 
         educational_api_booking.notify_pro_users_one_day_after()
