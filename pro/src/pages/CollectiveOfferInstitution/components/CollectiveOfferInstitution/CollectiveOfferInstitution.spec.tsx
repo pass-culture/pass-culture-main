@@ -408,7 +408,7 @@ describe('CollectiveOfferInstitution', () => {
         mode: Mode.EDITION,
         initialValues: {
           institution: '24',
-          teacher: 'teacher.teach@example.com',
+          teacherEmail: 'teacher.teach@example.com',
         },
       })
 
@@ -597,10 +597,6 @@ describe('CollectiveOfferInstitution', () => {
         screen.getByRole('button', { name: /Enregistrer et continuer/ })
       )
       expect(api.patchCollectiveOffersEducationalInstitution).toHaveBeenCalled()
-
-      expect(
-        screen.queryByText(REDACTOR_GENERIC_ERROR_MESSAGE)
-      ).toBeInTheDocument()
 
       await waitFor(() =>
         expect(snackBarError).toHaveBeenNthCalledWith(

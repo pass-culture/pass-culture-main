@@ -5,9 +5,9 @@ import { defaultGetCollectiveOfferRequest } from '@/commons/utils/factories/coll
 describe('extractInitialInstitutionValues', () => {
   it('should return default values when institution is not defined', () => {
     expect(extractInitialInstitutionValues(null)).toStrictEqual({
-      visibility: 'all',
       institution: '',
-      teacher: '',
+      teacherEmail: '',
+      teacherName: '',
     })
   })
 
@@ -21,9 +21,9 @@ describe('extractInitialInstitutionValues', () => {
       institutionId: 'ABCDEF11',
     }
     expect(extractInitialInstitutionValues(institution)).toStrictEqual({
-      visibility: 'one',
       institution: '1',
-      teacher: '',
+      teacherEmail: '',
+      teacherName: '',
     })
   })
 
@@ -44,9 +44,9 @@ describe('extractInitialInstitutionValues', () => {
     }
     expect(extractInitialInstitutionValues(institution, teacher)).toStrictEqual(
       {
-        visibility: 'one',
         institution: '1',
-        teacher: 'reda.khteur@example.com',
+        teacherEmail: 'reda.khteur@example.com',
+        teacherName: 'Reda Khteur',
       }
     )
   })
@@ -63,9 +63,9 @@ describe('extractInitialInstitutionValues', () => {
     expect(
       extractInitialInstitutionValues(null, null, requestInformations)
     ).toStrictEqual({
-      visibility: 'one',
       institution: '',
-      teacher: 'reda.khteur@example.com',
+      teacherEmail: 'reda.khteur@example.com',
+      teacherName: '',
     })
   })
 })
