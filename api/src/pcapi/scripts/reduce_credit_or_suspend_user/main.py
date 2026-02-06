@@ -54,9 +54,10 @@ def reduce_or_expire_user_credit(should_update_external_user: bool, author_id: i
 
         can_reduce_credit = domains_credit.all.remaining >= finance_conf.GRANTED_DEPOSIT_AMOUNT_17_v3
         if can_reduce_credit:
-            _reduce_user_deposit(user, author_id)
-
-            logger.info("reduced credit of user %s", user.id)
+            continue
+            # _reduce_user_deposit(user, author_id)
+            #
+            # logger.info("reduced credit of user %s", user.id)
         else:
             _expire_user_deposit(user, author_id)
 
@@ -71,8 +72,8 @@ def reduce_or_expire_user_credit(should_update_external_user: bool, author_id: i
             total_deposits_expired += 1
             total_surplus_money_spent += surplus_money_spent
 
-        if should_update_external_user:
-            external_attributes_api.update_external_user(user)
+        # if should_update_external_user:
+        #     external_attributes_api.update_external_user(user)
 
     logger.info("----- Overview -----")
 
