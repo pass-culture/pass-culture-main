@@ -1,2 +1,69 @@
 @use "styles/mixins/_size.scss" as size;
 @use "styles/mixins/_fonts.scss" as fonts;
+
+/**
+ * Juste pour visualiser les boxes
+ */
+.container > * {
+  border: 2px solid rgb(96 139 168);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 10%);
+  width: 100%;
+}
+
+.top > * {
+  height: 60px;
+}
+
+.main > * {
+  border: 2px solid rgb(7 57 90);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 30%);
+  width: 100%;
+  min-width: 300px;
+  min-height: 200px;
+}
+
+.side > * {
+  border: 2px solid rgb(7 57 90);
+  border-radius: 5px;
+  background-color: rgb(96 139 168 / 30%);
+  width: 100%;
+  min-width: 200px;
+  min-height: 150px;
+}
+
+/*
+ * Le vrai code commence là
+ */
+.container {
+  display: flex;
+  flex-flow: row wrap;
+  gap: var(--size-spacing-xl);
+}
+
+.top {
+  flex: 100%;
+}
+
+.main {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-xl);
+}
+
+.side {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--size-spacing-xl);
+
+  @media (max-width: size.$tablet) {
+    flex: 100%;
+  }
+}
+
+.is-hidden {
+  display: none;
+}
