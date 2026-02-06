@@ -1224,15 +1224,6 @@ describe('<IndividualOfferDescriptionScreen />', () => {
       expect(
         screen.getByRole('checkbox', { name: /Psychique ou cognitif/ })
       ).not.toBeChecked()
-    })
-
-    it('should not display the venue selector even with multiple venues', () => {
-      renderDetailsScreen({
-        contextValue,
-        options: {
-          features: ['WIP_SWITCH_VENUE'],
-        },
-      })
 
       expect(screen.queryByLabelText(LABELS.venue)).not.toBeInTheDocument()
     })

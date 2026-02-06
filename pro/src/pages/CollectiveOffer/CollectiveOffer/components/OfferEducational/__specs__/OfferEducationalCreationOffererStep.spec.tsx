@@ -1,7 +1,6 @@
 import { screen } from '@testing-library/react'
 
-import { api } from '@/apiClient/api'
-import { venueListItemFactory } from '@/commons/utils/factories/individualApiFactories'
+import { makeVenueListItem } from '@/commons/utils/factories/individualApiFactories'
 import {
   currentOffererFactory,
   sharedCurrentUserFactory,
@@ -10,6 +9,7 @@ import {
   managedVenuesFactory,
   userOffererFactory,
 } from '@/commons/utils/factories/userOfferersFactories'
+import { makeGetVenueResponseModel } from '@/commons/utils/factories/venueFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { defaultCreationProps } from '../__tests-utils__/defaultProps'
@@ -25,6 +25,8 @@ function renderOfferEducational(props: OfferEducationalProps) {
     storeOverrides: {
       user: {
         currentUser: user,
+        selectedVenue: makeGetVenueResponseModel({ id: props.venues[0].id }),
+        venues: [...props.venues],
       },
       offerer: currentOffererFactory(),
     },
@@ -32,23 +34,18 @@ function renderOfferEducational(props: OfferEducationalProps) {
 }
 
 describe('screens | OfferEducational : creation offerer step', () => {
-  let props: OfferEducationalProps
-
   describe('when the offerer is not validated', () => {
-    beforeEach(() => {
-      props = {
-        ...defaultCreationProps,
-        userOfferer: userOffererFactory({
-          managedVenues: managedVenuesFactory([{}]),
-        }),
-      }
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [venueListItemFactory()],
-      })
-    })
-
     it('should display specific banner instead of place and referencing banner', async () => {
-      renderWithProviders(<OfferEducational {...props} userOfferer={null} />)
+      const venues = [makeVenueListItem({ id: 1 })]
+
+      const props: OfferEducationalProps = {
+        ...defaultCreationProps,
+        userOfferer: null,
+        venues,
+      }
+
+      renderOfferEducational(props)
+
       expect(
         await screen.findByText(
           /La création d'offres collectives nécessite la validation de votre entité juridique./
@@ -58,32 +55,27 @@ describe('screens | OfferEducational : creation offerer step', () => {
   })
 
   describe('when there is multiple venues managed by an offerer', () => {
-    const venue1Id = 1
-    const venue2Id = 2
-    const venue3Id = 3
-    beforeEach(() => {
-      vi.spyOn(api, 'getVenues').mockResolvedValue({
-        venues: [
-          venueListItemFactory({ id: venue1Id }),
-          venueListItemFactory({ id: venue2Id }),
-          venueListItemFactory({ id: venue3Id }),
-        ],
-      })
+    it('should display venues by alphabetical order', async () => {
+      const venues = [
+        makeVenueListItem({ id: 1 }),
+        makeVenueListItem({ id: 2 }),
+        makeVenueListItem({ id: 3 }),
+      ]
 
-      props = {
+      const props: OfferEducationalProps = {
         ...defaultCreationProps,
         userOfferer: userOffererFactory({
           managedVenues: managedVenuesFactory([
-            { name: 'Venue 1', id: venue1Id },
-            { name: 'Venue 2', id: venue2Id },
-            { name: 'A - Venue 3', id: venue3Id },
+            { name: 'Venue 1', id: 1 },
+            { name: 'Venue 2', id: 2 },
+            { name: 'A - Venue 3', id: 3 },
           ]),
         }),
+        venues,
       }
-    })
 
-    it('should display venues by alphabeticall order', async () => {
       renderOfferEducational(props)
+
       const venueSelect = await screen.findByLabelText(/Structure/)
       const venuesOptions = venueSelect.children
       expect(venuesOptions[0].textContent).toEqual('Sélectionner une structure')
