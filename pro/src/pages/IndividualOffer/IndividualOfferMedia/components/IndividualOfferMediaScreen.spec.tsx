@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { forwardRef } from 'react'
 import { axe } from 'vitest-axe'
 
 import { api } from '@/apiClient/api'
@@ -20,6 +21,7 @@ import {
 } from '@/commons/utils/factories/individualApiFactories'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
+import { SnackBarContainer } from '@/components/SnackBarContainer/SnackBarContainer'
 import * as imageUploadModule from '@/pages/IndividualOffer/IndividualOfferDescription/commons/useIndividualOfferImageUpload'
 
 import { VideoUploaderContextProvider } from '../commons/context/VideoUploaderContext/VideoUploaderContext'
@@ -27,6 +29,23 @@ import {
   IndividualOfferMediaScreen,
   type IndividualOfferMediaScreenProps,
 } from './IndividualOfferMediaScreen'
+
+vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+  getImageDimensions: vi.fn((file) => {
+    return Promise.resolve({
+      width: (file as any).width || 0,
+      height: (file as any).height || 0,
+    })
+  }),
+}))
+
+vi.mock('react-avatar-editor', () => {
+  const MockAvatarEditor = forwardRef((_props, _ref) => {
+    return <div data-testid="mock-avatar-editor" />
+  })
+  MockAvatarEditor.displayName = 'MockAvatarEditor'
+  return { __esModule: true, default: MockAvatarEditor }
+})
 
 // This is to avoid "Already caught: Warning:
 // An update to IndividualOfferMediaScreen
@@ -54,7 +73,10 @@ const renderIndividualOfferMediaScreen = async ({
         offerId={finalOffer.id}
         initialVideoData={finalOffer.videoData}
       >
-        <IndividualOfferMediaScreen offer={finalOffer} />
+        <>
+          <IndividualOfferMediaScreen offer={finalOffer} />
+          <SnackBarContainer />
+        </>
       </VideoUploaderContextProvider>
     </IndividualOfferContext.Provider>,
     {
@@ -139,6 +161,11 @@ const updateVideoUrlAndSubmit = async ({
 }
 
 describe('IndividualOfferMediaScreen', () => {
+  beforeEach(() => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  })
+
   it('should render (without accessibility violations)', async () => {
     const { container } = await renderIndividualOfferMediaScreen()
     expect(container).toBeInTheDocument()
@@ -181,11 +208,21 @@ describe('IndividualOfferMediaScreen', () => {
       await renderIndividualOfferMediaScreen()
 
       const imageInput = screen.getByLabelText('Importez une image')
-      await userEvent.upload(imageInput, new File(['fake img'], 'fake_img.jpg'))
-
-      expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
-        imageType: UploaderModeEnum.OFFER,
-        imageCreationStage: 'add image',
+      await userEvent.upload(
+        imageInput,
+        Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+          width: 100,
+          height: 100,
+        })
+      )
+      await waitFor(() => {
+        expect(mockLogEvent).toHaveBeenCalledWith(
+          Events.DRAG_OR_SELECTED_IMAGE,
+          {
+            imageType: UploaderModeEnum.OFFER,
+            imageCreationStage: 'add image',
+          }
+        )
       })
     })
 
@@ -369,6 +406,48 @@ describe('IndividualOfferMediaScreen', () => {
         expect(mockNavigate).toHaveBeenCalledWith(
           `/offre/individuelle/${knownOffer.id}/media`
         )
+      })
+
+      it('should log error when video upload fail in api', async () => {
+        vi.spyOn(api, 'patchOffer').mockRejectedValue("c'est cassé")
+        const mode = OFFER_WIZARD_MODE.EDITION
+        const knownOffer = getIndividualOfferFactory()
+        await renderIndividualOfferMediaScreen({
+          props: { offer: knownOffer },
+          mode,
+        })
+
+        await updateVideoUrlAndSubmit({ mode })
+
+        await waitFor(() => {
+          expect(
+            screen.getByText(
+              'Une erreur est survenue lors de l’enregistrement de votre vidéo'
+            )
+          ).toBeInTheDocument()
+        })
+      })
+
+      it('should log error when image upload fail in api', async () => {
+        vi.spyOn(
+          imageUploadModule,
+          'useIndividualOfferImageUpload'
+        ).mockReturnValue({
+          hasUpsertedImage: true,
+          handleImageOnSubmit:
+            mockHandleImageOnSubmit.mockRejectedValue('oups'),
+        } as any)
+        await renderIndividualOfferMediaScreen()
+
+        await userEvent.click(screen.getByText(LABELS.nextButtonCreationMode))
+        expect(mockHandleImageOnSubmit).toHaveBeenCalled()
+        await waitFor(() => {
+          expect(
+            screen.getByText(
+              'Une erreur est survenue lors de l’enregistrement de votre image'
+            )
+          ).toBeInTheDocument()
+        })
       })
     })
   })

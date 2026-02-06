@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
@@ -10,6 +10,15 @@ import {
   ImageDragAndDropUploader,
   type ImageDragAndDropUploaderProps,
 } from './ImageDragAndDropUploader'
+
+vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+  getImageDimensions: vi.fn((file) => {
+    return Promise.resolve({
+      width: (file as any).width || 0,
+      height: (file as any).height || 0,
+    })
+  }),
+}))
 
 vi.mock('react-avatar-editor', () => {
   const MockAvatarEditor = forwardRef((_props, ref) => {
@@ -154,9 +163,13 @@ describe('ImageDragAndDropUploader', () => {
   it('should display a success toaster and call onImageUpload, as soon as a file is saved successfully', async () => {
     const mockUpload = vi.fn()
     const snackBarSuccess = vi.fn()
-    const mockFile = new File(['fake img'], 'fake_img.jpg', {
-      type: 'image/jpeg',
-    })
+    const mockFile = Object.assign(
+      new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+      {
+        width: 10,
+        height: 10,
+      }
+    )
 
     const snackBarsImport = (await vi.importActual(
       '@/commons/hooks/useSnackBar'
@@ -176,7 +189,9 @@ describe('ImageDragAndDropUploader', () => {
     await userEvent.upload(inputField, mockFile)
 
     // dialog: crop img
-    expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Modifier une image')).toBeInTheDocument()
+    })
     expect(
       screen.getByText(
         'En utilisant ce contenu, je certifie que je suis propriétaire ou que je dispose des autorisations nécessaires pour l’utilisation de celui-ci.'

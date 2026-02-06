@@ -1,10 +1,19 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { forwardRef } from 'react'
 
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
 import { ImageUploader, type ImageUploaderProps } from './ImageUploader'
+
+vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+  getImageDimensions: vi.fn((file) => {
+    return Promise.resolve({
+      width: (file as any).width || 0,
+      height: (file as any).height || 0,
+    })
+  }),
+}))
 
 vi.mock('react-avatar-editor', () => {
   const MockAvatarEditor = forwardRef((_props, ref) => {
@@ -102,7 +111,10 @@ describe('ImageUploader', () => {
 
   it('should upload a new image', async () => {
     const mockUpload = vi.fn()
-    const mockFile = new File(['fake img'], 'fake_img.jpg', {})
+    const mockFile = Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+      width: 1000,
+      height: 1000,
+    })
 
     props = {
       onImageUpload: mockUpload,
@@ -124,6 +136,8 @@ describe('ImageUploader', () => {
 
     await userEvent.click(screen.getByText('Importer'))
 
-    expect(mockUpload).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(mockUpload).toHaveBeenCalled()
+    })
   })
 })

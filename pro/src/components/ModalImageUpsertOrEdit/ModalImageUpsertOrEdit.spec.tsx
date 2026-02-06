@@ -14,6 +14,15 @@ import {
 const onImageUpload = vi.fn()
 const onImageDelete = vi.fn()
 
+vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+  getImageDimensions: vi.fn((file) => {
+    return Promise.resolve({
+      width: (file as any).width || 0,
+      height: (file as any).height || 0,
+    })
+  }),
+}))
+
 vi.mock('react-avatar-editor', () => {
   const MockAvatarEditor = forwardRef((_props, ref) => {
     if (ref && typeof ref === 'object' && 'current' in ref) {
@@ -282,14 +291,19 @@ describe('ModalImageUpsertOrEdit', () => {
         })
         await userEvent.click(replaceButton)
 
-        const imageFile = new File(['content'], 'image.png', {
-          type: 'image/png',
-        })
+        const imageFile = Object.assign(
+          new File(['test'], 'test-image.jpg', { type: 'image/jpeg' }),
+          {
+            width: 10,
+            height: 10,
+          }
+        )
         await userEvent.upload(screen.getByLabelText('Importez une image'), [
           imageFile,
         ])
-
-        expect(screen.getByLabelText("Editeur d'image")).toBeInTheDocument()
+        await waitFor(() => {
+          expect(screen.getByLabelText("Editeur d'image")).toBeInTheDocument()
+        })
         expect(
           screen.queryByLabelText('Importez une image')
         ).not.toBeInTheDocument()

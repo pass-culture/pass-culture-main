@@ -2,7 +2,7 @@ import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation, useNavigate } from 'react-router'
 import { useSWRConfig } from 'swr'
 
-import { isErrorAPIError } from '@/apiClient/helpers'
+import { getHumanReadableApiError } from '@/apiClient/helpers'
 import type {
   CreateThumbnailResponseModel,
   GetIndividualOfferWithAddressResponseModel,
@@ -19,6 +19,7 @@ import { getIndividualOfferUrl } from '@/commons/core/Offers/utils/getIndividual
 import { isOfferDisabled } from '@/commons/core/Offers/utils/isOfferDisabled'
 import { isOfferProductBased } from '@/commons/core/Offers/utils/typology'
 import { useOfferWizardMode } from '@/commons/hooks/useOfferWizardMode'
+import { useSnackBar } from '@/commons/hooks/useSnackBar'
 import { UploaderModeEnum } from '@/commons/utils/imageUploadTypes'
 import { FormLayout } from '@/components/FormLayout/FormLayout'
 import { ImageDragAndDropUploader } from '@/components/ImageDragAndDropUploader/ImageDragAndDropUploader'
@@ -57,6 +58,7 @@ export const IndividualOfferMediaScreen = ({
   } = useIndividualOfferImageUpload(initialImageOffer)
 
   const { handleVideoOnSubmit, videoUrl, videoData } = useVideoUploaderContext()
+  const snackBar = useSnackBar()
 
   const isProductBased = isOfferProductBased(offer)
 
@@ -88,14 +90,15 @@ export const IndividualOfferMediaScreen = ({
   }
 
   const onSubmit = async () => {
-    try {
-      // If only videoUrl was updated, there is an inner control on the
-      // definition of handleImageOnSubmit so thumbnail associated requests cannot be made
-      // if hasUpsertedImage=false.
-      if (isFormDirty) {
-        // Images can never be uploaded for product-based offers,
-        // the drag & drop should not be enabled so this is a safeguard.
-        if (!isProductBased) {
+    // If only videoUrl was updated, there is an inner control on the
+    // definition of handleImageOnSubmit so thumbnail associated requests cannot be made
+    // if hasUpsertedImage=false.
+
+    if (isFormDirty) {
+      // Images can never be uploaded for product-based offers,
+      // the drag & drop should not be enabled so this is a safeguard.
+      if (!isProductBased) {
+        try {
           await mutate(
             [GET_OFFER_QUERY_KEY, offer.id],
             handleImageOnSubmit(offer.id),
@@ -134,36 +137,49 @@ export const IndividualOfferMediaScreen = ({
               },
             }
           )
+        } catch (error) {
+          snackBar.error(
+            getHumanReadableApiError(
+              error,
+              'Une erreur est survenue lors de l’enregistrement de votre image'
+            )
+          )
+          return
         }
-
-        if (hasUpdatedVideoUrl) {
+      }
+      if (hasUpdatedVideoUrl) {
+        try {
           await mutate([GET_OFFER_QUERY_KEY, offer.id], handleVideoOnSubmit(), {
             revalidate: false,
           })
+        } catch (error) {
+          snackBar.error(
+            getHumanReadableApiError(
+              error,
+              'Une erreur est survenue lors de l’enregistrement de votre vidéo'
+            )
+          )
+          return
         }
       }
-
-      let nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
-      if (mode !== OFFER_WIZARD_MODE.EDITION) {
-        nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
-      }
-
-      await navigate(
-        getIndividualOfferUrl({
-          offerId: offer.id,
-          step: nextStep,
-          mode:
-            mode === OFFER_WIZARD_MODE.EDITION
-              ? OFFER_WIZARD_MODE.READ_ONLY
-              : mode,
-          isOnboarding,
-        })
-      )
-    } catch (error) {
-      if (!isErrorAPIError(error)) {
-        return
-      }
     }
+
+    let nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.MEDIA
+    if (mode !== OFFER_WIZARD_MODE.EDITION) {
+      nextStep = INDIVIDUAL_OFFER_WIZARD_STEP_IDS.TARIFS
+    }
+
+    await navigate(
+      getIndividualOfferUrl({
+        offerId: offer.id,
+        step: nextStep,
+        mode:
+          mode === OFFER_WIZARD_MODE.EDITION
+            ? OFFER_WIZARD_MODE.READ_ONLY
+            : mode,
+        isOnboarding,
+      })
+    )
   }
 
   const logOnImageDropOrSelected = () => {

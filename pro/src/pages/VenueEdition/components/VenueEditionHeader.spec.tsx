@@ -1,5 +1,6 @@
-import { screen } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import { userEvent } from '@testing-library/user-event'
+import { forwardRef } from 'react'
 
 import { VenueTypeCode } from '@/apiClient/v1'
 import * as useAnalytics from '@/app/App/analytics/firebase'
@@ -23,6 +24,23 @@ import {
 
 const mockLogEvent = vi.fn()
 
+vi.mock('@/components/ImageDragAndDrop/getImageDimensions', () => ({
+  getImageDimensions: vi.fn((file) => {
+    return Promise.resolve({
+      width: (file as any).width || 0,
+      height: (file as any).height || 0,
+    })
+  }),
+}))
+
+vi.mock('react-avatar-editor', () => {
+  const MockAvatarEditor = forwardRef((_props, _ref) => {
+    return <div data-testid="mock-avatar-editor" />
+  })
+  MockAvatarEditor.displayName = 'MockAvatarEditor'
+  return { __esModule: true, default: MockAvatarEditor }
+})
+
 const renderPartnerPages = (
   props: Partial<VenueEditionHeaderProps>,
   options?: RenderWithProvidersOptions
@@ -44,9 +62,15 @@ const renderPartnerPages = (
 }
 
 describe('VenueEditionHeader', () => {
+  beforeEach(() => {
+    vi.spyOn(URL, 'createObjectURL').mockReturnValue('blob:mock-url')
+    vi.spyOn(URL, 'revokeObjectURL').mockImplementation(() => {})
+  })
+
   it('should display image upload if no image', async () => {
-    const mockFile = new File(['fake img'], 'fake_img.jpg', {
-      type: 'image/jpeg',
+    const mockFile = Object.assign(new File(['fake img'], 'fake_img.jpg'), {
+      width: 100,
+      height: 100,
     })
 
     vi.spyOn(useAnalytics, 'useAnalytics').mockImplementation(() => ({
@@ -64,12 +88,14 @@ describe('VenueEditionHeader', () => {
     expect(imageInput).toBeInTheDocument()
     await userEvent.upload(imageInput, mockFile)
 
-    expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
-      offererId: '1',
-      venueId: defaultGetVenue.id,
-      imageType: UploaderModeEnum.VENUE,
-      isEdition: true,
-      imageCreationStage: 'add image',
+    await waitFor(() => {
+      expect(mockLogEvent).toHaveBeenCalledWith(Events.DRAG_OR_SELECTED_IMAGE, {
+        offererId: '1',
+        venueId: defaultGetVenue.id,
+        imageType: UploaderModeEnum.VENUE,
+        isEdition: true,
+        imageCreationStage: 'add image',
+      })
     })
   })
 
