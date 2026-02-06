@@ -58,7 +58,10 @@ export const CollectiveOfferVisibility = ({
     '`offer` shoud not be a (collective offer) template.'
   )
 
-  const initialValues = extractInitialVisibilityValues(offer.institution)
+  const initialValues = extractInitialVisibilityValues(
+    offer.institution,
+    offer.teacher
+  )
 
   return (
     <CollectiveOfferLayout
