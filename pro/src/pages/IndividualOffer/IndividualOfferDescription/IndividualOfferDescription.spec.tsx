@@ -33,11 +33,26 @@ vi.mock('@/apiClient/api', () => ({
     getVenues: vi.fn(),
   },
 }))
-vi.mock('./components/IndividualOfferDescriptionScreen', () => ({
-  IndividualOfferDescriptionScreen: ({ venues }: { venues: unknown[] }) => (
-    <div data-testid="details-screen">venues:{venues.length}</div>
-  ),
-}))
+vi.mock('./components/IndividualOfferDescriptionScreen', async () => {
+  const { useState } = await import('react')
+  const { useIndividualOfferContext } = await import(
+    '@/commons/context/IndividualOfferContext/IndividualOfferContext'
+  )
+
+  return {
+    IndividualOfferDescriptionScreen: ({ venues }: { venues: unknown[] }) => {
+      const { offer } = useIndividualOfferContext()
+      const [initialOfferName] = useState(() => offer?.name ?? '')
+
+      return (
+        <section>
+          <h1>{initialOfferName || 'Nouvelle offre'}</h1>
+          <p>venues:{venues.length}</p>
+        </section>
+      )
+    },
+  }
+})
 
 const renderIndividualOfferDescription: RenderComponentFunction<
   void,
@@ -112,7 +127,7 @@ describe('<IndividualOfferDescription />', () => {
 
     renderIndividualOfferDescription({ contextValues })
 
-    expect(screen.getByTestId('details-screen')).toHaveTextContent('venues:1')
+    expect(screen.getByText('venues:1')).toBeInTheDocument()
 
     expect(useSWRMock).toHaveBeenCalledWith(
       expect.any(Function),
