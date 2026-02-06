@@ -356,6 +356,7 @@ export const VenueEditionForm = ({ venue }: VenueFormProps) => {
                   label="URL de votre site web"
                   type="url"
                   description="Format : https://exemple.com"
+                  maxLength={256}
                   {...methods.register('webSite')}
                   error={methods.formState.errors.webSite?.message}
                 />

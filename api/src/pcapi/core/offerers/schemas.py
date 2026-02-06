@@ -33,7 +33,7 @@ class VenueContactModel(BaseModel):
         extra = pydantic_v1.Extra.forbid
 
     email: pydantic_v1.EmailStr | None
-    website: str | None
+    website: str | None = pydantic_v1.Field(max_length=256)
     phone_number: str | None
     social_medias: SocialMedias | None
 
