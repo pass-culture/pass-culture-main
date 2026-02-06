@@ -218,7 +218,7 @@ describe('CollectiveOfferSummary', () => {
       }),
       offerEditLink: '123',
       stockEditLink: '234',
-      visibilityEditLink: '345',
+      institutionEditLink: '345',
     })
 
     expect(screen.getAllByRole('link', { name: 'Modifier' })).toHaveLength(3)

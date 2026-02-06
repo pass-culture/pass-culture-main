@@ -7,16 +7,16 @@ import {
   SummaryDescriptionList,
 } from '@/ui-kit/SummaryLayout/SummaryDescriptionList'
 
-interface CollectiveOfferVisibilitySectionProps {
+interface CollectiveOfferInstitutionSectionProps {
   institution?: EducationalInstitutionResponseModel | null
   teacher?: EducationalRedactorResponseModel | null
 }
 
-export const CollectiveOfferVisibilitySection = ({
+export const CollectiveOfferInstitutionSection = ({
   institution,
   teacher,
-}: CollectiveOfferVisibilitySectionProps) => {
-  const getVisibilityDescription = (
+}: CollectiveOfferInstitutionSectionProps) => {
+  const getInstitutionDescription = (
     institution?: EducationalInstitutionResponseModel | null
   ) => {
     if (!institution) {
@@ -37,7 +37,7 @@ export const CollectiveOfferVisibilitySection = ({
   const descriptions: Description[] = [
     {
       title: 'Établissement scolaire auquel vous adressez votre offre',
-      text: getVisibilityDescription(institution),
+      text: getInstitutionDescription(institution),
     },
   ]
   if (teacher) {

@@ -160,9 +160,9 @@ export const CollectiveEditionOfferNavigation = ({
       url: `/offre/${offerId}/collectif/stocks/edition`,
     },
     {
-      key: CollectiveOfferStep.VISIBILITY,
+      key: CollectiveOfferStep.INSTITUTION,
       label: 'Établissement et enseignant',
-      url: `/offre/${offerId}/collectif/visibilite/edition`,
+      url: `/offre/${offerId}/collectif/etablissement/edition`,
     },
   ]
 
@@ -252,7 +252,7 @@ export const CollectiveEditionOfferNavigation = ({
             [styles['tabs-active']]: [
               CollectiveOfferStep.DETAILS,
               CollectiveOfferStep.STOCKS,
-              CollectiveOfferStep.VISIBILITY,
+              CollectiveOfferStep.INSTITUTION,
             ].includes(activeStep),
           })}
         />

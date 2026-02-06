@@ -8,7 +8,7 @@ import { type Step, Stepper } from '@/components/Stepper/Stepper'
 export enum CollectiveOfferStep {
   DETAILS = 'details',
   STOCKS = 'stocks',
-  VISIBILITY = 'visibility',
+  INSTITUTION = 'institution',
   SUMMARY = 'recapitulatif',
   PREVIEW = 'preview',
   CONFIRMATION = 'confirmation',
@@ -69,11 +69,11 @@ export const CollectiveCreationOfferNavigation = ({
           : '',
     }
 
-    stepList[CollectiveOfferStep.VISIBILITY] = {
-      id: CollectiveOfferStep.VISIBILITY,
+    stepList[CollectiveOfferStep.INSTITUTION] = {
+      id: CollectiveOfferStep.INSTITUTION,
       label: 'Établissement et enseignant',
       url: hasOfferPassedStocksStep
-        ? `/offre/${offerId}/collectif/visibilite`
+        ? `/offre/${offerId}/collectif/etablissement`
         : '',
     }
   }

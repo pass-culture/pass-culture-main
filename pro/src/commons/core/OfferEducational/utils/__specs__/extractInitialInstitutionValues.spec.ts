@@ -1,10 +1,10 @@
 import type { EducationalInstitutionResponseModel } from '@/apiClient/v1'
-import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { extractInitialInstitutionValues } from '@/commons/core/OfferEducational/utils/extractInitialInstitutionValues'
 import { defaultGetCollectiveOfferRequest } from '@/commons/utils/factories/collectiveApiFactories'
 
-describe('extractInitialVisibilityValues', () => {
+describe('extractInitialInstitutionValues', () => {
   it('should return default values when institution is not defined', () => {
-    expect(extractInitialVisibilityValues(null)).toStrictEqual({
+    expect(extractInitialInstitutionValues(null)).toStrictEqual({
       visibility: 'all',
       institution: '',
       teacher: '',
@@ -20,7 +20,7 @@ describe('extractInitialVisibilityValues', () => {
       phoneNumber: '',
       institutionId: 'ABCDEF11',
     }
-    expect(extractInitialVisibilityValues(institution)).toStrictEqual({
+    expect(extractInitialInstitutionValues(institution)).toStrictEqual({
       visibility: 'one',
       institution: '1',
       teacher: '',
@@ -42,11 +42,13 @@ describe('extractInitialVisibilityValues', () => {
       civility: 'Mr.',
       email: 'reda.khteur@example.com',
     }
-    expect(extractInitialVisibilityValues(institution, teacher)).toStrictEqual({
-      visibility: 'one',
-      institution: '1',
-      teacher: 'reda.khteur@example.com',
-    })
+    expect(extractInitialInstitutionValues(institution, teacher)).toStrictEqual(
+      {
+        visibility: 'one',
+        institution: '1',
+        teacher: 'reda.khteur@example.com',
+      }
+    )
   })
 
   it('should return teacher details when institution and teacher are defined from requested informations', () => {
@@ -59,7 +61,7 @@ describe('extractInitialVisibilityValues', () => {
       },
     }
     expect(
-      extractInitialVisibilityValues(null, null, requestInformations)
+      extractInitialInstitutionValues(null, null, requestInformations)
     ).toStrictEqual({
       visibility: 'one',
       institution: '',

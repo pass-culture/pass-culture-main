@@ -10,4 +10,4 @@ export const validationSchema = yup.object().shape({
   teacherName: yup.string(),
 })
 
-export type VisibilityFormValues = InferType<typeof validationSchema>
+export type InstitutionFormValues = InferType<typeof validationSchema>

@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { getCollectiveOfferFactory } from '@/commons/utils/factories/collectiveApiFactories'
 import { renderWithProviders } from '@/commons/utils/renderWithProviders'
 
-import { CollectiveOfferEditionVisibility } from '../CollectiveOfferEditionVisibility'
+import { CollectiveOfferEditionInstitution } from '../CollectiveOfferEditionInstitution'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -13,11 +13,11 @@ vi.mock('@/apiClient/api', () => ({
   },
 }))
 
-const renderCollectiveOfferEditionVisibility = (
+const renderCollectiveOfferEditionInstitution = (
   path: string,
   storeOverride?: any
 ) => {
-  renderWithProviders(<CollectiveOfferEditionVisibility {...defaultProps} />, {
+  renderWithProviders(<CollectiveOfferEditionInstitution {...defaultProps} />, {
     initialRouterEntries: [path],
     storeOverrides: storeOverride,
   })
@@ -29,24 +29,15 @@ const defaultProps = {
   offerer: undefined,
 }
 
-describe('CollectiveOfferEditionVisibility', () => {
-  it('should render collective offer visibility form', async () => {
-    renderCollectiveOfferEditionVisibility('/offre/A1/collectif/visibilite')
+describe('CollectiveOfferEditionInstitution', () => {
+  it('should render collective offer institution form', async () => {
+    renderCollectiveOfferEditionInstitution('/offre/A1/collectif/etablissement')
 
     expect(
       await screen.findByRole('heading', {
         name: /Modifier l’offre/,
       })
     ).toBeInTheDocument()
-
-    expect(
-      await screen.findByRole('heading', {
-        name: "Renseignez l'établissement scolaire et l'enseignant",
-      })
-    ).toBeInTheDocument()
-  })
-  it('should render new collective offer visibility form if ff active', async () => {
-    renderCollectiveOfferEditionVisibility('/offre/A1/collectif/visibilite')
 
     expect(
       await screen.findByRole('heading', {

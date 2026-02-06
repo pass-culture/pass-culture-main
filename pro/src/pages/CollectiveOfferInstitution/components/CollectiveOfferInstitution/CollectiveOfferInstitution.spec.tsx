@@ -12,7 +12,7 @@ import {
   type EducationalInstitutionResponseModel,
   type EducationalRedactors,
 } from '@/apiClient/v1'
-import { DEFAULT_VISIBILITY_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
+import { DEFAULT_INSTITUTION_FORM_VALUES } from '@/commons/core/OfferEducational/constants'
 import { Mode } from '@/commons/core/OfferEducational/types'
 import {
   GET_DATA_ERROR_MESSAGE,
@@ -30,13 +30,13 @@ import {
 
 import {
   INSTITUTION_GENERIC_ERROR_MESSAGE,
-  POST_VISIBILITY_FORM_ERROR_MESSAGE,
+  POST_INSTITUTION_FORM_ERROR_MESSAGE,
   REDACTOR_GENERIC_ERROR_MESSAGE,
 } from '../../commons/constants'
 import {
-  type CollectiveOfferVisibilityProps,
-  CollectiveOfferVisibilityScreen,
-} from './CollectiveOfferVisibility'
+  type CollectiveOfferInstitutionProps,
+  CollectiveOfferInstitutionScreen,
+} from './CollectiveOfferInstitution'
 
 vi.mock('@/apiClient/api', () => ({
   api: {
@@ -109,17 +109,17 @@ const institutions: EducationalInstitutionResponseModel[] = [
   },
 ]
 
-const renderVisibilityStep = (
-  props: CollectiveOfferVisibilityProps,
+const renderInstitutionStep = (
+  props: CollectiveOfferInstitutionProps,
   options?: RenderWithProvidersOptions
 ) => {
-  return renderWithProviders(<CollectiveOfferVisibilityScreen {...props} />, {
+  return renderWithProviders(<CollectiveOfferInstitutionScreen {...props} />, {
     ...options,
   })
 }
 
-describe('CollectiveOfferVisibility', () => {
-  let props: CollectiveOfferVisibilityProps
+describe('CollectiveOfferInstitution', () => {
+  let props: CollectiveOfferInstitutionProps
   const offerId = 1
   const offer = getCollectiveOfferFactory({
     id: offerId,
@@ -140,7 +140,7 @@ describe('CollectiveOfferVisibility', () => {
 
     props = {
       mode: Mode.CREATION,
-      initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
+      initialValues: DEFAULT_INSTITUTION_FORM_VALUES,
       onSuccess: vi.fn(),
       institutions,
       isLoadingInstitutions: false,
@@ -155,7 +155,7 @@ describe('CollectiveOfferVisibility', () => {
   it('should show banner if generate from publicApi', () => {
     const offer = getCollectiveOfferFactory({ isPublicApi: true })
 
-    renderVisibilityStep({
+    renderInstitutionStep({
       ...props,
       mode: Mode.EDITION,
       offer,
@@ -168,12 +168,12 @@ describe('CollectiveOfferVisibility', () => {
     ).toBeInTheDocument()
   })
 
-  it('should disable visibility form if institution is not editable', async () => {
+  it('should disable institution form if institution is not editable', async () => {
     props.initialValues = {
       ...props.initialValues,
       institution: '12',
     }
-    renderVisibilityStep({ ...props, offer: { ...offer, allowedActions: [] } })
+    renderInstitutionStep({ ...props, offer: { ...offer, allowedActions: [] } })
     expect(
       await screen.findByLabelText(
         /Nom de l’établissement scolaire ou code UAI/
@@ -186,7 +186,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display details on selected institution', async () => {
-    renderVisibilityStep(props)
+    renderInstitutionStep(props)
 
     const institutionInput = await screen.findByLabelText(
       /Nom de l’établissement scolaire ou code UAI/
@@ -229,7 +229,7 @@ describe('CollectiveOfferVisibility', () => {
         },
       ])
 
-    renderVisibilityStep(props)
+    renderInstitutionStep(props)
 
     const institutionInput = screen.getByLabelText(
       /Nom de l’établissement scolaire ou code UAI/
@@ -271,7 +271,7 @@ describe('CollectiveOfferVisibility', () => {
       'patchCollectiveOffersEducationalInstitution'
     ).mockRejectedValueOnce(new Error('Ooops'))
 
-    renderVisibilityStep(props)
+    renderInstitutionStep(props)
 
     await userEvent.click(
       await screen.findByLabelText(
@@ -295,7 +295,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display institution type, name and city in select options', async () => {
-    renderVisibilityStep(props)
+    renderInstitutionStep(props)
     await userEvent.click(
       await screen.findByLabelText(
         /Nom de l’établissement scolaire ou code UAI/
@@ -313,7 +313,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should trim values when searching in a SelectAutocomplete', async () => {
-    renderVisibilityStep(props)
+    renderInstitutionStep(props)
 
     const institutionInput = await screen.findByLabelText(
       /Nom de l’établissement scolaire ou code UAI/
@@ -330,7 +330,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should clear teacher suggestion when clearing teacher input', async () => {
-    renderVisibilityStep(props)
+    renderInstitutionStep(props)
 
     vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
       .mockResolvedValueOnce([]) // redactors preloading
@@ -365,7 +365,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should clear teacher suggestion when clearing institution', async () => {
-    renderVisibilityStep(props)
+    renderInstitutionStep(props)
     vi.spyOn(api, 'getAutocompleteEducationalRedactorsForUai')
       .mockResolvedValueOnce([]) // redactors preloading
       .mockResolvedValueOnce([
@@ -403,7 +403,7 @@ describe('CollectiveOfferVisibility', () => {
 
   describe('edition', () => {
     it('shoud prefill form with initial values', async () => {
-      renderVisibilityStep({
+      renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
         initialValues: {
@@ -451,11 +451,11 @@ describe('CollectiveOfferVisibility', () => {
           },
         ])
 
-      renderVisibilityStep({
+      renderInstitutionStep({
         ...props,
         requestId: '1',
         mode: Mode.EDITION,
-        initialValues: DEFAULT_VISIBILITY_FORM_VALUES,
+        initialValues: DEFAULT_INSTITUTION_FORM_VALUES,
       })
 
       const institutionInput = await screen.findByLabelText(
@@ -479,7 +479,7 @@ describe('CollectiveOfferVisibility', () => {
 
     it('should display default institution error message when institution input is not empty but institution is null', async () => {
       vi.spyOn(api, 'patchCollectiveOffersEducationalInstitution')
-      renderVisibilityStep({
+      renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
       })
@@ -504,7 +504,7 @@ describe('CollectiveOfferVisibility', () => {
 
     it('should display teacher generic error message when teacher input is not empty but teacherEmail is null', async () => {
       vi.spyOn(api, 'patchCollectiveOffersEducationalInstitution')
-      renderVisibilityStep({
+      renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
         initialValues: {
@@ -546,7 +546,7 @@ describe('CollectiveOfferVisibility', () => {
           ''
         )
       )
-      renderVisibilityStep({
+      renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
         initialValues: {
@@ -565,7 +565,7 @@ describe('CollectiveOfferVisibility', () => {
       await waitFor(() =>
         expect(snackBarError).toHaveBeenNthCalledWith(
           1,
-          POST_VISIBILITY_FORM_ERROR_MESSAGE
+          POST_INSTITUTION_FORM_ERROR_MESSAGE
         )
       )
     })
@@ -586,7 +586,7 @@ describe('CollectiveOfferVisibility', () => {
           ''
         )
       )
-      renderVisibilityStep({
+      renderInstitutionStep({
         ...props,
         mode: Mode.EDITION,
         initialValues: {
@@ -605,14 +605,14 @@ describe('CollectiveOfferVisibility', () => {
       await waitFor(() =>
         expect(snackBarError).toHaveBeenNthCalledWith(
           1,
-          POST_VISIBILITY_FORM_ERROR_MESSAGE
+          POST_INSTITUTION_FORM_ERROR_MESSAGE
         )
       )
     })
   })
 
   it('should have a cancel button instead of the previous step button when editing the offer', () => {
-    renderVisibilityStep({ ...props, mode: Mode.EDITION })
+    renderInstitutionStep({ ...props, mode: Mode.EDITION })
     expect(
       screen.queryByRole('button', { name: /Étape suivante/ })
     ).not.toBeInTheDocument()
@@ -623,7 +623,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should display saving information in action bar', async () => {
-    renderVisibilityStep({ ...props, mode: Mode.CREATION })
+    renderInstitutionStep({ ...props, mode: Mode.CREATION })
 
     expect(screen.getByText('Brouillon enregistré')).toBeInTheDocument()
 
@@ -633,7 +633,7 @@ describe('CollectiveOfferVisibility', () => {
   })
 
   it('should change saving information in action bar when form value change', async () => {
-    renderVisibilityStep({ ...props, mode: Mode.CREATION })
+    renderInstitutionStep({ ...props, mode: Mode.CREATION })
 
     vi.spyOn(
       api,
@@ -670,7 +670,7 @@ describe('CollectiveOfferVisibility', () => {
       ...props.initialValues,
       institution: '12',
     }
-    renderVisibilityStep({
+    renderInstitutionStep({
       ...props,
       mode: Mode.READ_ONLY,
     })
@@ -687,7 +687,7 @@ describe('CollectiveOfferVisibility', () => {
       ...props.initialValues,
       institution: '12',
     }
-    renderVisibilityStep({
+    renderInstitutionStep({
       ...props,
       mode: Mode.READ_ONLY,
       offer: { ...props.offer, allowedActions: [] },
@@ -724,7 +724,7 @@ describe('CollectiveOfferVisibility', () => {
           },
         ])
 
-      renderVisibilityStep(props)
+      renderInstitutionStep(props)
 
       const institutionInput = screen.getByLabelText(
         /Nom de l’établissement scolaire ou code UAI/
@@ -759,7 +759,7 @@ describe('CollectiveOfferVisibility', () => {
       })
       vi.spyOn(console, 'warn').mockImplementation(vi.fn())
 
-      renderVisibilityStep(props)
+      renderInstitutionStep(props)
 
       const institutionInput = screen.getByLabelText(
         /Nom de l’établissement scolaire ou code UAI/
@@ -788,7 +788,7 @@ describe('CollectiveOfferVisibility', () => {
         'getAutocompleteEducationalRedactorsForUai'
       ).mockRejectedValueOnce(new Error('Ooops'))
 
-      renderVisibilityStep(props)
+      renderInstitutionStep(props)
 
       const institutionInput = screen.getByLabelText(
         /Nom de l’établissement scolaire ou code UAI/

@@ -1,9 +1,9 @@
-import type { VisibilityFormValues } from './validationSchema'
+import type { InstitutionFormValues } from './validationSchema'
 
 export const GET_REDACTOR_NOT_FOUND_ERROR_MESSAGE =
   "Nous n'avons pas trouvé d'enseignant correspondant à votre recherche"
 
-export const POST_VISIBILITY_FORM_ERROR_MESSAGE =
+export const POST_INSTITUTION_FORM_ERROR_MESSAGE =
   'Une ou plusieurs erreurs sont présentes dans le formulaire'
 
 export const INSTITUTION_GENERIC_ERROR_MESSAGE =
@@ -19,18 +19,18 @@ type BackendFormKeys =
 
 export const FORM_KEYS_MAPPING: Record<
   BackendFormKeys,
-  keyof VisibilityFormValues
+  keyof InstitutionFormValues
 > = {
   educationalInstitutionId: 'institution',
   educationalInstitution: 'institution',
   teacherEmail: 'teacher',
 }
 export const DEFAULT_FORM_FIELD_ERRORS: Record<
-  keyof VisibilityFormValues,
+  keyof InstitutionFormValues,
   string
 > = {
   institution: INSTITUTION_GENERIC_ERROR_MESSAGE,
   teacher: REDACTOR_GENERIC_ERROR_MESSAGE,
-  visibility: POST_VISIBILITY_FORM_ERROR_MESSAGE,
+  visibility: POST_INSTITUTION_FORM_ERROR_MESSAGE,
   teacherName: REDACTOR_GENERIC_ERROR_MESSAGE,
 }

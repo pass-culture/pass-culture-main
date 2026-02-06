@@ -10,7 +10,7 @@ import {
   isCollectiveOfferTemplate,
   Mode,
 } from '@/commons/core/OfferEducational/types'
-import { extractInitialVisibilityValues } from '@/commons/core/OfferEducational/utils/extractInitialVisibilityValues'
+import { extractInitialInstitutionValues } from '@/commons/core/OfferEducational/utils/extractInitialInstitutionValues'
 import { assertOrFrontendError } from '@/commons/errors/assertOrFrontendError'
 import { queryParamsFromOfferer } from '@/commons/utils/queryParamsFromOfferer'
 import {
@@ -18,11 +18,11 @@ import {
   withCollectiveOfferFromParams,
 } from '@/pages/CollectiveOffer/CollectiveOffer/components/OfferEducational/useCollectiveOfferFromParams'
 import { CollectiveOfferLayout } from '@/pages/CollectiveOffer/CollectiveOfferLayout/CollectiveOfferLayout'
-import { CollectiveOfferVisibilityScreen } from '@/pages/CollectiveOfferVisibility/components/CollectiveOfferVisibility/CollectiveOfferVisibility'
+import { CollectiveOfferInstitutionScreen } from '@/pages/CollectiveOfferInstitution/components/CollectiveOfferInstitution/CollectiveOfferInstitution'
 
 import { getEducationalInstitutions } from './commons/utils/getEducationalInstitutions'
 
-export const CollectiveOfferVisibility = ({
+export const CollectiveOfferCreationInstitution = ({
   offer,
   isTemplate,
 }: MandatoryCollectiveOfferFromParamsProps) => {
@@ -58,7 +58,7 @@ export const CollectiveOfferVisibility = ({
     '`offer` shoud not be a (collective offer) template.'
   )
 
-  const initialValues = extractInitialVisibilityValues(
+  const initialValues = extractInitialInstitutionValues(
     offer.institution,
     offer.teacher
   )
@@ -71,7 +71,7 @@ export const CollectiveOfferVisibility = ({
       requestId={requestId}
       offer={offer}
     >
-      <CollectiveOfferVisibilityScreen
+      <CollectiveOfferInstitutionScreen
         mode={Mode.CREATION}
         initialValues={initialValues}
         onSuccess={onSuccess}
@@ -87,5 +87,5 @@ export const CollectiveOfferVisibility = ({
 // Lazy-loaded by react-router
 // ts-unused-exports:disable-next-line
 export const Component = withCollectiveOfferFromParams(
-  CollectiveOfferVisibility
+  CollectiveOfferCreationInstitution
 )
