@@ -18,6 +18,7 @@ from pcapi.core.users.factories import BeneficiaryGrant18Factory
 from pcapi.models import db
 from pcapi.sandboxes.scripts.utils.helpers import log_func_duration
 from pcapi.utils import date as date_utils
+from pcapi.utils.clean_accents import clean_accents
 
 
 logger = logging.getLogger(__name__)
@@ -52,7 +53,9 @@ def _create_offers(provider: Provider) -> Venue:
         venueTypeCode=VenueTypeCode.MOVIE,
     )
 
-    user_bene = BeneficiaryGrant18Factory.create(email=f"jeune-has-{provider_name}-external-bookings@example.com")
+    user_bene = BeneficiaryGrant18Factory.create(
+        email=f"jeune-has-{clean_accents(provider_name.lower())}-external-bookings@example.com"
+    )
 
     user_bene.deposit.amount = 300
     db.session.add(user_bene)
