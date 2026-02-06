@@ -473,19 +473,6 @@ class DeleteVenueTest:
         assert db.session.query(offers_models.Offer).count() == 1
         assert db.session.query(offers_models.Mediation).count() == 1
 
-    def test_delete_venue_should_remove_reports_of_managed_offers(self):
-        venue = offerers_factories.VenueFactory()
-        venue_to_delete = offerers_factories.VenueFactory()
-        offers_factories.OfferReportFactory(offer__venue=venue_to_delete)
-        offers_factories.OfferReportFactory(offer__venue=venue)
-        offerers_factories.VenueFactory(managingOfferer=venue_to_delete.managingOfferer)  # remaining venue
-
-        offerers_api.delete_venue(venue_to_delete.id)
-
-        assert db.session.query(offerers_models.Venue).count() == 2
-        assert db.session.query(offers_models.Offer).count() == 1
-        assert db.session.query(offers_models.OfferReport).count() == 1
-
     def test_delete_venue_should_remove_favorites_of_managed_offers(self):
         venue = offerers_factories.VenueFactory()
         venue_to_delete = offerers_factories.VenueFactory()

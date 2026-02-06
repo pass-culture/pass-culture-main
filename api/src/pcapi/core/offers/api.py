@@ -16,8 +16,6 @@ import sqlalchemy as sa
 import sqlalchemy.exc as sa_exc
 import sqlalchemy.orm as sa_orm
 from flask import current_app
-from psycopg2.errorcodes import CHECK_VIOLATION
-from psycopg2.errorcodes import UNIQUE_VIOLATION
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import insert
 from werkzeug.exceptions import BadRequest
@@ -1593,49 +1591,6 @@ def unindex_expired_offers(process_all_expired: bool = False) -> None:
         page += 1
 
 
-def report_offer(
-    user: users_models.User, offer: models.Offer, reason: models.Reason, custom_reason: str | None
-) -> None:
-    try:
-        # transaction() handles the commit/rollback operations
-        #
-        # UNIQUE_VIOLATION, CHECK_VIOLATION and STRING_DATA_RIGHT_TRUNCATION
-        # errors are specific ones:
-        # either the user tried to report the same error twice, which is not
-        # allowed, or the client sent a invalid report (eg. OTHER without
-        # custom reason / custom reason too long).
-        #
-        # Other errors are unexpected and are therefore re-raised as is.
-        with transaction():
-            report = models.OfferReport(user=user, offer=offer, reason=reason, customReasonContent=custom_reason)
-            db.session.add(report)
-    except sa_exc.IntegrityError as error:
-        pgcode = getattr(error.orig, "pgcode", None)
-        if pgcode == UNIQUE_VIOLATION:
-            raise exceptions.OfferAlreadyReportedError() from error
-        if pgcode == CHECK_VIOLATION:
-            raise exceptions.ReportMalformed() from error
-        raise
-
-    transactional_mails.send_email_reported_offer_by_user(user, offer, reason, custom_reason)
-
-
-def _should_try_to_update_offer_stock_quantity(offer: models.Offer) -> bool:
-    # The offer is to update only if it is a cinema offer, and if the venue has a cinema provider
-    if offer.subcategory.id != subcategories.SEANCE_CINE.id:
-        return False
-
-    if not offer.lastProviderId:  # Manual offer
-        return False
-
-    offer_venue_providers = offer.venue.venueProviders
-    for venue_provider in offer_venue_providers:
-        if venue_provider.isFromCinemaProvider:
-            return True
-
-    return False
-
-
 def create_or_update_product_mediations(product: models.Product, images: TiteliveImage | None) -> None:
     if not images or (not images.recto and not images.verso):
         return
@@ -2480,7 +2435,6 @@ def delete_offers_related_objects(offer_ids: typing.Collection[int]) -> None:
         models.Stock,
         users_models.Favorite,
         models.Mediation,
-        models.OfferReport,
         finance_models.CustomReimbursementRule,
     ]
 

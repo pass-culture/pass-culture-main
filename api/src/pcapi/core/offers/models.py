@@ -935,9 +935,6 @@ class Offer(PcObject, Model, ValidationMixin, AccessibilityMixin):
     mediations: sa_orm.Mapped[list["Mediation"]] = sa_orm.relationship(
         "Mediation", foreign_keys="Mediation.offerId", back_populates="offer"
     )
-    reports: sa_orm.Mapped[list["OfferReport"]] = sa_orm.relationship(
-        "OfferReport", foreign_keys="OfferReport.offerId", back_populates="offer"
-    )
     stocks: sa_orm.Mapped[list["Stock"]] = sa_orm.relationship(
         "Stock", foreign_keys="Stock.offerId", back_populates="offer"
     )
@@ -1675,95 +1672,6 @@ class OfferPriceLimitationRule(PcObject, Model):
     __tablename__ = "offer_price_limitation_rule"
     subcategoryId: sa_orm.Mapped[str] = sa_orm.mapped_column(sa.Text, nullable=False, unique=True)
     rate: sa_orm.Mapped[decimal.Decimal] = sa_orm.mapped_column(sa.Numeric(5, 4), nullable=False)
-
-
-@dataclass
-class ReasonMeta:
-    description: str
-    title: str
-
-
-class Reason(enum.Enum):
-    """
-    Describe possible reason codes to used when reporting an offer.
-
-    The whole meta part is only consumed by the api client, it has no meaning
-    inside the whole API code.
-
-    Note: when adding a new enum symbol, do not forget to update the meta method.
-    """
-
-    IMPROPER = "IMPROPER"
-    PRICE_TOO_HIGH = "PRICE_TOO_HIGH"
-    INAPPROPRIATE = "INAPPROPRIATE"
-    OTHER = "OTHER"
-
-    @staticmethod
-    def get_meta(value: str) -> ReasonMeta:
-        return Reason.get_full_meta()[value]
-
-    @staticmethod
-    def get_full_meta() -> dict[str, ReasonMeta]:
-        return {
-            "IMPROPER": ReasonMeta(
-                title="La description est non conforme",
-                description="La date ne correspond pas, mauvaise description...",
-            ),
-            "PRICE_TOO_HIGH": ReasonMeta(title="Le tarif est trop élevé", description="comparé à l'offre publique"),
-            "INAPPROPRIATE": ReasonMeta(
-                title="Le contenu est inapproprié", description="violence, incitation à la haine, nudité..."
-            ),
-            "OTHER": ReasonMeta(title="Autre", description=""),
-        }
-
-
-# if the reason is != OTHER, there should be no customReasonContent,
-# and if reason = OTHER, the customReasonContent cannot be NULL or "".
-OFFER_REPORT_CUSTOM_REASONS_CONSTRAINT = """
-(offer_report."customReasonContent" IS NULL AND offer_report.reason != 'OTHER')
-OR (
-    (offer_report."customReasonContent" IS NOT NULL OR trim(both ' ' from offer_report."customReasonContent") = '')
-    AND offer_report.reason = 'OTHER'
-)
-"""
-
-
-class OfferReport(PcObject, Model):
-    __tablename__ = "offer_report"
-
-    userId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("user.id"), index=True, nullable=False
-    )
-    user: sa_orm.Mapped["User"] = sa_orm.relationship("User", foreign_keys=[userId], back_populates="reported_offers")
-    offerId: sa_orm.Mapped[int] = sa_orm.mapped_column(
-        sa.BigInteger, sa.ForeignKey("offer.id"), index=True, nullable=False
-    )
-    offer: sa_orm.Mapped["Offer"] = sa_orm.relationship("Offer", foreign_keys=[offerId], back_populates="reports")
-    reason: sa_orm.Mapped[Reason] = sa_orm.mapped_column(
-        sa.Enum(Reason, create_constraint=False), nullable=False, index=True
-    )
-    reportedAt: sa_orm.Mapped[datetime.datetime] = sa_orm.mapped_column(
-        sa.DateTime, nullable=False, server_default=sa.func.now()
-    )
-    # If the reason code is OTHER, save the user's custom reason
-    customReasonContent: sa_orm.Mapped[str | None] = sa_orm.mapped_column(sa.Text, nullable=True)
-
-    __table_args__ = (
-        sa.UniqueConstraint(
-            "userId",
-            "offerId",
-            name="unique_offer_per_user",
-        ),
-        sa.CheckConstraint(
-            OFFER_REPORT_CUSTOM_REASONS_CONSTRAINT,
-            name="custom_reason_null_only_if_reason_is_other",
-        ),
-    )
-
-    def __str__(self) -> str:
-        return (
-            f"{self.__class__.__name__}#{self.id} userId={self.userId}, offerId={self.offerId}, when={self.reportedAt}"
-        )
 
 
 class BookMacroSection(PcObject, Model):

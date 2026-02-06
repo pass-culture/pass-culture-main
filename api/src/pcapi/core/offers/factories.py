@@ -10,7 +10,6 @@ from factory.faker import faker
 import pcapi.core.artist.models as artist_models
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.models as offers_models
-import pcapi.core.users.factories as users_factories
 from pcapi.core.categories import subcategories
 from pcapi.core.categories.genres import music
 from pcapi.core.categories.genres import show
@@ -454,15 +453,6 @@ class MediationFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     isActive = True
     thumbCount = 1
-
-
-class OfferReportFactory(BaseFactory):
-    class Meta:
-        model = models.OfferReport
-
-    user = factory.SubFactory(users_factories.UserFactory)
-    offer = factory.SubFactory(OfferFactory)
-    reason = "INAPPROPRIATE"
 
 
 class OfferValidationRuleFactory(BaseFactory):

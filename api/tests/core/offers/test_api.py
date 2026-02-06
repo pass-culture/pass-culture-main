@@ -5100,7 +5100,6 @@ class DeleteOffersRelatedObjectsTest:
         factories.StockFactory.create_batch(2, offer=offer)
         users_factories.FavoriteFactory(offer=offer)
         factories.MediationFactory.create_batch(2, offer=offer)
-        factories.OfferReportFactory(offer=offer)
         criteria_factories.OfferCriterionFactory(offerId=offer.id, criterionId=criteria_factories.CriterionFactory().id)
 
         return offer
@@ -5113,7 +5112,6 @@ class DeleteOffersRelatedObjectsTest:
             assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() == 0
             assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() == 0
             assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() == 0
-            assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() == 0
 
     def assert_offer_related_objects_have_not_been_deleted(self, offer_ids):
         db.session.commit()
@@ -5124,7 +5122,6 @@ class DeleteOffersRelatedObjectsTest:
             assert db.session.query(users_models.Favorite).filter_by(offerId=offer_id).count() > 0
             assert db.session.query(criteria_models.OfferCriterion).filter_by(offerId=offer_id).count() > 0
             assert db.session.query(models.Mediation).filter_by(offerId=offer_id).count() > 0
-            assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() > 0
 
 
 def assert_offers_have_been_completely_cleaned(offer_ids):
@@ -5145,7 +5142,6 @@ def assert_offers_have_been_completely_cleaned(offer_ids):
         assert db.session.query(chronicles_models.OfferChronicle).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.OfferCompliance).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(criteria_models.OfferCriterion).filter_by(offerId=offer_id).count() == 0
-        assert db.session.query(models.OfferReport).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.PriceCategory).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(reactions_models.Reaction).filter_by(offerId=offer_id).count() == 0
         assert db.session.query(models.Stock).filter_by(offerId=offer_id).count() == 0
@@ -5267,7 +5263,6 @@ class DeleteUnbookableUnusedOldOffersTest:
 
         factories.StockFactory.create_batch(2, offer=offer, isSoftDeleted=True)
         users_factories.FavoriteFactory(offer=offer)
-        factories.OfferReportFactory(offer=offer)
 
         api.delete_unbookable_unbooked_old_offers(max_id=offer.id * 2)
         assert_offers_have_been_completely_cleaned([offer_id])

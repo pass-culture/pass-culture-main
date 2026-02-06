@@ -31,7 +31,6 @@ from pcapi.core.reactions.models import ReactionTypeEnum
 from pcapi.core.testing import assert_no_duplicated_queries
 from pcapi.core.testing import assert_num_queries
 from pcapi.core.users import factories as users_factories
-from pcapi.core.users.factories import UserFactory
 from pcapi.models import db
 from pcapi.models.offer_mixin import OfferValidationStatus
 from pcapi.routes.native.v1.serialization.offers import MAX_PREVIEW_CHRONICLES
@@ -2247,26 +2246,6 @@ class SendOfferLinkNotificationTest:
             assert response.status_code == 404
 
         assert len(notifications_testing.requests) == 0
-
-
-class OfferReportReasonsTest:
-    def test_get_reasons(self, app, client):
-        user = UserFactory()
-        response = client.with_token(user).get("/native/v1/offer/report/reasons")
-
-        assert response.status_code == 200
-        assert response.json["reasons"] == {
-            "IMPROPER": {
-                "title": "La description est non conforme",
-                "description": "La date ne correspond pas, mauvaise description...",
-            },
-            "PRICE_TOO_HIGH": {"title": "Le tarif est trop élevé", "description": "comparé à l'offre publique"},
-            "INAPPROPRIATE": {
-                "title": "Le contenu est inapproprié",
-                "description": "violence, incitation à la haine, nudité...",
-            },
-            "OTHER": {"title": "Autre", "description": ""},
-        }
 
 
 class OfferChroniclesTest:
