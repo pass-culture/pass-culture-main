@@ -7,7 +7,6 @@ from decimal import InvalidOperation
 import pydantic as pydantic_v2
 import pydantic.v1 as pydantic_v1
 from pydantic import BaseModel as BaseModelV2
-from pydantic.types import StringConstraints
 from pydantic.v1 import validator
 
 from pcapi.routes.serialization import BaseModel
@@ -22,25 +21,33 @@ MAX_LATITUDE = 90
 SocialMedia = typing.Literal["facebook", "instagram", "snapchat", "twitter"]
 SocialMedias = dict[SocialMedia, pydantic_v1.HttpUrl]
 
-RequiredStrippedStringV2 = StringConstraints(strip_whitespace=True, min_length=1)
 
-VenueCityV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(max_length=200)]
-VenueInseeCodeV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(min_length=5, max_length=5)]
-VenuePostalCodeV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(min_length=5, max_length=5)]
-VenueAddressV2 = typing.Annotated[str, RequiredStrippedStringV2, StringConstraints(max_length=200)]
+def format_coordinate(value: typing.Any) -> Decimal:
+    if not isinstance(value, (int, str, float, Decimal)):
+        raise PydanticError("Format incorrect")
+
+    try:
+        decimal_value = Decimal(value).quantize(Decimal("1.00000"))
+    except InvalidOperation:
+        raise PydanticError("Format incorrect")
+
+    return decimal_value
+
+
+CoordinateField = typing.Annotated[Decimal, pydantic_v2.BeforeValidator(format_coordinate)]
 
 
 class LocationModelV2(BaseModelV2):
     isManualEdition: bool = False
     isVenueLocation: bool = False
     banId: str | None = None
-    city: VenueCityV2
-    inseeCode: VenueInseeCodeV2 | None = None
+    city: str = pydantic_v2.Field(min_length=1, max_length=200)
+    inseeCode: str | None = pydantic_v2.Field(min_length=5, max_length=5, default=None)
     label: str | None = None
-    latitude: float | str
-    longitude: float | str
-    postalCode: VenuePostalCodeV2
-    street: VenueAddressV2
+    latitude: CoordinateField = pydantic_v2.Field(gt=-MAX_LATITUDE, lt=MAX_LATITUDE)
+    longitude: CoordinateField = pydantic_v2.Field(gt=-MAX_LONGITUDE, lt=MAX_LONGITUDE)
+    postalCode: str = pydantic_v2.Field(min_length=5, max_length=5)
+    street: str = pydantic_v2.Field(min_length=1, max_length=200)
 
     @pydantic_v2.field_validator("city")
     @classmethod
@@ -49,32 +56,6 @@ class LocationModelV2(BaseModelV2):
             return city.title()
 
         return city
-
-    @pydantic_v2.field_validator("latitude")
-    @classmethod
-    def validate_latitude(cls, raw_latitude: float | str) -> float | str:
-        try:
-            latitude = Decimal(raw_latitude)
-        except InvalidOperation:
-            raise PydanticError("Format incorrect")
-
-        if not -MAX_LATITUDE < latitude < MAX_LATITUDE:
-            raise PydanticError(f"La latitude doit être comprise entre -{MAX_LATITUDE} et +{MAX_LATITUDE}")
-
-        return raw_latitude
-
-    @pydantic_v2.field_validator("longitude")
-    @classmethod
-    def validate_longitude(cls, raw_longitude: float | str) -> float | str:
-        try:
-            longitude = Decimal(raw_longitude)
-        except InvalidOperation:
-            raise PydanticError("Format incorrect")
-
-        if not -MAX_LONGITUDE < longitude < MAX_LONGITUDE:
-            raise PydanticError(f"La longitude doit être comprise entre -{MAX_LONGITUDE} et +{MAX_LONGITUDE}")
-
-        return raw_longitude
 
 
 # Legacy (pydantic V1)

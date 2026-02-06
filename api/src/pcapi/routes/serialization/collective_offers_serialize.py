@@ -487,7 +487,9 @@ class PostDateRangeModel(HttpBodyModel):
 class CollectiveOfferLocationModelV2(HttpBodyModel):
     locationType: models.CollectiveLocationType
     locationComment: str | None = None
-    location: address_serialize.LocationBodyModelV2 | address_serialize.LocationOnlyOnVenueBodyModelV2 | None = None
+    location: address_serialize.LocationBodyModelV2 | address_serialize.LocationOnlyOnVenueBodyModelV2 | None = (
+        pydantic_v2.Field(default=None, discriminator="isVenueLocation")
+    )
 
     @pydantic_v2.model_validator(mode="after")
     def validate_location_comment(self) -> typing.Self:
