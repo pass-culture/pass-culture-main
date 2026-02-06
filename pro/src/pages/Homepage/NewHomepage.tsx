@@ -1,3 +1,4 @@
+import cn from 'classnames'
 import { useId, useState } from 'react'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -16,6 +17,7 @@ import {
   TABS,
   type TabKey,
 } from './commons/utils'
+import styles from './NewHomepage.module.scss'
 
 export const NewHomepage = (): JSX.Element => {
   const selectedVenue: GetVenueResponseModel | null = useAppSelector(
@@ -65,22 +67,50 @@ export const NewHomepage = (): JSX.Element => {
         <div
           id={getPanelId(individualId)}
           role="tabpanel"
+          className={cn(styles['container'], {
+            [styles['is-hidden']]: selectedTab !== TABS.INDIVIDUAL,
+          })}
           aria-labelledby={getTabId(individualId)}
           tabIndex={selectedTab === TABS.INDIVIDUAL ? 0 : -1}
-          hidden={selectedTab !== TABS.INDIVIDUAL}
         >
-          <p>Bienvenue sur l'accueil individuel</p>
+          <div className={styles['top']}>
+            <div>Banner indiv</div>
+          </div>
+          <div className={styles['main']}>
+            <div>Liste des offres indiv</div>
+            <div>Stats de consult</div>
+            <div>Edito</div>
+          </div>
+          <div className={styles['side']}>
+            <div>Page partenaire</div>
+            <div>Newsletter</div>
+            <div>Budget €€€</div>
+          </div>
         </div>
       )}
       {hasCollective && (
         <div
           id={getPanelId(collectiveId)}
           role="tabpanel"
+          className={cn(styles['container'], {
+            [styles['is-hidden']]: selectedTab !== TABS.COLLECTIVE,
+          })}
           aria-labelledby={getTabId(collectiveId)}
           tabIndex={selectedTab === TABS.COLLECTIVE ? 0 : -1}
           hidden={selectedTab !== TABS.COLLECTIVE}
         >
-          <p>Bienvenue sur l'accueil collectif</p>
+          <div className={styles['top']}>
+            <div>Banner collective</div>
+          </div>
+          <div className={styles['main']}>
+            <div>Liste des offres collectives vitrines</div>
+            <div>Empty state des offres réservables</div>
+          </div>
+          <div className={styles['side']}>
+            <div>Page partenaire</div>
+            <div>Newsletter</div>
+            <div>Budget €€€</div>
+          </div>
         </div>
       )}
     </BasicLayout>
