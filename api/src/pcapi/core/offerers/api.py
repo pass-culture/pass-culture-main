@@ -701,9 +701,6 @@ def _delete_objects_linked_to_venue(venue_id: int) -> dict:
         db.session.query(offers_models.Mediation).filter(offers_models.Mediation.offerId.in_(offers_id_chunk)).delete(
             synchronize_session=False
         )
-        db.session.query(offers_models.OfferReport).filter(
-            offers_models.OfferReport.offerId.in_(offers_id_chunk)
-        ).delete(synchronize_session=False)
     db.session.query(offers_models.Offer).filter(offers_models.Offer.venueId == venue_id).delete(
         synchronize_session=False
     )

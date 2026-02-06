@@ -81,7 +81,6 @@ from .users.notification_before_deleting_suspended_account import send_email_bef
 from .users.offer_link_to_ios_user import send_offer_link_to_ios_user_email
 from .users.recredit_to_underage_beneficiary import send_recredit_email_to_18_years_old
 from .users.recredit_to_underage_beneficiary import send_recredit_email_to_underage_beneficiary
-from .users.reported_offer_by_user import send_email_reported_offer_by_user
 from .users.reset_password import send_email_already_exists_email
 from .users.reset_password import send_reset_password_email_to_user
 from .users.suspicious_login_email import send_suspicious_login_email

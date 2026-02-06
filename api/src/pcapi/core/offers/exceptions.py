@@ -100,18 +100,6 @@ class StockDoesNotExist(ApiErrors):
     status_code = 400
 
 
-class OfferReportError(Exception):
-    code = "OFFER_REPORT_ERROR"
-
-
-class OfferAlreadyReportedError(OfferReportError):
-    code = "OFFER_ALREADY_REPORTED"
-
-
-class ReportMalformed(OfferReportError):
-    code = "REPORT_MALFORMED"
-
-
 class BookingLimitDatetimeTooLate(OfferException):  # (tcoudray-pass, 14/05/2025) TODO: Remove
     def __init__(self) -> None:
         super().__init__()

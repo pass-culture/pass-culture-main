@@ -3538,22 +3538,6 @@
                 "title": "OfferOffererResponse",
                 "type": "object"
             },
-            "OfferReportReasons": {
-                "properties": {
-                    "reasons": {
-                        "additionalProperties": {
-                            "$ref": "#/components/schemas/ReasonMeta"
-                        },
-                        "title": "Reasons",
-                        "type": "object"
-                    }
-                },
-                "required": [
-                    "reasons"
-                ],
-                "title": "OfferReportReasons",
-                "type": "object"
-            },
             "OfferResponse": {
                 "properties": {
                     "accessibility": {
@@ -4629,24 +4613,6 @@
                     "NO_REACTION"
                 ],
                 "title": "ReactionTypeEnum"
-            },
-            "ReasonMeta": {
-                "properties": {
-                    "description": {
-                        "title": "Description",
-                        "type": "string"
-                    },
-                    "title": {
-                        "title": "Title",
-                        "type": "string"
-                    }
-                },
-                "required": [
-                    "description",
-                    "title"
-                ],
-                "title": "ReasonMeta",
-                "type": "object"
             },
             "RecommendationApiParams": {
                 "additionalProperties": false,
@@ -8420,45 +8386,6 @@
                     }
                 },
                 "summary": "google_oauth_state <GET>",
-                "tags": []
-            }
-        },
-        "/native/v1/offer/report/reasons": {
-            "get": {
-                "description": "",
-                "operationId": "get__native_v1_offer_report_reasons",
-                "parameters": [],
-                "responses": {
-                    "200": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OfferReportReasons"
-                                }
-                            }
-                        },
-                        "description": "OK"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "422": {
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationError"
-                                }
-                            }
-                        },
-                        "description": "Unprocessable Content"
-                    }
-                },
-                "security": [
-                    {
-                        "JWTAuth": []
-                    }
-                ],
-                "summary": "report_offer_reasons <GET>",
                 "tags": []
             }
         },
