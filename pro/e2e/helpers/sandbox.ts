@@ -6,7 +6,7 @@ const SANDBOX_TIMEOUT = 120000
 
 export async function sandboxCall<T = unknown>(
   request: APIRequestContext,
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'DELETE',
   url: string
 ): Promise<T> {
   const response = await request.fetch(url, {
@@ -28,6 +28,7 @@ export async function sandboxCall<T = unknown>(
 export interface ProUserData {
   user: {
     email: string
+    id: string
   }
 }
 
@@ -140,4 +141,10 @@ export async function createNewProUserAndOffererWithVenue(
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_new_pro_user_and_offerer_with_venue`
   )
+}
+
+export async function cleanE2eData(request: APIRequestContext, userId: string) {
+  return await request.post(`${BASE_API_URL}/sandboxes/clean`, {
+    data: { userId },
+  })
 }

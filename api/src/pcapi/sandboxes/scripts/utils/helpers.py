@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 # helper to serialize pro user's
 def get_pro_user_helper(user: users_models.User) -> dict:
-    return {"email": user.email}
+    return {"email": user.email, "id": user.id}
 
 
 class StepsSkip:

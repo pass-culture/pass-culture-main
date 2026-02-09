@@ -6,6 +6,7 @@ import { login } from './helpers/auth'
 import { setFeatureFlags } from './helpers/features'
 import {
   BASE_API_URL,
+  cleanE2eData,
   createNewProUser,
   createNewProUserAndOfferer,
   createNewProUserAndOffererWithVenue,
@@ -16,7 +17,7 @@ const newVenueName = 'First Venue'
 test.describe('Signup journey with unknown offerer and unknown venue', () => {
   const mySiret = '12345678912345'
 
-  test('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', async ({
+  test.only('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET)', async ({
     page,
   }) => {
     const requestContext = await playwrightRequest.newContext({
@@ -27,7 +28,6 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
       { name: 'WIP_IS_OPEN_TO_PUBLIC', isActive: true },
       { name: 'WIP_2025_AUTOLOGIN', isActive: true },
     ])
-    await requestContext.dispose()
 
     await login(page, userData.user.email)
     await page.goto('/')
@@ -84,6 +84,8 @@ test.describe('Signup journey with unknown offerer and unknown venue', () => {
     await expect(
       page.getByText('Où souhaitez-vous diffuser votre première offre ?')
     ).toBeVisible()
+    await cleanE2eData(requestContext, userData.user.id)
+    await requestContext.dispose()
   })
 
   test('I should be able to sign up with a new account and create a new offerer with an unknown SIREN (unknown SIRET) and a custom address', async ({

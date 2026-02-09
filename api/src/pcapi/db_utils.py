@@ -225,3 +225,14 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
     install_local_providers()
     perm_models.sync_db_permissions(db.session)
     perm_models.sync_db_roles(db.session)
+
+def clean_e2e_data(user_id):
+       db.session.execute(
+           sa.text(
+                """DO $$
+                BEGIN
+                    DELETE FROM "user" WHERE id = {user_id};
+                END $$;
+                """.format(user_id=user_id)
+       )
+   )

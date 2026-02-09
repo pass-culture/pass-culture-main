@@ -4,11 +4,17 @@ from flask import jsonify
 
 import pcapi.core.mails.testing as mails_testing
 from pcapi.db_utils import clean_all_database
+from pcapi.db_utils import clean_e2e_data
 from pcapi.models import db
 from pcapi.models.api_errors import ApiErrors
 from pcapi.routes.apis import private_api
+from pcapi.routes.serialization import BaseModel
 from pcapi.sandboxes.scripts import getters
+from pcapi.serialization.decorator import spectree_serialize
 
+
+class DeleteQueryModel(BaseModel):
+    userId: str | None
 
 @private_api.route("/sandboxes/<module_name>/<getter_name>", methods=["GET"])
 def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
@@ -42,6 +48,16 @@ def get_sandbox(module_name, getter_name):  # type: ignore [no-untyped-def]
             ),
         )
         raise errors
+    
+@private_api.route("/sandboxes/clean", methods=['POST'])
+@spectree_serialize(
+    on_success_status=200,
+    response_model= None,
+)
+def clean_db(body: DeleteQueryModel):
+    clean_e2e_data(body.userId)
+
+    
 
 
 # The next endpoints must only be used with EMAIL_BACKEND set to `pcapi.core.mails.backends.testing.TestingBackend`
