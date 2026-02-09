@@ -32,50 +32,77 @@ function addListener(
   )
 }
 
+function initOrejimeConsent(
+  setConsentedToFirebase: Dispatch<SetStateAction<boolean>>,
+  setConsentedToBeamer: Dispatch<SetStateAction<boolean>>
+) {
+  setTimeout(() => {
+    if (!globalThis.loadOrejime) {
+      return
+    }
+
+    if (
+      storageAvailable('localStorage') &&
+      localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) === null
+    ) {
+      localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, uuidv4())
+    }
+
+    try {
+      if (!orejime) {
+        orejime = globalThis.loadOrejime(orejimeConfig)
+        addListener(setConsentedToFirebase, setConsentedToBeamer)
+        setConsentedToFirebase(
+          orejime.manager.getConsent(Consents.FIREBASE) || false
+        )
+        setConsentedToBeamer(
+          orejime.manager.getConsent(Consents.BEAMER) || false
+        )
+      } else if (!document.cookie.includes('pc-orejime')) {
+        orejime.manager.clearConsents()
+        orejime = globalThis.loadOrejime(orejimeConfig)
+        addListener(setConsentedToFirebase, setConsentedToBeamer)
+      }
+    } catch (e) {
+      sendSentryCustomError(e)
+      setConsentedToFirebase(false)
+      setConsentedToBeamer(false)
+    }
+  })
+}
+
 export const useOrejime = () => {
   const location = useLocation()
   const [consentedToFirebase, setConsentedToFirebase] = useState(false)
   const [consentedToBeamer, setConsentedToBeamer] = useState(false)
 
   useEffect(() => {
-    // Initialize cookie consent modal
-    if (
-      location.pathname.indexOf('/adage-iframe') === -1 &&
-      window.loadOrejime
-    ) {
-      setTimeout(() => {
-        if (
-          storageAvailable('localStorage') &&
-          localStorage.getItem(LOCAL_STORAGE_DEVICE_ID_KEY) === null
-        ) {
-          localStorage.setItem(LOCAL_STORAGE_DEVICE_ID_KEY, uuidv4())
-        }
-
-        try {
-          if (!orejime) {
-            orejime = window.loadOrejime(orejimeConfig)
-            addListener(setConsentedToFirebase, setConsentedToBeamer)
-            setConsentedToFirebase(
-              orejime.manager.getConsent(Consents.FIREBASE) || false
-            )
-            setConsentedToBeamer(
-              orejime.manager.getConsent(Consents.BEAMER) || false
-            )
-          } else if (!document.cookie.includes('pc-orejime')) {
-            // We force the banner to be displayed again if the cookie was deleted somehow
-            orejime.manager.clearConsents()
-            orejime = window.loadOrejime(orejimeConfig)
-            addListener(setConsentedToFirebase, setConsentedToBeamer)
-          }
-        } catch (e) {
-          sendSentryCustomError(e)
-          setConsentedToFirebase(false)
-          setConsentedToBeamer(false)
-        }
-      })
-    } else {
+    if (location.pathname.includes('/adage-iframe')) {
       setConsentedToFirebase(false)
       setConsentedToBeamer(false)
+
+      return
+    }
+
+    if (globalThis.loadOrejime) {
+      initOrejimeConsent(setConsentedToFirebase, setConsentedToBeamer)
+
+      return
+    }
+
+    const handleScriptLoaded = () => {
+      initOrejimeConsent(setConsentedToFirebase, setConsentedToBeamer)
+    }
+
+    globalThis.addEventListener('orejime-script-loaded', handleScriptLoaded, {
+      once: true,
+    })
+
+    return () => {
+      globalThis.removeEventListener(
+        'orejime-script-loaded',
+        handleScriptLoaded
+      )
     }
   }, [location.pathname])
 

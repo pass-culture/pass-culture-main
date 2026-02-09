@@ -23,6 +23,7 @@ declare global {
       ready: (callback: () => Promise<void>) => void
       reset?: (siteKey: string) => void
     }
-    loadOrejime: (...args: any[]) => void
   }
+
+  var loadOrejime: ((...args: any[]) => void) | undefined
 }
