@@ -22,7 +22,7 @@ export const NewHomepage = (): JSX.Element => {
     (selectedVenue?.collectiveDmsApplications || []).length > 0
 
   const [selectedTab, setSelectedTab] = useState(
-    getInitialTab(selectedVenue?.id, hasIndividual, hasCollective)
+    getInitialTab(selectedVenue?.id ?? null, hasIndividual, hasCollective)
   )
   const individualId = useId()
   const collectiveId = useId()
@@ -40,9 +40,9 @@ export const NewHomepage = (): JSX.Element => {
     },
   ]
 
-  const hanldeTabChange = (newSelectedTab: string) => {
+  const handleTabChange = (newSelectedTab: string) => {
     setSelectedTab(newSelectedTab)
-    onNewTabSelected(newSelectedTab, selectedVenue?.id)
+    onNewTabSelected(newSelectedTab, selectedVenue?.id ?? null)
   }
 
   return (
@@ -53,7 +53,7 @@ export const NewHomepage = (): JSX.Element => {
           navLabel="Sous menu - page d'accueil"
           items={tabs}
           selectedKey={selectedTab}
-          onChange={hanldeTabChange}
+          onChange={handleTabChange}
         />
       )}
       {hasIndividual && (

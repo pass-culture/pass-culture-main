@@ -183,7 +183,7 @@ describe('NewHomepage', () => {
           })
 
           expect(tabManagement.getInitialTab).toHaveBeenCalledExactlyOnceWith(
-            venue ? defaultGetOffererVenueResponseModel.id : undefined,
+            venue ? defaultGetOffererVenueResponseModel.id : null,
             hasIndividual,
             hasCollective
           )
