@@ -2,7 +2,8 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 /**
- * Juste pour visualiser les boxes
+ * TODO (mdesquilbet-pass, 2026-02-16): clean tmp style
+ *      (used to display tmp cards while waiting for real ones)
  */
 .container > * {
   border: 2px solid rgb(96 139 168);
@@ -34,34 +35,41 @@
 }
 
 /*
- * Le vrai code commence là
+ * The real styling starts here
  */
 .container {
-  display: flex;
-  flex-flow: row wrap;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-template-areas:
+    "top-area top-area"
+    "main-area side-area";
   gap: var(--size-spacing-xl);
+
+  @media (max-width: size.$tablet) {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "top-area"
+      "main-area"
+      "side-area";
+  }
 }
 
 .top {
-  flex: 100%;
+  grid-area: top-area;
 }
 
 .main {
-  flex: 2;
+  grid-area: main-area;
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-xl);
 }
 
 .side {
-  flex: 1;
+  grid-area: side-area;
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-xl);
-
-  @media (max-width: size.$tablet) {
-    flex: 100%;
-  }
 }
 
 .is-hidden {
