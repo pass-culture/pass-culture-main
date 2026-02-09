@@ -14,8 +14,7 @@ async function clearBrowserStateAndReload(page: Page): Promise<void> {
     localStorage.clear()
     sessionStorage.clear()
   })
-  await page.reload()
-  await page.waitForLoadState('domcontentloaded')
+  await page.reload({ waitUntil: 'networkidle' })
 }
 
 test.describe('Cookie banner', () => {
