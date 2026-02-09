@@ -1540,14 +1540,14 @@ class CreateOfferTest:
             visualDisabilityCompliant=True,
             artistOfferLinks=[
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.AUTHOR,
-                    "custom_name": None,
+                    "artistId": artist.id,
+                    "artistType": artist_models.ArtistType.AUTHOR,
+                    "artistName": artist.name,
                 },
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.STAGE_DIRECTOR,
-                    "custom_name": "John Doe",
+                    "artistId": None,
+                    "artistType": artist_models.ArtistType.STAGE_DIRECTOR,
+                    "artistName": "John Doe",
                 },
             ],
         )
@@ -1555,12 +1555,28 @@ class CreateOfferTest:
         offer = api.create_offer(body, venue=venue, offerer_address=offerer_address)
 
         assert offer.id is not None
+
         mock_create_link.assert_called()
 
         assert len(mock_create_link.call_args_list) == 2
 
-        expected_first_call = mock.call(offer.id, body.artist_offer_links[0])
-        expected_second_call = mock.call(offer.id, body.artist_offer_links[1])
+        expected_first_call = mock.call(
+            offer.id,
+            ArtistOfferLinkKey(
+                artist_type=artist_models.ArtistType.AUTHOR,
+                artist_id=artist.id,
+                custom_name=None,
+            ),
+        )
+
+        expected_second_call = mock.call(
+            offer.id,
+            ArtistOfferLinkKey(
+                artist_type=artist_models.ArtistType.STAGE_DIRECTOR,
+                artist_id=None,
+                custom_name="John Doe",
+            ),
+        )
 
         mock_create_link.assert_has_calls([expected_first_call, expected_second_call], any_order=True)
 
@@ -1580,9 +1596,9 @@ class CreateOfferTest:
             visualDisabilityCompliant=True,
             artistOfferLinks=[
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.AUTHOR,
-                    "custom_name": None,
+                    "artistId": artist.id,
+                    "artistType": artist_models.ArtistType.AUTHOR,
+                    "artistName": artist.name,
                 },
             ],
         )
@@ -1628,9 +1644,9 @@ class CreateOfferTest:
             visualDisabilityCompliant=True,
             artistOfferLinks=[
                 {
-                    "artist_id": artist.id,
-                    "artist_type": artist_models.ArtistType.PERFORMER,
-                    "custom_name": None,
+                    "artistId": artist.id,
+                    "artistType": artist_models.ArtistType.PERFORMER,
+                    "artistName": artist.name,
                 },
             ],
         )
@@ -2093,7 +2109,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2121,7 +2137,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2131,7 +2147,7 @@ class UpdateOfferTest:
         mock_upsert_artist_offer_links.assert_called_once_with(
             [
                 artist_serialize.ArtistOfferLinkBodyModel(
-                    artistId="any-id", artistType=artist_models.ArtistType.AUTHOR, customName=None
+                    artist_id="any-id", artist_type=artist_models.ArtistType.AUTHOR, artist_name="any-name"
                 )
             ],
             offer,
@@ -2145,7 +2161,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.PERFORMER,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2169,7 +2185,7 @@ class UpdateOfferTest:
             {
                 "artistId": "any-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)
@@ -2204,7 +2220,7 @@ class UpdateOfferTest:
             {
                 "artistId": "artist-id",
                 "artistType": artist_models.ArtistType.AUTHOR,
-                "customName": None,
+                "artistName": "any-name",
             }
         ]
         body = offers_schemas.UpdateOffer(artistOfferLinks=artist_offer_links)

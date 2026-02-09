@@ -26,6 +26,9 @@ class ArtistType(enum.Enum):
     PERFORMER = "performer"
     STAGE_DIRECTOR = "stage_director"
 
+    def __str__(self) -> str:
+        return self.value
+
 
 class ArtistOfferLink(PcObject, Model):
     __tablename__ = "artist_offer_link"
