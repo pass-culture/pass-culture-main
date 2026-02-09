@@ -743,7 +743,7 @@ def get_and_lock_stock(stock_id: int) -> models.Stock:
         db.session.query(models.Stock)
         .filter_by(id=stock_id)
         .populate_existing()
-        .with_for_update()
+        .with_for_update(key_share=True, of=models.Stock)
         .options(sa_orm.joinedload(models.Stock.offer, innerjoin=True))
         .one_or_none()
     )
