@@ -462,15 +462,19 @@ describe('CollectiveOfferVisibility', () => {
         /Nom de l’établissement scolaire ou code UAI */
       )
 
-      expect(institutionInput).toHaveValue(
-        'LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13'
-      )
+      await waitFor(() => {
+        expect(institutionInput).toHaveValue(
+          'LYCEE POLYVALENT METIER ROBERT DOISNEAU - CORBEIL-ESSONNES - AZERTY13'
+        )
+      })
 
       const teacherInput = await screen.findByLabelText(
         /Prénom et nom de l’enseignant/
       )
 
-      expect(teacherInput).toHaveValue('Khteur Reda')
+      await waitFor(() => {
+        expect(teacherInput).toHaveValue('Khteur Reda')
+      })
     })
 
     it('should display default institution error message when institution input is not empty but institution is null', async () => {
