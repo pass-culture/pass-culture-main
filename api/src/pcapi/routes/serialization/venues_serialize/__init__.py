@@ -295,6 +295,9 @@ class GetVenueResponseGetterDict(pydantic_v1.utils.GetterDict):
         if key == "canDisplayHighlights":
             return venue.can_display_highlights
 
+        if key == "hasNonDraftOffers":
+            return venue.has_non_draft_offers
+
         return super().get(key, default)
 
 
@@ -346,6 +349,7 @@ class GetVenueResponseModel(BaseModel, AccessibilityComplianceMixin):
     hasNonFreeOffers: bool
     hasPartnerPage: bool
     canDisplayHighlights: bool
+    hasNonDraftOffers: bool
 
     class Config:
         orm_mode = True

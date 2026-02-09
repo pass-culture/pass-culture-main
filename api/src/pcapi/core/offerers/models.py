@@ -872,12 +872,12 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @hybrid_property
     def has_partner_page(self) -> bool:
-        from pcapi.core.offers.models import Offer
+        import pcapi.core.offers.models as offers_models
 
         return db.session.query(
             sa.select(1)
-            .select_from(Offer)
-            .join(Venue, Offer.venueId == Venue.id)
+            .select_from(offers_models.Offer)
+            .join(Venue, offers_models.Offer.venueId == Venue.id)
             .join(Offerer, Offerer.id == Venue.managingOffererId)
             .where(
                 Offerer.isActive.is_(True),
@@ -892,13 +892,13 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     @has_partner_page.inplace.expression
     @classmethod
     def _has_partner_page_expression(cls) -> Exists:
-        from pcapi.core.offers.models import Offer
+        import pcapi.core.offers.models as offers_models
 
         AliasedVenue = sa_orm.aliased(Venue)
         return (
             sa.select(1)
-            .select_from(Offer)
-            .join(AliasedVenue, Offer.venueId == AliasedVenue.id)
+            .select_from(offers_models.Offer)
+            .join(AliasedVenue, offers_models.Offer.venueId == AliasedVenue.id)
             .join(Offerer, Offerer.id == AliasedVenue.managingOffererId)
             .where(
                 Offerer.isActive.is_(True),
@@ -921,6 +921,22 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
                 sa.and_(
                     offers_models.Offer.venueId == self.id,
                     offers_models.Offer.isEvent,
+                )
+            )
+            .exists()
+        ).scalar()
+
+    @property
+    def has_non_draft_offers(self) -> bool:
+        import pcapi.core.offers.models as offers_models
+
+        return db.session.query(
+            sa.select(1)
+            .select_from(offers_models.Offer)
+            .where(
+                sa.and_(
+                    offers_models.Offer.venueId == self.id,
+                    offers_models.Offer.validation != offers_models.OfferValidationStatus.DRAFT,
                 )
             )
             .exists()
