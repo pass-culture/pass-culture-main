@@ -1,8 +1,12 @@
-import { yupResolver } from '@hookform/resolvers/yup'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 
 import { api } from '@/apiClient/api'
 import { isErrorAPIError } from '@/apiClient/helpers'
+import type {
+  UserIdentityBodyModel,
+  UserIdentityResponseModel,
+} from '@/apiClient/hey-api'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { useCurrentUser } from '@/commons/hooks/useCurrentUser'
 import { useSnackBar } from '@/commons/hooks/useSnackBar'
@@ -12,12 +16,11 @@ import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import { TextInput } from '@/design-system/TextInput/TextInput'
 
-import type { UserIdentityFormValues } from './types'
-import { validationSchema } from './validationSchema'
+import { userIdentitySchema } from './validationSchema'
 
 export interface UserIdentityFormProps {
   closeForm: () => void
-  initialValues: UserIdentityFormValues
+  initialValues: UserIdentityResponseModel
 }
 export const UserIdentityForm = ({
   closeForm,
@@ -32,13 +35,13 @@ export const UserIdentityForm = ({
     handleSubmit,
     reset,
     formState: { isSubmitting, errors },
-  } = useForm<UserIdentityFormValues>({
+  } = useForm<UserIdentityResponseModel>({
     defaultValues: initialValues,
-    resolver: yupResolver(validationSchema),
+    resolver: zodResolver(userIdentitySchema),
     mode: 'onBlur',
   })
 
-  const onSubmit = async (values: UserIdentityFormValues) => {
+  const onSubmit = async (values: UserIdentityBodyModel) => {
     try {
       const response = await api.patchUserIdentity(values)
       dispatch(

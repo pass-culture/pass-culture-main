@@ -1,4 +1,4 @@
-import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
+import type { UserIdentityResponseModel } from '@/apiClient/hey-api'
 import { UserIdentityForm } from '@/components/UserIdentityForm/UserIdentityForm'
 import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
 
@@ -6,7 +6,7 @@ import { Forms } from '../constants'
 
 interface UserIdentityProps {
   setCurrentForm: (value: Forms | null) => void
-  initialValues: UserIdentityFormValues
+  initialValues: UserIdentityResponseModel
   showForm: boolean
 }
 

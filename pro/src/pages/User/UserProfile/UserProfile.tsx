@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router'
 
+import type { UserIdentityResponseModel } from '@/apiClient/hey-api'
 import type { UserPhoneBodyModel } from '@/apiClient/v1'
 import { BannerRGS } from '@/components/BannerRGS/BannerRGS'
-import type { UserIdentityFormValues } from '@/components/UserIdentityForm/types'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -21,7 +21,7 @@ import { UserPhone } from './UserPhone/UserPhone'
 import styles from './UserProfile.module.scss'
 
 interface UserProfileProps {
-  userIdentityInitialValues: UserIdentityFormValues
+  userIdentityInitialValues: UserIdentityResponseModel
   userPhoneInitialValues: UserPhoneBodyModel
   userEmailInitialValues: UserEmailInitialValues
 }
