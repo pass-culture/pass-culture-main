@@ -18,7 +18,6 @@ import logging
 import sqlalchemy as sa
 
 import pcapi.core.offerers.models as offerers_models
-import pcapi.core.offerers.schemas as offerers_schemas
 from pcapi.app import app
 from pcapi.models import db
 
@@ -51,9 +50,6 @@ def main(
                 sa.or_(
                     offerers_models.Venue.activity.is_(None),
                     offerers_models.Venue.activity == offerers_models.Activity.NOT_ASSIGNED,
-                ),
-                offerers_models.Venue.venueTypeCode.in_(
-                    [offerers_schemas.VenueTypeCode.OTHER, offerers_schemas.VenueTypeCode.DIGITAL]
                 ),
             )
             .update({"activity": offerers_models.Activity.OTHER.name}, synchronize_session=False)
