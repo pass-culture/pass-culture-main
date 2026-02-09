@@ -28,7 +28,7 @@ export async function sandboxCall<T = unknown>(
 export interface ProUserData {
   user: {
     email: string
-    id: string
+    id: number
   }
 }
 
@@ -143,7 +143,7 @@ export async function createNewProUserAndOffererWithVenue(
   )
 }
 
-export async function cleanE2eData(request: APIRequestContext, userId: string) {
+export async function cleanE2eData(request: APIRequestContext, userId: number) {
   return await request.post(`${BASE_API_URL}/sandboxes/clean`, {
     data: { userId },
   })

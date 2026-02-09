@@ -226,13 +226,248 @@ def clean_all_database(*args: typing.Any, reset_ids: bool = False, **kwargs: typ
     perm_models.sync_db_permissions(db.session)
     perm_models.sync_db_roles(db.session)
 
-def clean_e2e_data(user_id):
-       db.session.execute(
-           sa.text(
-                """DO $$
-                BEGIN
-                    DELETE FROM "user" WHERE id = {user_id};
-                END $$;
-                """.format(user_id=user_id)
-       )
-   )
+def clean_e2e_data(user_id: int) -> None:
+    """Delete all database data related to a given user for e2e test cleanup.
+
+    Cascades through the FK graph starting from the user to find and delete
+    all related entities in the correct dependency order.
+    """
+    if settings.ENV not in ("development", "testing", "ops"):
+        raise ValueError(f"You cannot do this on this environment: '{settings.ENV}'")
+
+    offerer_ids = _fetch_related_ids(
+        'SELECT "offererId" FROM user_offerer WHERE "userId" = :user_id',
+        {"user_id": user_id},
+    )
+    venue_ids = _fetch_related_ids(
+        'SELECT id FROM venue WHERE "managingOffererId" = ANY(:ids)',
+        {"ids": offerer_ids},
+    ) if offerer_ids else []
+    offer_ids = _fetch_related_ids(
+        'SELECT id FROM offer WHERE "venueId" = ANY(:ids)',
+        {"ids": venue_ids},
+    ) if venue_ids else []
+    stock_ids = _fetch_related_ids(
+        'SELECT id FROM stock WHERE "offerId" = ANY(:ids)',
+        {"ids": offer_ids},
+    ) if offer_ids else []
+    booking_ids = _fetch_related_ids(
+        'SELECT id FROM booking WHERE "stockId" = ANY(:ids)',
+        {"ids": stock_ids},
+    ) if stock_ids else []
+    collective_offer_ids = _fetch_related_ids(
+        'SELECT id FROM collective_offer WHERE "venueId" = ANY(:ids)',
+        {"ids": venue_ids},
+    ) if venue_ids else []
+    collective_stock_ids = _fetch_related_ids(
+        'SELECT id FROM collective_stock WHERE "collectiveOfferId" = ANY(:ids)',
+        {"ids": collective_offer_ids},
+    ) if collective_offer_ids else []
+    collective_offer_template_ids = _fetch_related_ids(
+        'SELECT id FROM collective_offer_template WHERE "venueId" = ANY(:ids)',
+        {"ids": venue_ids},
+    ) if venue_ids else []
+    bank_account_ids = _fetch_related_ids(
+        'SELECT id FROM bank_account WHERE "offererId" = ANY(:ids)',
+        {"ids": offerer_ids},
+    ) if offerer_ids else []
+
+    _delete_finance_data(booking_ids, bank_account_ids, venue_ids)
+    _delete_booking_data(booking_ids, collective_stock_ids)
+    _delete_stock_data(stock_ids, collective_stock_ids)
+    _delete_offer_data(offer_ids, collective_offer_ids, collective_offer_template_ids)
+    _delete_venue_data(venue_ids)
+    _delete_action_history(user_id, offerer_ids, venue_ids)
+    _delete_offerer_data(user_id, offerer_ids, bank_account_ids)
+    _delete_user_data(user_id)
+
+    db.session.commit()
+
+
+def _fetch_related_ids(query: str, params: dict[str, typing.Any]) -> list[int]:
+    """Execute a SELECT query and return the first column as a list of ints."""
+    result = db.session.execute(sa.text(query), params)
+    return [row[0] for row in result]
+
+
+def _delete_by_ids(table_name: str, column: str, ids: list[int]) -> None:
+    """Delete rows from a table where a column matches any of the given IDs."""
+    if not ids:
+        return
+    db.session.execute(
+        sa.text(f'DELETE FROM {table_name} WHERE {column} = ANY(:ids)'),
+        {"ids": ids},
+    )
+
+
+def _delete_by_user_id(table_name: str, user_id: int) -> None:
+    """Delete rows from a table where userId matches the given user ID."""
+    db.session.execute(
+        sa.text(f'DELETE FROM {table_name} WHERE "userId" = :user_id'),
+        {"user_id": user_id},
+    )
+
+
+def _delete_finance_data(
+    booking_ids: list[int],
+    bank_account_ids: list[int],
+    venue_ids: list[int],
+) -> None:
+    """Delete finance-related data (pricing, invoices, cashflows, incidents)."""
+    pricing_ids = _fetch_related_ids(
+        'SELECT id FROM pricing WHERE "bookingId" = ANY(:ids)',
+        {"ids": booking_ids},
+    ) if booking_ids else []
+    _delete_by_ids("cashflow_pricing", '"pricingId"', pricing_ids)
+    _delete_by_ids("pricing_line", '"pricingId"', pricing_ids)
+    _delete_by_ids("pricing_log", '"pricingId"', pricing_ids)
+    _delete_by_ids("pricing", "id", pricing_ids)
+
+    invoice_ids = _fetch_related_ids(
+        'SELECT id FROM invoice WHERE "bankAccountId" = ANY(:ids)',
+        {"ids": bank_account_ids},
+    ) if bank_account_ids else []
+    cashflow_ids = _fetch_related_ids(
+        'SELECT id FROM cashflow WHERE "bankAccountId" = ANY(:ids)',
+        {"ids": bank_account_ids},
+    ) if bank_account_ids else []
+    _delete_by_ids("invoice_cashflow", '"invoiceId"', invoice_ids)
+    _delete_by_ids("invoice_cashflow", '"cashflowId"', cashflow_ids)
+    _delete_by_ids("invoice_line", '"invoiceId"', invoice_ids)
+    _delete_by_ids("invoice", "id", invoice_ids)
+    _delete_by_ids("cashflow_pricing", '"cashflowId"', cashflow_ids)
+    _delete_by_ids("cashflow", "id", cashflow_ids)
+
+    finance_incident_ids = _fetch_related_ids(
+        'SELECT id FROM finance_incident WHERE "venueId" = ANY(:ids)',
+        {"ids": venue_ids},
+    ) if venue_ids else []
+    _delete_by_ids("booking_finance_incident", '"incidentId"', finance_incident_ids)
+    _delete_by_ids("finance_incident", "id", finance_incident_ids)
+
+
+def _delete_booking_data(booking_ids: list[int], collective_stock_ids: list[int]) -> None:
+    """Delete booking-related data."""
+    _delete_by_ids("finance_event", '"bookingId"', booking_ids)
+    _delete_by_ids("booking_finance_incident", '"bookingId"', booking_ids)
+    _delete_by_ids("external_booking", '"bookingId"', booking_ids)
+    _delete_by_ids("fraudulent_booking_tag", '"bookingId"', booking_ids)
+    _delete_by_ids("booking", "id", booking_ids)
+    _delete_by_ids("collective_booking", '"collectiveStockId"', collective_stock_ids)
+
+
+def _delete_stock_data(stock_ids: list[int], collective_stock_ids: list[int]) -> None:
+    """Delete stock-related data."""
+    _delete_by_ids("activation_code", '"stockId"', stock_ids)
+    _delete_by_ids("stock", "id", stock_ids)
+    _delete_by_ids("collective_stock", "id", collective_stock_ids)
+
+
+def _delete_offer_data(
+    offer_ids: list[int],
+    collective_offer_ids: list[int],
+    collective_offer_template_ids: list[int],
+) -> None:
+    """Delete offer-related data."""
+    _delete_by_ids("mediation", '"offerId"', offer_ids)
+    _delete_by_ids("offer_criterion", '"offerId"', offer_ids)
+    _delete_by_ids("price_category", '"offerId"', offer_ids)
+    _delete_by_ids("collective_offer_domain", '"collectiveOfferId"', collective_offer_ids)
+    _delete_by_ids("collective_offer_request", '"collectiveOfferId"', collective_offer_ids)
+    _delete_by_ids(
+        "collective_offer_template_domain",
+        '"collectiveOfferTemplateId"',
+        collective_offer_template_ids,
+    )
+    _delete_by_ids("offer", "id", offer_ids)
+    _delete_by_ids("collective_offer", "id", collective_offer_ids)
+    _delete_by_ids("collective_offer_template", "id", collective_offer_template_ids)
+
+
+def _delete_venue_data(venue_ids: list[int]) -> None:
+    """Delete venue-related data."""
+    if venue_ids:
+        venue_provider_ids = _fetch_related_ids(
+            'SELECT id FROM venue_provider WHERE "venueId" = ANY(:ids)',
+            {"ids": venue_ids},
+        )
+        _delete_by_ids("allocine_venue_provider", "id", venue_provider_ids)
+    _delete_by_ids("venue_provider", '"venueId"', venue_ids)
+    _delete_by_ids("venue_pricing_point_link", '"venueId"', venue_ids)
+    _delete_by_ids("venue_criterion", '"venueId"', venue_ids)
+    _delete_by_ids("price_category_label", '"venueId"', venue_ids)
+    _delete_by_ids("venue", "id", venue_ids)
+
+
+def _delete_action_history(
+    user_id: int,
+    offerer_ids: list[int],
+    venue_ids: list[int],
+) -> None:
+    """Delete action history records related to the user, offerers, or venues."""
+    db.session.execute(
+        sa.text(
+            'DELETE FROM action_history '
+            'WHERE "userId" = :user_id '
+            'OR "authorUserId" = :user_id '
+            'OR "offererId" = ANY(:offerer_ids) '
+            'OR "venueId" = ANY(:venue_ids)'
+        ),
+        {
+            "user_id": user_id,
+            "offerer_ids": offerer_ids or [],
+            "venue_ids": venue_ids or [],
+        },
+    )
+
+
+def _delete_offerer_data(
+    user_id: int,
+    offerer_ids: list[int],
+    bank_account_ids: list[int],
+) -> None:
+    """Delete offerer-related data and the user-offerer link."""
+    _delete_by_ids("bank_account", "id", bank_account_ids)
+    _delete_by_ids("offerer_provider", '"offererId"', offerer_ids)
+    _delete_by_ids("offerer_confidence_rule", '"offererId"', offerer_ids)
+    _delete_by_ids("non_payment_notice", '"offererId"', offerer_ids)
+    _delete_by_ids("custom_reimbursement_rule", '"offererId"', offerer_ids)
+    db.session.execute(
+        sa.text('DELETE FROM user_offerer WHERE "userId" = :user_id'),
+        {"user_id": user_id},
+    )
+    _delete_by_ids("offerer", "id", offerer_ids)
+
+
+def _delete_user_data(user_id: int) -> None:
+    """Delete data directly owned by the user, then the user itself."""
+    deposit_ids = _fetch_related_ids(
+        'SELECT id FROM deposit WHERE "userId" = :user_id',
+        {"user_id": user_id},
+    )
+    _delete_by_ids("recredit", '"depositId"', deposit_ids)
+    _delete_by_user_id("deposit", user_id)
+    _delete_by_user_id("favorite", user_id)
+
+    beneficiary_import_ids = _fetch_related_ids(
+        'SELECT id FROM beneficiary_import WHERE "beneficiaryId" = :user_id',
+        {"user_id": user_id},
+    )
+    _delete_by_ids("beneficiary_import_status", '"beneficiaryImportId"', beneficiary_import_ids)
+    _delete_by_ids("beneficiary_import", "id", beneficiary_import_ids)
+
+    _delete_by_user_id("beneficiary_fraud_check", user_id)
+    _delete_by_user_id("beneficiary_fraud_review", user_id)
+    _delete_by_user_id("user_session", user_id)
+    _delete_by_user_id("single_sign_on", user_id)
+    _delete_by_user_id("user_email_history", user_id)
+    _delete_by_user_id("trusted_device", user_id)
+    _delete_by_user_id("login_device_history", user_id)
+    _delete_by_user_id("gdpr_user_data_extract", user_id)
+    _delete_by_user_id("gdpr_user_anonymization", user_id)
+    _delete_by_user_id("user_account_update_request", user_id)
+
+    db.session.execute(
+        sa.text('DELETE FROM "user" WHERE id = :user_id'),
+        {"user_id": user_id},
+    )
