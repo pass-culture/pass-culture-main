@@ -4,7 +4,7 @@ import {
 } from '@/commons/utils/localStorageManager'
 
 export const getInitialTab = (
-  venueId: number | undefined,
+  venueId: number | null,
   hasIndividual: boolean,
   hasCollective: boolean
 ): string => {
@@ -12,7 +12,7 @@ export const getInitialTab = (
   // (no venueId or venue does neither individual nor collective)
   let initialTab: string = 'tab-error'
 
-  if (venueId === undefined) {
+  if (venueId === null) {
     return initialTab
   }
 
@@ -42,9 +42,9 @@ export const getInitialTab = (
 
 export const onNewTabSelected = (
   newSelectedTab: string,
-  venueId: number | undefined
+  venueId: number | null
 ): void => {
-  if (venueId !== undefined) {
+  if (venueId !== null) {
     const lastTabsByVenue = JSON.parse(
       localStorageManager.getItem(
         LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS

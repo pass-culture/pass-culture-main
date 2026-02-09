@@ -26,7 +26,7 @@ describe('getInitialTab', () => {
   it('should return "tab-error" if no venue given', () => {
     const ls = getLsManager()
 
-    expect(getInitialTab(undefined, false, true)).toBe('tab-error')
+    expect(getInitialTab(null, false, true)).toBe('tab-error')
 
     expect(ls.getItem).not.toHaveBeenCalled()
     expect(ls.setItem).not.toHaveBeenCalled()
@@ -129,7 +129,7 @@ describe('onNewTabSelected', () => {
 
   it('should do nothing when no venueId is given', () => {
     const ls = getLsManager()
-    onNewTabSelected('tab-individual', undefined)
+    onNewTabSelected('tab-individual', null)
     expect(ls.getItem).not.toHaveBeenCalled()
     expect(ls.setItem).not.toHaveBeenCalled()
   })
