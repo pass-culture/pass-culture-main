@@ -89,6 +89,7 @@ export const makeGetVenueResponseModel = <
     venueType: makeVenueTypeResponseModel({}),
     visualDisabilityCompliant: false,
     canDisplayHighlights: false,
+    hasNonDraftOffers: false,
   }
 
   return {

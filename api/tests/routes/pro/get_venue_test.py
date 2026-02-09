@@ -22,7 +22,21 @@ from pcapi.utils.image_conversion import DO_NOT_CROP
 
 @pytest.mark.usefixtures("db_session")
 class Returns200Test:
-    def when_user_has_rights_on_managing_offerer(self, client, db_session):
+    num_queries = testing.AUTHENTICATION_QUERIES
+    num_queries += 1  # select venue, venue_bank_account_link, bank_acount, offerer
+    num_queries += 1  # select venue_pricing_point_link
+    num_queries += 1  # check user has rignts on venue
+    num_queries += 1  # select google_places_info
+    num_queries += 1  # select accessibility_provider
+    num_queries += 1  # select offer
+    num_queries += 1  # venue.hasActiveIndividualOffer
+    num_queries += 1  # venue.hasPartnerPage
+    num_queries += 1  # venue.canDisplayHighlights
+    num_queries += 1  # venue.hasNonDraftOffers
+
+    num_queries_no_places_info = num_queries - 1
+
+    def when_user_has_rights_on_managing_offerer(self, client):
         now = date_utils.get_naive_utc_now()
         user_offerer = offerers_factories.UserOffererFactory(user__email="user.pro@test.com")
         venue = offerers_factories.CollectiveVenueFactory(
@@ -226,23 +240,12 @@ class Returns200Test:
             "isValidated": True,
             "allowedOnAdage": True,
             "hasPartnerPage": True,
+            "hasNonDraftOffers": True,
         }
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        # select venue, offerer, venue_contact, educational_domain_venue, educational_domain,
-        # collective_dms_application, offerer_address, address
-        num_queries += 1
-        num_queries += 1  # select venue_bank_account_link, bank_account, venue (selectinload)
-        num_queries += 1  # select venue_pricing_point_link, venue (selectinload)
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
+        num_queries = self.num_queries + 1  # venue_bank_account_link
         with testing.assert_num_queries(num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
@@ -264,17 +267,7 @@ class Returns200Test:
         db.session.expire_all()
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -303,16 +296,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_no_places_info):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -336,17 +320,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -363,17 +337,7 @@ class Returns200Test:
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
         venue_id = venue.id
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -394,17 +358,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_no_places_info):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -438,17 +393,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_no_places_info):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -473,17 +419,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_no_places_info):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -512,17 +449,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_no_places_info):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -543,17 +471,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries_no_places_info):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -575,18 +494,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -604,18 +513,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -630,18 +529,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -660,18 +549,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -688,18 +567,8 @@ class Returns200Test:
         )
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -745,18 +614,8 @@ class Returns200Test:
         offerers_factories.AccessibilityProviderFactory(venue=venue, externalAccessibilityData=venue_accessibility_data)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -795,18 +654,8 @@ class Returns200Test:
         offers_factories.OfferFactory(venue=venue)
 
         auth_request = client.with_session_auth(email=user_offerer.user.email)
-        num_queries = testing.AUTHENTICATION_QUERIES
-        num_queries += 1  # select venue and offerer
-        num_queries += 1  # select venue_pricing_point_link
-        num_queries += 1  # check user has rignts on venue
-        num_queries += 1  # select google_places_info
-        num_queries += 1  # select accessibility_provider
-        num_queries += 1  # select offer
-        num_queries += 1  # venue.hasActiveIndividualOffer
-        num_queries += 1  # venue.hasPartnerPage
-        num_queries += 1  # venue.canDisplayHighlights
         venue_id = venue.id
-        with testing.assert_num_queries(num_queries):
+        with testing.assert_num_queries(self.num_queries):
             response = auth_request.get("/venues/%s" % venue_id)
             assert response.status_code == 200
 
@@ -842,6 +691,24 @@ class Returns200Test:
         assert response.status_code == 200
 
         assert response.json["canDisplayHighlights"] is can_display_highlights
+
+    def test_has_non_draft_offers(self, client):
+        user_offerer = offerers_factories.UserOffererFactory()
+        venue = offerers_factories.VenueFactory(managingOfferer=user_offerer.offerer)
+        offers_factories.DraftOfferFactory(venue=venue)
+
+        auth_request = client.with_session_auth(email=user_offerer.user.email)
+        response = auth_request.get(f"/venues/{venue.id}")
+        assert response.status_code == 200
+
+        assert response.json["hasNonDraftOffers"] is False
+
+        offers_factories.OfferFactory(venue=venue)
+
+        response = auth_request.get(f"/venues/{venue.id}")
+        assert response.status_code == 200
+
+        assert response.json["hasNonDraftOffers"] is True
 
 
 class Returns403Test:

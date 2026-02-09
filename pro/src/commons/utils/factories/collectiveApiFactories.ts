@@ -291,6 +291,7 @@ export const defaultGetVenue: GetVenueResponseModel = {
   allowedOnAdage: true,
   hasNonFreeOffers: true,
   canDisplayHighlights: true,
+  hasNonDraftOffers: true,
 }
 
 export const defaultGetCollectiveOfferRequest: GetCollectiveOfferRequestResponseModel =
