@@ -65,7 +65,7 @@ describe('extractInitialInstitutionValues', () => {
     ).toStrictEqual({
       institution: '',
       teacherEmail: 'reda.khteur@example.com',
-      teacherName: '',
+      teacherName: 'Reda Khteur',
     })
   })
 })

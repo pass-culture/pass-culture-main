@@ -20,12 +20,18 @@ export const extractInitialInstitutionValues = (
   institution?: EducationalInstitutionResponseModel | null,
   teacher?: EducationalRedactorResponseModel | null,
   requestInformations?: GetCollectiveOfferRequestResponseModel | null
-): InstitutionFormValues => ({
-  institution: institution?.id.toString() ?? '',
-  teacherEmail: teacher
-    ? `${teacher.email}`
-    : requestInformations
-      ? `${requestInformations.redactor.email}`
-      : '',
-  teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : '',
-})
+): InstitutionFormValues => {
+  const teacherEmailFromRequest = requestInformations
+    ? `${requestInformations.redactor.email}`
+    : ''
+  const teacherNameFromRequest = requestInformations
+    ? `${requestInformations.redactor.firstName} ${requestInformations.redactor.lastName}`
+    : ''
+  return {
+    institution: institution?.id.toString() ?? '',
+    teacherEmail: teacher ? `${teacher.email}` : teacherEmailFromRequest,
+    teacherName: teacher
+      ? `${teacher.firstName} ${teacher.lastName}`
+      : teacherNameFromRequest,
+  }
+}

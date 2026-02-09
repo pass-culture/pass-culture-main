@@ -44,7 +44,7 @@ describe('getEducationalInstitutions', () => {
 
   it('should return an error when the institutions could not be retrieved', async () => {
     vi.spyOn(api, 'getEducationalInstitutions').mockRejectedValueOnce(
-      new Error()
+      new Error('no institution found')
     )
 
     await expect(() => getEducationalInstitutions()).rejects.toThrowError()
@@ -54,7 +54,7 @@ describe('getEducationalInstitutions', () => {
     vi.spyOn(api, 'getEducationalInstitutions')
       .mockResolvedValueOnce(institutionsPaginated)
       .mockResolvedValueOnce({ ...institutionsPaginated, page: 2 })
-      .mockRejectedValueOnce(new Error())
+      .mockRejectedValueOnce(new Error('no institution found'))
 
     await expect(() => getEducationalInstitutions()).rejects.toThrowError()
   })
