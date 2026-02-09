@@ -498,3 +498,11 @@ class OfferComplianceFactory(BaseFactory):
     offer = factory.SubFactory(OfferFactory)
     compliance_score = 12
     compliance_reasons = ["stock_price", "offer_description"]
+
+
+class OfferQualityFactory(BaseFactory):
+    class Meta:
+        model = models.OfferQuality
+
+    offer = factory.SubFactory(OfferFactory)
+    completionScore = 5.0
