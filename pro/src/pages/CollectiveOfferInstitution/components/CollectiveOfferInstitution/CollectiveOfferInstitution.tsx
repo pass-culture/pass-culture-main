@@ -351,6 +351,7 @@ export const CollectiveOfferInstitutionScreen = ({
     }
   }, 400)
 
+  const requestIdQueryParam = requestId ? `?requete=${requestId}` : ''
   return (
     <>
       <OfferEducationalActions
@@ -449,9 +450,7 @@ export const CollectiveOfferInstitutionScreen = ({
                     }
                     to={
                       mode === Mode.CREATION
-                        ? `/offre/${offer.id}/collectif/stocks${
-                            requestId ? `?requete=${requestId}` : ''
-                          }`
+                        ? `/offre/${offer.id}/collectif/stocks${requestIdQueryParam}`
                         : '/offres/collectives'
                     }
                     label={
