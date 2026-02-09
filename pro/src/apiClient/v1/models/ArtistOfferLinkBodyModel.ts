@@ -4,8 +4,8 @@
 /* eslint-disable */
 import type { ArtistType } from './ArtistType';
 export type ArtistOfferLinkBodyModel = {
-  artistId?: string | null;
+  artistId: string | null;
+  artistName: string;
   artistType: ArtistType;
-  customName?: string | null;
 };
 
