@@ -61,7 +61,7 @@ export const ReimbursementsTabs = ({
     return steps
   }
 
-  const tabs: NavLinkItem[] = getSteps().map(({ id, label, url }) => ({
+  const tabs: NavLinkItem<string>[] = getSteps().map(({ id, label, url }) => ({
     key: id,
     label,
     url,

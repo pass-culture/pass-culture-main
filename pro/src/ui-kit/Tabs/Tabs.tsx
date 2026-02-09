@@ -1,7 +1,7 @@
 import { type NavLinkItem, NavLinkItems } from './NavLinkItems/NavLinkItems'
 import { type TabItem, TabItems } from './TabItems/TabItems'
 
-export type BaseTabsProps = {
+export type BaseTabsProps<T extends string> = {
   /**
    * Navigation accessible name
    */
@@ -9,28 +9,28 @@ export type BaseTabsProps = {
   /**
    * The key of the selected link.
    */
-  selectedKey?: string
+  selectedKey?: T
   className?: string
 }
 
-type StandardTabsProps = BaseTabsProps & {
+type StandardTabsProps<T extends string> = BaseTabsProps<T> & {
   type: 'tabs'
   /**
    * An array of links or tabs to be rendered.
    */
-  items: TabItem[]
+  items: TabItem<T>[]
   /**
    * The function called when a tab is clicked
    */
-  onChange: (selectedKey: string) => void
+  onChange: (selectedKey: T) => void
 }
 
-type NavTabsProps = BaseTabsProps & {
+type NavTabsProps<T extends string> = BaseTabsProps<T> & {
   type: 'links'
   /**
    * An array of links or tabs to be rendered.
    */
-  items: NavLinkItem[]
+  items: NavLinkItem<T>[]
 }
 
 /**
@@ -53,7 +53,9 @@ type NavTabsProps = BaseTabsProps & {
  *   selectedKey="home"
  * />
  */
-export const Tabs = (props: StandardTabsProps | NavTabsProps): JSX.Element => {
+export const Tabs = <T extends string>(
+  props: StandardTabsProps<T> | NavTabsProps<T>
+): JSX.Element => {
   return props.type === 'tabs' ? (
     <TabItems
       navLabel={props.navLabel}

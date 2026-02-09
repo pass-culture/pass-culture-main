@@ -23,10 +23,10 @@ beforeEach(() => {
 })
 
 describe('getInitialTab', () => {
-  it('should return "tab-error" if no venue given', () => {
+  it('should return "tab-individual" if no venue given', () => {
     const ls = getLsManager()
 
-    expect(getInitialTab(null, false, true)).toBe('tab-error')
+    expect(getInitialTab(null, false, true)).toBe('tab-individual')
 
     expect(ls.getItem).not.toHaveBeenCalled()
     expect(ls.setItem).not.toHaveBeenCalled()
@@ -100,7 +100,7 @@ describe('getInitialTab', () => {
         scenario: 'venue does neither collective nor individual',
         hasIndividual: false,
         hasCollective: false,
-        expectedTab: 'error',
+        expectedTab: 'individual',
       },
     ])('should return tab $expectedTab if $scenario', ({
       hasIndividual,

@@ -148,7 +148,7 @@ export const CollectiveEditionOfferNavigation = ({
       CollectiveOfferTemplateAllowedAction.CAN_SHARE
     )
 
-  const tabs: NavLinkItem[] = [
+  const tabs: NavLinkItem<string>[] = [
     {
       key: CollectiveOfferStep.DETAILS,
       label: 'Détails de l’offre',

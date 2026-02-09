@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import type { BaseTabsProps } from '../Tabs'
 import styles from '../Tabs.module.scss'
 
-export type NavLinkItem = {
+export type NavLinkItem<T extends string> = {
   /**
    * The label of the nav link.
    */
@@ -12,23 +12,23 @@ export type NavLinkItem = {
   /**
    * The unique key identifying the nav link.
    */
-  key: string
+  key: T
   /**
    * The URL for the navigation link.
    */
   url: string
 }
 
-type NavLinkItemsProps = BaseTabsProps & {
-  links: NavLinkItem[]
+type NavLinkItemsProps<T extends string> = BaseTabsProps<T> & {
+  links: NavLinkItem<T>[]
 }
 
-export const NavLinkItems = ({
+export const NavLinkItems = <T extends string>({
   navLabel,
   selectedKey,
   links,
   className,
-}: NavLinkItemsProps): JSX.Element => {
+}: NavLinkItemsProps<T>): JSX.Element => {
   return (
     <nav aria-label={navLabel}>
       {/** biome-ignore lint/correctness/useUniqueElementIds: This is always
