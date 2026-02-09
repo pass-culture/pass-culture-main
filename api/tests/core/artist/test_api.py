@@ -6,6 +6,7 @@ import pcapi.core.artist.factories as artist_factories
 import pcapi.core.offers.factories as offers_factories
 from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models as artist_models
+from pcapi.core.artist.api import ArtistOfferLinkKey
 from pcapi.core.artist.api import create_artist_offer_link
 from pcapi.core.artist.api import get_artist_image_url
 from pcapi.core.artist.api import upsert_artist_offer_links
@@ -76,9 +77,9 @@ class CreateArtistOfferLinkTest:
         offer = offers_factories.OfferFactory()
         artist = artist_factories.ArtistFactory()
 
-        link_data = artist_serialize.ArtistOfferLinkBodyModel(
-            artist_id=artist.id,
+        link_data = ArtistOfferLinkKey(
             artist_type=artist_models.ArtistType.PERFORMER,
+            artist_id=artist.id,
             custom_name=None,
         )
 
@@ -94,7 +95,7 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_custom_name(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferLinkBodyModel(
+        link_data = ArtistOfferLinkKey(
             artist_id=None,
             artist_type=artist_models.ArtistType.AUTHOR,
             custom_name="John Doe",
@@ -112,7 +113,7 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_missing_artist_data(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferLinkBodyModel(
+        link_data = ArtistOfferLinkKey(
             artist_id=None,
             artist_type=artist_models.ArtistType.PERFORMER,
             custom_name=None,
@@ -125,7 +126,7 @@ class CreateArtistOfferLinkTest:
         offer = offers_factories.OfferFactory()
         artist = artist_factories.ArtistFactory()
 
-        link_data = artist_serialize.ArtistOfferLinkBodyModel(
+        link_data = ArtistOfferLinkKey(
             artist_id=artist.id,
             artist_type=artist_models.ArtistType.PERFORMER,
             custom_name=None,
@@ -138,7 +139,7 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_duplicate_custom_name(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferLinkBodyModel(
+        link_data = ArtistOfferLinkKey(
             artist_id=None,
             artist_type=artist_models.ArtistType.AUTHOR,
             custom_name="John Doe",
@@ -151,10 +152,10 @@ class CreateArtistOfferLinkTest:
     def test_create_artist_offer_link_with_invalid_artist_id(self):
         offer = offers_factories.OfferFactory()
 
-        link_data = artist_serialize.ArtistOfferLinkBodyModel(
+        link_data = ArtistOfferLinkKey(
             artist_id="invalid_artist_id",
             artist_type=artist_models.ArtistType.PERFORMER,
-            custom_name=None,
+            custom_name="invalid_artist_name",
         )
 
         with pytest.raises(artist_exceptions.InvalidArtistDataException):
@@ -169,7 +170,7 @@ class UpsertArtistOfferLinksTest:
 
         incoming_links = [
             artist_serialize.ArtistOfferLinkBodyModel(
-                artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
+                artist_id=artist.id, artist_type=artist_models.ArtistType.PERFORMER, artist_name=artist.name
             )
         ]
 
@@ -200,9 +201,9 @@ class UpsertArtistOfferLinksTest:
 
         incoming_links = [
             artist_serialize.ArtistOfferLinkBodyModel(
-                artistId=existing_link.artist_id,
-                artistType=existing_link.artist_type,
-                customName=None,
+                artist_id=existing_link.artist_id,
+                artist_type=existing_link.artist_type,
+                artist_name=existing_link.artist_name,
             )
         ]
         upsert_artist_offer_links(incoming_links, offer)
@@ -218,10 +219,10 @@ class UpsertArtistOfferLinksTest:
 
         incoming_links = [
             artist_serialize.ArtistOfferLinkBodyModel(
-                artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
+                artist_id=artist.id, artist_type=artist_models.ArtistType.PERFORMER, artist_name=artist.name
             ),
             artist_serialize.ArtistOfferLinkBodyModel(
-                artistId=artist.id, artistType=artist_models.ArtistType.PERFORMER, customName=None
+                artist_id=artist.id, artist_type=artist_models.ArtistType.PERFORMER, artist_name=artist.name
             ),
         ]
         upsert_artist_offer_links(incoming_links, offer)

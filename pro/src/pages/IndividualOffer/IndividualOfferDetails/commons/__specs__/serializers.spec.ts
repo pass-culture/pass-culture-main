@@ -247,17 +247,17 @@ describe('serializeDetailsPostData', () => {
       artistOfferLinks: [
         {
           artistId: '1',
-          customName: null,
+          artistName: 'Boris Vian',
           artistType: ArtistType.AUTHOR,
         },
         {
           artistId: null,
-          customName: 'Marcel et son orchestre',
+          artistName: 'Marcel et son orchestre',
           artistType: ArtistType.PERFORMER,
         },
         {
           artistId: '2',
-          customName: null,
+          artistName: 'Bob Sinclar',
           artistType: ArtistType.STAGE_DIRECTOR,
         },
       ],
@@ -353,17 +353,17 @@ describe('serializeDetailsPatchData', () => {
       artistOfferLinks: [
         {
           artistId: '1',
-          customName: null,
+          artistName: 'Boris Vian',
           artistType: ArtistType.AUTHOR,
         },
         {
           artistId: null,
-          customName: 'Marcel et son orchestre',
+          artistName: 'Marcel et son orchestre',
           artistType: ArtistType.PERFORMER,
         },
         {
           artistId: '2',
-          customName: null,
+          artistName: 'Bob Sinclar',
           artistType: ArtistType.STAGE_DIRECTOR,
         },
       ],

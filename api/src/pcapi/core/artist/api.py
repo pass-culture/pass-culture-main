@@ -7,6 +7,7 @@ from pcapi.core.artist import exceptions as artist_exceptions
 from pcapi.core.artist import models
 from pcapi.core.artist.models import Artist
 from pcapi.core.artist.models import ArtistProductLink
+from pcapi.core.artist.models import ArtistType
 from pcapi.core.offers.models import ImageType
 from pcapi.core.offers.models import Product
 from pcapi.core.offers.models import ProductMediation
@@ -16,7 +17,7 @@ from pcapi.routes.serialization import artist_serialize
 
 @dataclass(frozen=True)
 class ArtistOfferLinkKey:
-    artist_type: str
+    artist_type: ArtistType
     artist_id: str | None
     custom_name: str | None
 
@@ -43,7 +44,7 @@ def get_artist_image_url(artist: Artist) -> str | None:
     return image_url
 
 
-def create_artist_offer_link(offer_id: int, artist_offer_link: artist_serialize.ArtistOfferLinkBodyModel) -> None:
+def create_artist_offer_link(offer_id: int, artist_offer_link: ArtistOfferLinkKey) -> None:
     link = models.ArtistOfferLink(
         offer_id=offer_id,
         artist_id=artist_offer_link.artist_id,
@@ -67,13 +68,14 @@ def create_artist_offer_link(offer_id: int, artist_offer_link: artist_serialize.
         raise error
 
 
-def _get_artist_offer_link_key(
+def get_artist_offer_link_key(
     link: models.ArtistOfferLink | artist_serialize.ArtistOfferLinkBodyModel,
 ) -> ArtistOfferLinkKey:
+    custom_name = link.artist_name if link.artist_id is None else None
     return ArtistOfferLinkKey(
-        artist_type=link.artist_type.value,
+        artist_type=link.artist_type,
         artist_id=link.artist_id,
-        custom_name=link.custom_name,
+        custom_name=custom_name,
     )
 
 
@@ -85,22 +87,21 @@ def upsert_artist_offer_links(
     - Deletes existing artist offer links that are not in the new list
     - Creates new artist offer links for entries that don't already exist
     """
-    current_links_keys = {_get_artist_offer_link_key(link) for link in offer.artistOfferLinks}
-    incoming_links_keys = {_get_artist_offer_link_key(link) for link in artist_offer_links}
+    current_links_keys = {get_artist_offer_link_key(link) for link in offer.artistOfferLinks}
+    incoming_links_keys = {get_artist_offer_link_key(link) for link in artist_offer_links}
 
     deleted_keys = []
     for current_link in offer.artistOfferLinks:
-        key = _get_artist_offer_link_key(current_link)
-        if key not in incoming_links_keys:
+        current_key = get_artist_offer_link_key(current_link)
+        if current_key not in incoming_links_keys:
             db.session.delete(current_link)
-            deleted_keys.append(key)
+            deleted_keys.append(current_key)
 
     created_keys = []
-    for incoming_link in artist_offer_links:
-        key = _get_artist_offer_link_key(incoming_link)
-        if key not in current_links_keys:
-            create_artist_offer_link(offer.id, incoming_link)
-            created_keys.append(key)
+    for incoming_key in incoming_links_keys:
+        if incoming_key not in current_links_keys:
+            create_artist_offer_link(offer.id, incoming_key)
+            created_keys.append(incoming_key)
 
     db.session.flush()
 

@@ -281,8 +281,9 @@ def create_offer(
     if feature.FeatureToggle.WIP_OFFER_ARTISTS.is_active() and artist_offer_links is not None:
         validation.check_artist_offer_links(artist_offer_links, subcategory)
 
-        for link_data in artist_offer_links:
-            artist_api.create_artist_offer_link(offer.id, link_data)
+        for artist_offer_link in artist_offer_links:
+            link_key = artist_api.get_artist_offer_link_key(artist_offer_link)
+            artist_api.create_artist_offer_link(offer.id, link_key)
 
     # This log is used for analytics purposes.
     # If you need to make a 'breaking change' of this log, please contact the data team.
