@@ -156,16 +156,14 @@ describe('NewHomepage', () => {
 
       it.each`
         scenario             | venue    | hasIndividual | hasCollective | initialTab
-        ${'only collective'} | ${true}  | ${false}      | ${true}       | ${'collective'}
-        ${'only individual'} | ${true}  | ${true}       | ${false}      | ${'individual'}
-        ${'nothing'}         | ${true}  | ${false}      | ${false}      | ${'error'}
-        ${'no venue '}       | ${false} | ${false}      | ${false}      | ${'error'}
+        ${'only collective'} | ${true}  | ${false}      | ${true}       | ${'tab-collective'}
+        ${'only individual'} | ${true}  | ${true}       | ${false}      | ${'tab-individual'}
+        ${'nothing'}         | ${true}  | ${false}      | ${false}      | ${'tab-individual'}
+        ${'no venue '}       | ${false} | ${false}      | ${false}      | ${'tab-individual'}
       `(
         'should handle the $scenario case.',
         ({ venue, hasIndividual, hasCollective, initialTab }) => {
-          vi.spyOn(tabManagement, 'getInitialTab').mockReturnValue(
-            `tab-${initialTab}`
-          )
+          vi.spyOn(tabManagement, 'getInitialTab').mockReturnValue(initialTab)
           vi.spyOn(tabManagement, 'onNewTabSelected')
 
           renderNewHomepage({

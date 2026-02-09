@@ -3,7 +3,7 @@ import cn from 'classnames'
 import type { BaseTabsProps } from '../Tabs'
 import styles from '../Tabs.module.scss'
 
-export type TabItem = {
+export type TabItem<T extends string> = {
   /**
    * The label of the tab.
    */
@@ -12,7 +12,7 @@ export type TabItem = {
    * The unique key identifying the tab.
    * This is used to identify the selected tab.
    */
-  key: string
+  key: T
   /**
    * Base string used to derive DOM ids for tab and panel elements.
    *
@@ -31,22 +31,22 @@ export type TabItem = {
   baseId?: string
 }
 
-type TabItemsProps = BaseTabsProps & {
+type TabItemsProps<T extends string> = BaseTabsProps<T> & {
   navLabel: string
-  tabs: TabItem[]
-  onChange: (selectedKey: string) => void
+  tabs: TabItem<T>[]
+  onChange: (selectedKey: T) => void
 }
 
 export const getTabId = (baseId: string): string => `tab-${baseId}`
 export const getPanelId = (baseId: string): string => `panel-${baseId}`
 
-export const TabItems = ({
+export const TabItems = <T extends string>({
   navLabel,
   tabs,
   onChange,
   selectedKey,
   className,
-}: TabItemsProps): JSX.Element => {
+}: TabItemsProps<T>): JSX.Element => {
   return (
     <div>
       <div

@@ -67,7 +67,7 @@ export const VenueEdition = (): JSX.Element | null => {
 
   const isNotReady = venueQuery.isLoading || !venue
 
-  const tabs: NavLinkItem[] = [
+  const tabs: NavLinkItem<string>[] = [
     {
       key: 'individual',
       label: 'Pour le grand public',

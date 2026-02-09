@@ -10,7 +10,12 @@ import {
 } from '@/ui-kit/Tabs/TabItems/TabItems'
 import { Tabs } from '@/ui-kit/Tabs/Tabs'
 
-import { getInitialTab, onNewTabSelected } from './commons/utils/tabsManagement'
+import {
+  getInitialTab,
+  onNewTabSelected,
+  TABS,
+  type TabKey,
+} from './commons/utils/tabsManagement'
 
 export const NewHomepage = (): JSX.Element => {
   const selectedVenue: GetVenueResponseModel | null = useAppSelector(
@@ -27,20 +32,20 @@ export const NewHomepage = (): JSX.Element => {
   const individualId = useId()
   const collectiveId = useId()
 
-  const tabs: TabItem[] = [
+  const tabs: TabItem<TabKey>[] = [
     {
-      key: 'tab-individual',
+      key: TABS.INDIVIDUAL,
       label: 'Individuel',
       baseId: individualId,
     },
     {
-      key: 'tab-collective',
+      key: TABS.COLLECTIVE,
       label: 'Collectif',
       baseId: collectiveId,
     },
   ]
 
-  const handleTabChange = (newSelectedTab: string) => {
+  const handleTabChange = (newSelectedTab: TabKey) => {
     setSelectedTab(newSelectedTab)
     onNewTabSelected(newSelectedTab, selectedVenue?.id ?? null)
   }
@@ -61,8 +66,8 @@ export const NewHomepage = (): JSX.Element => {
           id={getPanelId(individualId)}
           role="tabpanel"
           aria-labelledby={getTabId(individualId)}
-          tabIndex={selectedTab === 'tab-individual' ? 0 : -1}
-          hidden={selectedTab !== 'tab-individual'}
+          tabIndex={selectedTab === TABS.INDIVIDUAL ? 0 : -1}
+          hidden={selectedTab !== TABS.INDIVIDUAL}
         >
           <p>Bienvenue sur l'accueil individuel</p>
         </div>
@@ -72,8 +77,8 @@ export const NewHomepage = (): JSX.Element => {
           id={getPanelId(collectiveId)}
           role="tabpanel"
           aria-labelledby={getTabId(collectiveId)}
-          tabIndex={selectedTab === 'tab-collective' ? 0 : -1}
-          hidden={selectedTab !== 'tab-collective'}
+          tabIndex={selectedTab === TABS.COLLECTIVE ? 0 : -1}
+          hidden={selectedTab !== TABS.COLLECTIVE}
         >
           <p>Bienvenue sur l'accueil collectif</p>
         </div>

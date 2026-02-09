@@ -3,14 +3,19 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
+export const TABS = {
+  INDIVIDUAL: 'tab-individual',
+  COLLECTIVE: 'tab-collective',
+} as const
+
+export type TabKey = (typeof TABS)[keyof typeof TABS]
+
 export const getInitialTab = (
   venueId: number | null,
   hasIndividual: boolean,
   hasCollective: boolean
-): string => {
-  // The default here is in case something went wrong
-  // (no venueId or venue does neither individual nor collective)
-  let initialTab: string = 'tab-error'
+): TabKey => {
+  let initialTab: TabKey = TABS.INDIVIDUAL
 
   if (venueId === null) {
     return initialTab
@@ -27,21 +32,21 @@ export const getInitialTab = (
       ) ?? '{}'
     )
     const lastVisitedTab = lastTabsByVenue[venueId]
-    initialTab = lastVisitedTab || 'tab-individual'
+    initialTab = lastVisitedTab || TABS.INDIVIDUAL
     if (!lastVisitedTab) {
       onNewTabSelected(initialTab, venueId)
     }
   } else if (hasIndividual) {
-    initialTab = 'tab-individual'
+    initialTab = TABS.INDIVIDUAL
   } else if (hasCollective) {
-    initialTab = 'tab-collective'
+    initialTab = TABS.COLLECTIVE
   }
 
   return initialTab
 }
 
 export const onNewTabSelected = (
-  newSelectedTab: string,
+  newSelectedTab: TabKey,
   venueId: number | null
 ): void => {
   if (venueId !== null) {
