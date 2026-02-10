@@ -1305,12 +1305,6 @@ def get_offer_timezone(offer_id: int) -> str:
     The function determines the timezone for the specified offer based on the following priority:
     1. If an address is directly linked to the offer, return its timezone.
     2. If no address is linked to the offer, return the timezone of the address linked to the offer's venue.
-    3. If no address is linked to the venue (e.g., for virtual venues), return the venue's timezone.
-
-    Note:
-        - This behavior accounts for digital offers that are linked to virtual venues,
-          which do not have associated offerer addresses. Once virtual venues are removed
-          from the system, this fallback logic (step 3) should be simplified.
 
     Args:
         offer_id (int): The ID of the offer whose timezone is to be retrieved.
