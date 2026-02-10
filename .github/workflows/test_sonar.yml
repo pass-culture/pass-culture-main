@@ -7,6 +7,10 @@ on:
 
 permissions: write-all
 
+defaults:
+  run:
+    working-directory: api
+
 jobs:
     sonar-cloud-check:
       name: "Sonar Cloud check"
