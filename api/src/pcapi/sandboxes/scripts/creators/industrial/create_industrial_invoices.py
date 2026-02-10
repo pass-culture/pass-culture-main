@@ -290,6 +290,7 @@ def build_many_extra_invoices(count: int = 2) -> None:
 
         finance_api.generate_cashflows_and_payment_files(cutoff=cutoff)
 
+        assert venue.current_bank_account is not None
         bank_account = venue.current_bank_account
         cashflows = db.session.query(finance_models.Cashflow).filter_by(bankAccount=bank_account).all()
         cashflow_ids = [c.id for c in cashflows]

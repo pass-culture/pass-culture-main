@@ -341,7 +341,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
     venueLabelId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("venue_label.id"), nullable=True
     )
-    venueLabel: sa_orm.Mapped["VenueLabel"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
+    venueLabel: sa_orm.Mapped["VenueLabel | None"] = sa_orm.relationship("VenueLabel", foreign_keys=[venueLabelId])
 
     dateCreated: sa_orm.Mapped[datetime] = sa_orm.mapped_column(
         sa.DateTime, nullable=False, default=date_utils.get_naive_utc_now
@@ -866,7 +866,7 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
 
     @property
     def is_caledonian(self) -> bool:
-        return siren_utils.is_ridet(self.siret) or (
+        return siren_utils.is_ridet(self.siret) or bool(
             self.offererAddress and self.offererAddress.address.departmentCode == NEW_CALEDONIA_DEPARTMENT_CODE
         )
 

@@ -362,7 +362,7 @@ def get_pro_attributes(email: str) -> models.ProAttributes:
         venues_ids={venue.id for venue in all_venues},
         venues_names={venue.publicName or venue.name for venue in all_venues},
         venues_types=venues_types,
-        venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabelId},
+        venues_labels={venue.venueLabel.label for venue in all_venues if venue.venueLabel is not None},
         departement_code={venue.offererAddress.address.departmentCode for venue in all_venues},
         postal_code={venue.offererAddress.address.postalCode for venue in all_venues},
         is_eac_meg=is_eac_meg,

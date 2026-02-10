@@ -681,7 +681,7 @@ def validate_beneficiary(
     if not FeatureToggle.BENEFICIARY_VALIDATION_AFTER_FRAUD_CHECKS.is_active():
         raise DisabledFeatureError("Cannot validate beneficiary because the feature is disabled")
 
-    review = subscription_models.BeneficiaryFraudReview(
+    beneficiary_review = subscription_models.BeneficiaryFraudReview(
         user=user,
         author=reviewer,
         reason=reason,
@@ -691,14 +691,14 @@ def validate_beneficiary(
         ),  # needed condition to keep flask admin review behavior
     )
 
-    if review.review is not None:
-        handler = REVIEW_HANDLERS.get(subscription_models.FraudReviewStatus(review.review))
+    if beneficiary_review.review is not None:
+        handler = REVIEW_HANDLERS.get(subscription_models.FraudReviewStatus(beneficiary_review.review))
         if handler:
-            handler(user, review, None if user.eligibility is None else reviewed_eligibility)
+            handler(user, beneficiary_review, None if user.eligibility is None else reviewed_eligibility)
 
-    db.session.add(review)
+    db.session.add(beneficiary_review)
     db.session.flush()
-    return review
+    return beneficiary_review
 
 
 def _check_id_piece_number_unicity(user: users_models.User, id_piece_number: str | None) -> None:

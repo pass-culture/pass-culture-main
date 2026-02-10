@@ -54,6 +54,7 @@ def create_venue_provider(
     if existing_venue_provider:
         raise providers_exceptions.ProviderException({"global": ["Votre lieu est déjà lié à cette source."]})
 
+    new_venue_provider: providers_models.VenueProvider
     if provider.localClass == "AllocineStocks":
         new_venue_provider = connect_venue_to_allocine(venue, provider.id, payload)
     elif provider.localClass in providers_constants.CINEMA_PROVIDER_NAMES:
@@ -183,6 +184,7 @@ def update_venue_provider(
 ) -> providers_models.VenueProvider:
     activate_or_deactivate_venue_provider(venue_provider, bool(venue_provider_payload.is_active), author)
     if venue_provider.isFromAllocineProvider:
+        venue_provider = typing.cast(providers_models.AllocineVenueProvider, venue_provider)
         venue_provider = _update_allocine_venue_provider(venue_provider, venue_provider_payload)
     else:
         if venue_provider.provider.isCinemaProvider:

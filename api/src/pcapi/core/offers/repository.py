@@ -621,11 +621,11 @@ def _filter_by_status(query: sa_orm.Query, status: str) -> sa_orm.Query:
     return query.filter(models.Offer.status == offer_mixin.OfferStatus[status].name)
 
 
-def venue_already_has_validated_offer(offer: models.Offer) -> bool:
+def venue_already_has_validated_offer(venue_id: int) -> bool:
     return (
         db.session.query(models.Offer.id)
         .filter(
-            models.Offer.venueId == offer.venueId,
+            models.Offer.venueId == venue_id,
             models.Offer.validation == models.OfferValidationStatus.APPROVED,
         )
         .first()

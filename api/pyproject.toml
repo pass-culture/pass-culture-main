@@ -131,6 +131,7 @@ exclude = """
 (?x)(
     tests/.*
     | src/pcapi/alembic/.*
+    | src/pcapi/scripts/local_debug_script.py
   )
 """
 

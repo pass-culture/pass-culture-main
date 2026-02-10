@@ -38,7 +38,7 @@ def _create_booking_for_statistics_offerer_multiple_venues() -> None:
     offerers_factories.UserOffererFactory.create(
         offerer=offerer_multi_venues, user__email="retention_structures@example.com"
     )
-    offers = []
+    offers: list[offers_models.Offer | educational_models.CollectiveOffer] = []
     for index in range(1, 4):
         offerer_multi_venues_venue = offerers_factories.VenueFactory.create(
             name=f"Lieu CA et CA prévisionnel {index}",
@@ -161,7 +161,7 @@ def _create_booking_for_statistics_with_offer_no_revenue() -> None:
     logger.info("created bookings for statistics for offerer with offers but no revenue")
 
 
-def _create_bookings(offers: list[offers_models.Offer]) -> None:
+def _create_bookings(offers: list[offers_models.Offer | educational_models.CollectiveOffer]) -> None:
     january_first = date_utils.get_naive_utc_now().replace(month=1, day=1)
     for offer in offers:
         dates_used = [january_first, january_first - timedelta(days=500), january_first - timedelta(days=800)]
@@ -172,8 +172,10 @@ def _create_bookings(offers: list[offers_models.Offer]) -> None:
                 finance_factories.UsedBookingFinanceEventFactory.create(booking=booking)
         else:
             for date_used in dates_used:
-                booking = _create_booking_for_collective_offer(offer, date_used, CollectiveBookingStatus.USED)
-                finance_factories.UsedCollectiveBookingFinanceEventFactory.create(collectiveBooking=booking)
+                collective_booking = _create_booking_for_collective_offer(
+                    offer, date_used, CollectiveBookingStatus.USED
+                )
+                finance_factories.UsedCollectiveBookingFinanceEventFactory.create(collectiveBooking=collective_booking)
 
         # Current year in the future, next year
         dates_programmed = [
