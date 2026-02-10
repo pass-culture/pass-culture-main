@@ -7,6 +7,6 @@ export type VenueOfOffererFromSiretResponseModel = {
   isPermanent: boolean;
   name: string;
   publicName: string;
-  siret?: string | null;
+  siret?: (string | null);
 };
 
