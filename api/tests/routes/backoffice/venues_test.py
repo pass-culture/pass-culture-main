@@ -387,6 +387,8 @@ class GetVenueTest(GetEndpointHelper):
         badges = html_parser.extract(response.data, tag="span", class_="badge")
         assert "Partenaire culturel" in badges
         assert "Suspendu" not in badges
+        assert "Réservations frauduleuses" not in badges
+        assert "Remboursements gelés" not in badges
 
     def test_get_venue_with_adage_id(self, authenticated_client):
         venue_id = offerers_factories.VenueFactory(
@@ -517,8 +519,49 @@ class GetVenueTest(GetEndpointHelper):
             response = authenticated_client.get(url)
             assert response.status_code == 200
 
-        response_text = html_parser.content_as_text(response.data)
-        assert "Réservations frauduleuses" in response_text
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Réservations frauduleuses" in badges
+        assert "Remboursements gelés" not in badges
+
+    def test_get_venue_with_suspended_reimbursement(self, authenticated_client):
+        venue = offerers_factories.VenueFactory(isReimbursementSuspended=True)
+        url = url_for(self.endpoint, venue_id=venue.id)
+
+        with assert_num_queries(self.expected_num_queries):
+            response = authenticated_client.get(url)
+            assert response.status_code == 200
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert "Remboursements gelés" in badges
+        assert "Réservations frauduleuses" not in badges
+
+    @pytest.mark.parametrize(
+        "bo_role, has_fraudulent_booking_badge, has_reimbursement_suspended_badge",
+        [
+            # Depend on permissions set in conftest.py
+            (perm_models.Roles.FRAUDE_CONFORMITE, True, True),
+            (perm_models.Roles.SUPPORT_PRO, True, True),
+            (perm_models.Roles.DAF, False, True),
+            (perm_models.Roles.CHARGE_DEVELOPPEMENT, False, False),
+        ],
+    )
+    def test_venue_badge_depending_on_role(
+        self, client, roles_with_permissions, bo_role, has_fraudulent_booking_badge, has_reimbursement_suspended_badge
+    ):
+        venue = offerers_factories.VenueFactory(isReimbursementSuspended=True)
+        bookings_factories.FraudulentBookingTagFactory(booking__stock__offer__venue=venue)
+        url = url_for(self.endpoint, venue_id=venue.id)
+        bo_user = users_factories.AdminFactory()
+        backoffice_api.upsert_roles(bo_user, [bo_role])
+
+        client = client.with_bo_session_auth(bo_user)
+        with assert_num_queries(self.expected_num_queries):
+            response = client.get(url)
+            assert response.status_code == 200
+
+        badges = html_parser.extract(response.data, tag="span", class_="badge")
+        assert ("Réservations frauduleuses" in badges) is has_fraudulent_booking_badge
+        assert ("Remboursements gelés" in badges) is has_reimbursement_suspended_badge
 
     def test_get_venue_managed_by_closed_offerer(self, authenticated_client):
         closed_venue = offerers_factories.VenueFactory(managingOfferer=offerers_factories.ClosedOffererFactory())
@@ -540,6 +583,24 @@ class GetVenueTest(GetEndpointHelper):
             assert response.status_code == 200
 
         assert ' data-has-reset="true" ' in str(response.data)
+
+    class SuspendReimbursementButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
+        button_label = "Bloquer les remboursements"
+
+        @property
+        def path(self):
+            venue = offerers_factories.VenueFactory()
+            return url_for("backoffice_web.venue.get", venue_id=venue.id)
+
+    class UnsuspendReimbursementButtonTest(button_helpers.ButtonHelper):
+        needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
+        button_label = "Rétablir les remboursements"
+
+        @property
+        def path(self):
+            venue = offerers_factories.VenueFactory(isReimbursementSuspended=True)
+            return url_for("backoffice_web.venue.get", venue_id=venue.id)
 
 
 class GetVenueStatsTest(GetEndpointHelper):
@@ -3537,3 +3598,53 @@ class GetEntrepriseInfoTest(GetEndpointHelper):
             "Erreur Le format du numéro SIRET est détecté comme invalide, nous ne pouvons pas récupérer de données sur l'établissement."
             in sirene_content
         )
+
+
+class SuspendReimbursementTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.suspend_reimbursement"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
+
+    def test_suspend_reimbursement(self, legit_user, authenticated_client):
+        venue = offerers_factories.VenueFactory()
+
+        response = self.post_to_endpoint(
+            authenticated_client, venue_id=venue.id, form={"comment": "Test"}, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        db.session.refresh(venue)
+
+        assert venue.isReimbursementSuspended is True
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
+        assert venue.action_history[0].authorUser == legit_user
+        assert venue.action_history[0].comment == "Test"
+        assert venue.action_history[0].extraData["modified_info"] == {
+            "isReimbursementSuspended": {"new_info": True, "old_info": False}
+        }
+
+
+class UnsuspendReimbursementTest(PostEndpointHelper):
+    endpoint = "backoffice_web.venue.unsuspend_reimbursement"
+    endpoint_kwargs = {"venue_id": 1}
+    needed_permission = perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION
+
+    def test_suspend_reimbursement(self, legit_user, authenticated_client):
+        venue = offerers_factories.VenueFactory(isReimbursementSuspended=True)
+
+        response = self.post_to_endpoint(
+            authenticated_client, venue_id=venue.id, form={"comment": "Test"}, follow_redirects=True
+        )
+        assert response.status_code == 200
+
+        db.session.refresh(venue)
+
+        assert venue.isReimbursementSuspended is False
+        assert len(venue.action_history) == 1
+        assert venue.action_history[0].actionType == history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED
+        assert venue.action_history[0].authorUser == legit_user
+        assert venue.action_history[0].comment == "Test"
+        assert venue.action_history[0].extraData["modified_info"] == {
+            "isReimbursementSuspended": {"new_info": False, "old_info": True}
+        }

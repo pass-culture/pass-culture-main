@@ -26,6 +26,7 @@ from pcapi.core.external.attributes import api as external_attributes_api
 from pcapi.core.finance import models as finance_models
 from pcapi.core.finance import siret_api
 from pcapi.core.geography import models as geography_models
+from pcapi.core.history import api as history_api
 from pcapi.core.history import models as history_models
 from pcapi.core.history.api import add_action
 from pcapi.core.mails import transactional as transactional_mails
@@ -337,6 +338,7 @@ def render_venue_details(venue_row: sa.engine.Row, edit_venue_form: forms.EditVi
         edit_venue_form=edit_venue_form,
         delete_form=delete_form,
         fraud_form=fraud_form,
+        comment_form=forms.CommentForm(),
         active_tab=request.args.get("active_tab", "history"),
         connect_as=connect_as,
         zendesk_sell_synchronisation_form=(
@@ -604,6 +606,11 @@ def get_venue_with_history(venue_id: int) -> offerers_models.Venue:
     if not utils.has_current_user_permission(perm_models.Permissions.PRO_FRAUD_ACTIONS):
         history_filter = sa.and_(
             history_filter, history_models.ActionHistory.actionType != history_models.ActionType.FRAUD_INFO_MODIFIED
+        )
+    if not utils.has_current_user_permission(perm_models.Permissions.READ_PRO_REIMBURSEMENT_SUSPENSION):
+        history_filter = sa.and_(
+            history_filter,
+            history_models.ActionHistory.actionType != history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
         )
 
     venue = (
@@ -1414,3 +1421,45 @@ def remove_siret(venue_id: int) -> utils.BackofficeResponse:
             "HX-Redirect": url_for("backoffice_web.venue.get", venue_id=venue_id),
         },
     )
+
+
+def _suspend_venue_reimbursement(venue_id: int, suspend: bool) -> utils.BackofficeResponse:
+    venue = get_or_404(offerers_models.Venue, venue_id)
+
+    form = forms.CommentForm()
+    if not form.validate():
+        flash(utils.build_form_error_msg(form), "warning")
+        mark_transaction_as_invalid()
+
+    if venue.isReimbursementSuspended != suspend:
+        history_api.add_action(
+            history_models.ActionType.VENUE_REIMBURSEMENT_SUSPENDED,
+            author=current_user,
+            venue=venue,
+            comment=form.comment.data,
+            modified_info={
+                "isReimbursementSuspended": {"old_info": venue.isReimbursementSuspended, "new_info": suspend}
+            },
+        )
+        venue.isReimbursementSuspended = suspend
+        db.session.flush()
+
+        flash(
+            Markup("Les remboursements vers le partenaire culturel <strong>{name}</strong> ont été {verb}.").format(
+                name=venue.common_name, verb="gelés" if suspend else "rétablis"
+            )
+        )
+
+    return redirect(url_for("backoffice_web.venue.get", venue_id=venue_id), code=303)
+
+
+@venue_blueprint.route("/<int:venue_id>/suspend-reimbursement", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
+def suspend_reimbursement(venue_id: int) -> utils.BackofficeResponse:
+    return _suspend_venue_reimbursement(venue_id, True)
+
+
+@venue_blueprint.route("/<int:venue_id>/unsuspend-reimbursement", methods=["POST"])
+@utils.permission_required(perm_models.Permissions.MANAGE_PRO_REIMBURSEMENT_SUSPENSION)
+def unsuspend_reimbursement(venue_id: int) -> utils.BackofficeResponse:
+    return _suspend_venue_reimbursement(venue_id, False)
