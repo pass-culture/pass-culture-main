@@ -4,6 +4,7 @@ import {
   OfferStatus,
   SubcategoryIdEnum,
   type VenueListItemResponseModel,
+  type VenueTypeCode,
 } from '@/apiClient/v1'
 import {
   getIndividualOfferFactory,
@@ -614,6 +615,38 @@ describe('getFormReadOnlyFields', () => {
           }),
           false,
           isNewOfferCreationFlowFeatureActive
+        )
+      ).toStrictEqual(expectedValues)
+    })
+
+    it('should disable all fields except name & description for provided offers when the venue is a museum', () => {
+      const expectedValues = [
+        'venueId',
+        'categoryId',
+        'subcategoryId',
+        'gtl_id',
+        'showType',
+        'showSubType',
+        'speaker',
+        'author',
+        'artistOfferLinks',
+        'visa',
+        'stageDirector',
+        'performer',
+        'ean',
+        'durationMinutes',
+        'subcategoryConditionalFields',
+        'productId',
+      ]
+
+      expect(
+        getFormReadOnlyFields(
+          getIndividualOfferFactory({
+            lastProvider: { name: 'provider' },
+          }),
+          false,
+          isNewOfferCreationFlowFeatureActive,
+          venueListItemFactory({ venueTypeCode: 'MUSEUM' as VenueTypeCode })
         )
       ).toStrictEqual(expectedValues)
     })

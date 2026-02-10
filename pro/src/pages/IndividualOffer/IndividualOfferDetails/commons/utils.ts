@@ -8,6 +8,7 @@ import {
   SubcategoryIdEnum,
   type SubcategoryResponseModel,
   type VenueListItemResponseModel,
+  type VenueTypeCode,
 } from '@/apiClient/v1'
 import { showOptionsTree } from '@/commons/core/Offers/categoriesSubTypes'
 import { isOfferSynchronized } from '@/commons/core/Offers/utils/typology'
@@ -223,7 +224,8 @@ export function getAccessibilityFormValuesFromOffer(
 export function getFormReadOnlyFields(
   offer: GetIndividualOfferResponseModel | null,
   hasSelectedProduct: boolean,
-  isNewOfferCreationFlowFeatureActive: boolean
+  isNewOfferCreationFlowFeatureActive: boolean,
+  venue?: VenueListItemResponseModel
 ): string[] {
   const isNewOfferDraft = offer === null
 
@@ -251,7 +253,20 @@ export function getFormReadOnlyFields(
     return [...allFieldsExceptAccessibility, ...maybeAccessibilityFields]
   }
 
-  if (hasSelectedProduct || isOfferSynchronized(offer)) {
+  if (hasSelectedProduct) {
+    return allFieldsExceptAccessibility
+  }
+
+  if (isOfferSynchronized(offer)) {
+    // (tcoudray-pass, 10/02/26)
+    // To unblock the synchronization of EPNs we, for now,
+    // authorize the edition of synchronized offers' name and description
+    // when the venue is a MUSEUM
+    if (venue?.venueTypeCode === ('MUSEUM' as VenueTypeCode)) {
+      return allFieldsExceptAccessibility.filter(
+        (field) => field !== 'name' && field !== 'description'
+      )
+    }
     return allFieldsExceptAccessibility
   }
 
