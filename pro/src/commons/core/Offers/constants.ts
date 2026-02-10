@@ -49,8 +49,6 @@ export const OFFER_WITHDRAWAL_TYPE_LABELS = {
 // TODO (igabriele, 2025-08-14): Replace these pass-through variables with the actual OfferStatus enum values where it's used.
 /** @deprecated Use `OfferStatus` enum from the API client instead. */
 export const OFFER_STATUS_SOLD_OUT = OfferStatus.SOLD_OUT
-/** @deprecated Use `OfferStatus` enum from the API client instead. */
-export const OFFER_STATUS_DRAFT = OfferStatus.DRAFT
 
 const ALL_OFFERS = ''
 const ALL_VENUES = 'all'

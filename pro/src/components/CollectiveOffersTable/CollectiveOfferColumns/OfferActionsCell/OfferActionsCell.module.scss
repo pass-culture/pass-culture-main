@@ -20,6 +20,7 @@
     justify-content: flex-start;
     width: 100%;
     padding: var(--size-spacing-s);
+    border-radius: var(--size-border-radius-s);
 
     &:focus-visible {
       @include outline.focus-outline;

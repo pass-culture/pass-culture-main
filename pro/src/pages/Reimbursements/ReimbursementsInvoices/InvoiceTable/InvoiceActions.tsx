@@ -8,9 +8,8 @@ import { downloadFile } from '@/commons/utils/downloadFile'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullDownloadIcon from '@/icons/full-download.svg'
-import fullThreeDotsIcon from '@/icons/full-three-dots.svg'
-import { DropdownItem } from '@/ui-kit/DropdownMenuWrapper/DropdownItem'
-import { DropdownMenuWrapper } from '@/ui-kit/DropdownMenuWrapper/DropdownMenuWrapper'
+import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 type InvoiceActionsProps = {
   invoice: InvoiceResponseV2Model
@@ -53,11 +52,7 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
   }
 
   return (
-    <DropdownMenuWrapper
-      title="Téléchargement des justificatifs"
-      triggerIcon={fullThreeDotsIcon}
-      triggerTooltip
-    >
+    <Dropdown title="Téléchargement des justificatifs" triggerTooltip>
       <DropdownItem
         title="Télécharger le justificatif comptable (.pdf)"
         onSelect={() => downloadPDFFile(invoice.url)}
@@ -80,6 +75,6 @@ export function InvoiceActions({ invoice }: InvoiceActionsProps) {
           label="Télécharger le détail des réservations (.csv)"
         />
       </DropdownItem>
-    </DropdownMenuWrapper>
+    </Dropdown>
   )
 }

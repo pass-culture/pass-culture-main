@@ -1,7 +1,7 @@
 /** biome-ignore-all lint/correctness/useUniqueElementIds: SideNavLinks is used once per page. There cannot be id duplications. */
 
 import classnames from 'classnames'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router'
 
 import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
@@ -30,8 +30,10 @@ import {
   ButtonVariant,
   IconPositionEnum,
 } from '@/design-system/Button/types'
+import fullDownIcon from '@/icons/full-down.svg'
 import fullLeftIcon from '@/icons/full-left.svg'
 import fullSmsIcon from '@/icons/full-sms.svg'
+import fullUpIcon from '@/icons/full-up.svg'
 import strokeBagIcon from '@/icons/stroke-bag.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeEuroIcon from '@/icons/stroke-euro.svg'
@@ -40,7 +42,8 @@ import strokeHomeIcon from '@/icons/stroke-home.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
-import { DropdownButton } from '@/ui-kit/DropdownButton/DropdownButton'
+import { Dropdown } from '@/ui-kit/Dropdown/Dropdown'
+import { DropdownItem } from '@/ui-kit/Dropdown/DropdownItem'
 
 import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import { SideNavLink } from './SideNavLink'
@@ -136,6 +139,8 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
     stillRelevantSavedPartnerPageVenueId ||
     hasPartnerPageVenues.at(0)?.id
 
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
     <div
       className={classnames({
@@ -184,45 +189,47 @@ export const SideNavLinks = ({ isLateralPanelOpen }: SideNavLinksProps) => {
             </div>
           )}
 
-          <div className={styles['nav-links-create-offer-wrapper']}>
-            <DropdownButton
-              name="Créer une offre"
-              options={[
-                {
-                  element: (
-                    <Button
-                      as="a"
-                      variant={ButtonVariant.TERTIARY}
-                      color={ButtonColor.NEUTRAL}
-                      to={getIndividualOfferUrl({
-                        step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
-                        mode: OFFER_WIZARD_MODE.CREATION,
-                        isOnboarding: false,
-                      })}
-                      icon={strokePhoneIcon}
-                      label="Pour le grand public"
-                    />
-                  ),
-                  id: 'individual',
-                },
-                {
-                  element: (
-                    <Button
-                      as="a"
-                      variant={ButtonVariant.TERTIARY}
-                      color={ButtonColor.NEUTRAL}
-                      to="/offre/creation"
-                      icon={strokeBagIcon}
-                      label="Pour les groupes scolaires"
-                    />
-                  ),
-                  id: 'collective',
-                },
-              ]}
-              triggerProps={{
-                fullWidth: true,
-              }}
-            />
+          <div className={styles['nav-section-create-button-wrapper']}>
+            <Dropdown
+              title="Créer une offre"
+              open={isOpen}
+              onOpenChange={setIsOpen}
+              align="start"
+              trigger={
+                <Button
+                  label="Créer une offre"
+                  variant={ButtonVariant.PRIMARY}
+                  icon={isOpen ? fullUpIcon : fullDownIcon}
+                  iconPosition={IconPositionEnum.RIGHT}
+                  fullWidth
+                />
+              }
+            >
+              <DropdownItem>
+                <Button
+                  as="a"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  to={getIndividualOfferUrl({
+                    step: INDIVIDUAL_OFFER_WIZARD_STEP_IDS.DESCRIPTION,
+                    mode: OFFER_WIZARD_MODE.CREATION,
+                    isOnboarding: false,
+                  })}
+                  icon={strokePhoneIcon}
+                  label="Pour le grand public"
+                />
+              </DropdownItem>
+              <DropdownItem>
+                <Button
+                  as="a"
+                  variant={ButtonVariant.TERTIARY}
+                  color={ButtonColor.NEUTRAL}
+                  to="/offre/creation"
+                  icon={strokeBagIcon}
+                  label="Pour les groupes scolaires"
+                />
+              </DropdownItem>
+            </Dropdown>
           </div>
         </div>
       )}

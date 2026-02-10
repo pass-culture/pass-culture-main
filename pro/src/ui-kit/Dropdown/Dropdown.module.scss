@@ -1,26 +1,6 @@
 @use "styles/mixins/_rem.scss" as rem;
 @use "styles/mixins/_fonts.scss" as fonts;
 
-.menu-button {
-  @include fonts.title2;
-
-  background-color: transparent;
-  border: none;
-  display: flex;
-  cursor: pointer;
-
-  &-icon {
-    width: rem.torem(20px);
-    height: rem.torem(20px);
-
-    &:focus,
-    &:focus-visible,
-    &:hover {
-      color: var(--color-icon-brand-primary);
-    }
-  }
-}
-
 .menu-list {
   display: flex;
   flex-direction: column;
@@ -29,6 +9,7 @@
   padding: 0.5rem;
   background: var(--color-background-default);
   box-shadow: var(--shadow-overlay);
+  z-index: 15;
 }
 
 .menu-item {
@@ -57,8 +38,4 @@
   height: rem.torem(20px);
   flex-shrink: 0;
   margin-right: var(--size-spacing-s);
-
-  path {
-    fill: var(--color-icon-default);
-  }
 }

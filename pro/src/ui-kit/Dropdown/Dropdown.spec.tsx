@@ -4,31 +4,33 @@ import { axe } from 'vitest-axe'
 
 import { Button } from '@/design-system/Button/Button'
 
-import { DropdownButton, type DropdownButtonProps } from './DropdownButton'
+import { Dropdown, type DropdownProps } from './Dropdown'
+import { DropdownItem } from './DropdownItem'
 
-const defaultProps: DropdownButtonProps = {
-  name: 'Trigger',
-  options: [
-    { id: '1', element: <Button label="Button 1" onClick={() => {}}></Button> },
-    {
-      id: '2',
-      element: <Button label="Button 2" onClick={() => {}}></Button>,
-    },
-  ],
+const defaultProps: DropdownProps = {
+  title: 'dropdown',
+  trigger: <Button label="Trigger" onClick={() => {}}></Button>,
 }
 
-function renderDropdownButton(props?: Partial<DropdownButtonProps>) {
+function renderDropdown(props?: Partial<DropdownProps>) {
   return render(
     <>
-      <DropdownButton {...defaultProps} {...props} />
+      <Dropdown {...defaultProps} {...props}>
+        <DropdownItem>
+          <Button label="Button 1" onClick={() => {}}></Button>
+        </DropdownItem>
+        <DropdownItem>
+          <Button label="Button 2" onClick={() => {}}></Button>
+        </DropdownItem>
+      </Dropdown>
       <span>Other element</span>
     </>
   )
 }
 
-describe('DropdownButton', () => {
+describe('Dropdown', () => {
   it('should not have any accessibility violation', async () => {
-    const { container } = renderDropdownButton()
+    const { container } = renderDropdown()
     expect(await axe(container)).toHaveNoViolations()
 
     await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
@@ -37,7 +39,7 @@ describe('DropdownButton', () => {
   })
 
   it('should open the dropdown when the trigger is clicked', async () => {
-    renderDropdownButton()
+    renderDropdown()
 
     const trigger = screen.getByRole('button', { name: 'Trigger' })
 
@@ -63,7 +65,7 @@ describe('DropdownButton', () => {
   })
 
   it('should close the dropdown menu when the user clicks outside', async () => {
-    renderDropdownButton()
+    renderDropdown()
 
     await userEvent.click(screen.getByRole('button', { name: 'Trigger' }))
 
