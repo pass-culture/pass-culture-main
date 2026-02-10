@@ -1,9 +1,3 @@
-@mixin button() {
-  font-family: var(--typography-button-font-family), system-ui, sans-serif;
-  font-size: var(--typography-button-font-size);
-  line-height: var(--typography-button-line-height);
-}
-
 @mixin body() {
   font-family: var(--typography-body-font-family), system-ui, sans-serif;
   font-size: var(--typography-body-font-size);
@@ -77,4 +71,16 @@
     var(--typography-body-accent-xs-font-family), system-ui, sans-serif;
   font-size: var(--typography-body-accent-xs-font-size);
   line-height: var(--typography-body-accent-xs-line-height);
+}
+
+@mixin button() {
+  font-family: var(--typography-button-font-family), system-ui, sans-serif;
+  font-size: var(--typography-button-font-size);
+  line-height: var(--typography-button-line-height);
+}
+
+@mixin button-s() {
+  font-family: var(--typography-button-s-font-family), system-ui, sans-serif;
+  font-size: var(--typography-button-s-font-size);
+  line-height: var(--typography-button-s-line-height);
 }

@@ -20,7 +20,6 @@ export const Icon = ({
       src={icon}
       alt={iconAlt}
       className={classNames(className, iconClassName)}
-      width={'16'}
     />
   )
 }
