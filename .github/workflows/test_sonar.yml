@@ -5,6 +5,8 @@ on:
     branches:
         - sonarcloud-for-pcapi
 
+permissions: write-all
+
 jobs:
     sonar-cloud-check:
       name: "Sonar Cloud check"
