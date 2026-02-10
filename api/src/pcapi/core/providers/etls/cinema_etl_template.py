@@ -221,6 +221,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
         offer.subcategoryId = subcategories.SEANCE_CINE.id
         offer.publicationDatetime = offer.publicationDatetime or get_naive_utc_now()
         offer.dateModifiedAtLastProvider = get_naive_utc_now()
+        offer.lastProviderId = self.venue_provider.providerId
 
         # fill product information
         offer.product = product
@@ -280,6 +281,7 @@ class CinemaETLProcessTemplate[APIClient: cinema_client.CinemaAPIClient | EMSSch
             stock.features = stock_data["features"]
             stock.price = stock_data["price"]
             stock.dateModifiedAtLastProvider = get_naive_utc_now()
+            stock.lastProviderId = self.venue_provider.providerId
 
             label_price_key = f"{stock_data['price_label']}-{stock_data['price']}"
 
