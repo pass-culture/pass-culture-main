@@ -109,10 +109,13 @@ export const IndividualOfferDetailsScreen = ({
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.CREATION
   const isEanSearchCalloutDisplayed =
     isEanSearchAvailable && mode === OFFER_WIZARD_MODE.EDITION
+  const venueId = form.watch('venueId')
+  const venue = venues.find((venue) => venue.id === Number(venueId))
   const readOnlyFields = getFormReadOnlyFields(
     initialOffer,
     hasSelectedProduct,
-    true
+    true,
+    venue
   )
 
   const onSubmit = async (formValues: DetailsFormValues): Promise<void> => {
