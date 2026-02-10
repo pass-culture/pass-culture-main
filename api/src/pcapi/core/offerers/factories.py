@@ -101,6 +101,7 @@ class VenueFactory(BaseFactory[models.Venue]):
     dmsToken = factory.LazyFunction(api.generate_dms_token)
     _bannerUrl: str | None = None
     adageId: str | factory.declarations.BaseDeclaration | None = None
+    isReimbursementSuspended: bool = False
 
     offererAddress: factory.declarations.BaseDeclaration | None = factory.RelatedFactory(
         "pcapi.core.offerers.factories.VenueLocationFactory",

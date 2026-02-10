@@ -1988,6 +1988,50 @@ class GenerateCashflowsTest:
 
         assert db.session.query(models.Cashflow).count() == 2
 
+    def test_reimbursement_suspended(self):
+        offerer = offerers_factories.OffererFactory()
+        bank_account = factories.BankAccountFactory(offerer=offerer)
+
+        venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer, bank_account=bank_account, pricing_point="self"
+        )
+        suspended_venue = offerers_factories.VenueFactory(
+            managingOfferer=offerer,
+            bank_account=bank_account,
+            pricing_point="self",
+            isReimbursementSuspended=True,
+        )
+        venue_without_siret = offerers_factories.VenueWithoutSiretFactory(
+            managingOfferer=offerer, bank_account=bank_account, pricing_point=suspended_venue
+        )
+
+        pricing1 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            booking__stock__offer__venue=venue,
+        )
+        pricing2 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            booking__stock__offer__venue=suspended_venue,
+        )
+        pricing3 = factories.PricingFactory(
+            status=models.PricingStatus.VALIDATED,
+            booking__stock__offer__venue=venue_without_siret,
+        )
+
+        cutoff = date_utils.get_naive_utc_now()
+        batch = api.generate_cashflows(cutoff)
+
+        queried_batch = db.session.query(models.CashflowBatch).one()
+        assert queried_batch.id == batch.id
+        assert queried_batch.cutoff == cutoff
+        assert pricing1.status == models.PricingStatus.PROCESSED
+        assert pricing2.status == models.PricingStatus.VALIDATED
+        assert pricing3.status == models.PricingStatus.PROCESSED
+        assert db.session.query(models.Cashflow).count() == 1
+        assert len(pricing1.cashflows) == 1
+        assert len(pricing2.cashflows) == 0
+        assert len(pricing3.cashflows) == 1
+
 
 @time_machine.travel(datetime.datetime(date_utils.get_naive_utc_now().year, 2, 1, 12, 34, 26), tick=False)
 @mock.patch("pcapi.connectors.googledrive.TestingBackend.create_file")

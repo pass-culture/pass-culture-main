@@ -31,6 +31,15 @@
                 {% set form_description = "Le partenaire culturel <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") sera définitivement supprimé de la base de données. Veuillez confirmer ce choix." %}
                 {{ build_modal_form("delete-venue", url_for("backoffice_web.venue.delete_venue", venue_id=venue.id) , delete_form, "Supprimer le partenaire culturel", "Supprimer le partenaire culturel " + venue.common_name, "Confirmer", form_description, "bi-trash3-fill") }}
               {% endif %}
+              {% if has_permission("MANAGE_PRO_REIMBURSEMENT_SUSPENSION") %}
+                {% if venue.isReimbursementSuspended %}
+                  {% set form_description = "Les remboursements vers le partenaire culturel <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") seront rétablis. Toutes les réservations déjà consommées, y compris pendant la période de blocage, seront remboursées à la prochaine quinzaine. Veuillez confirmer ce choix." %}
+                  {{ build_modal_form("unsuspend-reimbursement", url_for("backoffice_web.venue.unsuspend_reimbursement", venue_id=venue.id) , comment_form, "Rétablir les remboursements", "Rétablir les remboursements", "Confirmer", form_description, "bi-coin") }}
+                {% else %}
+                  {% set form_description = "Les remboursements vers le partenaire culturel <strong>"|safe + venue.common_name + "</strong> ("|safe + venue.id|string + ") seront gelés jusqu'à rétablissement. Les réservations pourront se poursuivre. Veuillez confirmer ce choix." %}
+                  {{ build_modal_form("suspend-reimbursement", url_for("backoffice_web.venue.suspend_reimbursement", venue_id=venue.id) , comment_form, "Bloquer les remboursements", "Bloquer les remboursements", "Confirmer", form_description, "bi-coin") }}
+                {% endif %}
+              {% endif %}
               {% if zendesk_sell_synchronisation_form %}
                 <button class="btn  btn-outline-primary-subtle-bg mt-2"
                         data-bs-toggle="modal"

@@ -1008,6 +1008,9 @@ def _generate_cashflows(batch: models.CashflowBatch) -> None:
         )
         .filter(offerers_models.VenueBankAccountLink.timespan.contains(batch.cutoff))
         .join(models.BankAccount, models.BankAccount.id == offerers_models.VenueBankAccountLink.bankAccountId)
+        .join(offerers_models.Venue, offerers_models.Venue.id == models.Pricing.venueId)
+        .execution_options(include_deleted=True)  # also join with soft deleted venues
+        .filter(offerers_models.Venue.isReimbursementSuspended.is_(False))
         .outerjoin(models.CashflowPricing)
         .group_by(
             models.BankAccount.id,

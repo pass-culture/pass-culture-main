@@ -488,6 +488,10 @@ class Venue(PcObject, Model, HasThumbMixin, AccessibilityMixin, SoftDeletableMix
         "OffererConfidenceRule", foreign_keys="OffererConfidenceRule.venueId", back_populates="venue", uselist=False
     )
 
+    isReimbursementSuspended: sa_orm.Mapped[bool] = sa_orm.mapped_column(
+        sa.Boolean, nullable=False, server_default=expression.false(), default=False
+    )
+
     _has_partner_page: sa_orm.Mapped[bool] = sa_orm.query_expression()
 
     activity: sa_orm.Mapped[Activity | None] = sa_orm.mapped_column(
