@@ -35,7 +35,7 @@
     flex-shrink: 0;
   }
 
-  @media (min-width: size.$tablet) {
+  @media (min-width: size.$laptop) {
     .burger-icon {
       display: none;
     }
@@ -53,10 +53,7 @@
     display: inline-flex;
     height: 100%;
     color: var(--color-text-default);
-
-    svg {
-      width: rem.torem(80px);
-    }
+    width: rem.torem(80px);
 
     @media (min-width: size.$tablet) {
       margin-left: var(--size-spacing-l);
