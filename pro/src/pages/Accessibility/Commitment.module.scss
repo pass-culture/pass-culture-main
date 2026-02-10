@@ -1,4 +1,6 @@
 @use "styles/mixins/_fonts.scss" as fonts;
+@use "styles/mixins/_rem.scss" as rem;
+@use "styles/mixins/_size.scss" as size;
 
 .heading2-commitment {
   @include fonts.title2;
@@ -11,4 +13,10 @@
 
 .back-link {
   margin-bottom: var(--size-spacing-xxl);
+}
+
+.page-content {
+  width: rem.torem(826px);
+  margin-bottom: var(--size-spacing-xxl);
+  justify-self: center;
 }

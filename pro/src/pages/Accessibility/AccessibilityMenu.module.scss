@@ -1,7 +1,17 @@
 @use "styles/mixins/_rem.scss" as rem;
 
-.menu-accessibility {
+.pages-buttons-container {
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-s);
+  width: rem.torem(826px);
+  margin-bottom: var(--size-spacing-xxl);
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 32px;
+  margin-bottom: 32px;
 }
