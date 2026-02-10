@@ -210,7 +210,7 @@ jobs:
         id: generate-pcapi-secrets-list
         run: |
           # Retrieve pcapi secrets list from source code
-          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | sed -n 's/.*secrets_utils.get("\([^"]*\)".*/\1/p' | grep -v '^GOOGLE_CLIENT_ID$' | grep -v 'GOOGLE_CLIENT_SECRET$' | grep -v '^DATABASE_URL$')
+          PCAPI_SECRETS=$(cat api/src/pcapi/settings.py | grep "secrets_utils.get(" | sed -n 's/.*secrets_utils.get("\([^"]*\)".*/\1/p' | grep -Ev '^(GOOGLE_CLIENT_ID|GOOGLE_CLIENT_SECRET|DATABASE_URL)$'
           echo $PCAPI_SECRETS
           # Sort list
           PCAPI_SECRETS=$(echo $PCAPI_SECRETS | xargs -n1 | sort | xargs)
