@@ -208,7 +208,7 @@ class Booking(PcObject, Model):
         sa.Enum(BookingValidationAuthorType), nullable=True
     )
 
-    reimbursementDate = sa_orm.mapped_column(sa.DateTime, nullable=True)
+    reimbursementDate: sa_orm.Mapped[datetime | None] = sa_orm.mapped_column(sa.DateTime, nullable=True)
 
     depositId: sa_orm.Mapped[int | None] = sa_orm.mapped_column(
         sa.BigInteger, sa.ForeignKey("deposit.id"), index=True, nullable=True

@@ -5,7 +5,7 @@ from enum import Enum
 
 import pydantic as pydantic_v2
 
-from pcapi.core.bookings.models import Booking
+from pcapi.core.bookings import schemas
 from pcapi.core.bookings.models import BookingExportType
 from pcapi.core.bookings.models import BookingStatus
 from pcapi.core.bookings.models import BookingStatusFilter
@@ -145,7 +145,7 @@ def _serialize_booking_status_info(
 
 
 def serialize_booking_status_history(
-    booking: Booking,
+    booking: schemas.GetBookingsQueryResult,
 ) -> list[BookingRecapResponseBookingStatusHistoryModel]:
     serialized_booking_status_history = [
         _serialize_booking_status_info(
@@ -182,7 +182,7 @@ def serialize_booking_status_history(
     return serialized_booking_status_history
 
 
-def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
+def serialize_bookings(booking: schemas.GetBookingsQueryResult) -> BookingRecapResponseModel:
     stock_beginning_datetime = _apply_departement_timezone(booking.stockBeginningDatetime, booking.venueDepartmentCode)
     booking_date = convert_booking_dates_utc_to_venue_timezone(booking.bookedAt, booking)
     serialized_booking_recap = BookingRecapResponseModel(
@@ -216,7 +216,7 @@ def serialize_bookings(booking: Booking) -> BookingRecapResponseModel:
     return serialized_booking_recap
 
 
-def _build_booking_status(booking: Booking) -> BookingRecapStatus:
+def _build_booking_status(booking: schemas.GetBookingsQueryResult) -> BookingRecapStatus:
     if booking.status == BookingStatus.REIMBURSED:
         return BookingRecapStatus.reimbursed
     if booking.status == BookingStatus.CANCELLED:

@@ -17,6 +17,7 @@ from xlsxwriter.worksheet import Worksheet
 
 from pcapi.core.bookings import constants
 from pcapi.core.bookings import models
+from pcapi.core.bookings import schemas
 from pcapi.core.bookings import utils
 from pcapi.core.categories import subcategories
 from pcapi.core.finance.models import BookingFinanceIncident
@@ -419,7 +420,7 @@ def _get_filtered_bookings_query(
     offer_id: int | None = None,
     offerer_address_id: int | None = None,
     extra_joins: tuple[tuple[typing.Any, ...], ...] = (),
-) -> sa_orm.Query:
+) -> sa_orm.Query[models.Booking]:
     VenueOffererAddress = sa_orm.aliased(offerers_models.OffererAddress)
     VenueAddress = sa_orm.aliased(Address)
     bookings_query = (
@@ -679,7 +680,7 @@ def _get_booking_status(status: models.BookingStatus, is_confirmed: bool) -> str
     return BOOKING_STATUS_LABELS[status]
 
 
-def get_booking_price(booking: models.Booking) -> Decimal:
+def get_booking_price(booking: schemas.ExportBookingsQueryResult) -> Decimal:
     """
     Retourne le prix de la réservation, converti en CFP si le bénéficiaire est calédonien.
     """
@@ -693,6 +694,8 @@ def _write_bookings_to_csv(query: sa_orm.Query) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         if booking.quantity == DUO_QUANTITY:
             _write_csv_row(writer, booking, "DUO 1")
             _write_csv_row(writer, booking, "DUO 2")
@@ -702,7 +705,7 @@ def _write_bookings_to_csv(query: sa_orm.Query) -> str:
     return output.getvalue()
 
 
-def _write_csv_row(csv_writer: typing.Any, booking: models.Booking, booking_duo_column: str) -> None:
+def _write_csv_row(csv_writer: typing.Any, booking: schemas.ExportBookingsQueryResult, booking_duo_column: str) -> None:
     booking_price = get_booking_price(booking)
     row: tuple[typing.Any, ...] = (
         booking.venueName,
@@ -751,6 +754,8 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
 
     row = 1
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         if booking.quantity == DUO_QUANTITY:
             _write_excel_row(
                 worksheet,
@@ -781,7 +786,7 @@ def _write_bookings_to_excel(query: sa_orm.Query) -> bytes:
 
 
 def _write_excel_row(
-    worksheet: Worksheet, row: int, booking: models.Booking, currency_format: Format, duo_column: str
+    worksheet: Worksheet, row: int, booking: schemas.ExportBookingsQueryResult, currency_format: Format, duo_column: str
 ) -> None:
     booking_price = get_booking_price(booking)
     worksheet.write(row, 0, booking.venueName)
@@ -824,6 +829,8 @@ def _serialize_csv_report(query: sa_orm.Query) -> str:
     writer = csv.writer(output, dialect=csv.excel, delimiter=";", quoting=csv.QUOTE_NONNUMERIC)
     writer.writerow(booking_export_header())
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         booking_price = get_booking_price(booking)
         row: tuple[typing.Any, ...] = (
             booking.venueName,
@@ -875,6 +882,8 @@ def _serialize_excel_report(query: sa_orm.Query) -> bytes:
     row = 1
     data: tuple[typing.Any, ...]
     for booking in query.yield_per(1000):
+        booking = typing.cast(schemas.ExportBookingsQueryResult, booking)
+
         booking_price = get_booking_price(booking)
         if hasattr(booking, "is_caledonian") and booking.is_caledonian:
             currency_format = currency_format_cfp
