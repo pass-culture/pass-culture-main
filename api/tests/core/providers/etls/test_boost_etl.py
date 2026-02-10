@@ -383,6 +383,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_1.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_1.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_1.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_1.lastProviderId == venue_provider.providerId
 
         assert offer_1.product
         assert offer_1.product.name == "MISSION IMPOSSIBLE DEAD RECKONING PARTIE 1"
@@ -396,6 +397,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_2.subcategoryId == subcategories.SEANCE_CINE.id
         assert offer_2.withdrawalDetails == venue_provider.venue.withdrawalDetails
         assert offer_2.publicationDatetime == datetime.datetime(2023, 8, 12, 12, 41, 30, tzinfo=datetime.UTC)
+        assert offer_2.lastProviderId == venue_provider.providerId
 
         assert offer_2.product
         assert offer_2.product.name == "SPIDER-MAN ACROSS THE SPIDER-VERSE"
@@ -416,6 +418,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_1_stock_1.price == decimal.Decimal("12.0")
         assert offer_1_stock_1.priceCategory.price == decimal.Decimal("12.0")
         assert offer_1_stock_1.priceCategory.label == "PASS CULTURE"
+        assert offer_1_stock_1.lastProviderId == venue_provider.providerId
 
         assert len(offer_2.activeStocks) == 2
         offer_2_stocks = offer_2.activeStocks
@@ -429,6 +432,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_2_stock_1.price == decimal.Decimal("12.0")
         assert offer_2_stock_1.priceCategory.price == decimal.Decimal("12.0")
         assert offer_2_stock_1.priceCategory.label == "PASS CULTURE"
+        assert offer_2_stock_1.lastProviderId == venue_provider.providerId
 
         offer_2_stock_2 = offer_2_stocks[1]
         assert offer_2_stock_2.idAtProviders == f"145%{venue_id}%Boost#16277"
@@ -439,6 +443,7 @@ class BoostExtractTransformLoadProcessTest:
         assert offer_2_stock_2.price == decimal.Decimal("6.0")
         assert offer_2_stock_2.priceCategory.price == decimal.Decimal("6.0")
         assert offer_2_stock_2.priceCategory.label == "PASS CULTURE"
+        assert offer_2_stock_2.lastProviderId == venue_provider.providerId
 
         assert len(products_with_poster) == 2
         product_1, poster_url_1 = products_with_poster[0]
