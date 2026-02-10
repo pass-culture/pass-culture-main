@@ -1,4 +1,4 @@
-name: "1 [on_pull_request] Delete PR deployment"
+name: "Test SonarCloud"
 
 on:
   push:
