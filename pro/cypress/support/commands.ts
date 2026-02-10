@@ -136,7 +136,10 @@ Cypress.Commands.add('a11yLog', (violations) => {
   violations.forEach((violation) => {
     Cypress.log({
       name: `A11Y`,
-      message: violation.description,
+      message:
+        violation.description +
+        '. Check nodes ' +
+        JSON.stringify(violation.nodes),
       consoleProps: () => violation,
     })
   })

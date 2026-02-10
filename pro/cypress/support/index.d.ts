@@ -42,6 +42,7 @@ declare namespace Cypress {
     a11yLog(
       violations: {
         description: string
+        nodes: HTMLElement[]
       }[]
     ): Chainable
 
