@@ -21,7 +21,7 @@ class OfferQualityQuery(BaseQuery):
     def _build_query(self) -> str:
         where_clause = ""
         if self.start_from_id > 0:
-            where_clause = f"WHERE offer_id >= '{self.start_from_id}'"
+            where_clause = f"WHERE CAST(offer_id AS INT64) >= {self.start_from_id}"
         return f"""
             SELECT
                 offer_id,
@@ -30,7 +30,7 @@ class OfferQualityQuery(BaseQuery):
                 `{settings.BIG_QUERY_TABLE_BASENAME}.offer_quality`
             {where_clause}
             ORDER BY
-                offer_id ASC
+                CAST(offer_id AS INT64) ASC
         """
 
     model = OfferQualityModel

@@ -137,3 +137,17 @@ class UpdateOfferQualityTest:
         assert "Successfully updated offer quality batch scores" not in caplog.text
         assert offer_1.quality.completionScore == 10.0
         assert offer_2.quality.completionScore == 8.5
+
+    @mock.patch("pcapi.connectors.big_query.queries.offer_quality.OfferQualityQuery.execute")
+    def test_run_update_respects_start_from_id(self, mock_bq_execute):
+        offer_ignored = offers_factories.OfferFactory(id=8)
+        offers_factories.OfferQualityFactory(offer=offer_ignored, completionScore=1.0)
+        offer_updated = offers_factories.OfferFactory(id=20)
+        offers_factories.OfferQualityFactory(offer=offer_updated, completionScore=1.0)
+        mock_bq_execute.return_value = iter([OfferQualityModel(offer_id=20, completion_score=9.9)])
+
+        importer = OfferQualityImporter()
+        importer.run_offer_quality_update(start_from_id=15)
+
+        assert offer_ignored.quality.completionScore == 1.0
+        assert offer_updated.quality.completionScore == 9.9
