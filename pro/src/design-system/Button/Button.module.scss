@@ -42,6 +42,10 @@
   transition: all 0.15s ease-in-out;
   width: fit-content;
 
+  .btn-icon {
+    width: rem.torem(22px);
+  }
+
   &.btn-default {
     border-radius: var(--size-border-radius-m);
     gap: var(--size-spacing-s);
@@ -69,6 +73,10 @@
 
     .btn-label {
       @include fonts.button-s;
+    }
+
+    .btn-icon {
+      width: rem.torem(14px);
     }
 
     &.btn-icon-only {
@@ -121,7 +129,6 @@
         @include button-border(var(--color-border-brand-primary-hover));
 
         .btn-icon {
-          width: 22px;
           color: var(--color-icon-brand-primary-hover);
         }
       }
