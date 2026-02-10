@@ -2568,6 +2568,22 @@ class RefrestTest:
         assert response.status_code == 200
         assert response.json.get("accessToken")
 
+    def test_user_is_inactive(self, client):
+        user = users_factories.BeneficiaryFactory(isActive=False)
+        token = create_refresh_token(identity=user.email, expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 200
+        assert response.json.get("accessToken")
+
+    def test_user_does_not_exists(self, client):
+        token = create_refresh_token(identity="invalid_email@example.com", expires_delta=timedelta(seconds=30))
+
+        response = client.with_explicit_token(token).post("/native/v1/refresh_access_token", json={})
+
+        assert response.status_code == 403
+
     def test_with_access_token(self, client):
         user = users_factories.BeneficiaryFactory()
         token = create_access_token(
