@@ -3,6 +3,7 @@ import typing
 from functools import wraps
 
 import flask
+import sentry_sdk
 from flask_login import current_user
 from flask_login import login_user
 
@@ -60,7 +61,13 @@ def authenticated_with_refresh_token(route_function: RouteFunc) -> RouteDecorato
 
         user = db.session.query(users_models.User).filter(users_models.User.email == flask.g.jwt_data.sub).one_or_none()
         if user:
-            login_user(user)
+            login_user(
+                user,
+                force=True,  # also accept users where isActive=False as needed for some features.
+            )
+            # the user is set in sentry in before_request, way before we do the
+            # token auth so it needs to be also set here.
+            sentry_sdk.set_user({"id": user.id})
         else:
             _raise_forbidden(flask.g.jwt_data.sub)
 
