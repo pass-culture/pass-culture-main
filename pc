@@ -64,7 +64,14 @@ fi
 # =============================================
 
 if [[ $# -gt 2 ]] && [[ "$1" == "-e" ]]; then
-  ENV=$2
+  if [[ "$2" == "staging" ]]; then
+    ENV="pcapi-stg"
+  elif [[ "$2" == "testing" ]]; then
+    ENV="pcapi-tst"
+  else
+    ENV=$2
+  fi
+
   shift 2
 else
   ENV=${ENV:-'development'}
@@ -147,7 +154,12 @@ function exit_success_restoring_branch() {
 }
 
 function pod_console() {
-  kubectl get pod -n $ENV --field-selector status.phase=Running | grep $ENV-pcapi-console | awk '{print $1}'
+  if [[ "$ENV" == pcapi-pr* ]]; then
+    POD_GREP="testing-pcapi-api"
+  else
+    POD_GREP="$ENV-console"
+  fi
+  kubectl get pod -n $ENV --field-selector status.phase=Running | grep $POD_GREP | awk '{print $1}'
 }
 
 # =============================================
