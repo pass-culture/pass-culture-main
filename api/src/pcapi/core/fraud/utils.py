@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 ACCEPTED_CHARS_FOR_NAMES = [" ", "-", ".", ",", "'", "’"]
 ACCEPTED_CHARS_FOR_CITY = [" ", "-", "'", "(", ")"]
-ACCEPTED_CHARS_FOR_ADDRESS = [" ", "-", ".", ",", "'", "’"]
+ACCEPTED_CHARS_FOR_ADDRESS = [" ", "-", ".", ",", "'", "’", "°"]
 
 
 def is_latin(s: str, accepted_chars: list[str]) -> bool:

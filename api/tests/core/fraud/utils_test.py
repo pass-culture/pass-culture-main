@@ -30,6 +30,7 @@ class UtilsUnitTest:
             ("25 & 26 rue Duhesme", False),
             ("1", True),
             ("La rue d'en face de chose-les-bains", True),
+            ("14 Chemin n°15 dit la Terre basse", True),
         ],
     )
     def test_is_address_valid(self, test_input, expected):
