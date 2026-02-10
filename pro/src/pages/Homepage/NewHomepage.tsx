@@ -15,7 +15,7 @@ import {
   onNewTabSelected,
   TABS,
   type TabKey,
-} from './commons/utils/tabsManagement'
+} from './commons/utils'
 
 export const NewHomepage = (): JSX.Element => {
   const selectedVenue: GetVenueResponseModel | null = useAppSelector(

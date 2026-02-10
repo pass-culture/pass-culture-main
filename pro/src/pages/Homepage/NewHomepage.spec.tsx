@@ -10,7 +10,7 @@ import {
   renderWithProviders,
 } from '@/commons/utils/renderWithProviders'
 
-import * as tabManagement from './commons/utils/tabsManagement'
+import * as utils from './commons/utils'
 import { NewHomepage } from './NewHomepage'
 
 const renderNewHomepage = (options?: RenderWithProvidersOptions) => {
@@ -119,11 +119,9 @@ describe('NewHomepage', () => {
     })
 
     describe('initial tab', () => {
-      it('should ask for initial tab on load and save the visited tab on tab change', async () => {
-        vi.spyOn(tabManagement, 'getInitialTab').mockReturnValue(
-          'tab-individual'
-        )
-        vi.spyOn(tabManagement, 'onNewTabSelected')
+      it('when venue has both tabs > should ask for initial tab on load and save the visited tab on tab change', async () => {
+        vi.spyOn(utils, 'getInitialTab').mockReturnValue('tab-individual')
+        vi.spyOn(utils, 'onNewTabSelected')
 
         const user = userEvent.setup()
         renderNewHomepage({
@@ -138,17 +136,17 @@ describe('NewHomepage', () => {
           },
         })
 
-        expect(tabManagement.getInitialTab).toHaveBeenCalledOnce()
+        expect(utils.getInitialTab).toHaveBeenCalledOnce()
         expect(
           screen.getByRole('tabpanel', { name: /Individuel/ })
         ).toBeVisible()
 
         // It's not the Homepage component's role to save the first computed value
         // it's done in tabManagement module
-        expect(tabManagement.onNewTabSelected).not.toHaveBeenCalled()
+        expect(utils.onNewTabSelected).not.toHaveBeenCalled()
 
         await user.click(screen.getByRole('tab', { name: /Collectif/ }))
-        expect(tabManagement.onNewTabSelected).toHaveBeenCalledWith(
+        expect(utils.onNewTabSelected).toHaveBeenCalledWith(
           'tab-collective',
           defaultGetOffererVenueResponseModel.id
         )
@@ -161,10 +159,10 @@ describe('NewHomepage', () => {
         ${'nothing'}         | ${true}  | ${false}      | ${false}      | ${'tab-individual'}
         ${'no venue '}       | ${false} | ${false}      | ${false}      | ${'tab-individual'}
       `(
-        'should handle the $scenario case.',
+        'when other scenarii > should handle the $scenario case.',
         ({ venue, hasIndividual, hasCollective, initialTab }) => {
-          vi.spyOn(tabManagement, 'getInitialTab').mockReturnValue(initialTab)
-          vi.spyOn(tabManagement, 'onNewTabSelected')
+          vi.spyOn(utils, 'getInitialTab').mockReturnValue(initialTab)
+          vi.spyOn(utils, 'onNewTabSelected')
 
           renderNewHomepage({
             storeOverrides: {
@@ -180,7 +178,7 @@ describe('NewHomepage', () => {
             },
           })
 
-          expect(tabManagement.getInitialTab).toHaveBeenCalledExactlyOnceWith(
+          expect(utils.getInitialTab).toHaveBeenCalledExactlyOnceWith(
             venue ? defaultGetOffererVenueResponseModel.id : null,
             hasIndividual,
             hasCollective
@@ -188,7 +186,7 @@ describe('NewHomepage', () => {
           expect(screen.queryByRole('tab')).not.toBeInTheDocument()
           // It's not the Homepage component's role to save the first computed value
           // it's done in tabManagement module
-          expect(tabManagement.onNewTabSelected).not.toHaveBeenCalled()
+          expect(utils.onNewTabSelected).not.toHaveBeenCalled()
         }
       )
     })

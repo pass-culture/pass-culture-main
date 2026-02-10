@@ -3,9 +3,9 @@ import {
   localStorageManager,
 } from '@/commons/utils/localStorageManager'
 
-import { getInitialTab, onNewTabSelected } from '../tabsManagement'
+import { getInitialTab, onNewTabSelected } from '../utils'
 
-function getLsManager(initialValue?: Record<string, unknown>) {
+function getLocalStorageManagerMock(initialValue?: Record<string, unknown>) {
   return {
     getItem: vi
       .spyOn(localStorageManager, 'getItem')
@@ -24,32 +24,32 @@ beforeEach(() => {
 
 describe('getInitialTab', () => {
   it('should return "tab-individual" if no venue given', () => {
-    const ls = getLsManager()
+    const localStorageManagerMock = getLocalStorageManagerMock()
 
     expect(getInitialTab(null, false, true)).toBe('tab-individual')
 
-    expect(ls.getItem).not.toHaveBeenCalled()
-    expect(ls.setItem).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.getItem).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.setItem).not.toHaveBeenCalled()
   })
 
   it('should not use localStorage if venue only does either individual or collective', () => {
-    const ls = getLsManager()
+    const localStorageManagerMock = getLocalStorageManagerMock()
 
     getInitialTab(CURRENT_VENUE_ID, false, true)
 
-    expect(ls.getItem).not.toHaveBeenCalled()
-    expect(ls.setItem).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.getItem).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.setItem).not.toHaveBeenCalled()
   })
 
   it('should read the local storage and write the new value when venue does both', () => {
-    const ls = getLsManager()
+    const localStorageManagerMock = getLocalStorageManagerMock()
 
     getInitialTab(CURRENT_VENUE_ID, true, true)
 
-    expect(ls.getItem).toHaveBeenCalledWith(
+    expect(localStorageManagerMock.getItem).toHaveBeenCalledWith(
       LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS
     )
-    expect(ls.setItem).toHaveBeenCalledWith(
+    expect(localStorageManagerMock.setItem).toHaveBeenCalledWith(
       LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
       expect.stringMatching(`{"${CURRENT_VENUE_ID}":"tab-.*"}`)
     )
@@ -58,25 +58,25 @@ describe('getInitialTab', () => {
   describe.each([
     {
       case: 'first visit ever to homepage',
-      initialLsValue: undefined,
+      initialLocalStorageValue: undefined,
       expectedTabWhenBoth: 'individual',
     },
     {
       case: 'first visit for the current venue to homepage',
-      initialLsValue: { [OTHER_VENUE_ID]: 'tab-collective' },
+      initialLocalStorageValue: { [OTHER_VENUE_ID]: 'tab-collective' },
       expectedTabWhenBoth: 'individual',
     },
     {
-      case: 'other visit for the current venue to homepage',
-      initialLsValue: { [CURRENT_VENUE_ID]: 'tab-collective' },
+      case: 'last visit for the current venue to homepage was tab-collective',
+      initialLocalStorageValue: { [CURRENT_VENUE_ID]: 'tab-collective' },
       expectedTabWhenBoth: 'collective',
     },
     {
-      case: 'other visit for the current venue to homepage',
-      initialLsValue: { [CURRENT_VENUE_ID]: 'tab-individual' },
+      case: 'last visit for the current venue to homepage was tab-individual',
+      initialLocalStorageValue: { [CURRENT_VENUE_ID]: 'tab-individual' },
       expectedTabWhenBoth: 'individual',
     },
-  ])('when $case', ({ initialLsValue, expectedTabWhenBoth }) => {
+  ])('when $case', ({ initialLocalStorageValue, expectedTabWhenBoth }) => {
     it.each([
       {
         scenario: 'venue only does individual',
@@ -107,7 +107,7 @@ describe('getInitialTab', () => {
       hasCollective,
       expectedTab,
     }) => {
-      getLsManager(initialLsValue)
+      getLocalStorageManagerMock(initialLocalStorageValue)
 
       expect(
         getInitialTab(CURRENT_VENUE_ID, hasIndividual, hasCollective)
@@ -118,19 +118,19 @@ describe('getInitialTab', () => {
 
 describe('onNewTabSelected', () => {
   it('should update the tab in local storage when a venueId is given', () => {
-    const ls = getLsManager()
+    const localStorageManagerMock = getLocalStorageManagerMock()
     onNewTabSelected('tab-individual', CURRENT_VENUE_ID)
-    expect(ls.getItem).toHaveBeenCalledOnce()
-    expect(ls.setItem).toHaveBeenCalledExactlyOnceWith(
+    expect(localStorageManagerMock.getItem).toHaveBeenCalledOnce()
+    expect(localStorageManagerMock.setItem).toHaveBeenCalledExactlyOnceWith(
       LOCAL_STORAGE_KEY.LAST_VISITED_HOMEPAGE_TABS,
       `{"${CURRENT_VENUE_ID}":"tab-individual"}`
     )
   })
 
   it('should do nothing when no venueId is given', () => {
-    const ls = getLsManager()
+    const localStorageManagerMock = getLocalStorageManagerMock()
     onNewTabSelected('tab-individual', null)
-    expect(ls.getItem).not.toHaveBeenCalled()
-    expect(ls.setItem).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.getItem).not.toHaveBeenCalled()
+    expect(localStorageManagerMock.setItem).not.toHaveBeenCalled()
   })
 })
