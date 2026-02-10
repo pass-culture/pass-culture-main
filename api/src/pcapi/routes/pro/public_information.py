@@ -33,6 +33,7 @@ def get_venues_of_offerer_from_siret(
         offererSiren=offerer.siren if offerer else None,
         offererName=offerer.name if offerer else None,
         venues=[
-            public_information_serialize.VenueOfOffererFromSiretResponseModel.from_orm(venue) for venue in db_venues
+            public_information_serialize.VenueOfOffererFromSiretResponseModel.model_validate(venue)
+            for venue in db_venues
         ],
     )

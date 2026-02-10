@@ -4,30 +4,24 @@ Those serializers are exposed to general view and should not
 include GDPR protected data.
 """
 
-from pcapi.routes.serialization import BaseModel
+from pcapi.routes.serialization import HttpBodyModel
 
 
-class VenueOfOffererFromSiretResponseModel(BaseModel):
+class VenueOfOffererFromSiretResponseModel(HttpBodyModel):
     id: int
     name: str
     publicName: str
-    siret: str | None
+    siret: str | None = None
     isPermanent: bool
 
-    class Config:
-        orm_mode = True
 
-
-class GetVenuesOfOffererFromSiretResponseModel(BaseModel):
-    offererName: str | None
-    offererSiren: str | None
+class GetVenuesOfOffererFromSiretResponseModel(HttpBodyModel):
+    offererName: str | None = None
+    offererSiren: str | None = None
     venues: list[VenueOfOffererFromSiretResponseModel]
 
 
-class PostOffererResponseModel(BaseModel):
+class PostOffererResponseModel(HttpBodyModel):
     name: str
     id: int
     siren: str
-
-    class Config:
-        orm_mode = True
