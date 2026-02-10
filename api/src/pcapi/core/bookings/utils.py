@@ -17,7 +17,7 @@ from pcapi.core.categories import subcategories
 
 
 if typing.TYPE_CHECKING:
-    from pcapi.core.bookings.models import Booking
+    from pcapi.core.bookings import schemas
 
 QR_CODE_PASS_CULTURE_VERSION = "v3"
 
@@ -57,7 +57,10 @@ def _apply_departement_timezone(naive_datetime: datetime | None, departement_cod
     return naive_datetime.astimezone(departement_tz)
 
 
-def convert_booking_dates_utc_to_venue_timezone(date_without_timezone: datetime, booking: "Booking") -> datetime | None:
+def convert_booking_dates_utc_to_venue_timezone(
+    date_without_timezone: datetime | None,
+    booking: "schemas.ExportBookingsQueryResult | schemas.GetBookingsQueryResult",
+) -> datetime | None:
     if booking.offerDepartmentCode:
         department_code = booking.offerDepartmentCode
         return _apply_departement_timezone(naive_datetime=date_without_timezone, departement_code=department_code)
