@@ -11,6 +11,7 @@ class OfferQualityModel(BaseModelV2):
 
 class OfferQualityQuery(BaseQuery):
     def __init__(self, start_from_id: int = 0):
+        super().__init__()
         self.start_from_id = start_from_id
 
     @property
@@ -20,7 +21,7 @@ class OfferQualityQuery(BaseQuery):
     def _build_query(self) -> str:
         where_clause = ""
         if self.start_from_id > 0:
-            where_clause = f"WHERE offer_id >= {self.start_from_id}"
+            where_clause = f"WHERE offer_id >= '{self.start_from_id}'"
         return f"""
             SELECT
                 offer_id,
