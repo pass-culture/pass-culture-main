@@ -568,8 +568,8 @@ class PostProductBlacklistTest(PostEndpointHelper):
         offers_factories.OfferFactory(product=product, venue=venue)
         booking = bookings_factories.BookingFactory(stock__offer=offer1)
 
-        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
-        assert response.status_code == 200
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=False)
+        assert response.status_code == 303
 
         assert booking.status == bookings_models.BookingStatus.CANCELLED
 
@@ -620,8 +620,8 @@ class PostProductBlacklistTest(PostEndpointHelper):
             event=finance_event, booking=reimbursed_booking, status=finance_models.PricingStatus.INVOICED
         )
 
-        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=True)
-        assert response.status_code == 200
+        response = self.post_to_endpoint(authenticated_client, product_id=product.id, follow_redirects=False)
+        assert response.status_code == 303
 
         # ensure that we check that everything is committed, when using @atomic, transaction and with atomic (PC-31934)
         db.session.close()
@@ -811,7 +811,7 @@ class AddCriteriaToOffersTest(PostEndpointHelper):
             authenticated_client,
             product_id=product.id,
             form={"criteria": [criterion.id]},
-            follow_redirects=True,
+            follow_redirects=False,
         )
 
-        assert response.status_code == 200
+        assert response.status_code == 303
