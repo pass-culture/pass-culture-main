@@ -107,10 +107,6 @@
 
         @include button-border(var(--color-background-brand-primary-hover));
       }
-
-      @include disabled-state {
-        opacity: 0.4;
-      }
     }
 
     &.btn-secondary {
@@ -132,17 +128,6 @@
           color: var(--color-icon-brand-primary-hover);
         }
       }
-
-      @include disabled-state {
-        background-color: var(--color-background-disabled);
-        color: var(--color-text-disabled);
-
-        @include button-border(var(--color-border-disabled));
-
-        .btn-icon {
-          color: var(--color-icon-disabled);
-        }
-      }
     }
 
     &.btn-tertiary {
@@ -157,6 +142,20 @@
 
       @include disabled-state {
         color: var(--color-text-disabled);
+      }
+    }
+
+    &.btn-primary,
+    &.btn-secondary {
+      @include disabled-state {
+        background-color: var(--color-background-disabled);
+        color: var(--color-text-disabled);
+
+        @include button-border(var(--color-border-disabled));
+
+        .btn-icon {
+          color: var(--color-icon-disabled);
+        }
       }
     }
   }
