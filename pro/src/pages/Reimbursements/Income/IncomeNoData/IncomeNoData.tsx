@@ -1,6 +1,8 @@
 import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { Button } from '@/design-system/Button/Button'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
+import fullLinkIcon from '@/icons/full-link.svg'
 import strokeBookingHoldIcon from '@/icons/stroke-booking-hold.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
@@ -34,7 +36,10 @@ export const IncomeNoData = ({ type }: IncomeNoDataProps) => {
                 as="a"
                 isExternal
                 opensInNewTab
+                icon={fullLinkIcon}
                 to="https://passcultureapp.notion.site/pass-Culture-Documentation-323b1a0ec309406192d772e7d803fbd0"
+                variant={ButtonVariant.TERTIARY}
+                color={ButtonColor.NEUTRAL}
                 onClick={() =>
                   logEvent(Events.CLICKED_BEST_PRACTICES_STUDIES, {
                     from: location.pathname,

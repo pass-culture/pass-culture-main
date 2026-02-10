@@ -71,7 +71,6 @@ export function ManadgedVenueItem({
               onClick={() => {
                 setSelectedVenue(venue)
               }}
-              className={styles['dialog-checkbox-button']}
               label="Sélectionner un SIRET"
             />
           }
