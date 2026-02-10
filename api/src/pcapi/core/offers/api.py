@@ -1073,7 +1073,7 @@ def publish_offer(
 
 
 def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | None) -> None:
-    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer)
+    venue_already_has_validated_offer = offers_repository.venue_already_has_validated_offer(offer.venueId)
 
     offer.validation = set_offer_status_based_on_fraud_criteria(offer)
 
@@ -1103,9 +1103,9 @@ def update_offer_fraud_information(offer: AnyOffer, user: users_models.User | No
         offer.isActive = is_neither_pending_nor_rejected
 
     if (
-        offer.validation == models.OfferValidationStatus.APPROVED
+        isinstance(offer, models.Offer)
+        and offer.validation == models.OfferValidationStatus.APPROVED
         and not venue_already_has_validated_offer
-        and isinstance(offer, models.Offer)
     ):
         transactional_mails.send_first_venue_approved_offer_email_to_pro(offer)
 
@@ -1494,6 +1494,9 @@ def _resolve_subrule_attribute(obj: object, attribute: str) -> typing.Any:
 
 def resolve_offer_validation_sub_rule(sub_rule: models.OfferValidationSubRule, offer: AnyOffer) -> bool:
     if sub_rule.model:
+        object_to_compare: (
+            AnyOffer | educational_models.CollectiveStock | offerers_models.Venue | offerers_models.Offerer
+        )
         if sub_rule.model.value in OFFER_LIKE_MODELS and type(offer).__name__ == sub_rule.model.value:
             object_to_compare = offer
         elif sub_rule.model.value == "CollectiveStock" and isinstance(offer, educational_models.CollectiveOffer):
@@ -2836,9 +2839,9 @@ def get_offer_mediation_url(offer: models.Offer) -> tuple[str | None, str | None
     product = offer.product
 
     if product:
-        mediations = sorted(product.productMediations, key=lambda m: m.id, reverse=True)
-        if mediations:
-            return mediations[0].url, None
+        product_mediations = sorted(product.productMediations, key=lambda m: m.id, reverse=True)
+        if product_mediations:
+            return product_mediations[0].url, None
 
     mediations = sorted(offer.mediations, key=lambda m: m.id, reverse=True)
     if mediations:

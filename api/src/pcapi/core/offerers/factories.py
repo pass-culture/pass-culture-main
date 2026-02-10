@@ -173,7 +173,7 @@ class VenueFactory(BaseFactory[models.Venue]):
         if not self.isOpenToPublic and not extracted:
             import pcapi.core.educational.factories as educational_factories
 
-            extracted = [educational_factories.EducationalDomainFactory()]
+            extracted = [educational_factories.EducationalDomainFactory.create()]
         self.collectiveDomains = extracted or []
         return extracted or []
 
