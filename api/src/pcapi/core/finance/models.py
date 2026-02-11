@@ -247,10 +247,6 @@ class PricingLogReason(enum.Enum):
     GENERATE_INVOICE = "generate invoice"
 
 
-class Frequency(enum.Enum):
-    EVERY_TWO_WEEKS = "every two weeks"
-
-
 class CashflowStatus(enum.Enum):
     # A cashflow starts by being pending, i.e. it's waiting for being
     # sent to our accounting system.
@@ -949,7 +945,6 @@ class InvoiceStatus(enum.Enum):
     PENDING = "pending"
     PENDING_PAYMENT = "pending_payment"
     PAID = "paid"
-    REJECTED = "rejected"
 
 
 @dataclasses.dataclass
