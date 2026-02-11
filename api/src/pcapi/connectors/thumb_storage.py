@@ -28,7 +28,7 @@ def create_thumb(
 
     offers_validation.check_image(image_as_bytes, min_height=None, min_width=None)
     if keep_ratio:
-        image_as_bytes = process_original_image(image_as_bytes)
+        image_as_bytes = process_original_image(image_as_bytes, resize=True)
     else:
         image_as_bytes = standardize_image(image_as_bytes, ratio=ratio, crop_params=crop_params)
 
