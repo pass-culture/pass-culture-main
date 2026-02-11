@@ -41,7 +41,14 @@ export const GenericCinemaProviderEdit = ({
     payload: PostVenueProviderBody
   ): Promise<boolean> => {
     try {
-      await api.updateVenueProvider(venueProvider.id, payload)
+      await api.updateVenueProvider(venueProvider.id, {
+        // we must get rid of payload.providerId
+        price: payload.price,
+        isActive: payload.isActive,
+        isDuo: payload.isDuo,
+        quantity: payload.quantity,
+        venueIdAtOfferProvider: payload.venueIdAtOfferProvider,
+      })
 
       await mutate([GET_VENUE_PROVIDERS_QUERY_KEY, venue.id])
       snackBar.success(
