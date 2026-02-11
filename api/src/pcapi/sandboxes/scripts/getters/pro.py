@@ -214,6 +214,8 @@ def create_adage_environment() -> dict:
         isFinal=False,
     )
 
+    educational_factories.EducationalRedactorFactory.create(email="compte.test@education.gouv.fr")
+
     # offer result by algolia are mocked in e2e test
     return {"offerId": offer.id, "offerName": offer.name, "venueName": newOfferer.venue.name}
 
