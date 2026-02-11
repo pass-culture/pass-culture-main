@@ -38,6 +38,7 @@ jobs:
       api-script-test-changed: ${{ steps.check-api-script-test-changes.outputs.any_modified }}
       pro-changed: ${{ steps.check-pro-changes.outputs.any_modified }}
       dependencies-changed: ${{ steps.check-dependencies-changes.outputs.any_modified }}
+      github-changed: ${{ steps.check-github-changes.outputs.any_modified }}
       push-tags: ${{ steps.pcapi-tags.outputs.push-tags }}
       checksum-tag: ${{ steps.pcapi-tags.outputs.checksum-tag }}
       checksum-tag-exists: ${{ steps.check-checksum-tag.outputs.tag-exists }}
@@ -83,6 +84,12 @@ jobs:
           files: |
             api/poetry.lock
             pro/yarn.lock
+      - name: "Check changes in .github"
+        id: check-github-changes
+        uses: tj-actions/changed-files@v47
+        with:
+          files: |
+            .github/**
       # checkout source branch of the pull request
       - uses: actions/checkout@v6
         with:
@@ -111,6 +118,7 @@ jobs:
             echo "| [api-documentation] content changed  | ${{ steps.check-api-documentation-changes.outputs.any_modified }} |"
             echo "| [pro] content changed                | ${{ steps.check-pro-changes.outputs.any_modified }} |"
             echo "| [dependencies] content changed       | ${{ steps.check-dependencies-changes.outputs.any_modified }} |"
+            echo "| [github] content changed             | ${{ steps.check-github-changes.outputs.any_modified }} |"
           } >> $GITHUB_STEP_SUMMARY
 
   build-pcapi-tests:
@@ -119,7 +127,8 @@ jobs:
     if: |
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
       needs.pcapi-init-job.outputs.api-script-test-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
+      needs.pcapi-init-job.outputs.pro-changed == 'true' ||
+      needs.pcapi-init-job.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_build_docker_image.yml
     with:
       image: pcapi-tests
@@ -129,8 +138,8 @@ jobs:
     name: "MyPy cop"
     needs: [pcapi-init-job]
     if: |
-      github.event_name == 'pull_request' &&
-      needs.pcapi-init-job.outputs.api-changed == 'true'
+      needs.pcapi-init-job.outputs.api-changed == 'true' ||
+      needs.pcapi-init-job.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_mypy_cop.yml
 
   update-api-client-template:
@@ -154,7 +163,9 @@ jobs:
   test-api:
     name: "Tests api"
     needs: [pcapi-init-job, build-pcapi-tests]
-    if: needs.pcapi-init-job.outputs.api-changed == 'true'
+    if: |
+      needs.pcapi-init-job.outputs.api-changed == 'true' ||
+      needs.pcapi-init-job.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api.yml
     with:
       tag: ${{ github.sha }}
@@ -165,7 +176,8 @@ jobs:
   test-api-script:
     name: "Tests api scripts"
     needs: [pcapi-init-job, build-pcapi-tests]
-    if: needs.pcapi-init-job.outputs.api-script-test-changed == 'true'
+    if: |
+      needs.pcapi-init-job.outputs.api-script-test-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api_scripts.yml
     with:
       tag: ${{ github.sha }}
@@ -177,7 +189,9 @@ jobs:
   test-api-documentation:
     name: "Tests API documentation"
     needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.api-documentation-changed == 'true'
+    if: |
+      needs.pcapi-init-job.outputs.api-documentation-changed == 'true' ||
+      needs.pcapi-init-job.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_api_documentation.yml
     secrets:
       GCP_EHP_SERVICE_ACCOUNT: ${{ secrets.GCP_EHP_SERVICE_ACCOUNT }}
@@ -186,7 +200,9 @@ jobs:
   test-pro:
     name: "Pro Unit Tests"
     needs: [pcapi-init-job]
-    if: needs.pcapi-init-job.outputs.pro-changed == 'true'
+    if: |
+      needs.pcapi-init-job.outputs.pro-changed == 'true' ||
+      needs.pcapi-init-job.outputs.github-changed == 'true'
     uses: ./.github/workflows/dev_on_workflow_tests_pro.yml
     with:
       CACHE_BUCKET_NAME: "passculture-infra-prod-github-runner-cache"
@@ -201,7 +217,8 @@ jobs:
     if: always() &&
       !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
+      needs.pcapi-init-job.outputs.pro-changed == 'true' ||
+      needs.pcapi-init-job.outputs.github-changed == 'true'
     with:
       ENV: "development"
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
@@ -217,7 +234,8 @@ jobs:
     if: always() &&
       !cancelled() &&
       needs.pcapi-init-job.outputs.api-changed == 'true' ||
-      needs.pcapi-init-job.outputs.pro-changed == 'true'
+      needs.pcapi-init-job.outputs.pro-changed == 'true' ||
+      needs.pcapi-init-job.outputs.github-changed == 'true'
     with:
       ENV: "development"
       tag: ${{ needs.build-pcapi-tests.result == 'skipped' && 'latest' || github.sha }}
