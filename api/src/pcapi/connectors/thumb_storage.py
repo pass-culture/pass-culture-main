@@ -2,6 +2,7 @@ from pcapi import settings
 from pcapi.core import object_storage
 from pcapi.core.offers import validation as offers_validation
 from pcapi.models.has_thumb_mixin import HasThumbMixin
+from pcapi.utils.image_conversion import MAX_THUMB_WIDTH
 from pcapi.utils.image_conversion import CropParams
 from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import process_original_image
@@ -16,7 +17,9 @@ def create_thumb(
     crop_params: CropParams | None = None,
     ratio: ImageRatio = ImageRatio.PORTRAIT,
     keep_ratio: bool = False,
+    folder: str = settings.THUMBS_FOLDER_NAME,
     object_id: str | None = None,
+    max_width: int = MAX_THUMB_WIDTH,
 ) -> None:
     if model_with_thumb is None and object_id is None:
         raise ValueError("model_with_thumb or object_id must be provided")
@@ -30,10 +33,15 @@ def create_thumb(
     if keep_ratio:
         image_as_bytes = process_original_image(image_as_bytes, resize=True)
     else:
-        image_as_bytes = standardize_image(image_as_bytes, ratio=ratio, crop_params=crop_params)
+        image_as_bytes = standardize_image(
+            image_as_bytes,
+            ratio=ratio,
+            crop_params=crop_params,
+            max_width=max_width,
+        )
 
     object_storage.store_public_object(
-        folder=settings.THUMBS_FOLDER_NAME,
+        folder=folder,
         object_id=object_id,
         blob=image_as_bytes,
         content_type="image/jpeg",

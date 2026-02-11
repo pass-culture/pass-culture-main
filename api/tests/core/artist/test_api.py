@@ -1,5 +1,7 @@
 from unittest import mock
+from unittest.mock import patch
 
+import PIL.Image
 import pytest
 
 import pcapi.core.artist.factories as artist_factories
@@ -9,9 +11,13 @@ from pcapi.core.artist import models as artist_models
 from pcapi.core.artist.api import ArtistOfferLinkKey
 from pcapi.core.artist.api import create_artist_offer_link
 from pcapi.core.artist.api import get_artist_image_url
+from pcapi.core.artist.api import store_mini_thumb
 from pcapi.core.artist.api import upsert_artist_offer_links
 from pcapi.models import db
 from pcapi.routes.serialization import artist_serialize
+from pcapi.utils.image_conversion import MINI_THUMB_WIDTH
+from pcapi.utils.image_conversion import CropParams
+from pcapi.utils.image_conversion import ImageRatio
 
 
 pytestmark = pytest.mark.usefixtures("db_session")
@@ -228,3 +234,26 @@ class UpsertArtistOfferLinksTest:
         upsert_artist_offer_links(incoming_links, offer)
         mock_create_artist_offer_link.assert_called()
         len(mock_create_artist_offer_link.call_args_list) == 2
+
+
+class StoreMiniThumbTest:
+    @patch("pcapi.core.artist.api.thumb_storage.create_thumb")
+    @patch("pcapi.core.artist.api.get_crop_params")
+    @patch("pcapi.core.artist.api.PIL.Image.open")
+    def test_calls_create_thumb_with_correct_params(self, mock_pil_open, mock_get_crop_params, mock_create_thumb):
+        mock_image = PIL.Image.new("RGB", (400, 300), "red")
+        mock_pil_open.return_value = mock_image
+        mock_crop_params = CropParams()
+        mock_get_crop_params.return_value = mock_crop_params
+
+        store_mini_thumb(b"fake-image", "artist-123")
+
+        mock_get_crop_params.assert_called_once_with(400, 300, ImageRatio.SQUARE)
+        mock_create_thumb.assert_called_once_with(
+            b"fake-image",
+            ratio=ImageRatio.SQUARE,
+            crop_params=mock_crop_params,
+            object_id="72x72/artist-123",
+            folder="thumbs/artist",
+            max_width=MINI_THUMB_WIDTH,
+        )

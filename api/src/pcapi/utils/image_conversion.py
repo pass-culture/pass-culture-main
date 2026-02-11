@@ -50,6 +50,7 @@ class ImageRatio(enum.Enum):
 
     PORTRAIT = 2.0 / 3.0
     LANDSCAPE = 3.0 / 2.0
+    SQUARE = 1.0
 
 
 class ImageRatioError(Exception):
@@ -60,11 +61,17 @@ class ImageRatioError(Exception):
 
 
 MAX_THUMB_WIDTH = 750
+MINI_THUMB_WIDTH = 72
 CONVERSION_QUALITY = 90
 DO_NOT_CROP = CropParams()
 
 
-def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams | None = None) -> bytes:
+def standardize_image(
+    content: bytes,
+    ratio: ImageRatio,
+    crop_params: CropParams | None = None,
+    max_width: int = MAX_THUMB_WIDTH,
+) -> bytes:
     """
     Standardization steps are:
         * transpose image
@@ -97,10 +104,10 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams
         crop_params.width_crop_percent,
         preprocessed_image,
     )
-    resized_image = _resize_image(cropped_image, ratio)
-    resized_image = _check_ratio(resized_image, ratio)
+    resized_image = _resize_image(cropped_image, ratio, max_width)
+    validated_image = _check_ratio(resized_image, ratio)
 
-    return _post_process_image(resized_image)
+    return _post_process_image(validated_image)
 
 
 def process_original_image(content: bytes, resize: bool = False) -> bytes:
@@ -187,16 +194,16 @@ def _crop_image(
     return cropped_img
 
 
-def _resize_image(image: PIL.Image.Image, ratio: ImageRatio) -> PIL.Image.Image:
+def _resize_image(image: PIL.Image.Image, ratio: ImageRatio, max_width: int = MAX_THUMB_WIDTH) -> PIL.Image.Image:
     """
     Resize image, adapt ratio if image is too wide
     """
-    if image.width <= MAX_THUMB_WIDTH:
+    if image.width <= max_width:
         return image
 
     height_to_width_ratio = 1 / ratio.value
-    new_height = int(MAX_THUMB_WIDTH * height_to_width_ratio)
-    return image.resize((MAX_THUMB_WIDTH, new_height))
+    new_height = int(max_width * height_to_width_ratio)
+    return image.resize((max_width, new_height))
 
 
 def _shrink_image(image: PIL.Image.Image) -> PIL.Image.Image:

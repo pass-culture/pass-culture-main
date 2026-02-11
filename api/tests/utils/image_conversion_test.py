@@ -94,28 +94,43 @@ class ShrinkImageTest:
 
 
 class ResizeImageTest:
-    def test_resizes_large_landscape_image(self):
-        image = PIL.Image.new("RGB", (1500, 1000), "red")
+    def test_resizes_image_with_landscape_ratio(self):
+        image = PIL.Image.new("RGB", (1500, 1500), "red")
 
         result = _resize_image(image, ImageRatio.LANDSCAPE)
 
         assert result.width == MAX_THUMB_WIDTH
         assert result.height == 500
 
-    def test_resizes_large_portrait_image(self):
-        image = PIL.Image.new("RGB", (1000, 1500), "red")
+    def test_resizes_with_portrait_ratio(self):
+        image = PIL.Image.new("RGB", (1500, 1500), "red")
 
         result = _resize_image(image, ImageRatio.PORTRAIT)
 
         assert result.width == MAX_THUMB_WIDTH
         assert result.height == 1125
 
+    def test_resizes_with_square_ratio(self):
+        image = PIL.Image.new("RGB", (1500, 1500), "red")
+
+        result = _resize_image(image, ImageRatio.SQUARE)
+
+        assert result.width == MAX_THUMB_WIDTH
+        assert result.height == MAX_THUMB_WIDTH
+
+    def test_resize_image_with_max_width(self):
+        image = PIL.Image.new("RGB", (1500, 1500), "red")
+
+        result = _resize_image(image, ImageRatio.SQUARE, max_width=72)
+
+        assert result.size == (72, 72)
+
     def test_does_not_resize_small_image(self):
-        image = PIL.Image.new("RGB", (400, 600), "red")
+        image = PIL.Image.new("RGB", (600, 600), "red")
 
         result = _resize_image(image, ImageRatio.PORTRAIT)
 
-        assert result.size == (400, 600)
+        assert result.size == (600, 600)
 
 
 class CheckRatioTest:
@@ -156,7 +171,7 @@ class StandardizeImageTest:
     @patch("pcapi.utils.image_conversion._resize_image")
     @patch("pcapi.utils.image_conversion._crop_image")
     @patch("pcapi.utils.image_conversion._pre_process_image")
-    def test_standardize_portrait_image(
+    def test_standardize_portrait_image_with_max_width(
         self, mock_pre_process, mock_crop, mock_resize, mock_check_ratio, mock_post_process
     ):
         mock_pre_process.return_value = b"pre-processed-image"
@@ -165,12 +180,12 @@ class StandardizeImageTest:
         mock_check_ratio.return_value = b"validated-image"
         mock_post_process.return_value = b"post-processed-image"
 
-        result = standardize_image(b"fake-image", ratio=ImageRatio.PORTRAIT)
+        result = standardize_image(b"fake-image", ratio=ImageRatio.PORTRAIT, max_width=100)
 
         assert result == b"post-processed-image"
         mock_pre_process.assert_called_once_with(b"fake-image")
         mock_crop.assert_called_once_with(0.0, 0.0, 1.0, 1.0, b"pre-processed-image")
-        mock_resize.assert_called_once_with(b"cropped-image", ImageRatio.PORTRAIT)
+        mock_resize.assert_called_once_with(b"cropped-image", ImageRatio.PORTRAIT, 100)
         mock_check_ratio.assert_called_once_with(b"resized-image", ImageRatio.PORTRAIT)
         mock_post_process.assert_called_once_with(b"validated-image")
 
@@ -196,7 +211,7 @@ class StandardizeImageTest:
         assert result == b"post-processed-image"
         mock_pre_process.assert_called_once_with(b"fake-image")
         mock_crop.assert_called_once_with(0.1, 0.2, 0.8, 0.7, b"pre-processed-image")
-        mock_resize.assert_called_once_with(b"cropped-image", ImageRatio.LANDSCAPE)
+        mock_resize.assert_called_once_with(b"cropped-image", ImageRatio.LANDSCAPE, 750)
         mock_check_ratio.assert_called_once_with(b"resized-image", ImageRatio.LANDSCAPE)
         mock_post_process.assert_called_once_with(b"validated-image")
 
