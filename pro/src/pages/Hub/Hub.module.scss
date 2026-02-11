@@ -41,6 +41,8 @@
   border: solid 1px var(--color-border-subtle);
   border-radius: var(--size-border-radius-m);
   cursor: pointer;
+  overflow: hidden;
+  overflow-wrap: anywhere;
   padding: var(--size-spacing-l) var(--size-spacing-xl);
   width: 100%;
 }
