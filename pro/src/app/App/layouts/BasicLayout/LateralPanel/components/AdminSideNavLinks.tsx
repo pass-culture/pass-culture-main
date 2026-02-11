@@ -2,23 +2,18 @@ import classnames from 'classnames'
 import { useId, useState } from 'react'
 import { NavLink } from 'react-router'
 
-import { UserReviewDialog } from '@/app/App/layouts/components/Header/components/UserReviewDialog/UserReviewDialog'
 import { useMediaQuery } from '@/commons/hooks/useMediaQuery'
 import { Button } from '@/design-system/Button/Button'
-import {
-  ButtonColor,
-  ButtonVariant,
-  IconPositionEnum,
-} from '@/design-system/Button/types'
+import { ButtonVariant, IconPositionEnum } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullDownIcon from '@/icons/full-down.svg'
-import fullSmsIcon from '@/icons/full-sms.svg'
 import fullUpIcon from '@/icons/full-up.svg'
 import strokeCollaboratorIcon from '@/icons/stroke-collaborator.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import strokeReportIcon from '@/icons/stroke-report.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { FeedbackDialogTriggerNavItem } from './FeedbackDialogTriggerNavItem'
 import { HelpDropdownNavItem } from './HelpDropdownNavItem'
 import styles from './SideNavLinks.module.scss'
 
@@ -176,17 +171,7 @@ export const AdminSideNavLinks = ({
       </div>
       <ul className={styles['nav-links-footer']}>
         <li>
-          <UserReviewDialog
-            dialogTrigger={
-              <Button
-                variant={ButtonVariant.TERTIARY}
-                color={ButtonColor.NEUTRAL}
-                icon={fullSmsIcon}
-                className={classnames(styles['nav-links-item'])}
-                label="Donner mon avis"
-              />
-            }
-          />
+          <FeedbackDialogTriggerNavItem />
         </li>
         <li>
           <HelpDropdownNavItem isMobileScreen={isMobileScreen ?? false} />

@@ -104,7 +104,6 @@ export const ReimbursementBankAccount = ({
               )
             }}
             icon={fullLinkIcon}
-            className={styles['ds-link-button']}
             label={
               bankAccount.status === BankAccountApplicationStatus.A_CORRIGER
                 ? 'Compléter le dossier'

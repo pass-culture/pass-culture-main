@@ -58,7 +58,6 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
                   </FormLayout>
                   <div>
                     <Button
-                      style={{ marginTop: 24, marginRight: 16 }}
                       onClick={() => setShowForm(false)}
                       variant={ButtonVariant.SECONDARY}
                       color={ButtonColor.NEUTRAL}
@@ -66,7 +65,6 @@ const DefaultBoxFormLayout = (args: BoxFormLayoutProps) => {
                     />
                     <Button
                       type="submit"
-                      style={{ marginTop: 24 }}
                       isLoading={isSubmitting}
                       label="Enregistrer"
                     />

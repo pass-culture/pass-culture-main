@@ -13,7 +13,7 @@ import { HelpDropdownMenu } from './HelpDropdownMenu'
 export const HeaderHelpDropdown = () => {
   return (
     <Dropdown
-      title="Centre d'aide"
+      title="Centre d’aide"
       sideOffset={16}
       trigger={
         <Button
@@ -22,7 +22,7 @@ export const HeaderHelpDropdown = () => {
           size={ButtonSize.SMALL}
           icon={fullDownIcon}
           iconPosition={IconPositionEnum.RIGHT}
-          label="Centre d'aide"
+          label="Centre d’aide"
         />
       }
     >

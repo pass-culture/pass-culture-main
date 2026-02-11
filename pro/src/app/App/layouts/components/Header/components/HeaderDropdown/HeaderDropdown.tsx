@@ -25,8 +25,8 @@ import fullSwitchIcon from '@/icons/full-switch.svg'
 import fulValidateIcon from '@/icons/full-validate.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { UserReviewDialog } from '../../../../BasicLayout/LateralPanel/components/UserReviewDialog/UserReviewDialog'
 import { HelpDropdownMenu } from '../HeaderHelpDropdown/HelpDropdownMenu'
-import { UserReviewDialog } from '../UserReviewDialog/UserReviewDialog'
 import styles from './HeaderDropdown.module.scss'
 import { resetAllStoredFilterConfig } from './utils/resetAllStoredFilterConfig'
 

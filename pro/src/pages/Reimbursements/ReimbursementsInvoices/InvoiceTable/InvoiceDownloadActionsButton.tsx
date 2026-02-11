@@ -74,7 +74,6 @@ export const InvoiceDownloadActionsButton = ({
             color={ButtonColor.NEUTRAL}
             icon={fullDownloadIcon}
             onClick={() => downloadInvoices(checkedInvoices)}
-            className={styles['first-action']}
             label="Télécharger les justificatifs"
           />
           <Button
