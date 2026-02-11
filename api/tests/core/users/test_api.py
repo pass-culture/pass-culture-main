@@ -750,7 +750,8 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_grant_17_18_digital_cap_v2(self):
-        user = users_factories.BeneficiaryFactory()
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME + relativedelta(minutes=1)):
+            user = users_factories.BeneficiaryFactory()
 
         # booking in physical domain
         bookings_factories.BookingFactory(
@@ -758,6 +759,7 @@ class DomainsCreditTest:
             amount=50,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
+
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
             all=users_models.Credit(initial=Decimal(150), remaining=Decimal(100)),
             digital=users_models.Credit(initial=Decimal(50), remaining=Decimal(50)),
@@ -765,7 +767,8 @@ class DomainsCreditTest:
         )
 
     def test_get_domains_credit_deposit_expired(self):
-        user = users_factories.BeneficiaryFactory()
+        with time_machine.travel(settings.DIGITAL_CAP_V2_DATETIME):
+            user = users_factories.BeneficiaryFactory()
         deposit_expiration_date = user.deposit.expirationDate
         deposit_initial_amount = user.deposit.amount
         bookings_factories.BookingFactory(
