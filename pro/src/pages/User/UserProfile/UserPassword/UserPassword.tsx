@@ -1,5 +1,5 @@
 import { UserPasswordForm } from '@/components/UserPasswordForm/UserPasswordForm'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import { Forms } from '../constants'
 
@@ -15,16 +15,16 @@ export const UserPassword = ({
   const onClickModify = () => setCurrentForm(Forms.USER_PASSWORD)
   const resetForm = () => setCurrentForm(null)
   return (
-    <BoxFormLayout>
+    <Panel>
       {showForm ? (
         <UserPasswordForm closeForm={resetForm} />
       ) : (
-        <BoxFormLayout.Header
+        <Panel.Header
           onClickModify={onClickModify}
           subtitle="***************"
           title="Mot de passe"
         />
       )}
-    </BoxFormLayout>
+    </Panel>
   )
 }

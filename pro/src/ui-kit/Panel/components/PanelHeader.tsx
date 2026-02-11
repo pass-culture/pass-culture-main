@@ -6,9 +6,9 @@ import {
 } from '@/design-system/Button/types'
 import fullEditIcon from '@/icons/full-edit.svg'
 
-import style from '../BoxFormLayout.module.scss'
+import style from '../Panel.module.scss'
 
-interface BoxFormLayoutHeader {
+interface PanelHeader {
   title: string
   subtitle?: string
   onClickModify?: () => void
@@ -18,12 +18,12 @@ export const Header = ({
   title,
   subtitle,
   onClickModify,
-}: BoxFormLayoutHeader): JSX.Element => (
-  <div className={style['box-form-layout-header']}>
+}: PanelHeader): JSX.Element => (
+  <div className={style['panel-header']}>
     <div>
-      <h3 className={style['box-form-layout-header-title']}>{title}</h3>
+      <h3 className={style['panel-header-title']}>{title}</h3>
       {subtitle && (
-        <h4 className={style['box-form-layout-header-subtitle']}>{subtitle}</h4>
+        <h4 className={style['panel-header-subtitle']}>{subtitle}</h4>
       )}
     </div>
 

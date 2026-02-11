@@ -1,14 +1,11 @@
 import { Button } from '@/design-system/Button/Button'
 import { ButtonVariant } from '@/design-system/Button/types'
-import { CardBis } from '@/ui-kit/CardBis/CardBis'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import styles from './OffererCreationLinks.module.scss'
 
 export const OffererCreationLinks = () => (
-  <CardBis
-    className={styles['card']}
-    data-testid="offerers-creation-links-card"
-  >
+  <Panel>
     <h3 className={styles['title']}>Structures</h3>
 
     <div className={styles['content']}>
@@ -34,5 +31,5 @@ export const OffererCreationLinks = () => (
         />
       </div>
     </div>
-  </CardBis>
+  </Panel>
 )

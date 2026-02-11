@@ -61,20 +61,18 @@ export const Homepage = (): JSX.Element => {
       ) : (
         <>
           <CollectiveBudgetBanner />
-          <>
-            <div className={styles['reimbursements-banners']}>
-              <AddBankAccountCallout
-                offerer={selectedOfferer}
-                venue={selectedVenue}
-              />
-              <LinkVenueCallout offerer={selectedOfferer} />
-              <BankAccountHasPendingCorrectionCallout
-                offerer={selectedOfferer}
-                venue={selectedVenue}
-              />
-            </div>
-            {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
-          </>
+          <div className={styles['reimbursements-banners']}>
+            <AddBankAccountCallout
+              offerer={selectedOfferer}
+              venue={selectedVenue}
+            />
+            <LinkVenueCallout offerer={selectedOfferer} />
+            <BankAccountHasPendingCorrectionCallout
+              offerer={selectedOfferer}
+              venue={selectedVenue}
+            />
+          </div>
+          {selectedOfferer && <OffererBanners offerer={selectedOfferer} />}
 
           {selectedOfferer?.isValidated && selectedOfferer.isActive && (
             <section className={styles.section}>

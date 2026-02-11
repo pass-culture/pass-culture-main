@@ -12,7 +12,7 @@ import fullLinkIcon from '@/icons/full-link.svg'
 import fullShowIcon from '@/icons/full-show.svg'
 import strokePhoneIcon from '@/icons/stroke-phone.svg'
 import strokeTeacherIcon from '@/icons/stroke-teacher.svg'
-import { CardBis } from '@/ui-kit/CardBis/CardBis'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { LoadingSkeleton } from './LoadingSkeleton'
@@ -73,7 +73,7 @@ export const PublishedOfferStats = ({
   const pendingOfferWording = 'en instruction'
 
   return (
-    <CardBis className={className}>
+    <Panel>
       <h3 className={styles['title']}>Vos offres publiées</h3>
 
       <div className={styles['container']}>
@@ -150,6 +150,6 @@ export const PublishedOfferStats = ({
             </div>
           </div>
         )}
-    </CardBis>
+    </Panel>
   )
 }

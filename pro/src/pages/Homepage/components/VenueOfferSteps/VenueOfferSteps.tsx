@@ -1,5 +1,3 @@
-import cn from 'classnames'
-
 import type {
   GetOffererResponseModel,
   GetOffererVenueResponseModel,
@@ -20,7 +18,7 @@ import {
 } from '@/design-system/Button/types'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullNextIcon from '@/icons/full-next.svg'
-import { CardBis } from '@/ui-kit/CardBis/CardBis'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import {
   shouldDisplayEACInformationSectionForVenue,
@@ -85,13 +83,7 @@ export const VenueOfferSteps = ({
 
   return (
     (displayNextStepsSection || displayAddEACInfoButton) && (
-      <CardBis
-        className={cn(styles['card-wrapper'], className, {
-          [styles['no-shadow']]: hasVenue || isInsidePartnerBlock,
-          [styles['inside-partner-block']]: isInsidePartnerBlock,
-        })}
-        data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}
-      >
+      <Panel data-testid={hasVenue ? 'venue-offer-steps' : 'home-offer-steps'}>
         {displayNextStepsSection && (
           <>
             <h3 className={styles['card-title']}>Prochaines étapes : </h3>
@@ -188,7 +180,7 @@ export const VenueOfferSteps = ({
             </div>
           </>
         )}
-      </CardBis>
+      </Panel>
     )
   )
 }

@@ -14,7 +14,7 @@ import fullDisclosureCloseIcon from '@/icons/full-disclosure-close.svg'
 import fullDisclosureOpenIcon from '@/icons/full-disclosure-open.svg'
 import { shouldShowVenueOfferStepsForVenue } from '@/pages/Homepage/components/Offerers/components/VenueList/venueUtils'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
-import { CardBis } from '@/ui-kit/CardBis/CardBis'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import styles from './Venue.module.scss'
@@ -54,7 +54,7 @@ export const Venue = ({ offerer, venue, isFirstVenue = false }: VenueProps) => {
     : venue.publicName
 
   return (
-    <CardBis data-testid="venue-wrapper">
+    <Panel>
       <div className={styles['header-row']}>
         <h3 className={styles['toggle-wrapper']}>
           {shouldShowVenueOfferSteps ? (
@@ -127,6 +127,6 @@ export const Venue = ({ offerer, venue, isFirstVenue = false }: VenueProps) => {
           />
         </div>
       )}
-    </CardBis>
+    </Panel>
   )
 }

@@ -11,7 +11,7 @@ import {
   formatPacificFranc,
 } from '@/commons/utils/convertEuroToPacificFranc'
 import fullHelpIcon from '@/icons/full-help.svg'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
+import { Panel } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 import { Tooltip } from '@/ui-kit/Tooltip/Tooltip'
 
@@ -81,7 +81,7 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
       : income.individual
 
   return (
-    <BoxFormLayout>
+    <Panel>
       <div className={styles['income-results-box']}>
         <IncomeResultsSubBox
           title={totalLabel}
@@ -105,6 +105,6 @@ export const IncomeResultsBox = ({ type, income }: IncomeResultsBoxProps) => {
           </>
         )}
       </div>
-    </BoxFormLayout>
+    </Panel>
   )
 }

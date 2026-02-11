@@ -28,7 +28,7 @@ import {
 import fullParametersIcon from '@/icons/full-parameters.svg'
 import { VenueOfferSteps } from '@/pages/Homepage/components/VenueOfferSteps/VenueOfferSteps'
 import { buildInitialValues } from '@/pages/VenueEdition/components/VenueEditionHeader'
-import { CardBis } from '@/ui-kit/CardBis/CardBis'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import styles from './PartnerPage.module.scss'
 import { PartnerPageCollectiveSection } from './PartnerPageCollectiveSection'
@@ -84,7 +84,7 @@ export const PartnerPage = ({
   }
 
   return (
-    <CardBis>
+    <Panel>
       <div className={styles['header']}>
         <ImageUploader
           className={styles['image-uploader']}
@@ -140,6 +140,6 @@ export const PartnerPage = ({
         allowedOnAdage={venue.allowedOnAdage}
         isDisplayedInHomepage
       />
-    </CardBis>
+    </Panel>
   )
 }

@@ -8,7 +8,7 @@ import type {
 } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm, formatDate } from '@/commons/utils/date'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
-import { CardBis as HomeCard } from '@/ui-kit/CardBis/CardBis'
+import { Panel as HomeCard } from '@/ui-kit/Panel/Panel'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { CumulatedViews } from './components/CumulatedViews'
@@ -37,7 +37,7 @@ export const StatisticsDashboard = ({ offerer }: StatisticsDashboardProps) => {
   }, [offerer.id])
 
   return (
-    <HomeCard className={styles['card-data']}>
+    <HomeCard>
       {isLoading ? (
         <LoadingSkeleton />
       ) : stats?.jsonData.topOffers.length ||

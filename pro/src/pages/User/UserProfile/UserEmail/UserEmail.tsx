@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 import { api } from '@/apiClient/api'
 import { UserEmailForm } from '@/pages/User/UserProfile/UserEmail/UserEmailForm/UserEmailForm'
-import { BoxFormLayout } from '@/ui-kit/BoxFormLayout/BoxFormLayout'
+import { Panel } from '@/ui-kit/Panel/Panel'
 
 import { Forms } from '../constants'
 import { BannerPendingEmailValidation } from './BannerPendingEmailValidation/BannerPendingEmailValidation'
@@ -39,14 +39,14 @@ export const UserEmail = ({
   }, [])
 
   return (
-    <BoxFormLayout>
+    <Panel>
       {showForm ? (
         <UserEmailForm
           closeForm={resetForm}
           getPendingEmailRequest={getPendingEmailRequest}
         />
       ) : (
-        <BoxFormLayout.Header
+        <Panel.Header
           title="Adresse email de connexion"
           subtitle={initialValues.email}
           onClickModify={onClickModify}
@@ -55,6 +55,6 @@ export const UserEmail = ({
       {!showForm && pendingEmailValidation && (
         <BannerPendingEmailValidation email={pendingEmailValidation} />
       )}
-    </BoxFormLayout>
+    </Panel>
   )
 }
