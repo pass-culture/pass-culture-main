@@ -70,8 +70,8 @@ def list_educational_offerers(
         offerers = api.get_educational_offerers(offerer_id, current_user)
 
         return offerers_serialize.GetEducationalOfferersResponseModel(
-            educationalOfferers=[
-                offerers_serialize.GetEducationalOffererResponseModel.from_orm(offerer) for offerer in offerers
+            educational_offerers=[
+                offerers_serialize.GetEducationalOffererResponseModel.build(offerer) for offerer in offerers
             ]
         )
 
@@ -142,14 +142,14 @@ def get_offerer_members(offerer_id: int) -> offerers_serialize.GetOffererMembers
     api=blueprint.pro_private_schema,
 )
 def create_offerer(
-    body: offerers_serialize.CreateOffererQueryModel,
+    body: offerers_serialize.CreateOffererBodyModel,
 ) -> public_information_serialize.PostOffererResponseModel:
     siren_info = api_entreprise.get_siren_open_data(body.siren)
     if not siren_info.active:
         raise ApiErrors(errors={"siren": ["SIREN is no longer active"]})
     body.name = siren_info.name
     assert siren_info.address  # helps mypy
-    body.postalCode = siren_info.address.postal_code
+    body.postal_code = siren_info.address.postal_code
     if api.is_user_offerer_already_exist(current_user, body.siren):
         # As this endpoint does not only allow to create an offerer, but also handles
         # a large part of `user_offerer` business logic (see `api.create_offerer` below)
@@ -160,7 +160,8 @@ def create_offerer(
         user_offerer = api.create_offerer(current_user, body, insee_data=siren_info)
     except offerers_exceptions.NotACollectivity:
         raise ApiErrors(errors={"user_offerer": ["Le rattachement est permis seulement pour les collectivités"]})
-    return public_information_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
+
+    return public_information_serialize.PostOffererResponseModel.model_validate(user_offerer.offerer)
 
 
 @private_api.route("/offerers/new", methods=["POST"])
@@ -191,7 +192,8 @@ def save_new_onboarding_data(
         raise ApiErrors({"siret": "SIRET doesn't belong to a collectivity"})
     except offerers_exceptions.publicNameRequiredException:
         raise ApiErrors({"publicName": "Veuillez renseigner un nom public pour votre structure."})
-    return public_information_serialize.PostOffererResponseModel.from_orm(user_offerer.offerer)
+
+    return public_information_serialize.PostOffererResponseModel.model_validate(user_offerer.offerer)
 
 
 @private_api.route("/offerers/<int:offerer_id>/bank-accounts", methods=["GET"])
@@ -375,7 +377,7 @@ def get_offerer_v2_stats(offerer_id: int) -> offerers_serialize.GetOffererV2Stat
         stats = api.get_offerer_v2_stats(offerer_id)
     except offerers_exceptions.CannotFindOffererForOfferId:
         raise ResourceNotFoundError()
-    return offerers_serialize.GetOffererV2StatsResponseModel.from_orm(stats)
+    return offerers_serialize.GetOffererV2StatsResponseModel.model_validate(stats)
 
 
 @private_api.route("/offerers/<int:offerer_id>/offerer_addresses", methods=["GET"])
@@ -390,11 +392,11 @@ def get_offerer_addresses(
 ) -> offerers_serialize.GetOffererAddressesResponseModel:
     check_user_has_access_to_offerer(current_user, offerer_id)
 
-    offerer_addresses = repository.get_offerer_addresses(offerer_id, with_offers_option=query.withOffersOption)
+    offerer_addresses = repository.get_offerer_addresses(offerer_id, with_offers_option=query.with_offers_option)
 
     return offerers_serialize.GetOffererAddressesResponseModel(
-        __root__=[
-            offerers_serialize.GetOffererAddressResponseModel.from_orm(offerer_address)
+        root=[
+            offerers_serialize.GetOffererAddressResponseModel.model_validate(offerer_address)
             for offerer_address in offerer_addresses
         ]
     )
