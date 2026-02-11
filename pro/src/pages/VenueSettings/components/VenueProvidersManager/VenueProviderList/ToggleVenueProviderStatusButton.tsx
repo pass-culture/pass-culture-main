@@ -33,7 +33,6 @@ export const ToggleVenueProviderStatusButton = ({
     setIsLoading(true)
     const payload = {
       ...venueProvider,
-      providerId: venueProvider.provider.id,
       isActive: !venueProvider.isActive,
     }
 
