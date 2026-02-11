@@ -759,7 +759,6 @@ class DomainsCreditTest:
             amount=50,
             stock__offer__subcategoryId=subcategories.JEU_SUPPORT_PHYSIQUE.id,
         )
-
         assert users_api.get_domains_credit(user) == users_models.DomainsCredit(
             all=users_models.Credit(initial=Decimal(150), remaining=Decimal(100)),
             digital=users_models.Credit(initial=Decimal(50), remaining=Decimal(50)),
