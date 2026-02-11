@@ -39,7 +39,6 @@ jobs:
           node-version-file: "pro/package.json"
       
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV != 'production'
 
       - name: "Cache the node_modules"
         id: "yarn-modules-cache"
@@ -120,7 +119,6 @@ jobs:
           node-version-file: "pro/package.json"
 
       - uses: pass-culture/common-workflows/actions/setup-safe-chain@main
-        if: inputs.ENV != 'production'
 
       - name: "Authentification to Google"
         uses: "google-github-actions/auth@v3"
