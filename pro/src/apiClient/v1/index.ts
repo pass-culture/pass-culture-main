@@ -180,7 +180,7 @@ export type { ListProviderResponse } from './models/ListProviderResponse';
 export type { ListVenueProviderResponse } from './models/ListVenueProviderResponse';
 export type { LocationBodyModel } from './models/LocationBodyModel';
 export type { LocationBodyModelV2 } from './models/LocationBodyModelV2';
-export type { LocationModel } from './models/LocationModel';
+export type { LocationModelV2 } from './models/LocationModelV2';
 export type { LocationOnlyOnVenueBodyModel } from './models/LocationOnlyOnVenueBodyModel';
 export type { LocationOnlyOnVenueBodyModelV2 } from './models/LocationOnlyOnVenueBodyModelV2';
 export type { LocationResponseModel } from './models/LocationResponseModel';
