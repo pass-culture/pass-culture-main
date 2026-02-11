@@ -193,7 +193,18 @@ VSCode vous proposera d’installer automatiquement les extensions recommandées
 
 La liste est disponible dans le fichier [`.vscode/extensions.json`](https://github.com/pass-culture/pass-culture-main/blob/master/pro/.vscode/extensions.json).
 
+Pour les devs **qui n'utilisent PAS VSCode** et qui ouvrent le projet à partir du dossier racine `pass-culture-main` dans leur IDE :
+
+- [Biome](https://biomejs.dev/guides/getting-started/) (Linter JS/JSON/CSS/HTML pour le Frontend)
+  - `npm i -g @biomejs/biome` ou `brew install biome`
+  - Installer l'[extension correspondant à ton IDE si dispo](https://biomejs.dev/guides/editors/first-party-extensions/)
+  - Prendre garde à ce que ta version Biome globale soit la même que celle déclarée dans les dev-deps `pro/package.json`.
+
 ## Les tests
+
+Il faut cette fois installer l'extension `vitest.explorer`. On aura alors accès aux tests des fichiers `*.spec.tsx` dans l'onglet Testing.
+
+On peut également utiliser la commande de launch `Debug current spec test file`. Lorsqu'on est dans un fichier `*.spec.tsx`, on peut lancer la commande depuis l'onglet `Run and Debug` et les tests du fichier seront exécutés.
 
 **Tests unitaires / d’intégration :**
 
@@ -305,7 +316,7 @@ Nous utilisons **SonarCloud** pour monitorer la dette technique.
 
 Vous retrouverez dans le fichier [`pro/package.json`](https://github.com/pass-culture/pass-culture-main/blob/master/pro/package.json) des scripts Yarn utiles pour le développement.
 
-## Générer des templates de composants React et utilitaires avec [Templatron](https://www.npmjs.com/package/templatron) :
+## Générer des templates de composants React et utilitaires avec [Templatron](https://www.npmjs.com/package/templatron)
 
 Lister les templates disponibles :
 
@@ -331,19 +342,19 @@ npx templatron util maFonction
 
 Pour plus de détails sur le fonctionnement des templates, voir la [documentation de Templatron](https://github.com/jmpp/templatron).
 
-## Linter les fichiers TypeScript :
+## Linter les fichiers TypeScript
 
 ```bash
 yarn lint:js
 ```
 
-## Identifier du code mort :
+## Identifier du code mort
 
 ```bash
 yarn lint:dead-code
 ```
 
-## Identifier des problèmes de types TS :
+## Identifier des problèmes de types TS
 
 ```bash
 yarn tsc -b
