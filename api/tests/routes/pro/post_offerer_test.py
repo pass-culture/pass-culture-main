@@ -27,7 +27,7 @@ def test_returned_data(client):
     body = {
         "name": "MINISTERE DE LA CULTURE",
         "siren": "418166096",
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,
@@ -51,7 +51,7 @@ def test_user_cant_create_same_offerer_twice(client):
     body = {
         "name": "MINISTERE DE LA CULTURE",
         "siren": "418166096",
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,
@@ -83,7 +83,7 @@ def test_user_can_create_rejected_offerer_again(client):
     body = {
         "name": "MINISTERE DE LA CULTURE",
         "siren": "418166096",
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,
@@ -104,7 +104,7 @@ def test_user_can_create_offerer(client):
     body = {
         "name": "MINISTERE DE LA CULTURE",
         "siren": "418166096",
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,
@@ -129,7 +129,6 @@ def test_user_can_create_offerer(client):
 
 
 def test_when_no_address_is_provided(client):
-    # given
     pro = users_factories.ProFactory(
         lastConnectionDate=date_utils.get_naive_utc_now(),
     )
@@ -142,11 +141,9 @@ def test_when_no_address_is_provided(client):
         "longitude": 2,
     }
 
-    # when
     client = client.with_session_auth(pro.email)
     response = client.post("/offerers", json=body)
 
-    # then
     assert response.status_code == 201
     assert response.json["siren"] == "418166096"
     assert response.json["name"] == "MINISTERE DE LA CULTURE"
@@ -158,7 +155,7 @@ def test_use_offerer_name_retrieved_from_sirene_api(client):
     body = {
         "name": "Manually edited name",
         "siren": "418166096",
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,
@@ -174,30 +171,26 @@ def test_use_offerer_name_retrieved_from_sirene_api(client):
 
 
 def test_current_user_has_access_to_created_offerer(client):
-    # Given
     pro = users_factories.ProFactory()
     body = {
         "name": "Test Offerer",
         "siren": "418166096",
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,
         "longitude": 2,
     }
 
-    # when
     client = client.with_session_auth(pro.email)
     response = client.post("/offerers", json=body)
 
-    # then
     assert response.status_code == 201
     offerer = db.session.query(offerers_models.Offerer).one()
     assert offerer.UserOfferers[0].user == pro
 
 
 def test_new_user_offerer_has_validation_status_new(client):
-    # Given
     pro = users_factories.ProFactory()
     venue = offerers_factories.VenueFactory()
     offerer = venue.managingOfferer
@@ -212,11 +205,9 @@ def test_new_user_offerer_has_validation_status_new(client):
         "longitude": 2,
     }
 
-    # when
     client = client.with_session_auth(pro.email)
     response = client.post("/offerers", json=body)
 
-    # then
     assert response.status_code == 201
     offerer = db.session.query(offerers_models.Offerer).one()
     created_user_offerer = db.session.query(offerers_models.UserOfferer).filter_by(offerer=offerer, user=pro).one()
@@ -224,24 +215,21 @@ def test_new_user_offerer_has_validation_status_new(client):
 
 
 def test_create_offerer_action_is_logged(client):
-    # given
     user = users_factories.UserFactory()
 
     body = {
         "name": "Test Offerer",
         "siren": "418166096",
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,
         "longitude": 2,
     }
 
-    # when
     client = client.with_session_auth(user.email)
     response = client.post("/offerers", json=body)
 
-    # then
     assert response.status_code == 201
     action = db.session.query(history_models.ActionHistory).one()
     assert action.actionType == history_models.ActionType.OFFERER_NEW
@@ -262,7 +250,7 @@ def test_with_inactive_siren(requests_mock, client):
     body = {
         "name": "Test Offerer",
         "siren": siren,
-        "address": "123 rue de Paris",
+        "street": "123 rue de Paris",
         "postalCode": "93100",
         "city": "Montreuil",
         "latitude": 48,

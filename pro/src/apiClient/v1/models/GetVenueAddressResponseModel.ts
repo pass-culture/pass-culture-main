@@ -7,7 +7,7 @@ export type GetVenueAddressResponseModel = {
   city: string;
   departmentCode: (string | null);
   id: number;
-  label?: (string | null);
+  label: (string | null);
   postalCode: string;
   street: (string | null);
   venueId: number;

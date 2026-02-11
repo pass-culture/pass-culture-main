@@ -130,6 +130,7 @@ export const venueAddressFactory = (
     venueId: venueId,
     addressId: currentOaId,
     id: currentOaId,
+    label: 'ma venue',
     city: 'Paris',
     postalCode: '75001',
     street: '1 Rue de paris',

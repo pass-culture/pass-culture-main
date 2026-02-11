@@ -442,7 +442,7 @@ class GetVenueAddressesQueryModel(HttpBodyModel):
 class GetVenueAddressResponseModel(HttpBodyModel):
     id: int
     addressId: int
-    label: str | None = None
+    label: str | None
     venueId: int
     venueName: str | None
     street: str | None

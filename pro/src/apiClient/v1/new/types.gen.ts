@@ -960,9 +960,9 @@ export type CreateOfferHighlightRequestBodyModel = {
 };
 
 /**
- * CreateOffererQueryModel
+ * CreateOffererBodyModel
  */
-export type CreateOffererQueryModel = {
+export type CreateOffererBodyModel = {
     /**
      * City
      */
@@ -970,15 +970,15 @@ export type CreateOffererQueryModel = {
     /**
      * Inseecode
      */
-    inseeCode?: string;
+    inseeCode?: string | null;
     /**
      * Latitude
      */
-    latitude?: number;
+    latitude?: number | null;
     /**
      * Longitude
      */
-    longitude?: number;
+    longitude?: number | null;
     /**
      * Name
      */
@@ -986,7 +986,7 @@ export type CreateOffererQueryModel = {
     /**
      * Phonenumber
      */
-    phoneNumber?: string;
+    phoneNumber?: string | null;
     /**
      * Postalcode
      */
@@ -998,7 +998,7 @@ export type CreateOffererQueryModel = {
     /**
      * Street
      */
-    street?: string;
+    street?: string | null;
 };
 
 /**
@@ -2273,23 +2273,23 @@ export type GetEducationalOffererVenueResponseModel = {
     /**
      * Audiodisabilitycompliant
      */
-    audioDisabilityCompliant?: boolean;
+    audioDisabilityCompliant?: boolean | null;
     /**
      * City
      */
-    city?: string;
+    city?: string | null;
     /**
      * Collectiveemail
      */
-    collectiveEmail?: string;
+    collectiveEmail?: string | null;
     /**
      * Collectiveinterventionarea
      */
-    collectiveInterventionArea?: Array<string>;
+    collectiveInterventionArea?: Array<string> | null;
     /**
      * Collectivephone
      */
-    collectivePhone?: string;
+    collectivePhone?: string | null;
     /**
      * Id
      */
@@ -2301,11 +2301,11 @@ export type GetEducationalOffererVenueResponseModel = {
     /**
      * Mentaldisabilitycompliant
      */
-    mentalDisabilityCompliant?: boolean;
+    mentalDisabilityCompliant?: boolean | null;
     /**
      * Motordisabilitycompliant
      */
-    motorDisabilityCompliant?: boolean;
+    motorDisabilityCompliant?: boolean | null;
     /**
      * Name
      */
@@ -2313,7 +2313,7 @@ export type GetEducationalOffererVenueResponseModel = {
     /**
      * Postalcode
      */
-    postalCode?: string;
+    postalCode?: string | null;
     /**
      * Publicname
      */
@@ -2321,11 +2321,11 @@ export type GetEducationalOffererVenueResponseModel = {
     /**
      * Street
      */
-    street?: string;
+    street?: string | null;
     /**
      * Visualdisabilitycompliant
      */
-    visualDisabilityCompliant?: boolean;
+    visualDisabilityCompliant?: boolean | null;
 };
 
 /**
@@ -2333,9 +2333,9 @@ export type GetEducationalOffererVenueResponseModel = {
  */
 export type GetEducationalOfferersQueryModel = {
     /**
-     * Offerer Id
+     * Offererid
      */
-    offerer_id?: number;
+    offererId?: number | null;
 };
 
 /**
@@ -2853,7 +2853,7 @@ export type GetOffererAddressResponseModel = {
     /**
      * Departmentcode
      */
-    departmentCode?: string;
+    departmentCode: string | null;
     /**
      * Id
      */
@@ -2861,7 +2861,7 @@ export type GetOffererAddressResponseModel = {
     /**
      * Label
      */
-    label?: string;
+    label: string | null;
     /**
      * Postalcode
      */
@@ -2869,14 +2869,14 @@ export type GetOffererAddressResponseModel = {
     /**
      * Street
      */
-    street?: string;
+    street: string | null;
 };
 
 /**
  * GetOffererAddressesQueryModel
  */
 export type GetOffererAddressesQueryModel = {
-    withOffersOption?: GetOffererAddressesWithOffersOption;
+    withOffersOption?: GetOffererAddressesWithOffersOption | null;
 };
 
 /**
@@ -2886,8 +2886,6 @@ export type GetOffererAddressesResponseModel = Array<GetOffererAddressResponseMo
 
 /**
  * GetOffererAddressesWithOffersOption
- *
- * An enumeration.
  */
 export enum GetOffererAddressesWithOffersOption {
     INDIVIDUAL_OFFERS_ONLY = 'INDIVIDUAL_OFFERS_ONLY',
@@ -3263,7 +3261,7 @@ export type GetVenueAddressResponseModel = {
     /**
      * Label
      */
-    label?: string | null;
+    label: string | null;
     /**
      * Postalcode
      */
@@ -3814,9 +3812,9 @@ export type LegalStatusResponseModel = {
  */
 export type LinkVenueToBankAccountBodyModel = {
     /**
-     * Venues Ids
+     * Venuesids
      */
-    venues_ids: Array<number>;
+    venuesIds: Array<number>;
 };
 
 /**
@@ -4747,15 +4745,15 @@ export type OffererEligibilityResponseModel = {
     /**
      * Hasadageid
      */
-    hasAdageId?: boolean;
+    hasAdageId: boolean | null;
     /**
      * Hasdsapplication
      */
-    hasDsApplication?: boolean;
+    hasDsApplication: boolean | null;
     /**
      * Isonboarded
      */
-    isOnboarded?: boolean;
+    isOnboarded: boolean | null;
     /**
      * Offererid
      */
@@ -4764,8 +4762,6 @@ export type OffererEligibilityResponseModel = {
 
 /**
  * OffererMemberStatus
- *
- * An enumeration.
  */
 export enum OffererMemberStatus {
     VALIDATED = 'validated',
@@ -8782,7 +8778,7 @@ export type getLiteVenuesResponses = {
 export type getLiteVenuesResponse = getLiteVenuesResponses[keyof getLiteVenuesResponses];
 
 export type postOfferersData = {
-    body: CreateOffererQueryModel;
+    body: CreateOffererBodyModel;
     path?: never;
     query?: never;
     url: '/offerers';
@@ -8815,9 +8811,9 @@ export type getOfferersEducationalData = {
     path?: never;
     query?: {
         /**
-         * Offerer Id
+         * Offererid
          */
-        offerer_id?: number;
+        offererId?: number | null;
     };
     url: '/offerers/educational';
 };
@@ -9157,7 +9153,7 @@ export type getOfferersByOffererIdOffererAddressesData = {
         offerer_id: number;
     };
     query?: {
-        withOffersOption?: GetOffererAddressesWithOffersOption;
+        withOffersOption?: GetOffererAddressesWithOffersOption | null;
     };
     url: '/offerers/{offerer_id}/offerer_addresses';
 };

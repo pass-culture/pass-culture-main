@@ -20,10 +20,17 @@ export const managedVenueFactory = (
       id: currentVenueId,
       name: 'Nom de la structure',
       publicName: 'Nom public de la structure',
-      address: '2 bis Street Name',
+      street: '2 bis Street Name',
       postalCode: '93100',
       city: 'Montreuil',
       isVirtual: false,
+      audioDisabilityCompliant: null,
+      collectiveEmail: null,
+      collectiveInterventionArea: null,
+      collectivePhone: null,
+      mentalDisabilityCompliant: null,
+      motorDisabilityCompliant: null,
+      visualDisabilityCompliant: null,
     },
     userVenueExtends
   )
