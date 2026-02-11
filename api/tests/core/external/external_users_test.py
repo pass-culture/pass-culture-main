@@ -5,6 +5,7 @@ import pytest
 import time_machine
 from dateutil.relativedelta import relativedelta
 
+from pcapi import settings as pcapi_settings
 from pcapi.core.achievements.factories import AchievementFactory
 from pcapi.core.achievements.models import AchievementEnum
 from pcapi.core.bookings.factories import BookingFactory
@@ -274,7 +275,8 @@ def test_get_user_attributes_ex_beneficiary_because_of_expiration():
 
 
 def test_get_user_attributes_beneficiary_because_of_credit():
-    user = BeneficiaryFactory()
+    with time_machine.travel(pcapi_settings.DIGITAL_CAP_V2_DATETIME - relativedelta(minutes=1)):
+        user = BeneficiaryFactory()
     initial_amount = user.deposit.amount
     offer1 = OfferFactory(
         product=ProductFactory(id=list(TRACKED_PRODUCT_IDS.keys())[0], subcategoryId=subcategories.SEANCE_CINE.id)

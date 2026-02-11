@@ -5,11 +5,14 @@ from decimal import Decimal
 import pytest
 import pytz
 import sqlalchemy.exc as sa_exc
+import time_machine
+from dateutil.relativedelta import relativedelta
 
 import pcapi.core.bookings.factories as bookings_factories
 import pcapi.core.offerers.factories as offerers_factories
 import pcapi.core.offers.factories as offers_factories
 import pcapi.utils.db as db_utils
+from pcapi import settings as pcapi_settings
 from pcapi.core.finance import factories
 from pcapi.core.finance import models
 from pcapi.core.users import factories as users_factories
@@ -178,9 +181,10 @@ class DepositSpecificCapsTest:
         assert specific_caps.PHYSICAL_CAP is None
 
     def should_have_100_euros_cap_when_deposit_17_18(self):
-        user = users_factories.BeneficiaryGrant18Factory(
-            deposit__type=models.DepositType.GRANT_17_18, deposit__version=1
-        )
+        with time_machine.travel(pcapi_settings.DIGITAL_CAP_V2_DATETIME - relativedelta(minutes=1)):
+            user = users_factories.BeneficiaryGrant18Factory(
+                deposit__type=models.DepositType.GRANT_17_18, deposit__version=1
+            )
         specific_caps = user.deposit.specific_caps
 
         assert specific_caps.DIGITAL_CAP == Decimal(100)
