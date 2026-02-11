@@ -9,7 +9,15 @@ set -ex
 export IS_REBUILD_STAGING=1
 
 flask import_test_users --update
-flask sandbox --name beneficiaries --name accessibility_offers --clean false --index-all-offers false
+
+export SANDBOX_ENABLED=true
+
+if [ "$SANDBOX_ENABLED" == "true" ]; then
+  echo "Sandbox is enabled, importing sandbox data ..."
+  flask sandbox --name beneficiaries --name accessibility_offers --clean false --index-all-offers false
+else
+  echo "Sandbox is disabled, skipping sandbox data import."
+fi
 
 flask add_permissions_to_staging_specific_roles
 
