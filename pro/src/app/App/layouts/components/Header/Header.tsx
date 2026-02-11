@@ -15,13 +15,14 @@ import {
 } from '@/design-system/Button/types'
 import fullBackIcon from '@/icons/full-back.svg'
 import fullBurgerIcon from '@/icons/full-burger.svg'
+import fullSmsIcon from '@/icons/full-sms.svg'
 import logoPassCultureProIcon from '@/icons/logo-pass-culture-pro.svg'
 import strokeRepaymentIcon from '@/icons/stroke-repayment.svg'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
+import { UserReviewDialog } from '../../BasicLayout/LateralPanel/components/UserReviewDialog/UserReviewDialog'
 import { HeaderDropdown } from './components/HeaderDropdown/HeaderDropdown'
 import { HeaderHelpDropdown } from './components/HeaderHelpDropdown/HeaderHelpDropdown'
-import { UserReviewDialog } from './components/UserReviewDialog/UserReviewDialog'
 import styles from './Header.module.scss'
 
 type HeaderProps = {
@@ -101,7 +102,19 @@ export const Header = forwardRef(
             {!withSwitchVenueFeature && (
               <div className={styles['top-right-menu-links']}>
                 <div className={styles['tablet-and-above']}>
-                  {isProFeedbackEnabled && <UserReviewDialog />}
+                  {isProFeedbackEnabled && (
+                    <UserReviewDialog
+                      dialogTrigger={
+                        <Button
+                          color={ButtonColor.NEUTRAL}
+                          icon={fullSmsIcon}
+                          label="Donner mon avis"
+                          size={ButtonSize.SMALL}
+                          variant={ButtonVariant.TERTIARY}
+                        />
+                      }
+                    />
+                  )}
                 </div>
                 <div className={styles['tablet-and-above']}>
                   <HeaderHelpDropdown />

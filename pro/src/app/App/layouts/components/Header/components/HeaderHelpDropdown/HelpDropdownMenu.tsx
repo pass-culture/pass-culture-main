@@ -22,7 +22,7 @@ export const HelpDropdownMenu = () => {
               from: location.pathname,
             })
           }
-          label="Consulter le centre d'aide"
+          label="Consulter le centre d’aide"
           variant={ButtonVariant.TERTIARY}
           color={ButtonColor.NEUTRAL}
         />

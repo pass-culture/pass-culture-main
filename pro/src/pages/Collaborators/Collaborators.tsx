@@ -119,56 +119,57 @@ export const Collaborators = (): JSX.Element | null => {
 
         {members.length > 0 && (
           <div className={styles['members-container']}>
-            <div className={styles['members-inner']}>
-              <table className={styles['members-list']}>
-                <thead>
-                  <tr className={styles['members-list-tr']}>
-                    <th scope="col" className={styles['members-list-th']}>
-                      Email
-                    </th>
-                    <th scope="col" className={styles['members-list-th']}>
-                      Statut
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {members.map(
-                    ({ email, status }, index) =>
-                      !(
-                        !displayAllMembers && index > MAX_COLLABORATORS - 1
-                      ) && (
-                        <tr key={email} className={styles['members-list-tr']}>
-                          <td
-                            className={classNames(
-                              styles['member-email'],
-                              styles['members-list-td']
-                            )}
-                          >
-                            {email}
-                          </td>
-                          <td
-                            className={classNames(
-                              styles['member-status'],
-                              styles['members-list-td']
-                            )}
-                          >
-                            {status === OffererMemberStatus.VALIDATED
-                              ? 'Validé'
-                              : 'En attente'}
-                          </td>
-                        </tr>
-                      )
-                  )}
-                </tbody>
-              </table>
-            </div>
+            <table
+              className={classNames(styles['members-list'], {
+                [styles['members-list--withMarginBottom']]:
+                  members.length > MAX_COLLABORATORS,
+              })}
+            >
+              <thead>
+                <tr className={styles['members-list-tr']}>
+                  <th scope="col" className={styles['members-list-th']}>
+                    Email
+                  </th>
+                  <th scope="col" className={styles['members-list-th']}>
+                    Statut
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {members.map(
+                  ({ email, status }, index) =>
+                    !(!displayAllMembers && index > MAX_COLLABORATORS - 1) && (
+                      <tr key={email} className={styles['members-list-tr']}>
+                        <td
+                          className={classNames(
+                            styles['member-email'],
+                            styles['members-list-td']
+                          )}
+                        >
+                          {email}
+                        </td>
+                        <td
+                          className={classNames(
+                            styles['member-status'],
+                            styles['members-list-td']
+                          )}
+                        >
+                          {status === OffererMemberStatus.VALIDATED
+                            ? 'Validé'
+                            : 'En attente'}
+                        </td>
+                      </tr>
+                    )
+                )}
+              </tbody>
+            </table>
+
             {members.length > MAX_COLLABORATORS && (
               <Button
                 onClick={() => setDisplayAllMembers(!displayAllMembers)}
                 variant={ButtonVariant.TERTIARY}
                 color={ButtonColor.NEUTRAL}
                 icon={displayAllMembers ? fullUpIcon : fullDownIcon}
-                className={styles['display-all-members-button']}
                 label={
                   displayAllMembers
                     ? 'Voir moins de collaborateurs'

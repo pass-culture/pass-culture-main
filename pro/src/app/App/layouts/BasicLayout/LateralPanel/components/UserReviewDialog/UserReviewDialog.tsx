@@ -1,6 +1,6 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import * as Dialog from '@radix-ui/react-dialog'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useLocation } from 'react-router'
 
@@ -13,12 +13,7 @@ import { selectCurrentOffererId } from '@/commons/store/offerer/selectors'
 import { sendSentryCustomError } from '@/commons/utils/sendSentryCustomError'
 import { ScrollToFirstHookFormErrorAfterSubmit } from '@/components/ScrollToFirstErrorAfterSubmit/ScrollToFirstErrorAfterSubmit'
 import { Button } from '@/design-system/Button/Button'
-import {
-  ButtonColor,
-  ButtonSize,
-  ButtonVariant,
-} from '@/design-system/Button/types'
-import fullSmsIcon from '@/icons/full-sms.svg'
+import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import strokeValidIcon from '@/icons/stroke-valid.svg'
 import { DialogBuilder } from '@/ui-kit/DialogBuilder/DialogBuilder'
 import {
@@ -37,18 +32,10 @@ export interface UserReviewDialogFormValues {
 }
 
 export const UserReviewDialog = ({
-  dialogTrigger = (
-    <Button
-      variant={ButtonVariant.TERTIARY}
-      color={ButtonColor.NEUTRAL}
-      size={ButtonSize.SMALL}
-      icon={fullSmsIcon}
-      label="Donner mon avis"
-    />
-  ),
-}: {
-  dialogTrigger?: React.ReactNode
-}) => {
+  dialogTrigger,
+}: Readonly<{
+  dialogTrigger: ReactNode
+}>) => {
   const snackBar = useSnackBar()
   const [displayConfirmation, setDisplayConfirmation] = useState<boolean>(false)
   const onSubmitReview = async (formValues: UserReviewDialogFormValues) => {
@@ -131,7 +118,7 @@ export const UserReviewDialog = ({
       variant={displayConfirmation ? 'default' : 'drawer'}
     >
       <div className={styles.dialog}>
-        {!displayConfirmation ? (
+        {!displayConfirmation && (
           <FormProvider {...form}>
             <form
               className={styles['dialog-form']}
@@ -157,8 +144,7 @@ export const UserReviewDialog = ({
                   label={
                     <>
                       Pourriez-vous préciser ? Nous lisons tous les
-                      commentaires.
-                      <span aria-hidden="true"> 🙂</span>
+                      commentaires. <span aria-hidden="true">🙂</span>
                     </>
                   }
                   maxLength={500}
@@ -183,7 +169,9 @@ export const UserReviewDialog = ({
               </DialogBuilder.Footer>
             </form>
           </FormProvider>
-        ) : (
+        )}
+
+        {displayConfirmation && (
           <div className={styles['confirmation-dialog']}>
             <SvgIcon
               src={strokeValidIcon}
