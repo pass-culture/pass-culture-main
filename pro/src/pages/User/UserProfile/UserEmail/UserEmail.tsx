@@ -1,8 +1,14 @@
 import { useEffect, useState } from 'react'
 
 import { api } from '@/apiClient/api'
+import { SummarySection } from '@/components/SummaryLayout/SummarySection'
+import { Button } from '@/design-system/Button/Button'
+import {
+  ButtonColor,
+  ButtonSize,
+  ButtonVariant,
+} from '@/design-system/Button/types'
 import { UserEmailForm } from '@/pages/User/UserProfile/UserEmail/UserEmailForm/UserEmailForm'
-import { Panel } from '@/ui-kit/Panel/Panel'
 
 import { Forms } from '../constants'
 import { BannerPendingEmailValidation } from './BannerPendingEmailValidation/BannerPendingEmailValidation'
@@ -39,22 +45,30 @@ export const UserEmail = ({
   }, [])
 
   return (
-    <Panel>
+    <SummarySection
+      title={'Adresse email de connexion'}
+      editLink={
+        <Button
+          label="Modifier"
+          onClick={onClickModify}
+          variant={ButtonVariant.SECONDARY}
+          color={ButtonColor.NEUTRAL}
+          size={ButtonSize.SMALL}
+        />
+      }
+      shouldShowDivider={true}
+    >
       {showForm ? (
         <UserEmailForm
           closeForm={resetForm}
           getPendingEmailRequest={getPendingEmailRequest}
         />
       ) : (
-        <Panel.Header
-          title="Adresse email de connexion"
-          subtitle={initialValues.email}
-          onClickModify={onClickModify}
-        />
+        initialValues.email
       )}
       {!showForm && pendingEmailValidation && (
         <BannerPendingEmailValidation email={pendingEmailValidation} />
       )}
-    </Panel>
+    </SummarySection>
   )
 }

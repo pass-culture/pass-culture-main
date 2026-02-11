@@ -51,6 +51,7 @@ export const UserProfile = ({
           initialValues={userIdentityInitialValues}
           showForm={currentForm === Forms.USER_IDENTITY}
         />
+
         <UserPhone
           setCurrentForm={(value: Forms | null) => setCurrentForm(value)}
           initialValues={userPhoneInitialValues}

@@ -67,3 +67,4 @@ export const GET_STATISTICS_QUERY_KEY = 'getStatistics'
 export const GET_HIGHLIGHTS_QUERY_KEY = 'getHighlights'
 export const GET_PRO_ANONYMIZATION_ELIGIBILITY_QUERY_KEY =
   'getProAnonymizationEligibility'
+export const GET_USER_PENDING_EMAIL = 'getUserEmailPendingValidation'
