@@ -1,4 +1,3 @@
-import cn from 'classnames'
 import { useId, useState } from 'react'
 
 import type { GetVenueResponseModel } from '@/apiClient/v1'
@@ -63,16 +62,21 @@ export const NewHomepage = (): JSX.Element => {
           onChange={handleTabChange}
         />
       )}
-      {hasIndividual && (
+      {hasIndividual && selectedTab === TABS.INDIVIDUAL && (
         <div
           id={getPanelId(individualId)}
           role="tabpanel"
-          className={cn(styles['container'], {
-            [styles['is-hidden']]: selectedTab !== TABS.INDIVIDUAL,
-          })}
+          className={styles['container']}
           aria-labelledby={getTabId(individualId)}
+          aria-describedby={`description-${individualId}`}
           tabIndex={selectedTab === TABS.INDIVIDUAL ? 0 : -1}
         >
+          <span
+            id={`description-${individualId}`}
+            className={styles['visually-hidden']}
+          >
+            Page d'accueil - part individuelle
+          </span>
           <div className={styles['top']}>
             <div>Banner indiv</div>
           </div>
@@ -88,17 +92,22 @@ export const NewHomepage = (): JSX.Element => {
           </div>
         </div>
       )}
-      {hasCollective && (
+      {hasCollective && selectedTab === TABS.COLLECTIVE && (
         <div
           id={getPanelId(collectiveId)}
           role="tabpanel"
-          className={cn(styles['container'], {
-            [styles['is-hidden']]: selectedTab !== TABS.COLLECTIVE,
-          })}
+          className={styles['container']}
           aria-labelledby={getTabId(collectiveId)}
+          aria-describedby={`description-${collectiveId}`}
           tabIndex={selectedTab === TABS.COLLECTIVE ? 0 : -1}
           hidden={selectedTab !== TABS.COLLECTIVE}
         >
+          <span
+            id={`description-${collectiveId}`}
+            className={styles['visually-hidden']}
+          >
+            Page d'accueil - part collective
+          </span>
           <div className={styles['top']}>
             <div>Banner collective</div>
           </div>
