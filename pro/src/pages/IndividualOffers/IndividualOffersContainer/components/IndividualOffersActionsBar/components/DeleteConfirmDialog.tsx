@@ -1,6 +1,6 @@
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import strokeTrashIcon from '@/icons/stroke-trash.svg'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 interface DeleteConfirmDialogProps {
   onCancel: () => void

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { Dialog } from '@/components/Dialog/Dialog'
 import { Button } from '@/design-system/Button/Button'
 import { ButtonColor, ButtonVariant } from '@/design-system/Button/types'
 import fullTrashIcon from '@/icons/full-trash.svg'
 import strokeWarningIcon from '@/icons/stroke-warning.svg'
+import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
 import { UserAnonymizationForm } from './components/UserAnonymizationForm'
 import { UserAnonymizationUneligibility } from './components/UserAnonymizationUneligibility'

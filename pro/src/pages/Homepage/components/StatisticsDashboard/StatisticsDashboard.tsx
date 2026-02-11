@@ -7,8 +7,8 @@ import type {
   GetOffererStatsResponseModel,
 } from '@/apiClient/v1'
 import { FORMAT_DD_MM_YYYY_HH_mm, formatDate } from '@/commons/utils/date'
-import { Card as HomeCard } from '@/components/Card/Card'
 import strokeNoBookingIcon from '@/icons/stroke-no-booking.svg'
+import { CardBis as HomeCard } from '@/ui-kit/CardBis/CardBis'
 import { SvgIcon } from '@/ui-kit/SvgIcon/SvgIcon'
 
 import { CumulatedViews } from './components/CumulatedViews'

@@ -6,10 +6,10 @@ import {
   DS_BANK_ACCOUNT_PROCEDURE_ID,
   DS_NEW_CALEDONIA_BANK_ACCOUNT_PROCEDURE_ID,
 } from '@/commons/utils/config'
-import { Dialog } from '@/components/Dialog/Dialog'
 import { Button } from '@/design-system/Button/Button'
 import fullLinkIcon from '@/icons/full-link.svg'
 import strokeLinkIcon from '@/icons/stroke-link.svg'
+import { Dialog } from '@/ui-kit/Dialog/Dialog'
 
 import styles from './AddBankInformationsDialog.module.scss'
 

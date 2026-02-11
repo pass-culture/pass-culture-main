@@ -12,7 +12,6 @@ import {
   VenueEvents,
 } from '@/commons/core/FirebaseEvents/constants'
 import { useActiveFeature } from '@/commons/hooks/useActiveFeature'
-import { Card } from '@/components/Card/Card'
 import { Button } from '@/design-system/Button/Button'
 import {
   ButtonColor,
@@ -21,6 +20,7 @@ import {
 } from '@/design-system/Button/types'
 import fullInfoIcon from '@/icons/full-info.svg'
 import fullNextIcon from '@/icons/full-next.svg'
+import { CardBis } from '@/ui-kit/CardBis/CardBis'
 
 import {
   shouldDisplayEACInformationSectionForVenue,
@@ -85,7 +85,7 @@ export const VenueOfferSteps = ({
 
   return (
     (displayNextStepsSection || displayAddEACInfoButton) && (
-      <Card
+      <CardBis
         className={cn(styles['card-wrapper'], className, {
           [styles['no-shadow']]: hasVenue || isInsidePartnerBlock,
           [styles['inside-partner-block']]: isInsidePartnerBlock,
@@ -188,7 +188,7 @@ export const VenueOfferSteps = ({
             </div>
           </>
         )}
-      </Card>
+      </CardBis>
     )
   )
 }

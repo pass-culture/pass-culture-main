@@ -5,9 +5,9 @@ import { Events, VenueEvents } from '@/commons/core/FirebaseEvents/constants'
 import { INDIVIDUAL_OFFER_WIZARD_STEP_IDS } from '@/commons/core/Offers/constants'
 import { useAppDispatch } from '@/commons/hooks/useAppDispatch'
 import { updateUserAccess } from '@/commons/store/user/reducer'
-import { RedirectDialog } from '@/components/RedirectDialog/RedirectDialog'
 import fullWaitIcon from '@/icons/full-wait.svg'
 import strokePartyIcon from '@/icons/stroke-party.svg'
+import { RedirectDialog } from '@/ui-kit/RedirectDialog/RedirectDialog'
 
 export interface RedirectToBankAccountDialogProps {
   cancelRedirectUrl: string

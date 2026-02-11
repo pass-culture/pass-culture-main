@@ -4,8 +4,8 @@ import { useAnalytics } from '@/app/App/analytics/firebase'
 import { Events } from '@/commons/core/FirebaseEvents/constants'
 import { NBSP } from '@/commons/core/shared/constants'
 import { pluralizeFr } from '@/commons/utils/pluralize'
-import { ConfirmDialog } from '@/components/ConfirmDialog/ConfirmDialog'
 import fullEyeIcon from '@/icons/full-hide.svg'
+import { ConfirmDialog } from '@/ui-kit/ConfirmDialog/ConfirmDialog'
 
 export interface CollectiveDeactivationConfirmDialogProps {
   areAllOffersSelected: boolean
