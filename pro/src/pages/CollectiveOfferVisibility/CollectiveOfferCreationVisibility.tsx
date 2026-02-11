@@ -45,7 +45,7 @@ export const CollectiveOfferVisibility = ({
     offerId: string
     payload: GetCollectiveOfferResponseModel
   }) => {
-    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY], payload, {
+    await mutate([GET_COLLECTIVE_OFFER_QUERY_KEY, Number(offerId)], payload, {
       revalidate: false,
     })
 
