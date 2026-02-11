@@ -198,3 +198,26 @@ def _convert_to_jpeg(image: PIL.Image.Image) -> bytes:
     image.save(new_bytes, format="JPEG", quality=CONVERSION_QUALITY, optimize=True, progressive=True)
 
     return new_bytes.getvalue()
+
+
+def get_crop_params(width: int, height: int, expected_ratio: ImageRatio) -> CropParams:
+    ratio = width / height
+
+    x_crop_percent = 0.0
+    y_crop_percent = 0.0
+    width_crop_percentage = 1.0
+    height_crop_percentage = 1.0
+
+    if ratio < expected_ratio.value:  # height is too big
+        new_height = width / expected_ratio.value
+        height_crop_percentage = new_height / height
+        y_crop_start = (height - new_height) / 2
+        y_crop_percent = y_crop_start / height
+
+    else:  # width is too big
+        new_width = height * expected_ratio.value
+        width_crop_percentage = new_width / width
+        x_crop_start = (width - new_width) / 2
+        x_crop_percent = x_crop_start / width
+
+    return CropParams(x_crop_percent, y_crop_percent, height_crop_percentage, width_crop_percentage)

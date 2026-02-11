@@ -16,6 +16,7 @@ from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _post_process_image
 from pcapi.utils.image_conversion import _pre_process_image
 from pcapi.utils.image_conversion import _shrink_image
+from pcapi.utils.image_conversion import get_crop_params
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
 
@@ -204,3 +205,37 @@ class ProcessOriginalImageTest:
         assert result == b"post-processed-image"
         mock_shrink.assert_not_called()
         mock_post_process.assert_called_once_with(b"pre-processed-image")
+
+
+class GetCropParamsTest:
+    def test_landscape_wider_image(self):
+        crop_params = get_crop_params(400, 200, ImageRatio.LANDSCAPE)
+
+        assert crop_params.x_crop_percent == 0.125
+        assert crop_params.y_crop_percent == 0
+        assert crop_params.width_crop_percent == 0.75
+        assert crop_params.height_crop_percent == 1
+
+    def test_landscape_taller_image(self):
+        crop_params = get_crop_params(300, 1000, ImageRatio.LANDSCAPE)
+
+        assert crop_params.x_crop_percent == 0
+        assert crop_params.y_crop_percent == 0.4
+        assert crop_params.width_crop_percent == 1
+        assert crop_params.height_crop_percent == 0.2
+
+    def test_portrait_taller_image(self):
+        crop_params = get_crop_params(200, 400, ImageRatio.PORTRAIT)
+
+        assert crop_params.x_crop_percent == 0
+        assert crop_params.y_crop_percent == 0.125
+        assert crop_params.width_crop_percent == 1
+        assert crop_params.height_crop_percent == 0.75
+
+    def test_portrait_wider_image(self):
+        crop_params = get_crop_params(1000, 300, ImageRatio.PORTRAIT)
+
+        assert crop_params.x_crop_percent == 0.4
+        assert crop_params.y_crop_percent == 0
+        assert crop_params.width_crop_percent == 0.2
+        assert crop_params.height_crop_percent == 1
