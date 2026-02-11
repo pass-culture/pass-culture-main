@@ -1,6 +1,6 @@
 import { addDays, format } from 'date-fns'
 
-import { expect, test } from './fixtures/test'
+import { expect, test } from './fixtures/desk'
 
 test.describe('Desk (Guichet)', () => {
   test.describe.configure({ mode: 'serial' })

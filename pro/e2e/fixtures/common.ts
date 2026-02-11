@@ -4,14 +4,12 @@ import {
   test as base,
   expect,
   request as playwrightRequest,
+  type Page,
+  type APIRequestContext,
 } from '@playwright/test'
 import * as path from 'node:path'
 
 import { login } from '../helpers/auth'
-import {
-  createProUserWithBookings,
-  type DeskBookingsData,
-} from '../helpers/sandbox'
 
 export interface AccessibilityResult {
   violations: Array<{
@@ -26,19 +24,19 @@ export interface AccessibilityResult {
 }
 
 interface AuthSession {
-  data: DeskBookingsData
+  data: any
   storageStatePath: string
 }
 
 const sessionCache = new Map<string, AuthSession>()
 
 export const test = base.extend<{
+  callSandbox: (ctx: APIRequestContext) => Promise<any>
   checkAccessibility: (disabledRules?: string[]) => Promise<AccessibilityResult>
-  deskData: DeskBookingsData
   authSession: AuthSession
-  authenticatedPage: typeof base.page
+  authenticatedPage: Page
 }>({
-  authSession: async ({ browser }, use, testInfo) => {
+  authSession: async ({ browser, callSandbox }, use, testInfo) => {
     const projectName = testInfo.project.name
     const cached = sessionCache.get(projectName)
 
@@ -50,12 +48,14 @@ export const test = base.extend<{
     const requestContext = await playwrightRequest.newContext({
       baseURL: 'http://localhost:5001',
     })
-    const deskData = await createProUserWithBookings(requestContext)
+    const data = await callSandbox(requestContext)
+
     await requestContext.dispose()
 
     const tempContext = await browser.newContext()
     const tempPage = await tempContext.newPage()
-    await login(tempPage, deskData.user.email)
+
+    await login(tempPage, data.user.email)
 
     const storageStatePath = path.join(
       testInfo.project.outputDir,
@@ -63,25 +63,18 @@ export const test = base.extend<{
     )
     await tempContext.storageState({ path: storageStatePath })
     await tempContext.close()
+    await tempPage.close()
 
-    const session: AuthSession = { data: deskData, storageStatePath }
+    const session: AuthSession = { data: data, storageStatePath }
     sessionCache.set(projectName, session)
     await use(session)
   },
-
-  deskData: async ({ authSession }, use) => {
-    await use(authSession.data)
-  },
-
   authenticatedPage: async ({ browser, authSession }, use, testInfo) => {
     const context = await browser.newContext({
       storageState: authSession.storageStatePath,
       ...testInfo.project.use,
     })
     const page = await context.newPage()
-
-    await page.goto('/guichet')
-    await page.getByLabel('Contremarque').waitFor({ state: 'visible' })
 
     await use(page)
 

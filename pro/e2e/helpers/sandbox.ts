@@ -74,6 +74,16 @@ export async function createRegularProUser(
   return await sandboxCall<ProUserData>(
     request,
     'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user`
+  )
+}
+
+export async function createRegularOnboardedProUser(
+  request: APIRequestContext
+): Promise<ProUserData> {
+  return await sandboxCall<ProUserData>(
+    request,
+    'GET',
     `${BASE_API_URL}/sandboxes/pro/create_regular_pro_user_already_onboarded`
   )
 }
@@ -95,6 +105,16 @@ export async function createProUserWithActiveCollectiveOffer(
     request,
     'GET',
     `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_active_collective_offer`
+  )
+}
+
+export async function createProUserWithCollectiveOffer(
+  request: APIRequestContext
+): Promise<ProUserWithActiveCollectiveOfferResponse> {
+  return await sandboxCall<ProUserWithActiveCollectiveOfferResponse>(
+    request,
+    'GET',
+    `${BASE_API_URL}/sandboxes/pro/create_pro_user_with_collective_offers`
   )
 }
 
