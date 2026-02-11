@@ -1192,8 +1192,8 @@ def create_movie_poster(product: models.Product, provider: providers_models.Prov
     )
     db.session.add(mediation)
     thumb_storage.create_thumb(
-        product,
         image,
+        model_with_thumb=product,
         storage_id_suffix_str="",
         keep_ratio=True,
         object_id=image_id,
@@ -1226,8 +1226,8 @@ def create_mediation(
 
     try:
         create_thumb(
-            mediation,
             image_as_bytes,
+            model_with_thumb=mediation,
             crop_params=crop_params,
             ratio=aspect_ratio,
             keep_ratio=keep_ratio,
@@ -1641,8 +1641,8 @@ def create_or_update_product_mediations(product: models.Product, images: Titeliv
                 db.session.flush()
 
                 thumb_storage.create_thumb(
-                    product,
                     image_bytes,
+                    model_with_thumb=product,
                     keep_ratio=True,
                     object_id=image_id,
                 )

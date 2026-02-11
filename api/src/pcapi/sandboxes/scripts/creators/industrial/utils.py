@@ -36,4 +36,4 @@ def create_products_thumb(products: list[offers_models.Product]) -> None:
     image_paths = image_dir.iterdir()
 
     for product, image_path in zip(products, itertools.cycle(image_paths)):
-        thumb_storage.create_thumb(product, image_path.read_bytes(), keep_ratio=True)
+        thumb_storage.create_thumb(image_path.read_bytes(), model_with_thumb=product, keep_ratio=True)
