@@ -83,9 +83,15 @@ def has_invoice(query: finance_serialize.HasInvoiceQueryModel) -> finance_serial
     query_params_as_list=["invoiceReferences"],
 )
 def get_combined_invoices(query: finance_serialize.GetCombinedInvoicesQueryModel) -> bytes:
-    invoices = finance_repository.get_invoices_by_references(query.invoice_references)
+    invoices = (
+        db.session.query(finance_models.Invoice)
+        .filter(finance_models.Invoice.reference.in_(query.invoice_references))
+        .order_by(finance_models.Invoice.date)
+        .all()
+    )
     if not invoices:
         raise ApiErrors({"invoice": "Invoice not found"}, status_code=404)
+
     bank_accounts = (
         db.session.query(finance_models.Invoice)
         .join(finance_models.Invoice.bankAccount)

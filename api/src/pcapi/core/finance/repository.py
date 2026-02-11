@@ -87,15 +87,6 @@ def has_active_or_future_custom_reimbursement_rule(offer: offers_models.Offer) -
     return db.session.query(query).scalar()
 
 
-def get_invoices_by_references(references: list[str]) -> list[models.Invoice]:
-    return (
-        db.session.query(models.Invoice)
-        .filter(models.Invoice.reference.in_(references))
-        .order_by(models.Invoice.date)
-        .all()
-    )
-
-
 def find_offerer_payments(
     offerer_id: int | None = None,
     reimbursement_period: tuple[datetime.date, datetime.date] | None = None,

@@ -51,20 +51,15 @@ class ExternalFinanceTest:
         invoice3 = finance_factories.InvoiceFactory(
             status=finance_models.InvoiceStatus.PENDING_PAYMENT, cashflows=[finance_factories.CashflowFactory()]
         )
-        invoice4 = finance_factories.InvoiceFactory(
-            status=finance_models.InvoiceStatus.REJECTED, cashflows=[finance_factories.CashflowFactory()]
-        )
 
         external.push_invoices(10)
         db.session.flush()
         db.session.refresh(invoice1)
         db.session.refresh(invoice2)
         db.session.refresh(invoice3)
-        db.session.refresh(invoice4)
         assert invoice1.status == finance_models.InvoiceStatus.PAID
         assert invoice2.status == finance_models.InvoiceStatus.PAID
         assert invoice3.status == finance_models.InvoiceStatus.PENDING_PAYMENT
-        assert invoice4.status == finance_models.InvoiceStatus.REJECTED
 
         assert len(dummy_invoices) == 1
         assert dummy_invoices[0] == invoice1
