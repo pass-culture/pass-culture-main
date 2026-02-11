@@ -11,9 +11,11 @@ export const offererAddressFactory = (
 
   return {
     id: currentOaId,
+    label: null,
+    street: '1 Rue de paris',
     city: 'Paris',
     postalCode: '75001',
-    street: '1 Rue de paris',
+    departmentCode: '75',
     ...customOffererAddress,
   }
 }

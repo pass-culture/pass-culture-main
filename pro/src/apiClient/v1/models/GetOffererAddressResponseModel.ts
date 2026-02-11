@@ -4,10 +4,10 @@
 /* eslint-disable */
 export type GetOffererAddressResponseModel = {
   city: string;
-  departmentCode?: string | null;
+  departmentCode: (string | null);
   id: number;
-  label?: string | null;
+  label: (string | null);
   postalCode: string;
-  street?: string | null;
+  street: (string | null);
 };
 

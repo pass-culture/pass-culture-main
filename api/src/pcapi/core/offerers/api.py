@@ -1002,7 +1002,7 @@ def _add_new_onboarding_info_to_extra_data(new_onboarding_info: NewOnboardingInf
 
 def create_offerer(
     user: users_models.User,
-    offerer_informations: offerers_serialize.CreateOffererQueryModel,
+    offerer_informations: offerers_serialize.CreateOffererBodyModel,
     new_onboarding_info: NewOnboardingInfo | None = None,
     author: users_models.User | None = None,
     comment: str | None = None,
@@ -1097,9 +1097,9 @@ def create_offerer(
     else:
         db.session.commit()
 
-    if offerer_informations.phoneNumber:
+    if offerer_informations.phone_number:
         users_repository.fill_phone_number_on_all_users_offerer_without_any(
-            offerer.id, offerer_informations.phoneNumber
+            offerer.id, offerer_informations.phone_number
         )
 
     external_attributes_api.update_external_pro(user.email)
@@ -2177,16 +2177,16 @@ def create_from_onboarding_data(
     link_cultural_domains_to_venue(onboarding_data.culturalDomains, None)
 
     # Create Offerer or attach user to existing Offerer
-    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
+    offerer_creation_info = offerers_serialize.CreateOffererBodyModel(
         street=onboarding_data.address.street,
         city=onboarding_data.address.city,
         latitude=float(onboarding_data.address.latitude),
         longitude=float(onboarding_data.address.longitude),
         name=name,
-        postalCode=onboarding_data.address.postalCode,
-        inseeCode=onboarding_data.address.inseeCode,
+        postal_code=onboarding_data.address.postalCode,
+        insee_code=onboarding_data.address.inseeCode,
         siren=onboarding_data.siret[:9],
-        phoneNumber=onboarding_data.phoneNumber,
+        phone_number=onboarding_data.phoneNumber,
     )
     new_onboarding_info = NewOnboardingInfo(
         activity=offerers_models.Activity[onboarding_data.activity.name] if onboarding_data.activity else None,

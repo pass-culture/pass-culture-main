@@ -3,9 +3,9 @@
 /* tslint:disable */
 /* eslint-disable */
 export type OffererEligibilityResponseModel = {
-  hasAdageId?: boolean | null;
-  hasDsApplication?: boolean | null;
-  isOnboarded?: boolean | null;
+  hasAdageId: (boolean | null);
+  hasDsApplication: (boolean | null);
+  isOnboarded: (boolean | null);
   offererId: number;
 };
 

@@ -64,7 +64,7 @@ export type { CollectiveStockHomeResponseModel } from './models/CollectiveStockH
 export type { CollectiveStockResponseModel } from './models/CollectiveStockResponseModel';
 export type { Consent } from './models/Consent';
 export type { CookieConsentRequest } from './models/CookieConsentRequest';
-export type { CreateOffererQueryModel } from './models/CreateOffererQueryModel';
+export type { CreateOffererBodyModel } from './models/CreateOffererBodyModel';
 export type { CreateOfferHighlightRequestBodyModel } from './models/CreateOfferHighlightRequestBodyModel';
 export type { CreatePriceCategoryModel } from './models/CreatePriceCategoryModel';
 export type { CreateThumbnailBodyModel } from './models/CreateThumbnailBodyModel';

@@ -3,19 +3,19 @@
 /* tslint:disable */
 /* eslint-disable */
 export type GetEducationalOffererVenueResponseModel = {
-  audioDisabilityCompliant?: boolean | null;
-  city?: string | null;
-  collectiveEmail?: string | null;
-  collectiveInterventionArea?: Array<string> | null;
-  collectivePhone?: string | null;
+  audioDisabilityCompliant?: (boolean | null);
+  city?: (string | null);
+  collectiveEmail?: (string | null);
+  collectiveInterventionArea?: (Array<string> | null);
+  collectivePhone?: (string | null);
   id: number;
   isVirtual: boolean;
-  mentalDisabilityCompliant?: boolean | null;
-  motorDisabilityCompliant?: boolean | null;
+  mentalDisabilityCompliant?: (boolean | null);
+  motorDisabilityCompliant?: (boolean | null);
   name: string;
-  postalCode?: string | null;
+  postalCode?: (string | null);
   publicName: string;
-  street?: string | null;
-  visualDisabilityCompliant?: boolean | null;
+  street?: (string | null);
+  visualDisabilityCompliant?: (boolean | null);
 };
 

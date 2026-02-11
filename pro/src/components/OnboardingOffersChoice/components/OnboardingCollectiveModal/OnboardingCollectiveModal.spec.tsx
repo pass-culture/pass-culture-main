@@ -87,6 +87,8 @@ describe('<OnboardingCollectiveModal />', () => {
       vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate)
       vi.spyOn(api, 'getOffererEligibility').mockResolvedValue({
         offererId: 1,
+        hasAdageId: false,
+        hasDsApplication: false,
         isOnboarded: true,
       })
 
@@ -102,6 +104,8 @@ describe('<OnboardingCollectiveModal />', () => {
     it('should show an error message if user is not onboarded', async () => {
       vi.spyOn(api, 'getOffererEligibility').mockResolvedValue({
         offererId: 1,
+        hasAdageId: false,
+        hasDsApplication: false,
         isOnboarded: false,
       })
 

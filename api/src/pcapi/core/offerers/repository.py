@@ -1199,8 +1199,6 @@ def get_offerer_addresses(
             models.OffererAddress.id,
             geography_models.Address.id.label("addressId"),
             models.OffererAddress.label,
-            models.Venue.publicName,
-            models.Venue.id.label("venueId"),
             geography_models.Address.street,
             geography_models.Address.postalCode,
             geography_models.Address.city,

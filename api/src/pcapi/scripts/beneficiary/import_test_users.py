@@ -101,16 +101,16 @@ def _create_pro_user(row: dict) -> User:
 
     siret = _get_siret(row["SIREN"])
     gps = (48.865987, 2.3232)
-    offerer_creation_info = offerers_serialize.CreateOffererQueryModel(
+    offerer_creation_info = offerers_serialize.CreateOffererBodyModel(
         city="PARIS",
         latitude=gps[0],
         longitude=gps[1],
         name=f"{(row['Type'] or 'test').split(':')[-1].capitalize()} {row['Prénom']} {row['Nom']}",
-        postalCode="75001",
-        inseeCode="75101",
+        postal_code="75001",
+        insee_code="75101",
         siren=siret[:9],
         street="1 place de la Concorde",
-        phoneNumber=None,
+        phone_number=None,
     )
     new_onboarding_info = offerers_api.NewOnboardingInfo(
         activity=offerers_models.Activity.NOT_ASSIGNED,
@@ -142,7 +142,7 @@ def _create_pro_user(row: dict) -> User:
     address = address_serialize.LocationBodyModel(
         street=offerers_schemas.VenueAddress(offerer_creation_info.street),
         city=offerers_schemas.VenueCity(offerer_creation_info.city),
-        postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postalCode),
+        postalCode=offerers_schemas.VenuePostalCode(offerer_creation_info.postal_code),
         inseeCode=offerers_schemas.VenueInseeCode("75101"),
         latitude=gps[0],
         longitude=gps[1],

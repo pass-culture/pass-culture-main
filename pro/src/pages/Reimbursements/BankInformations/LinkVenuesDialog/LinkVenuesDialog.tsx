@@ -74,7 +74,7 @@ export const LinkVenuesDialog = ({
 
     try {
       await api.linkVenueToBankAccount(offererId, selectedBankAccount.id, {
-        venues_ids: selectedVenuesIds,
+        venuesIds: selectedVenuesIds,
       })
 
       logEvent(BankAccountEvents.CLICKED_SAVE_VENUE_TO_BANK_ACCOUNT, {
