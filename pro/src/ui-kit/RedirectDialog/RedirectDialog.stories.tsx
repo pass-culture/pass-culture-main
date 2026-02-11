@@ -3,7 +3,7 @@ import type { StoryObj } from '@storybook/react-vite'
 import { RedirectDialog } from './RedirectDialog'
 
 export default {
-  title: '@/components/Dialog/RedirectDialog',
+  title: '@/ui-kit/Dialog/RedirectDialog',
   component: RedirectDialog,
 }
 

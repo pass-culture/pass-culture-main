@@ -5,7 +5,7 @@ import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { Dialog } from './Dialog'
 
 export default {
-  title: '@/components/Dialog/Dialog',
+  title: '@/ui-kit/Dialog/Dialog',
   component: Dialog,
 }
 

@@ -72,13 +72,11 @@ const DefaultPanel = (args: PanelProps) => {
                 </form>
               </FormProvider>
         ) : (
-          <>
             <Panel.Header
               subtitle={'Je suis le sous-titre'}
               title="Adresse email"
               onClickModify={() => setShowForm(true) }
             />
-          </>
         )}
     </Panel>
   )

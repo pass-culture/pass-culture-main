@@ -5,7 +5,7 @@ import strokeTrashIcon from '@/icons/stroke-trash.svg'
 import { ConfirmDialog } from './ConfirmDialog'
 
 export default {
-  title: '@/components/Dialog/ConfirmDialog',
+  title: '@/ui-kit/Dialog/ConfirmDialog',
   component: ConfirmDialog,
 }
 

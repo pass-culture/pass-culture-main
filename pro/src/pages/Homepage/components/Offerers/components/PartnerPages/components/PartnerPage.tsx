@@ -118,13 +118,7 @@ export const PartnerPage = ({
         </div>
       </div>
 
-      <VenueOfferSteps
-        className={styles['venue-offer-steps']}
-        offerer={offerer}
-        venue={venue}
-        hasVenue
-        isInsidePartnerBlock
-      />
+      <VenueOfferSteps offerer={offerer} venue={venue} hasVenue />
       {venueHasPartnerPage && (
         <PartnerPageIndividualSection
           venueId={venue.id}

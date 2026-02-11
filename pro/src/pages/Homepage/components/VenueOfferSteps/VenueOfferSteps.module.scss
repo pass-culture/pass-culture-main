@@ -2,26 +2,15 @@
 @use "styles/mixins/_fonts.scss" as fonts;
 
 .card-wrapper {
-  margin-left: 0 !important;
   display: flex;
   flex-direction: column;
   gap: var(--size-spacing-l);
+}
 
-  &.no-shadow {
-    box-shadow: none;
-  }
-
-  & .venue-offer-steps {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-spacing-s);
-
-    .step-venue-creation {
-      display: flex;
-      flex-direction: row;
-      gap: var(--size-spacing-l);
-    }
-  }
+.venue-offer-steps {
+  display: flex;
+  gap: var(--size-spacing-s);
+  flex-wrap: wrap;
 }
 
 .dms-container {

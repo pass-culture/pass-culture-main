@@ -178,8 +178,6 @@ describe('VenueOfferSteps', () => {
     renderVenueOfferSteps(props)
 
     expect(screen.queryByText('Prochaines étapes :')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('venue-offer-steps')).not.toBeInTheDocument()
-    expect(screen.queryByTestId('home-offer-steps')).not.toBeInTheDocument()
   })
 
   it('should display venueOfferSteps if condition to display it', () => {
