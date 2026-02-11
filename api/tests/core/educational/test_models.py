@@ -273,7 +273,7 @@ class HasImageMixinTest:
         assert image.imageId.startswith(str(image.id).zfill(10))
         assert image.imageHasOriginal is True
         standardize_image.assert_called_once_with(content=image_data, ratio=ratio, crop_params=crop_data)
-        process_original_image.assert_called_once_with(content=image_data, resize=False)
+        process_original_image.assert_called_once_with(content=image_data)
         assert store_public_object.call_count == 2
         store_public_object.assert_any_call(
             folder=image.FOLDER,

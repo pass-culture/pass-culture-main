@@ -9,6 +9,7 @@ from pcapi.utils.image_conversion import ImageRatio
 from pcapi.utils.image_conversion import ImageRatioError
 from pcapi.utils.image_conversion import _crop_image
 from pcapi.utils.image_conversion import _pre_process_image
+from pcapi.utils.image_conversion import _resize_image
 from pcapi.utils.image_conversion import get_crop_params
 from pcapi.utils.image_conversion import process_original_image
 from pcapi.utils.image_conversion import standardize_image
@@ -97,7 +98,7 @@ class ImageConversionTest:
 
         expected_ratio = original_image.width / original_image.height
 
-        standardized_image = process_original_image(image_as_bytes)
+        standardized_image = process_original_image(image_as_bytes, resize=True)
 
         result_image = PIL.Image.open(io.BytesIO(standardized_image))
 

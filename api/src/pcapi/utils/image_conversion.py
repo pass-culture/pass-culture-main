@@ -103,7 +103,7 @@ def standardize_image(content: bytes, ratio: ImageRatio, crop_params: CropParams
     return _post_process_image(resized_image)
 
 
-def process_original_image(content: bytes, resize: bool = True) -> bytes:
+def process_original_image(content: bytes, resize: bool = False) -> bytes:
     """
     Process steps are:
         * transpose image
